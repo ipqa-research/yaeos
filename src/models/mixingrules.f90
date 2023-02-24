@@ -94,9 +94,9 @@ contains
       type(hyperdual), intent(in) :: z(:), v, t, a(size(z)), b(size(z)), c(size(z))
       type(hyperdual), intent(out) :: amix, bmix, cmix
       
-      call a_mix(mixrule, z, v, t, a, amix)
-      call b_mix(mixrule, z, v, t, b, bmix)
-      call c_mix(mixrule, z, v, t, c, cmix)
+      call a_mix_classic(mixrule, z, v, t, a, amix)
+      call b_mix_classic(mixrule, z, v, t, b, bmix)
+      call c_mix_classic(mixrule, z, v, t, c, cmix)
    end subroutine
 
    pure subroutine a_mix_classic(mixrule, z, v, t, a, amix)
