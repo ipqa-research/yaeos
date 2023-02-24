@@ -17,9 +17,9 @@ contains
 
       real(pr), intent(out) :: p
       real(pr), intent(out) :: dp(model%size + 2)
-      real(pr), intent(out) :: dp2(model%size+2, model%size+2)
+      real(pr), intent(out) :: dp2(model%size + 2, model%size + 2)
 
-      real(pr) :: ar, dar(model%size+2), dar2(model%size+2, model%size+2)
+      real(pr) :: ar, dar(model%size + 2), dar2(model%size + 2, model%size + 2)
       real(pr) :: RT
 
       integer :: n
@@ -28,6 +28,7 @@ contains
       RT = R*t
 
       call residual_helmholtz(model, z, v, t, ar, dar, dar2)
+
       p = -Rt*dar(n+1) + sum(z)*Rt / v
       dp(:n) = -Rt*dar2(:n, n+1) + Rt / v
       dp(n+1) = -Rt*dar2(n+1, n+1) - sum(z)*Rt/v**2
