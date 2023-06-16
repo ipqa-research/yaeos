@@ -146,5 +146,4 @@ contains
       cmix = sum(z*c)
    end subroutine
    ! ===========================================================================
-
 end module mixing_rules

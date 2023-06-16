@@ -77,6 +77,7 @@ contains
       call get_value( &
          system_table, "components", components, stat=stat, requested=.false. &
       )
+
       call get_value( &
          system_table, "composition", composition, stat=stat, requested=.false. &
       )

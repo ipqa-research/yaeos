@@ -1,8 +1,8 @@
 module cubic_eos
    use constants, only: pr, R
-   use ar_models, only: ArModel, dual_property, size, dualderiv, alloc
-   use mixing_rules
    use hyperdual_mod
+   use ar_models, only: ArModel, dual_property, size, dualderiv, alloc
+   use mixing_rules, only: CubicMixingRule
 
    implicit none
 
@@ -63,9 +63,7 @@ module cubic_eos
    interface alloc
       module procedure :: alloc_CubicEoS
    end interface alloc
-
 contains
-
    subroutine alloc_CubicEoS(model, n)
       type(CubicEoS) :: model
       integer :: n
@@ -86,7 +84,7 @@ contains
    end subroutine alloc_CubicEoS
 
    pure subroutine a_classic(model, z, v, t, a)
-      class(CubicEOS), intent(in) :: model
+      type(CubicEOS), intent(in) :: model
       type(hyperdual), intent(in) :: z(size(model)), v, t
       type(hyperdual), intent(out) :: a(size(model))
 
@@ -96,7 +94,7 @@ contains
    end subroutine
 
    pure subroutine b_classic(model, z, v, t, b)
-      class(CubicEOS), intent(in) :: model
+      type(CubicEOS), intent(in) :: model
       type(hyperdual), intent(in) :: z(size(model)), v, t
 
       type(hyperdual), intent(out) :: b(size(model))
@@ -105,7 +103,7 @@ contains
    end subroutine
 
    pure subroutine c_classic(model, z, v, t, c)
-      class(CubicEOS), intent(in) :: model
+      type(CubicEOS), intent(in) :: model
       type(hyperdual), intent(in) :: z(size(model)), v, t
       type(hyperdual), intent(out) :: c(size(model))
 
@@ -113,7 +111,7 @@ contains
    end subroutine
 
    pure subroutine del1_classic(model, z, v, t, del1)
-      class(CubicEOS), intent(in) :: model
+      type(CubicEOS), intent(in) :: model
       type(hyperdual), intent(in) :: z(size(model)), v, t
       type(hyperdual), intent(out) :: del1(size(model))
 
@@ -121,7 +119,7 @@ contains
    end subroutine
 
    pure subroutine del2_classic(model, z, v, t, del2)
-      class(CubicEOS), intent(in) :: model
+      type(CubicEOS), intent(in) :: model
       type(hyperdual), intent(in) :: z(size(model)), v, t
       type(hyperdual), intent(out) :: del2(size(model))
 
@@ -139,6 +137,7 @@ contains
 
       select type (model)
       class is (CubicEoS)
+         ! Pure components parameters
          call attractive_parameter(model, z, v, t, a_pures)
          call repulsive_parameter(model, z, v, t, b_pures)
 
@@ -148,18 +147,17 @@ contains
          del1 = del1_pures(1)
          del2 = del2_pures(1)
 
+         ! Call the model's mixing rule
          call model%mixrule%mix( &
                   z, v, t, &
                   a_pures, b_pures, c_pures, &
                   a, b, c &
-            )
+         )
 
-         
          ar = (&
                -sum(z)*log(1.0_pr - b/v) - a/(R*t*b)*1.0_pr/(del1 - del2) &
                *log((1.0_pr + del1*b/v)/(1.0_pr + del2*b/v))&
-            )*R*t
+         )! * R * t
       end select
    end subroutine
-
 end module

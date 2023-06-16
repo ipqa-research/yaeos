@@ -25,8 +25,8 @@ module ar_models
       module procedure :: alloc_ArModel
    end interface
    
-   ! Dual Property
    abstract interface
+     ! Dual Property
      pure subroutine dual_property(model, z, v, t, property)
         import hyperdual
         import ArModel
@@ -79,8 +79,25 @@ contains
          model%residual_helmholtz, ar, dar, dar2 &
       )
    end subroutine residual_helmholtz
+
+   subroutine dardv(model, z, v, t, dar_dv)
+      class(ArModel) :: model
+      type(hyperdual), intent(in) :: z(model%size)
+      type(hyperdual), intent(in) :: v, t
+      type(hyperdual), intent(out) :: dar_dv
+
+      type(hyperdual) :: z_in(size(z)), v_in, t_in
+
+      z_in = z%f0
+      v_in = v%f0
+      t_in = v%f0
+      v_in%f1 = 1
+      call model%residual_helmholtz(model, z_in, v_in, t_in, dar_dv)
+      dar_dv = dar_dv%f0
+      dar_dv%f1 = v%f1
+   end subroutine
    ! ===========================================================================
-   
+
    pure function size_model(model) result(smodel)
       class(ArModel), intent(in) :: model
       integer :: smodel
@@ -119,8 +136,7 @@ contains
          call f_in(model, X(:n - 2), X(n - 1), X(n), y)
          df(i) = y%f1
          df2(i, i) = y%f12
-
-         do j = i, n
+         do j = i, 0
             X = [z, v, t]
             X(i)%f1 = 1
             X(j)%f2 = 1

@@ -1,5 +1,8 @@
 module pengrobinson76
-    use cubic_eos
+    use constants, only: pr, R
+    use hyperdual_mod
+    use cubic_eos, only: CubicEoS, a_classic, b_classic, c_classic, alloc
+    use ar_models, only: size
 
     implicit none
 
@@ -29,22 +32,23 @@ module pengrobinson76
 contains
 
     subroutine setup_pr76(model, n, tc, pc, w)
+        use stdlib_optval, only: optval
         type(PR76) :: model
         integer :: n
         real(pr) :: tc(n), pc(n), w(n)
 
         call alloc(model%CubicEoS, n)
 
-        model%del1 = 1 + sqrt(2.0_pr)
-        model%del2 = 1 - sqrt(2.0_pr)
+        model%del1 = 1._pr + sqrt(2.0_pr)
+        model%del2 = 1._pr - sqrt(2.0_pr)
 
         model%tc = tc
         model%pc = pc
         model%w = w
 
-        model%ac = 0.45723553 * R**2 * tc**2 / pc
-        model%b = 0.07779607*R*tc/pc
-        model%k = 0.37464 + 1.54226*w - 0.26993*w**2
+        model%ac = 0.45723553_pr * R**2 * tc**2 / pc
+        model%b = 0.07779607_pr * R * tc/pc
+        model%k = 0.37464_pr + 1.54226_pr * w - 0.26993_pr * w**2
         model%c = 0
     end subroutine
 
@@ -54,16 +58,16 @@ contains
         type(hyperdual) :: p, v, t
         type(hyperdual) :: a(size(model))
 
-        call a_classic(model, z, v, t, a)
+        call a_classic(model%CubicEoS, z, v, t, a)
     end subroutine
-    
+
     subroutine b_pr(model, z, p, v, t, b)
         type(PR76) :: model
         type(hyperdual) :: z(size(model))
         type(hyperdual) :: p, v, t
         type(hyperdual) :: b(size(model))
 
-        call b_classic(model, z, v, t, b)
+        call b_classic(model%CubicEoS, z, v, t, b)
     end subroutine
 
     subroutine del1_pr(model, z, v, t, del1)
@@ -74,7 +78,7 @@ contains
 
         del1 = 1 + sqrt(2.0_pr)
     end subroutine
-    
+
     subroutine del2_pr(model, z, v, t, del2)
         type(PR76) :: model
         type(hyperdual) :: z(size(model))
