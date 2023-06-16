@@ -1,10 +1,12 @@
-module system
-   ! Module for a cubic eos system,
-   ! this should be later adapted into a simple oop system where an eos object
-   ! stores the relevant parameters
+module legacy_ar_models
+   !! Legacy Thermodynamic routines
+   !! Module for a cubic eos system, made with the intention to keep
+   !! compatiblity with legacy codes but with a better structure.
+   !! this should be later adapted into a simple oop system where an eos object
+   !! stores the relevant parameters (or some functional oriented approach)
    use constants, only: pr, R
+   use ar_interface, only: ar_fun, check
    implicit none
-
 
    ! Model settings
    integer :: thermo_model !! Which thermodynamic model to use
@@ -12,10 +14,13 @@ module system
    integer :: mixing_rule !! What mixing rule to use
    integer :: nc !! Number of components
 
-   ! Mole fracions
+   ! Mole fractions
    real(pr), allocatable :: z(:) !! Mole fractions vector
    real(pr), allocatable :: moles(:)
 
+   ! ==========================================================================
+   !  Cubic EoS Possible parameters
+   ! --------------------------------------------------------------------------
    ! Critical constants
    real(pr), allocatable :: tc(:) !! Critical temperature [K]
    real(pr), allocatable :: pc(:) !! Critical pressure [bar]
@@ -27,18 +32,29 @@ module system
    real(pr), allocatable :: b(:)  !! repulsive parameter [L]
    real(pr), allocatable :: del1(:) !! $$\delta_1$$ parameter
    real(pr), allocatable :: k(:) !! Attractive parameter constant
+
+   ! Classic VdW mixing rules parameters
    real(pr), allocatable :: kij(:, :) !! Attractive BIP
    real(pr), allocatable :: lij(:, :) !! Repulsive BIP
+   real(pr), allocatable :: bij(:, :)
 
    ! T dependant mixing rule parameters
    real(pr), allocatable :: kij0(:, :), kinf(:, :), tstar(:, :)
-   real(pr), allocatable :: bij(:, :)
+   ! ==========================================================================
+
 contains
+
+   ! ==========================================================================
+   !  Initializer routines
+   ! --------------------------------------------------------------------------
    subroutine setup(n, nmodel, ntdep, ncomb)
-      integer, intent(in) :: n
-      integer, intent(in) :: nmodel
-      integer, intent(in) :: ntdep
-      integer, intent(in) :: ncomb
+      !! Setup the basics variables that describe the model.
+      ! TODO: With a more integrated legacy code maybe this can be
+      !       avoided or at least better set up
+      integer, intent(in) :: n !! Number of components
+      integer, intent(in) :: nmodel !! Number of model
+      integer, intent(in) :: ntdep !! Kij dependant of temperature
+      integer, intent(in) :: ncomb !! Combining rule
 
       thermo_model = nmodel
       tdep = ntdep
@@ -66,6 +82,9 @@ contains
 
    subroutine PR78_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
         !! PengRobinson 78 factory
+        !!
+        !! Takes either the critical parameters or the fitted model parameters
+        !! and gets ones in base of the others
         real(pr), intent(in) :: moles_in(nc)
         real(pr), optional, intent(in) :: ac_in(nc)
         real(pr), optional, intent(in) :: b_in(nc)
@@ -127,6 +146,9 @@ contains
 
    subroutine PR76_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
       !! PengRobinson 76 factory
+      !!
+      !! Takes either the critical parameters or the fitted model parameters
+      !! and gets ones in base of the others
       real(pr), intent(in) :: moles_in(nc)
       real(pr), optional, intent(in) :: ac_in(nc)
       real(pr), optional, intent(in) :: b_in(nc)
@@ -141,6 +163,8 @@ contains
       real(pr) :: zc(nc), oma(nc), omb(nc)
       real(pr) :: vceos(nc), al, be, ga(nc)
       real(pr) :: RTc(nc)
+
+      ar_fun => ar_srkpr
 
       del1 = 1 + sqrt(2.0_pr)
       z = moles_in
@@ -182,6 +206,9 @@ contains
 
    subroutine SRK_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
         !! SoaveRedlichKwong factory
+        !!
+        !! Takes either the critical parameters or the fitted model parameters
+        !! and gets ones in base of the others
         real(pr), intent(in) :: moles_in(nc)
         real(pr), optional, intent(in) :: ac_in(nc)
         real(pr), optional, intent(in) :: b_in(nc)
@@ -194,6 +221,10 @@ contains
         real(pr) :: zc(nc), oma(nc), omb(nc)
         real(pr) :: vceos(nc), al, be, ga(nc)
         real(pr) :: RTc(nc)
+
+        integer :: i, j
+
+        ar_fun => ar_srkpr
 
         del1 = 1
         z = moles_in
@@ -247,36 +278,76 @@ contains
       OMb = 1._pr/(3._pr*y + d1 - 1.0_pr)
       Zc = y/(3._pr*y + d1 - 1.0_pr)
    end subroutine get_Zc_OMa_OMb
-end module system
+   ! ==========================================================================
 
-module legacy
-   use constants, only: pr, R
-   use system
+   ! ==========================================================================
+   !  Ar Functions
+   ! --------------------------------------------------------------------------
+   subroutine ar_srkpr(z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      !! Wrapper subroutine to the SRK/PR Residula Helmholtz function to
+      !! use the general interface
+      real(pr), intent(in) :: z(:) !! Number of moles
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: t !! Temperature [K]
 
-   implicit none
+      real(pr), intent(out) :: ar !! Residual Helmholtz
+      real(pr), intent(out) :: arv !! dAr/dV
+      real(pr), intent(out) :: artv !! dAr2/dTV
+      real(pr), intent(out) :: arv2 !! dAr2/dV2
+      real(pr), intent(out) :: Arn(size(z)) !! dAr/dn
+      real(pr), intent(out) :: ArVn(size(z)) !! dAr2/dVn
+      real(pr), intent(out) :: ArTn(size(z)) !! dAr2/dTn
+      real(pr), intent(out) :: Arn2(size(z), size(z)) !! dAr2/dn2
 
-   abstract interface
-      subroutine Ares(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-         use constants, only: pr
-         real(pr), intent(in) :: z(:)
-         real(pr), intent(in) :: v, t
-         real(pr), intent(out) :: Ar, ArV, ArTV, ArV2
-         real(pr), dimension(size(z)), intent(out) :: Arn, ArVn, ArTn
-         real(pr), intent(out) :: Arn2(size(z), size(z))
-      end subroutine
-   end interface
+      integer :: nd !! Compositional derivatives
+      integer :: nt !! Temperature derivatives
 
-   procedure(Ares), pointer :: ar_fun
+      nd = 2
+      nt = 2
+      call HelmSRKPR(size(z), nd, nt, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+   end subroutine
+   
+   subroutine ar_rkpr(z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      real(pr), intent(in) :: z(:) !! Number of moles
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: t !! Temperature [K]
 
-contains
-   subroutine HelmSRKPR(nc, ND, NT, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-      integer, intent(in) :: nc
-      integer, intent(in) :: nd
-      integer, intent(in) :: nt
-      real(pr), intent(in) :: v, t, rn(nc)
-      real(pr), intent(out) :: ar, arv, artv, arv2, Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc)
-      real(pr) :: ArT, ArTT
+      real(pr), intent(out) :: ar !! Residual Helmholtz
+      real(pr), intent(out) :: arv !! dAr/dV
+      real(pr), intent(out) :: artv !! dAr2/dTV
+      real(pr), intent(out) :: arv2 !! dAr2/dV2
+      real(pr), intent(out) :: Arn(size(z)) !! dAr/dn
+      real(pr), intent(out) :: ArVn(size(z)) !! dAr2/dVn
+      real(pr), intent(out) :: ArTn(size(z)) !! dAr2/dTn
+      real(pr), intent(out) :: Arn2(size(z), size(z)) !! dAr2/dn2
       
+      integer :: nd !! Compositional derivatives
+      integer :: nt !! Temperature derivatives
+
+      nd = 2
+      nt = 2
+      call HelmRKPR(size(z), nd, nt, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+   end subroutine
+   
+   subroutine HelmSRKPR(nc, ND, NT, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      integer, intent(in) :: nc !! Number of components
+      integer, intent(in) :: nd !! Compositional derivatives
+      integer, intent(in) :: nt !! Temperature derivatives
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: rn(nc) !! Number of moles
+
+      real(pr), intent(out) :: ar !! Residual Helmholtz
+      real(pr), intent(out) :: arv !! dAr/dV
+      real(pr), intent(out) :: artv !! dAr2/dTV
+      real(pr), intent(out) :: arv2 !! dAr2/dV2
+      real(pr), intent(out) :: Arn(nc) !! dAr/dn
+      real(pr), intent(out) :: ArVn(nc) !! dAr2/dVn
+      real(pr), intent(out) :: ArTn(nc) !! dAr2/dTn
+      real(pr), intent(out) :: Arn2(nc, nc) !! dAr2/dn2
+
+      real(pr) :: ArT, ArTT
+
       real(pr) :: Bmix, dBi(nc), dBij(nc, nc)
       real(pr) :: D, dDi(nc), dDij(nc, nc), dDiT(nc), dDdT, dDdT2
 
@@ -339,190 +410,6 @@ contains
          end do
       end if
    end subroutine HelmSRKPR
-
-   subroutine aTder(ac, Tc, k, T, a, dadT, dadT2)
-      ! Given ac,Tc and the k parameter of the RKPR correlation, as well as the actual T,
-      ! this subroutine calculates a(T) and its first and second derivatives with T.
-      real(pr), intent(in) :: ac
-      real(pr), intent(in) :: Tc
-      real(pr), intent(in) :: k
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: a
-      real(pr), intent(out) :: dadT
-      real(pr), intent(out) :: dadT2
-
-      real(pr) :: Tr
-
-      Tr = T/Tc
-
-      if (thermo_model .le. 3) then
-         a = ac*(1 + k*(1 - sqrt(Tr)))**2
-         dadT = ac*k*(k - (k + 1)/sqrt(Tr))/Tc
-         dadT2 = ac*k*(k + 1)/(2*Tc**2*Tr**1.5D0)
-      else if (thermo_model == 4) then
-         a = ac*(3/(2 + Tr))**k
-         dadT = -k*a/Tc/(2 + Tr)
-         dadT2 = -(k + 1)*dadT/Tc/(2 + Tr)
-      end if
-   end subroutine aTder
-
-   subroutine aijTder(NTD, nc, T, aij, daijdT, daijdT2)
-      integer, intent(in) :: ntd
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: aij(nc, nc), daijdT(nc, nc), daijdT2(nc, nc)
-
-      real(pr) :: ai(nc), daidT(nc), daidT2(nc)
-
-      real(pr) :: aux(nc, nc), ratK(nc, nc)
-      integer :: i, j
-
-      if (tdep .ge. 1) then
-         Kij = 0.0D0
-         do i = 1, nc
-            Kij(:i - 1, i) = Kinf(:i - 1, i) + Kij0(:i - 1, i)*exp(-T/Tstar(:i - 1, i))
-         end do
-      else
-         ! Kij = Kij0
-      end if
-
-      do i = 1, nc
-         call aTder(ac(i), Tc(i), k(i), T, ai(i), daidT(i), daidT2(i))
-         aij(i, i) = ai(i)
-         daijdT(i, i) = daidT(i)
-         daijdT2(i, i) = daidT2(i)
-         if (i .gt. 1) then
-            do j = 1, i - 1
-               aij(j, i) = sqrt(ai(i)*ai(j))*(1 - Kij(j, i))
-               aij(i, j) = aij(j, i)
-               if (NTD .eq. 1) then
-                  daijdT(j, i) = (1 - Kij(j, i))*(sqrt(ai(i)/ai(j))*daidT(j) &
-                                  + sqrt(ai(j)/ai(i))*daidT(i))/2
-                  daijdT2(j, i) = (1 - Kij(j, i))*(daidT(j)*daidT(i)/sqrt(ai(i)*ai(j)) &
-                                 + sqrt(ai(i)/ai(j))*(daidT2(j) - daidT(j)**2/(2*ai(j))) &
-                                 + sqrt(ai(j)/ai(i))*(daidT2(i) - daidT(i)**2/(2*ai(i))))/2
-                  daijdT(i, j) = daijdT(j, i)
-                  daijdT2(i, j) = daijdT2(j, i)
-               end if
-            end do
-         end if
-      end do
-
-      if (tdep .ge. 1 .and. NTD .eq. 1) then
-         do i = 1, nc
-            aux(:i - 1, i) = daijdT(:i - 1, i)
-            ratK(:i - 1, i) = Kij(:i - 1, i)/(1 - Kij(:i - 1, i))/Tstar(:i - 1, i)
-            daijdT(:i - 1, i) = aux(:i - 1, i) + aij(:i - 1, i)*ratK(:i - 1, i)
-            daijdT(i, :i - 1) = daijdT(:i - 1, i)
-            daijdT2(:i - 1, i) = daijdT2(:i - 1, i) + (2*aux(:i - 1, i) - aij(:i - 1, i)/Tstar(:i - 1, i))*ratK(:i - 1, i)
-            daijdT2(i, :i - 1) = daijdT2(:i - 1, i)
-         end do
-      end if
-   end subroutine aijTder
-
-   subroutine DandTnder(NTD, nc, T, rn, D, dDi, dDiT, dDij, dDdT, dDdT2)
-      implicit none
-
-      integer, intent(in) :: ntd
-      integer, intent(in) :: nc
-
-      real(pr), intent(in) :: T
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(out) :: D
-      real(pr), intent(out) :: dDiT(nc)
-      real(pr), intent(out) :: dDdT
-      real(pr), intent(out) :: dDdT2
-      real(pr), intent(out) :: dDi(nc)
-      real(pr), intent(out) :: dDij(nc, nc)
-
-      real(pr) :: aij(nc, nc), daijdT(nc, nc), daijdT2(nc, nc)
-      real(pr) :: aux, aux2
-
-      integer :: i, j
-
-      call aijTder(NTD, nc, T, aij, daijdT, daijdT2)
-
-      D = 0
-      dDdT = 0
-      dDdT2 = 0
-      do i = 1, nc
-         aux = 0
-         aux2 = 0
-         dDi(i) = 0
-         dDiT(i) = 0
-
-         do j = 1, nc
-            dDi(i) = dDi(i) + 2*rn(j)*aij(i, j)
-            if (NTD .eq. 1) then
-               dDiT(i) = dDiT(i) + 2*rn(j)*daijdT(i, j)
-               aux2 = aux2 + rn(j)*daijdT2(i, j)
-            end if
-
-            dDij(i, j) = 2*aij(i, j)
-            aux = aux + rn(j)*aij(i, j)
-         end do
-
-         D = D + rn(i)*aux
-         if (NTD .eq. 1) then
-            dDdT = dDdT + rn(i)*dDiT(i)/2
-            dDdT2 = dDdT2 + rn(i)*aux2
-         end if
-      end do
-   end subroutine DandTnder
-
-   subroutine DELTAnder(nc, rn, D1m, dD1i, dD1ij)
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(out) ::  D1m, dD1i(nc), dD1ij(nc, nc)
-
-      real(pr) :: totn
-
-      integer :: i, j
-
-      D1m = 0.0d0
-      do i = 1, nc
-         D1m = D1m + rn(i) * del1(i)
-      end do
-
-      TOTN = sum(rn)
-      D1m = D1m/totn
-
-      do i = 1, nc
-         dD1i(i) = (del1(i) - D1m)/totn
-         do j = 1, nc
-            dD1ij(i, j) = (2.0D0*D1m - del1(i) - del1(j))/totn**2
-         end do
-      end do
-   end subroutine DELTAnder
-
-   subroutine Bnder(nc, rn, Bmix, dBi, dBij)
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(out) ::  Bmix, dBi(nc), dBij(nc, nc)
-      
-      real(pr) :: totn, aux(nc)
-
-      integer :: i, j
-
-      TOTN = sum(rn)
-      Bmix = 0.0D0
-      aux = 0.0D0
-
-      do i = 1, nc
-         do j = 1, nc
-            aux(i) = aux(i) + rn(j)*bij(i, j)
-         end do
-         Bmix = Bmix + rn(i)*aux(i)
-      end do
-      Bmix = Bmix/totn
-      do i = 1, nc
-         dBi(i) = (2*aux(i) - Bmix)/totn
-         do j = 1, i
-            dBij(i, j) = (2*bij(i, j) - dBi(i) - dBi(j))/totn
-            dBij(j, i) = dBij(i, j)
-         end do
-      end do
-   end subroutine Bnder
 
    subroutine HelmRKPR(nco, NDE, NTD, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
       !! Calculate the reduced residual Helmholtz Energy and it's derivatives with the RKPR EOS
@@ -621,6 +508,217 @@ contains
          end do
       end if
    end subroutine HelmRKPR
+   
+   subroutine ArVnder(nc, NDER, NTEMP, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      integer, intent(in) :: nc
+      integer, intent(in) :: nder ! Get compositional derivatives
+      integer, intent(in) :: ntemp ! Get temperature derivatives
+      real(pr), intent(in) :: z(nc)
+      real(pr), intent(in) :: V
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: ar, arv, artv, arv2
+      real(pr), dimension(size(z)), intent(out) :: Arn, ArVn, ArTn
+      real(pr), intent(out) :: Arn2(size(z),size(z))
+
+      call check()
+      call ar_fun(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+   end subroutine ArVnder
+   ! ==========================================================================
+
+   ! ==========================================================================
+   !  Attractive parameter routines
+   ! --------------------------------------------------------------------------
+   subroutine aTder(ac, Tc, k, T, a, dadT, dadT2)
+      ! Given ac,Tc and the k parameter of the RKPR correlation, as well as the actual T,
+      ! this subroutine calculates a(T) and its first and second derivatives with T.
+      real(pr), intent(in) :: ac
+      real(pr), intent(in) :: Tc
+      real(pr), intent(in) :: k
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: a
+      real(pr), intent(out) :: dadT
+      real(pr), intent(out) :: dadT2
+
+      real(pr) :: Tr
+
+      Tr = T/Tc
+
+      if (thermo_model .le. 3) then
+         a = ac*(1 + k*(1 - sqrt(Tr)))**2
+         dadT = ac*k*(k - (k + 1)/sqrt(Tr))/Tc
+         dadT2 = ac*k*(k + 1)/(2*Tc**2*Tr**1.5D0)
+      else if (thermo_model == 4) then
+         a = ac*(3/(2 + Tr))**k
+         dadT = -k*a/Tc/(2 + Tr)
+         dadT2 = -(k + 1)*dadT/Tc/(2 + Tr)
+      end if
+   end subroutine aTder
+
+   subroutine aijTder(NTD, nc, T, aij, daijdT, daijdT2)
+      integer, intent(in) :: ntd
+      integer, intent(in) :: nc
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: aij(nc, nc), daijdT(nc, nc), daijdT2(nc, nc)
+
+      real(pr) :: ai(nc), daidT(nc), daidT2(nc)
+
+      real(pr) :: aux(nc, nc), ratK(nc, nc)
+      integer :: i, j
+
+      if (tdep .ge. 1) then
+         Kij = 0.0D0
+         do i = 1, nc
+            Kij(:i - 1, i) = Kinf(:i - 1, i) + Kij0(:i - 1, i)*exp(-T/Tstar(:i - 1, i))
+         end do
+      else
+         ! Kij = Kij0
+      end if
+
+      do i = 1, nc
+         call aTder(ac(i), Tc(i), k(i), T, ai(i), daidT(i), daidT2(i))
+         aij(i, i) = ai(i)
+         daijdT(i, i) = daidT(i)
+         daijdT2(i, i) = daidT2(i)
+         if (i .gt. 1) then
+            do j = 1, i - 1
+               aij(j, i) = sqrt(ai(i)*ai(j))*(1 - Kij(j, i))
+               aij(i, j) = aij(j, i)
+               if (NTD .eq. 1) then
+                  daijdT(j, i) = (1 - Kij(j, i))*(sqrt(ai(i)/ai(j))*daidT(j) &
+                                  + sqrt(ai(j)/ai(i))*daidT(i))/2
+                  daijdT2(j, i) = (1 - Kij(j, i))*(daidT(j)*daidT(i)/sqrt(ai(i)*ai(j)) &
+                                 + sqrt(ai(i)/ai(j))*(daidT2(j) - daidT(j)**2/(2*ai(j))) &
+                                 + sqrt(ai(j)/ai(i))*(daidT2(i) - daidT(i)**2/(2*ai(i))))/2
+                  daijdT(i, j) = daijdT(j, i)
+                  daijdT2(i, j) = daijdT2(j, i)
+               end if
+            end do
+         end if
+      end do
+   end subroutine aijTder
+
+   subroutine DandTnder(NTD, nc, T, rn, D, dDi, dDiT, dDij, dDdT, dDdT2)
+      integer, intent(in) :: ntd
+      integer, intent(in) :: nc
+
+      real(pr), intent(in) :: T
+      real(pr), intent(in) :: rn(nc)
+      real(pr), intent(out) :: D
+      real(pr), intent(out) :: dDiT(nc)
+      real(pr), intent(out) :: dDdT
+      real(pr), intent(out) :: dDdT2
+      real(pr), intent(out) :: dDi(nc)
+      real(pr), intent(out) :: dDij(nc, nc)
+
+      real(pr) :: aij(nc, nc), daijdT(nc, nc), daijdT2(nc, nc)
+      real(pr) :: aux, aux2
+
+      integer :: i, j
+
+      call aijTder(NTD, nc, T, aij, daijdT, daijdT2)
+
+      D = 0
+      dDdT = 0
+      dDdT2 = 0
+      do i = 1, nc
+         aux = 0
+         aux2 = 0
+         dDi(i) = 0
+         dDiT(i) = 0
+
+         do j = 1, nc
+            dDi(i) = dDi(i) + 2*rn(j)*aij(i, j)
+            if (NTD .eq. 1) then
+               dDiT(i) = dDiT(i) + 2*rn(j)*daijdT(i, j)
+               aux2 = aux2 + rn(j)*daijdT2(i, j)
+            end if
+
+            dDij(i, j) = 2*aij(i, j)
+            aux = aux + rn(j)*aij(i, j)
+         end do
+
+         D = D + rn(i)*aux
+         if (NTD .eq. 1) then
+            dDdT = dDdT + rn(i)*dDiT(i)/2
+            dDdT2 = dDdT2 + rn(i)*aux2
+         end if
+      end do
+   end subroutine DandTnder
+   ! ==========================================================================
+
+   subroutine DELTAnder(nc, rn, D1m, dD1i, dD1ij)
+      integer, intent(in) :: nc
+      real(pr), intent(in) :: rn(nc)
+      real(pr), intent(out) ::  D1m, dD1i(nc), dD1ij(nc, nc)
+
+      real(pr) :: totn
+
+      integer :: i, j
+
+      D1m = 0.0_pr
+      do i = 1, nc
+         D1m = D1m + rn(i) * del1(i)
+      end do
+
+      TOTN = sum(rn)
+      D1m = D1m/totn
+
+      do i = 1, nc
+         dD1i(i) = (del1(i) - D1m)/totn
+         do j = 1, nc
+            dD1ij(i, j) = (2.0_pr*D1m - del1(i) - del1(j))/totn**2
+         end do
+      end do
+   end subroutine DELTAnder
+
+   ! ==========================================================================
+   !  Repulsive parameter routines
+   ! --------------------------------------------------------------------------
+   subroutine Bnder(nc, rn, Bmix, dBi, dBij)
+      integer, intent(in) :: nc
+      real(pr), intent(in) :: rn(nc)
+      real(pr), intent(out) ::  Bmix, dBi(nc), dBij(nc, nc)
+
+      real(pr) :: totn, aux(nc)
+
+      integer :: i, j
+
+      TOTN = sum(rn)
+      Bmix = 0.0_pr
+      aux = 0.0_pr
+
+      do i = 1, nc
+         do j = 1, nc
+            bij(i, j) = (b(i) + b(j)) * 0.5_pr * (1.0_pr - lij(i, j))
+            aux(i) = aux(i) + rn(j)*bij(i, j)
+         end do
+         Bmix = Bmix + rn(i)*aux(i)
+      end do
+
+      Bmix = Bmix/totn
+
+      do i = 1, nc
+         dBi(i) = (2*aux(i) - Bmix)/totn
+         do j = 1, i
+            dBij(i, j) = (2*bij(i, j) - dBi(i) - dBi(j))/totn
+            dBij(j, i) = dBij(i, j)
+         end do
+      end do
+   end subroutine Bnder
+   ! ==========================================================================
+
+   ! ==========================================================================
+   !  Properties
+   ! --------------------------------------------------------------------------
+   function v0(z, t)
+      real(pr) :: v0
+      real(pr) :: z(nc)
+      real(pr) :: t
+
+      real(pr) :: dbi(nc), dbij(nc,nc)
+      
+      call bnder(nc, z, v0, dBi, dBij)
+   end function
 
    subroutine TERMO(nc, MTYP, INDIC, T, P, rn, V, PHILOG, DLPHIP, DLPHIT, FUGN)
       !  MTYP      TYPE OF ROOT DESIRED (-1 vapor, 1 liquid, 0 lower Gibbs energy phase)
@@ -756,8 +854,6 @@ contains
    end subroutine zTVTERMO
 
    subroutine PUREFUG_CALC(nc, icomp, T, P, V, phi)
-      use constants
-      implicit none
       integer, intent(in) :: nc
       integer, intent(in) :: icomp
       real(pr), intent(in) :: T, P, V
@@ -798,8 +894,8 @@ contains
       NDER = 0
       FIRST_RUN = .true.
       TOTN = sum(rn)
-      ! call Bcalc(nc, rn, T, B)
-      CPV = v0()
+      CPV = v0(rn, t)
+      B = CPV
       S3R = 1.D0/CPV
       ITER = 0
 
@@ -813,7 +909,7 @@ contains
          ZETA = min(.5D0, CPV*P/(TOTN*R*T))
       end if
 
-   100 continue
+  100 continue
 
       DEL = 1
       pcalc = 2*p
@@ -857,81 +953,5 @@ contains
          end if
       end if
    end subroutine vcalc
-
-   subroutine ArVnder(nc, NDER, NTD, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-      use constants
-      use system, only: nmodel => thermo_model
-      implicit none
-      integer, intent(in) :: nc
-      integer, intent(in) :: nder
-      integer, intent(in) :: ntd
-
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(in) :: V
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: ar, arv, artv, arv2
-      real(pr), intent(out) :: Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc)
-
-      if (associated(ar_fun)) then
-         call ar_fun(rn, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-         return
-      end if
-
-      if (NMODEL .le. 3) then
-         ! SRK or PR76/78
-         call HelmSRKPR(nc, NDER, NTD, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-      else if (NMODEL .eq. 4) then
-         call HelmRKPR(nc, NDER, NTD, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-      else if (NMODEL .eq. 5) then
-         ! CALL HelmPCSAFT(NDER,NTD,rn,V,T,Ar,ArV,ArTV,ArV2,Arn,ArVn,ArTn,Arn2)
-      else if (NMODEL .eq. 6) then
-         ! CALL HelmSPHCT(NDER,NTD,rn,V,T,Ar,ArV,ArTV,ArV2,Arn,ArVn,ArTn,Arn2)
-      else if (NMODEL .eq. 8) then
-         ! CALL HelmESD  (NDER,NTD,rn,V,T,Ar,ArV,ArTV,ArV2,Arn,ArVn,ArTn,Arn2)
-      else
-         ! GC-EOS 5 (or GCA 7)
-         ! CALL HelmGC(NDER,NTD,rn,V,T,Ar,ArV,ArTV,ArV2,Arn,ArVn,ArTn,Arn2)
-      end if
-   end subroutine ArVnder
-
-   subroutine Bcalc(nc, x, T, BMIX)
-      ! This general subroutine provides the "co-volume" for specified composition,
-      ! that will be used by Evalsecond or Vcalc
-      use constants, only: pr
-      use system, only: nmodel => thermo_model, ncomb => mixing_rule
-      implicit none
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: bmix
-      real(pr) ::  x(nc), b, dBi(nc), dBij(nc, nc)
-      ! common/MIXRULE/NSUB
-      ! common/BMIX/B
-      ! common/NG/NGR
-      ! NG = NGR
-      if (NMODEL .eq. 5 .or. NMODEL .eq. 7) then
-         ! CALL PARAGC(T,nc,NG,1)
-         ! PI=3.1415926536D0
-         ! XLAM3=0.0d0
-         ! DO 3 I=1,nc
-         ! DGC=D(I)
-         ! 3   XLAM3=XLAM3+X(I)*DGC**3
-         ! B=PI/6.D0*XLAM3/1.0D3
-      else if (NMODEL .eq. 4) then
-         ! DD=DDB
-         ! CALL DIAMET(nc,T,DIA,DD,DDT,DTT,NSUB)
-         !   B=R*(DD(3,1)*X(1)+DD(3,2)*X(2))        !S3
-      else if (NMODEL .eq. 6) then
-         !  CALL Mixture_Param(NSUB,NC,X,T)
-         ! B=VCPM
-      else if (NMODEL .eq. 8) then
-         ! B=x(1)*VX(1)+x(2)*VX(2)
-      else
-         if (ncomb <= 2) then
-            call Bnder(nc, x, B, dBi, dBij)        ! Bmix is used in EVALSECOND
-         else
-            ! call Bcubicnder(2,x,B,dBi,dBij)
-         end if
-      end if
-      BMIX = B
-   end subroutine bcalc
+   ! ==========================================================================
 end module
