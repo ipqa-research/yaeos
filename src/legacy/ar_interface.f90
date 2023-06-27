@@ -26,6 +26,7 @@ module ar_interface
          real(pr) :: p
          real(pr) :: t
          character(len=*), optional :: root
+         real(pr) :: initial_volume
       end function
    end interface
 
