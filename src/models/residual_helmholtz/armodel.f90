@@ -2,128 +2,66 @@ module ar_models
    !! Simple derived types that hold the important parameters
    use constants, only: pr
    use hyperdual_mod
+   use yaeos_interfaces, only: dual_property
 
    implicit none
 
-   type :: ArModel
-      !! Residual Helmholtz model, this type contains the basics attributes that
-      !! this kind of model must have. 
-      integer :: size
-      character(len=30), allocatable :: names(:) !! Components names
-      real(pr), allocatable :: z(:) !! Global composition
-      character(len=:), allocatable :: thermo_model !! Thermodynamic model name
-      character(len=:), allocatable :: mixing_rule !! Mixing rule to use name
-      procedure(dual_property), nopass, pointer :: residual_helmholtz
-         !! Ar(model, z, v, t): Residual Helmholtz function
-   end type
+   private
+   public :: set_ar_function, residual_helmholtz
 
-   interface size
-      module procedure :: size_model
-   end interface
-
-   interface alloc
-      module procedure :: alloc_ArModel
-   end interface
-   
-   abstract interface
-     ! Dual Property
-     pure subroutine dual_property(model, z, v, t, property)
-        import hyperdual
-        import ArModel
-        class(ArModel), intent(in) :: model
-        type(hyperdual), intent(in) :: z(model%size), v, t
-        type(hyperdual), intent(out) :: property
-     end subroutine dual_property
-   end interface
+   procedure(dual_property), pointer :: ar_fun
 
 contains
    ! ===========================================================================
    ! Constructor
    ! ---------------------------------------------------------------------------
-   subroutine init_ArModel(model, ares)
-      class(ArModel) :: model
-      procedure(dual_property) :: ares
-
-      model%residual_helmholtz => ares
-   end subroutine init_ArModel
-
-   subroutine alloc_ArModel(model, n)
-      type(ArModel) :: model
-      integer :: n, stat
-
-      model%size = n
-
-      allocate(model%names(n), stat=stat)
-      allocate(model%z(n), stat=stat)
+   subroutine set_ar_function(ar)
+      ! Setup the general ar_function
+      procedure(dual_property) :: ar
+      ar_fun => ar
    end subroutine
    ! ===========================================================================
 
    ! ===========================================================================
-   ! Thermo properties
+   ! Get all Residual Helmholtz derivatives
    ! ---------------------------------------------------------------------------
-   subroutine residual_helmholtz(model, z, v, t, ar, dar, dar2)
-      class(ArModel) :: model
-      real(pr), intent(in) :: z(model%size)
+   subroutine residual_helmholtz(z, v, t, ar, dar, dar2)
+      real(pr), intent(in) :: z(:)
       real(pr), intent(in) :: v, t
 
       real(pr), intent(out) :: ar
-      real(pr), intent(out) :: dar(model%size + 2)
-      real(pr), intent(out) :: dar2(model%size + 2, model%size + 2)
+      real(pr), intent(out) :: dar(size(z) + 2)
+      real(pr), intent(out) :: dar2(size(z) + 2, size(z) + 2)
 
       ar = 0
       dar = 0
       dar2 = 0
 
       call dualderiv( &
-         model, z, v, t, &
-         model%residual_helmholtz, ar, dar, dar2 &
+         z, v, t, &
+         ar_fun, ar, dar, dar2 &
       )
    end subroutine residual_helmholtz
-
-   subroutine dardv(model, z, v, t, dar_dv)
-      class(ArModel) :: model
-      type(hyperdual), intent(in) :: z(model%size)
-      type(hyperdual), intent(in) :: v, t
-      type(hyperdual), intent(out) :: dar_dv
-
-      type(hyperdual) :: z_in(size(z)), v_in, t_in
-
-      z_in = z%f0
-      v_in = v%f0
-      t_in = v%f0
-      v_in%f1 = 1
-      call model%residual_helmholtz(model, z_in, v_in, t_in, dar_dv)
-      dar_dv = dar_dv%f0
-      dar_dv%f1 = v%f1
-   end subroutine
    ! ===========================================================================
 
-   pure function size_model(model) result(smodel)
-      class(ArModel), intent(in) :: model
-      integer :: smodel
-
-      smodel = size(model%names)
-   end function
-
    pure subroutine dualderiv( &
-      model, z, v, t, &
+      z, v, t, &
       f_in, &
       f, df, df2)
-      class(ArModel), intent(in) :: model
 
-      real(pr), intent(in) :: v, t, z(model%size)
+      real(pr), intent(in) :: v, t, z(:)
       procedure(dual_property) :: f_in
 
       real(pr), intent(out) :: f
-      real(pr), intent(out) :: df(model%size + 2)
-      real(pr), intent(out) :: df2(model%size + 2, model%size + 2)
+      real(pr), intent(out) :: df (size(z) + 2)
+      real(pr), intent(out) :: df2(size(z) + 2, size(z) + 2)
 
-      type(hyperdual) :: X(model%size + 2)
+      type(hyperdual) :: X(size(z) + 2)
       type(hyperdual) :: y
 
       integer :: i, j, n
 
-      n = model%size + 2
+      n = size(z) + 2
       df = 0
       df2 = 0
 
@@ -133,7 +71,7 @@ contains
          X(i)%f1 = 1
          X(i)%f2 = 1
 
-         call f_in(model, X(:n - 2), X(n - 1), X(n), y)
+         call f_in(X(:n - 2), X(n - 1), X(n), y)
          df(i) = y%f1
          df2(i, i) = y%f12
          do j = i, 0
@@ -141,7 +79,7 @@ contains
             X(i)%f1 = 1
             X(j)%f2 = 1
 
-            call f_in(model, X(:n - 2), X(n - 1), X(n), y)
+            call f_in(X(:n - 2), X(n - 1), X(n), y)
             df2(i, j) = y%f12
             df2(j, i) = df2(i, j)
          end do
