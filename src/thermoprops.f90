@@ -1,49 +1,36 @@
-module thermo_properties
+module yaeos_thermo_properties
    !! Thermodynamic routines
    use constants
-   use models, only: ArModel, residual_helmholtz
+   use yaeos_models, only: residual_helmholtz
    use hyperdual_mod
    implicit none
 
    private
 
-   public :: pressure, volume, ln_phi
+   ! public :: pressure, volume, ln_phi
 
-   interface volume
-      module procedure :: ArModel_get_volume !! Volume solving routine
-   end interface
-
-   interface ln_phi
-      !! Fugacity coefficent
-      module procedure :: ArModel_ln_phi
-   end interface
-
-   interface pressure
-         module procedure :: ArModel_pressure
-   end interface
 contains
 
    ! =============================================================================
    !  Bulk Properties
    ! -----------------------------------------------------------------------------
-   subroutine ArModel_pressure(model, z, v, t, p, dp, dp2)
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(model%size)
+   subroutine pressure(z, v, t, p, dp, dp2)
+      real(pr), intent(in) :: z(:)
       real(pr), intent(in) :: v, t
 
       real(pr), intent(out) :: p
-      real(pr), intent(out) :: dp(model%size + 2)
-      real(pr), intent(out) :: dp2(model%size + 2, model%size + 2)
+      real(pr), intent(out) :: dp(size(z) + 2)
+      real(pr), intent(out) :: dp2(size(z) + 2, size(z) + 2)
 
-      real(pr) :: ar, dar(model%size + 2), dar2(model%size + 2, model%size + 2)
+      real(pr) :: ar, dar(size(z) + 2), dar2(size(z) + 2, size(z) + 2)
       real(pr) :: RT
 
       integer :: n
       
-      n = model%size
+      n = size(z)
       RT = R*t
 
-      call residual_helmholtz(model, z, v, t, ar, dar, dar2)
+      call residual_helmholtz(z, v, t, ar, dar, dar2)
 
       p = -RT*dar(n+1) + sum(z)*RT / v
       dp(:n)  = -RT * dar2(:n, n+1) + Rt / v
@@ -51,30 +38,29 @@ contains
       ! dp(n+2) = -Rt * dar2(n+1, n+2) + p/t
    end subroutine
 
-   subroutine ArModel_ln_phi(model, z, v, t, lnphi)
+   subroutine ln_phi(z, v, t, lnphi)
       !! Fugacity coefficent as a function of volume and temperature.
       !! The fugacity coefficent is the first derivative of the Residual
       !! Helmholtz energy, substracted with the compressibility factor:
       !!
       !! \[ln \phi_i = \frac{dAr}{dn_i}(z, v, T) - \ln Z\]
       !!
-      class(ArModel), intent(in) :: model !! Residual Helmholtz Mode Derived type
-      real(pr), intent(in) :: z(model%size) !! Composition vector
+      real(pr), intent(in) :: z(:) !! Composition vector
       real(pr), intent(in) :: v !! Volume
       real(pr), intent(in) :: t !! Temperature
-      real(pr), intent(out) :: lnphi(model%size) !! Fugacity coefficent
+      real(pr), intent(out) :: lnphi(size(z)) !! Fugacity coefficent
 
-      real(pr) :: ar, dar(model%size + 2), dar2(model%size + 2, model%size + 2)
+      real(pr) :: ar, dar(size(z) + 2), dar2(size(z) + 2, size(z) + 2)
       real(pr) :: p, compressibility
 
-      call pressure(model, z, v, t, p, dar, dar2)
-      call residual_helmholtz(model, z, v, t, ar, dar, dar2)
+      call pressure(z, v, t, p, dar, dar2)
+      call residual_helmholtz(z, v, t, ar, dar, dar2)
 
       compressibility = p * v / (R * t)
-      lnphi = dar(:model%size) - log(compressibility)
+      lnphi = dar(:size(z)) - log(compressibility)
    end subroutine
 
-   subroutine ArModel_get_volume(model, z, p, t, v, root, v0)
+   subroutine get_volume(z, p, t, v, root, v0)
       !! Volume solver routine.
       !! This volume solving routine uses a simple Newton method to solve the
       !! equation:
@@ -86,18 +72,17 @@ contains
       !! value can be provided as an optional argument.
       !!
       ! TODO: The optional should be a function with no parameters instead
-      class(ArModel), intent(in) :: model !! Residual Helmholtz Model
-      real(pr), intent(in) :: z(model%size) !! Composition Vector
+      real(pr), intent(in) :: z(:) !! Composition Vector
       real(pr), intent(in) :: p !! Pressure
       real(pr), intent(in) :: t !! Temperature
       character(len=*), intent(in) :: root  !! Desired root `[vapor | liquid | stable]`
       real(pr), intent(in), optional :: v0 !! Initial volume
       real(pr), intent(out) :: v !! Volume
 
-      real(pr) :: p_in, dp(model%size + 2), dp2(model%size + 2, model%size + 2), delta
+      real(pr) :: p_in, dp(size(z) + 2), dp2(size(z) + 2, size(z) + 2), delta
 
       integer :: it, n
-      n = model%size
+      n = size(z)
 
       if (present(v0)) then
          v = v0
@@ -115,10 +100,10 @@ contains
       delta = 1
 
       do while (abs(delta) > 1e-10)
-         call pressure(model, z, v, t, p_in, dp, dp2)
+         call pressure(z, v, t, p_in, dp, dp2)
          delta = (p - p_in)/dp(n + 1)
          v = v + delta
       end do
    end subroutine
    ! =============================================================================
-end module thermo_properties
+end module
