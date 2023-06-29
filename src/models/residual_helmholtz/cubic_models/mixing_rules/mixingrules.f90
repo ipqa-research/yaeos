@@ -21,8 +21,8 @@ contains
       real(pr) :: kij_in(:, :)
       real(pr) :: lij_in(:, :)
 
-      kij = kij
-      lij = lij
+      kij = kij_in
+      lij = lij_in
       
    end subroutine
    ! ===========================================================================
