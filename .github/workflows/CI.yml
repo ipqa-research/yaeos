@@ -68,15 +68,20 @@ jobs:
     #   uses: codecov/codecov-action@v2
     #   with:
     #     files: build/coverage/coverage.info
-
-    - name: Build documentation
-      run: | 
-        mkdir doc
-        ford ./docs.md
-
-    - name: Deploy Documentation
-      if: github.ref == 'refs/heads/master'
-      uses: JamesIves/github-pages-deploy-action@4.1.0
-      with:
-        branch: gh-pages # The branch the action should deploy to.
-        folder: doc  # The folder the action should deploy.
+  publish:
+    runs-on: ubuntu-latest
+    project_file: docs.md
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Build
+        id: build
+        uses: ResearchSoftwareActions/ford-build@v1
+      - name: Deploy
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v1
+        with:
+          target_branch: gh-pages
+          build_dir: ${{ steps.build.outputs.output_dir }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
