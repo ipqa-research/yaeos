@@ -7,7 +7,7 @@ author_email: federico.benelli@mi.unc.edu.ar
 github: https://github.com/fedebenelli
 src_dir: ./src
 page_dir: ./doc
-output_dir: ./doc/
+output_dir: ./doc
 exclude_dir: ./test
 display: public
          protected
