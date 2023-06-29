@@ -4,7 +4,7 @@ module legacy_ar_models
    !! compatiblity with legacy codes but with a better structure.
    !! this should be later adapted into a simple oop system where an eos object
    !! stores the relevant parameters (or some functional oriented approach)
-   use constants, only: pr, R
+   use yaeos_constants, only: pr, R
    use ar_interface, only: ar_fun, check
    implicit none
 
@@ -202,6 +202,9 @@ contains
             k(i) = 0.37464 + 1.54226 * w(i) - 0.26992 * w(i)**2
          end do
       end if
+      ! ac = 0.45723553_pr * R**2 * tc**2 / pc
+      ! b = 0.07779607_pr * R * tc/pc
+      ! k = 0.37464_pr + 1.54226_pr * w - 0.26993_pr * w**2
    end subroutine
 
    subroutine SRK_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
@@ -358,15 +361,28 @@ contains
 
       integer :: i, j
 
+      real(pr) :: b_v, a
+
 
       TOTN = sum(rn)
       D1 = del1(1)
-      D2 = (1 - D1)/(1 + D1)
+      D2 = (1._pr - D1)/(1._pr + D1)
 
       if (mixing_rule .lt. 2) then
          call Bnder(nc, rn, Bmix, dBi, dBij)
          call DandTnder(NT, nc, T, rn, D, dDi, dDiT, dDij, dDdT, dDdT2)
       end if
+
+      ! b_v = Bmix/V
+      ! a = D
+
+      ! ar = (&
+      !       - totn * log(1.0_pr - b_v) &
+      !       - a/(R*t*bmix)*1.0_pr/(d1 - d2) & 
+      !       * log((1.0_pr + d1 * b_v) / (1.0_pr + d2 * b_v)) &
+      ! ) * R * t
+
+      ! return
 
       ! The f's and g's used here are for Ar, not F (reduced Ar)
       ! This requires to multiply by R all g, f and its derivatives as defined by Mollerup
@@ -731,8 +747,6 @@ contains
       !  DLPHIP    P-derivative of ln(phi(i)) (const T, n)    (output)   INDIC < 5
       !  FUGN      comp-derivative of ln(phi(i)) (const t & P)(output)   INDIC > 2
       !  -------------------------------------------------------------------------
-      use constants
-
       integer, intent(in) :: nc !! Number of components
       integer, intent(in) :: indic !! Desired element, this should be setted with optionals
       integer, intent(in) :: mtyp !! Type of root desired (-1 vapor, 1 liquid, 0 lower Gr)
