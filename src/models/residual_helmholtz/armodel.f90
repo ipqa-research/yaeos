@@ -1,5 +1,5 @@
 module ar_models
-   !-> General logic for residual Helmholtz free energy models.
+   !-| General logic for residual Helmholtz free energy models.
    !
    !   A Helmholtz free energy model is considered to be a just single
    !   subroutine that respondes to the function \(Ar = f(z, v, t)\).
@@ -49,10 +49,10 @@ contains
    ! Constructor
    ! ---------------------------------------------------------------------------
    subroutine set_ar_function(ar)
-      !-> Select which Ar subroutine to use.
+      !-| Select which Ar subroutine to use.
       !   this subroutine sets up the pointer procedure to the desired
       !   Helmholtz subroutine
-      procedure(dual_property) :: ar !- Ar subroutine to use
+      procedure(dual_property) :: ar !| Ar subroutine to use
       ar_fun => ar
    end subroutine
    ! ===========================================================================
@@ -61,18 +61,18 @@ contains
    ! Get all Residual Helmholtz derivatives
    ! ---------------------------------------------------------------------------
    subroutine residual_helmholtz(z, v, t, ar, dar, dar2)
-      !-> General residual Helmholtz subroutine.
+      !-| General residual Helmholtz subroutine.
       !
       !   This subroutine handles all the necesary calls to calculate the
       !   residual Helmholtz free energy with just using the pointed Ar
       !   subroutine.
-      real(pr), intent(in) :: z(:) !- Composition
-      real(pr), intent(in) :: v !- Volume
-      real(pr), intent(in) :: t !- Temperature
+      real(pr), intent(in) :: z(:) !| Composition
+      real(pr), intent(in) :: v !| Volume
+      real(pr), intent(in) :: t !| Temperature
 
-      real(pr), intent(out) :: ar !- Residual Helmholtz energy
-      real(pr), intent(out) :: dar(size(z) + 2) !- First derivatives
-      real(pr), intent(out) :: dar2(size(z) + 2, size(z) + 2) !- Second derivatives
+      real(pr), intent(out) :: ar !| Residual Helmholtz energy
+      real(pr), intent(out) :: dar(size(z) + 2) !| First derivatives
+      real(pr), intent(out) :: dar2(size(z) + 2, size(z) + 2) !| Second derivatives
 
       ar = 0
       dar = 0
@@ -89,14 +89,14 @@ contains
       z, v, t, &
       f_in, &
       f, df, df2)
-      !-> Subroutine that takes care of he hyperdual numbers logic to obtain
+      !-| Subroutine that takes care of he hyperdual numbers logic to obtain
       !   the function and it's derivatives.
       real(pr), intent(in) :: v, t, z(:)
-      procedure(dual_property) :: f_in !- Subroutine to use
+      procedure(dual_property) :: f_in !| Subroutine to use
 
-      real(pr), intent(out) :: f !- Function value
-      real(pr), intent(out) :: df(size(z) + 2) !- Gradient
-      real(pr), intent(out) :: df2(size(z) + 2, size(z) + 2) !- Hessian
+      real(pr), intent(out) :: f !| Function value
+      real(pr), intent(out) :: df(size(z) + 2) !| Gradient
+      real(pr), intent(out) :: df2(size(z) + 2, size(z) + 2) !| Hessian
 
       type(hyperdual) :: X(size(z) + 2)
       type(hyperdual) :: y

@@ -1,5 +1,5 @@
 module yaeos_thermo_properties
-   !-> Thermodynamic routines
+   !-| Thermodynamic routines
    ! This module includes all the procedures to calculate bulk properties like
    ! Pressure, fugacity, volume, etc.
    !
@@ -23,14 +23,14 @@ contains
    !  Bulk Properties
    ! -----------------------------------------------------------------------------
    subroutine pressure(z, v, t, p, dp, dp2)
-      !-> Calculate pressure using the residual Helmholtz energy, as defined
+      !-| Calculate pressure using the residual Helmholtz energy, as defined
       !   by Michelsen Møllerup.
-      real(pr), intent(in)            :: z(:) !- Molar compositions
-      real(pr), intent(in)            :: v    !- Volume
-      real(pr), intent(in)            :: t    !- Temperature
+      real(pr), intent(in)            :: z(:) !| Molar compositions
+      real(pr), intent(in)            :: v    !| Volume
+      real(pr), intent(in)            :: t    !| Temperature
 
-      real(pr), intent(out)           :: p    !- Pressure
-      real(pr), optional, intent(out) :: dp(size(z) + 2) !- Pressure derivatives
+      real(pr), intent(out)           :: p    !| Pressure
+      real(pr), optional, intent(out) :: dp(size(z) + 2) !| Pressure derivatives
       real(pr), optional, intent(out) :: dp2(size(z) + 2, size(z) + 2)
 
       ! Ar values and derivatives
@@ -55,16 +55,16 @@ contains
    end subroutine
 
    subroutine ln_phi(z, v, t, lnphi)
-      !-> Fugacity coefficent as a function of volume and temperature.
+      !-| Fugacity coefficent as a function of volume and temperature.
       !   The fugacity coefficent is the first derivative of the Residual
       !   Helmholtz energy, substracted with the compressibility factor:
       !
       !   \[ln \phi_i = \frac{dAr}{dn_i}(z, v, T) - \ln Z\]
       !
-      real(pr), intent(in)  :: z(:)           !- Composition vector
-      real(pr), intent(in)  :: v              !- Volume
-      real(pr), intent(in)  :: t              !- Temperature
-      real(pr), intent(out) :: lnphi(size(z)) !- Fugacity coefficent
+      real(pr), intent(in)  :: z(:)           !| Composition vector
+      real(pr), intent(in)  :: v              !| Volume
+      real(pr), intent(in)  :: t              !| Temperature
+      real(pr), intent(out) :: lnphi(size(z)) !| Fugacity coefficent
 
       real(pr) :: ar, dar(size(z) + 2), dar2(size(z) + 2, size(z) + 2)
       real(pr) :: p, compressibility
@@ -77,7 +77,7 @@ contains
    end subroutine
 
    recursive subroutine get_volume(z, p, t, v, root, v0)
-      !-> Volume solver routine.
+      !-| Volume solver routine.
       !   This volume solving routine uses a simple Newton method to solve the
       !   equation:
       !
@@ -86,13 +86,13 @@ contains
       !   I'ts expected from the model to include an initialization function
       !   for the first volume ( $v_0$ ), besides that, an initialization
       !   value can be provided as an optional argument.
-      real(pr), intent(in)           :: z(:) !- Composition Vector
-      real(pr), intent(in)           :: p    !- Pressure
-      real(pr), intent(in)           :: t    !- Temperature
-      character(len=*), intent(in)   :: root !- root: `[vapor | liquid | stable]`
-      real(pr), intent(in), optional :: v0   !- Initial volume
+      real(pr), intent(in)           :: z(:) !| Composition Vector
+      real(pr), intent(in)           :: p    !| Pressure
+      real(pr), intent(in)           :: t    !| Temperature
+      character(len=*), intent(in)   :: root !| root: `[vapor | liquid | stable]`
+      real(pr), intent(in), optional :: v0   !| Initial volume
 
-      real(pr), intent(out)          :: v    !- Volume
+      real(pr), intent(out)          :: v    !| Volume
 
       real(pr) :: p_in, dp(size(z) + 2), dp2(size(z) + 2, size(z) + 2), delta
       real(pr) :: v_liq, v_vap
