@@ -1,7 +1,5 @@
 module pengrobinson76
-    !! Peng Robinson 76 Equation of State.
-    !! 
-    !!
+    !-> Peng Robinson 76 Equation of State.
     use constants, only: pr, R
     use hyperdual_mod
     use ar_models, only: set_ar_function
@@ -25,8 +23,8 @@ module pengrobinson76
 
 contains
     subroutine setup_pr76(n, tc_in, pc_in, w_in, kij_in, lij_in)
-        !! Setup the enviroment to use the PengRobinson 76 Equation of State
-        !! It uses the Cubic Van der Waals mixing rules
+        !-> Setup the enviroment to use the PengRobinson 76 Equation of State
+        !   It uses the Cubic Van der Waals mixing rules
         integer :: n !! Number of components
         real(pr) :: tc_in(n)
         real(pr) :: pc_in(n)
