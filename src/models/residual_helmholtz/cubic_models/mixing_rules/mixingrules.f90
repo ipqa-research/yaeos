@@ -1,11 +1,11 @@
-module mixrule_classicvdw
+module yaeos_mixrule_classicvdw
    !-|  Mixing rules module
    !
    !    Cubic EoS Mixing Rule
    !    Contains a single subroutine as an attribute that receives the
    !    set of parameters of pure compounds and returns the mixture's
    !    parameters and their derivatives
-   use constants, only: pr
+   use yaeos_constants, only: pr
    use hyperdual_mod
    
    implicit none
@@ -25,7 +25,7 @@ contains
 
       kij = kij_in
       lij = lij_in
-      
+
    end subroutine
    ! ===========================================================================
 
@@ -120,7 +120,7 @@ contains
       type(hyperdual), intent(in)  :: del(size(z)) !| Pure's VT parameter
       type(hyperdual), intent(out) :: delmix       !| Mixture's VT param
 
-      delmix = del(1)
+      delmix = del(1) ! sum(z * del)
    end subroutine
    ! ===========================================================================
 end module

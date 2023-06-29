@@ -1,7 +1,7 @@
 module ar_interface
-   !! Generic interfaces to an ArModel compatible with legacy codes, using
-   !! pointers.
-   use constants, only: pr, R
+   !-| Generic interfaces to an ArModel compatible with legacy codes, using
+   !   pointers.
+   use yaeos_constants, only: pr, R
    use iso_fortran_env, only: error_unit
 
    implicit none
@@ -11,8 +11,8 @@ module ar_interface
 
    abstract interface
       subroutine Ares(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-         !! Residual Helmholtz model interface
-         use constants, only: pr
+         !| Residual Helmholtz model interface
+         import pr
          real(pr), intent(in) :: z(:)
          real(pr), intent(in) :: v, t
          real(pr), intent(out) :: Ar, ArV, ArTV, ArV2
@@ -21,7 +21,7 @@ module ar_interface
       end subroutine
 
       function initial_volume(z, p, t, root)
-         use constants, only: pr
+         import pr
          real(pr) :: z(:)
          real(pr) :: p
          real(pr) :: t

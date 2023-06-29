@@ -1,13 +1,13 @@
-module generic_cubic
+module yaeos_generic_cubic
    !-| Implementation of the generic cubic Equation of State.
    !
    !   This module implements a generic cubic based on the definition given
    !   by Michelsen and Møllerup. 
    
-   use constants, only: pr, R
-   use hyperdual_mod
+   use yaeos_constants, only: pr, R
+   use yaeos_autodiff
    use yaeos_interfaces, only: pures_property, abs_cubic_mix
-   use ar_models, only: set_ar_function
+   use yaeos_ar_models, only: set_ar_function
    use yaeos_thermo_properties, only: vinit
 
    implicit none
@@ -111,40 +111,78 @@ contains
    end function
 end module
 
-module cubic_eos
+module yaeos_cubic_eos
    !-| Set of subroutine that are part of the classic Cubic EoS, like
    ! PR and SRK alpha function and constant rest of parameters.
-   use constants, only: pr, R
-   use hyperdual_mod
+   use yaeos_constants, only: pr, R
+   use yaeos_autodiff
 
    implicit none
 
    ! Model parameters
-   real(pr), allocatable :: ac(:) !| Critical atractive parameter
-   real(pr), allocatable :: b(:)  !| Repulsive parameter
-   real(pr), allocatable :: c(:)  !| Volume traslation
-   real(pr), allocatable :: k(:)  !| alpha k-parameter
+   real(pr), allocatable :: ac(:) !| Critical atractive parameter)
+   real(pr), allocatable :: b(:)  !| Repulsive parameter)
+   real(pr), allocatable :: c(:)  !| Volume traslation)
+   real(pr), allocatable :: k(:)  !| alpha k-parameter)
 
-   real(pr), allocatable :: del1(:) !| \(\delta_1\) Parameter
-   real(pr), allocatable :: del2(:) !| \(\delta_2\) Parameter
+   real(pr), allocatable :: del1(:) !| \(\delta_1\) Parameter)
+   real(pr), allocatable :: del2(:) !| \(\delta_2\) Parameter)
 
-   ! Critical constants
-   real(pr), allocatable :: pc(:) !| Critical Pressure
-   real(pr), allocatable :: tc(:) !| Critical Temperature
-   real(pr), allocatable :: w(:)  !| Acentric factor
+   ! Critical constants)
+   real(pr), allocatable :: pc(:) !| Critical Pressure)
+   real(pr), allocatable :: tc(:) !| Critical Temperature)
+   real(pr), allocatable :: w(:)  !| Acentric factor)
 
 contains
+
+   subroutine set_parameters(&
+      ac_in, b_in, c_in, k_in, del1_in, del2_in, &
+      pc_in, tc_in, w_in & 
+   )
+      real(pr), intent(in) :: ac_in(:) !| Critical atractive parameter
+      real(pr), intent(in) :: b_in(size(ac_in))  !| Repulsive parameter
+      real(pr), intent(in) :: c_in(size(ac_in))  !| Volume traslation
+      real(pr), intent(in) :: k_in(size(ac_in))  !| alpha k-parameter
+
+      real(pr), intent(in) :: del1_in(size(ac_in)) !| \(\delta_1\) Parameter
+      real(pr), intent(in) :: del2_in(size(ac_in)) !| \(\delta_2\) Parameter
+
+      real(pr), intent(in) :: pc_in(size(ac_in)) !| Critical Pressure
+      real(pr), intent(in) :: tc_in(size(ac_in)) !| Critical Temperature
+      real(pr), intent(in) :: w_in(size(ac_in))  !| Acentric factor
+
+      ac = ac_in
+      b = b_in
+      c = c_in
+      k = k_in
+
+      del1 = del1_in
+      del2 = del2_in
+
+      pc = pc_in
+      tc = tc_in
+      w = w_in
+   end subroutine
 
    ! Allocators
    subroutine alloc(n)
       !-| Allocate the module's parameters to the desired number of components
       integer, intent(in) :: n !| Number of components
+      call destroy()
       allocate(ac(n), b(n), c(n), k(n), del1(n), del2(n), pc(n), tc(n), w(n))
    end subroutine
    
    subroutine destroy()
       !-| Deallocate all the module's parameters
-      deallocate(ac, b, c, k, del1, del2, pc, tc, w)
+      if (allocated(ac)) deallocate(ac)
+      if (allocated(b)) deallocate(b)
+      if (allocated(c)) deallocate(c)
+      if (allocated(k)) deallocate(k)
+      if (allocated(del1)) deallocate(del1)
+      if (allocated(del2)) deallocate(del2)
+      if (allocated(pc)) deallocate(pc)
+      if (allocated(tc)) deallocate(tc)
+      if (allocated(w)) deallocate(w)
    end subroutine
 
    pure subroutine a_classic(z, v, t, a_out)

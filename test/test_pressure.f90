@@ -1,8 +1,8 @@
 program main
-    use constants, only: pr
+    use yaeos_constants, only: pr
     use pengrobinson76, only: setup_pr76
-    use cubic_eos, only: ac, b, wmod => w, k
-    use ar_models, only: residual_helmholtz
+    use yaeos_cubic_eos, only: ac, b, wmod => w, k
+    use yaeos_ar_models, only: residual_helmholtz
     use yaeos_thermo_properties, only: get_volume, pressure
     implicit none
 

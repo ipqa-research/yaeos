@@ -1,4 +1,4 @@
-module ar_models
+module yaeos_ar_models
    !-| General logic for residual Helmholtz free energy models.
    !
    !   A Helmholtz free energy model is considered to be a just single
@@ -33,8 +33,8 @@ module ar_models
    ! ```
    !
 
-   use constants, only: pr
-   use hyperdual_mod
+   use yaeos_constants, only: pr
+   use yaeos_autodiff
    use yaeos_interfaces, only: dual_property
 
    implicit none
@@ -106,8 +106,8 @@ contains
       n = size(z) + 2
       df = 0
       df2 = 0
-
       X = [z, v, t]
+
       do i = 1, n
          X = [z, v, t]
          X(i)%f1 = 1
@@ -116,7 +116,7 @@ contains
          call f_in(X(:n - 2), X(n - 1), X(n), y)
          df(i) = y%f1
          df2(i, i) = y%f12
-         do j = i, n
+         do j = i, n-1
             X = [z, v, t]
             X(i)%f1 = 1
             X(j)%f2 = 1

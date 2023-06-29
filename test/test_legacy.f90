@@ -1,5 +1,5 @@
 program main
-    use constants, only: pr, r
+    use yaeos_constants, only: pr, r
     use legacy_ar_models, only: setup, fact => PR76_factory, vcalc, ar_srkpr, ArVnder,&
      kij, lij, ac, b, wmod => w, k
     implicit none

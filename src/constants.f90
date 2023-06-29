@@ -1,4 +1,4 @@
-module constants
+module yaeos_constants
    !-| Constants used on the whole package
    use iso_fortran_env, only: real32, real64, real128
    
@@ -12,4 +12,4 @@ module constants
    !| Path to find database
    character(len=1) :: path_sep = "/"
    !| File separator (to preprocess on Win or Mac/linux)
-end module constants
+end module

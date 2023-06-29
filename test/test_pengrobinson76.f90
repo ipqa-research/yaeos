@@ -1,8 +1,9 @@
 program main
-    use constants, only: pr
+    use hyperdual_mod
+    use yaeos_constants, only: pr
     use pengrobinson76, only: setup_pr76
-    use cubic_eos, only: ac, b, wmod => w, k
-    use ar_models, only: residual_helmholtz
+    use yaeos_cubic_eos, only: ac, b, wmod => w, k
+    use yaeos_ar_models, only: residual_helmholtz, ar_fun
     implicit none
 
     integer, parameter :: n = 2
@@ -11,6 +12,8 @@ program main
     real(pr) :: tc(n), pc(n), w(n), z(n), kij(n, n), lij(n, n)
     real(pr) :: ar, dar(n+2), dar2(n+2,n+2)
     real(pr) :: t, v, et, st
+
+    type(hyperdual) :: z_d(n), v_d, t_d, ar_d
 
     z  = [0.3, 0.7]
     tc = [190, 310]
@@ -25,13 +28,26 @@ program main
     v = 1.0
     t = 150
 
+    z_d = z
+    v_d = v
+    t_d = t
+
+    call cpu_time(st)
+    do i=1,10000
+        call ar_fun(z_d, v_d, t_d, ar_d)
+    end do
+    call cpu_time(et)
+
+    print *, "Ar", ar_d%f0
+    print *, "dAr", dar
+    print *, (et-st)/10000 * 1e6
+
     call cpu_time(st)
     do i=1,10000
         call residual_helmholtz(z, v, t, ar, dar, dar2)
     end do
     call cpu_time(et)
-
-    print *, "params", ac, b, wmod, k
+    
     print *, "Ar", ar
     print *, "dAr", dar
     print *, (et-st)/10000 * 1e6

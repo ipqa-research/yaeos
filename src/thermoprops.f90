@@ -5,9 +5,9 @@ module yaeos_thermo_properties
    !
    ! This procedures are based on residual Helmholtz free energy models. Using
    ! The approach presented by Michelsen and Møllerup.
-   use constants, only: pr, R
+   use yaeos_constants, only: pr, R
    use yaeos_models, only: residual_helmholtz
-   use hyperdual_mod
+   use yaeos_autodiff
    use yaeos_interfaces, only: volume_initalizer
    implicit none
 
