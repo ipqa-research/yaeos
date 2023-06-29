@@ -1,10 +1,13 @@
 module pengrobinson76
+    !! Peng Robinson 76 Equation of State.
+    !! 
+    !!
     use constants, only: pr, R
     use hyperdual_mod
     use ar_models, only: set_ar_function
     
     ! Use the generic Cubic EoS Ar function
-    use generic_cubic, only: set_parameters_functions, set_mixrule, a_res
+    use generic_cubic, only: set_functions, a_res
 
     ! Use the parameters defined in the Cubic EoS Module
     use cubic_eos, only: ac, b, c, del1, del2, k, &
@@ -14,8 +17,6 @@ module pengrobinson76
    
     ! Use the subroutines defined in the ClassicVdW module
     use mixrule_classicvdw, only: setup_ClassicVdW, mix_ClassicVdW
-
-    use yaeos_thermo_properties, only: vinit
 
     implicit none
 
@@ -52,12 +53,9 @@ contains
         ! Setup the mixing rule parameters
         call setup_ClassicVdW(kij_in, lij_in)
 
-        ! Setup the mixing rule function in the generic cubicEoS module
-        call set_mixrule(mix_ClassicVdW)
-
         ! Setup the parameters functions in the generic cubicEoS module
-        call set_parameters_functions(&
-            a_classic, b_classic, c_classic, del1_classic, del2_classic &
+        call set_functions(&
+            a_classic, b_classic, c_classic, del1_classic, del2_classic, mix_ClassicVdW &
         )
 
         call set_ar_function(a_res)
