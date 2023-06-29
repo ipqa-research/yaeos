@@ -5,10 +5,10 @@ author: Federico Benelli
 author_description: PhD student with focus on reservoir PVT simulation.
 author_email: federico.benelli@mi.unc.edu.ar
 github: https://github.com/fedebenelli
-src_dir: ./src
-page_dir: ./doc
-output_dir: ./doc
-exclude_dir: ./test
+src_dir: ../src
+exclude_dir: ../test ../doc
+output_dir: ../doc/ford_site
+preprocessor: gfortran -E
 display: public
          protected
          private
@@ -25,4 +25,4 @@ md_extensions: markdown.extensions.toc
 graph: true
 license: MIT
 
-{!README.md!}
+{!../README.md!}
