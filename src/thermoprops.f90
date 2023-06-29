@@ -102,7 +102,7 @@ contains
       else
          select case (root)
          case ("vapor")
-            v = min([1.0_pr, R * t / p])
+            v = R * t / p
          case ("liquid")
             ! TODO: Generalize the initialization with a function
             v = 2.0_pr * vinit(z, p, t)
