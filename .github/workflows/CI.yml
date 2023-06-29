@@ -70,13 +70,13 @@ jobs:
     #     files: build/coverage/coverage.info
   publish:
     runs-on: ubuntu-latest
-    project_file: docs.md
     steps:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Build
         id: build
         uses: ResearchSoftwareActions/ford-build@v1
+        project_file: docs.md
       - name: Deploy
         if: success()
         uses: crazy-max/ghaction-github-pages@v1
