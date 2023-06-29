@@ -70,7 +70,9 @@ jobs:
     #     files: build/coverage/coverage.info
 
     - name: Build documentation
-      run: ford ./docs.md
+      run: 
+        - mkdir doc
+        - ford ./docs.md
 
     - name: Deploy Documentation
       if: github.ref == 'refs/heads/master'
