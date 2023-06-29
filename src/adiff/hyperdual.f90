@@ -1258,4 +1258,4 @@ module hyperdual_mod
         v3 = v2
       endif
     end function min_rd
-end module hyperdual_mod
+end module

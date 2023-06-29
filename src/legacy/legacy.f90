@@ -5,7 +5,7 @@ module legacy_ar_models
    !! this should be later adapted into a simple oop system where an eos object
    !! stores the relevant parameters (or some functional oriented approach)
    use yaeos_constants, only: pr, R
-   use ar_interface, only: ar_fun, check
+   use ar_interface, only: ar_fun, vinit, check
    implicit none
 
    ! Model settings
@@ -537,6 +537,7 @@ contains
       real(pr), intent(out) :: Arn2(size(z),size(z))
 
       call check()
+      vinit => cubic_v0
       call ar_fun(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
    end subroutine ArVnder
    ! ==========================================================================
@@ -726,14 +727,14 @@ contains
    ! ==========================================================================
    !  Properties
    ! --------------------------------------------------------------------------
-   function v0(z, t)
-      real(pr) :: v0
-      real(pr) :: z(nc)
+   function cubic_v0(z, p, t)
+      real(pr) :: z(:)
+      real(pr) :: p
       real(pr) :: t
+      real(pr) :: cubic_v0
 
       real(pr) :: dbi(nc), dbij(nc,nc)
-      
-      call bnder(nc, z, v0, dBi, dBij)
+      call bnder(nc, z, cubic_v0, dBi, dBij)
    end function
 
    subroutine TERMO(nc, MTYP, INDIC, T, P, rn, V, PHILOG, DLPHIP, DLPHIT, FUGN)
@@ -908,7 +909,7 @@ contains
       NDER = 0
       FIRST_RUN = .true.
       TOTN = sum(rn)
-      CPV = v0(rn, t)
+      CPV = vinit(rn, p, t)
       B = CPV
       S3R = 1.D0/CPV
       ITER = 0

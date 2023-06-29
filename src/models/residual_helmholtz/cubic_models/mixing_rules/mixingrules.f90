@@ -6,7 +6,7 @@ module yaeos_mixrule_classicvdw
    !    set of parameters of pure compounds and returns the mixture's
    !    parameters and their derivatives
    use yaeos_constants, only: pr
-   use hyperdual_mod
+   use yaeos_autodiff
    
    implicit none
 

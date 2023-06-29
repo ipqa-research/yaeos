@@ -7,7 +7,7 @@ module ar_interface
    implicit none
 
    procedure(Ares), pointer :: ar_fun
-   procedure(initial_volume), pointer :: v0
+   procedure(initial_volume), pointer :: vinit
 
    abstract interface
       subroutine Ares(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
@@ -20,12 +20,11 @@ module ar_interface
          real(pr), intent(out) :: Arn2(size(z), size(z))
       end subroutine
 
-      function initial_volume(z, p, t, root)
+      function initial_volume(z, p, t)
          import pr
          real(pr) :: z(:)
          real(pr) :: p
          real(pr) :: t
-         character(len=*), optional :: root
          real(pr) :: initial_volume
       end function
    end interface
