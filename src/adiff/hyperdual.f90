@@ -1,85 +1,85 @@
-!-| Hyperdual number definition & type declaration
-!
-! Original code provided by Philipp Rehner and Gernot Bauer,
-! Institute of Thermodynamics and Thermal Process Engineering (ITT),
-! University of Stuttgart, Stuttgart, Germany
-!
-! #### Hypderdual numbers
-!
-! Hypderdual numbers extend the idea of additional, non-real
-! components from one non-real component (complex numbers) to four
-! non-real components: \f$\varepsilon_1\f$, \f$\varepsilon_2\f$ and
-! \f$\varepsilon_1 \varepsilon_2\f$.
-! Hyperdual numbers require: \f$(\varepsilon_1)^2 = 0\f$,
-! \f$(\varepsilon_2)^2 = 0\f$ and
-! \f$(\varepsilon_1\varepsilon_2)^2 = 0\f$
-! This leads to the fact, that the Taylor series of a function with
-! hyperdual arguments can be truncated _exactly_ after the second
-! derivative term:
-! \f[
-!    f(\mathbf{x} + h_1 \varepsilon_1 + h_2 \varepsilon_2
-!      + h_1 h_2 \varepsilon_1 \varepsilon_2)
-!    = f(\mathbf{x}) + h_1 f'(\mathbf{x}) \varepsilon_1
-!      + h_2 f'(\mathbf{x}) \varepsilon_2
-!      + h_1 h_2 f''(\mathbf{x}) \varepsilon_1 \varepsilon_2
-! \f]
-! Because there is _no truncation error_, all first and second order
-! derivatives can be obtained _exactly_, regardless of the step size ''
-! \f$h_1\f$ and \f$h_2\f$.
-! The derivatives can be obtained for a function \f$ f(\mathbf{x}) \f$
-! with multiple variables \f$ \mathbf{x} \in \mathbb{R}^n \f$ via
-! \f{eqnarray*}{
-!   \frac{\partial f(\mathbf{x})}{\partial x_i} &=& \frac{
-!     \varepsilon_{1, \mathrm{part}} \Big\{
-!     f(\mathbf{x} + h_1 \varepsilon_1 \mathbf{e}_i
-!     + h_2 \varepsilon_2 \mathbf{e}_j + h_1 h_2 \mathbf{0})\Big\}}
-!     {h_1}\\
-!   \frac{\partial f(\mathbf{x})}{\partial x_i} &=& \frac{
-!      \varepsilon_{2, \mathrm{part}} \Big\{
-!      f(\mathbf{x} + h_1 \varepsilon_1 \mathbf{e}_i
-!      + h_2 \varepsilon_2 \mathbf{e}_j + h_1 h_2 \mathbf{0})\Big\}}
-!      {h_2}\\
-!   \frac{\partial^2 f(\mathbf{x})}{\partial x_i \partial x_j} &=&
-!     \frac{(\varepsilon_1 \varepsilon_2)_\mathrm{part} \Big\{
-!     f(\mathbf{x} + h_1 \varepsilon_1 \mathbf{e}_i
-!     + h_2 \varepsilon_2 \mathbf{e}_j + h_1 h_2 \mathbf{0})\Big\}}
-!     {h_1 h_2}  \\
-! \f}
-! where \f$\mathbf{e}_i\f$ and \f$\mathbf{e}_j\f$ are unit vectors,
-! which are all zero except for the \f$i\f$-th and \f$j\f$-th
-! component, respectively.
-!
-! #### Computation principles for hypderdual numbers
-!
-! Hyperdual numbers \f$\mathbf{x} \in \mathbb{HD}\f$ can be expressed
-! as tuples: \f$\mathbf{x} = [x_0, x_1, x_2, x_{12}] = x_0
-! + x_1 \varepsilon_1 + x_2 \varepsilon_2
-! + x_{12} \varepsilon_1\varepsilon_2\f$.
-! By using the Taylor expansion of the function \f$f(\mathbf{x})\f$
-! one gets computation priniple for functions with hyperdual
-! arguments from
-! \f[
-!    f(\mathbf{x}) = f(x_0) + x_1 f'(x_0) \varepsilon_1
-!    + x_2 f'(x_0) \varepsilon_2 + \big( x_{12} f'(x_0)
-!    + x_1 x_2 f''(x_0) \big) \varepsilon_1 \varepsilon_2
-! \f]
-!
-! A hyperdual number derived type is provided by: \ref hyperdual.
-!
-! #### References
-!
-! [[1]](https://doi.org/10.2514/6.2011-886)
-!      Fike, Alonso: **The Development of Hyper-Dual Numbers for Exact
-!                      Second-Derivative Calculations.**
-!      _49th AIAA Aerospace Sciences Meeting including the New
-!       Horizons Forum and Aerospace Exposition_ (2011) \n
-! [[2]](https://doi.org/10.3389/fceng.2021.758090)
-!      Rehner, P. and Bauer, G.: **Application of Generalized
-!                                  (Hyper-) Dual Numbers in Equation
-!                                  of State Modeling.**
-!      Frontiers in Chemical Engineering_ (2021) \n
-!
 module hyperdual_mod
+  !-| Hyperdual number definition & type declaration
+  !
+  ! Original code provided by Philipp Rehner and Gernot Bauer,
+  ! Institute of Thermodynamics and Thermal Process Engineering (ITT),
+  ! University of Stuttgart, Stuttgart, Germany
+  !
+  ! #### Hypderdual numbers
+  !
+  ! Hypderdual numbers extend the idea of additional, non-real
+  ! components from one non-real component (complex numbers) to four
+  ! non-real components: \f$\varepsilon_1\f$, \f$\varepsilon_2\f$ and
+  ! \f$\varepsilon_1 \varepsilon_2\f$.
+  ! Hyperdual numbers require: \f$(\varepsilon_1)^2 = 0\f$,
+  ! \f$(\varepsilon_2)^2 = 0\f$ and
+  ! \f$(\varepsilon_1\varepsilon_2)^2 = 0\f$
+  ! This leads to the fact, that the Taylor series of a function with
+  ! hyperdual arguments can be truncated _exactly_ after the second
+  ! derivative term:
+  ! \f[
+  !    f(\mathbf{x} + h_1 \varepsilon_1 + h_2 \varepsilon_2
+  !      + h_1 h_2 \varepsilon_1 \varepsilon_2)
+  !    = f(\mathbf{x}) + h_1 f'(\mathbf{x}) \varepsilon_1
+  !      + h_2 f'(\mathbf{x}) \varepsilon_2
+  !      + h_1 h_2 f''(\mathbf{x}) \varepsilon_1 \varepsilon_2
+  ! \f]
+  ! Because there is _no truncation error_, all first and second order
+  ! derivatives can be obtained _exactly_, regardless of the step size ''
+  ! \f$h_1\f$ and \f$h_2\f$.
+  ! The derivatives can be obtained for a function \f$ f(\mathbf{x}) \f$
+  ! with multiple variables \f$ \mathbf{x} \in \mathbb{R}^n \f$ via
+  ! \f{eqnarray*}{
+  !   \frac{\partial f(\mathbf{x})}{\partial x_i} &=& \frac{
+  !     \varepsilon_{1, \mathrm{part}} \Big\{
+  !     f(\mathbf{x} + h_1 \varepsilon_1 \mathbf{e}_i
+  !     + h_2 \varepsilon_2 \mathbf{e}_j + h_1 h_2 \mathbf{0})\Big\}}
+  !     {h_1}\\
+  !   \frac{\partial f(\mathbf{x})}{\partial x_i} &=& \frac{
+  !      \varepsilon_{2, \mathrm{part}} \Big\{
+  !      f(\mathbf{x} + h_1 \varepsilon_1 \mathbf{e}_i
+  !      + h_2 \varepsilon_2 \mathbf{e}_j + h_1 h_2 \mathbf{0})\Big\}}
+  !      {h_2}\\
+  !   \frac{\partial^2 f(\mathbf{x})}{\partial x_i \partial x_j} &=&
+  !     \frac{(\varepsilon_1 \varepsilon_2)_\mathrm{part} \Big\{
+  !     f(\mathbf{x} + h_1 \varepsilon_1 \mathbf{e}_i
+  !     + h_2 \varepsilon_2 \mathbf{e}_j + h_1 h_2 \mathbf{0})\Big\}}
+  !     {h_1 h_2}  \\
+  ! \f}
+  ! where \f$\mathbf{e}_i\f$ and \f$\mathbf{e}_j\f$ are unit vectors,
+  ! which are all zero except for the \f$i\f$-th and \f$j\f$-th
+  ! component, respectively.
+  !
+  ! #### Computation principles for hypderdual numbers
+  !
+  ! Hyperdual numbers \f$\mathbf{x} \in \mathbb{HD}\f$ can be expressed
+  ! as tuples: \f$\mathbf{x} = [x_0, x_1, x_2, x_{12}] = x_0
+  ! + x_1 \varepsilon_1 + x_2 \varepsilon_2
+  ! + x_{12} \varepsilon_1\varepsilon_2\f$.
+  ! By using the Taylor expansion of the function \f$f(\mathbf{x})\f$
+  ! one gets computation priniple for functions with hyperdual
+  ! arguments from
+  ! \f[
+  !    f(\mathbf{x}) = f(x_0) + x_1 f'(x_0) \varepsilon_1
+  !    + x_2 f'(x_0) \varepsilon_2 + \big( x_{12} f'(x_0)
+  !    + x_1 x_2 f''(x_0) \big) \varepsilon_1 \varepsilon_2
+  ! \f]
+  !
+  ! A hyperdual number derived type is provided by: \ref hyperdual.
+  !
+  ! #### References
+  !
+  ! [[1]](https://doi.org/10.2514/6.2011-886)
+  !      Fike, Alonso: **The Development of Hyper-Dual Numbers for Exact
+  !                      Second-Derivative Calculations.**
+  !      _49th AIAA Aerospace Sciences Meeting including the New
+  !       Horizons Forum and Aerospace Exposition_ (2011) \n
+  ! [[2]](https://doi.org/10.3389/fceng.2021.758090)
+  !      Rehner, P. and Bauer, G.: **Application of Generalized
+  !                                  (Hyper-) Dual Numbers in Equation
+  !                                  of State Modeling.**
+  !      Frontiers in Chemical Engineering_ (2021) \n
+  !
   use yaeos_constants, only: pr
   implicit none
 
