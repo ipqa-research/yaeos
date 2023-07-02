@@ -1,5 +1,10 @@
 module yaeos_ar_models
-   !-| General logic for residual Helmholtz free energy models.
+   !-| 
+   ! # Residual free Helmholtz energy models.
+   !
+   !   This module holds the general logic for residual Helmholtz 
+   !   free energy models. This library assumes that always the reduced
+   !   \(\alpha^r = \frac{A^r}{RT}\) energy is used.
    !
    !   A Helmholtz free energy model is considered to be a just single
    !   subroutine that respondes to the function \(Ar = f(z, v, t)\).
@@ -11,8 +16,8 @@ module yaeos_ar_models
    !
    !   In principle, just defining a subroutine that responds to the interface
    !   provided by `dual_property` and setting that function as the desired
-   !   Ar function to use is enough to provide all the library provided
-   !  provided functionality.
+   !   Ar function to use is enough to provide all the library provided 
+   !   functionality.
    !
    ! ```fortran
    ! subroutine Ar(z, v, t, ar)
@@ -22,15 +27,19 @@ module yaeos_ar_models
    !    type(hyperdual), intent(in) :: t
    !    type(hyperdual), intent(out) :: ar
    !
-   !    ! A very complicated residual helmholtz function
+   !    ! A very complicated residual helmholtz function of a mixture
    !    ar = sum(z) * v * t
    ! end subroutine
+   !
    ! ...
    !
+   !program
+   ! use yaeos, only: set_ar_function, pressure
    ! call set_ar_function(Ar)
    ! call pressure(z, v, t, p, dp, dp2) ! This calculates the pressure and
-   !                                    ! derivatives !
-   ! ```
+   !                                    ! derivatives.
+   !end program
+   !```
    !
 
    use yaeos_constants, only: pr

@@ -89,27 +89,59 @@
       <div class="row" id='text'>
         <div class="col-md-8">
           <h1>Yaeos</h1>
-          <h1 id="yaeos">yaeos</h1>
+          <h1 id="ya_eos">YA_EoS</h1>
 <p>There are multiple equation of state libraries, like:</p>
 <ul>
-<li>Clapeyron.jl</li>
-<li>FeOs</li>
-<li>phasepy</li>
-<li>teqp</li>
-<li>thermo.py</li>
-<li>thermopack</li>
-<li>(many more)</li>
+<li><a href="https://github.com/ClapeyronThermo/Clapeyron.jl">Clapeyron</a> <code>julia</code></li>
+<li><a href="https://github.com/feos-org/feos">FeOs</a> <code>rust</code></li>
+<li><a href="https://hpp.uva.es/open-source-software-eos/">OSSEoS</a> <code>MATLAB (LO MATARON)</code></li>
+<li><a href="https://github.com/usnistgov/teqp">teqp</a> <code>C++</code></li>
+<li><a href="https://github.com/CalebBell/thermo">thermo</a> <code>python</code></li>
+<li><a href="https://github.com/thermotools/thermopack">thermopack</a> <code>Fortran</code></li>
 </ul>
-<p>Here we are presenting another (still in development) library that tackles the
+<p>Here we are presenting yet another (still in development) one, that tackles the
 same problem just, in another way. Mostly exploiting readability and
 extensiblity of Modern Fortran for scientists to have an easy way to implement
-new thermodynamic models.</p>
-<p>This is an experimental work in progress and we recommend the before mentioned
-libraries if you are intending to use some of this in real work.</p>
+new thermodynamic models without dealing with lower level languages but still
+getting decent performance. And also having the possiblility of using
+analitically obtained derivatives so both options are available with just a 
+switch.</p>
+<blockquote>
+<p>This is an experimental work in progress and we recommend the before
+mentioned libraries if you are intending to use some of this in real work.</p>
+</blockquote>
+<p>We focus mainly in that the addition of a new thermodynamic model is as easy as
+possible.
+Also providing our own models too!</p>
+<p>For now we only include residual helmholtz model (like Cubic or Saft Equations
+of State). But we&rsquo;ll be adding other models like $G^E$ (UNIFAC for example).</p>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">Ar</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">ar</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos_adiff</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:)</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar</span><span class="w"></span>
+
+<span class="w">   </span><span class="c">! A very complicated residual helmholtz function of a mixture</span>
+<span class="w">   </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<span class="k">end subroutine</span><span class="w"></span>
+</code></pre></div>
+
+<p>After defining your own model you must just setup the Ar function and you&rsquo;re
+done, all the available routines are using your model:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos_ar_models</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">set_ar_function</span><span class="w"></span>
+<span class="k">use </span><span class="n">yaeos_thermoprops</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pressure</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+
+<span class="k">call </span><span class="n">set_ar_function</span><span class="p">(</span><span class="n">Ar</span><span class="p">)</span><span class="w"> </span><span class="c">! Set the before defined subroutine</span>
+<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dp</span><span class="p">,</span><span class="w"> </span><span class="n">dp2</span><span class="p">)</span><span class="w"> </span><span class="c">! Get the pressure and it&#39;s derivatives </span>
+<span class="w">                                   </span><span class="c">! at some thermodynamic state</span>
+</code></pre></div>
+
 <h2 id="documentation">Documentation</h2>
 <p>The latest API documentation for the <code>main</code> branch can be found
-<a href="https://fedebenelli.github.io/yaeos">here</a>. This was generated from
-the source code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.</p>
+<a href="https://fedebenelli.github.io/yaeos">here</a>. This was generated from the source
+code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.</p>
         </div>
         <div class="col-md-4">
 	  <div class="well">
@@ -183,7 +215,7 @@ the source code using <a href="https://github.com/Fortran-FOSS-Programmers/ford"
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2023-07-02 19:42            </p>
+ on 2023-07-02 20:15            </p>
         </div>
       </div>
       <br>
