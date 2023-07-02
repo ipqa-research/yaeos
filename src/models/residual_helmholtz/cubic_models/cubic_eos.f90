@@ -1,8 +1,116 @@
 module yaeos_generic_cubic
-   !-| Implementation of the generic cubic Equation of State.
+   !-|
+   !# Generic Cubic Equation of State.
    !
    !   This module implements a generic cubic based on the definition given
-   !   by Michelsen and Møllerup. 
+   !   by Michelsen and Møllerup:
+   !
+   !   \[ 
+   !    \alpha^r(T, V, n) = - n \ln(1 - B/V) 
+   !                        - \frac{D(T)}{RTB(\delta_1 - \delta_2)} \ln\left(\frac{1+\delta_1 B/V}{1+\delta_2 B/V}\right)
+   !   \]
+   !
+   !   Which considers the parameters:
+   !   
+   !   - \(D\): Attractive parameter
+   !   - \(B\): Repulsive parameter
+   !   - \(\delta_i\): EoS parameters
+   !
+   !   All the parameters are defined as internal procedures via pointers, which
+   !   should point at the corresponding function. There is no need to understand
+   !   the internal work of Fortran pointers, just definining the important
+   !   functions and using the `set_functions` subroutine is enough to make
+   !   this method to work. For example, adding the Van der Waals Cubic EoS 
+   !   from scratch would be something like:
+   ! 
+   !
+   ! @note First make a module that use the relevant data types, like 
+   ! real precision and dual numbers to use automatic differentiation and also
+   ! include the setter functions
+   ! 
+   !```fortran
+   ! module cubic_van_der_waals
+   !    use yaeos_constants, only: pr ! Import the real precision
+   !    use yaeos_autodiff ! Use the automatic differentiation types
+   ! 
+   !    ! From the generic cubic eos use the `set_functions` subroutine and the
+   !    ! Ar function one.
+   !    use yaeos_generic_cubic, only: set_functions, a_res 
+   ! 
+   !    ! We define the model parameters to be used
+   !    ! Model parameters: 
+   !    type(hyperdual), allocatable :: a(:) ! Attractive
+   !    type(hyperdual), allocatable :: b(:) ! Repulsive
+   !```
+   !
+   ! @note Then, inside the module (or not), define all the relevant subroutines
+   ! for parameters calculation and their mixing rule. In this case we define
+   ! the Cubic Van der Waals EoS, where all parameters are held constant, and
+   ! \(\delta_i=0\)
+   !
+   !```fortran
+   !    ! Define how each required parameter is calculated
+   !    subroutine a_parameter(z, v, t, a_out)
+   !       type(hyperdual), intent(in) :: z(:), v, t
+   !       type(hyperdual) :: a_out(size(z))
+   !       ! In the VdW EoS the a parameter is held constant
+   !       a_out = a ! Use the module's defined a parameter
+   !    end subroutine
+   !    
+   !    subroutine b_parameter(z, v, t, b_out)
+   !       type(hyperdual), intent(in) :: z(:), v, t
+   !       type(hyperdual) :: b_out(size(z))
+   !       ! In the VdW EoS the b parameter is held constant
+   !       b_out = b ! Use the module's defined a parameter
+   !    end subroutine
+   !    
+   !    subroutine no_parameter(z, v, t, no)
+   !       type(hyperdual), intent(in) :: z(:), v, t
+   !       type(hyperdual) :: no(size(z))
+   !       ! We'll assign zero to non used parameters, like volume traslation
+   !       ! or delta_1 and delta_2
+   !       no = 0.0_pr
+   !    end subroutine
+   ! 
+   !    ! And the mixing rule
+   !    subroutine mixrule(z, v, t, a_p, b_p, c_p, amix, bmix, cmix)
+   !       type(hyperdual), intent(in) :: z(:), v, z, a_p(size(z)), b_p(size(z)), c_p(size(z))
+   !       type(hyperdual), intent(out) :: amix, bmix, cmix
+   !       ! For simplicity we'll assume linear mixing
+   ! 
+   !       amix = sum(z * a_p)
+   !       bmix = sum(z * b_p)
+   !       cmix = 0.0_pr ! No VT
+   !    end subroutine
+   !    ! ==========================================================================
+   !```
+   !
+   ! @note Now having all the relevant procedures defined, we add a simple
+   ! `setup` subroutine to receive from somewhere (an input interpetator routine
+   ! for example) the number of components and the values of their parameters.
+   ! Inside this subroutine the Generic CEoS are setted up, and finally the 
+   ! Generic Cubic EoS Ar subroutine is selected
+   !
+   !```fortran
+   !
+   !    ! Finally setup the generic cubic model:
+   !    subroutine setup(n, a_in, b_in)
+   !       use yaeos_generic_cubic, only: set_functions
+   !       use yaeos_ar_models, only: set_ar_function
+   !       integer, intent(in) :: n
+   !       real(pr), intent(in) :: a_in(n), b_in(n)
+   ! 
+   !       a = a_in; b = b_in ! Setup the model's parameters
+   !       
+   !       call set_functions(& ! Setup the generic cubic functions
+   !          a_parameter, b_parameter, & ! a and b subroutines
+   !          no_parameter, no_parameter, no_parameter, &  ! null delta1, delta2 and c
+   !          mixrule) ! Mixing rule
+   !       call set_ar_function(a_res) ! Use the generic cubic eos subroutine as the
+   !                                   ! main Ar subroutine.
+   !    end subroutine
+   !end module
+   !```
    
    use yaeos_constants, only: pr, R
    use yaeos_autodiff
@@ -234,7 +342,7 @@ contains
    end subroutine
 
    pure subroutine del2_classic(z, v, t, del2_out)
-      !-| \(\delta_1\) Parameter.
+      !-| \(\delta_2\) Parameter.
       !
       !   In most cubic equation of state systems this parameter is
       !   held constant.
