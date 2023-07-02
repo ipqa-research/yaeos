@@ -3,7 +3,7 @@ There are multiple equation of state libraries, like:
 
 - [Clapeyron](https://github.com/ClapeyronThermo/Clapeyron.jl) `julia`
 - [FeOs](https://github.com/feos-org/feos) `rust`
-- [OSSEoS](https://hpp.uva.es/open-source-software-eos/) `MATLAB (LO MATARON)`
+- [OSSEoS](https://hpp.uva.es/open-source-software-eos/) `MATLAB`
 - [teqp](https://github.com/usnistgov/teqp) `C++`
 - [thermo](https://github.com/CalebBell/thermo) `python`
 - [thermopack](https://github.com/thermotools/thermopack) `Fortran`
