@@ -39,7 +39,7 @@ program main
         v = v + i * dv
         call pressure(z, v, t, p)
         call get_volume(z, p, t, v_vap, "vapor")
-        call get_volume(z, p, t, v_liq, "liquid")
+        call get_volume(z, p, t, v_liq, "liquid", v0=0.075_pr)
         print *, v, p, v_vap, v_liq
         i = i + 1
     end do
