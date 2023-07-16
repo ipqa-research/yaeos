@@ -681,14 +681,14 @@ module hyperdual_mod
       eq_dd = lhs%f0 == rhs%f0
     end function eq_dd
 
-    logical function eq_dr(lhs, rhs)
+    elemental logical function eq_dr(lhs, rhs)
       type (hyperdual), intent(in) :: lhs
       real(pr),         intent(in) :: rhs
 
       eq_dr = lhs%f0 == rhs
     end function eq_dr
 
-    logical function eq_rd(lhs, rhs)
+    elemental logical function eq_rd(lhs, rhs)
       real(pr),         intent(in) :: lhs
       type (hyperdual), intent(in) :: rhs
 
