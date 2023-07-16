@@ -40,7 +40,7 @@ end subroutine
 ```
 
 After defining your own model you must just setup the Ar function and you're
-done, all the available routines are using your model:
+done, the available routines are using your model:
 
 ```fortran
 use yaeos_ar_models, only: set_ar_function
