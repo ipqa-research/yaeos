@@ -177,12 +177,7 @@ contains
 
         integer :: j
         call ln_phi(z, v, t, lnphi)
-        ! z_d = z_d%f0
-        ! do j=1,n-1,2
-        !     z_d(j)%f1 = 1.0_pr
-        !     z_d(j+1)%f2 = 1.0_pr
-        !     call ar_fun(z_d, v_d, t_d, ar_d)
-        ! end do
+        print *, lnphi
     end subroutine
 
     subroutine legsub()
