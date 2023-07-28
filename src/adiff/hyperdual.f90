@@ -92,9 +92,9 @@ module hyperdual_mod
   !  Calculations specificaions are defined in module hyperdual_mod.
     sequence
     real(pr) :: f0 = 0  !| real part of the hyperdual number
-    real(pr) :: f1 !| \f$\varepsilon_1\f$-part of  the hyperdual number
-    real(pr) :: f2 !| \f$\varepsilon_2\f$-part of  the hyperdual number
-    real(pr) :: f12 !| \f$\varepsilon_1\varepsilon_2\f$-part of the
+    real(pr) :: f1 = 0  !| \f$\varepsilon_1\f$-part of  the hyperdual number
+    real(pr) :: f2 = 0  !| \f$\varepsilon_2\f$-part of  the hyperdual number
+    real(pr) :: f12 = 0 !| \f$\varepsilon_1\varepsilon_2\f$-part of the
   end type hyperdual
 
   !---------------------------------------------------------------------
@@ -1045,8 +1045,20 @@ module hyperdual_mod
     elemental function sqrtHyperDual(v1) result (v2)
       type (hyperdual), intent(in) :: v1
       type (hyperdual)             :: v2
+      real(pr), parameter :: expo=3.0_pr/2.0_pr
+      real(pr) :: square
+
+      ! v2 = v1**(0.5_pr)
 
       v2 = v1**(0.5_pr)
+
+      square = sqrt(v1%f0)
+      
+      v2%f0 = square
+      v2%f1 = 0.5_pr / square * v1%f1
+      v2%f2 = 0.5_pr / square * v1%f2
+
+      v2%f12 = 0.5_pr * v1%f12 / square - 0.25_pr * v1%f1 * v1%f2 / (v1%f0**expo)
     end function sqrtHyperDual
 
     ! Log function
