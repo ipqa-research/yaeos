@@ -61,16 +61,20 @@ contains
       type(hyperdual), intent(in)  :: a(size(z)) !| Pure's attractive parameter
       type(hyperdual), intent(out) :: amix       !| Mixture's Attractive param
 
-      type(hyperdual) :: aij(size(z), size(z))
+      type(hyperdual) :: ai(size(z)), z2(size(z)), zij
 
       integer :: i, j
 
-      aij = 0.0_pr
-      amix = 0.0_pr
-      do j = 1, size(z)
-         aij(:, j) = sqrt(a(:) * a(j)) * (1.0_pr - kij(:, j))
-         amix = amix + sum(z(:) * z(j) * aij(:, j))
+      ai = sqrt(a)
+      z2 = z * z
+
+      do i=1,size(z)-1
+         do j=i+1,size(z)
+            zij = z(i) * z(j)
+            amix = amix + zij * (ai(i) * ai(j)) * (1 - kij(i, j))
+         end do
       end do
+      amix = 2 * amix + sum(z2 * a)
    end subroutine
 
    pure subroutine b_mix_classic(z, v, t, b, bmix)
@@ -84,15 +88,16 @@ contains
       type(hyperdual), intent(in)  :: b(size(z)) !| Pure's repulsive parameter
       type(hyperdual), intent(out) :: bmix       !| Mixture's repulsive param
 
-      type(hyperdual) :: bij(size(z), size(z))
-
-      integer :: i
+      integer :: i, j
 
       bmix = 0.0_pr
-      do i = 1, size(z)
-         bij(:, i) = (b(:) + b(i))/2.0_pr*(1.0_pr - lij(:, i))
-         bmix = bmix + sum(z(:)*z(i)*bij(:, i))
+      
+      do i=1,size(z)
+         do j=i+1, size(z)
+            bmix = bmix + z(i) * z(j) * (b(i) + b(j)) * (1 - lij(i, j))
+         end do
       end do
+      bmix = bmix + sum(z * z * b)
 
       bmix = bmix/sum(z)
    end subroutine

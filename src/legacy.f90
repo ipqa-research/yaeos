@@ -60,8 +60,21 @@ contains
       tdep = ntdep
       mixing_rule = ncomb
       nc = n
+      
+      if (allocated(tc)) deallocate(tc)
+      if (allocated(pc)) deallocate(pc)
+      if (allocated(dc)) deallocate(dc)
+      if (allocated(w)) deallocate(w)
+      if (allocated(ac)) deallocate(ac)
+      if (allocated(b)) deallocate(b)
+      if (allocated(del1)) deallocate(del1)
+      if (allocated(k)) deallocate(k)
+      if (allocated(kij)) deallocate(kij)
+      if (allocated(lij)) deallocate(lij)
+      if (allocated(kinf)) deallocate(kinf)
+      if (allocated(tstar)) deallocate(tstar)
+      if (allocated(bij)) deallocate(bij)
 
-      ! allocate(z(n))
       allocate(tc(n))
       allocate(pc(n))
       allocate(dc(n))
@@ -74,9 +87,6 @@ contains
       allocate(lij(n, n))
       allocate(kinf(n, n))
       allocate(tstar(n, n))
-      ! allocate(aij(n, n))
-      ! allocate(daijdt(n, n))
-      ! allocate(daijdt2(n, n))
       allocate(bij(n, n))
    end subroutine setup
 
