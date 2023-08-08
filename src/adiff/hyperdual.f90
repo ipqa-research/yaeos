@@ -1048,10 +1048,6 @@ module hyperdual_mod
       real(pr), parameter :: expo=3.0_pr/2.0_pr
       real(pr) :: square
 
-      ! v2 = v1**(0.5_pr)
-
-      v2 = v1**(0.5_pr)
-
       square = sqrt(v1%f0)
       
       v2%f0 = square
