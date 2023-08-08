@@ -34,7 +34,7 @@ program main
     end do
     call cpu_time(et)
 
-    print *, "Ar_LEG", ar / (r*t)
+    print *, "Ar_LEG: ", ar / (r*t)
     print *, "dAr_LEG", arn / (r*t), arv/(r*t)
     print *, (et-st)/10000 * 1e6
 

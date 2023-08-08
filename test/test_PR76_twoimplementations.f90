@@ -1,25 +1,46 @@
-! Dirty code to benchmark the implementation of PR76 compared to legacy code
-! (faster) and a more dirty implementation.
+! Dirty code to benchmark the implementation of PR76 compared to legacy code (faster) and a more dirty implementation.
+module triangular_matrix
+    use yaeos_constants, only: pr
+    implicit none
+
+contains
+
+    pure function matrix_to_vector(m) result(v)
+        real(pr), intent(in) :: m(:, :)
+        real(pr) :: v(size(m, dim=1) * (size(m, dim=1)-1)/2 )
+        integer :: i, j, n, nv
+
+        n = size(m, dim=1)
+
+        nv = 0
+        do i=1, n
+            do j=i+1,n
+                nv = nv + 1
+                v(nv) = m(i, j)
+            end do
+        end do
+    end function
+end module
+
 module dirtypengrobinson76
     !-| Peng Robinson 76 Equation of State.
     use yaeos_constants, only: pr, R
     use yaeos_autodiff
     use yaeos_ar_models, only: set_ar_function
     use yaeos_interfaces, only: dual_property
+    use triangular_matrix
     
     implicit none
 
     private
     public :: setup_dirty_pr76
 
-    real(pr), allocatable :: kij(:, :), lij(:, :)
+    real(pr), allocatable :: kij(:, :), lij(:, :), kij_vect(:)
     real(pr), allocatable :: ac(:), b(:), k(:)
     real(pr), allocatable :: tc(:), pc(:), w(:)
 
     real(pr), parameter :: del1 = 1._pr + sqrt(2._pr)
     real(pr), parameter :: del2 = 1._pr - sqrt(2._pr)
-
-    procedure(dual_property), pointer :: ar => arfun
 contains
     subroutine setup_dirty_pr76(n, tc_in, pc_in, w_in, kij_in, lij_in)
         !-| Setup the enviroment to use the PengRobinson 76 Equation of State
@@ -42,31 +63,42 @@ contains
         kij = kij_in
         lij = lij_in
 
-        call set_ar_function(ar)
+        kij_vect = matrix_to_vector(kij)
+
+        call set_ar_function(arfun)
     end subroutine
 
     pure subroutine arfun(z, v, t, ar)
         type(hyperdual), intent(in) :: z(:), v, t
         type(hyperdual), intent(out) :: ar
     
-        type(hyperdual) :: amix, a(size(z)), aij(size(z), size(z))
+        type(hyperdual) :: amix, a(size(z)), ai(size(z)), z2(size(z)), zij
         type(hyperdual) :: bmix
         type(hyperdual) :: b_v
 
         integer :: i, j
 
         a = 1.0_pr + k * (1.0_pr - sqrt(t/tc))
-        a = sqrt(ac * a * a)
+        ai = ac * a * a
+        a = sqrt(ai)
+        z2 = z * z
 
         amix = 0.0_pr
         bmix = 0.0_pr
 
-        do concurrent(i=1:size(z), j=1:size(z))
-            amix = amix + z(i) * z(j) * (a(i) * a(j)) * (1.0_pr - kij(i, j))
-            bmix = bmix + z(i) * z(j) * (b(i) + b(j)) * (1 - lij(i,j)) * 0.5_pr
+        do i=1,size(z)-1
+            do j=i+1,size(z)
+                zij = z(i) * z(j)
+                amix = amix + zij * (a(i) * a(j)) * (1 - kij(i, j))
+                bmix = bmix + zij * (b(i) + b(j)) * (1 - lij(i, j))
+             end do
         end do
 
+        amix = 2 * amix + sum(z2 * ai)
+        bmix = (bmix + sum(z2 * b)) / sum(z)
+        
         b_v = bmix/v
+        
         ar = (&
               - sum(z) * log(1.0_pr - b_v) &
               - amix / (R*t*bmix)*1.0_pr / (del1 - del2) &
@@ -122,6 +154,7 @@ program test_pr76_two
     use yaeos_autodiff
     use yaeos_constants, only: pr
     use yaeos_thermo_properties, only: ln_phi
+    use triangular_matrix, only: matrix_to_vector
     implicit none
     
     integer, parameter :: evals=100
@@ -130,13 +163,16 @@ program test_pr76_two
     real(pr) :: et, st
     real(pr) :: time_pr, time_dpr, time_lpr, desv_pr, desv_dpr, desv_lpr
 
+    real(pr) :: kij(3,3)
+    real(pr), allocatable :: k(:)
+
     print *, "n PR76 PR76err dirtyPR76 dirtyPR76err LPR76 LPR76err"
 
-    do n=1,30
+    do n=1,50
         call bench("PR76", time_pr, desv_pr)
         call bench("dirtyPR76", time_dpr, desv_dpr)
         call bench("leg_PR76", time_lpr, desv_lpr)
-        print *, n, &
+        print *, n , &
             time_pr * 1e6, desv_pr * 1e6, &
             time_dpr * 1e6, desv_dpr * 1e6, &
             time_lpr * 1e6, desv_lpr * 1e6
@@ -150,7 +186,7 @@ contains
         use ar_interface, only: ar_fun
         character(len=*), intent(in) :: model
         real(pr), intent(out) :: time, desv
-        
+
         call alloc(n)
 
         select case(model)
@@ -170,22 +206,19 @@ contains
     end subroutine
 
     subroutine sub()
-        !  use state, only: z_d, v_d, t_d, ar_d
         use state, only: z, v, t
         use yaeos_ar_models, only: residual_helmholtz, ar_fun
         real(pr) :: lnphi(size(z))
-
-        integer :: j
+        
         call ln_phi(z, v, t, lnphi)
-        print *, lnphi
     end subroutine
 
     subroutine legsub()
         use state
-        use legacy_ar_models, only: ArVnder
+        use legacy_ar_models, only: ArVnder, zTVTERMO
 
         real(pr) :: ar, arn(n), arnn(n, n)
-        call ArVnder(n, 2, 2, z, 150.0_pr, 500.0_pr, ar, ar, ar, ar, arn, arn, arn, arnn)
+        call zTVTermo(n, 5, 150.0_pr, z, 500.0_pr, ar, ar, arn, arn, arn, arnn)
     end subroutine
 
     subroutine timeit(time, desv, abs_sub)
