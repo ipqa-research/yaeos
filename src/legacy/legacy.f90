@@ -110,6 +110,7 @@ contains
         real(pr) :: RTc(nc)
 
         ar_fun => ar_srkpr
+        vinit => cubic_v0
 
         del1 = 1 + sqrt(2.0_pr)
         z = moles_in
@@ -176,6 +177,7 @@ contains
       real(pr) :: RTc(nc)
 
       ar_fun => ar_srkpr
+      vinit => cubic_v0
 
       del1 = 1 + sqrt(2.0_pr)
       z = moles_in
@@ -239,6 +241,7 @@ contains
         integer :: i, j
 
         ar_fun => ar_srkpr
+        vinit => cubic_v0
 
         del1 = 1
         z = moles_in
