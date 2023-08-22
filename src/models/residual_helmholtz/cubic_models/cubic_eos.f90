@@ -27,6 +27,7 @@ module yaeos_generic_cubic
    ! @note First make a module that use the relevant data types, like 
    ! real precision and dual numbers to use automatic differentiation and also
    ! include the setter functions
+   ! @endnote
    ! 
    !```fortran
    ! module cubic_van_der_waals
@@ -47,6 +48,7 @@ module yaeos_generic_cubic
    ! for parameters calculation and their mixing rule. In this case we define
    ! the Cubic Van der Waals EoS, where all parameters are held constant, and
    ! \(\delta_i=0\)
+   ! @endnote
    !
    !```fortran
    !    ! Define how each required parameter is calculated
@@ -74,7 +76,10 @@ module yaeos_generic_cubic
    ! 
    !    ! And the mixing rule
    !    subroutine mixrule(z, v, t, a_p, b_p, c_p, amix, bmix, cmix)
-   !       type(hyperdual), intent(in) :: z(:), v, z, a_p(size(z)), b_p(size(z)), c_p(size(z))
+   !       type(hyperdual), intent(in) :: z(:), v, z, &
+   !                                       a_p(size(z)), &
+   !                                       b_p(size(z)), &
+   !                                       c_p(size(z))
    !       type(hyperdual), intent(out) :: amix, bmix, cmix
    !       ! For simplicity we'll assume linear mixing
    ! 
@@ -82,14 +87,15 @@ module yaeos_generic_cubic
    !       bmix = sum(z * b_p)
    !       cmix = 0.0_pr ! No VT
    !    end subroutine
-   !    ! ==========================================================================
+   !    ! =====================================================================
    !```
    !
    ! @note Now having all the relevant procedures defined, we add a simple
    ! `setup` subroutine to receive from somewhere (an input interpetator routine
    ! for example) the number of components and the values of their parameters.
    ! Inside this subroutine the Generic CEoS are setted up, and finally the 
-   ! Generic Cubic EoS Ar subroutine is selected
+   ! Generic Cubic EoS Ar subroutine is selected.
+   ! @endnote
    !
    !```fortran
    !
