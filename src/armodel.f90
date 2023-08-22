@@ -16,7 +16,7 @@ module yaeos_ar_models
    !
    !   In principle, just defining a subroutine that responds to the interface
    !   provided by `dual_property` and setting that function as the desired
-   !   Ar function to use is enough to provide all the library provided 
+   !   Ar function to use is enough to provide all the library provided
    !   functionality.
    !
    ! ```fortran

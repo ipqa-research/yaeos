@@ -175,7 +175,9 @@
    from scratch would be something like:</p>
 <p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p>First make a module that use the relevant data types, like 
  real precision and dual numbers to use automatic differentiation and also
- include the setter functions</p></div>
+ include the setter functions
+ </p></div>
+<p>
 <div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="k">module </span><span class="n">cubic_van_der_waals</span><span class="w"></span>
 <span class="w">    </span><span class="k">use </span><span class="n">yaeos_constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="w"> </span><span class="c">! Import the real precision</span>
 <span class="w">    </span><span class="k">use </span><span class="n">yaeos_autodiff</span><span class="w"> </span><span class="c">! Use the automatic differentiation types</span>
@@ -193,7 +195,9 @@
 <p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p>Then, inside the module (or not), define all the relevant subroutines
  for parameters calculation and their mixing rule. In this case we define
  the Cubic Van der Waals EoS, where all parameters are held constant, and
- <script type="math/tex">\delta_i=0</script></p></div>
+ <script type="math/tex">\delta_i=0</script>
+ </p></div>
+<p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c">! Define how each required parameter is calculated</span>
 <span class="w">    </span><span class="k">subroutine </span><span class="n">a_parameter</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">a_out</span><span class="p">)</span><span class="w"></span>
 <span class="w">       </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:),</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
@@ -219,7 +223,10 @@
 
 <span class="w">    </span><span class="c">! And the mixing rule</span>
 <span class="w">    </span><span class="k">subroutine </span><span class="n">mixrule</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">a_p</span><span class="p">,</span><span class="w"> </span><span class="n">b_p</span><span class="p">,</span><span class="w"> </span><span class="n">c_p</span><span class="p">,</span><span class="w"> </span><span class="n">amix</span><span class="p">,</span><span class="w"> </span><span class="n">bmix</span><span class="p">,</span><span class="w"> </span><span class="n">cmix</span><span class="p">)</span><span class="w"></span>
-<span class="w">       </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:),</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">a_p</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">)),</span><span class="w"> </span><span class="n">b_p</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">)),</span><span class="w"> </span><span class="n">c_p</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">))</span><span class="w"></span>
+<span class="w">       </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:),</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">a_p</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">)),</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">b_p</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">)),</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">c_p</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">))</span><span class="w"></span>
 <span class="w">       </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">amix</span><span class="p">,</span><span class="w"> </span><span class="n">bmix</span><span class="p">,</span><span class="w"> </span><span class="n">cmix</span><span class="w"></span>
 <span class="w">       </span><span class="c">! For simplicity we&#39;ll assume linear mixing</span>
 
@@ -227,14 +234,16 @@
 <span class="w">       </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b_p</span><span class="p">)</span><span class="w"></span>
 <span class="w">       </span><span class="n">cmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="w"> </span><span class="c">! No VT</span>
 <span class="w">    </span><span class="k">end subroutine</span><span class="w"></span>
-<span class="w">    </span><span class="c">! ==========================================================================</span>
+<span class="w">    </span><span class="c">! =====================================================================</span>
 </code></pre></div>
 
 <p></p><div class="alert alert-info" role="alert"><h4>Note</h4><p>Now having all the relevant procedures defined, we add a simple
  <code>setup</code> subroutine to receive from somewhere (an input interpetator routine
  for example) the number of components and the values of their parameters.
  Inside this subroutine the Generic CEoS are setted up, and finally the 
- Generic Cubic EoS Ar subroutine is selected</p></div>
+ Generic Cubic EoS Ar subroutine is selected.
+ </p></div>
+<p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c">! Finally setup the generic cubic model:</span>
 <span class="w">    </span><span class="k">subroutine </span><span class="n">setup</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">a_in</span><span class="p">,</span><span class="w"> </span><span class="n">b_in</span><span class="p">)</span><span class="w"></span>
 <span class="w">       </span><span class="k">use </span><span class="n">yaeos_generic_cubic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">set_functions</span><span class="w"></span>
@@ -263,11 +272,11 @@
       <ul class="list-group">
       <li class="list-group-item">
   <ul class="list-inline">
-    <li><a href='../module/yaeos_thermo_properties.html'>yaeos_thermo_properties</a></li>
-    <li><a href='../module/yaeos_ar_models.html'>yaeos_ar_models</a></li>
     <li><a href='../module/yaeos_constants.html'>yaeos_constants</a></li>
     <li><a href='../module/yaeos_autodiff.html'>yaeos_autodiff</a></li>
+    <li><a href='../module/yaeos_thermo_properties.html'>yaeos_thermo_properties</a></li>
     <li><a href='../module/yaeos_interfaces.html'>yaeos_interfaces</a></li>
+    <li><a href='../module/yaeos_ar_models.html'>yaeos_ar_models</a></li>
   </ul>
       </li>
       <li class="list-group-item">
@@ -277,199 +286,199 @@
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: module~~yaeos_generic_cubic~~UsesGraph Pages: 1 -->
-<svg id="moduleyaeos_generic_cubicUsesGraph" width="641pt" height="88pt"
- viewBox="0.00 0.00 641.00 88.06" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos_generic_cubic~~UsesGraph" class="graph" transform="scale(1.94 1.94) rotate(0) translate(4 167.03)">
+<svg id="moduleyaeos_generic_cubicUsesGraph" width="641pt" height="86pt"
+ viewBox="0.00 0.00 641.00 85.97" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos_generic_cubic~~UsesGraph" class="graph" transform="scale(1.94 1.94) rotate(0) translate(4 162.97)">
 <title>module~~yaeos_generic_cubic~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-167.03 1241,-167.03 1241,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-162.97 1241,-162.97 1241,4 -4,4"/>
 <!-- module~yaeos_generic_cubic -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_node1" class="node">
 <title>module~yaeos_generic_cubic</title>
-<polygon fill="none" stroke="black" points="1237,-95.01 1113,-95.01 1113,-71.01 1237,-71.01 1237,-95.01"/>
-<text text-anchor="middle" x="1175" y="-80.61" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_generic_cubic</text>
+<polygon fill="none" stroke="black" points="1237,-90 1113,-90 1113,-66 1237,-66 1237,-90"/>
+<text text-anchor="middle" x="1175" y="-75.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_generic_cubic</text>
 </g>
-<!-- module~yaeos_thermo_properties -->
+<!-- module~yaeos_interfaces -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_node2" class="node">
-<title>module~yaeos_thermo_properties</title>
-<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node2"><a xlink:href=".././module/yaeos_thermo_properties.html" xlink:title="yaeos_thermo_properties">
-<polygon fill="#337ab7" stroke="#337ab7" points="1077,-95.01 929,-95.01 929,-71.01 1077,-71.01 1077,-95.01"/>
-<text text-anchor="middle" x="1003" y="-80.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_thermo_properties</text>
+<title>module~yaeos_interfaces</title>
+<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node2"><a xlink:href=".././module/yaeos_interfaces.html" xlink:title="yaeos_interfaces">
+<polygon fill="#337ab7" stroke="#337ab7" points="628,-128 525,-128 525,-104 628,-104 628,-128"/>
+<text text-anchor="middle" x="576.5" y="-113.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_interfaces</text>
 </a>
 </g>
 </g>
-<!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_thermo_properties -->
+<!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_interfaces -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge1" class="edge">
-<title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_thermo_properties</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.63,-83.01C1104.35,-83.01 1095.76,-83.01 1087.19,-83.01"/>
-<polygon fill="#000000" stroke="#000000" points="1087.16,-79.51 1077.16,-83.01 1087.16,-86.51 1087.16,-79.51"/>
+<title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_interfaces</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-156C790.23,-150.89 775.35,-160.11 717.5,-156"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M715.5,-156C680.71,-153.53 642.75,-141.82 615.47,-131.71"/>
+<polygon fill="#000000" stroke="#000000" points="616.52,-128.36 605.93,-128.07 614.03,-134.9 616.52,-128.36"/>
 </g>
 <!-- module~yaeos_ar_models -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_node3" class="node">
 <title>module~yaeos_ar_models</title>
 <g id="a_module~~yaeos_generic_cubic~~UsesGraph_node3"><a xlink:href=".././module/yaeos_ar_models.html" xlink:title="yaeos_ar_models">
-<polygon fill="#337ab7" stroke="#337ab7" points="769,-133.01 664,-133.01 664,-109.01 769,-109.01 769,-133.01"/>
-<text text-anchor="middle" x="716.5" y="-118.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_ar_models</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="769,-90 664,-90 664,-66 769,-66 769,-90"/>
+<text text-anchor="middle" x="716.5" y="-75.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_ar_models</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_ar_models -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge2" class="edge">
 <title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_ar_models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1148,-95.07C1093.59,-119.01 963.37,-169.52 850,-161.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-161.01C813.96,-160.77 777.03,-148.2 751.18,-137.22"/>
-<polygon fill="#000000" stroke="#000000" points="752.4,-133.94 741.84,-133.12 749.58,-140.35 752.4,-133.94"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1150.31,-90.13C1097.19,-115.9 964.24,-172.46 850,-156"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-156C803.35,-152.05 760.52,-119.03 736.74,-97.23"/>
+<polygon fill="#000000" stroke="#000000" points="739.1,-94.65 729.43,-90.33 734.29,-99.74 739.1,-94.65"/>
 </g>
-<!-- module~yaeos_interfaces -->
+<!-- module~yaeos_thermo_properties -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_node4" class="node">
-<title>module~yaeos_interfaces</title>
-<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node4"><a xlink:href=".././module/yaeos_interfaces.html" xlink:title="yaeos_interfaces">
-<polygon fill="#337ab7" stroke="#337ab7" points="628,-95.01 525,-95.01 525,-71.01 628,-71.01 628,-95.01"/>
-<text text-anchor="middle" x="576.5" y="-80.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_interfaces</text>
+<title>module~yaeos_thermo_properties</title>
+<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node4"><a xlink:href=".././module/yaeos_thermo_properties.html" xlink:title="yaeos_thermo_properties">
+<polygon fill="#337ab7" stroke="#337ab7" points="1077,-90 929,-90 929,-66 1077,-66 1077,-90"/>
+<text text-anchor="middle" x="1003" y="-75.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_thermo_properties</text>
 </a>
 </g>
 </g>
-<!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_interfaces -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge3" class="edge">
-<title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_interfaces</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-161.01C765.79,-160.42 741.21,-170.26 664,-142.01 639.43,-133.02 615.15,-115.49 598.6,-101.87"/>
-<polygon fill="#000000" stroke="#000000" points="600.58,-98.96 590.68,-95.16 596.05,-104.3 600.58,-98.96"/>
-</g>
-<!-- module~yaeos_constants -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_node5" class="node">
-<title>module~yaeos_constants</title>
-<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node5"><a xlink:href=".././module/yaeos_constants.html" xlink:title="yaeos_constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="230,-76.01 130,-76.01 130,-52.01 230,-52.01 230,-76.01"/>
-<text text-anchor="middle" x="180" y="-61.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_constants</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_constants -->
+<!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_thermo_properties -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge4" class="edge">
-<title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1146.78,-71C1091.71,-47.94 962.72,-0.13 850,-5.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-5.01C790.02,-3.59 775.35,-9.14 717.5,-5.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M715.5,-5.01C515.52,9.25 463.82,-10.42 266,-43.01 255.54,-44.73 244.48,-47.08 233.91,-49.57"/>
-<polygon fill="#000000" stroke="#000000" points="232.85,-46.23 223.97,-52 234.51,-53.03 232.85,-46.23"/>
+<title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_thermo_properties</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.63,-78C1104.35,-78 1095.76,-78 1087.19,-78"/>
+<polygon fill="#000000" stroke="#000000" points="1087.16,-74.5 1077.16,-78 1087.16,-81.5 1087.16,-74.5"/>
 </g>
 <!-- module~yaeos_autodiff -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_node6" class="node">
+<g id="module~~yaeos_generic_cubic~~UsesGraph_node5" class="node">
 <title>module~yaeos_autodiff</title>
-<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node6"><a xlink:href=".././module/yaeos_autodiff.html" xlink:title="yaeos_autodiff">
-<polygon fill="#337ab7" stroke="#337ab7" points="489,-76.01 398,-76.01 398,-52.01 489,-52.01 489,-76.01"/>
-<text text-anchor="middle" x="443.5" y="-61.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_autodiff</text>
+<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node5"><a xlink:href=".././module/yaeos_autodiff.html" xlink:title="yaeos_autodiff">
+<polygon fill="#337ab7" stroke="#337ab7" points="489,-88 398,-88 398,-64 489,-64 489,-88"/>
+<text text-anchor="middle" x="443.5" y="-73.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_autodiff</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_autodiff -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge5" class="edge">
 <title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_autodiff</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-5.01C812.43,-7.55 804.26,-13.68 769,-19.01 684.19,-31.83 663.14,-47.85 577.5,-43.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M575.5,-43.01C550.24,-42.01 522.56,-45.73 499.18,-50.3"/>
-<polygon fill="#000000" stroke="#000000" points="498.19,-46.93 489.1,-52.37 499.6,-53.79 498.19,-46.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1120.2,-65.99C1106.16,-62.96 1091.03,-59.78 1077,-57 957.54,-33.36 926.39,-14.35 805,-24 765.74,-27.12 756.78,-35.2 717.5,-38"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M715.5,-38C640.11,-40.27 553.99,-54.34 499.46,-64.7"/>
+<polygon fill="#000000" stroke="#000000" points="498.47,-61.33 489.32,-66.66 499.8,-68.2 498.47,-61.33"/>
+</g>
+<!-- module~yaeos_constants -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_node6" class="node">
+<title>module~yaeos_constants</title>
+<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node6"><a xlink:href=".././module/yaeos_constants.html" xlink:title="yaeos_constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="230,-88 130,-88 130,-64 230,-64 230,-88"/>
+<text text-anchor="middle" x="180" y="-73.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_generic_cubic&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge3" class="edge">
+<title>module~yaeos_generic_cubic&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M715.5,-156C630.63,-149.97 608.75,-152.01 525,-137 488.6,-130.48 481.44,-117.71 444.5,-116"/>
+</g>
+<!-- module~yaeos_interfaces&#45;&gt;module~yaeos_autodiff -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge6" class="edge">
+<title>module~yaeos_interfaces&#45;&gt;module~yaeos_autodiff</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M536.2,-104C522.98,-99.96 508.05,-95.4 494.14,-91.16"/>
+<polygon fill="#000000" stroke="#000000" points="494.82,-87.7 484.23,-88.13 492.77,-94.4 494.82,-87.7"/>
+</g>
+<!-- module~yaeos_interfaces&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge7" class="edge">
+<title>module~yaeos_interfaces&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M524.8,-116C500.51,-116 471,-116 444.5,-116"/>
+</g>
+<!-- module~yaeos_ar_models&#45;&gt;module~yaeos_interfaces -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge9" class="edge">
+<title>module~yaeos_ar_models&#45;&gt;module~yaeos_interfaces</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M671.84,-90.02C658.87,-93.59 644.53,-97.54 631.01,-101.26"/>
+<polygon fill="#000000" stroke="#000000" points="630.07,-97.9 621.35,-103.92 631.92,-104.64 630.07,-97.9"/>
+</g>
+<!-- module~yaeos_ar_models&#45;&gt;module~yaeos_autodiff -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge8" class="edge">
+<title>module~yaeos_ar_models&#45;&gt;module~yaeos_autodiff</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M663.68,-75.24C637.77,-74.37 605.95,-74.08 577.5,-76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M575.5,-76C550.5,-77.69 522.75,-77.93 499.25,-77.64"/>
+<polygon fill="#000000" stroke="#000000" points="499.17,-74.14 489.12,-77.49 499.06,-81.14 499.17,-74.14"/>
+</g>
+<!-- module~yaeos_ar_models&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge10" class="edge">
+<title>module~yaeos_ar_models&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M575.5,-76C514.76,-80.11 505.38,-116 444.5,-116"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M442.5,-116C363.6,-116 343.7,-110.72 266,-97 255.79,-95.2 244.99,-92.87 234.63,-90.41"/>
+<polygon fill="#000000" stroke="#000000" points="235.42,-87 224.88,-88.04 233.76,-93.8 235.42,-87"/>
 </g>
 <!-- module~yaeos_thermo_properties&#45;&gt;module~yaeos_interfaces -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge9" class="edge">
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge12" class="edge">
 <title>module~yaeos_thermo_properties&#45;&gt;module~yaeos_interfaces</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M715.5,-81.01C690.2,-82.93 662.23,-83.6 638.11,-83.73"/>
-<polygon fill="#000000" stroke="#000000" points="638.03,-80.23 628.04,-83.76 638.04,-87.23 638.03,-80.23"/>
-</g>
-<!-- module~yaeos_thermo_properties&#45;&gt;module~yaeos_constants -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge7" class="edge">
-<title>module~yaeos_thermo_properties&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M966.89,-70.98C936.41,-61.21 890.87,-48.23 850,-43.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-43.01C788.08,-35.36 777.76,-9.31 717.5,-5.01"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M947.34,-90.04C930.04,-93.45 910.79,-96.82 893,-99 804.94,-109.8 702.21,-113.74 638.5,-115.18"/>
+<polygon fill="#000000" stroke="#000000" points="638.16,-111.68 628.23,-115.39 638.3,-118.68 638.16,-111.68"/>
 </g>
 <!-- module~yaeos_thermo_properties&#45;&gt;module~yaeos_autodiff -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge8" class="edge">
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge14" class="edge">
 <title>module~yaeos_thermo_properties&#45;&gt;module~yaeos_autodiff</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-43.01C788.08,-35.36 777.74,-76.44 717.5,-81.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M715.5,-81.01C652.07,-85.82 641.01,-46.6 577.5,-43.01"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-38C791.14,-26.58 775.35,-33.87 717.5,-38"/>
+</g>
+<!-- module~yaeos_thermo_properties&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge13" class="edge">
+<title>module~yaeos_thermo_properties&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M961.66,-65.99C931.2,-57.27 888.26,-45.69 850,-38"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M848,-38C728.98,-14.09 698.9,0 577.5,0 577.5,0 577.5,0 442.5,0 357.62,0 263.18,-37.38 214.34,-59.71"/>
+<polygon fill="#000000" stroke="#000000" points="212.79,-56.57 205.19,-63.96 215.74,-62.92 212.79,-56.57"/>
 </g>
 <!-- module~yaeos_models -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_node7" class="node">
 <title>module~yaeos_models</title>
 <g id="a_module~~yaeos_generic_cubic~~UsesGraph_node7"><a xlink:href=".././module/yaeos_models.html" xlink:title="yaeos_models">
-<polygon fill="#337ab7" stroke="#337ab7" points="893,-114.01 805,-114.01 805,-90.01 893,-90.01 893,-114.01"/>
-<text text-anchor="middle" x="849" y="-99.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="893,-90 805,-90 805,-66 893,-66 893,-90"/>
+<text text-anchor="middle" x="849" y="-75.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_thermo_properties&#45;&gt;module~yaeos_models -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge6" class="edge">
-<title>module~yaeos_thermo_properties&#45;&gt;module~yaeos_models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M928.67,-92.18C920.13,-93.25 911.55,-94.32 903.35,-95.34"/>
-<polygon fill="#000000" stroke="#000000" points="902.69,-91.9 893.2,-96.61 903.56,-98.84 902.69,-91.9"/>
-</g>
-<!-- module~yaeos_ar_models&#45;&gt;module~yaeos_interfaces -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge12" class="edge">
-<title>module~yaeos_ar_models&#45;&gt;module~yaeos_interfaces</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M671.84,-108.99C658.87,-105.42 644.53,-101.47 631.01,-97.75"/>
-<polygon fill="#000000" stroke="#000000" points="631.92,-94.37 621.35,-95.09 630.07,-101.12 631.92,-94.37"/>
-</g>
-<!-- module~yaeos_ar_models&#45;&gt;module~yaeos_constants -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge11" class="edge">
-<title>module~yaeos_ar_models&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M663.8,-121.22C609.26,-121.47 520.83,-122.01 444.5,-123.01"/>
-</g>
-<!-- module~yaeos_ar_models&#45;&gt;module~yaeos_autodiff -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge10" class="edge">
-<title>module~yaeos_ar_models&#45;&gt;module~yaeos_autodiff</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M688.24,-108.99C680.17,-104.98 671.5,-100.19 664,-95.01 646.14,-82.67 646.49,-73.37 628,-62.01 607.57,-49.46 601.44,-44.36 577.5,-43.01"/>
-</g>
-<!-- module~yaeos_interfaces&#45;&gt;module~yaeos_constants -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge14" class="edge">
-<title>module~yaeos_interfaces&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M548.58,-95.08C522.57,-105.81 481.73,-120.23 444.5,-123.01"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M442.5,-123.01C361.35,-129.08 269.07,-99.34 218.71,-79.87"/>
-<polygon fill="#000000" stroke="#000000" points="219.8,-76.54 209.22,-76.13 217.24,-83.05 219.8,-76.54"/>
-</g>
-<!-- module~yaeos_interfaces&#45;&gt;module~yaeos_autodiff -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge13" class="edge">
-<title>module~yaeos_interfaces&#45;&gt;module~yaeos_autodiff</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M524.85,-75.67C516.37,-74.43 507.53,-73.15 498.95,-71.91"/>
-<polygon fill="#000000" stroke="#000000" points="499.44,-68.44 489.04,-70.47 498.43,-75.37 499.44,-68.44"/>
-</g>
-<!-- iso_fortran_env -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_node8" class="node">
-<title>iso_fortran_env</title>
-<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node8"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-76.01 0,-76.01 0,-52.01 94,-52.01 94,-76.01"/>
-<text text-anchor="middle" x="47" y="-61.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos_constants&#45;&gt;iso_fortran_env -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge15" class="edge">
-<title>module~yaeos_constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.85,-64.01C121.59,-64.01 112.96,-64.01 104.53,-64.01"/>
-<polygon fill="#000000" stroke="#000000" points="104.39,-60.51 94.39,-64.01 104.39,-67.51 104.39,-60.51"/>
+<title>module~yaeos_thermo_properties&#45;&gt;module~yaeos_models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M928.67,-78C920.13,-78 911.55,-78 903.35,-78"/>
+<polygon fill="#000000" stroke="#000000" points="903.2,-74.5 893.2,-78 903.2,-81.5 903.2,-74.5"/>
 </g>
 <!-- module~hyperdual_mod -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_node9" class="node">
+<g id="module~~yaeos_generic_cubic~~UsesGraph_node8" class="node">
 <title>module~hyperdual_mod</title>
-<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node9"><a xlink:href=".././module/hyperdual_mod.html" xlink:title="hyperdual_mod">
-<polygon fill="#337ab7" stroke="#337ab7" points="362,-76.01 266,-76.01 266,-52.01 362,-52.01 362,-76.01"/>
-<text text-anchor="middle" x="314" y="-61.61" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
+<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node8"><a xlink:href=".././module/hyperdual_mod.html" xlink:title="hyperdual_mod">
+<polygon fill="#337ab7" stroke="#337ab7" points="362,-88 266,-88 266,-64 362,-64 362,-88"/>
+<text text-anchor="middle" x="314" y="-73.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_autodiff&#45;&gt;module~hyperdual_mod -->
-<g id="module~~yaeos_generic_cubic~~UsesGraph_edge16" class="edge">
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge15" class="edge">
 <title>module~yaeos_autodiff&#45;&gt;module~hyperdual_mod</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M397.91,-64.01C389.74,-64.01 381.11,-64.01 372.62,-64.01"/>
-<polygon fill="#000000" stroke="#000000" points="372.39,-60.51 362.39,-64.01 372.39,-67.51 372.39,-60.51"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M397.91,-76C389.74,-76 381.11,-76 372.62,-76"/>
+<polygon fill="#000000" stroke="#000000" points="372.39,-72.5 362.39,-76 372.39,-79.5 372.39,-72.5"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_node9" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~yaeos_generic_cubic~~UsesGraph_node9"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-88 0,-88 0,-64 94,-64 94,-88"/>
+<text text-anchor="middle" x="47" y="-73.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_constants&#45;&gt;iso_fortran_env -->
+<g id="module~~yaeos_generic_cubic~~UsesGraph_edge16" class="edge">
+<title>module~yaeos_constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.85,-76C121.59,-76 112.96,-76 104.53,-76"/>
+<polygon fill="#000000" stroke="#000000" points="104.39,-72.5 94.39,-76 104.39,-79.5 104.39,-72.5"/>
 </g>
 <!-- module~yaeos_models&#45;&gt;module~yaeos_ar_models -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge17" class="edge">
 <title>module~yaeos_models&#45;&gt;module~yaeos_ar_models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M804.91,-108.29C796.69,-109.48 787.94,-110.76 779.27,-112.02"/>
-<polygon fill="#000000" stroke="#000000" points="778.56,-108.58 769.17,-113.49 779.57,-115.51 778.56,-108.58"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M804.91,-78C796.69,-78 787.94,-78 779.27,-78"/>
+<polygon fill="#000000" stroke="#000000" points="779.17,-74.5 769.17,-78 779.17,-81.5 779.17,-74.5"/>
 </g>
 <!-- module~hyperdual_mod&#45;&gt;module~yaeos_constants -->
 <g id="module~~yaeos_generic_cubic~~UsesGraph_edge18" class="edge">
 <title>module~hyperdual_mod&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M265.72,-64.01C257.51,-64.01 248.89,-64.01 240.41,-64.01"/>
-<polygon fill="#000000" stroke="#000000" points="240.18,-60.51 230.18,-64.01 240.18,-67.51 240.18,-60.51"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M265.72,-76C257.51,-76 248.89,-76 240.41,-76"/>
+<polygon fill="#000000" stroke="#000000" points="240.18,-72.5 230.18,-76 240.18,-79.5 240.18,-72.5"/>
 </g>
 </g>
 </svg>
@@ -894,7 +903,7 @@
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2023-08-08 20:07            </p>
+ on 2023-08-22 23:05            </p>
         </div>
       </div>
       <br>

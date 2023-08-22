@@ -10,32 +10,31 @@ module legacy_ar_models
 
    ! Model settings
    integer :: thermo_model !! Which thermodynamic model to use
-   integer :: tdep !! Temperature dependance of kij
-   integer :: mixing_rule !! What mixing rule to use
-   integer :: nc !! Number of components
+   integer :: tdep         !! Temperature dependance of kij
+   integer :: mixing_rule  !! What mixing rule to use
+   integer :: nc           !! Number of components
 
    ! Mole fractions
    real(pr), allocatable :: z(:) !! Mole fractions vector
-   real(pr), allocatable :: moles(:)
 
    ! ==========================================================================
    !  Cubic EoS Possible parameters
    ! --------------------------------------------------------------------------
    ! Critical constants
-   real(pr), allocatable :: tc(:) !! Critical temperature [K]
-   real(pr), allocatable :: pc(:) !! Critical pressure [bar]
-   real(pr), allocatable :: dc(:) !! Critical density [mol/L]
-   real(pr), allocatable :: w(:)  !! Acentric factor
+   real(pr), allocatable :: tc(:) !| Critical temperature [K]
+   real(pr), allocatable :: pc(:) !| Critical pressure [bar]
+   real(pr), allocatable :: dc(:) !| Critical density [mol/L]
+   real(pr), allocatable :: w(:)  !| Acentric factor
 
    ! Model parameters
-   real(pr), allocatable :: ac(:) !! Critical attractive parameter [bar (L/mol)^2]
-   real(pr), allocatable :: b(:)  !! repulsive parameter [L]
-   real(pr), allocatable :: del1(:) !! $$\delta_1$$ parameter
-   real(pr), allocatable :: k(:) !! Attractive parameter constant
+   real(pr), allocatable :: ac(:)   !| Critical attractive parameter [bar (L/mol)^2]
+   real(pr), allocatable :: b(:)    !| repulsive parameter [L]
+   real(pr), allocatable :: del1(:) !| $$\delta_1$$ parameter
+   real(pr), allocatable :: k(:)    !| Attractive parameter constant
 
    ! Classic VdW mixing rules parameters
-   real(pr), allocatable :: kij(:, :) !! Attractive BIP
-   real(pr), allocatable :: lij(:, :) !! Repulsive BIP
+   real(pr), allocatable :: kij(:, :) !| Attractive BIP
+   real(pr), allocatable :: lij(:, :) !| Repulsive BIP
    real(pr), allocatable :: bij(:, :)
 
    ! T dependant mixing rule parameters
@@ -109,6 +108,8 @@ contains
         real(pr) :: zc(nc), oma(nc), omb(nc)
         real(pr) :: vceos(nc), al, be, ga(nc)
         real(pr) :: RTc(nc)
+
+        ar_fun => ar_srkpr
 
         del1 = 1 + sqrt(2.0_pr)
         z = moles_in
@@ -316,7 +317,7 @@ contains
       integer :: nt !! Temperature derivatives
 
       nd = 2
-      nt = 2
+      nt = 1
       call HelmSRKPR(size(z), nd, nt, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
    end subroutine
    
@@ -338,7 +339,7 @@ contains
       integer :: nt !! Temperature derivatives
 
       nd = 2
-      nt = 2
+      nt = 1
       call HelmRKPR(size(z), nd, nt, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
    end subroutine
    
@@ -534,7 +535,7 @@ contains
          end do
       end if
    end subroutine HelmRKPR
-   
+
    subroutine ArVnder(nc, NDER, NTEMP, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
       integer, intent(in) :: nc
       integer, intent(in) :: nder ! Get compositional derivatives
