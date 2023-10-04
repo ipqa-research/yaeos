@@ -771,9 +771,9 @@ contains
 
       real(pr), intent(out) :: v !! Volume [L]
       real(pr), intent(out) :: PHILOG(nc) !! ln(phi*p) vector
-      real(pr), intent(out) :: DLPHIT(nc) !! ln(phi) Temp derivative
-      real(pr), intent(out) :: DLPHIP(nc) !! ln(phi) Presssure derivative
-      real(pr), intent(out) :: FUGN(nc, nc) !! ln(phi) compositional derivative
+      real(pr), optional, intent(out) :: DLPHIT(nc) !! ln(phi) Temp derivative
+      real(pr), optional, intent(out) :: DLPHIP(nc) !! ln(phi) Presssure derivative
+      real(pr), optional, intent(out) :: FUGN(nc, nc) !! ln(phi) compositional derivative
 
       real(pr) :: ar, arv, artv, arv2
       real(pr) :: RT, Z, dpv, dpdt
@@ -804,13 +804,15 @@ contains
       do I = 1, NC
          PHILOG(I) = -log(Z) + Arn(I)/RT
          DPDN(I) = RT/V - ArVn(I)
-         DLPHIP(I) = -DPDN(I)/DPV/RT - 1.D0/P
+         if (present(dlphip)) DLPHIP(I) = -DPDN(I)/DPV/RT - 1.D0/P
          if (NTEMP .ne. 0) then
-            DLPHIT(I) = (ArTn(I) - Arn(I)/T)/RT + DPDN(I)*DPDT/DPV/RT + 1.D0/T
+            if (present(dlphit)) then
+               DLPHIT(I) = (ArTn(I) - Arn(I)/T)/RT + DPDN(I)*DPDT/DPV/RT + 1.D0/T
+            end if
          end if
       end do
 
-      if (NDER .ge. 2) then
+      if (present(fugn)) then
          do I = 1, NC
             do K = I, NC
                FUGN(I, K) = 1.D0/TOTN + (Arn2(I, K) + DPDN(I)*DPDN(K)/DPV)/RT
