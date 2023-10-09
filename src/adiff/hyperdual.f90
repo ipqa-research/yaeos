@@ -17,6 +17,7 @@ module hyperdual_mod
   ! This leads to the fact, that the Taylor series of a function with
   ! hyperdual arguments can be truncated _exactly_ after the second
   ! derivative term:
+  !
   ! \f[
   !    f(\mathbf{x} + h_1 \varepsilon_1 + h_2 \varepsilon_2
   !      + h_1 h_2 \varepsilon_1 \varepsilon_2)
@@ -24,6 +25,7 @@ module hyperdual_mod
   !      + h_2 f'(\mathbf{x}) \varepsilon_2
   !      + h_1 h_2 f''(\mathbf{x}) \varepsilon_1 \varepsilon_2
   ! \f]
+  !
   ! Because there is _no truncation error_, all first and second order
   ! derivatives can be obtained _exactly_, regardless of the step size ''
   ! \f$h_1\f$ and \f$h_2\f$.
@@ -59,6 +61,7 @@ module hyperdual_mod
   ! By using the Taylor expansion of the function \f$f(\mathbf{x})\f$
   ! one gets computation priniple for functions with hyperdual
   ! arguments from
+  !
   ! \f[
   !    f(\mathbf{x}) = f(x_0) + x_1 f'(x_0) \varepsilon_1
   !    + x_2 f'(x_0) \varepsilon_2 + \big( x_{12} f'(x_0)
@@ -83,14 +86,14 @@ module hyperdual_mod
   use yaeos_constants, only: pr
   implicit none
 
-  type hyperdual
+  type, bind(c) :: hyperdual
   !-| Derived type for hyperdual numbers
   !
   !  Hyperdual numbers are represented by the tuple \f$\mathbf{f} =
   !  [f_0, f_1, f_2, f_{12}] = f_0 + f_1 \varepsilon_1
   !  + f_2 \varepsilon_2 + f_{12} \varepsilon_1 \varepsilon_2 \f$.
   !  Calculations specificaions are defined in module hyperdual_mod.
-    sequence
+    ! sequence
     real(pr) :: f0 = 0  !| real part of the hyperdual number
     real(pr) :: f1 = 0  !| \f$\varepsilon_1\f$-part of  the hyperdual number
     real(pr) :: f2 = 0  !| \f$\varepsilon_2\f$-part of  the hyperdual number
@@ -553,7 +556,7 @@ module hyperdual_mod
       type (hyperdual), intent(in) :: v1, v2
       type (hyperdual)             :: v3
 
-      v3 = v1 * v2**(-1.0_pr)
+      v3 = v1 * v2**(-1)
     end function DivideHyperDualHyperDual
 
     elemental function DivideHyperDualReal(v1,v2) result (v3)
