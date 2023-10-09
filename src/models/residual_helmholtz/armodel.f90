@@ -44,7 +44,7 @@ module yaeos_ar_models
 
    use yaeos_constants, only: pr
    use yaeos_autodiff
-   use yaeos_interfaces, only: dual_property
+   use yaeos_interfaces, only: dual_property, adiff
 
    implicit none
 
@@ -52,6 +52,21 @@ module yaeos_ar_models
    public :: set_ar_function, residual_helmholtz, ar_fun
 
    procedure(dual_property), pointer :: ar_fun
+
+   type, abstract :: ArModel
+   contains
+      procedure(absAr), deferred :: Ar
+   end type
+
+   abstract interface
+      pure subroutine absAr(model, z, v, t, property)
+         import adiff
+         import ArModel
+         class(ArModel), intent(in) :: model
+         type(adiff), intent(in) :: z(:), v, t
+         type(adiff), intent(out) :: property
+      end subroutine
+   end interface
 
 contains
    ! ===========================================================================
