@@ -552,6 +552,7 @@ contains
 
       call check()
       vinit => cubic_v0
+
       call ar_fun(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
    end subroutine ArVnder
    ! ==========================================================================
