@@ -7,8 +7,8 @@ module yaeos_thermo_properties
    ! The approach presented by Michelsen and Møllerup.
    use yaeos_constants, only: pr, R
    use yaeos_models, only: residual_helmholtz, ar_fun
-   use yaeos_autodiff
    use yaeos_interfaces, only: volume_initalizer
+   use hyperdual_mod
    implicit none
 
    private
@@ -66,22 +66,25 @@ contains
       real(pr), intent(in)  :: t              !| Temperature
       real(pr), intent(out) :: lnphi(size(z)) !| Fugacity coefficent
 
-      real(pr) :: ar, dardv, dardn(size(z))
-      real(pr) :: p, compressibility
-      
-      type(hyperdual) :: z_d(size(z)), v_d, t_d, ar_d, rt
+      real(pr) :: ar, dardv, dardn(size(z))!, dardn2(size(z), size(z))
+      real(pr) :: p, compressibility, rt
+
+      type(hyperdual) :: z_d(size(z)), v_d, t_d, ar_d, rt_d
 
       integer :: i
       v_d = v
       v_d%f1 = 1
       t_d = t
       z_d = z
-      rt = R*t_d
+      rt = R*t
 
       call ar_fun(z_d, v_d, t_d, ar_d)
+
       dardv = ar_d%f1
-      compressibility = (- dardv + sum(z) / v) * v / RT%f0
+      p = -dardv + r*t/v
+      compressibility = p * v / (rt)
       
+      v_d = v
       do i=2,size(z),2
          z_d = z
          z_d(i-1)%f1 = 1
@@ -91,14 +94,14 @@ contains
          dardn(i) = ar_d%f2
       end do
 
-      if (mod(size(z), 2) /= 0.0_pr) then
+      if (mod(size(z), 2) /= 0) then
          z_d = z
          z_d(i-1)%f1 = 1
          call ar_fun(z_d, v_d, t_d, ar_d)
          dardn(i-1) = ar_d%f1
       end if
 
-      lnphi = dardn(:size(z)) - log(compressibility)
+      lnphi = dardn /(rt) - log(compressibility)
    end subroutine
 
    recursive subroutine get_volume(z, p, t, v, root, v0)
