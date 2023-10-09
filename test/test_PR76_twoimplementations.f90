@@ -157,7 +157,7 @@ program test_pr76_two
     use triangular_matrix, only: matrix_to_vector
     implicit none
     
-    integer, parameter :: evals=100
+    integer, parameter :: evals=1000
     integer :: i, ncomp
 
     real(pr) :: et, st
@@ -168,7 +168,7 @@ program test_pr76_two
 
     print *, "n PR76 PR76err dirtyPR76 dirtyPR76err LPR76 LPR76err"
 
-    do n=1,50
+    do n=1,30
         call bench("PR76", time_pr, desv_pr)
         call bench("dirtyPR76", time_dpr, desv_dpr)
         call bench("leg_PR76", time_lpr, desv_lpr)

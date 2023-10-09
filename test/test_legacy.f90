@@ -23,20 +23,13 @@ program main
     kij = 0
     lij = 0
 
-    print *, "params", ac, b, wmod, k
-    
     v = 1.0
     t = 150
     
-    call cpu_time(st)
-    do i=1,10000
-        call ArVnder(n, 1, 1, z, v, t, ar, arv, artv, arv2, arn, arvn, artn, arn2)
-    end do
-    call cpu_time(et)
+    call ArVnder(n, 2, 1, z, v, t, ar, arv, artv, arv2, arn, arvn, artn, arn2)
 
-    print *, "Ar_LEG: ", ar / (r*t)
-    print *, "dAr_LEG", arn / (r*t), arv/(r*t)
-    print *, (et-st)/10000 * 1e6
+    print *, "Ar_LEG: ", ar
+    print *, "dAr_LEG", arn, arv
 
     p = 1
     t = 150

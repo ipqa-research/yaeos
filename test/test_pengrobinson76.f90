@@ -38,10 +38,15 @@ program main
     print *, "Ar:  ", ar
     print *, "dAr: ", dar
 
-    if (abs(dar(1) - -1.2826493523830327) > 1e-5) call exit(1)
-    if (abs(dar(2) - -1.6345889891864140) > 1e-5) call exit(1)
-    if (abs(dar(3) - 0.73594494470211513) > 1e-5) call exit(1)
-    if (abs(dar(4) - 7.3893197047816229e-003) > 1e-5) call exit(1)
+    if (abs(dar(1) - -15.996828189310289_pr     ) > 1e-5) call exit(1)
+    if (abs(dar(2) - -20.386116573148119_pr     ) > 1e-5) call exit(1)
+    if (abs(dar(3) - 9.17849045440092760_pr     ) > 1e-5) call exit(1)
+    if (abs(dar(4) - 2.6218507334872965e-002_pr ) > 1e-5) call exit(1)
+
+    ! if (abs(dar(1) - -1.2826493523830327      ) > 1e-5) call exit(1)
+    ! if (abs(dar(2) - -1.6345889891864140      ) > 1e-5) call exit(1)
+    ! if (abs(dar(3) - 0.73594494470211513      ) > 1e-5) call exit(1)
+    ! if (abs(dar(4) - 7.3893197047816229e-003  ) > 1e-5) call exit(1)
     
 
 end program main
