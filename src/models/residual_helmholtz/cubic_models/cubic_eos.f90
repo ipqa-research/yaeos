@@ -105,9 +105,9 @@ module yaeos_generic_cubic
    !       use yaeos_ar_models, only: set_ar_function
    !       integer, intent(in) :: n
    !       real(pr), intent(in) :: a_in(n), b_in(n)
-   ! 
+   !
    !       a = a_in; b = b_in ! Setup the model's parameters
-   !       
+   !
    !       call set_functions(& ! Setup the generic cubic functions
    !          a_parameter, b_parameter, & ! a and b subroutines
    !          no_parameter, no_parameter, no_parameter, &  ! null delta1, delta2 and c
@@ -201,7 +201,7 @@ contains
             -sum(z) * log(1.0_pr - b_v) &
             - a/(R*t*b)*1.0_pr/(del1 - del2) & 
             * log((1.0_pr + del1 * b_v) / (1.0_pr + del2 * b_v)) &
-      ) ! * R * t
+      ) * R * t
    end subroutine
 
    pure function v0(z, p, t)
