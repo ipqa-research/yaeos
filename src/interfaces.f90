@@ -11,6 +11,7 @@ module yaeos_interfaces
    public :: abs_cubic_prop_mix
    public :: pures_property
    public :: volume_initalizer
+   public :: adiff
 
    abstract interface
       pure subroutine dual_property(z, v, t, property)
