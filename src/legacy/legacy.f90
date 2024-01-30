@@ -5,7 +5,7 @@ module legacy_ar_models
    !! this should be later adapted into a simple oop system where an eos object
    !! stores the relevant parameters (or some functional oriented approach)
    use yaeos_constants, only: pr, R
-   use ar_interface, only: ar_fun, vinit, check
+   use ar_interface, only: ar_fun, vinit
    implicit none
 
    ! Model settings
@@ -42,7 +42,6 @@ module legacy_ar_models
    ! ==========================================================================
 
 contains
-
    ! ==========================================================================
    !  Initializer routines
    ! --------------------------------------------------------------------------
@@ -387,17 +386,6 @@ contains
          call DandTnder(NT, nc, T, rn, D, dDi, dDiT, dDij, dDdT, dDdT2)
       end if
 
-      ! b_v = Bmix/V
-      ! a = D
-
-      ! ar = (&
-      !       - totn * log(1.0_pr - b_v) &
-      !       - a/(R*t*bmix)*1.0_pr/(d1 - d2) & 
-      !       * log((1.0_pr + d1 * b_v) / (1.0_pr + d2 * b_v)) &
-      ! ) * R * t
-
-      ! return
-
       ! The f's and g's used here are for Ar, not F (reduced Ar)
       ! This requires to multiply by R all g, f and its derivatives as defined by Mollerup
       f = log((V + D1*Bmix)/(V + D2*Bmix))/Bmix/(D1 - D2)
@@ -550,7 +538,6 @@ contains
       real(pr), dimension(size(z)), intent(out) :: Arn, ArVn, ArTn
       real(pr), intent(out) :: Arn2(size(z),size(z))
 
-      call check()
       vinit => cubic_v0
 
       call ar_fun(z, v, t, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
@@ -602,8 +589,6 @@ contains
          do i = 1, nc
             Kij(:i - 1, i) = Kinf(:i - 1, i) + Kij0(:i - 1, i)*exp(-T/Tstar(:i - 1, i))
          end do
-      else
-         ! Kij = Kij0
       end if
 
       do i = 1, nc
@@ -751,7 +736,13 @@ contains
       real(pr) :: dbi(nc), dbij(nc,nc)
       call bnder(nc, z, cubic_v0, dBi, dBij)
    end function
-
+end module
+module legacy_thermo_properties
+   use yaeos_constants, only: R, pr
+   use legacy_ar_models, only: ArVnder, vinit
+   implicit none
+contains
+   
    subroutine TERMO(nc, MTYP, INDIC, T, P, rn, V, PHILOG, DLPHIP, DLPHIT, FUGN)
       !  MTYP      TYPE OF ROOT DESIRED (-1 vapor, 1 liquid, 0 lower Gibbs energy phase)
       !  rn        mixture mole numbers                        (input)
@@ -824,15 +815,16 @@ contains
    end subroutine TERMO
 
    subroutine zTVTERMO(nc, INDIC, T, rn, V, P, DPV, PHILOG, DLPHIP, DLPHIT, FUGN)
-      !  rn        mixture mole numbers                       (input)
-      !  t         temperature (k)                            (input)
-      !  v         volume      (L)                            (input)
-      !  p         pressure    (bar)                          (output)
-      !  PHILOG    vector of ln(phi(i)*P)                     (output)  0 < INDIC < 5
-      !  DLPHIT    t-derivative of ln(phi(i)) (const P, n)    (output)  0 < INDIC = 2 or 4
-      !  DLPHIP    P-derivative of ln(phi(i)) (const T, n)    (output)  0 < INDIC < 5
-      !  FUGN      comp-derivative of ln(phi(i)) (const t & P)(output)  2 < INDIC
-      !  -------------------------------------------------------------------------
+      !! Calculation of lnphi*P and derivatives
+      !!  rn        mixture mole numbers                       (input)
+      !!  t         temperature (k)                            (input)
+      !!  v         volume      (L)                            (input)
+      !!  p         pressure    (bar)                          (output)
+      !!  PHILOG    vector of ln(phi(i)*P)                     (output)  0 < INDIC < 5
+      !!  DLPHIT    t-derivative of ln(phi(i)) (const P, n)    (output)  0 < INDIC = 2 or 4
+      !!  DLPHIP    P-derivative of ln(phi(i)) (const T, n)    (output)  0 < INDIC < 5
+      !!  FUGN      comp-derivative of ln(phi(i)) (const t & P)(output)  2 < INDIC
+      !!  -------------------------------------------------------------------------
       implicit none
 
       integer, intent(in) :: nc, indic
@@ -886,6 +878,7 @@ contains
    end subroutine zTVTERMO
 
    subroutine PUREFUG_CALC(nc, icomp, T, P, V, phi)
+      !! Fugacity of a pure component
       integer, intent(in) :: nc
       integer, intent(in) :: icomp
       real(pr), intent(in) :: T, P, V
@@ -940,9 +933,7 @@ contains
          ! IDEAL GAS ESTIMATE
          ZETA = min(.5D0, CPV*P/(TOTN*R*T))
       end if
-
   100 continue
-
       DEL = 1
       pcalc = 2*p
 
@@ -986,4 +977,6 @@ contains
       end if
    end subroutine vcalc
    ! ==========================================================================
+
+
 end module
