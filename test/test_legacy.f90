@@ -43,15 +43,6 @@ contains
 
       call ArVnder(n, 2, 1, z, v, t, ar, arv, artv, arv2, arn, arvn, artn, arn2)
 
-      print *, "Ar:     ", ar
-      print *, "dArdV:  ", arv
-      print *, "dArdTV: ", artv
-      print *, "dArdV2: ", arv2
-      print *, "dArdn:  ", arn
-      print *, "dArdvn: ", arvn
-      print *, "dArdtn: ", artn
-      print *, "dArdn2: ", arn2
-
       call check(error, abs(ar - -9.8908394285700236) < 1e-5)
       call check(error, abs(arv - 9.1784903035682817) < 1e-5)
       call check(error, abs(artv - -2.5223831049344479E-002) < 1e-5)
@@ -97,6 +88,5 @@ contains
       print *, "FUGN:   ", lnphi_nn
       
       call check(error, maxval(abs(lnphi_p - [1.7282684886888058, -2.3291258019214967])) < 1e-5)
-      ! FUGN:     -1.7080029766043285       0.73200131724060458       0.73200131724060458      -0.31371486805441484   
    end subroutine
 end module

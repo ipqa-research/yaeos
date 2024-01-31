@@ -10,6 +10,9 @@ module yaeos_models_ar_genericcubic
         class(CubicMixRule), allocatable :: mixrule
         class(AlphaFunction), allocatable :: alpha
         real(pr), allocatable :: ac(:), b(:), del1(:), del2(:)
+    contains
+        procedure :: residual_helmholtz => GenericCubic_Ar
+        procedure :: get_v0 => v0
     end type
 
     type, abstract :: AlphaFunction
@@ -149,4 +152,14 @@ contains
       if (present(ArTV)) ArTV = -TOTN*gv - dDdT*fV
       if (present(ArT2)) ArT2 = -dDdT2*f
    end subroutine GenericCubic_Ar
+
+   function v0(self, n, p, t)
+    class(CubicEoS), intent(in) :: self
+    real(pr), intent(in) :: n(:), p, t
+    real(pr) :: v0
+
+    real(pr) :: dbi(size(n)), dbij(size(n), size(n))
+    call self%mixrule%Bmix(n, self%b, v0, dbi, dbij)
+   end function
+
 end module

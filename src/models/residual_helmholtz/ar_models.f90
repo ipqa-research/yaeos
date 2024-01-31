@@ -7,34 +7,36 @@ module yaeos_models_ar
         !! Abstract residual Helmholtz model.
         integer :: id
         character(len=:), allocatable :: name
-        procedure(abs_residual_helmholtz), pointer :: residual_helmholtz => NULL()
+    contains
+        procedure(abs_residual_helmholtz), deferred :: residual_helmholtz
             !! Method to calculate residual helmholtz energy and derivatives.
-        procedure(abs_volume_initializer), pointer :: get_v0 => NULL()
+        procedure(abs_volume_initializer), deferred :: get_v0
             !! Volume initializer
     end type
 
     abstract interface
-       pure subroutine abs_residual_helmholtz( &
-             self, n, v, t, &
-             ar, dardn, dardv, dardt, &
-             dardn2, darnv, dardnt, dardvt, dardv2, dardt2 &
-          )
-          import pr
-          import ArModel
-          class(ArModel), intent(in) :: self
-          real(pr), intent(in) :: n(:), v, t
-          real(pr), optional, intent(out) :: ar, dardn(size(n)), dardv, dardt
-          real(pr), optional, intent(out) :: dardn2(size(n), size(n)), darnv(size(n)), dardnt(size(n))
-          real(pr), optional, intent(out) :: dardvt, dardv2, dardt2
-       end subroutine
+        subroutine abs_residual_helmholtz(&
+            self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
+        )
+         !! Residual Helmholtz model generic interface
+         import ArModel, pr
+         class(ArModel), intent(in) :: self
+         real(pr), intent(in) :: n(:)
+         real(pr), intent(in) :: v, t
+         real(pr), optional, intent(out) :: Ar, ArV, ArT, ArT2, ArTV, ArV2
+         real(pr), optional, dimension(size(n)), intent(out) :: Arn, ArVn, ArTn
+         real(pr), optional, intent(out) :: Arn2(size(n), size(n))
+      end subroutine
 
-       pure function abs_volume_initializer(self, n, p, t) result(v)
-           import pr
-           import ArModel
-           class(ArModel), intent(in) :: self
-           real(pr), intent(in) :: n(:)
-           real(pr), intent(in) :: p, t
-           real(pr) :: v
-       end function
-    end interface
+      function abs_volume_initializer(self, n, p, t)
+         !! Initialization of volume
+         import ArModel, pr
+         class(ArModel), intent(in) :: self
+         real(pr), intent(in) :: n(:)
+         real(pr), intent(in) :: p
+         real(pr), intent(in) :: t
+         real(pr) :: abs_volume_initializer
+      end function
+   end interface
+
 end module
