@@ -24,5 +24,6 @@ md_extensions: markdown.extensions.toc
                markdown.extensions.smarty
 graph: true
 license: MIT
+page_dir:pages
 
 {!../README.md!}
