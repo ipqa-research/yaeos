@@ -17,7 +17,7 @@ program main
     real(pr) :: ar
     real(pr) :: art, arv, arv2, art2, artv
     real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n) 
-    real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n)
+    real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n, n)
 
     class(ArModel), allocatable :: models(:)
 
@@ -34,30 +34,33 @@ program main
     lij = kij / 2 
 
     eos = PengRobinson76(tc, pc, w, kij, lij)
-    eos2 = PengRobinson76(tc, pc, w, kij, lij)
-
-    models = [eos, eos2]
-    this => eos
-    ! do i=1,2
-    !     print *, loc(models(i))
-    !     call models(i)%residual_helmholtz(&
-    !         z, v, t, ar, arv, art, artv, arv2, art2, arn, arvn, artn, arn2&
-    !     )
-    ! end do
-
+    
     v = 1
+    t = 150
 
     call fugacity_vt(eos, &
          z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
     )
 
-    print *, lnfug
-
-    p = 1.0
-    T = 150
-    call fugacity_tp(eos, &
-         z, T, P, V, 1, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
+    print *, "LNFUG: ", lnfug
+    print *, "dfugdt:", dlnphidt
+    print *, "dfugdp:", dlnphidp
+    call eos%residual_helmholtz(&
+            z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
+            Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
     )
+
+    print *, "Ar: ", ar
+    print *, "ArV: ", arV
+    print *, "ArV2: ", arV2
+    print *, "ArVn: ", arVn
+    print *, "Arn2: ", arn2
+
+    ! p = 1.0
+    ! T = 150
+    ! call fugacity_tp(eos, &
+    !      z, T, P, V, 1, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
+    ! )
 
 contains
     type(CubicEoS) function set_eos(composition, alphafun, mixrule)

@@ -80,7 +80,7 @@ contains
       dPdN(:) = RT/V - ArVn(:)
 
       lnfug(:) = Arn(:)/RT - log(Z)
-      
+
       if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1.D0/P
       if (present(dlnphidt)) then
          dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1.D0/T
