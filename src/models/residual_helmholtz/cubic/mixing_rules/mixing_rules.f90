@@ -1,17 +1,17 @@
-module mixing
+module yaeos_models_ar_genericcubic_quadratic_mixing
     use yaeos_constants, only: pr
     use yaeos_substance, only: substances
     use yaeos_models_ar_genericcubic, only: CubicMixRule
     implicit none
-
+   
     type, extends(CubicMixRule) :: QMR
         real(pr), allocatable :: k(:, :), l(:, :)
-        procedure(get_aij), pointer :: aij => constant_kij
+        procedure(get_aij), pointer :: aij => kij_constant
     contains
         procedure :: Dmix
         procedure :: Bmix
     end type
-
+    
     abstract interface
         subroutine get_aij(&
             self, ai, daidt, daidt2, &
@@ -107,7 +107,7 @@ contains
       end do
     end subroutine
 
-    subroutine constant_kij(&
+    subroutine kij_constant(&
         self, a, dadt, dadt2, &
         aij, daijdt, daijdt2 &
                             )
@@ -126,6 +126,7 @@ contains
          aij(i, i) = a(i)
          daijdt(i, i) = dadt(i)
          daijdt2(i, i) = dadt2(i)
+         
          do j=i+1, size(a)
             sqrt_aii_ajj = sqrt(a(i) * a(j))
 
@@ -140,7 +141,7 @@ contains
                 - aij_daidt * dadt(j) / (a(i) * ai2(j)) &
                 - aij_daidt * dadt(i) / (a(j) * ai2(i)) &
                 + aij(i, j) * (&
-                      0.5 * (a(i) * dadt2(j) + a(j) * dadt2(i)) &
+                      0.5_pr * (a(i) * dadt2(j) + a(j) * dadt2(i)) &
                       + dadt(i) * dadt(j)&
                       ) / (a(i) * a(j))
             

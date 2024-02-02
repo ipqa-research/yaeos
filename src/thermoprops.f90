@@ -26,7 +26,8 @@ contains
       call fugacity_vt(self, n, v_in, T, P_in, lnfug, dlnphidp, dlnphidt, dlnphidn)
       
       if(present(v)) v = v_in
-      if(abs(p-p_in) > 1e-5) write(error_unit, *) "WARN: Possible wrong root calculating fugacity!" , p, p_in
+      if(abs(p-p_in) > 1e-5) write(error_unit, *) &
+       "WARN: Possible wrong root calculating fugacity!" , p, p_in
    end subroutine fugacity_tp
 
    subroutine fugacity_vt(self, &
@@ -43,7 +44,7 @@ contains
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
       real(pr), optional, intent(out) :: dlnphidn(size(n), size(n)) !! ln(phi) compositional derivative
 
-      real(pr) :: Ar, ArTV, ArV2
+      real(pr) :: Ar, ArTV, ArV, ArV2
       real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
       real(pr) :: Arn2(size(n), size(n))
 
@@ -61,11 +62,19 @@ contains
       RT = R*T
       Z = V/(TOTN*RT) ! this is Z/P
 
-      call self%residual_helmholtz(&
-         n, V, T, Ar=Ar, ArV2=ArV2, ArTV=ArTV, &
-         Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-      )
+      !if (present(dlnphidn)) then
+         call self%residual_helmholtz(&
+            n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
+            Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+         )
+      ! else
+      !    call self%residual_helmholtz(&
+      !       n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
+      !       Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+      !    )
+      ! end if
 
+      P = TOTN*RT/V - ArV
       dPdV = -ArV2 - RT*TOTN/V**2
       dPdT = -ArTV + TOTN*R/V
       dPdN(:) = RT/V - ArVn(:)
@@ -130,9 +139,9 @@ contains
       real(pr) :: ZETMIN, ZETA, ZETMAX
       real(pr) :: del, pcalc, der, AT, AVAP, VVAP
 
-      integer :: iter
+      integer :: iter, maximum_iterations
 
-      iter = optval(max_iters, 100)
+      maximum_iterations = optval(max_iters, 100)
 
       FIRST_RUN = .true.
       TOTN = sum(rn)
@@ -153,7 +162,7 @@ contains
       DEL = 1
       pcalc = 2*p
 
-      do while(abs(DEL) > 1d-10 .and. iter < 100)
+      do while(abs(DEL) > 1d-10 .and. iter < maximum_iterations)
          V = CPV/ZETA
          ITER = ITER + 1
          call self%residual_helmholtz(&
@@ -178,7 +187,7 @@ contains
             ZETA = .5D0*(ZETMAX + ZETMIN)
       end do
 
-      if (iter >= 100) write(error_unit, *) &
+      if (iter >= maximum_iterations) write(error_unit, *) &
          "WARN: Volume solver exceeded maximum number of iterations"
 
       if (ITYP .eq. 0) then

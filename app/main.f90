@@ -1,7 +1,6 @@
 program main
-    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, GenericCubic_Ar, fugacity_vt, fugacity_tp, vcalc
-    use yaeos, only: ArModel
-    use mixing, only: QMR
+    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, GenericCubic_Ar, fugacity_vt, fugacity_tp, vcalc, QMR
+    use yaeos, only: ArModel, PengRobinson76
     implicit none
 
     type(Substances) :: compos
@@ -22,20 +21,20 @@ program main
 
     class(ArModel), allocatable :: models(:)
 
+    real(pr) :: tc(n), pc(n), w(n), kij(n, n), lij(n, n)
+
     integer :: i
 
     z = [0.3_pr, 0.7_pr]
-    compos%tc = [190._pr, 310._pr]
-    compos%pc = [14._pr, 30._pr]
-    compos%w = [0.001_pr, 0.03_pr]
+    tc = [190._pr, 310._pr]
+    pc = [14._pr, 30._pr]
+    w = [0.001_pr, 0.03_pr]
 
-    alpha%k = 0.37464_pr + 1.54226_pr * compos%w - 0.26993_pr * compos%w**2
+    kij = reshape([0., 0.1, 0.1, 0.], [n,n]) 
+    lij = kij / 2 
 
-    mixrule%k = reshape([0., 0.1, 0.1, 0.], [n,n]) * 0
-    mixrule%l = mixrule%k / 2 * 0
-
-    eos = set_eos(compos, alpha, mixrule)
-    eos2 = set_eos(compos, alpha, mixrule)
+    eos = PengRobinson76(tc, pc, w, kij, lij)
+    eos2 = PengRobinson76(tc, pc, w, kij, lij)
 
     models = [eos, eos2]
     this => eos
@@ -46,11 +45,16 @@ program main
     !     )
     ! end do
 
+    v = 1
+
     call fugacity_vt(eos, &
          z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
     )
 
+    print *, lnfug
+
     p = 1.0
+    T = 150
     call fugacity_tp(eos, &
          z, T, P, V, 1, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
     )

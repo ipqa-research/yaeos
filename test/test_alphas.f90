@@ -14,7 +14,7 @@ contains
 
    subroutine test_alpha_soave(error)
       use yaeos_constants, only: pr
-      use yaeos_cubic_alphas, only: AlphaSoave
+      use yaeos_models_ar_cubic_alphas, only: AlphaSoave
       type(error_type), allocatable, intent(out) :: error
 
       type(AlphaSoave) :: alpha

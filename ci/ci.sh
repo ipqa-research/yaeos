@@ -1,11 +1,16 @@
 #!/bin/bash
-#!/bin/sh
-FPM=$(which fpm || ./fpm)
 DESIRED_COVERAGE=90
 
 DID_TEST=0
 
+COVER=0
+
 echoerr() { echo -e "$@" 1>&2; }
+
+install_fpm() {
+    apt install pipx
+    pipx install fpm
+}
 
 green() {
     echo -e "\e[1;32m$@\e[m"
@@ -16,7 +21,7 @@ red() {
 }
 
 run_test() {
-    $FPM clean
+    echo y | $FPM clean
     DID_TEST=1
     echo Checking tests files names...
     NAMING_ERRORS=0
@@ -40,17 +45,27 @@ run_test() {
 }
 
 run_coverage() {
-    gcovr \
+    COVER=$(gcovr \
         --exclude "build" \
-        --exclude "test/tester.f90" \
+        --exclude "test/test_runner.f90" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
-        --exclude "app" --fail-under-branch 90
+        --exclude "src/legacy/*" \
+        --exclude "app"\
+        --fail-under-branch 90)
+    echo "$COVER"
+    COVER=$(echo "$COVER" | grep TOTAL | awk '{print $4}' | tr -d '%')
 }
 
 resumee() {
     [ $DID_TEST = 1 ] &&
         echo There has been $NAMING_ERRORS test naming errors
+
+    if [ ${COVER} -le 90 ]; then
+        echo "COVERAGE: " $(red $COVER)
+    else
+        echo "COVERAGE: " $(green $COVER)
+    fi
 }
 
 case $1 in

@@ -85,7 +85,7 @@ contains
 
       call termo(n, 1, 4, t, p, z, v, philog=lnphi_p, fugn=lnphi_nn)
       print *, "PHILOG: ", lnphi_p
-      print *, "FUGN:   ", lnphi_nn
+      print *, "V: ", v
       
       call check(error, maxval(abs(lnphi_p - [1.7282684886888058, -2.3291258019214967])) < 1e-5)
    end subroutine

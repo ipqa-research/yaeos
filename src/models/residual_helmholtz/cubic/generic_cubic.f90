@@ -3,6 +3,17 @@ module yaeos_models_ar_genericcubic
     use yaeos_models_ar, only: ArModel
     use yaeos_substance, only: Substances
     implicit none
+    
+    type, abstract :: AlphaFunction
+    contains
+        procedure(abs_alpha), deferred :: alpha
+    end type
+
+    type, abstract :: CubicMixRule
+    contains
+        procedure(abs_Dmix), deferred :: Dmix
+        procedure(abs_Bmix), deferred :: Bmix
+    end type
 
     type, extends(ArModel) :: CubicEoS
         !! Cubic Equation of State.
@@ -13,17 +24,6 @@ module yaeos_models_ar_genericcubic
     contains
         procedure :: residual_helmholtz => GenericCubic_Ar
         procedure :: get_v0 => v0
-    end type
-
-    type, abstract :: AlphaFunction
-    contains
-        procedure(abs_alpha), deferred :: alpha
-    end type
-
-    type, abstract :: CubicMixRule
-    contains
-        procedure(abs_Dmix), deferred :: Dmix
-        procedure(abs_Bmix), deferred :: Bmix
     end type
 
     abstract interface

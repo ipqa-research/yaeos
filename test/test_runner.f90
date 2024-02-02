@@ -1,8 +1,11 @@
 program tester
     use, intrinsic :: iso_fortran_env, only : error_unit
     use testdrive, only : run_testsuite, new_testsuite, testsuite_type
+
     use test_legacy, only: suite_legacy => collect_suite
     use test_cubic_alphas, only: suite_alphas => collect_suite
+    use test_thermoprops, only: suite_thermoprops => collect_suite
+
     use stdlib_ansi, only : fg_color_green, fg_color_red, operator(//), style_reset
     
     implicit none
@@ -15,7 +18,8 @@ program tester
 
     testsuites = [ &
         new_testsuite("legacy", suite_legacy ),  &
-        new_testsuite("Alphas", suite_alphas) &
+        new_testsuite("Alphas", suite_alphas), &
+        new_testsuite("Thermoprops", suite_thermoprops) &
     ]
 
     do is = 1, size(testsuites)

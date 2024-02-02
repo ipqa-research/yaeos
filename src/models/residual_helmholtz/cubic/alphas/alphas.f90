@@ -1,4 +1,4 @@
-module yaeos_cubic_alphas
+module yaeos_models_ar_cubic_alphas
     use yaeos_constants, only: pr
     use yaeos_substance, only: substances
     use yaeos_models_ar_genericcubic, only: CubicEoS, AlphaFunction

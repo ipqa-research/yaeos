@@ -38,5 +38,4 @@ module yaeos_models_ar
          real(pr) :: abs_volume_initializer
       end function
    end interface
-
 end module
