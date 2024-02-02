@@ -21,7 +21,7 @@ red() {
 }
 
 run_test() {
-    echo y | $FPM clean
+    echo y | fpm clean
     DID_TEST=1
     echo Checking tests files names...
     NAMING_ERRORS=0
@@ -41,7 +41,7 @@ run_test() {
         echoerr "There are wrongly named files in the test directory"
 
     echo Running tests...
-    $FPM test --flag "--coverage"
+    fpm test --flag "--coverage"
 }
 
 run_coverage() {
@@ -69,7 +69,7 @@ resumee() {
 }
 
 case $1 in
-    "install")  install;;
+    "install")  install_fpm;;
     "test") run_test;;
     "coverage") run_coverage;;
     *)
