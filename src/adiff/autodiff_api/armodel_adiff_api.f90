@@ -47,7 +47,7 @@ contains
         if (present(ArT)) then
             if (present(ArT2)) call get_dardt2
             if (present(ArTn)) call get_dardtn
-            if (.not. (present(ArT2) .and. present(ArTn))) call get_dardv
+            if (.not. (present(ArT2) .and. present(ArTn))) call get_dardt
         end if
 
         if (present(Arn)) then
@@ -109,7 +109,7 @@ contains
             do i=1,size(n)
                 call reset_vars
                 d_n(i)%f1 = 1
-                d_t%f1 = 1
+                d_t%f2 = 1
                 d_Ar = self%Ar(d_n, d_v, d_t)
                 Arn(i) = d_Ar%f1
                 ArT = d_Ar%f2
@@ -128,7 +128,7 @@ contains
             call reset_vars
             d_t%f1 = 1
             d_Ar = self%Ar(d_n, d_v, d_t)
-            ArV = d_Ar%f1
+            ArT = d_Ar%f1
         end subroutine
         
         subroutine get_dardt2()
