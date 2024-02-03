@@ -42,63 +42,23 @@ program main
          z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
     )
 
-    print *, "LNFUG: ", lnfug
-    print *, "dfugdt:", dlnphidt
-    print *, "dfugdp:", dlnphidp
     call eos%residual_helmholtz(&
-            z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
-            Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+            z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
+            ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
     )
 
     print *, "Ar: ", ar
+
     print *, "ArV: ", arV
-    print *, "ArV2: ", arV2
-    print *, "ArVn: ", arVn
-    print *, "Arn2: ", arn2
+    print *, "ArT: ", arT
 
-    ! p = 1.0
-    ! T = 150
-    ! call fugacity_tp(eos, &
-    !      z, T, P, V, 1, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
-    ! )
+    print *, "ArT2: ", arT2
+    print *, "ArV2: ", ArV2
+    
+    print *, "ArTV: ", ArTV
 
-contains
-    type(CubicEoS) function set_eos(composition, alphafun, mixrule)
-        use yaeos_substance, only: Substances
-        use yaeos_models_ar_genericcubic, only: CubicEoS, AlphaFunction, CubicMixRule
-        
-        class(Substances) :: composition
-        
-        class(AlphaFunction), optional :: alphafun
-        class(CubicMixRule), optional :: mixrule
+    print *, "ArVn: ", ArVn
+    print *, "ArTn: ", ArTn
 
-        type(AlphaSoave) :: default_alphafun
-        type(QMR) :: default_mixrule
-
-        real(pr) :: k(size(composition%w))
-
-        integer :: i, nc
-
-        set_eos%ac = 0.45723553_pr * R**2 * composition%tc**2 / composition%pc
-        set_eos%b = 0.07779607_pr * R * composition%tc/composition%pc
-        set_eos%del1 = [1 + sqrt(2.0_pr)]
-        set_eos%del2 = [1 - sqrt(2.0_pr)]
-        
-        set_eos%components = composition
-
-        if (present(alphafun)) then
-            set_eos%alpha = alphafun
-        else
-            default_alphafun%k = 0.37464_pr + 1.54226_pr * compos%w - 0.26993_pr * compos%w**2
-            set_eos%alpha = default_alphafun
-        end if
-
-        if (present(mixrule)) then
-            set_eos%mixrule = mixrule
-        else
-            default_mixrule%k=reshape([(0._pr, i=1,n**2)],[nc,nc])
-            default_mixrule%l=reshape([(0._pr, i=1,n**2)],[nc,nc])
-            set_eos%mixrule = default_mixrule
-        end if
-    end function
+    print *, "Arn2: ", Arn2
 end program

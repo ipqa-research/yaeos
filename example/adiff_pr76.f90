@@ -17,7 +17,6 @@ module hyperdual_pr76
     real(pr), parameter :: del1 = 1._pr + sqrt(2._pr)
     real(pr), parameter :: del2 = 1._pr - sqrt(2._pr)
 
-
 contains
 
     type(PR76) function setup(tc_in, pc_in, w_in, kij_in, lij_in) result(self)
@@ -61,8 +60,8 @@ contains
             bmix = 0.0_pr
             do i=1,size(n)
                 do j=1,size(n)
-                    amix = amix + n(i) * n(j) * sqrt(a(i) * a(j)) * (1 - kij(i, j))
-                    bmix = bmix + n(i) * n(j) * 0.5_pr * (b(i) + b(j)) * (1 - lij(i, j))
+                    amix = amix + n(i) * n(j) * sqrt(a(i) * a(j)) * (1._pr - kij(i, j))
+                    bmix = bmix + n(i) * n(j) * 0.5_pr * (b(i) + b(j)) * (1._pr - lij(i, j))
                 end do
             end do
 
@@ -88,45 +87,55 @@ contains
 
         v0 = sum(n * self%b) / sum(n)
     end function
+
+    subroutine adiff_pr76 
+        class(ArModel), allocatable :: eos
+
+        integer, parameter :: n=2
+        real(pr) :: tc(n), pc(n), w(n), kij(n, n), lij(n, n)
+        real(pr) :: z(n), lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n, n), v, t, p
+        real(pr) :: ar
+        real(pr) :: art, arv, arv2, art2, artv
+        real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n) 
+
+        real(8) :: time, std, mean
+        real(8) :: et, st
+        integer :: i, nevals=1e3
+
+        z = [0.3_pr, 0.7_pr]
+        tc = [190._pr, 310._pr]
+        pc = [14._pr, 30._pr]
+        w = [0.001_pr, 0.03_pr]
+
+        kij = reshape([0._pr, 0.1_pr, 0.1_pr, 0._pr], [n,n]) 
+        lij = kij / 2._pr
+
+        eos = setup(tc, pc, w, kij, lij)
+        v = 1
+        t = 150
+
+        call cpu_time(st)
+        do i=1,nevals
+            call eos%residual_helmholtz(&
+                    z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
+                    ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+            )
+        end do
+        call cpu_time(et)
+        print *, (et-st)/nevals
+        print *, "Ar: ", ar
+
+        print *, "ArV: ", arV
+        print *, "ArT: ", arT
+
+        print *, "ArT2: ", arT2
+        print *, "ArV2: ", ArV2
+        
+        print *, "ArTV: ", ArTV
+
+        print *, "ArVn: ", ArVn
+        print *, "ArTn: ", ArTn
+
+        print *, "Arn2: ", Arn2
+    end subroutine
 end module
-
-program main
-    use yaeos, only: ArModel, fugacity_vt
-    use hyperdual_pr76
-
-    class(ArModel), allocatable :: eos
-
-    integer, parameter :: n=2
-    real(pr) :: tc(n), pc(n), w(n), kij(n, n), lij(n, n)
-    real(pr) :: z(n), lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n, n), v, t, p
-    real(pr) :: ar
-    real(pr) :: art, arv, arv2, art2, artv
-    real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n) 
-    z = [0.3_pr, 0.7_pr]
-    tc = [190._pr, 310._pr]
-    pc = [14._pr, 30._pr]
-    w = [0.001_pr, 0.03_pr]
-
-    kij = reshape([0., 0.1, 0.1, 0.], [n,n]) 
-    lij = kij / 2 
-
-    eos = setup(tc, pc, w, kij, lij)
-    v = 1
-    t = 150
-    call fugacity_vt(eos, &
-         z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
-    )
-
-    call eos%residual_helmholtz(&
-            z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
-            Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-    )
-    print *, "LNFUG: ", lnfug
-    print *, "dfugdt:", dlnphidt
-    print *, "dfugdp:", dlnphidp
-    print *, "Ar: ", ar
-    print *, "ArV: ", arV
-    print *, "ArV2: ", arV2
-    print *, "ArVn: ", arVn
-
-end program

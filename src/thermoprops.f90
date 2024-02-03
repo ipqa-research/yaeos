@@ -62,17 +62,17 @@ contains
       RT = R*T
       Z = V/(TOTN*RT) ! this is Z/P
 
-      !if (present(dlnphidn)) then
+      if (present(dlnphidn)) then
          call self%residual_helmholtz(&
             n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
             Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
-      ! else
-      !    call self%residual_helmholtz(&
-      !       n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
-      !       Arn=Arn, ArVn=ArVn, ArTn=ArTn &
-      !    )
-      ! end if
+      else
+         call self%residual_helmholtz(&
+            n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
+            Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         )
+      end if
 
       P = TOTN*RT/V - ArV
       dPdV = -ArV2 - RT*TOTN/V**2
