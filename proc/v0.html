@@ -43,6 +43,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+            <li><a href='../page/index.html'>User documentation</a></li>
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
@@ -89,13 +90,13 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 0.6% of total for procedures.">12 statements</a>
+    title=" 0.4% of total for procedures.">7 statements</a>
      </li> 
-    <li><i class="fa fa-code"></i><a href="../src/cubic_eos.f90"> Source File</a></li>
+    <li><i class="fa fa-code"></i><a href="../src/generic_cubic.f90"> Source File</a></li>
   </ul>
   <ol class="breadcrumb in-well text-right">
-     <li><a href='../sourcefile/cubic_eos.f90.html'>cubic_eos.f90</a></li>
-     <li><a href='../module/yaeos_generic_cubic.html'>yaeos_generic_cubic</a></li>
+     <li><a href='../sourcefile/generic_cubic.f90.html'>generic_cubic.f90</a></li>
+     <li><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></li>
      <li class="active">v0</li>
   </ol>
 </div>
@@ -118,10 +119,8 @@
   <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
   <div id="vars-0" class="panel-collapse collapse">
     <div class="list-group">
-      <a class="list-group-item" href="../proc/v0.html#variable-b~3">b</a>
-      <a class="list-group-item" href="../proc/v0.html#variable-p_d">p_d</a>
-      <a class="list-group-item" href="../proc/v0.html#variable-t_d~2">t_d</a>
-      <a class="list-group-item" href="../proc/v0.html#variable-z_d~2">z_d</a>
+      <a class="list-group-item" href="../proc/v0.html#variable-dbi~2">dbi</a>
+      <a class="list-group-item" href="../proc/v0.html#variable-dbij~2">dbij</a>
     </div>
   </div>
 </div>
@@ -131,40 +130,43 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private pure function v0(z, p, t)</h2>
+    <h2>public function v0(self, n, p, t)</h2>
     
 
-    <p>Volume initializer function.</p>
-<p>The classic cubic equation uses the mixture&rsquo;s covolume as
-an initializer</p>
 
     <h3>Arguments</h3>
       <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-z~17"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-self~13"></span>class(<a href='../type/cubiceos.html'>CubicEoS</a>),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>z</strong>(:)</td><td><p>Compositon</p></td>
+  <td><strong>self</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-p~9"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-n~17"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>p</strong></td><td><p>Pressure</p></td>
+  <td><strong>n</strong>(:)</td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-t~19"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-p~8"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td><p>Temperature</p></td>
+  <td><strong>p</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-t~21"></span>real(kind=pr),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>t</strong></td><td></td>
 </tr>
 </tbody>
 </table>
 
-   <h3>Return Value <small><span class="anchor" id="variable-v0~3"></span>real(kind=pr)</small></h3>
-    <p>Initial volume</p>
+   <h3>Return Value <small><span class="anchor" id="variable-v0"></span>real(kind=pr)</small></h3>
+    
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
@@ -174,10 +176,8 @@ an initializer</p>
   <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
   <div id="vars-1" class="panel-collapse collapse">
     <div class="list-group">
-      <a class="list-group-item" href="../proc/v0.html#variable-b~3">b</a>
-      <a class="list-group-item" href="../proc/v0.html#variable-p_d">p_d</a>
-      <a class="list-group-item" href="../proc/v0.html#variable-t_d~2">t_d</a>
-      <a class="list-group-item" href="../proc/v0.html#variable-z_d~2">z_d</a>
+      <a class="list-group-item" href="../proc/v0.html#variable-dbi~2">dbi</a>
+      <a class="list-group-item" href="../proc/v0.html#variable-dbij~2">dbij</a>
     </div>
   </div>
 </div>
@@ -192,24 +192,14 @@ an initializer</p>
 <thead><tr><th>Type</th><th>Visibility</th><th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-b~3"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
-<td>private</td>  <td></td><td>::</td>
-  <td><strong>b</strong>(size(z))</td><td></td><td></td><td></td>
+  <td><span class="anchor" id="variable-dbi~2"></span>real(kind=pr),</td>
+<td>public</td>  <td></td><td>::</td>
+  <td><strong>dbi</strong>(size(n))</td><td></td><td></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-p_d"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
-<td>private</td>  <td></td><td>::</td>
-  <td><strong>p_d</strong></td><td></td><td></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-t_d~2"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
-<td>private</td>  <td></td><td>::</td>
-  <td><strong>t_d</strong></td><td></td><td></td><td></td>
-</tr>
-<tr>
-  <td><span class="anchor" id="variable-z_d~2"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
-<td>private</td>  <td></td><td>::</td>
-  <td><strong>z_d</strong>(size(z))</td><td></td><td></td><td></td>
+  <td><span class="anchor" id="variable-dbij~2"></span>real(kind=pr),</td>
+<td>public</td>  <td></td><td>::</td>
+  <td><strong>dbij</strong>(size(n),size(n))</td><td></td><td></td><td></td>
 </tr>
 </tbody>
 </table>
@@ -233,14 +223,14 @@ an initializer</p>
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2023 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2023-10-04 17:39            </p>
+ on 2024-02-03 14:53            </p>
         </div>
       </div>
       <br>

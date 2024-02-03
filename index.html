@@ -43,6 +43,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+            <li><a href='./page/index.html'>User documentation</a></li>
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
@@ -91,57 +92,86 @@
           <h1>Yaeos</h1>
           <p><a href="https://github.com/fedebenelli"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-fedebenelli-blue.svg?style=social&amp;logo=github"></a> <a href="https://fortran-lang.org"><img alt="Fortran" src="https://img.shields.io/badge/Fortran-734f96?logo=fortran&amp;style=flat"></a> <a href="https://fpm.fortran-lang.org"><img alt="fpm" src="https://img.shields.io/badge/fpm-Fortran_package_manager-734f96"></a> <a href="https://fedebenelli.github.io/yaeos/"><img alt="Documentation" src="https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg"></a> <a href="https://github.com/fedebenelli/yaeos/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/fedebenelli/yaeos?color=green"></a> <a href="https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml"><img alt="CI" src="https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg"></a></p>
 <h1 id="ya_eos">YA_EoS</h1>
-<p>There are multiple equation of state libraries, like:</p>
+<p>There are multiple open source equation of state libraries, like:</p>
 <ul>
 <li><a href="https://github.com/ClapeyronThermo/Clapeyron.jl">Clapeyron</a> <code>julia</code></li>
-<li><a href="https://github.com/feos-org/feos">FeOs</a> <code>rust</code></li>
-<li><a href="https://github.com/usnistgov/teqp">teqp</a> <code>C++</code></li>
+<li><a href="https://github.com/feos-org/feos">FeOs</a> <code>rust</code> with <code>Python</code> bindings</li>
+<li><a href="https://github.com/usnistgov/teqp">teqp</a> <code>C++</code> with <code>Python</code> bindings</li>
 <li><a href="https://github.com/CalebBell/thermo">thermo</a> <code>python</code></li>
-<li><a href="https://github.com/thermotools/thermopack">thermopack</a> <code>Fortran</code></li>
+<li><a href="https://github.com/thermotools/thermopack">thermopack</a> <code>Fortran</code> with <code>Python</code> bindings</li>
+<li><a href="https://github.com/CoolProp/CoolProp">CoolProp</a> <code>C++</code> with <code>Python</code> bindings</li>
 </ul>
 <p>Here we are presenting yet another (still in development) one, that tackles the
 same problem just, in another way. Mostly exploiting readability and
 extensiblity of Modern Fortran for scientists to have an easy way to implement
 new thermodynamic models without dealing with lower level languages but still
-getting decent performance. And also having the possiblility of using
-analitically obtained derivatives so both options are available with just a 
-switch.</p>
+getting decent performance. 
+And also this framework provides the possiblility of using analitically obtained
+derivatives so both options are easy available.</p>
 <blockquote>
 <p>This is an experimental work in progress and we recommend the before
-mentioned libraries if you are intending to use some of this in real work.</p>
+mentioned libraries if you are intending to use some of this in real work.
+Big part of the code comes from a refactoring process of older codes so
+not all parts are easily readable, yet.</p>
 </blockquote>
 <p>We focus mainly in that the addition of a new thermodynamic model is as easy as
-possible.
-Also providing our own models too!</p>
+possible. Also providing our own models too!</p>
 <p>For now we only include residual helmholtz model (like Cubic or Saft Equations
 of State). But we&rsquo;ll be adding other models like $G^E$ (UNIFAC for example).</p>
-<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">Ar</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">ar</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="k">use </span><span class="n">yaeos_adiff</span><span class="w"></span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:)</span><span class="w"></span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="w"></span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar</span><span class="w"></span>
-
-<span class="w">   </span><span class="c">! A very complicated residual helmholtz function of a mixture</span>
-<span class="w">   </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
-<span class="k">end subroutine</span><span class="w"></span>
+<h2 id="including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</h2>
+<p>We are using the <code>hyperdual</code> module developed by <a href="https://github.com/prehner">Philipp Rehner</a> and <a href="https://github.com/g-bauer">Gernot Bauer</a></p>
+<blockquote>
+<p>The automatic differentiation API isn&rsquo;t fully optimized yet so performance is
+much slower than it should be.</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">YourNewModel</span><span class="w"></span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">Substances</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">composition</span><span class="w"></span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">parameters</span><span class="p">(:)</span><span class="w"></span>
+<span class="w">    </span><span class="k">contains</span>
+<span class="k">      procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">arfun</span><span class="w"></span>
+<span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v0</span><span class="w"></span>
+<span class="k">end type</span><span class="w"></span>
 </code></pre></div>
 
-<p>After defining your own model you must just setup the Ar function and you&rsquo;re
-done, the available routines are using your model:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos_ar_models</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">set_ar_function</span><span class="w"></span>
-<span class="k">use </span><span class="n">yaeos_thermoprops</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pressure</span><span class="w"></span>
-<span class="p">...</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">arfun</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">Ar</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">YourNewModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w"> </span><span class="c">! Number of moles</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="c">! Volume [L]</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="c">! Temperature [K]</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar_value</span><span class="w"> </span><span class="c">! Residual Helmholtz Energy</span>
 
-<span class="k">call </span><span class="n">set_ar_function</span><span class="p">(</span><span class="n">Ar</span><span class="p">)</span><span class="w"> </span><span class="c">! Set the before defined subroutine</span>
-<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dp</span><span class="p">,</span><span class="w"> </span><span class="n">dp2</span><span class="p">)</span><span class="w"> </span><span class="c">! Get the pressure and it&#39;s derivatives </span>
-<span class="w">                                   </span><span class="c">! at some thermodynamic state</span>
+<span class="w">   </span><span class="c">! A very complicated residual helmholtz function of a mixture</span>
+<span class="w">   </span><span class="n">Ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<span class="k">end subroutine</span>
+
+<span class="k">function </span><span class="n">v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">YourNewModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span><span class="w"></span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w"> </span><span class="c">! Number of moles</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="c">! Pressure [bar]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="c">! Temperature [K]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span><span class="w"></span>
+
+<span class="w">   </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">parameters</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"></span>
+<span class="k">end function</span><span class="w"></span>
+</code></pre></div>
+
+<p>A complete implementation of the PR76 Equation of State can me found in
+<code>example/adiff/adiff_pr76.f90</code>.</p>
+<p>All the thermodynamic properties can be found in <code>yaeos_thermoprops</code> and called
+like:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos_thermoprops</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">fugacity_vt</span><span class="w"></span>
+<span class="k">use </span><span class="n">my_new_model</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">YourNewModel</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+<span class="k">type</span><span class="p">(</span><span class="n">YourNewModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span><span class="w"></span>
+<span class="n">eos</span><span class="p">%</span><span class="n">parameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"></span>
+<span class="k">call </span><span class="n">fugacity_vt</span><span class="p">(</span><span class="n">eos</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">lnfug</span><span class="o">=</span><span class="n">lnfug</span><span class="p">,</span><span class="w"> </span><span class="n">dlnphidn</span><span class="o">=</span><span class="n">dlnphidn</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 <h2 id="documentation">Documentation</h2>
 <p>The latest API documentation for the <code>main</code> branch can be found
 <a href="https://fedebenelli.github.io/yaeos">here</a>. This was generated from the source
-code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.</p>
+code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>. We&rsquo;re
+working in extending it more.</p>
         </div>
         <div class="col-md-4">
 	  <div class="well">
@@ -157,49 +187,57 @@ code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.<
       <div class="row">
         <div class="col-xs-6 col-sm-3">
               <h3>Source Files</h3>
-              <ul>                    <li><a href='./sourcefile/ar_interface.f90.html'>ar_interface.f90</a></li>
-                    <li><a href='./sourcefile/armodel.f90.html'>armodel.f90</a></li>
+              <ul>                    <li><a href='./sourcefile/admm_tapenade_interface.f90.html'>admm_tapenade_interface.f90</a></li>
+                    <li><a href='./sourcefile/alphas.f90.html'>alphas.f90</a></li>
+                    <li><a href='./sourcefile/ar_interface.f90.html'>ar_interface.f90</a></li>
+                    <li><a href='./sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
+                    <li><a href='./sourcefile/armodel_adiff_api.f90.html'>armodel_adiff_api.f90</a></li>
                     <li><a href='./sourcefile/autodiff.f90.html'>autodiff.f90</a></li>
                     <li><a href='./sourcefile/constants.f90.html'>constants.f90</a></li>
-                    <li><a href='./sourcefile/cubic_eos.f90.html'>cubic_eos.f90</a></li>
+                    <li><a href='./sourcefile/generic_cubic.f90.html'>generic_cubic.f90</a></li>
                     <li><a href='./sourcefile/hyperdual.f90.html'>hyperdual.f90</a></li>
-                    <li><a href='./sourcefile/interfaces.f90.html'>interfaces.f90</a></li>
                     <li><a href='./sourcefile/legacy.f90.html'>legacy.f90</a></li>
-                    <li><a href='./sourcefile/mixingrules.f90.html'>mixingrules.f90</a></li>
-                    <li><a href='./sourcefile/models.f90.html'>models.f90</a></li>
 </ul>
           </div>
 		  <div class="col-xs-6 col-sm-3">
               <h3>Modules</h3>
-              <ul>                    <li><a href='./module/ar_interface.html'>ar_interface</a></li>
+              <ul>                    <li><a href='./module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></li>
+                    <li><a href='./module/ar_interface.html'>ar_interface</a></li>
                     <li><a href='./module/hyperdual_mod.html'>hyperdual_mod</a></li>
                     <li><a href='./module/legacy_ar_models.html'>legacy_ar_models</a></li>
-                    <li><a href='./module/pengrobinson76.html'>pengrobinson76</a></li>
-                    <li><a href='./module/pengrobinson78.html'>pengrobinson78</a></li>
-                    <li><a href='./module/yaeos_ar_models.html'>yaeos_ar_models</a></li>
+                    <li><a href='./module/legacy_thermo_properties.html'>legacy_thermo_properties</a></li>
+                    <li><a href='./module/yaeos.html'>yaeos</a></li>
+                    <li><a href='./module/yaeos_ar_models_hyperdual.html'>yaeos_ar_models_hyperdual</a></li>
                     <li><a href='./module/yaeos_autodiff.html'>yaeos_autodiff</a></li>
                     <li><a href='./module/yaeos_constants.html'>yaeos_constants</a></li>
-                    <li><a href='./module/yaeos_cubic_eos.html'>yaeos_cubic_eos</a></li>
-                    <li><a href='./module/yaeos_generic_cubic.html'>yaeos_generic_cubic</a></li>
+                    <li><a href='./module/yaeos_models.html'>yaeos_models</a></li>
 </ul>
           </div>
 		  <div class="col-xs-6 col-sm-3">
               <h3>Procedures</h3>
-              <ul>                    <li><a href='./proc/a_classic.html'>a_classic</a></li>
-                    <li><a href='./proc/a_mix_classic.html'>a_mix_classic</a></li>
-                    <li><a href='./proc/a_res.html'>a_res</a></li>
-                    <li><a href='./interface/abs.html'>abs</a></li>
+              <ul>                    <li><a href='./interface/abs.html'>abs</a></li>
                     <li><a href='./proc/abshyperdual.html'>absHyperDual</a></li>
                     <li><a href='./interface/acos.html'>acos</a></li>
                     <li><a href='./proc/acoshyperdual.html'>acosHyperDual</a></li>
                     <li><a href='./proc/addhyperdualhyperdual.html'>AddHyperDualHyperDual</a></li>
                     <li><a href='./proc/addhyperdualreal.html'>AddHyperDualReal</a></li>
                     <li><a href='./proc/addrealhyperdual.html'>AddRealHyperDual</a></li>
+                    <li><a href='./interface/admm_rebase.html'>ADMM_REBASE</a></li>
+                    <li><a href='./interface/admm_rebaseshadowed.html'>ADMM_REBASESHADOWED</a></li>
+                    <li><a href='./interface/admm_register.html'>ADMM_REGISTER</a></li>
 </ul>
           </div>
 		  <div class="col-xs-6 col-sm-3">
               <h3>Derived Types</h3>
-              <ul>                    <li><a href='./type/hyperdual.html'>hyperdual</a></li>
+              <ul>                    <li><a href='./type/alphafunction.html'>AlphaFunction</a></li>
+                    <li><a href='./type/alphasoave.html'>AlphaSoave</a></li>
+                    <li><a href='./type/armodel.html'>ArModel</a></li>
+                    <li><a href='./type/armodeladiff.html'>ArModelAdiff</a></li>
+                    <li><a href='./type/cubiceos.html'>CubicEoS</a></li>
+                    <li><a href='./type/cubicmixrule.html'>CubicMixRule</a></li>
+                    <li><a href='./type/hyperdual.html'>hyperdual</a></li>
+                    <li><a href='./type/qmr.html'>QMR</a></li>
+                    <li><a href='./type/substances.html'>Substances</a></li>
 </ul>
           </div>
       </div>
@@ -208,14 +246,14 @@ code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>.<
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2023 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2023-10-04 17:39            </p>
+ on 2024-02-03 14:53            </p>
         </div>
       </div>
       <br>

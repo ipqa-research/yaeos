@@ -43,6 +43,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+            <li><a href='../page/index.html'>User documentation</a></li>
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
@@ -89,13 +90,13 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 0.6% of total for procedures.">12 statements</a>
+    title=" 0.3% of total for procedures.">6 statements</a>
      </li> 
-    <li><i class="fa fa-code"></i><a href="../src/armodel.f90"> Source File</a></li>
+    <li><i class="fa fa-code"></i><a href="../src/tapenade_ar_api.f90"> Source File</a></li>
   </ul>
   <ol class="breadcrumb in-well text-right">
-     <li><a href='../sourcefile/armodel.f90.html'>armodel.f90</a></li>
-     <li><a href='../module/yaeos_ar_models.html'>yaeos_ar_models</a></li>
+     <li><a href='../sourcefile/tapenade_ar_api.f90.html'>tapenade_ar_api.f90</a></li>
+     <li><a href='../module/yaeos_tapenade_ar_api.html'>yaeos_tapenade_ar_api</a></li>
      <li class="active">residual_helmholtz</li>
   </ol>
 </div>
@@ -121,279 +122,95 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public subroutine residual_helmholtz(z, v, t, ar, dar, dar2)</h2>
+    <h2>private subroutine residual_helmholtz(n, v, t, ar, dardn, dardv, dardt, dardn2, darnv, dardnt, dardvt, dardv2, dardt2)</h2>
     
 
-    <p>General residual Helmholtz subroutine.</p>
-<p>This subroutine handles all the necesary calls to calculate the
-  residual Helmholtz free energy with just using the pointed Ar
-  subroutine.</p>
 
     <h3>Arguments</h3>
       <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-z~15"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-n~14"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>z</strong>(:)</td><td><p>Composition</p></td>
+  <td><strong>n</strong>(:)</td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-v~14"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-v~11"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td><p>Volume</p></td>
+  <td><strong>v</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-t~17"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-t~13"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td><p>Temperature</p></td>
+  <td><strong>t</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-ar~9"></span>real(kind=pr),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td><p>Residual Helmholtz energy</p></td>
+  <td><span class="anchor" id="variable-ar"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ar</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dar~2"></span>real(kind=pr),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>dar</strong>(size(z)+2)</td><td><p>First derivatives</p></td>
+  <td><span class="anchor" id="variable-dardn"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardn</strong>(size(n))</td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dar2~2"></span>real(kind=pr),</td>
-<td>intent(out)</td>
-  <td></td>  <td></td><td>::</td>
-  <td><strong>dar2</strong>(size(z)+2,size(z)+2)</td><td><p>Second derivatives</p></td>
+  <td><span class="anchor" id="variable-dardv"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardv</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-dardt"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardt</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-dardn2"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardn2</strong>(size(n),size(n))</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-darnv"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>darnv</strong>(size(n))</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-dardnt"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardnt</strong>(size(n))</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-dardvt"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardvt</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-dardv2"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardv2</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-dardt2"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>dardt2</strong></td><td></td>
 </tr>
 </tbody>
 </table>
 
-    <br>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-  <h3 class="panel-title">Calls</h3>
-      </div>
-      <div class="panel-body">
-  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~residual_helmholtz~~CallsGraph Pages: 1 -->
-<svg id="procresidual_helmholtzCallsGraph" width="219pt" height="32pt"
- viewBox="0.00 0.00 219.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~residual_helmholtz~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>proc~~residual_helmholtz~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 215,-28 215,4 -4,4"/>
-<!-- proc~residual_helmholtz -->
-<g id="proc~~residual_helmholtz~~CallsGraph_node1" class="node">
-<title>proc~residual_helmholtz</title>
-<polygon fill="none" stroke="black" points="112,-24 0,-24 0,0 112,0 112,-24"/>
-<text text-anchor="middle" x="56" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">residual_helmholtz</text>
-</g>
-<!-- proc~dualderiv -->
-<g id="proc~~residual_helmholtz~~CallsGraph_node2" class="node">
-<title>proc~dualderiv</title>
-<g id="a_proc~~residual_helmholtz~~CallsGraph_node2"><a xlink:href=".././proc/dualderiv.html" xlink:title="dualderiv">
-<polygon fill="#d9534f" stroke="#d9534f" points="211,-24 148,-24 148,0 211,0 211,-24"/>
-<text text-anchor="middle" x="179.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dualderiv</text>
-</a>
-</g>
-</g>
-<!-- proc~residual_helmholtz&#45;&gt;proc~dualderiv -->
-<g id="proc~~residual_helmholtz~~CallsGraph_edge1" class="edge">
-<title>proc~residual_helmholtz&#45;&gt;proc~dualderiv</title>
-<path fill="none" stroke="#000000" d="M112.06,-12C120.72,-12 129.52,-12 137.78,-12"/>
-<polygon fill="#000000" stroke="#000000" points="137.88,-15.5 147.88,-12 137.88,-8.5 137.88,-15.5"/>
-</g>
-</g>
-</svg>
-</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
-    <p>Nodes of different colours represent the following: </p>
-    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="597pt" height="32pt"
- viewBox="0.00 0.00 596.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 592.5,-28 592.5,4 -4,4"/>
-<!-- Subroutine -->
-<g id="node1" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node2" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Interface -->
-<g id="node3" class="node">
-<title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
-</g>
-<!-- Unknown Procedure Type -->
-<g id="node4" class="node">
-<title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="388.5,-24 243.5,-24 243.5,0 388.5,0 388.5,-24"/>
-<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
-</g>
-<!-- Program -->
-<g id="node5" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="465,-24 407,-24 407,0 465,0 465,-24"/>
-<text text-anchor="middle" x="436" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node6" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="588.5,-24 483.5,-24 483.5,0 588.5,0 588.5,-24"/>
-<text text-anchor="middle" x="536" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
-
-    
-    <p>Solid arrows point from a procedure to one which it calls. Dashed 
-    arrows point from an interface to procedures which implement that interface.
-    This could include the module procedures in a generic interface or the
-    implementation in a submodule of an interface in a parent module.
-    </p>
-    </div></div></div></div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-  <h3 class="panel-title">Called by</h3>
-      </div>
-      <div class="panel-body">
-  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~residual_helmholtz~~CalledByGraph Pages: 1 -->
-<svg id="procresidual_helmholtzCalledByGraph" width="325pt" height="50pt"
- viewBox="0.00 0.00 325.00 50.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~residual_helmholtz~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 46)">
-<title>proc~~residual_helmholtz~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-46 321,-46 321,4 -4,4"/>
-<!-- proc~residual_helmholtz -->
-<g id="proc~~residual_helmholtz~~CalledByGraph_node1" class="node">
-<title>proc~residual_helmholtz</title>
-<polygon fill="none" stroke="black" points="317,-24 205,-24 205,0 317,0 317,-24"/>
-<text text-anchor="middle" x="261" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">residual_helmholtz</text>
-</g>
-<!-- proc~pressure -->
-<g id="proc~~residual_helmholtz~~CalledByGraph_node2" class="node">
-<title>proc~pressure</title>
-<g id="a_proc~~residual_helmholtz~~CalledByGraph_node2"><a xlink:href=".././proc/pressure.html" xlink:title="pressure">
-<polygon fill="#d9534f" stroke="#d9534f" points="169,-24 111,-24 111,0 169,0 169,-24"/>
-<text text-anchor="middle" x="140" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pressure</text>
-</a>
-</g>
-</g>
-<!-- proc~pressure&#45;&gt;proc~residual_helmholtz -->
-<g id="proc~~residual_helmholtz~~CalledByGraph_edge1" class="edge">
-<title>proc~pressure&#45;&gt;proc~residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M169.2,-12C176.99,-12 185.78,-12 194.75,-12"/>
-<polygon fill="#000000" stroke="#000000" points="194.9,-15.5 204.9,-12 194.9,-8.5 194.9,-15.5"/>
-</g>
-<!-- proc~get_volume -->
-<g id="proc~~residual_helmholtz~~CalledByGraph_node3" class="node">
-<title>proc~get_volume</title>
-<g id="a_proc~~residual_helmholtz~~CalledByGraph_node3"><a xlink:href=".././proc/get_volume.html" xlink:title="get_volume">
-<polygon fill="#d9534f" stroke="#d9534f" points="75,-24 0,-24 0,0 75,0 75,-24"/>
-<text text-anchor="middle" x="37.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_volume</text>
-</a>
-</g>
-</g>
-<!-- proc~get_volume&#45;&gt;proc~pressure -->
-<g id="proc~~residual_helmholtz~~CalledByGraph_edge2" class="edge">
-<title>proc~get_volume&#45;&gt;proc~pressure</title>
-<path fill="none" stroke="#000000" d="M75.07,-12C83.35,-12 92.18,-12 100.54,-12"/>
-<polygon fill="#000000" stroke="#000000" points="100.81,-15.5 110.81,-12 100.81,-8.5 100.81,-15.5"/>
-</g>
-<!-- proc~get_volume&#45;&gt;proc~get_volume -->
-<g id="proc~~residual_helmholtz~~CalledByGraph_edge3" class="edge">
-<title>proc~get_volume&#45;&gt;proc~get_volume</title>
-<path fill="none" stroke="#000000" d="M20.63,-24.01C14.75,-32.97 20.37,-42 37.5,-42 47.94,-42 54.11,-38.65 56,-34"/>
-<polygon fill="#000000" stroke="#000000" points="59.43,-33.32 54.37,-24.01 52.52,-34.45 59.43,-33.32"/>
-</g>
-</g>
-</svg>
-</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
-    <p>Nodes of different colours represent the following: </p>
-    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="597pt" height="32pt"
- viewBox="0.00 0.00 596.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 592.5,-28 592.5,4 -4,4"/>
-<!-- Subroutine -->
-<g id="node1" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node2" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Interface -->
-<g id="node3" class="node">
-<title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
-</g>
-<!-- Unknown Procedure Type -->
-<g id="node4" class="node">
-<title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="388.5,-24 243.5,-24 243.5,0 388.5,0 388.5,-24"/>
-<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
-</g>
-<!-- Program -->
-<g id="node5" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="465,-24 407,-24 407,0 465,0 465,-24"/>
-<text text-anchor="middle" x="436" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node6" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="588.5,-24 483.5,-24 483.5,0 588.5,0 588.5,-24"/>
-<text text-anchor="middle" x="536" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
-
-    
-    <p>Solid arrows point from a procedure to one which it calls. Dashed 
-    arrows point from an interface to procedures which implement that interface.
-    This could include the module procedures in a generic interface or the
-    implementation in a submodule of an interface in a parent module.
-    </p>
-    </div></div></div></div>
-      </div>
-    </div>
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
@@ -422,14 +239,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2023 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2023-10-04 17:39            </p>
+ on 2024-02-03 14:53            </p>
         </div>
       </div>
       <br>

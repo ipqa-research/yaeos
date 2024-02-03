@@ -1,155 +1,208 @@
-module yaeos_thermo_properties
-   !-| Thermodynamic routines
-   ! This module includes all the procedures to calculate bulk properties like
-   ! Pressure, fugacity, volume, etc.
-   !
-   ! This procedures are based on residual Helmholtz free energy models. Using
-   ! The approach presented by Michelsen and Møllerup.
-   use yaeos_constants, only: pr, R
-   use yaeos_models, only: residual_helmholtz, ar_fun
-   use yaeos_autodiff
-   use yaeos_interfaces, only: volume_initalizer
+module yaeos_thermoprops
+   !! Residual thermodyamic properties using residual Helmholtz model
+   use yaeos_constants, only: R, pr
+   use yaeos_models_ar, only: ArModel
    implicit none
-
-   private
-
-   public :: pressure, get_volume, ln_phi, vinit
-
-   procedure(volume_initalizer), pointer :: vinit
-
 contains
+   subroutine fugacity_tp(self, &
+         n, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
+      )
+      use iso_fortran_env, only: error_unit
+      class(ArModel), intent(in) :: self
+      real(pr), intent(in) :: n(:) !! Mixture mole numbers
+      integer, intent(in) :: root_type !! Type of root desired (-1 vapor, 1 liquid, 0 lower Gr)
+      real(pr), intent(in) :: t    !! Temperature [K]
+      real(pr), intent(in) :: p    !! Pressure [bar]
 
-   ! =============================================================================
-   !  Bulk Properties
-   ! -----------------------------------------------------------------------------
-   subroutine pressure(z, v, t, p, dp, dp2)
-      !-| Calculate pressure using the residual Helmholtz energy, as defined
-      !   by Michelsen Møllerup.
-      real(pr), intent(in)            :: z(:) !| Molar compositions
-      real(pr), intent(in)            :: v    !| Volume
-      real(pr), intent(in)            :: t    !| Temperature
+      real(pr), intent(out) :: lnfug(size(n)) !! \(\ln(\phi*p)\) vector
+      real(pr), optional, intent(out) :: v !! Volume [L]
+      real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
+      real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
+      real(pr), optional, intent(out) :: dlnphidn(size(n), size(n)) !! ln(phi) compositional derivative
 
-      real(pr), intent(out)           :: p    !| Pressure
-      real(pr), optional, intent(out) :: dp(size(z) + 2) !| Pressure derivatives
-      real(pr), optional, intent(out) :: dp2(size(z) + 2, size(z) + 2)
+      real(pr) :: v_in, p_in
 
-      ! Ar values and derivatives
-      real(pr) :: ar, dar(size(z) + 2), dar2(size(z) + 2, size(z) + 2)
-
-      ! Keep the RT product
-      real(pr) :: RT
-
-      integer :: n
-
-      n = size(z)
-      RT = R*t
-
-      call residual_helmholtz(z, v, t, ar, dar, dar2)
-
-      p = -RT*dar(n + 1) + sum(z)*RT/v
-      if (present(dp)) then
-         dp(:n) = -RT*dar2(:n, n + 1) + Rt/v
-         dp(n + 1) = -RT*dar2(n + 1, n + 1) - sum(z)*RT/v**2
-      end if
-      ! dp(n+2) = -RT * dar2(n+1, n+2) + p/t
-   end subroutine
-
-   subroutine ln_phi(z, v, t, lnphi)
-      !-| Fugacity coefficent as a function of volume and temperature.
-      !   The fugacity coefficent is the first derivative of the Residual
-      !   Helmholtz energy, substracted with the compressibility factor:
-      !
-      !   \[ln \phi_i = \frac{dAr}{dn_i}(z, v, T) - \ln Z\]
-      !
-      real(pr), intent(in)  :: z(:)           !| Composition vector
-      real(pr), intent(in)  :: v              !| Volume
-      real(pr), intent(in)  :: t              !| Temperature
-      real(pr), intent(out) :: lnphi(size(z)) !| Fugacity coefficent
-
-      real(pr) :: ar, dardv, dardn(size(z))
-      real(pr) :: p, compressibility
+      call VCALC(self, root_type, size(n), n, T, P, V_in)
+      call fugacity_vt(self, n, v_in, T, P_in, lnfug, dlnphidp, dlnphidt, dlnphidn)
       
-      type(hyperdual) :: z_d(size(z)), v_d, t_d, ar_d, rt
+      if(present(v)) v = v_in
+      if(abs(p-p_in) > 1e-5) write(error_unit, *) &
+       "WARN: Possible wrong root calculating fugacity!" , p, p_in
+   end subroutine fugacity_tp
 
-      integer :: i
-      v_d = v
-      v_d%f1 = 1
-      t_d = t
-      z_d = z
-      rt = R*t_d
+   subroutine fugacity_vt(self, &
+         n, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
+      )
+      class(ArModel) :: self
+      real(pr), intent(in) :: n(:) !! Mixture mole numbers
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: t !! Temperature [K]
 
-      call ar_fun(z_d, v_d, t_d, ar_d)
-      dardv = ar_d%f1
-      compressibility = (- dardv + sum(z) / v) * v / RT%f0
-      
-      do i=2,size(z),2
-         z_d = z
-         z_d(i-1)%f1 = 1
-         z_d(i)%f2 = 1
-         call ar_fun(z_d, v_d, t_d, ar_d)
-         dardn(i-1) = ar_d%f1
-         dardn(i) = ar_d%f2
-      end do
+      real(pr), optional, intent(out) :: p    !! Pressure [bar]
+      real(pr), optional, intent(out) :: lnfug(size(n)) !! \(\ln(\phi*p)\) vector
+      real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
+      real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
+      real(pr), optional, intent(out) :: dlnphidn(size(n), size(n)) !! ln(phi) compositional derivative
 
-      if (mod(size(z), 2) /= 0.0_pr) then
-         z_d = z
-         z_d(i-1)%f1 = 1
-         call ar_fun(z_d, v_d, t_d, ar_d)
-         dardn(i-1) = ar_d%f1
-      end if
+      real(pr) :: Ar, ArTV, ArV, ArV2
+      real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
+      real(pr) :: Arn2(size(n), size(n))
 
-      lnphi = dardn(:size(z)) - log(compressibility)
-   end subroutine
+      real(pr) :: dPdV, dPdT, dPdN(size(n))
 
-   recursive subroutine get_volume(z, p, t, v, root, v0)
-      !-| Volume solver routine.
-      !   This volume solving routine uses a simple Newton method to solve the
-      !   equation:
-      !
-      !   \[ 0 = P(z, v, T) - P_{spec} \]
-      !
-      !   I'ts expected from the model to include an initialization function
-      !   for the first volume ( $v_0$ ), besides that, an initialization
-      !   value can be provided as an optional argument.
-      real(pr), intent(in)           :: z(:) !| Composition Vector
-      real(pr), intent(in)           :: p    !| Pressure
-      real(pr), intent(in)           :: t    !| Temperature
-      character(len=*), intent(in)   :: root !| root: `[vapor | liquid | stable]`
-      real(pr), intent(in), optional :: v0   !| Initial volume
+      real(pr) :: RT, Z
 
-      real(pr), intent(out)          :: v    !| Volume
+      real(pr) :: totn
+      integer :: nc, i, j
 
-      real(pr) :: p_in, dp(size(z) + 2), dp2(size(z) + 2, size(z) + 2), delta
-      real(pr) :: v_liq, v_vap
 
-      integer :: its, n
-      n = size(z)
+      TOTN = sum(n)
+      nc = size(n)
 
-      if (present(v0)) then
-         v = v0
+      RT = R*T
+      Z = V/(TOTN*RT) ! this is Z/P
+
+      if (present(dlnphidn)) then
+         call self%residual_helmholtz(&
+            n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
+            Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+         )
       else
-         select case (root)
-         case ("vapor")
-            v = R*t/p
-         case ("liquid")
-            v = 2.0_pr*vinit(z, p, t)
-         case ("stable")
-            call get_volume(z, v, t, v_liq, "liquid")
-            call get_volume(z, v, t, v_vap, "vapor")
-         end select
+         call self%residual_helmholtz(&
+            n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
+            Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         )
       end if
 
-      delta = 1
-      p_in = p*20
-      its = 0
+      P = TOTN*RT/V - ArV
+      dPdV = -ArV2 - RT*TOTN/V**2
+      dPdT = -ArTV + TOTN*R/V
+      dPdN(:) = RT/V - ArVn(:)
 
-      do while ((abs(delta) > 1e-10 .or. abs(p - p_in) > 1e-10) &
-                .and. its < 100)
-         its = its + 1
-         call pressure(z, v, t, p_in, dp, dp2)
-         delta = ((p - p_in)/dp(n + 1)) ! / p
-         v = v + delta
-      end do
+      lnfug(:) = Arn(:)/RT - log(Z)
+
+      if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1.D0/P
+      if (present(dlnphidt)) then
+         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1.D0/T
+      end if
+
+      if (present(dlnphidn)) then
+         do i = 1, nc
+            do j = i, nc
+               dlnphidn(i, j) = 1.D0/TOTN + (Arn2(i, j) + dPdN(i)*dPdN(j)/dPdV)/RT
+               dlnphidn(j, i) = dlnphidn(i, j)
+            end do
+         end do
+      end if
    end subroutine
-   ! ===========================================================================
+
+   subroutine PUREFUG_CALC(self, nc, icomp, T, P, V, fug)
+      !! Fugacity of a pure component
+      class(ArModel), intent(in) :: self
+      integer, intent(in)  :: nc
+      integer,  intent(in) :: icomp
+      real(pr), intent(in) :: T, P, V
+      real(pr), intent(out) :: fug
+
+      real(pr) :: n(nc), Ar, Arn(nc)
+      real(pr) :: RT, Z, lnfug
+
+      n = 0.0
+      n(icomp) = 1.0
+
+      RT = R*T
+      Z = P*V/RT
+
+      call self%residual_helmholtz(n, V, T, Ar, Arn=Arn)
+      lnfug = -log(Z) + Arn(icomp)/RT
+      fug = exp(fug)
+   end subroutine purefug_calc
+
+   recursive subroutine VCALC(self, ITYP, nc, rn, T, P, V, max_iters)
+      !! ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE
+      use iso_fortran_env, only: error_unit
+      use stdlib_optval, only: optval
+      class(ArModel), intent(in) :: self
+      integer, intent(in) :: ITYP !! Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]
+      integer, intent(in) :: nc  !! Number of components
+      real(pr), intent(in) ::  rn(nc) !! Mixture moles
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(out) :: V !! Volume [L]
+      integer, optional, intent(in) :: max_iters !! Maxiumum number of iterations, defaults to 100
+
+      real(pr) ::  Ar, ArV, ArV2
+      logical :: FIRST_RUN
+
+      real(pr) :: totn
+      real(pr) :: B, CPV, S3R
+      real(pr) :: ZETMIN, ZETA, ZETMAX
+      real(pr) :: del, pcalc, der, AT, AVAP, VVAP
+
+      integer :: iter, maximum_iterations
+
+      maximum_iterations = optval(max_iters, 100)
+
+      FIRST_RUN = .true.
+      TOTN = sum(rn)
+      CPV = self%get_v0(rn, p, t)
+      B = CPV
+      S3R = 1.D0/CPV
+      ITER = 0
+
+      ZETMIN = 0.D0
+      ZETMAX = 1.D0 - 0.01*T/(10000*B)  ! improvement for cases with heavy components
+      if (ITYP .gt. 0) then
+         ZETA = .5D0
+      else
+         ! IDEAL GAS ESTIMATE
+         ZETA = min(.5D0, CPV*P/(TOTN*R*T))
+      end if
+  100 continue
+      DEL = 1
+      pcalc = 2*p
+
+      do while(abs(DEL) > 1d-10 .and. iter < maximum_iterations)
+         V = CPV/ZETA
+         ITER = ITER + 1
+         call self%residual_helmholtz(&
+            rn, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2 &
+         )
+         PCALC = TOTN*R*T/V - ArV
+
+         if (PCALC .gt. P) then
+            ZETMAX = ZETA
+         else
+            ZETMIN = ZETA
+         end if
+
+         ! AT is something close to Gr(P,T)
+         AT = (Ar + V*P)/(T*R) - TOTN*log(V)
+
+         DER = (ArV2*V**2 + TOTN*R*T)*S3R  ! this is dPdrho/B
+         DEL = -(PCALC - P)/DER
+         ZETA = ZETA + max(min(DEL, 0.1D0), -.1D0)
+
+         if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) &
+            ZETA = .5D0*(ZETMAX + ZETMIN)
+      end do
+
+      if (iter >= maximum_iterations) write(error_unit, *) &
+         "WARN: Volume solver exceeded maximum number of iterations"
+
+      if (ITYP .eq. 0) then
+         ! FIRST RUN WAS VAPOUR; RERUN FOR LIQUID
+         if (FIRST_RUN) then
+            VVAP = V
+            AVAP = AT
+            FIRST_RUN = .false.
+            ZETA = 0.5D0
+            ZETMAX = 1.D0 - 0.01*T/500
+            goto 100
+         else
+            if (AT .gt. AVAP) V = VVAP
+         end if
+      end if
+   end subroutine vcalc
+   ! ==========================================================================
 end module

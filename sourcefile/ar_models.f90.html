@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="description" content="Yet another Equation of State (library)">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>ar_models.f90 &ndash; Yaeos</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">Yaeos </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href='../page/index.html'>User documentation</a></li>
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="../lists/files.html">Source Files</a></li>
+            <li><a href="../lists/modules.html">Modules</a></li>
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                   <li><a href="../lists/types.html">Derived Types</a></li>
+       
+            </ul>
+        
+            </li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+          </ul>
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+  <div class="row">
+    <h1>ar_models.f90
+    <small>Source File</small>
+    </h1>
+    <div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 1.3% of total for source files.">30 statements</a>
+     </li> 
+    <li><i class="fa fa-code"></i><a href="../src/ar_models.f90"> Source File</a></li>
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+     <li class="active">ar_models.f90</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    <div id="sidebar">
+  <h3>Contents</h3>
+ 
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#mods-0">Modules</a></h3></div>
+  <div id="mods-0" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../module/yaeos_models_ar.html">yaeos_models_ar</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  <div class="list-group">
+    <a class="list-group-item" href="../sourcefile/ar_models.f90.html#src">ar_models.f90</a>
+  </div>
+</div>
+
+</div>
+
+    </div>
+    <div class="col-md-9" id='text'>
+      
+      <br>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">This file depends on</h3>
+      </div>
+      <div class="panel-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: sourcefile~~ar_models.f90~~EfferentGraph Pages: 1 -->
+<svg id="sourcefilear_modelsf90EfferentGraph" width="216pt" height="32pt"
+ viewBox="0.00 0.00 216.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~ar_models.f90~~EfferentGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>sourcefile~~ar_models.f90~~EfferentGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 212,-28 212,4 -4,4"/>
+<!-- sourcefile~ar_models.f90 -->
+<g id="sourcefile~~ar_models.f90~~EfferentGraph_node1" class="node">
+<title>sourcefile~ar_models.f90</title>
+<polygon fill="none" stroke="black" points="208,-24 120,-24 120,0 208,0 208,-24"/>
+<text text-anchor="middle" x="164" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">ar_models.f90</text>
+</g>
+<!-- sourcefile~constants.f90 -->
+<g id="sourcefile~~ar_models.f90~~EfferentGraph_node2" class="node">
+<title>sourcefile~constants.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~EfferentGraph_node2"><a xlink:href=".././sourcefile/constants.f90.html" xlink:title="constants.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="84,-24 0,-24 0,0 84,0 84,-24"/>
+<text text-anchor="middle" x="42" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">constants.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~ar_models.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~ar_models.f90~~EfferentGraph_edge1" class="edge">
+<title>sourcefile~ar_models.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M119.68,-12C111.47,-12 102.81,-12 94.38,-12"/>
+<polygon fill="#000000" stroke="#000000" points="94.26,-8.5 84.26,-12 94.26,-15.5 94.26,-8.5"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="202pt" height="32pt"
+ viewBox="0.00 0.00 201.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 197.5,-28 197.5,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="193.5,-24 88.5,-24 88.5,0 193.5,0 193.5,-24"/>
+<text text-anchor="middle" x="141" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a file to a file which it depends on. A file
+    is dependent upon another if the latter must be compiled before the former
+    can be.
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Files dependent on this one</h3>
+      </div>
+      <div class="panel-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: sourcefile~~ar_models.f90~~AfferentGraph Pages: 1 -->
+<svg id="sourcefilear_modelsf90AfferentGraph" width="641pt" height="166pt"
+ viewBox="0.00 0.00 641.00 165.87" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~ar_models.f90~~AfferentGraph" class="graph" transform="scale(1.16 1.16) rotate(0) translate(4 188)">
+<title>sourcefile~~ar_models.f90~~AfferentGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-188 738,-188 738,4 -4,4"/>
+<!-- sourcefile~ar_models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node1" class="node">
+<title>sourcefile~ar_models.f90</title>
+<polygon fill="none" stroke="black" points="88,-104 0,-104 0,-80 88,-80 88,-104"/>
+<text text-anchor="middle" x="44" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50">ar_models.f90</text>
+</g>
+<!-- sourcefile~thermoprops.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node2" class="node">
+<title>sourcefile~thermoprops.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node2"><a xlink:href=".././sourcefile/thermoprops.f90.html" xlink:title="thermoprops.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="526,-184 425,-184 425,-160 526,-160 526,-184"/>
+<text text-anchor="middle" x="475.5" y="-169.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">thermoprops.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~thermoprops.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge1" class="edge">
+<title>sourcefile~thermoprops.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M424.78,-166.8C367.67,-160.42 271.31,-148.4 189.5,-132"/>
+</g>
+<!-- sourcefile~models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node3" class="node">
+<title>sourcefile~models.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node3"><a xlink:href=".././sourcefile/models.f90.html" xlink:title="models.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="634,-121 562,-121 562,-97 634,-97 634,-121"/>
+<text text-anchor="middle" x="598" y="-106.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">models.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~models.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge2" class="edge">
+<title>sourcefile~models.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M338,-132C272.14,-127.64 254.51,-143.37 189.5,-132"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M187.5,-132C154.36,-126.2 117.85,-115.87 90.08,-107.16"/>
+<polygon fill="#000000" stroke="#000000" points="90.86,-103.74 80.27,-104.04 88.73,-110.41 90.86,-103.74"/>
+</g>
+<!-- sourcefile~generic_cubic.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node4" class="node">
+<title>sourcefile~generic_cubic.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node4"><a xlink:href=".././sourcefile/generic_cubic.f90.html" xlink:title="generic_cubic.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="242,-104 135,-104 135,-80 242,-80 242,-104"/>
+<text text-anchor="middle" x="188.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">generic_cubic.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~models.f90&#45;&gt;sourcefile~generic_cubic.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge7" class="edge">
+<title>sourcefile~models.f90&#45;&gt;sourcefile~generic_cubic.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M474.5,-132C414.73,-133.2 399.65,-135.95 340,-132"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M338,-132C300.42,-129.51 259.17,-117.62 229.7,-107.45"/>
+<polygon fill="#000000" stroke="#000000" points="230.78,-104.12 220.18,-104.08 228.44,-110.71 230.78,-104.12"/>
+</g>
+<!-- sourcefile~alphas.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node7" class="node">
+<title>sourcefile~alphas.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node7"><a xlink:href=".././sourcefile/alphas.f90.html" xlink:title="alphas.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="373,-24 305,-24 305,0 373,0 373,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">alphas.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~models.f90&#45;&gt;sourcefile~alphas.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge11" class="edge">
+<title>sourcefile~models.f90&#45;&gt;sourcefile~alphas.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M583.58,-96.94C569.99,-85.34 547.91,-68.12 526,-58 479.57,-36.55 421.81,-24.28 383.09,-17.89"/>
+<polygon fill="#000000" stroke="#000000" points="383.61,-14.43 373.18,-16.32 382.51,-21.34 383.61,-14.43"/>
+</g>
+<!-- sourcefile~mixing_rules.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node8" class="node">
+<title>sourcefile~mixing_rules.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node8"><a xlink:href=".././sourcefile/mixing_rules.f90.html" xlink:title="mixing_rules.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="389,-104 289,-104 289,-80 389,-80 389,-104"/>
+<text text-anchor="middle" x="339" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">mixing_rules.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~models.f90&#45;&gt;sourcefile~mixing_rules.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge13" class="edge">
+<title>sourcefile~models.f90&#45;&gt;sourcefile~mixing_rules.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M561.74,-118.98C537.89,-124.92 505.57,-131.42 476.5,-132"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M474.5,-132C438.92,-132.71 400.16,-119.59 373.43,-108.19"/>
+<polygon fill="#000000" stroke="#000000" points="374.71,-104.93 364.15,-104.1 371.89,-111.34 374.71,-104.93"/>
+</g>
+<!-- sourcefile~pr76.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node9" class="node">
+<title>sourcefile~pr76.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node9"><a xlink:href=".././sourcefile/pr76.f90.html" xlink:title="pr76.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="504.5,-91 446.5,-91 446.5,-67 504.5,-67 504.5,-91"/>
+<text text-anchor="middle" x="475.5" y="-76.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pr76.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~models.f90&#45;&gt;sourcefile~pr76.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge15" class="edge">
+<title>sourcefile~models.f90&#45;&gt;sourcefile~pr76.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M561.82,-100.24C547.03,-96.56 529.79,-92.27 514.7,-88.51"/>
+<polygon fill="#000000" stroke="#000000" points="515.19,-85.03 504.64,-86.01 513.5,-91.82 515.19,-85.03"/>
+</g>
+<!-- sourcefile~generic_cubic.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge3" class="edge">
+<title>sourcefile~generic_cubic.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M134.84,-92C122.95,-92 110.31,-92 98.38,-92"/>
+<polygon fill="#000000" stroke="#000000" points="98.12,-88.5 88.12,-92 98.12,-95.5 98.12,-88.5"/>
+</g>
+<!-- sourcefile~armodel_adiff_api.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node5" class="node">
+<title>sourcefile~armodel_adiff_api.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node5"><a xlink:href=".././sourcefile/armodel_adiff_api.f90.html" xlink:title="armodel_adiff_api.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="253,-62 124,-62 124,-38 253,-38 253,-62"/>
+<text text-anchor="middle" x="188.5" y="-47.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">armodel_adiff_api.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge4" class="edge">
+<title>sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M146.67,-62.04C130.72,-66.74 112.26,-72.18 95.49,-77.12"/>
+<polygon fill="#000000" stroke="#000000" points="94.44,-73.78 85.84,-79.96 96.42,-80.49 94.44,-73.78"/>
+</g>
+<!-- sourcefile~yaeos.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_node6" class="node">
+<title>sourcefile~yaeos.f90</title>
+<g id="a_sourcefile~~ar_models.f90~~AfferentGraph_node6"><a xlink:href=".././sourcefile/yaeos.f90.html" xlink:title="yaeos.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="734,-141 670,-141 670,-117 734,-117 734,-141"/>
+<text text-anchor="middle" x="702" y="-126.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~yaeos.f90&#45;&gt;sourcefile~thermoprops.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge5" class="edge">
+<title>sourcefile~yaeos.f90&#45;&gt;sourcefile~thermoprops.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M669.78,-134.98C635.32,-141.58 579.03,-152.36 536.06,-160.59"/>
+<polygon fill="#000000" stroke="#000000" points="535.16,-157.2 526,-162.52 536.48,-164.07 535.16,-157.2"/>
+</g>
+<!-- sourcefile~yaeos.f90&#45;&gt;sourcefile~models.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge6" class="edge">
+<title>sourcefile~yaeos.f90&#45;&gt;sourcefile~models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M669.84,-122.89C661.76,-121.31 652.88,-119.57 644.24,-117.87"/>
+<polygon fill="#000000" stroke="#000000" points="644.73,-114.4 634.25,-115.91 643.39,-121.27 644.73,-114.4"/>
+</g>
+<!-- sourcefile~alphas.f90&#45;&gt;sourcefile~generic_cubic.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge8" class="edge">
+<title>sourcefile~alphas.f90&#45;&gt;sourcefile~generic_cubic.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M312.35,-24.05C304.6,-28.09 296.24,-32.89 289,-38 271.27,-50.52 271.72,-60.01 253,-71 249.95,-72.79 246.73,-74.45 243.43,-75.98"/>
+<polygon fill="#000000" stroke="#000000" points="241.79,-72.88 233.94,-79.99 244.51,-79.32 241.79,-72.88"/>
+</g>
+<!-- sourcefile~mixing_rules.f90&#45;&gt;sourcefile~generic_cubic.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge9" class="edge">
+<title>sourcefile~mixing_rules.f90&#45;&gt;sourcefile~generic_cubic.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M288.96,-92C277.22,-92 264.51,-92 252.24,-92"/>
+<polygon fill="#000000" stroke="#000000" points="252.06,-88.5 242.06,-92 252.06,-95.5 252.06,-88.5"/>
+</g>
+<!-- sourcefile~pr76.f90&#45;&gt;sourcefile~generic_cubic.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge10" class="edge">
+<title>sourcefile~pr76.f90&#45;&gt;sourcefile~generic_cubic.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M446.44,-75.71C429.77,-73.92 408.21,-71.9 389,-71 344.6,-68.93 333.2,-66.39 289,-71 275.08,-72.45 260.24,-75.02 246.39,-77.87"/>
+<polygon fill="#000000" stroke="#000000" points="245.55,-74.47 236.5,-79.98 247.01,-81.32 245.55,-74.47"/>
+</g>
+<!-- sourcefile~pr76.f90&#45;&gt;sourcefile~alphas.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge12" class="edge">
+<title>sourcefile~pr76.f90&#45;&gt;sourcefile~alphas.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M450.14,-66.87C428.62,-56.15 397.05,-40.42 373.22,-28.55"/>
+<polygon fill="#000000" stroke="#000000" points="374.69,-25.37 364.18,-24.04 371.57,-31.63 374.69,-25.37"/>
+</g>
+<!-- sourcefile~pr76.f90&#45;&gt;sourcefile~mixing_rules.f90 -->
+<g id="sourcefile~~ar_models.f90~~AfferentGraph_edge14" class="edge">
+<title>sourcefile~pr76.f90&#45;&gt;sourcefile~mixing_rules.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M446.3,-81.73C432.59,-83.05 415.56,-84.7 399.17,-86.28"/>
+<polygon fill="#000000" stroke="#000000" points="398.71,-82.81 389.09,-87.25 399.38,-89.78 398.71,-82.81"/>
+</g>
+</g>
+</svg>
+</div><script>var pansourcefilear_modelsf90AfferentGraph = svgPanZoom('#sourcefilear_modelsf90AfferentGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="202pt" height="32pt"
+ viewBox="0.00 0.00 201.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 197.5,-28 197.5,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="193.5,-24 88.5,-24 88.5,0 193.5,0 193.5,-24"/>
+<text text-anchor="middle" x="141" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a file to a file which it depends on. A file
+    is dependent upon another if the latter must be compiled before the former
+    can be.
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+<br>
+    <section class="visible-xs visible-sm hidden-md">
+      <h3>Contents</h3>
+ 
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#mods-1">Modules</a></h3></div>
+  <div id="mods-1" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../module/yaeos_models_ar.html">yaeos_models_ar</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  <div class="list-group">
+    <a class="list-group-item" href="../sourcefile/ar_models.f90.html#src">ar_models.f90</a>
+  </div>
+</div>
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    <section>
+      <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="k">module </span><span class="n">yaeos_models_ar</span><span class="w"></span>
+<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">    </span><span class="c">!! Module that defines the basics of a residual Helmholtz energy.</span>
+<a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">    </span><span class="k">use </span><span class="n">yaeos_constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="w"></span>
+<a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">    </span><span class="k">implicit none</span>
+<a id="ln-5" name="ln-5" href="#ln-5"></a>
+<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="k">    type</span><span class="p">,</span><span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArModel</span><span class="w"></span>
+<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">        </span><span class="c">!! Abstract residual Helmholtz model.</span>
+<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">id</span><span class="w"></span>
+<a id="ln-9" name="ln-9" href="#ln-9"></a><span class="w">        </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="p">:),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">name</span><span class="w"></span>
+<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">    </span><span class="k">contains</span>
+<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="k">        procedure</span><span class="p">(</span><span class="n">abs_residual_helmholtz</span><span class="p">),</span><span class="w"> </span><span class="k">deferred</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">residual_helmholtz</span><span class="w"></span>
+<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="w">            </span><span class="c">!! Method to calculate residual helmholtz energy and derivatives.</span>
+<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">        </span><span class="k">procedure</span><span class="p">(</span><span class="n">abs_volume_initializer</span><span class="p">),</span><span class="w"> </span><span class="k">deferred</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"></span>
+<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">            </span><span class="c">!! Volume initializer</span>
+<a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">    </span><span class="k">end type</span>
+<a id="ln-16" name="ln-16" href="#ln-16"></a>
+<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="k">    abstract interface</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="k">        subroutine </span><span class="n">abs_residual_helmholtz</span><span class="p">(&amp;</span><span class="w"></span>
+<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">            </span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">Ar</span><span class="p">,</span><span class="w"> </span><span class="n">ArV</span><span class="p">,</span><span class="w"> </span><span class="n">ArT</span><span class="p">,</span><span class="w"> </span><span class="n">ArTV</span><span class="p">,</span><span class="w"> </span><span class="n">ArV2</span><span class="p">,</span><span class="w"> </span><span class="n">ArT2</span><span class="p">,</span><span class="w"> </span><span class="n">Arn</span><span class="p">,</span><span class="w"> </span><span class="n">ArVn</span><span class="p">,</span><span class="w"> </span><span class="n">ArTn</span><span class="p">,</span><span class="w"> </span><span class="n">Arn2</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
+<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">        </span><span class="p">)</span><span class="w"></span>
+<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">         </span><span class="c">!! Residual Helmholtz model generic interface</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">         </span><span class="k">import </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="w"></span>
+<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">         </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span><span class="w"></span>
+<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w"></span>
+<a id="ln-25" name="ln-25" href="#ln-25"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="p">,</span><span class="w"> </span><span class="n">ArV</span><span class="p">,</span><span class="w"> </span><span class="n">ArT</span><span class="p">,</span><span class="w"> </span><span class="n">ArT2</span><span class="p">,</span><span class="w"> </span><span class="n">ArTV</span><span class="p">,</span><span class="w"> </span><span class="n">ArV2</span><span class="w"></span>
+<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Arn</span><span class="p">,</span><span class="w"> </span><span class="n">ArVn</span><span class="p">,</span><span class="w"> </span><span class="n">ArTn</span><span class="w"></span>
+<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Arn2</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"></span>
+<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">      </span><span class="k">end subroutine</span>
+<a id="ln-30" name="ln-30" href="#ln-30"></a>
+<a id="ln-31" name="ln-31" href="#ln-31"></a><span class="k">      function </span><span class="n">abs_volume_initializer</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"></span>
+<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">         </span><span class="c">!! Initialization of volume</span>
+<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="w">         </span><span class="k">import </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="w"></span>
+<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="w">         </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span><span class="w"></span>
+<a id="ln-35" name="ln-35" href="#ln-35"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w"></span>
+<a id="ln-36" name="ln-36" href="#ln-36"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="w"></span>
+<a id="ln-37" name="ln-37" href="#ln-37"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<a id="ln-38" name="ln-38" href="#ln-38"></a><span class="w">         </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">abs_volume_initializer</span><span class="w"></span>
+<a id="ln-39" name="ln-39" href="#ln-39"></a><span class="w">      </span><span class="k">end function</span>
+<a id="ln-40" name="ln-40" href="#ln-40"></a><span class="k">   end interface</span>
+<a id="ln-41" name="ln-41" href="#ln-41"></a><span class="k">end module</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    </div>
+  </div>
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+        </div>
+        <div class="col-xs-6 col-md-6">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-02-03 14:53            </p>
+        </div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+  </body>
+</html>

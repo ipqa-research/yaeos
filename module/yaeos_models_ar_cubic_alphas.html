@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="description" content="Yet another Equation of State (library)">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>yaeos_models_ar_cubic_alphas &ndash; Yaeos</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">Yaeos </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href='../page/index.html'>User documentation</a></li>
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="../lists/files.html">Source Files</a></li>
+            <li><a href="../lists/modules.html">Modules</a></li>
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                   <li><a href="../lists/types.html">Derived Types</a></li>
+       
+            </ul>
+        
+            </li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+          </ul>
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+  <div class="row">
+    <h1>yaeos_models_ar_cubic_alphas 
+    <small>Module</small>
+    </h1>
+    <div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 1.0% of total for modules and submodules.">22 statements</a>
+     </li> 
+    <li><i class="fa fa-code"></i><a href="../src/alphas.f90"> Source File</a></li>
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+     <li><a href='../sourcefile/alphas.f90.html'>alphas.f90</a></li>
+     <li class="active">yaeos_models_ar_cubic_alphas</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    <div id="sidebar">
+  <h3>Contents</h3>
+ 
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-0">Derived Types</a></h3></div>
+  <div id="types-0" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../module/yaeos_models_ar_cubic_alphas.html#type-alphasoave">AlphaSoave</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      <a class="list-group-item" href="../module/yaeos_models_ar_cubic_alphas.html#proc-alpha">alpha</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    
+<br>        <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      <li class="list-group-item">
+  <ul class="list-inline">
+    <li><a href='../module/yaeos_constants.html'>yaeos_constants</a></li>
+    <li><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></li>
+    <li><a href='../module/yaeos_substance.html'>yaeos_substance</a></li>
+  </ul>
+      </li>
+      <li class="list-group-item">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos_models_ar_cubic_alphas~~UsesGraph Pages: 1 -->
+<svg id="moduleyaeos_models_ar_cubic_alphasUsesGraph" width="641pt" height="83pt"
+ viewBox="0.00 0.00 641.00 83.22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph" class="graph" transform="scale(1.26 1.26) rotate(0) translate(4 101.03)">
+<title>module~~yaeos_models_ar_cubic_alphas~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-101.03 805,-101.03 805,4 -4,4"/>
+<!-- module~yaeos_models_ar_cubic_alphas -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node1" class="node">
+<title>module~yaeos_models_ar_cubic_alphas</title>
+<polygon fill="none" stroke="black" points="801,-66 622,-66 622,-42 801,-42 801,-66"/>
+<text text-anchor="middle" x="711.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_models_ar_cubic_alphas</text>
+</g>
+<!-- module~yaeos_constants -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node2" class="node">
+<title>module~yaeos_constants</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node2"><a xlink:href=".././module/yaeos_constants.html" xlink:title="yaeos_constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="230,-66 130,-66 130,-42 230,-42 230,-66"/>
+<text text-anchor="middle" x="180" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_models_ar_cubic_alphas&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge1" class="edge">
+<title>module~yaeos_models_ar_cubic_alphas&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M655.84,-66.06C580.29,-81.24 439.68,-104.2 319.5,-94"/>
+</g>
+<!-- module~yaeos_models_ar_genericcubic -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node3" class="node">
+<title>module~yaeos_models_ar_genericcubic</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node3"><a xlink:href=".././module/yaeos_models_ar_genericcubic.html" xlink:title="yaeos_models_ar_genericcubic">
+<polygon fill="#337ab7" stroke="#337ab7" points="586,-66 407,-66 407,-42 586,-42 586,-66"/>
+<text text-anchor="middle" x="496.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models_ar_genericcubic</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_models_ar_cubic_alphas&#45;&gt;module~yaeos_models_ar_genericcubic -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge2" class="edge">
+<title>module~yaeos_models_ar_cubic_alphas&#45;&gt;module~yaeos_models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M621.71,-54C613.35,-54 604.84,-54 596.4,-54"/>
+<polygon fill="#000000" stroke="#000000" points="596.15,-50.5 586.14,-54 596.14,-57.5 596.15,-50.5"/>
+</g>
+<!-- module~yaeos_substance -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node4" class="node">
+<title>module~yaeos_substance</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node4"><a xlink:href=".././module/yaeos_substance.html" xlink:title="yaeos_substance">
+<polygon fill="#337ab7" stroke="#337ab7" points="370,-24 267,-24 267,0 370,0 370,-24"/>
+<text text-anchor="middle" x="318.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_substance</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_models_ar_cubic_alphas&#45;&gt;module~yaeos_substance -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge3" class="edge">
+<title>module~yaeos_models_ar_cubic_alphas&#45;&gt;module~yaeos_substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M645.72,-41.96C626.54,-38.69 605.47,-35.4 586,-33 515.68,-24.32 434.46,-18.52 380.34,-15.26"/>
+<polygon fill="#000000" stroke="#000000" points="380.42,-11.76 370.23,-14.66 380,-18.74 380.42,-11.76"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node5" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node5"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-66 0,-66 0,-42 94,-42 94,-66"/>
+<text text-anchor="middle" x="47" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_constants&#45;&gt;iso_fortran_env -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge4" class="edge">
+<title>module~yaeos_constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.85,-54C121.59,-54 112.96,-54 104.53,-54"/>
+<polygon fill="#000000" stroke="#000000" points="104.39,-50.5 94.39,-54 104.39,-57.5 104.39,-50.5"/>
+</g>
+<!-- module~yaeos_models_ar_genericcubic&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge7" class="edge">
+<title>module~yaeos_models_ar_genericcubic&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M455.54,-66.06C412.12,-78.62 345.49,-96.21 319.5,-94"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M317.5,-94C283.31,-91.1 246.03,-79.57 219.08,-69.62"/>
+<polygon fill="#000000" stroke="#000000" points="220.23,-66.32 209.64,-66.05 217.75,-72.86 220.23,-66.32"/>
+</g>
+<!-- module~yaeos_models_ar_genericcubic&#45;&gt;module~yaeos_substance -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge6" class="edge">
+<title>module~yaeos_models_ar_genericcubic&#45;&gt;module~yaeos_substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M445.07,-41.96C424.72,-37.11 401.08,-31.47 379.83,-26.4"/>
+<polygon fill="#000000" stroke="#000000" points="380.48,-22.95 369.94,-24.04 378.86,-29.76 380.48,-22.95"/>
+</g>
+<!-- module~yaeos_models_ar -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node6" class="node">
+<title>module~yaeos_models_ar</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsesGraph_node6"><a xlink:href=".././module/yaeos_models_ar.html" xlink:title="yaeos_models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="371,-66 266,-66 266,-42 371,-42 371,-66"/>
+<text text-anchor="middle" x="318.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models_ar</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_models_ar_genericcubic&#45;&gt;module~yaeos_models_ar -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge5" class="edge">
+<title>module~yaeos_models_ar_genericcubic&#45;&gt;module~yaeos_models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M406.98,-54C398.22,-54 389.46,-54 381.06,-54"/>
+<polygon fill="#000000" stroke="#000000" points="381.01,-50.5 371.01,-54 381.01,-57.5 381.01,-50.5"/>
+</g>
+<!-- module~yaeos_substance&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge8" class="edge">
+<title>module~yaeos_substance&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M278.38,-24.04C263.25,-28.69 245.76,-34.07 229.81,-38.98"/>
+<polygon fill="#000000" stroke="#000000" points="228.65,-35.68 220.12,-41.96 230.71,-42.37 228.65,-35.68"/>
+</g>
+<!-- module~yaeos_models_ar&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsesGraph_edge9" class="edge">
+<title>module~yaeos_models_ar&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M265.9,-54C257.63,-54 249.02,-54 240.58,-54"/>
+<polygon fill="#000000" stroke="#000000" points="240.42,-50.5 230.42,-54 240.42,-57.5 240.42,-50.5"/>
+</g>
+</g>
+</svg>
+</div><script>var panmoduleyaeos_models_ar_cubic_alphasUsesGraph = svgPanZoom('#moduleyaeos_models_ar_cubic_alphasUsesGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      </ul>
+    </div>
+
+        <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+  <li class="list-group-item">
+    <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos_models_ar_cubic_alphas~~UsedByGraph Pages: 1 -->
+<svg id="moduleyaeos_models_ar_cubic_alphasUsedByGraph" width="641pt" height="50pt"
+ viewBox="0.00 0.00 641.00 49.97" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph" class="graph" transform="scale(1.04 1.04) rotate(0) translate(4 48)">
+<title>module~~yaeos_models_ar_cubic_alphas~~UsedByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 663,-48 663,4 -4,4"/>
+<!-- module~yaeos_models_ar_cubic_alphas -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node1" class="node">
+<title>module~yaeos_models_ar_cubic_alphas</title>
+<polygon fill="none" stroke="black" points="179,-44 0,-44 0,-20 179,-20 179,-44"/>
+<text text-anchor="middle" x="89.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_models_ar_cubic_alphas</text>
+</g>
+<!-- module~yaeos_models -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node2" class="node">
+<title>module~yaeos_models</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node2"><a xlink:href=".././module/yaeos_models.html" xlink:title="yaeos_models">
+<polygon fill="#337ab7" stroke="#337ab7" points="569,-44 481,-44 481,-20 569,-20 569,-44"/>
+<text text-anchor="middle" x="525" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_models&#45;&gt;module~yaeos_models_ar_cubic_alphas -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_edge1" class="edge">
+<title>module~yaeos_models&#45;&gt;module~yaeos_models_ar_cubic_alphas</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M480.95,-32.64C469.28,-32.79 456.66,-32.93 445,-33 342.78,-33.65 317.22,-33.41 215,-33 206.69,-32.97 198.06,-32.92 189.41,-32.87"/>
+<polygon fill="#000000" stroke="#000000" points="189.28,-29.37 179.25,-32.8 189.23,-36.37 189.28,-29.37"/>
+</g>
+<!-- module~yaeos_models_ar_cubic_pengrobinson76 -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node3" class="node">
+<title>module~yaeos_models_ar_cubic_pengrobinson76</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node3"><a xlink:href=".././module/yaeos_models_ar_cubic_pengrobinson76.html" xlink:title="yaeos_models_ar_cubic_pengrobinson76">
+<polygon fill="#337ab7" stroke="#337ab7" points="445,-24 215,-24 215,0 445,0 445,-24"/>
+<text text-anchor="middle" x="330" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models_ar_cubic_pengrobinson76</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_models&#45;&gt;module~yaeos_models_ar_cubic_pengrobinson76 -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_edge4" class="edge">
+<title>module~yaeos_models&#45;&gt;module~yaeos_models_ar_cubic_pengrobinson76</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M480.69,-27.51C472.85,-26.7 464.34,-25.82 455.49,-24.9"/>
+<polygon fill="#000000" stroke="#000000" points="455.66,-21.4 445.36,-23.85 454.94,-28.36 455.66,-21.4"/>
+</g>
+<!-- module~yaeos_models_ar_cubic_pengrobinson76&#45;&gt;module~yaeos_models_ar_cubic_alphas -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_edge2" class="edge">
+<title>module~yaeos_models_ar_cubic_pengrobinson76&#45;&gt;module~yaeos_models_ar_cubic_alphas</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.99,-21.56C206.47,-22.27 197.92,-22.99 189.51,-23.7"/>
+<polygon fill="#000000" stroke="#000000" points="189,-20.23 179.33,-24.55 189.59,-27.2 189,-20.23"/>
+</g>
+<!-- module~yaeos -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node4" class="node">
+<title>module~yaeos</title>
+<g id="a_module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_node4"><a xlink:href=".././module/yaeos.html" xlink:title="yaeos">
+<polygon fill="#337ab7" stroke="#337ab7" points="659,-44 605,-44 605,-20 659,-20 659,-44"/>
+<text text-anchor="middle" x="632" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos&#45;&gt;module~yaeos_models -->
+<g id="module~~yaeos_models_ar_cubic_alphas~~UsedByGraph_edge3" class="edge">
+<title>module~yaeos&#45;&gt;module~yaeos_models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M604.77,-32C596.92,-32 588.01,-32 579.07,-32"/>
+<polygon fill="#000000" stroke="#000000" points="579.03,-28.5 569.03,-32 579.03,-35.5 579.03,-28.5"/>
+</g>
+</g>
+</svg>
+</div><script>var panmoduleyaeos_models_ar_cubic_alphasUsedByGraph = svgPanZoom('#moduleyaeos_models_ar_cubic_alphasUsedByGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+  </li>
+      </ul>
+    </div>
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      <h3>Contents</h3>
+ 
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-1">Derived Types</a></h3></div>
+  <div id="types-1" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../module/yaeos_models_ar_cubic_alphas.html#type-alphasoave">AlphaSoave</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      <a class="list-group-item" href="../module/yaeos_models_ar_cubic_alphas.html#proc-alpha">alpha</a>
+    </div>
+  </div>
+</div>
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+
+    
+    
+
+    
+    <section>
+     <h2>Derived Types</h2>
+     <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-alphasoave"></span><h3>type, public, extends(<a href='../type/alphafunction.html'>AlphaFunction</a>) :: <a href='../type/alphasoave.html'>AlphaSoave</a>  </h3></div>
+  <div class="panel-body">
+     <h4>Components</h4>
+    <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th><th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" id="variable-k~2"></span>real(kind=pr),</td>
+<td>public,</td>  <td>allocatable</td><td>::</td>
+  <td><strong>k</strong>(:)</td><td></td><td></td><td></td>
+</tr>
+</tbody>
+</table>
+
+     
+     <h4>Type-Bound Procedures</h4>
+      <table class="table table-striped varlist">
+      <tbody>
+       <tr><td>procedure, public :: <strong><a href='../type/alphasoave.html#boundprocedure-alpha~3'>alpha</a></strong>  </td>
+       <td></td></tr>
+       </tbody>
+       </table>
+  </div>
+</div>
+
+    </section>
+  <br>
+    
+
+    <section>
+    <h2>Subroutines</h2>
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-alpha"></span><h3>public subroutine <a href='../proc/alpha.html'>alpha</a>(self, Tr, a, dadt, dadt2)</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>class(<a href='../type/alphasoave.html'>AlphaSoave</a>),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>self</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=pr),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>Tr</strong>(:)</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=pr),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>a</strong>(:)</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=pr),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>dadt</strong>(:)</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" ></span>real(kind=pr),</td>
+<td>intent(out)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>dadt2</strong>(:)</td><td></td>
+</tr>
+</tbody>
+</table>
+
+
+  </div>
+  </div>
+
+    </section>    
+    <br>
+    
+    </div>
+  </div>
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+        </div>
+        <div class="col-xs-6 col-md-6">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-02-03 14:53            </p>
+        </div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+  </body>
+</html>

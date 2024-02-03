@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="description" content="Yet another Equation of State (library)">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>residual_helmholtz &ndash; Yaeos</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">Yaeos </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href='../page/index.html'>User documentation</a></li>
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="../lists/files.html">Source Files</a></li>
+            <li><a href="../lists/modules.html">Modules</a></li>
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                   <li><a href="../lists/types.html">Derived Types</a></li>
+       
+            </ul>
+        
+            </li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+          </ul>
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+  <div class="row">
+    <h1>residual_helmholtz
+      <small>Subroutine</small>
+    </h1>
+    <div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 5.9% of total for procedures.">117 statements</a>
+     </li> 
+    <li><i class="fa fa-code"></i><a href="../src/armodel_adiff_api.f90"> Source File</a></li>
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+     <li><a href='../sourcefile/armodel_adiff_api.f90.html'>armodel_adiff_api.f90</a></li>
+     <li><a href='../module/yaeos_ar_models_hyperdual.html'>yaeos_ar_models_hyperdual</a></li>
+     <li class="active">residual_helmholtz</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    <div id="sidebar">
+  <h3>Contents</h3>
+ 
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_ar">d_Ar</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_n">d_n</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_t">d_t</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_v">d_v</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardn">get_dardn</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardn2">get_dardn2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardt">get_dardt</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardt2">get_dardt2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardtn">get_dardtn</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardv">get_dardv</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardv2">get_dardv2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardvn">get_dardvn</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardvt">get_dardvt</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-reset_vars">reset_vars</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public subroutine residual_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)</h2>
+    
+
+
+    <h3>Arguments</h3>
+      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" id="variable-self~12"></span>class(<a href='../type/armodeladiff.html'>ArModelAdiff</a>),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>self</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-n~15"></span>real(kind=pr),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>n</strong>(:)</td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-v~12"></span>real(kind=pr),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>v</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-t~14"></span>real(kind=pr),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>t</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-ar~7"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>Ar</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arv~5"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArV</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-art~2"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArT</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-artv~4"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArTV</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arv2~5"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArV2</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-art2~2"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArT2</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arn~5"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
+  <td><strong>Arn</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arvn~4"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
+  <td><strong>ArVn</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-artn~4"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
+  <td><strong>ArTn</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arn2~4"></span>real(kind=pr),</td>
+<td>intent(out),</td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>Arn2</strong>(size(n),size(n))</td><td></td>
+</tr>
+</tbody>
+</table>
+
+    <br>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Calls</h3>
+      </div>
+      <div class="panel-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~residual_helmholtz~2~~CallsGraph Pages: 1 -->
+<svg id="procresidual_helmholtz2CallsGraph" width="332pt" height="368pt"
+ viewBox="0.00 0.00 332.00 368.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~residual_helmholtz~2~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 364)">
+<title>proc~~residual_helmholtz~2~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-364 328,-364 328,4 -4,4"/>
+<!-- proc~residual_helmholtz~2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node1" class="node">
+<title>proc~residual_helmholtz~2</title>
+<polygon fill="none" stroke="black" points="112,-192 0,-192 0,-168 112,-168 112,-192"/>
+<text text-anchor="middle" x="56" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50">residual_helmholtz</text>
+</g>
+<!-- none~get_dardv2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node2" class="node">
+<title>none~get_dardv2</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="221,-276 148,-276 148,-252 221,-252 221,-276"/>
+<text text-anchor="middle" x="184.5" y="-261.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardv2</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardv2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge1" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardv2</title>
+<path fill="none" stroke="#000000" d="M73.86,-192.21C91.95,-205.18 121.63,-226.1 148,-243 149.86,-244.19 151.79,-245.4 153.74,-246.61"/>
+<polygon fill="#000000" stroke="#000000" points="151.96,-249.62 162.32,-251.81 155.59,-243.63 151.96,-249.62"/>
+</g>
+<!-- none~get_dardv -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node3" class="node">
+<title>none~get_dardv</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="217.5,-234 151.5,-234 151.5,-210 217.5,-210 217.5,-234"/>
+<text text-anchor="middle" x="184.5" y="-219.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardv</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardv -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge2" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardv</title>
+<path fill="none" stroke="#000000" d="M93.25,-192.04C108.22,-197.01 125.68,-202.8 141.23,-207.97"/>
+<polygon fill="#000000" stroke="#000000" points="140.53,-211.42 151.13,-211.25 142.74,-204.78 140.53,-211.42"/>
+</g>
+<!-- none~get_dardn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node4" class="node">
+<title>none~get_dardn</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218,-108 151,-108 151,-84 218,-84 218,-108"/>
+<text text-anchor="middle" x="184.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardn</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge4" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardn</title>
+<path fill="none" stroke="#000000" d="M73.86,-167.79C91.95,-154.82 121.63,-133.9 148,-117 149.86,-115.81 151.79,-114.6 153.74,-113.39"/>
+<polygon fill="#000000" stroke="#000000" points="155.59,-116.37 162.32,-108.19 151.96,-110.38 155.59,-116.37"/>
+</g>
+<!-- none~get_dardtn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node5" class="node">
+<title>none~get_dardtn</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="219.5,-150 149.5,-150 149.5,-126 219.5,-126 219.5,-150"/>
+<text text-anchor="middle" x="184.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardtn</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardtn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge3" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardtn</title>
+<path fill="none" stroke="#000000" d="M93.25,-167.96C107.74,-163.15 124.57,-157.57 139.73,-152.53"/>
+<polygon fill="#000000" stroke="#000000" points="141.03,-155.79 149.42,-149.32 138.82,-149.15 141.03,-155.79"/>
+</g>
+<!-- none~get_dardvn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node6" class="node">
+<title>none~get_dardvn</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="221,-66 148,-66 148,-42 221,-42 221,-66"/>
+<text text-anchor="middle" x="184.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardvn</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardvn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge5" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardvn</title>
+<path fill="none" stroke="#000000" d="M65.48,-167.86C80.43,-147.06 113.18,-104.06 148,-75 149.32,-73.9 150.71,-72.81 152.14,-71.76"/>
+<polygon fill="#000000" stroke="#000000" points="154.26,-74.55 160.61,-66.06 150.36,-68.74 154.26,-74.55"/>
+</g>
+<!-- none~get_dardt2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node7" class="node">
+<title>none~get_dardt2</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="219.5,-192 149.5,-192 149.5,-168 219.5,-168 219.5,-192"/>
+<text text-anchor="middle" x="184.5" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardt2</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardt2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge6" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardt2</title>
+<path fill="none" stroke="#000000" d="M112.12,-180C121.21,-180 130.53,-180 139.31,-180"/>
+<polygon fill="#000000" stroke="#000000" points="139.32,-183.5 149.32,-180 139.32,-176.5 139.32,-183.5"/>
+</g>
+<!-- none~get_dardvt -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node8" class="node">
+<title>none~get_dardvt</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="219.5,-360 149.5,-360 149.5,-336 219.5,-336 219.5,-360"/>
+<text text-anchor="middle" x="184.5" y="-345.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardvt</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardvt -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge7" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardvt</title>
+<path fill="none" stroke="#000000" d="M62.18,-192.4C74.02,-219.56 105.34,-285.19 148,-327 149.05,-328.03 150.17,-329.04 151.33,-330.01"/>
+<polygon fill="#000000" stroke="#000000" points="149.3,-332.86 159.44,-335.93 153.43,-327.21 149.3,-332.86"/>
+</g>
+<!-- none~get_dardt -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node9" class="node">
+<title>none~get_dardt</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="216.5,-318 152.5,-318 152.5,-294 216.5,-294 216.5,-318"/>
+<text text-anchor="middle" x="184.5" y="-303.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardt</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardt -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge8" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardt</title>
+<path fill="none" stroke="#000000" d="M65.48,-192.14C80.43,-212.94 113.18,-255.94 148,-285 149.32,-286.1 150.71,-287.19 152.14,-288.24"/>
+<polygon fill="#000000" stroke="#000000" points="150.36,-291.26 160.61,-293.94 154.26,-285.45 150.36,-291.26"/>
+</g>
+<!-- none~get_dardn2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node10" class="node">
+<title>none~get_dardn2</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="221,-24 148,-24 148,0 221,0 221,-24"/>
+<text text-anchor="middle" x="184.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dardn2</text>
+</g>
+<!-- proc~residual_helmholtz~2&#45;&gt;none~get_dardn2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge9" class="edge">
+<title>proc~residual_helmholtz~2&#45;&gt;none~get_dardn2</title>
+<path fill="none" stroke="#000000" d="M62.18,-167.6C74.02,-140.44 105.34,-74.81 148,-33 149.05,-31.97 150.17,-30.96 151.33,-29.99"/>
+<polygon fill="#000000" stroke="#000000" points="153.43,-32.79 159.44,-24.07 149.3,-27.14 153.43,-32.79"/>
+</g>
+<!-- none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node11" class="node">
+<title>none~reset_vars</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="324,-192 257,-192 257,-168 324,-168 324,-192"/>
+<text text-anchor="middle" x="290.5" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">reset_vars</text>
+</g>
+<!-- none~get_dardv2&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge10" class="edge">
+<title>none~get_dardv2&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M207.74,-251.81C212.24,-249.08 216.86,-246.07 221,-243 238.78,-229.79 257.16,-212.66 270.4,-199.6"/>
+<polygon fill="#000000" stroke="#000000" points="272.97,-201.99 277.56,-192.44 268.01,-197.04 272.97,-201.99"/>
+</g>
+<!-- none~get_dardv&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge11" class="edge">
+<title>none~get_dardv&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M215.3,-209.96C226.18,-205.57 238.66,-200.53 250.23,-195.86"/>
+<polygon fill="#000000" stroke="#000000" points="251.73,-199.03 259.69,-192.04 249.11,-192.54 251.73,-199.03"/>
+</g>
+<!-- none~get_dardn&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge12" class="edge">
+<title>none~get_dardn&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M208.41,-108.05C212.77,-110.75 217.16,-113.78 221,-117 239.83,-132.8 238.48,-142.83 257,-159 258.14,-159.99 259.33,-160.98 260.55,-161.94"/>
+<polygon fill="#000000" stroke="#000000" points="258.76,-164.96 268.91,-167.98 262.86,-159.29 258.76,-164.96"/>
+</g>
+<!-- arn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node12" class="node">
+<title>arn</title>
+<polygon fill="#777777" stroke="#777777" points="317.5,-108 263.5,-108 263.5,-84 317.5,-84 317.5,-108"/>
+<text text-anchor="middle" x="290.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">arn</text>
+</g>
+<!-- none~get_dardn&#45;&gt;arn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge13" class="edge">
+<title>none~get_dardn&#45;&gt;arn</title>
+<path fill="none" stroke="#000000" d="M218.12,-96C229.25,-96 241.76,-96 253.16,-96"/>
+<polygon fill="#000000" stroke="#000000" points="253.25,-99.5 263.25,-96 253.25,-92.5 253.25,-99.5"/>
+</g>
+<!-- none~get_dardtn&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge14" class="edge">
+<title>none~get_dardtn&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M215.3,-150.04C226.18,-154.43 238.66,-159.47 250.23,-164.14"/>
+<polygon fill="#000000" stroke="#000000" points="249.11,-167.46 259.69,-167.96 251.73,-160.97 249.11,-167.46"/>
+</g>
+<!-- none~get_dardtn&#45;&gt;arn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge15" class="edge">
+<title>none~get_dardtn&#45;&gt;arn</title>
+<path fill="none" stroke="#000000" d="M215.3,-125.96C227.36,-121.1 241.37,-115.44 253.95,-110.36"/>
+<polygon fill="#000000" stroke="#000000" points="255.27,-113.6 263.23,-106.61 252.65,-107.11 255.27,-113.6"/>
+</g>
+<!-- artn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node13" class="node">
+<title>artn</title>
+<polygon fill="#777777" stroke="#777777" points="317.5,-150 263.5,-150 263.5,-126 317.5,-126 317.5,-150"/>
+<text text-anchor="middle" x="290.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">artn</text>
+</g>
+<!-- none~get_dardtn&#45;&gt;artn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge16" class="edge">
+<title>none~get_dardtn&#45;&gt;artn</title>
+<path fill="none" stroke="#000000" d="M219.55,-138C230.33,-138 242.27,-138 253.2,-138"/>
+<polygon fill="#000000" stroke="#000000" points="253.29,-141.5 263.29,-138 253.29,-134.5 253.29,-141.5"/>
+</g>
+<!-- none~get_dardvn&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge17" class="edge">
+<title>none~get_dardvn&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M210.71,-66.15C214.48,-68.71 218.07,-71.66 221,-75 247.81,-105.52 230.8,-127.96 257,-159 257.61,-159.72 258.24,-160.42 258.91,-161.11"/>
+<polygon fill="#000000" stroke="#000000" points="256.88,-163.98 266.76,-167.83 261.43,-158.66 256.88,-163.98"/>
+</g>
+<!-- none~get_dardvn&#45;&gt;arn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge18" class="edge">
+<title>none~get_dardvn&#45;&gt;arn</title>
+<path fill="none" stroke="#000000" d="M215.3,-66.04C227.36,-70.9 241.37,-76.56 253.95,-81.64"/>
+<polygon fill="#000000" stroke="#000000" points="252.65,-84.89 263.23,-85.39 255.27,-78.4 252.65,-84.89"/>
+</g>
+<!-- arvn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node15" class="node">
+<title>arvn</title>
+<polygon fill="#777777" stroke="#777777" points="317.5,-66 263.5,-66 263.5,-42 317.5,-42 317.5,-66"/>
+<text text-anchor="middle" x="290.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">arvn</text>
+</g>
+<!-- none~get_dardvn&#45;&gt;arvn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge19" class="edge">
+<title>none~get_dardvn&#45;&gt;arvn</title>
+<path fill="none" stroke="#000000" d="M221,-54C231.42,-54 242.82,-54 253.28,-54"/>
+<polygon fill="#000000" stroke="#000000" points="253.35,-57.5 263.35,-54 253.35,-50.5 253.35,-57.5"/>
+</g>
+<!-- none~get_dardt2&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge20" class="edge">
+<title>none~get_dardt2&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M219.55,-180C228.25,-180 237.71,-180 246.77,-180"/>
+<polygon fill="#000000" stroke="#000000" points="246.79,-183.5 256.79,-180 246.79,-176.5 246.79,-183.5"/>
+</g>
+<!-- none~get_dardvt&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge21" class="edge">
+<title>none~get_dardvt&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M210.63,-335.77C214.4,-333.22 218.02,-330.29 221,-327 254.83,-289.68 274.83,-232.73 283.81,-201.81"/>
+<polygon fill="#000000" stroke="#000000" points="287.22,-202.61 286.53,-192.04 280.48,-200.73 287.22,-202.61"/>
+</g>
+<!-- none~get_dardt&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge22" class="edge">
+<title>none~get_dardt&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M209.5,-293.87C213.57,-291.25 217.59,-288.27 221,-285 246.75,-260.35 267.59,-224.27 279.26,-201.47"/>
+<polygon fill="#000000" stroke="#000000" points="282.5,-202.81 283.83,-192.3 276.24,-199.69 282.5,-202.81"/>
+</g>
+<!-- none~get_dardn2&#45;&gt;none~reset_vars -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge23" class="edge">
+<title>none~get_dardn2&#45;&gt;none~reset_vars</title>
+<path fill="none" stroke="#000000" d="M211.45,-24.1C215.03,-26.64 218.37,-29.6 221,-33 256.59,-79.1 222.33,-112.21 257,-159 257.46,-159.63 257.95,-160.24 258.47,-160.84"/>
+<polygon fill="#000000" stroke="#000000" points="256.35,-163.65 266.07,-167.86 261.1,-158.51 256.35,-163.65"/>
+</g>
+<!-- none~get_dardn2&#45;&gt;arn -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge25" class="edge">
+<title>none~get_dardn2&#45;&gt;arn</title>
+<path fill="none" stroke="#000000" d="M208.41,-24.05C212.77,-26.75 217.16,-29.78 221,-33 239.83,-48.8 238.48,-58.83 257,-75 258.14,-75.99 259.33,-76.98 260.55,-77.94"/>
+<polygon fill="#000000" stroke="#000000" points="258.76,-80.96 268.91,-83.98 262.86,-75.29 258.76,-80.96"/>
+</g>
+<!-- arn2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_node14" class="node">
+<title>arn2</title>
+<polygon fill="#777777" stroke="#777777" points="317.5,-24 263.5,-24 263.5,0 317.5,0 317.5,-24"/>
+<text text-anchor="middle" x="290.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">arn2</text>
+</g>
+<!-- none~get_dardn2&#45;&gt;arn2 -->
+<g id="proc~~residual_helmholtz~2~~CallsGraph_edge24" class="edge">
+<title>none~get_dardn2&#45;&gt;arn2</title>
+<path fill="none" stroke="#000000" d="M221,-12C231.42,-12 242.82,-12 253.28,-12"/>
+<polygon fill="#000000" stroke="#000000" points="253.35,-15.5 263.35,-12 253.35,-8.5 253.35,-15.5"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="597pt" height="32pt"
+ viewBox="0.00 0.00 596.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 592.5,-28 592.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node4" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="388.5,-24 243.5,-24 243.5,0 388.5,0 388.5,-24"/>
+<text text-anchor="middle" x="316" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="465,-24 407,-24 407,0 465,0 465,-24"/>
+<text text-anchor="middle" x="436" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="588.5,-24 483.5,-24 483.5,0 588.5,0 588.5,-24"/>
+<text text-anchor="middle" x="536" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a procedure to one which it calls. Dashed 
+    arrows point from an interface to procedures which implement that interface.
+    This could include the module procedures in a generic interface or the
+    implementation in a submodule of an interface in a parent module.
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      <h3>Contents</h3>
+ 
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_ar">d_Ar</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_n">d_n</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_t">d_t</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#variable-d_v">d_v</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardn">get_dardn</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardn2">get_dardn2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardt">get_dardt</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardt2">get_dardt2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardtn">get_dardtn</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardv">get_dardv</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardv2">get_dardv2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardvn">get_dardvn</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-get_dardvt">get_dardvt</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz~2.html#proc-reset_vars">reset_vars</a>
+    </div>
+  </div>
+</div>
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+
+    <section>    
+      <h2>Variables</h2>
+    <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th><th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" id="variable-d_ar"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
+<td>public</td>  <td></td><td>::</td>
+  <td><strong>d_Ar</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-d_n"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
+<td>public</td>  <td></td><td>::</td>
+  <td><strong>d_n</strong>(size(n))</td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-d_t"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
+<td>public</td>  <td></td><td>::</td>
+  <td><strong>d_t</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-d_v"></span>type(<a href='../type/hyperdual.html'>hyperdual</a>),</td>
+<td>public</td>  <td></td><td>::</td>
+  <td><strong>d_v</strong></td><td></td><td></td><td></td>
+</tr>
+</tbody>
+</table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+    <section>
+    <h2>Subroutines</h2>
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardn"></span><h3>subroutine get_dardn()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardn2"></span><h3>subroutine get_dardn2()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardt"></span><h3>subroutine get_dardt()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardt2"></span><h3>subroutine get_dardt2()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardtn"></span><h3>subroutine get_dardtn()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardv"></span><h3>subroutine get_dardv()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardv2"></span><h3>subroutine get_dardv2()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardvn"></span><h3>subroutine get_dardvn()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardvt"></span><h3>subroutine get_dardvt()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-reset_vars"></span><h3>subroutine reset_vars()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+    </section>    
+    
+    
+    </div>
+  </div>
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+        </div>
+        <div class="col-xs-6 col-md-6">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-02-03 14:53            </p>
+        </div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+  </body>
+</html>

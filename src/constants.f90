@@ -12,4 +12,6 @@ module yaeos_constants
    !| Path to find database
    character(len=1) :: path_sep = "/"
    !| File separator (to preprocess on Win or Mac/linux)
+
+   real(pr), parameter :: NOT_IMPLEMENTED = huge(R)
 end module
