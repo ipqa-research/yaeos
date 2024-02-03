@@ -28,18 +28,4 @@ module ar_interface
          real(pr) :: initial_volume
       end function
    end interface
-
-contains
-   subroutine check()
-      use iso_fortran_env, only: error_unit
-      ! if (.not. associated(ar_fun)) then
-      !    write(error_unit, *) "ERORR: Ar Function not associated"
-      !    call exit(1)
-      ! end if
-
-      ! if (.not. associated(v0)) then
-      !    write(error_unit, *) "ERORR: v0 Function not associated"
-      !    call exit(1)
-      ! end if
-   end subroutine
 end module

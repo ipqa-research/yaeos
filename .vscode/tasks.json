@@ -1,0 +1,64 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "fpm: install",
+      "type": "shell",
+      "command": "fpm",
+      "args": [
+        "install",
+        "--profile",
+        "debug",
+        "--prefix",
+        "${workspaceRoot}/build/vscode"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "fpm: test Single File",
+      "type": "shell",
+      "command": "fpm",
+      "args": [
+        "test",
+        "--target",
+        "${fileBasenameNoExtension}",
+        "--profile",
+        "debug",
+        "--runner",
+        "cp",
+        "--",
+        "${workspaceFolder}/build/vscode/test/"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "dependsOn": ["Copy Directory Structure"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Copy Directory Structure",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}/test" },
+      "linux": {
+        "command": "find",
+        "args": [
+          ".",
+          "-type",
+          "d",
+          "-exec",
+          "mkdir",
+          "-p",
+          "--",
+          "${workspaceRoot}/build/vscode/test/{}",
+          "\\;"
+        ]
+      }
+    }
+  ]
+}
