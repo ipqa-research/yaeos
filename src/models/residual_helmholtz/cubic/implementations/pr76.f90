@@ -1,4 +1,5 @@
 module yaeos_models_ar_cubic_pengrobinson76
+    !! PengRobinson 76 implementation.
     use yaeos_constants, only: R, pr
     use yaeos_substance, only: Substances
     use yaeos_models_ar_genericcubic, only: CubicEoS, AlphaFunction, CubicMixRule
@@ -13,8 +14,30 @@ module yaeos_models_ar_cubic_pengrobinson76
 contains
 
     type(CubicEoS) function PengRobinson76(tc, pc, w, kij, lij) result(model)
-        real(pr), intent(in) :: tc(:), pc(:), w(:)
-        real(pr), optional, intent(in) :: kij(:, :), lij(:, :)
+        !! PengRobinson76.
+        !!
+        !! Using the critical constants setup the parameters to use the 
+        !! PengRobinson Equation of State
+        !!
+        !! - \[\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2\]
+        !! - \[k = 0.37464 + 1.54226 * \omega - 0.26993 \omega^2 \]
+        !! - \[a_c = 0.45723553  R^2 T_c^2 / P_c\]
+        !! - \[b = 0.07779607r  R T_c/P_c\]
+        !! - \[\delta_1 = 1 + \sqrt{2}\]
+        !! - \[\delta_2 = 1 - \sqrt{2}\]
+        !!
+        !! There is also the optional posibility to include the \(k_{ij}\) and
+        !! \(l_{ij}\) matrices. Using by default Classic Van der Waals mixing
+        !! rules.
+        !!
+        !! After setting up the model, it is possible to redefine either the
+        !! mixing rule or the alpha function using a different derived type
+        !! defined outside the function.
+        real(pr), intent(in) :: tc(:) !! Critical Temperatures [K]
+        real(pr), intent(in) :: pc(:) !! Critical Pressures [bar]
+        real(pr), intent(in) :: w(:) !! Acentric Factors
+        real(pr), optional, intent(in) :: kij(:, :) !! \(k_{ij}\) matrix
+        real(pr), optional, intent(in) :: lij(:, :) !! \(l_{ij}\) matrix
 
         type(Substances) :: composition
         type(QMR) :: mixrule
