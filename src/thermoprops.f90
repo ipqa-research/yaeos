@@ -62,7 +62,16 @@ contains
       RT = R*T
       Z = V/(TOTN*RT) ! this is Z/P
 
-      if (present(dlnphidn)) then
+      if (present(lnfug) .and. .not. (&
+         present(dlnphidn) &
+         .and. present(dlnphidp) &
+         .and. present(dlnphidt) &
+         .and. present(p) &
+      )) then
+         call self%residual_helmholtz(n, v, t, Arn=Arn)
+         lnfug(:) = Arn(:)/RT - log(Z)
+         return
+      else if (present(dlnphidn)) then
          call self%residual_helmholtz(&
             n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
             Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
@@ -73,13 +82,13 @@ contains
             Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
       end if
+      
+      lnfug(:) = Arn(:)/RT - log(Z)
 
       P = TOTN*RT/V - ArV
       dPdV = -ArV2 - RT*TOTN/V**2
       dPdT = -ArTV + TOTN*R/V
       dPdN(:) = RT/V - ArVn(:)
-
-      lnfug(:) = Arn(:)/RT - log(Z)
 
       if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1._pr/P
       if (present(dlnphidt)) then

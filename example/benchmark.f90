@@ -46,7 +46,7 @@ contains
         if (dn) then
             call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
         else
-            call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT)
+            call fugacity_vt(model, z, V, T, lnfug=lnfug)
         end if
     end subroutine
 
@@ -57,13 +57,13 @@ contains
         real(8) :: et, st
 
 
-        do n=1,5
+        do n=1,30
             time = 0
             std = 0
             mean = 0
             do i=1,nevals
                 call cpu_time(st)
-                    call yaeos_run(n, .true., "Adiff PR76")
+                    call yaeos_run(n, .true., "Analytic PR76")
                 call cpu_time(et)
 
                 time = (et-st)*1e6
