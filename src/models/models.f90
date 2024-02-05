@@ -5,4 +5,6 @@ module yaeos_models
     use yaeos_models_ar_genericcubic_quadratic_mixing, only: QMR
 
     use yaeos_models_ar_cubic_pengrobinson76, only: PengRobinson76
+    use yaeos_models_ar_cubic_pengrobinson78, only: PengRobinson78
+    use yaeos_models_ar_cubic_srk, only: SoaveRedlichKwong
 end module
