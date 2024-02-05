@@ -81,15 +81,15 @@ contains
 
       lnfug(:) = Arn(:)/RT - log(Z)
 
-      if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1.D0/P
+      if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1._pr/P
       if (present(dlnphidt)) then
-         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1.D0/T
+         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1._pr/T
       end if
 
       if (present(dlnphidn)) then
          do i = 1, nc
             do j = i, nc
-               dlnphidn(i, j) = 1.D0/TOTN + (Arn2(i, j) + dPdN(i)*dPdN(j)/dPdV)/RT
+               dlnphidn(i, j) = 1._pr/TOTN + (Arn2(i, j) + dPdN(i)*dPdN(j)/dPdV)/RT
                dlnphidn(j, i) = dlnphidn(i, j)
             end do
          end do
@@ -147,13 +147,13 @@ contains
       TOTN = sum(rn)
       CPV = self%get_v0(rn, p, t)
       B = CPV
-      S3R = 1.D0/CPV
+      S3R = 1._pr/CPV
       ITER = 0
 
-      ZETMIN = 0.D0
-      ZETMAX = 1.D0 - 0.01*T/(10000*B)  ! improvement for cases with heavy components
+      ZETMIN = 0._pr
+      ZETMAX = 1._pr - 0.01*T/(10000*B)  ! improvement for cases with heavy components
       if (ITYP .gt. 0) then
-         ZETA = .5D0
+         ZETA = 0.5_pr
       else
          ! IDEAL GAS ESTIMATE
          ZETA = min(.5D0, CPV*P/(TOTN*R*T))
@@ -162,7 +162,7 @@ contains
       DEL = 1
       pcalc = 2*p
 
-      do while(abs(DEL) > 1d-10 .and. iter < maximum_iterations)
+      do while(abs(DEL) > 1.e-10_pr .and. iter < maximum_iterations)
          V = CPV/ZETA
          ITER = ITER + 1
          call self%residual_helmholtz(&
@@ -181,10 +181,10 @@ contains
 
          DER = (ArV2*V**2 + TOTN*R*T)*S3R  ! this is dPdrho/B
          DEL = -(PCALC - P)/DER
-         ZETA = ZETA + max(min(DEL, 0.1D0), -.1D0)
+         ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
 
          if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) &
-            ZETA = .5D0*(ZETMAX + ZETMIN)
+            ZETA = .5_pr*(ZETMAX + ZETMIN)
       end do
 
       if (iter >= maximum_iterations) write(error_unit, *) &
@@ -196,8 +196,8 @@ contains
             VVAP = V
             AVAP = AT
             FIRST_RUN = .false.
-            ZETA = 0.5D0
-            ZETMAX = 1.D0 - 0.01*T/500
+            ZETA = 0.5_pr
+            ZETMAX = 1._pr - 0.01_pr*T/500._pr
             goto 100
          else
             if (AT .gt. AVAP) V = VVAP
