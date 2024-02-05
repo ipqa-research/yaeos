@@ -1,63 +1,73 @@
 module yaeos_models_ar_genericcubic
-    use yaeos_constants, only: pr
-    use yaeos_models_ar, only: ArModel
-    use yaeos_substance, only: Substances
-    implicit none
-    
-    type, abstract :: AlphaFunction
-    contains
-        procedure(abs_alpha), deferred :: alpha
-    end type
+   use yaeos_constants, only: pr
+   use yaeos_models_ar, only: ArModel
+   use yaeos_substance, only: Substances
+   implicit none
 
-    type, abstract :: CubicMixRule
-    contains
-        procedure(abs_Dmix), deferred :: Dmix
-        procedure(abs_Bmix), deferred :: Bmix
-    end type
+   type, abstract :: AlphaFunction
+      !! Abstract derived type that describe the required
+      !! procedure for an alpha function.
+   contains
+      procedure(abs_alpha), deferred :: alpha
+   end type
 
-    type, extends(ArModel) :: CubicEoS
-        !! Cubic Equation of State.
-        class(Substances), allocatable :: components
-        class(CubicMixRule), allocatable :: mixrule
-        class(AlphaFunction), allocatable :: alpha
-        real(pr), allocatable :: ac(:), b(:), del1(:), del2(:)
-    contains
-        procedure :: residual_helmholtz => GenericCubic_Ar
-        procedure :: get_v0 => v0
-    end type
+   type, abstract :: CubicMixRule
+      !! Abstract derived type that describe the required
+      !! procedure for a mixing rule on a Cubic EoS
+   contains
+      procedure(abs_Dmix), deferred :: Dmix
+      procedure(abs_Bmix), deferred :: Bmix
+   end type
 
-    abstract interface
-        subroutine abs_alpha(self, Tr, a, dadt, dadt2)
-            import AlphaFunction, pr
-            class(AlphaFunction), intent(in) :: self
-            real(pr), intent(in) :: Tr(:)
-            real(pr), intent(out) :: a(:), dadt(:), dadt2(:)
-        end subroutine
+   type, extends(ArModel) :: CubicEoS
+      !! Cubic Equation of State.
+      !!
+      !! Generic Cubic Equation of State as defined by Michelsen and Mollerup
+      !! with constant \(\delta_1\) and \(\delta_2\) parameters.
+      class(Substances), allocatable :: components
+      class(CubicMixRule), allocatable :: mixrule
+      class(AlphaFunction), allocatable :: alpha
+      real(pr), allocatable :: ac(:) !! Attractive critical parameter
+      real(pr), allocatable :: b(:) !! Repulsive parameter
+      real(pr), allocatable :: del1(:) !! \(\delta_1\) paramter
+      real(pr), allocatable :: del2(:) !! \(\delta_2\) paramter
+   contains
+      procedure :: residual_helmholtz => GenericCubic_Ar
+      procedure :: get_v0 => v0
+   end type
 
-        subroutine abs_Dmix(self, n, T, &
-            ai, daidt, daidt2, &
-            D, dDdT, dDdT2, dDi, dDidT, dDij&
-            )
-            import CubicMixRule, pr
-            class(CubicMixRule), intent(in) :: self
-            real(pr), intent(in) :: T, n(:)
-            real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-            real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
-        end subroutine
-        
-        subroutine abs_Bmix(self, n, bi, B, dBi, dBij)
-            import CubicMixRule, pr
-            class(CubicMixRule), intent(in) :: self
-            real(pr), intent(in) :: n(:)
-            real(pr), intent(in) :: bi(:)
-            real(pr), intent(out) :: B, dBi(:), dBij(:, :)
-        end subroutine
-    end interface
+   abstract interface
+      subroutine abs_alpha(self, Tr, a, dadt, dadt2)
+         import AlphaFunction, pr
+         class(AlphaFunction), intent(in) :: self
+         real(pr), intent(in) :: Tr(:)
+         real(pr), intent(out) :: a(:), dadt(:), dadt2(:)
+      end subroutine
+
+      subroutine abs_Dmix(self, n, T, &
+         ai, daidt, daidt2, &
+         D, dDdT, dDdT2, dDi, dDidT, dDij&
+         )
+         import CubicMixRule, pr
+         class(CubicMixRule), intent(in) :: self
+         real(pr), intent(in) :: T, n(:)
+         real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
+         real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+      end subroutine
+
+      subroutine abs_Bmix(self, n, bi, B, dBi, dBij)
+         import CubicMixRule, pr
+         class(CubicMixRule), intent(in) :: self
+         real(pr), intent(in) :: n(:)
+         real(pr), intent(in) :: bi(:)
+         real(pr), intent(out) :: B, dBi(:), dBij(:, :)
+      end subroutine
+   end interface
 contains
 
    subroutine GenericCubic_Ar(&
-        self, n, V, T, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
-    )
+      self, n, V, T, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
+      )
       !! Residual Helmholtz Energy for a generic Cubic Equation of State.
       !!
       !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
@@ -71,15 +81,15 @@ contains
       real(pr), intent(in) :: t !! Temperature [K]
 
       real(pr), optional, intent(out) :: ar !! Residual Helmholtz
-      real(pr), optional, intent(out) :: arv !! dAr/dV
-      real(pr), optional, intent(out) :: ArT !! dAr/dT
-      real(pr), optional, intent(out) :: artv !! dAr2/dTV
-      real(pr), optional, intent(out) :: arv2 !! dAr2/dV2
-      real(pr), optional, intent(out) :: ArT2 !! dAr2/dT2
-      real(pr), optional, intent(out) :: Arn(size(n)) !! dAr/dn
-      real(pr), optional, intent(out) :: ArVn(size(n)) !! dAr2/dVn
-      real(pr), optional, intent(out) :: ArTn(size(n)) !! dAr2/dTn
-      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! dAr2/dn2
+      real(pr), optional, intent(out) :: arv !! \(\frac{dAr}{dV}\)
+      real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
+      real(pr), optional, intent(out) :: artv !! \(\frac{d^2Ar}{dTV}\)
+      real(pr), optional, intent(out) :: arv2 !! \(\frac{d^2Ar}{dV^2}\)
+      real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
+      real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
+      real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
+      real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
+      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
 
 
       real(pr) :: Bmix, dBi(size(n)), dBij(size(n), size(n))
@@ -104,14 +114,14 @@ contains
       call self%alpha%alpha(Tr, a, dadt, dadt2)
       call self%mixrule%Bmix(n, self%b, Bmix, dBi, dBij)
 
-      
+
       a = self%ac * a
       dadt = self%ac * dadt / self%components%Tc
       dadt2 = self%ac * dadt2 / self%components%Tc**2
 
       call self%mixrule%Dmix(&
-            n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
-      )
+         n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
+         )
 
       ! The f's and g's used here are for Ar, not F (reduced Ar)
       ! This requires to multiply by R all g, f and its derivatives as defined by Mollerup
@@ -138,13 +148,13 @@ contains
       if (present(ArTn)) ArTn(:) = -g + (TOTN*AUX/T - dDdT*fB)*dBi(:) - f*dDidT(:)
 
       if (present(Arn2)) then
-      do i = 1, nc
-         do j = 1, i
-            Arn2(i, j) = AUX*(dBi(i) + dBi(j)) - fB*(dBi(i)*dDi(j) + dBi(j)*dDi(i)) &
-                        + FFB*dBij(i, j) + FFBB*dBi(i)*dBi(j) - f*dDij(i, j)
-            Arn2(j, i) = Arn2(i, j)
+         do i = 1, nc
+            do j = 1, i
+               Arn2(i, j) = AUX*(dBi(i) + dBi(j)) - fB*(dBi(i)*dDi(j) + dBi(j)*dDi(i)) &
+                  + FFB*dBij(i, j) + FFBB*dBi(i)*dBi(j) - f*dDij(i, j)
+               Arn2(j, i) = Arn2(i, j)
+            end do
          end do
-      end do
       end if
 
       ! TEMPERATURE DERIVATIVES
@@ -154,12 +164,16 @@ contains
    end subroutine GenericCubic_Ar
 
    function v0(self, n, p, t)
-    class(CubicEoS), intent(in) :: self
-    real(pr), intent(in) :: n(:), p, t
-    real(pr) :: v0
+      !! Cubic EoS volume initializer.
+      !! For a Cubic Equation of State, the covolume calculated with the mixing
+      !! rule is a good estimate for the initial volume solver on the liquid
+      !! region.
+      class(CubicEoS), intent(in) :: self
+      real(pr), intent(in) :: n(:), p, t
+      real(pr) :: v0
 
-    real(pr) :: dbi(size(n)), dbij(size(n), size(n))
-    call self%mixrule%Bmix(n, self%b, v0, dbi, dbij)
+      real(pr) :: dbi(size(n)), dbij(size(n), size(n))
+      call self%mixrule%Bmix(n, self%b, v0, dbi, dbij)
    end function
 
 end module

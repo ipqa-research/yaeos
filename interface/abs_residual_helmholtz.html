@@ -87,11 +87,11 @@
   <div class="col-lg-12">
 <div class="well well-sm">
   <ul class="list-inline" style="margin-bottom:0px;display:inline">
-    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+    <li><i class="fa fa-legal"></i> MPL</li> 
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 5.8% of total for abstract interfaces.">19 statements</a>
+    title=" 7.9% of total for abstract interfaces.">27 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/ar_models.f90"> Source File</a></li>
   </ul>
@@ -136,89 +136,109 @@
   <td><span class="anchor" id="variable-self~2"></span>class(<a href='../type/armodel.html'>ArModel</a>),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>self</strong></td><td></td>
+  <td><strong>self</strong></td><td><p>ArModel</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-n~7"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong>(:)</td><td></td>
+  <td><strong>n</strong>(:)</td><td><p>Moles vector</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-v~8"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-t~9"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-ar~3"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>Ar</strong></td><td></td>
+  <td><strong>Ar</strong></td><td><p>Residual Helmoltz energy</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arv~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArV</strong></td><td></td>
+  <td><strong>ArV</strong></td><td><p>
+<script type="math/tex">\frac{dAr}{dV}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-art"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArT</strong></td><td></td>
+  <td><strong>ArT</strong></td><td><p>
+<script type="math/tex">\frac{dAr}{dT}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-artv~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArTV</strong></td><td></td>
+  <td><strong>ArTV</strong></td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dTV}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arv2~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArV2</strong></td><td></td>
+  <td><strong>ArV2</strong></td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dV^2}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-art2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArT2</strong></td><td></td>
+  <td><strong>ArT2</strong></td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dT^2}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arn~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
-  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
-  <td><strong>Arn</strong></td><td></td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>Arn</strong>(size(n))</td><td><p>
+<script type="math/tex">\frac{dAr}{dn_i}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arvn~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
-  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
-  <td><strong>ArVn</strong></td><td></td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArVn</strong>(size(n))</td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dVn_i}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-artn~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
-  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
-  <td><strong>ArTn</strong></td><td></td>
+  <td>optional</td>  <td></td><td>::</td>
+  <td><strong>ArTn</strong>(size(n))</td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dTn_i}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arn2~2"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>Arn2</strong>(size(n),size(n))</td><td></td>
+  <td><strong>Arn2</strong>(size(n),size(n))</td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dn_{ij}}</script>
+</p></td>
 </tr>
 </tbody>
 </table>
 
+    <h3>Description</h3>
+    <p>Residual Helmholtz model generic interface.</p>
     <br>
 
  </div>
@@ -229,14 +249,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-05 12:07            </p>
+ on 2024-02-05 19:06            </p>
         </div>
       </div>
       <br>

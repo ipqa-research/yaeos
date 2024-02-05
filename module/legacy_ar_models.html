@@ -86,11 +86,11 @@
   <div class="col-lg-12">
 <div class="well well-sm">
   <ul class="list-inline" style="margin-bottom:0px;display:inline">
-    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+    <li><i class="fa fa-legal"></i> MPL</li> 
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title="22.7% of total for modules and submodules.">535 statements</a>
+    title="22.2% of total for modules and submodules.">535 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/legacy.f90"> Source File</a></li>
   </ul>
@@ -176,7 +176,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    
+    <p>Legacy Thermodynamic routines
+Module for a cubic eos system, made with the intention to keep
+compatiblity with legacy codes but with a better structure.
+this should be later adapted into a simple oop system where an eos object
+stores the relevant parameters (or some functional oriented approach)</p>
 <br>        <div class="panel panel-default">
       <div class="panel-heading">
   <h3 class="panel-title">Uses</h3>
@@ -503,12 +507,12 @@
 <tr>
   <td><span class="anchor" id="variable-ac~3"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>ac</strong>(:)</td><td></td><td></td><td><p>Critical attractive parameter [bar (L/mol)^2]</p></td>
+  <td><strong>ac</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-b~3"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>b</strong>(:)</td><td></td><td></td><td><p>repulsive parameter [L]</p></td>
+  <td><strong>b</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-bij~2"></span>real(kind=pr),</td>
@@ -518,23 +522,22 @@
 <tr>
   <td><span class="anchor" id="variable-dc"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>dc</strong>(:)</td><td></td><td></td><td><p>Critical density [mol/L]</p></td>
+  <td><strong>dc</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-del1~3"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>del1</strong>(:)</td><td></td><td></td><td><p>
-<script type="math/tex; mode=display">\delta_1</script> parameter</p></td>
+  <td><strong>del1</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-k~6"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>k</strong>(:)</td><td></td><td></td><td><p>Attractive parameter constant</p></td>
+  <td><strong>k</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-kij~4"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>kij</strong>(:,:)</td><td></td><td></td><td><p>Attractive BIP</p></td>
+  <td><strong>kij</strong>(:,:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-kij0"></span>real(kind=pr),</td>
@@ -549,37 +552,37 @@
 <tr>
   <td><span class="anchor" id="variable-lij~4"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>lij</strong>(:,:)</td><td></td><td></td><td><p>Repulsive BIP</p></td>
+  <td><strong>lij</strong>(:,:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-mixing_rule"></span>integer,</td>
 <td>public</td>  <td></td><td>::</td>
-  <td><strong>mixing_rule</strong></td><td></td><td></td><td></td>
+  <td><strong>mixing_rule</strong></td><td></td><td></td><td><p>What mixing rule to use</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-nc~20"></span>integer,</td>
 <td>public</td>  <td></td><td>::</td>
-  <td><strong>nc</strong></td><td></td><td></td><td></td>
+  <td><strong>nc</strong></td><td></td><td></td><td><p>Number of components</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-pc~5"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>pc</strong>(:)</td><td></td><td></td><td><p>Critical pressure [bar]</p></td>
+  <td><strong>pc</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-tc~5"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>tc</strong>(:)</td><td></td><td></td><td><p>Critical temperature [K]</p></td>
+  <td><strong>tc</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-tdep"></span>integer,</td>
 <td>public</td>  <td></td><td>::</td>
-  <td><strong>tdep</strong></td><td></td><td></td><td></td>
+  <td><strong>tdep</strong></td><td></td><td></td><td><p>Temperature dependance of kij</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-thermo_model"></span>integer,</td>
 <td>public</td>  <td></td><td>::</td>
-  <td><strong>thermo_model</strong></td><td></td><td></td><td></td>
+  <td><strong>thermo_model</strong></td><td></td><td></td><td><p>Which thermodynamic model to use</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-tstar"></span>real(kind=pr),</td>
@@ -589,12 +592,12 @@
 <tr>
   <td><span class="anchor" id="variable-w~5"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>w</strong>(:)</td><td></td><td></td><td><p>Acentric factor</p></td>
+  <td><strong>w</strong>(:)</td><td></td><td></td><td></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-z~7"></span>real(kind=pr),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>z</strong>(:)</td><td></td><td></td><td></td>
+  <td><strong>z</strong>(:)</td><td></td><td></td><td><p>Mole fractions vector</p></td>
 </tr>
 </tbody>
 </table>
@@ -910,7 +913,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-helmrkpr"></span><h3>public subroutine <a href='../proc/helmrkpr.html'>HelmRKPR</a>(nco, NDE, NTD, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)</h3></div>
   <div class="panel-body">
-           
+       
+<p>Calculate the reduced residual Helmholtz Energy and it&rsquo;s derivatives with the RKPR EOS</p>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1016,85 +1021,85 @@
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>nc</strong></td><td></td>
+  <td><strong>nc</strong></td><td><p>Number of components</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>nd</strong></td><td></td>
+  <td><strong>nd</strong></td><td><p>Compositional derivatives</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>nt</strong></td><td></td>
+  <td><strong>nt</strong></td><td><p>Temperature derivatives</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>rn</strong>(nc)</td><td></td>
+  <td><strong>rn</strong>(nc)</td><td><p>Number of moles</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td></td>
+  <td><strong>ar</strong></td><td><p>Residual Helmholtz</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>arv</strong></td><td></td>
+  <td><strong>arv</strong></td><td><p>dAr/dV</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>artv</strong></td><td></td>
+  <td><strong>artv</strong></td><td><p>dAr2/dTV</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>arv2</strong></td><td></td>
+  <td><strong>arv2</strong></td><td><p>dAr2/dV2</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Arn</strong>(nc)</td><td></td>
+  <td><strong>Arn</strong>(nc)</td><td><p>dAr/dn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ArVn</strong>(nc)</td><td></td>
+  <td><strong>ArVn</strong>(nc)</td><td><p>dAr2/dVn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ArTn</strong>(nc)</td><td></td>
+  <td><strong>ArTn</strong>(nc)</td><td><p>dAr2/dTn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Arn2</strong>(nc,nc)</td><td></td>
+  <td><strong>Arn2</strong>(nc,nc)</td><td><p>dAr2/dn2</p></td>
 </tr>
 </tbody>
 </table>
@@ -1106,7 +1111,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-pr76_factory"></span><h3>public subroutine <a href='../proc/pr76_factory.html'>PR76_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)</h3></div>
   <div class="panel-body">
-           
+       
+<p>PengRobinson 76 factory</p><a href="../proc/pr76_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1162,7 +1169,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-pr78_factory"></span><h3>public subroutine <a href='../proc/pr78_factory.html'>PR78_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)</h3></div>
   <div class="panel-body">
-           
+       
+<p>PengRobinson 78 factory</p><a href="../proc/pr78_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1218,7 +1227,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-srk_factory"></span><h3>public subroutine <a href='../proc/srk_factory.html'>SRK_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)</h3></div>
   <div class="panel-body">
-           
+       
+<p>SoaveRedlichKwong factory</p><a href="../proc/srk_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1388,67 +1399,67 @@
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>z</strong>(:)</td><td></td>
+  <td><strong>z</strong>(:)</td><td><p>Number of moles</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td></td>
+  <td><strong>ar</strong></td><td><p>Residual Helmholtz</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>arv</strong></td><td></td>
+  <td><strong>arv</strong></td><td><p>dAr/dV</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>artv</strong></td><td></td>
+  <td><strong>artv</strong></td><td><p>dAr2/dTV</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>arv2</strong></td><td></td>
+  <td><strong>arv2</strong></td><td><p>dAr2/dV2</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Arn</strong>(size(z))</td><td></td>
+  <td><strong>Arn</strong>(size(z))</td><td><p>dAr/dn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ArVn</strong>(size(z))</td><td></td>
+  <td><strong>ArVn</strong>(size(z))</td><td><p>dAr2/dVn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ArTn</strong>(size(z))</td><td></td>
+  <td><strong>ArTn</strong>(size(z))</td><td><p>dAr2/dTn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Arn2</strong>(size(z),size(z))</td><td></td>
+  <td><strong>Arn2</strong>(size(z),size(z))</td><td><p>dAr2/dn2</p></td>
 </tr>
 </tbody>
 </table>
@@ -1460,7 +1471,10 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-ar_srkpr"></span><h3>public subroutine <a href='../proc/ar_srkpr.html'>ar_srkpr</a>(z, v, t, ar, arv, artv, arv2, Arn, ArVn, ArTn, Arn2)</h3></div>
   <div class="panel-body">
-           
+       
+<p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
+use the general interface</p>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1468,67 +1482,67 @@
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>z</strong>(:)</td><td></td>
+  <td><strong>z</strong>(:)</td><td><p>Number of moles</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td></td>
+  <td><strong>ar</strong></td><td><p>Residual Helmholtz</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>arv</strong></td><td></td>
+  <td><strong>arv</strong></td><td><p>dAr/dV</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>artv</strong></td><td></td>
+  <td><strong>artv</strong></td><td><p>dAr2/dTV</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>arv2</strong></td><td></td>
+  <td><strong>arv2</strong></td><td><p>dAr2/dV2</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Arn</strong>(size(z))</td><td></td>
+  <td><strong>Arn</strong>(size(z))</td><td><p>dAr/dn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ArVn</strong>(size(z))</td><td></td>
+  <td><strong>ArVn</strong>(size(z))</td><td><p>dAr2/dVn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ArTn</strong>(size(z))</td><td></td>
+  <td><strong>ArTn</strong>(size(z))</td><td><p>dAr2/dTn</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Arn2</strong>(size(z),size(z))</td><td></td>
+  <td><strong>Arn2</strong>(size(z),size(z))</td><td><p>dAr2/dn2</p></td>
 </tr>
 </tbody>
 </table>
@@ -1540,7 +1554,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-get_zc_oma_omb"></span><h3>public subroutine <a href='../proc/get_zc_oma_omb.html'>get_Zc_OMa_OMb</a>(del1, Zc, OMa, OMb)</h3></div>
   <div class="panel-body">
-           
+       
+<p>Calculate Zc, OMa and OMb from the delta_1 parameter.</p>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1548,25 +1564,25 @@
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>del1</strong>(:)</td><td></td>
+  <td><strong>del1</strong>(:)</td><td><p>delta_1 parameter</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>Zc</strong>(:)</td><td></td>
+  <td><strong>Zc</strong>(:)</td><td><p>Critical compressibility factor</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>OMa</strong>(:)</td><td></td>
+  <td><strong>OMa</strong>(:)</td><td><p>OMa</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>OMb</strong>(:)</td><td></td>
+  <td><strong>OMb</strong>(:)</td><td><p>OMb</p></td>
 </tr>
 </tbody>
 </table>
@@ -1578,7 +1594,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-setup"></span><h3>public subroutine <a href='../proc/setup.html'>setup</a>(n, nmodel, ntdep, ncomb)</h3></div>
   <div class="panel-body">
-           
+       
+<p>Setup the basics variables that describe the model.</p>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -1586,25 +1604,25 @@
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong></td><td></td>
+  <td><strong>n</strong></td><td><p>Number of components</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>nmodel</strong></td><td></td>
+  <td><strong>nmodel</strong></td><td><p>Number of model</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ntdep</strong></td><td></td>
+  <td><strong>ntdep</strong></td><td><p>Kij dependant of temperature</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ncomb</strong></td><td></td>
+  <td><strong>ncomb</strong></td><td><p>Combining rule</p></td>
 </tr>
 </tbody>
 </table>
@@ -1624,14 +1642,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-05 12:07            </p>
+ on 2024-02-05 19:06            </p>
         </div>
       </div>
       <br>

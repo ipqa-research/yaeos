@@ -86,7 +86,7 @@
   <div class="col-lg-12">
 <div class="well well-sm">
   <ul class="list-inline" style="margin-bottom:0px;display:inline">
-    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+    <li><i class="fa fa-legal"></i> MPL</li> 
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
@@ -282,6 +282,12 @@
     </div>
 
 
+    <p>Residual Helmholtz Energy for a generic Cubic Equation of State.</p>
+<p>Calculates the residual Helmholtz Energy for a generic Cubic EoS as
+defined by Michelsen and Møllerup:</p>
+<p>
+<script type="math/tex; mode=display">P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}</script>
+</p>
 
     <h3>Arguments</h3>
       <table class="table table-striped varlist">
@@ -297,79 +303,97 @@
   <td><span class="anchor" id="variable-n~18"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong>(:)</td><td></td>
+  <td><strong>n</strong>(:)</td><td><p>Number of moles</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-v~18"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-t~22"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-ar~8"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td></td>
+  <td><strong>ar</strong></td><td><p>Residual Helmholtz</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arv~7"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>arv</strong></td><td></td>
+  <td><strong>arv</strong></td><td><p>
+<script type="math/tex">\frac{dAr}{dV}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-art~5"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArT</strong></td><td></td>
+  <td><strong>ArT</strong></td><td><p>
+<script type="math/tex">\frac{dAr}{dT}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-artv~7"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>artv</strong></td><td></td>
+  <td><strong>artv</strong></td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dTV}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arv2~7"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>arv2</strong></td><td></td>
+  <td><strong>arv2</strong></td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dV^2}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-art2~3"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArT2</strong></td><td></td>
+  <td><strong>ArT2</strong></td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dT^2}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arn~15"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>Arn</strong>(size(n))</td><td></td>
+  <td><strong>Arn</strong>(size(n))</td><td><p>
+<script type="math/tex">\frac{dAr}{dn_i}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arvn~14"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArVn</strong>(size(n))</td><td></td>
+  <td><strong>ArVn</strong>(size(n))</td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dVn_i}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-artn~14"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ArTn</strong>(size(n))</td><td></td>
+  <td><strong>ArTn</strong>(size(n))</td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dTn_i}</script>
+</p></td>
 </tr>
 <tr>
   <td><span class="anchor" id="variable-arn2~14"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>Arn2</strong>(size(n),size(n))</td><td></td>
+  <td><strong>Arn2</strong>(size(n),size(n))</td><td><p>
+<script type="math/tex">\frac{d^2Ar}{dn_{ij}}</script>
+</p></td>
 </tr>
 </tbody>
 </table>
@@ -598,14 +622,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-05 12:07            </p>
+ on 2024-02-05 19:06            </p>
         </div>
       </div>
       <br>

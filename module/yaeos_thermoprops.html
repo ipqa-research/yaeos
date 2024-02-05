@@ -86,11 +86,11 @@
   <div class="col-lg-12">
 <div class="well well-sm">
   <ul class="list-inline" style="margin-bottom:0px;display:inline">
-    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+    <li><i class="fa fa-legal"></i> MPL</li> 
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 6.3% of total for modules and submodules.">149 statements</a>
+    title=" 6.2% of total for modules and submodules.">149 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/thermoprops.f90"> Source File</a></li>
   </ul>
@@ -131,7 +131,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    
+    <p>Residual thermodyamic properties using residual Helmholtz model</p>
 <br>        <div class="panel panel-default">
       <div class="panel-heading">
   <h3 class="panel-title">Uses</h3>
@@ -410,7 +410,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-purefug_calc"></span><h3>public subroutine <a href='../proc/purefug_calc.html'>PUREFUG_CALC</a>(self, nc, icomp, T, P, V, fug)</h3></div>
   <div class="panel-body">
-           
+       
+<p>Fugacity of a pure component</p>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -466,7 +468,9 @@
       <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="proc-vcalc"></span><h3>public recursive subroutine <a href='../proc/vcalc.html'>VCALC</a>(self, ITYP, nc, rn, T, P, V, max_iters)</h3></div>
   <div class="panel-body">
-           
+       
+<p>ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE</p>
+    
 <h4>Arguments</h4>      <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
@@ -480,43 +484,43 @@
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>ITYP</strong></td><td></td>
+  <td><strong>ITYP</strong></td><td><p>Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>nc</strong></td><td></td>
+  <td><strong>nc</strong></td><td><p>Number of components</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>rn</strong>(nc)</td><td></td>
+  <td><strong>rn</strong>(nc)</td><td><p>Mixture moles</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>T</strong></td><td></td>
+  <td><strong>T</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>P</strong></td><td></td>
+  <td><strong>P</strong></td><td><p>Pressure [bar]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>V</strong></td><td></td>
+  <td><strong>V</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>max_iters</strong></td><td></td>
+  <td><strong>max_iters</strong></td><td><p>Maxiumum number of iterations, defaults to 100</p></td>
 </tr>
 </tbody>
 </table>
@@ -542,55 +546,56 @@
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong>(:)</td><td></td>
+  <td><strong>n</strong>(:)</td><td><p>Mixture mole numbers</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>p</strong></td><td></td>
+  <td><strong>p</strong></td><td><p>Pressure [bar]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>integer,</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>root_type</strong></td><td></td>
+  <td><strong>root_type</strong></td><td><p>Type of root desired (-1 vapor, 1 liquid, 0 lower Gr)</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>lnfug</strong>(size(n))</td><td></td>
+  <td><strong>lnfug</strong>(size(n))</td><td><p>
+<script type="math/tex">\ln(\phi*p)</script> vector</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dlnphidp</strong>(size(n))</td><td></td>
+  <td><strong>dlnphidp</strong>(size(n))</td><td><p>ln(phi) Presssure derivative</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dlnphidt</strong>(size(n))</td><td></td>
+  <td><strong>dlnphidt</strong>(size(n))</td><td><p>ln(phi) Temp derivative</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dlnphidn</strong>(size(n),size(n))</td><td></td>
+  <td><strong>dlnphidn</strong>(size(n),size(n))</td><td><p>ln(phi) compositional derivative</p></td>
 </tr>
 </tbody>
 </table>
@@ -616,49 +621,50 @@
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>n</strong>(:)</td><td></td>
+  <td><strong>n</strong>(:)</td><td><p>Mixture mole numbers</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>v</strong></td><td></td>
+  <td><strong>v</strong></td><td><p>Volume [L]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
-  <td><strong>t</strong></td><td></td>
+  <td><strong>t</strong></td><td><p>Temperature [K]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>p</strong></td><td></td>
+  <td><strong>p</strong></td><td><p>Pressure [bar]</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>lnfug</strong>(size(n))</td><td></td>
+  <td><strong>lnfug</strong>(size(n))</td><td><p>
+<script type="math/tex">\ln(\phi*p)</script> vector</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dlnphidp</strong>(size(n))</td><td></td>
+  <td><strong>dlnphidp</strong>(size(n))</td><td><p>ln(phi) Presssure derivative</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dlnphidt</strong>(size(n))</td><td></td>
+  <td><strong>dlnphidt</strong>(size(n))</td><td><p>ln(phi) Temp derivative</p></td>
 </tr>
 <tr>
   <td><span class="anchor" ></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dlnphidn</strong>(size(n),size(n))</td><td></td>
+  <td><strong>dlnphidn</strong>(size(n),size(n))</td><td><p>ln(phi) compositional derivative</p></td>
 </tr>
 </tbody>
 </table>
@@ -678,14 +684,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-05 12:07            </p>
+ on 2024-02-05 19:06            </p>
         </div>
       </div>
       <br>

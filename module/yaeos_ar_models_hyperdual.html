@@ -86,11 +86,11 @@
   <div class="col-lg-12">
 <div class="well well-sm">
   <ul class="list-inline" style="margin-bottom:0px;display:inline">
-    <li><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li> 
+    <li><i class="fa fa-legal"></i> MPL</li> 
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 5.8% of total for modules and submodules.">138 statements</a>
+    title=" 5.8% of total for modules and submodules.">139 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/armodel_adiff_api.f90"> Source File</a></li>
   </ul>
@@ -144,7 +144,46 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <p>Module that contains the automatic differentiation logic for an Ar model</p>
+    <p>Module that contains the automatic differentiation logic for an Ar model.</p>
+<p>All that is needed to define an Ar model that uses automatic
+differentiation with hyperdual numbers is to define a new derived type
+that overloads the method to the Ar function that you want to use.
+A minimal example follows:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">module </span><span class="n">newmodel</span><span class="w"></span>
+<span class="k">use </span><span class="n">yaeos_ar_models_hyperdual</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModelAdiff</span><span class="w"></span>
+
+<span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">YourNewModel</span><span class="w"></span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">Substances</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">composition</span><span class="w"></span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">parameters</span><span class="p">(:)</span><span class="w"></span>
+<span class="w">    </span><span class="k">contains</span>
+<span class="k">      procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">arfun</span><span class="w"></span>
+<span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v0</span><span class="w"></span>
+<span class="k">end type</span>
+<span class="k">contains</span>
+<span class="k">subroutine </span><span class="n">arfun</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">Ar</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">YourNewModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w"> </span><span class="c">! Number of moles</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="c">! Volume [L]</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="c">! Temperature [K]</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar_value</span><span class="w"> </span><span class="c">! Residual Helmholtz Energy</span>
+
+<span class="w">   </span><span class="c">! A very complicated residual helmholtz function of a mixture</span>
+<span class="w">   </span><span class="n">Ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<span class="k">end subroutine</span>
+
+<span class="k">function </span><span class="n">v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">YourNewModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span><span class="w"></span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w"> </span><span class="c">! Number of moles</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="c">! Pressure [bar]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="c">! Temperature [K]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span><span class="w"></span>
+
+<span class="w">   </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">parameters</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"></span>
+<span class="k">end function</span><span class="w"></span>
+</code></pre></div>
+
+<p>A complete implementation of the PR76 Equation of State can me found in
+<code>example/adiff/adiff_pr76.f90</code></p>
 <br>        <div class="panel panel-default">
       <div class="panel-heading">
   <h3 class="panel-title">Uses</h3>
@@ -152,8 +191,8 @@
       <ul class="list-group">
       <li class="list-group-item">
   <ul class="list-inline">
-    <li><a href='../module/yaeos_autodiff.html'>yaeos_autodiff</a></li>
     <li><a href='../module/yaeos_models_ar.html'>yaeos_models_ar</a></li>
+    <li><a href='../module/yaeos_autodiff.html'>yaeos_autodiff</a></li>
     <li><a href='../module/yaeos_constants.html'>yaeos_constants</a></li>
   </ul>
       </li>
@@ -164,104 +203,103 @@
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: module~~yaeos_ar_models_hyperdual~~UsesGraph Pages: 1 -->
-<svg id="moduleyaeos_ar_models_hyperdualUsesGraph" width="641pt" height="102pt"
- viewBox="0.00 0.00 641.00 101.69" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph" class="graph" transform="scale(1.1 1.1) rotate(0) translate(4 108)">
+<svg id="moduleyaeos_ar_models_hyperdualUsesGraph" width="641pt" height="83pt"
+ viewBox="0.00 0.00 641.00 82.90" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph" class="graph" transform="scale(1.1 1.1) rotate(0) translate(4 87.31)">
 <title>module~~yaeos_ar_models_hyperdual~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-108 702,-108 702,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-87.31 702,-87.31 702,4 -4,4"/>
 <!-- module~yaeos_ar_models_hyperdual -->
 <g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node1" class="node">
 <title>module~yaeos_ar_models_hyperdual</title>
-<polygon fill="none" stroke="black" points="698,-84 534,-84 534,-60 698,-60 698,-84"/>
-<text text-anchor="middle" x="616" y="-69.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_ar_models_hyperdual</text>
-</g>
-<!-- module~yaeos_autodiff -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node2" class="node">
-<title>module~yaeos_autodiff</title>
-<g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node2"><a xlink:href=".././module/yaeos_autodiff.html" xlink:title="yaeos_autodiff">
-<polygon fill="#337ab7" stroke="#337ab7" points="498,-104 407,-104 407,-80 498,-80 498,-104"/>
-<text text-anchor="middle" x="452.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_autodiff</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_autodiff -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge1" class="edge">
-<title>module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_autodiff</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M533.78,-82.06C525.16,-83.13 516.55,-84.19 508.34,-85.21"/>
-<polygon fill="#000000" stroke="#000000" points="507.68,-81.76 498.19,-86.47 508.54,-88.71 507.68,-81.76"/>
-</g>
-<!-- module~yaeos_constants -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node3" class="node">
-<title>module~yaeos_constants</title>
-<g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node3"><a xlink:href=".././module/yaeos_constants.html" xlink:title="yaeos_constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="230,-64 130,-64 130,-40 230,-40 230,-64"/>
-<text text-anchor="middle" x="180" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_constants</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_constants -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge2" class="edge">
-<title>module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M451.5,-52C379.37,-42.21 295.41,-44.27 240.4,-47.43"/>
-<polygon fill="#000000" stroke="#000000" points="239.9,-43.95 230.13,-48.05 240.33,-50.94 239.9,-43.95"/>
+<polygon fill="none" stroke="black" points="698,-41.31 534,-41.31 534,-17.31 698,-17.31 698,-41.31"/>
+<text text-anchor="middle" x="616" y="-26.91" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_ar_models_hyperdual</text>
 </g>
 <!-- module~yaeos_models_ar -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node4" class="node">
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node2" class="node">
 <title>module~yaeos_models_ar</title>
-<g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node4"><a xlink:href=".././module/yaeos_models_ar.html" xlink:title="yaeos_models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="371,-24 266,-24 266,0 371,0 371,-24"/>
-<text text-anchor="middle" x="318.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models_ar</text>
+<g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node2"><a xlink:href=".././module/yaeos_models_ar.html" xlink:title="yaeos_models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="371,-83.31 266,-83.31 266,-59.31 371,-59.31 371,-83.31"/>
+<text text-anchor="middle" x="318.5" y="-68.91" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_models_ar -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge3" class="edge">
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge1" class="edge">
 <title>module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M533.62,-62.3C507.97,-59.14 479.54,-55.53 453.5,-52"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M451.5,-52C419.52,-47.66 384.62,-36.8 358.75,-27.49"/>
-<polygon fill="#000000" stroke="#000000" points="359.89,-24.18 349.3,-24.02 357.48,-30.75 359.89,-24.18"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M551.97,-41.34C534.52,-44.48 515.56,-47.7 498,-50.31 459.4,-56.04 415.91,-61.18 381.53,-64.94"/>
+<polygon fill="#000000" stroke="#000000" points="380.73,-61.51 371.16,-66.06 381.48,-68.47 380.73,-61.51"/>
+</g>
+<!-- module~yaeos_autodiff -->
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node3" class="node">
+<title>module~yaeos_autodiff</title>
+<g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node3"><a xlink:href=".././module/yaeos_autodiff.html" xlink:title="yaeos_autodiff">
+<polygon fill="#337ab7" stroke="#337ab7" points="498,-41.31 407,-41.31 407,-17.31 498,-17.31 498,-41.31"/>
+<text text-anchor="middle" x="452.5" y="-26.91" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_autodiff</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_autodiff -->
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge2" class="edge">
+<title>module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_autodiff</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M533.78,-29.31C525.16,-29.31 516.55,-29.31 508.34,-29.31"/>
+<polygon fill="#000000" stroke="#000000" points="508.19,-25.81 498.19,-29.31 508.19,-32.81 508.19,-25.81"/>
+</g>
+<!-- module~yaeos_constants -->
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node4" class="node">
+<title>module~yaeos_constants</title>
+<g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node4"><a xlink:href=".././module/yaeos_constants.html" xlink:title="yaeos_constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="230,-41.31 130,-41.31 130,-17.31 230,-17.31 230,-41.31"/>
+<text text-anchor="middle" x="180" y="-26.91" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge3" class="edge">
+<title>module~yaeos_ar_models_hyperdual&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M559.63,-17.29C540.24,-13.63 518.25,-10.11 498,-8.31 395.3,0.84 368.36,4.15 266,-8.31 254.56,-9.7 242.45,-12.11 231.06,-14.81"/>
+<polygon fill="#000000" stroke="#000000" points="230.13,-11.43 221.27,-17.24 231.82,-18.23 230.13,-11.43"/>
+</g>
+<!-- module~yaeos_models_ar&#45;&gt;module~yaeos_constants -->
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge4" class="edge">
+<title>module~yaeos_models_ar&#45;&gt;module~yaeos_constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M278.38,-59.27C263.25,-54.61 245.76,-49.23 229.81,-44.33"/>
+<polygon fill="#000000" stroke="#000000" points="230.71,-40.94 220.12,-41.34 228.65,-47.63 230.71,-40.94"/>
 </g>
 <!-- module~hyperdual_mod -->
 <g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node5" class="node">
 <title>module~hyperdual_mod</title>
 <g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node5"><a xlink:href=".././module/hyperdual_mod.html" xlink:title="hyperdual_mod">
-<polygon fill="#337ab7" stroke="#337ab7" points="366.5,-104 270.5,-104 270.5,-80 366.5,-80 366.5,-104"/>
-<text text-anchor="middle" x="318.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="366.5,-41.31 270.5,-41.31 270.5,-17.31 366.5,-17.31 366.5,-41.31"/>
+<text text-anchor="middle" x="318.5" y="-26.91" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_autodiff&#45;&gt;module~hyperdual_mod -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge4" class="edge">
+<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge5" class="edge">
 <title>module~yaeos_autodiff&#45;&gt;module~hyperdual_mod</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M406.81,-92C397.26,-92 387.05,-92 377.09,-92"/>
-<polygon fill="#000000" stroke="#000000" points="376.85,-88.5 366.85,-92 376.85,-95.5 376.85,-88.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M406.81,-29.31C397.26,-29.31 387.05,-29.31 377.09,-29.31"/>
+<polygon fill="#000000" stroke="#000000" points="376.85,-25.81 366.85,-29.31 376.85,-32.81 376.85,-25.81"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_node6" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos_ar_models_hyperdual~~UsesGraph_node6"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-64 0,-64 0,-40 94,-40 94,-64"/>
-<text text-anchor="middle" x="47" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-41.31 0,-41.31 0,-17.31 94,-17.31 94,-41.31"/>
+<text text-anchor="middle" x="47" y="-26.91" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos_constants&#45;&gt;iso_fortran_env -->
-<g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge5" class="edge">
-<title>module~yaeos_constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.85,-52C121.59,-52 112.96,-52 104.53,-52"/>
-<polygon fill="#000000" stroke="#000000" points="104.39,-48.5 94.39,-52 104.39,-55.5 104.39,-48.5"/>
-</g>
-<!-- module~yaeos_models_ar&#45;&gt;module~yaeos_constants -->
 <g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge6" class="edge">
-<title>module~yaeos_models_ar&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M276.55,-24C262.64,-28.08 246.92,-32.68 232.3,-36.97"/>
-<polygon fill="#000000" stroke="#000000" points="231.01,-33.7 222.4,-39.87 232.98,-40.42 231.01,-33.7"/>
+<title>module~yaeos_constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.85,-29.31C121.59,-29.31 112.96,-29.31 104.53,-29.31"/>
+<polygon fill="#000000" stroke="#000000" points="104.39,-25.81 94.39,-29.31 104.39,-32.81 104.39,-25.81"/>
 </g>
 <!-- module~hyperdual_mod&#45;&gt;module~yaeos_constants -->
 <g id="module~~yaeos_ar_models_hyperdual~~UsesGraph_edge7" class="edge">
 <title>module~hyperdual_mod&#45;&gt;module~yaeos_constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M276.55,-80C262.64,-75.92 246.92,-71.32 232.3,-67.03"/>
-<polygon fill="#000000" stroke="#000000" points="232.98,-63.58 222.4,-64.13 231.01,-70.3 232.98,-63.58"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M270.14,-29.31C260.54,-29.31 250.33,-29.31 240.37,-29.31"/>
+<polygon fill="#000000" stroke="#000000" points="240.13,-25.81 230.13,-29.31 240.13,-32.81 240.13,-25.81"/>
 </g>
 </g>
 </svg>
@@ -422,14 +460,9 @@
 <thead><tr><th>Type</th><th>Visibility</th><th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-id"></span>integer,</td>
-<td>public</td>  <td></td><td>::</td>
-  <td><strong>id</strong></td><td></td><td></td><td></td>
-</tr>
-<tr>
   <td><span class="anchor" id="variable-name"></span>character(len=:),</td>
 <td>public,</td>  <td>allocatable</td><td>::</td>
-  <td><strong>name</strong></td><td></td><td></td><td></td>
+  <td><strong>name</strong></td><td></td><td></td><td><p>Name of the model</p></td>
 </tr>
 </tbody>
 </table>
@@ -441,8 +474,8 @@
        <tr><td>procedure(hyperdual_Ar), public :: <strong><a href='../type/armodeladiff.html#boundprocedure-ar'>Ar</a></strong>  </td>
        <td></td></tr>
        <tr><td>procedure(abs_volume_initializer), public :: <strong><a href='../type/armodel.html#boundprocedure-get_v0'>get_v0</a></strong>  </td>
-       <td></td></tr>
-       <tr><td>procedure, public :: <strong><a href='../type/armodeladiff.html#boundprocedure-residual_helmholtz'>residual_helmholtz</a></strong>  </td>
+       <td><p>Volume initializer</p></td></tr>
+       <tr><td>procedure, public :: <strong><a href='../type/armodeladiff.html#boundprocedure-residual_helmholtz~2'>residual_helmholtz</a></strong>  </td>
        <td></td></tr>
        </tbody>
        </table>
@@ -564,14 +597,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-05 12:07            </p>
+ on 2024-02-05 19:06            </p>
         </div>
       </div>
       <br>
