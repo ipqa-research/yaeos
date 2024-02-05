@@ -15,8 +15,8 @@ display: public
 source: false
 proc_internals: true
 sort: permission-alpha
-docmark_alt: -|
-docmark: |
+docmark_alt: !>
+docmark: !
 predocmark_alt: *
 print_creation_date: true
 creation_date: %Y-%m-%d %H:%M %z
