@@ -15,15 +15,15 @@ display: public
 source: false
 proc_internals: true
 sort: permission-alpha
-docmark_alt: -|
-docmark: |
+docmark_alt: !>
+docmark: !
 predocmark_alt: *
 print_creation_date: true
 creation_date: %Y-%m-%d %H:%M %z
 md_extensions: markdown.extensions.toc
                markdown.extensions.smarty
 graph: true
-license: MIT
+license: MPL
 page_dir:pages
 
 {!../README.md!}

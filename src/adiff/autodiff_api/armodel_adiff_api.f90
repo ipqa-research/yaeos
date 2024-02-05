@@ -1,5 +1,48 @@
 module yaeos_ar_models_hyperdual
-    !-| Module that contains the automatic differentiation logic for an Ar model
+    !! Module that contains the automatic differentiation logic for an Ar model.
+    !! 
+    !! All that is needed to define an Ar model that uses automatic
+    !! differentiation with hyperdual numbers is to define a new derived type
+    !! that overloads the method to the Ar function that you want to use.
+    !! A minimal example follows:
+    !!
+    !! ```fortran
+    !! module newmodel
+    !! use yaeos_ar_models_hyperdual, only: ArModelAdiff
+    !!
+    !! type, extends(ArModelAdiff) :: YourNewModel
+    !!       type(Substances) :: composition
+    !!       real(8) :: parameters(:)
+    !!     contains
+    !!       procedure :: Ar => arfun
+    !!       procedure :: get_v0 => v0
+    !! end type
+    !! contains
+    !! subroutine arfun(self, n, v, t, Ar)
+    !!    class(YourNewModel), intent(in) :: self
+    !!    type(hyperdual), intent(in) :: n(:) ! Number of moles
+    !!    type(hyperdual), intent(in) :: v ! Volume [L]
+    !!    type(hyperdual), intent(in) :: t ! Temperature [K]
+    !!    type(hyperdual), intent(out) :: ar_value ! Residual Helmholtz Energy
+    !! 
+    !!    ! A very complicated residual helmholtz function of a mixture
+    !!    Ar = sum(n) * v * t
+    !! end subroutine
+    !! 
+    !! function v0(self, n, p, t)
+    !!    class(YourNewModel), intent(in) :: self
+    !!    real(pr), intent(in) :: n(:) ! Number of moles
+    !!    real(pr), intent(in) :: p ! Pressure [bar]
+    !!    real(pr), intent(in) :: t ! Temperature [K]
+    !!    real(pr) :: v0
+    !! 
+    !!    v0 = self%parameters(3)
+    !! end function
+    !! ```
+    !! 
+    !! A complete implementation of the PR76 Equation of State can me found in
+    !! `example/adiff/adiff_pr76.f90`
+    !!
     use yaeos_constants, only: pr
     use yaeos_models_ar, only: ArModel
     use yaeos_autodiff
@@ -57,6 +100,8 @@ contains
                 call get_dardn
             end if
         end if
+
+        Ar = d_Ar%f0
 
     contains
 
@@ -163,7 +208,6 @@ contains
             d_v = v
             d_t = t
         end subroutine
- 
     end subroutine
 
 end module
