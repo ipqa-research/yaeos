@@ -57,6 +57,14 @@ run_coverage() {
     COVER=$(echo "$COVER" | grep TOTAL | awk '{print $4}' | tr -d '%')
 }
 
+python_wrappers(){
+    fpm install --profile release --prefix build/python
+    f2py \
+        -I ../build/tmp/include \
+        -L ../build/tmp/lib/libyaeos.a \
+        -m yaeos -c yaeos_python.f90 ../build/tmp/lib/libyaeos.a
+}
+
 resumee() {
     [ $DID_TEST = 1 ] &&
         echo There has been $NAMING_ERRORS test naming errors
