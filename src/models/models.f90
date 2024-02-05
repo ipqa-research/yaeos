@@ -1,15 +1,18 @@
 module yaeos_models
-    !! Ya_EoS thermodynamic models
+   !! Ya_EoS thermodynamic models
 
-    ! Residual Helmholtz Models
-    use yaeos_models_ar, only: ArModel
+   ! Residual Helmholtz Models
+   use yaeos_models_ar, only: ArModel
 
-    ! Cubic EoS models
-    use yaeos_models_ar_genericcubic, only: CubicEoS, GenericCubic_Ar
-    use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-    use yaeos_models_ar_genericcubic_quadratic_mixing, only: QMR
+   ! Cubic EoS models
+   use yaeos_models_ar_genericcubic, only: CubicEoS, GenericCubic_Ar
 
-    use yaeos_models_ar_cubic_pengrobinson76, only: PengRobinson76
-    use yaeos_models_ar_cubic_pengrobinson78, only: PengRobinson78
-    use yaeos_models_ar_cubic_srk, only: SoaveRedlichKwong
+   ! Alpha functions
+   use yaeos_models_ar_cubic_alphas
+
+   ! Mixing Rules
+   use yaeos_models_ar_genericcubic_quadratic_mixing
+
+   ! Implemented models
+   use yaeos_models_ar_cubic_implementations
 end module

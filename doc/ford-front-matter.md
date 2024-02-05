@@ -23,7 +23,7 @@ creation_date: %Y-%m-%d %H:%M %z
 md_extensions: markdown.extensions.toc
                markdown.extensions.smarty
 graph: true
-license: MIT
+license: MPL
 page_dir:pages
 
 {!../README.md!}
