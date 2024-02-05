@@ -1,0 +1,18 @@
+#: def qmr(params=False, vars=False, eqs=False)
+    #: if params
+        real(8), allocatable :: kij(:, :), lij(:, :)
+    #: elif vars
+        ! QMR Variables
+        real(8) :: amix, bmix, d1mix, d2mix
+        integer :: i, j
+    #: elif eqs
+        do i=1, size(n)
+            do j=1, size(n)
+                amix = amix + sqrt(self%a(i)*a(j)) * (1 - self%kij(i, j))
+                bmix = bmix + (self%b(i) + self%b(j))/2 * (1 - self%lij(i, j))
+                d1mix = delta_1(1)
+                d2mix = delta_2(1)
+            end do
+        end do
+    #: endif
+#: enddef qmr
