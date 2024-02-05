@@ -30,11 +30,11 @@ contains
                  + 1.54226_pr * composition%w &
                  - 0.26993_pr * composition%w**2
 
-        where composition%w <=0.491
+        where (composition%w <=0.491)
               alpha%k = 0.37464 + 1.54226 * composition%w(i) - 0.26992 * composition%w**2
         elsewhere
               alpha%k = 0.379642 + 1.48503 * composition%w - 0.164423 * composition%w**2 + 0.016666 * composition%w**3
-        end do
+        end where
 
         if (present(kij)) then
             mixrule%k = kij
