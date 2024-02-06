@@ -1,272 +1,193 @@
-module phase_equilibria
-   use constants, only: pr
-   use legacy_ar_models, only: zTVTERMO, termo, n => nc, omg => w, tc, pc
+module yaeos_equilibria_flash
+   use yaeos_constants, only: pr
+   use yaeos_models, only: ArModel
+   use yaeos_equilibria_equilibria_state, only: EquilibriaState
+   use yaeos_thermoprops, only: fugacity_vt, fugacity_tp, pressure
    implicit none
 
 contains
 
-   subroutine flash_pt(z, p, t, x, y, beta, its)
-      real(pr), intent(in) :: z(:) !! Feed phase molar fractions
-      real(pr), intent(in) :: p !! Pressure [bar]
+   type(EquilibriaState) function flash(self, z, t, v_spec, p_spec, k0, iters)
+      !! This algorithm assumes that the specified T and P correspond to
+      !! vapor-liquid separation predicted by the provided model (0<beta<1)
+      class(ArModel), intent(in) :: self
+      real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(out) :: x(size(z)) !! Phase X molar fractions
-      real(pr), intent(out) :: y(size(z)) !! Phase Y molar fractions
-      real(pr), intent(out) :: beta !! Molar Y fraction
-      real(pr), optional, intent(out) :: its !! Number of iterations
+      real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
+      real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
+      real(pr), intent(in) :: k0(:) !! Initial K factors (y/x)
+      
+      integer, optional, intent(out) :: iters
 
-      real(pr) :: rho_x, rho_y
-   end subroutine
-
-   subroutine flash(spec, FIRST, z, t, p, v, x, y, rho_x, rho_y, beta, iter)
-      ! Flash specification, eos id and  number of compounds in the system
-      character(len=*), intent(in) :: spec !! Flash specification [PT | VT]
-      logical, intent(in out) ::  FIRST
       logical :: stopflash
 
-      ! composition of the system
-      real*8, intent(in) :: z(:)
-
-      ! Temperature and Pressure for the flash
-      real*8, intent(in) :: t            ! Temperature for the flash (K)
-      real*8 :: p            ! (bar) Pressure for the flash (TP) or resulting from (TV)
-      real*8 :: v          ! (L/mol) Molar vol for the flash (TV) or resulting from (TP)
-
       ! Results from flash calculation
-      real*8, dimension(size(z)), intent(out) :: x  ! composition of liquid (molar fractions)
-      real*8, dimension(size(z)), intent(out) :: y  ! composition of vapour (molar fractions)
-      real*8, intent(out) :: rho_x            ! density of liquid (moles/L)
-      real*8, intent(out) :: rho_y            ! density of vapour (moles/L)
-      real*8, intent(out) :: beta             ! total fraction of vapour (molar base)
-      integer, intent(out) :: iter            ! number of iterations required to converge
+      real(pr), dimension(size(z)) :: x  ! composition of liquid (molar fractions)
+      real(pr), dimension(size(z)) :: y  ! composition of vapour (molar fractions)
+      real(pr) :: rho_x            ! density of liquid (moles/L)
+      real(pr) :: rho_y            ! density of vapour (moles/L)
+      real(pr) :: beta             ! total fraction of vapour (molar base)
 
       ! Intermediate variables during calculation process
-      real*8, dimension(n) :: PHILOGy, PHILOGx, DLPHIT, DLPHIP
-      real*8, dimension(n) :: KFACT, LOG_K, AUXK, var_K, denom, varKold, logKold
-      real*8, dimension(n, n) :: FUGN
-      real*8 :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
-      real*8 :: g, dg, bmin, bmax, Vy, Vx
+      real(pr) :: p, v
+      real(pr), dimension(size(z)) :: lnfug_y, lnfug_x
+      real(pr), dimension(size(z)) :: K, dK, lnK, dKold, lnKold
+      real(pr), dimension(size(z), size(z)) :: dlnphidn
+      
+      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
+      real(pr) :: bmin, bmax, Vy, Vx
 
-      ! real*8, dimension(nco, nco) :: Kij_or_K0, Tstar
-      ! real*8, dimension(nco) :: saveK, LOG_K2
-      real(8) :: aux, bx, savek(n), log_k2(n)
-      integer :: MTYP
+      real(pr) :: aux, bx, savek(size(z)), log_k2(size(z))
+      real(pr) :: DPVl, dpvv, dVydVl, h, pl, pold, pold2, pv, step, stepv
+      real(pr) :: told, told2
 
-      real(8) :: dh, dpv, DPVl, dpvv, dVydVl, h, pl, pold, pold2, pv, step, stepv
-      real(8) :: told, told2, bij(n, n)
+      character(len=2) :: spec !! Flash specification [PT | VT]
 
-      integer :: i, j, iterv, nco
 
-      ! do i = 1, n
-      !    do j = i, n
-      !       bij(i, j) = (1 - lij(i, j))*(b(i) + b(j))/2
-      !       bij(j, i) = bij(i, j)
-      !    end do
-      ! end do
-      !
-      !-----------------------------------------------------------
-      ! This algorithm assumes that the specified T and P correspond to
-      ! vapor-liquid separation predicted by the provided model (0<beta<1)
+      ! ========================================================================
+      ! Starting steps
+      ! ------------------------------------------------------------------------
+      if (present(v_spec) .and. present(p_spec)) then
+         write (*, *) "ERROR: Can't specify pressure and volume in Flash"
+      else if ( present(v_spec) ) then
+         spec = "TV"
+         v = v_spec
+      else if ( present(p_spec) ) then
+         spec = "TP"
+         p = p_spec
+      end if
 
       if (spec == 'TV' .or. spec == 'isoV') then
          Vx = 0.0
-         if (FIRST) then  ! the EoS one-phase pressure will be used to estimate Wilson K factors
-            call zTVTERMO(n, 0, T, z, V, P, DPV, PHILOGy, DLPHIP, DLPHIT, FUGN)
+         ! if (FIRST) then  
+            ! the EoS one-phase pressure will be used to estimate Wilson K factors
+            call pressure(self, z, v_spec, t, p=p)
             if (P < 0) P = 1.0
-         end if
+         ! end if
       end if
-      AUXK = log(saveK(1:n))
-      if (FIRST) then          !  use Wilson to initiate the first flash
-         KFACT = (PC/P)*exp(5.373*(1 + omg)*(1 - TC/T))
-         Pold2 = 0.d0
-         Pold = 0.d0
-         Told2 = 0.d0
-         Told = 0.d0
-      else !  for running the indirect "Tv flash" for comparisonn purposes
-   !        else if(Pold2==0.d0.or.spec=='TV')then ! use the converged K's from the previous flash
-         KFACT = saveK(1:n)
-   !        else ! use extrapolation based on the last two points (not resolved yet for series of TV flashes)
-   !            if(spec=='isoV')    LOG_K = AUXK + (AUXK - LOG_K2)
-   !            if(spec=='TP'.and.P/=Pold)      LOG_K = AUXK + (AUXK - LOG_K2)*(P-Pold)/(Pold-Pold2)
-   !            if(spec=='TP'.and.T/=Told)      LOG_K = AUXK + (AUXK - LOG_K2)*(T-Told)/(Told-Told2)
-   !            KFACT = EXP(LOG_K)
-      end if
-      LOG_K2(:n) = AUXK
-      Pold2 = Pold
-      Pold = P
-      Told2 = Told
-      Told = T
-      ! WRITE (2,3) (KFACT(i),i=1,N)
-      call betato01(n, z, KFACT)  ! adapted 26/11/2014
-      LOG_K = log(KFACT)
+
+      K = K0
+      
+      call betato01(z, K)  ! adapted 26/11/2014
+      lnK = log(K)
+      
       ! now we must have  g0>0 and g1<0 and therefore 0<beta<1 (M&M page 252)
-      call betalimits(n, z, KFACT, bmin, bmax)
+      call betalimits(z, K, bmin, bmax)
       beta = (bmin + bmax)/2  ! first guess for beta
+      ! ========================================================================
 
       ! Succesive sustitution loop starts here
-      var_K = 1.0
-      iter = 0
-      do while (maxval(abs(var_K)) > 1.d-6)
-         if (maxval(abs(var_K)) > 1.10) then  ! 26/11/2014
-            g0 = sum(z*KFACT) - 1.D0
-            g1 = 1.D0 - sum(z/KFACT)
+      dK = 1.0
+      iters = 0
+      do while (maxval(abs(dK)) > 1.d-6)
+         iters = iters + 1
 
-            if (g0 < 0 .or. g1 > 0) then  ! bring beta back to range, by touching KFACT
-               call betato01(n, z, KFACT)
-               call betalimits(n, z, KFACT, bmin, bmax)
+         if (maxval(abs(dK)) > 1.10_pr) then  
+            ! 26/11/2014
+            g0 = sum(z*K) - 1._pr
+            g1 = 1._pr - sum(z/K)
+            if (g0 < 0 .or. g1 > 0) then  
+               ! bring beta back to range, by touching K
+               call betato01(z, K)
+               call betalimits(z, K, bmin, bmax)
                beta = (bmin + bmax)/2  ! new guess for beta
             end if
-
          end if
 
-         iter = iter + 1
-         ! Newton starts here (Rachford-Rice)
-         g = 1.0
-         step = 1.0
+         call solve_rr(z, K, beta, bmin, bmax)
 
-         do while (abs(g) > 1.d-5 .and. abs(step) > 1.d-10)
-            denom = 1 + beta*(KFACT - 1.D0)
-            g = sum(z*(KFACT - 1.D0)/denom)
-            dg = -sum(z*(KFACT - 1.D0)**2/denom**2)
-            step = -g/dg
-            beta = beta + step
-
-            do while ((beta < bmin .or. bmax < beta) .and. step > 1e-10) ! much better (GUARANTED!) 3/3/15
-               step = step/2
-               beta = beta - step
-            end do
-
-         end do
-
-         denom = 1 + beta*(KFACT - 1.D0)
-         y = z*KFACT/denom
-         x = y/KFACT
+         y = z * K / (1 + beta*(K - 1._pr))
+         x = y/K
 
          ! new for TV Flash
-         if (spec == 'TV' .or. spec == 'isoV') then     ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            dVydVl = -(1 - beta)/beta
-            ! call Bcalc(n, x, T, Bx)
-            ! TODO: Add this intiial volume
-
-            if (Vx < Bx) Vx = 1.625*Bx  ! First evaluation will be with Vx = 1.5*Bx
-            ! Pl = -1.0
-            call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, PHILOGy, DLPHIP, DLPHIT, FUGN)  ! 26/06/15
-            do while (Pl < 0 .or. DPVl >= 0)
-               Vx = Vx - 0.2*(Vx - Bx)
-               call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, PHILOGy, DLPHIP, DLPHIT, FUGN)
-            end do
-            Vy = (v - (1 - beta)*Vx)/beta
-            h = 1.0
-            iterv = 0
-
-            stopflash = .false.
-            do while (abs(h) > 1.d-4)  ! Newton for solving P equality, with Vx as independent variable
-               iterv = iterv + 1
-               if (iterv >= 100) then
-                  write (2, *) 'volume convergence problems'
-                  P = -1.0
-                  stopflash = .true.
-                  exit
-               end if
-               call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, PHILOGy, DLPHIP, DLPHIT, FUGN)
-               call zTVTERMO(n, 0, T, y, Vy, Pv, DPVv, PHILOGy, DLPHIP, DLPHIT, FUGN)
-               h = Pv - Pl
-               dh = -DPVv*dVydVl - DPVl
-               stepv = -h/dh
-               if (iterv >= 10) stepv = stepv/2
-               Vx = Vx + stepv
-               do while (Vx < 1.001*Bx)
-                  stepv = stepv/2
-                  Vx = Vx - stepv
-               end do
-               Vy = (v - (1 - beta)*Vx)/beta
-            end do
-            if (stopflash .eqv. .true.) exit
-
-            call zTVTERMO(n, 1, T, x, Vx, Pl, DPVl, PHILOGx, DLPHIP, DLPHIT, FUGN)
-            call zTVTERMO(n, 1, T, y, Vy, Pv, DPVv, PHILOGy, DLPHIP, DLPHIT, FUGN)
-         else  
+         select case (spec)
+         case("TV", "isoV")
+            ! find Vy,Vx (vV and vL) from V balance and P equality equations
+            ! TODO: Add TV specification
+         case("TP")
             ! for TP Flash
-            ! nc,MTYP,INDIC,T,P,rn,V,PHILOG,DLPHI
-            MTYP = 0    ! -1   (with 0, generalized also fo LL and not only VL)
-            call TERMO(n, MTYP, 1, T, P, y, Vy, PHILOGy, DLPHIP, DLPHIT, FUGN)
-            MTYP = 1
-            call TERMO(n, MTYP, 1, T, P, x, Vx, PHILOGx, DLPHIP, DLPHIT, FUGN)
+            call fugacity_tp(self, y, T, P, V=Vy, root_type=-1, lnfug=lnfug_y)
+            call fugacity_tp(self, x, T, P, V=Vx, root_type=1, lnfug=lnfug_x)
+         end select
+
+         dKold = dK
+         lnKold = lnK
+
+         lnK = lnfug_x - lnfug_y
+         dK = lnK - lnKold
+         
+         aux = sum(dK + dKold)
+
+         if (iters > 10 .and. abs(aux) < 0.05) then 
+            ! oscilation behavior detected (27/06/15)
+            lnK = (lnK + lnKold)/2
          end if
 
-         varKold = var_K
-         logKold = LOG_K ! From previous iteration step
-         var_K = PHILOGx - PHILOGy - LOG_K  ! variation in LOG_K = new - old
-         LOG_K = PHILOGx - PHILOGy
-         aux = sum(var_K + varKold)
-
-         if (iter > 10 .and. abs(aux) < 0.05) then ! oscilation behavior detected (27/06/15)
-            LOG_K = (LOG_K + logKold)/2
-         end if
-
-         KFACT = exp(LOG_K)
-         call betalimits(n, z, KFACT, bmin, bmax)  ! 26/06/15
-
+         K = exp(lnK)
+         
+         call betalimits(z, K, bmin, bmax)  ! 26/06/15
          if ((beta < bmin) .or. (bmax < beta)) then
             beta = (bmin + bmax)/2
          end if
 
-         if (iter > 500) then
+         if (iters > 500) then
             p = -1
             return
          end if
 
       end do
 
-      !  WRITE (2,4) (KFACT(i),i=1,N)
-      rho_x = 1/Vx
-      rho_y = 1/Vy
       if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
       if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
       if (spec == 'TV' .or. spec == 'isoV') P = Pv
-      FIRST = .false.
-
-      if (maxval(KFACT) < 1.001 .and. minval(KFACT) > 0.999) then ! trivial solution
+      
+      if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
          P = -1.0
+         flash%x = x/x
+         flash%y = y/y
          return
-         !go to 31
       end if
-      saveK(1:n) = KFACT
-   ! 3  format('KWilson ', 15E12.4)
-   ! 4  format('KFinal  ', 15E12.4)
-      !-----------------------------------------------------------
 
-      ! print *, x  ! Estos print son los que "lee" tanto Fluids como Sur
-      ! print *, y
-      ! print *, rho_x
-      ! print *, rho_y
-      ! print *, beta
-   end subroutine flash
+      flash%iters = iters
+      flash%p = p
+      flash%t = t
 
-   subroutine betato01(n, z, KFACT)
+      if (Vy < Vx) then
+         ! `y` phase is the heaviest phase
+         flash%y = x
+         flash%x = y
+         flash%vy = Vx
+         flash%vx = vy
+      else
+         flash%x = x
+         flash%y = y
+         flash%vx = Vx
+         flash%vy = vy
+      end if
+   end function flash
+
+   subroutine betato01(z, K)
       implicit none
-      integer, intent(in) :: n  ! number of compounds in the system
-      real*8, dimension(n), intent(in) :: z ! composition of the system
-      real*8, dimension(n) :: KFACT  ! K factors (modified in this routine)
-      real*8 :: g0, g1  ! function g valuated at beta=0 and 1, based on K factors
+      real(pr), intent(in) :: z(:) ! composition of the system
+      real(pr) :: K(:) ! K factors (modified in this routine)
+      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on K factors
 
       g1 = 1.0
       do while (g0 < 0 .or. g1 > 0)
-         g0 = sum(z*KFACT) - 1.D0
-         g1 = 1.D0 - sum(z/KFACT)
+         g0 = sum(z*K) - 1.D0
+         g1 = 1.D0 - sum(z/K)
          if (g0 < 0) then
-            KFACT = 1.1*KFACT  ! increased volatiliy will bring the solution from subcooled liquid into VLE
+            K = 1.1*K  ! increased volatiliy will bring the solution from subcooled liquid into VLE
          else if (g1 > 0) then
-            KFACT = 0.9*KFACT  ! decreased volatiliy will bring the solution from superheated vapor into VLE
+            K = 0.9*K  ! decreased volatiliy will bring the solution from superheated vapor into VLE
          end if
       end do
    end subroutine betato01
 
-   subroutine betalimits(n, z, KFACT, bmin, bmax)
-      implicit none
-      integer, intent(in) :: n  ! number of compounds in the system
-      real*8, dimension(n), intent(in) :: z, KFACT  ! composition of the system and K factors
-      real*8, intent(out) :: bmin, bmax
-      real*8, dimension(n) :: vmin, vmax
+   subroutine betalimits(z, K, bmin, bmax)
+      real(pr), intent(in) :: z(:), K(:)  ! composition of the system and K factors
+      real(pr), intent(out) :: bmin, bmax
+      real(pr), dimension(size(z)) :: vmin, vmax
       integer :: i, in, ix
 
       in = 0
@@ -274,16 +195,101 @@ contains
       vmin = 0.d0
       ! max=1.001d0    ! modified  3/3/15 (not to generate false separations with beta 0.9999...)
       vmax = 1.00001d0 ! modified 28/6/15 (to prevent overshooting in the Newton for solving RR eq.)
-      do i = 1, n
-         if (KFACT(i)*z(i) > 1) then
+      do i = 1, size(z)
+         if (K(i)*z(i) > 1) then
             in = in + 1
-            vmin(in) = (KFACT(i)*z(i) - 1.d0)/(KFACT(i) - 1.d0)
-         else if (KFACT(i) < z(i)) then
+            vmin(in) = (K(i)*z(i) - 1.d0)/(K(i) - 1.d0)
+         else if (K(i) < z(i)) then
             ix = ix + 1
-            vmax(ix) = (1.d0 - z(i))/(1.d0 - KFACT(i))
+            vmax(ix) = (1.d0 - z(i))/(1.d0 - K(i))
          end if
       end do
       bmin = maxval(vmin)
       bmax = minval(vmax)
    end subroutine betalimits
+
+   subroutine rachford_rice(z, K, beta, rr, drrdb)
+      real(pr), intent(in) :: z(:)
+      real(pr), intent(in) :: K(:)
+      real(pr), intent(in) :: beta
+
+      real(pr), intent(out) :: rr 
+      real(pr), intent(out) :: drrdb
+
+      real(pr) :: denom(size(z))
+      
+      denom = 1 + beta*(K - 1._pr)
+      rr = sum(z*(K - 1._pr)/denom)
+      drrdb = -sum(z*(K - 1._pr)**2/denom**2)
+   end subroutine
+
+   subroutine solve_rr(z, K, beta, beta_min, beta_max)
+      real(pr), intent(in) :: z(:)
+      real(pr), intent(in) :: K(:)
+      real(pr), intent(in) :: beta_min
+      real(pr), intent(in) :: beta_max
+      real(pr), intent(out) :: beta
+
+      real(pr) :: g, dgdb
+      real(pr) :: step
+
+      g = 1.0
+      step = 1.0
+
+      do while (abs(g) > 1.d-5 .and. abs(step) > 1.d-10)
+         call rachford_rice(z, k, beta, g, dgdb)
+         step = -g/dgdb
+         beta = beta + step
+         do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10) 
+            ! much better (GUARANTED!) 3/3/15
+            step = step/2
+            beta = beta - step
+         end do
+
+      end do
+   end subroutine
+
+   ! subroutine tv_loop
+   !    dVydVl = -(1 - beta)/beta
+   !    ! call Bcalc(n, x, T, Bx)
+   !    ! TODO: Add this intiial volume
+
+   !    if (Vx < Bx) Vx = 1.625*Bx  ! First evaluation will be with Vx = 1.5*Bx
+   !    ! Pl = -1.0
+   !    call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, lnfug_y, dlnphidp, dlnphitp, dlnphidn)  ! 26/06/15
+   !    do while (Pl < 0 .or. DPVl >= 0)
+   !       Vx = Vx - 0.2*(Vx - Bx)
+   !       call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
+   !    end do
+   !    Vy = (v - (1 - beta)*Vx)/beta
+   !    h = 1.0
+   !    iterv = 0
+
+   !    stopflash = .false.
+   !    do while (abs(h) > 1.d-4)  ! Newton for solving P equality, with Vx as independent variable
+   !       iterv = iterv + 1
+   !       if (iterv >= 100) then
+   !          write (2, *) 'volume convergence problems'
+   !          P = -1.0
+   !          stopflash = .true.
+   !          exit
+   !       end if
+   !       call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
+   !       call zTVTERMO(n, 0, T, y, Vy, Pv, DPVv, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
+   !       h = Pv - Pl
+   !       dh = -DPVv*dVydVl - DPVl
+   !       stepv = -h/dh
+   !       if (iterv >= 10) stepv = stepv/2
+   !       Vx = Vx + stepv
+   !       do while (Vx < 1.001*Bx)
+   !          stepv = stepv/2
+   !          Vx = Vx - stepv
+   !       end do
+   !       Vy = (v - (1 - beta)*Vx)/beta
+   !    end do
+   !    if (stopflash .eqv. .true.) exit
+
+   !    call zTVTERMO(n, 1, T, x, Vx, Pl, DPVl, PHILOGx, dlnphidp, dlnphitp, dlnphidn)
+   !    call zTVTERMO(n, 1, T, y, Vy, Pv, DPVv, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
+   ! end subroutine
 end module

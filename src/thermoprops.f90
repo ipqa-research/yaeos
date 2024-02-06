@@ -4,6 +4,33 @@ module yaeos_thermoprops
    use yaeos_models_ar, only: ArModel
    implicit none
 contains
+   subroutine pressure(self, n, v, t, p, dpdv, dpdt, dpdn)
+      class(ArModel), intent(in) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: t
+      real(pr), intent(in) :: v
+      real(pr), intent(out) :: p
+      real(pr), optional, intent(out) :: dpdv
+      real(pr), optional, intent(out) :: dpdt
+      real(pr), optional, intent(out) :: dpdn(:)
+
+      real(pr) :: totn
+
+      real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(n))
+      integer :: nc
+      
+      TOTN = sum(n)
+      nc = size(n)
+
+      call self%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, ArVn=ArVn &
+      )
+      P = TOTN*R*T/V - ArV
+      if (present(dPdV)) dPdV = -ArV2 - R*t*TOTN/V**2
+      if (present(dPdT)) dPdT = -ArTV + TOTN*R/V
+      if (present(dPdN)) dPdN(:) = R*T/V - ArVn(:)
+   end subroutine
+
    subroutine fugacity_tp(self, &
          n, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
       )
@@ -26,8 +53,8 @@ contains
       call fugacity_vt(self, n, v_in, T, P_in, lnfug, dlnphidp, dlnphidt, dlnphidn)
       
       if(present(v)) v = v_in
-      if(abs(p-p_in) > 1e-5) write(error_unit, *) &
-       "WARN: Possible wrong root calculating fugacity!" , p, p_in
+      ! if(abs(p-p_in) > 1e-5) write(error_unit, *) &
+      !  "WARN: Possible wrong root calculating fugacity!" , p, p_in
    end subroutine fugacity_tp
 
    subroutine fugacity_vt(self, &
@@ -63,7 +90,7 @@ contains
       Z = V/(TOTN*RT) ! this is Z/P
 
       if (present(lnfug) .and. .not. (&
-         present(dlnphidn) &
+               present(dlnphidn) &
          .and. present(dlnphidp) &
          .and. present(dlnphidt) &
          .and. present(p) &
