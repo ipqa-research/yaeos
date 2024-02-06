@@ -106,7 +106,7 @@ contains
             ! TODO: Add TV specification
          case("TP")
             ! for TP Flash
-            call fugacity_tp(self, y, T, P, V=Vy, root_type=-1, lnfug=lnfug_y)
+            call fugacity_tp(self, y, T, P, V=Vy, root_type=0, lnfug=lnfug_y)
             call fugacity_tp(self, x, T, P, V=Vx, root_type=1, lnfug=lnfug_x)
          end select
 

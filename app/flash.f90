@@ -27,4 +27,8 @@ program flasher
     
     print *, "X:", flash_result%x, sum(flash_result%x)
     print *, "Y:", flash_result%y, sum(flash_result%y)
+    print *, "Vx: ", flash_result%Vx
+    print *, "Vy: ", flash_result%Vy
+    print *, "P: ", flash_result%p
+    print *, "T: ", flash_result%T
 end program
