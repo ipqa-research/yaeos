@@ -52,13 +52,13 @@ contains
         if (present(kij)) then
             mixrule%k = kij
         else
-            mixrule%k = reshape([(i, i=1,nc**2)], [nc, nc])
+            mixrule%k = reshape([(0, i=1,nc**2)], [nc, nc])
         endif
         
         if (present(lij)) then
             mixrule%l = lij
         else
-            mixrule%l = reshape([(i, i=1,nc**2)], [nc, nc])
+            mixrule%l = reshape([(0, i=1,nc**2)], [nc, nc])
         endif
 
         model%components = composition
