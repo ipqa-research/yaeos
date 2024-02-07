@@ -90,6 +90,6 @@ call fugacity_vt(eos, n, v, t, lnfug=lnfug, dlnphidn=dlnphidn)
 
 ## Documentation
 The latest API documentation for the `main` branch can be found
-[here](https://fedebenelli.github.io/yaeos). This was generated from the source
+[here](https://ipqa-research.github.io/yaeos). This was generated from the source
 code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford). We're
 working in extending it more.
