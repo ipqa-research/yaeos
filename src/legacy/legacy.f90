@@ -21,20 +21,21 @@ module legacy_ar_models
    !  Cubic EoS Possible parameters
    ! --------------------------------------------------------------------------
    ! Critical constants
-   real(pr), allocatable :: tc(:) ! Critical temperature [K]
-   real(pr), allocatable :: pc(:) ! Critical pressure [bar]
-   real(pr), allocatable :: dc(:) ! Critical density [mol/L]
-   real(pr), allocatable :: w(:)  ! Acentric factor
+
+   real(pr), allocatable :: tc(:) !! Critical temperature [K]
+   real(pr), allocatable :: pc(:) !! Critical pressure [bar]
+   real(pr), allocatable :: dc(:) !! Critical density [mol/L]
+   real(pr), allocatable :: w(:)  !! Acentric factor
 
    ! Model parameters
-   real(pr), allocatable :: ac(:)   ! Critical attractive parameter [bar (L/mol)^2]
-   real(pr), allocatable :: b(:)    ! repulsive parameter [L]
-   real(pr), allocatable :: del1(:) ! $$\delta_1$$ parameter
-   real(pr), allocatable :: k(:)    ! Attractive parameter constant
+   real(pr), allocatable :: ac(:)   !! Critical attractive parameter [bar (L/mol)^2]
+   real(pr), allocatable :: b(:)    !! repulsive parameter [L]
+   real(pr), allocatable :: del1(:) !! $$\delta_1$$ parameter
+   real(pr), allocatable :: k(:)    !! Attractive parameter constant
 
    ! Classic VdW mixing rules parameters
-   real(pr), allocatable :: kij(:, :) ! Attractive BIP
-   real(pr), allocatable :: lij(:, :) ! Repulsive BIP
+   real(pr), allocatable :: kij(:, :) !! Attractive BIP
+   real(pr), allocatable :: lij(:, :) !! Repulsive BIP
    real(pr), allocatable :: bij(:, :)
 
    ! T dependant mixing rule parameters
