@@ -1,4 +1,9 @@
-[![GitHub](https://img.shields.io/badge/GitHub-fedebenelli-blue.svg?style=social&logo=github)](https://github.com/fedebenelli) [![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org) [![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org) [![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://fedebenelli.github.io/yaeos/) [![License](https://img.shields.io/github/license/fedebenelli/yaeos?color=green)](https://github.com/fedebenelli/yaeos/blob/main/LICENSE) [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml)
+[![GitHub](https://img.shields.io/badge/GitHub-fedebenelli-blue.svg?style=social&logo=github)](https://github.com/fedebenelli)
+[![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
+[![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
+[![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://fedebenelli.github.io/yaeos/)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/fedebenelli/yaeos/blob/main/LICENSE)
+[![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml)
 
 # YA_EoS
 There are multiple open source equation of state libraries, like:
@@ -85,6 +90,6 @@ call fugacity_vt(eos, n, v, t, lnfug=lnfug, dlnphidn=dlnphidn)
 
 ## Documentation
 The latest API documentation for the `main` branch can be found
-[here](https://fedebenelli.github.io/yaeos). This was generated from the source
+[here](https://ipqa-research.github.io/yaeos). This was generated from the source
 code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford). We're
 working in extending it more.
