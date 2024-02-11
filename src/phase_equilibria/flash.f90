@@ -10,14 +10,13 @@ contains
    type(EquilibriaState) function flash(self, z, t, v_spec, p_spec, k0, iters)
       !! This algorithm assumes that the specified T and P correspond to
       !! vapor-liquid separation predicted by the provided model (0<beta<1)
-      class(ArModel), intent(in) :: self
+      class(ArModel), intent(in) :: self !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), intent(in) :: k0(:) !! Initial K factors (y/x)
-      
-      integer, optional, intent(out) :: iters
+      integer, optional, intent(out) :: iters !! Number of iterations
 
       logical :: stopflash
 
@@ -145,6 +144,9 @@ contains
          P = -1.0
          flash%x = x/x
          flash%y = y/y
+         flash%iters = iters
+         flash%p = p
+         flash%t = t
          return
       end if
 
@@ -224,10 +226,11 @@ contains
    end subroutine
 
    subroutine solve_rr(z, K, beta, beta_min, beta_max)
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: K(:)
-      real(pr), intent(in) :: beta_min
-      real(pr), intent(in) :: beta_max
+      !! Solve the Rachford-Rice Equation.
+      real(pr), intent(in) :: z(:) !! Mole fractions vector
+      real(pr), intent(in) :: K(:) !! K-factors
+      real(pr), intent(out) :: beta_min !! 
+      real(pr), intent(out) :: beta_max
       real(pr), intent(out) :: beta
 
       real(pr) :: g, dgdb
@@ -236,16 +239,16 @@ contains
       g = 1.0
       step = 1.0
 
+      call betalimits(z, k, beta_min, beta_max)
+
       do while (abs(g) > 1.d-5 .and. abs(step) > 1.d-10)
          call rachford_rice(z, k, beta, g, dgdb)
          step = -g/dgdb
          beta = beta + step
          do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10) 
-            ! much better (GUARANTED!) 3/3/15
             step = step/2
             beta = beta - step
          end do
-
       end do
    end subroutine
 

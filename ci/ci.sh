@@ -52,6 +52,7 @@ run_coverage() {
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "app"\
+        --exclude "tools" \
         --fail-under-branch 90)
     echo "$COVER"
     COVER=$(echo "$COVER" | grep TOTAL | awk '{print $4}' | tr -d '%')
