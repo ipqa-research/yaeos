@@ -7,8 +7,8 @@ program flasher
 
     real(pr) :: tc(2), pc(2), w(2)
 
-    real(pr) :: n(2), p, v, t, k0(2)
-    integer :: iters, i, j
+    real(pr) :: n(2), t, p, k0(2)
+    integer :: iter
 
     print *, "FLASH EXAMPLE:"
     
@@ -23,7 +23,7 @@ program flasher
     k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
     print *, k0
     
-    flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
+    flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iter)
     
     print *, "X:", flash_result%x, sum(flash_result%x)
     print *, "Y:", flash_result%y, sum(flash_result%y)
