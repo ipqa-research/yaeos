@@ -1,16 +1,16 @@
 OUTDIR="./tapeout"
+mkdir -p "$OUTDIR"
 rm "$OUTDIR/*"
 rm ./tapeout/*
 
-infile=fypp/pr
+infile=pr #fypp/pr
 name=$(basename ${infile})
 modflag="YAEOSD"
-
-echo $name
+ADFirstAidKitDIR=../src/tapenade/ADFirstAidKit
 
 # Forward
 tapenade -tangent -head "ar(arval)/(n, v, t)" \
-         -ext ./tapenade/ADFirstAidKit/PUSHPOPGeneralLib \
+         -ext ${ADFirstAidKitDIR}/PUSHPOPGeneralLib \
          -ext ../src/models/residual_helmholtz/tapenade_ar_api.f90 \
          -tgtmodulename "$modflag" \
          -noisize\
@@ -19,7 +19,7 @@ tapenade -tangent -head "ar(arval)/(n, v, t)" \
 
 # Double forward
 tapenade -tangent -head "ar_d(arval_d)/(v, t)" \
-         -ext ./tapenade/ADFirstAidKit/PUSHPOPGeneralLib  \
+         -ext ${ADFirstAidKitDIR}/PUSHPOPGeneralLib  \
          -tgtmodulename "$modflag" \
          -noisize \
          "tapeout/${name}_d.f90" \
@@ -27,7 +27,7 @@ tapenade -tangent -head "ar_d(arval_d)/(v, t)" \
 
 # Triple forward
 tapenade -tangent -head "ar_d_d(arval_d_d)/(v, t)" \
-         -ext ./tapenade/ADFirstAidKit/PUSHPOPGeneralLib  \
+         -ext ${ADFirstAidKitDIR}/PUSHPOPGeneralLib  \
          -tgtmodulename "$modflag" \
          -noisize \
          "tapeout/${name}_d_d.f90" \
@@ -36,7 +36,7 @@ tapenade -tangent -head "ar_d_d(arval_d_d)/(v, t)" \
 # Forward-Backward
 tapenade -reverse -head "ar_d/(n, nd, v, vd, t, td)" \
          -noisize \
-         -ext ./tapenade/ADFirstAidKit/PUSHPOPGeneralLib  \
+         -ext ${ADFirstAidKitDIR}/PUSHPOPGeneralLib  \
          -adjmodulename "$modflag" \
          "tapeout/${name}_d_d_d.f90" \
          -O tapeout
@@ -44,17 +44,21 @@ tapenade -reverse -head "ar_d/(n, nd, v, vd, t, td)" \
 # Single backward
 tapenade -reverse -head "ar(arval)/(n, v, t)" \
          -noisize \
+         -ext ${ADFirstAidKitDIR}/PUSHPOPGeneralLib  \
          -adjmodulename "$modflag" \
          "tapeout/${name}_d_d_d_b.f90" \
          -O tapeout
 
 rm tapeout/*msg
-# rm tapeout/${name}_d.f90
-# rm tapeout/${name}_d_d.f90
-# rm tapeout/${name}_d_d_d.f90
-# rm tapeout/${name}_d_d_d_b.f90
-# mv tapeout/${name}_d_d_d_b_b.f90 tapeout/${name}_diff.f90
-# sed -i "s/$modflag//g" tapeout/${name}_diff.f90
+rm tapeout/${name}_d.f90
+rm tapeout/${name}_d_d.f90
+rm tapeout/${name}_d_d_d.f90
+rm tapeout/${name}_d_d_d_b.f90
+mv tapeout/${name}_d_d_d_b_b.f90 tapeout/${name}_diff.f90
+
+sed -i "s/$modflag//g" tapeout/${name}_diff.f90
+sed -i "s/TYPE(UNKNOWNTYPE).*//g" tapeout/${name}_diff.f90
+sed -i "s/model%\(.*\) \(=\).*/model%\1 => \1/g" tapeout/${name}_diff.f90
 
 # lfortran fmt -i tapeout/${infile}_diff.f90
 # =============================================================================

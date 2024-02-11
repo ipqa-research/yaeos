@@ -7,6 +7,8 @@ module yaeos_tapenade_ar_api
 
    private
 
+   public :: ArModelTapenade
+
    type, extends(ArModel) :: ArModelTapenade
       procedure(tapenade_ar), pointer, nopass :: ar
       procedure(tapenade_ar_d), pointer, nopass :: ar_d
