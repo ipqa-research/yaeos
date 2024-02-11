@@ -32,8 +32,11 @@ contains
         !! After setting up the model, it is possible to redefine either the
         !! mixing rule or the alpha function using a different derived type
         !! defined outside the function.
-        real(pr), intent(in) :: tc(:), pc(:), w(:)
-        real(pr), optional, intent(in) :: kij(:, :), lij(:, :)
+        real(pr), intent(in) :: tc(:) !! Critical temperature [K]
+        real(pr), intent(in) :: pc(:) !! Critical pressure [bar]
+        real(pr), intent(in) :: w(:) !! Acentric factor
+        real(pr), optional, intent(in) :: kij(:, :) !! \(k_{ij}\) matrix
+        real(pr), optional, intent(in) :: lij(:, :) !! \(l_{ij}\) matrix
 
         type(Substances) :: composition
         type(QMR) :: mixrule
