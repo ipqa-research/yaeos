@@ -3,7 +3,7 @@ mkdir -p "$OUTDIR"
 rm "$OUTDIR/*"
 rm ./tapeout/*
 
-infile=pr #fypp/pr
+infile=pr
 name=$(basename ${infile})
 modflag="YAEOSD"
 ADFirstAidKitDIR=../src/tapenade/ADFirstAidKit
@@ -48,6 +48,7 @@ tapenade -reverse -head "ar(arval)/(n, v, t)" \
          -adjmodulename "$modflag" \
          "tapeout/${name}_d_d_d_b.f90" \
          -O tapeout
+
 
 rm tapeout/*msg
 rm tapeout/${name}_d.f90
