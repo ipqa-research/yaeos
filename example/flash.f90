@@ -1,9 +1,10 @@
 module flashing
     use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
     implicit none
+
 contains
 
-    subroutine run_flashes
+    subroutine main()
         class(ArModel), allocatable :: model
         type(EquilibriaState) :: flash_result
 
@@ -28,6 +29,5 @@ contains
         flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
         print *, "X:", flash_result%x, sum(flash_result%x)
         print *, "Y:", flash_result%y, sum(flash_result%y)
-
     end subroutine
 end module

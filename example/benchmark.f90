@@ -53,19 +53,6 @@ contains
         end if
     end subroutine
 
-    subroutine benchmarks
-        integer :: n=30
-        logical :: allderivs=.false.
-
-        ! "Analytic PR76"
-        ! "Adiff PR76"
-        ! "Tape PR76"
-
-        call run_bench(n, allderivs, "Analytic PR76")
-        call run_bench(n, allderivs, "Tape PR76")
-        call run_bench(n, allderivs, "Adiff PR76")
-    end subroutine
-
     subroutine run_bench(nmax, all_derivs, eos)
         integer, parameter :: nevals=1e3
         integer :: nmax
@@ -78,7 +65,7 @@ contains
         std = 0
         mean = 0
 
-        print *, "running: ", eos
+        print *, "running: ", eos, "all derivs: ", all_derivs
 
         do n=1,nmax
             do i=1,nevals
@@ -91,10 +78,25 @@ contains
                 std = std + time**2
             end do
             mean = mean/nevals
-            std = sqrt(1._pr/(nevals-1) * (std - nevals*mean**2))
+            std = sqrt(1._pr/(nevals-1) * abs(std - nevals*mean**2))
 
             print *, n, mean, std
         end do
-
     end subroutine
+    
+    subroutine main()
+        integer :: n=10
+        logical :: allderivs=.false.
+
+        call run_bench(n, allderivs, "Analytic PR76")
+        call run_bench(n, allderivs, "Tape PR76")
+        call run_bench(n, allderivs, "Adiff PR76")
+
+        allderivs = .true.
+        
+        call run_bench(n, allderivs, "Analytic PR76")
+        call run_bench(n, allderivs, "Tape PR76")
+        call run_bench(n, allderivs, "Adiff PR76")
+    end subroutine
+
 end module

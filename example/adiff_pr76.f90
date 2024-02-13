@@ -20,8 +20,7 @@ module hyperdual_pr76
 contains
 
     type(PR76) function setup(tc_in, pc_in, w_in, kij_in, lij_in) result(self)
-        !-| Setup the enviroment to use the PengRobinson 76 Equation of State
-        !   It uses the Cubic Van der Waals mixing rules
+        !! Seup an Autodiff_PR76 model
         real(pr) :: tc_in(:)
         real(pr) :: pc_in(:)
         real(pr) :: w_in(:)
@@ -45,7 +44,7 @@ contains
         type(hyperdual), intent(in) :: n(:), v, t
         type(hyperdual) :: ar
     
-        type(hyperdual) :: amix, a(size(n)), ai(size(n)), z2(size(n)), zij
+        type(hyperdual) :: amix, a(size(n)), ai(size(n)), n2(size(n))
         type(hyperdual) :: bmix
         type(hyperdual) :: b_v, nij
 
@@ -54,27 +53,10 @@ contains
         associate(pc => self%pc, ac => self%ac, b => self%b, k => self%k, &
                   kij => self%kij, lij => self%kij, tc => self%tc &
         )
-            ! a = ac * (1.0_pr + k * (1.0_pr - sqrt(t/self%tc)))**2
-            
-            ! amix = 0.0_pr
-            ! bmix = 0.0_pr
-            ! do i=1,size(n)
-            !     do j=1,size(n)
-            !         amix = amix + n(i) * n(j) * sqrt(a(i) * a(j)) * (1._pr - kij(i, j))
-            !         bmix = bmix + n(i) * n(j) * 0.5_pr * (b(i) + b(j)) * (1._pr - lij(i, j))
-            !     end do
-            ! end do
+            a = 1.0_pr + k * (1.0_pr - sqrt(t/tc))
+            a = ac * a ** 2
+            ai = sqrt(a)
 
-            ! bmix = bmix/sum(n)
-
-            ! b_v = bmix/v
-            
-            ! ar = (&
-            !     - sum(n) * log(1.0_pr - b_v) &
-            !     - amix / (R*t*bmix)*1.0_pr / (del1 - del2) &
-            !     * log((1.0_pr + del1 * b_v) / (1.0_pr + del2 * b_v)) &
-            ! ) * R*t
-            a = sqrt(ac * (1.0_pr + k * (1.0_pr - sqrt(t/tc)))**2)
         
             amix = 0.0_pr
             bmix = 0.0_pr
@@ -82,12 +64,12 @@ contains
             do i=1,size(n)-1
                 do j=i+1,size(n)
                     nij = n(i) * n(j)
-                    amix = amix + 2 * nij * (a(i) * a(j)) * (1 - kij(i, j))
+                    amix = amix + 2 * nij * (ai(i) * ai(j)) * (1 - kij(i, j))
                     bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))
                 end do
             end do
 
-            amix = amix + sum(n**2*a**2)
+            amix = amix + sum(n**2*a)
             bmix = bmix + sum(n**2 * b)
 
             bmix = bmix/sum(n)
@@ -112,7 +94,7 @@ contains
         v0 = sum(n * self%b) / sum(n)
     end function
 
-    subroutine adiff_pr76 
+    subroutine main 
         class(ArModel), allocatable :: eos
 
         integer, parameter :: n=2
@@ -138,22 +120,19 @@ contains
         v = 1
         t = 150
 
-        call cpu_time(st)
-        do i=1,nevals
-            call eos%residual_helmholtz(&
-                    z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
-                    ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-            )
-        end do
-        call cpu_time(et)
-        print *, (et-st)/nevals
-        print *, "Ar: ", ar
+        call eos%residual_helmholtz(&
+                z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
+                ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+        )
+        print *, "Ar:  ", ar
 
         print *, "ArV: ", arV
         print *, "ArT: ", arT
 
         print *, "ArT2: ", arT2
         print *, "ArV2: ", ArV2
+
+        print *, "Arn:  ", arn
         
         print *, "ArTV: ", ArTV
 

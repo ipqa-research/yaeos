@@ -100,40 +100,6 @@ contains
 
       nc = size(n)
 
-      !do i=1,nc+2
-      !   call reset_vars
-      !   arvaldb = 1
-
-      !   if (i <= nc) then
-      !      nd(i) = 1
-      !   else if (i == nc + 1) then
-      !      vd = 1
-      !   else
-      !      td = 1
-      !   end if
-
-      !   call self%ar_d_b(&
-      !      n, nb, nd, ndb, &
-      !      v, vb, vd, vdb, &
-      !      t, tb, td, tdb, &
-      !      arval, arvalb, arvald, arvaldb &
-      !   )
-      !   if (i <= nc) then
-      !      Arn2(i, :) = nb
-      !   else if (i == nc + 1) then
-      !      if (present(ArV)) ArV  = vdb
-      !      if (present(ArV2)) ArV2  = vb
-      !      if (present(ArVn)) ArVn  = nb
-      !   else
-      !      if (present(ArT)) ArT  = tdb
-      !      if (present(ArT2)) ArT2  = tb
-      !      if (present(ArTn)) ArTn  = nb
-      !   end if
-
-      !end do
-      !Ar = arval
-      !return
-
       if (present(Arn2)) then
          do i=1, nc
             call reset_vars
@@ -172,6 +138,8 @@ contains
       if (present(ArTV)) ArTV = get_dArdX2("TV")
       if (present(ArT2)) ArT2 = get_dArdX2("T2")
       if (present(ArV2)) ArV2 = get_dArdX2("V2")
+
+      if (present(Ar)) Ar = arval
 
    contains
       subroutine reset_vars
@@ -225,9 +193,8 @@ contains
          character(len=*), intent(in) :: var
          real(pr) :: get_ArnX(size(n))
          call reset_vars
-         arvalb = 1
+         
          arvaldb = 1
-
          select case(var)
           case("V")
             vd = 1
@@ -241,7 +208,7 @@ contains
             t, tb, td, tdb, &
             arval, arvalb, arvald, arvaldb &
             )
-         get_ArnX = ndb
+         get_ArnX = nb
       end function
    end subroutine
 

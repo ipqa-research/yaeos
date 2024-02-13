@@ -33,9 +33,6 @@ CONTAINS
     REAL(8) :: kij_in(:, :)
     REAL(8) :: lij_in(:, :)
     
-    
-    
-    
     tc = tc_in
     pc = pc_in
     w = w_in

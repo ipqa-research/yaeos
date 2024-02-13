@@ -1,7 +1,6 @@
 MODULE TapeRobinson
    use tapenade_pr
 contains
-
    subroutine main()
       use yaeos_constants, only: pr
       integer, parameter :: n=2
@@ -17,8 +16,8 @@ contains
       pc = [14._pr, 30._pr]
       w = [0.001_pr, 0.03_pr]
 
-      kij = reshape([0., 0.1, 0.1, 0.], [n,n])
-      lij = kij / 2
+      kij = reshape([0._pr, 0.1_pr, 0.1_pr, 0._pr], [n,n])
+      lij = kij / 2._pr
 
       call SETUP_MODEL(tc, pc, w, kij, lij)
       call model%residual_helmholtz(&
@@ -42,5 +41,4 @@ contains
 
       print *, "Arn2: ", Arn2
    endsubroutine
-
 END MODULE TapeRobinson
