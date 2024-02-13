@@ -6,12 +6,11 @@ rm ./tapeout/*
 infile=pr
 name=$(basename ${infile})
 modflag="YAEOSD"
-ADFirstAidKitDIR=../src/tapenade/ADFirstAidKit
+ADFirstAidKitDIR=../src/adiff/autodiff_api/tapenade #ADFirstAidKit
 
 # Forward
 tapenade -tangent -head "ar(arval)/(n, v, t)" \
          -ext ${ADFirstAidKitDIR}/PUSHPOPGeneralLib \
-         -ext ../src/models/residual_helmholtz/tapenade_ar_api.f90 \
          -tgtmodulename "$modflag" \
          -noisize\
          "${infile}".f90 \
@@ -60,6 +59,10 @@ mv tapeout/${name}_d_d_d_b_b.f90 tapeout/${name}_diff.f90
 sed -i "s/$modflag//g" tapeout/${name}_diff.f90
 sed -i "s/TYPE(UNKNOWNTYPE).*//g" tapeout/${name}_diff.f90
 sed -i "s/model%\(.*\) \(=\).*/model%\1 => \1/g" tapeout/${name}_diff.f90
+sed -i 's/REAL\*8/REAL(8)/' tapeout/${name}_diff.f90
+
+cp tapeout/${name}_diff.f90 ../example/taperobinson.f90
+# findent < tapeout/${name}_diff.f90 > tapeout/${name}_diff.f90
 
 # lfortran fmt -i tapeout/${infile}_diff.f90
 # =============================================================================
