@@ -49,19 +49,19 @@ module yaeos_tapenade_ar_api
          import pr
          real(pr), intent(in) :: n(:), v, t
          real(pr) :: arval
-         
+
          real(pr), intent(in) :: nd(:), vd, td
          real(pr) :: arvald
-         
+
          real(pr) :: nb(:), vb, tb
          real(pr) :: arvalb
-         
+
          real(pr) :: ndb(:), vdb, tdb
          real(pr) :: arvaldb
       end subroutine
 
       subroutine tapenade_ar_d_d(n, nd, v, vd0, vd, t, td0, td, &
-            arval, arvald0, arvald, arvaldd)
+         arval, arvald0, arvald, arvaldd)
          import pr
          real(pr), intent(in) :: n(:), v, t
          real(pr), intent(in) :: vd0, td0
@@ -79,7 +79,7 @@ module yaeos_tapenade_ar_api
 contains
 
    subroutine residual_helmholtz(&
-         self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
+      self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
       )
       !! Residual Helmholtz model generic interface
       class(ArModelTapenade), intent(in) :: self
@@ -99,6 +99,40 @@ contains
       integer :: i, nc
 
       nc = size(n)
+
+      !do i=1,nc+2
+      !   call reset_vars
+      !   arvaldb = 1
+
+      !   if (i <= nc) then
+      !      nd(i) = 1
+      !   else if (i == nc + 1) then
+      !      vd = 1
+      !   else
+      !      td = 1
+      !   end if
+
+      !   call self%ar_d_b(&
+      !      n, nb, nd, ndb, &
+      !      v, vb, vd, vdb, &
+      !      t, tb, td, tdb, &
+      !      arval, arvalb, arvald, arvaldb &
+      !   )
+      !   if (i <= nc) then
+      !      Arn2(i, :) = nb
+      !   else if (i == nc + 1) then
+      !      if (present(ArV)) ArV  = vdb
+      !      if (present(ArV2)) ArV2  = vb
+      !      if (present(ArVn)) ArVn  = nb
+      !   else
+      !      if (present(ArT)) ArT  = tdb
+      !      if (present(ArT2)) ArT2  = tb
+      !      if (present(ArTn)) ArTn  = nb
+      !   end if
+
+      !end do
+      !Ar = arval
+      !return
 
       if (present(Arn2)) then
          do i=1, nc
@@ -147,15 +181,18 @@ contains
 
          vb=0
          vd=0
+         vd0 = 0
          vdb=0
 
          tb=0
          td=0
+         td0 = 0
          tdb=0
 
          arval = 0
          arvalb = 0
          arvald = 0
+         arvald0 = 0
          arvaldb = 0
       end subroutine
 
@@ -164,21 +201,22 @@ contains
          real(pr) :: get_dArdX2
 
          call reset_vars
-         
+
          select case(var)
-         case("TV")
+          case("TV")
             vd = 1
             td0 = 1
-         case ("V2")
+          case ("V2")
             vd = 1
             vd0 = 1
-         case ("T2")
+          case ("T2")
             td = 1
             td0 = 1
          end select
+
          call self%ar_d_d(&
-               n, nd, v, vd0, vd, t, td0, td, &
-               arval, arvald0, arvald, arvaldd &
+            n, nd, v, vd0, vd, t, td0, td, &
+            arval, arvald0, arvald, arvaldd &
          )
          get_dArdX2 = arvaldd
       end function
@@ -187,11 +225,13 @@ contains
          character(len=*), intent(in) :: var
          real(pr) :: get_ArnX(size(n))
          call reset_vars
+         arvalb = 1
+         arvaldb = 1
 
          select case(var)
-         case("V")
+          case("V")
             vd = 1
-         case("T")
+          case("T")
             td = 1
          end select
 
@@ -200,8 +240,8 @@ contains
             v, vb, vd, vdb, &
             t, tb, td, tdb, &
             arval, arvalb, arvald, arvaldb &
-         )
-         get_ArnX = nb
+            )
+         get_ArnX = ndb
       end function
    end subroutine
 
