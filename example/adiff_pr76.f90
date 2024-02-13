@@ -47,34 +47,58 @@ contains
     
         type(hyperdual) :: amix, a(size(n)), ai(size(n)), z2(size(n)), zij
         type(hyperdual) :: bmix
-        type(hyperdual) :: b_v
+        type(hyperdual) :: b_v, nij
 
         integer :: i, j
 
         associate(pc => self%pc, ac => self%ac, b => self%b, k => self%k, &
-                  kij => self%kij, lij => self%kij&
+                  kij => self%kij, lij => self%kij, tc => self%tc &
         )
-            a = ac * (1.0_pr + k * (1.0_pr - sqrt(t/self%tc)))**2
+            ! a = ac * (1.0_pr + k * (1.0_pr - sqrt(t/self%tc)))**2
             
+            ! amix = 0.0_pr
+            ! bmix = 0.0_pr
+            ! do i=1,size(n)
+            !     do j=1,size(n)
+            !         amix = amix + n(i) * n(j) * sqrt(a(i) * a(j)) * (1._pr - kij(i, j))
+            !         bmix = bmix + n(i) * n(j) * 0.5_pr * (b(i) + b(j)) * (1._pr - lij(i, j))
+            !     end do
+            ! end do
+
+            ! bmix = bmix/sum(n)
+
+            ! b_v = bmix/v
+            
+            ! ar = (&
+            !     - sum(n) * log(1.0_pr - b_v) &
+            !     - amix / (R*t*bmix)*1.0_pr / (del1 - del2) &
+            !     * log((1.0_pr + del1 * b_v) / (1.0_pr + del2 * b_v)) &
+            ! ) * R*t
+            a = sqrt(ac * (1.0_pr + k * (1.0_pr - sqrt(t/tc)))**2)
+        
             amix = 0.0_pr
             bmix = 0.0_pr
-            do i=1,size(n)
-                do j=1,size(n)
-                    amix = amix + n(i) * n(j) * sqrt(a(i) * a(j)) * (1._pr - kij(i, j))
-                    bmix = bmix + n(i) * n(j) * 0.5_pr * (b(i) + b(j)) * (1._pr - lij(i, j))
+
+            do i=1,size(n)-1
+                do j=i+1,size(n)
+                    nij = n(i) * n(j)
+                    amix = amix + 2 * nij * (a(i) * a(j)) * (1 - kij(i, j))
+                    bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))
                 end do
             end do
+
+            amix = amix + sum(n**2*a**2)
+            bmix = bmix + sum(n**2 * b)
 
             bmix = bmix/sum(n)
 
             b_v = bmix/v
-            
             ar = (&
                 - sum(n) * log(1.0_pr - b_v) &
                 - amix / (R*t*bmix)*1.0_pr / (del1 - del2) &
                 * log((1.0_pr + del1 * b_v) / (1.0_pr + del2 * b_v)) &
-            ) * R*t
-        end associate
+            ) * (r * t)
+            end associate
     end function
 
     function v0(self, n, p, t)
