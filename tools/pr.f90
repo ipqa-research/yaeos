@@ -1,5 +1,4 @@
-module pengrobinson
-    !! Peng Robinson 76 Equation of State.
+module tapenade_pr
     use yaeos_tapenade_ar_api, only: ArModelTapenade
     implicit none
 
@@ -13,8 +12,6 @@ module pengrobinson
     type(ArModelTapenade) :: model
 contains
     subroutine setup_model(tc_in, pc_in, w_in, kij_in, lij_in)
-        !-| Setup the enviroment to use the PengRobinson 76 Equation of State
-        !   It uses the Cubic Van der Waals mixing rules
         real(8) :: tc_in(:)
         real(8) :: pc_in(:)
         real(8) :: w_in(:)
@@ -32,13 +29,11 @@ contains
         kij = kij_in
         lij = lij_in
 
-        !$AD DO-NOT-DIFF
         model%ar => ar
         model%ar_d => ar_d
         model%ar_b => ar_b
         model%ar_d_b => ar_d_b
         model%ar_d_d => ar_d_d
-        !$AD END-DO-NOT-DIFF
     end subroutine
 
     subroutine ar(n, v, t, arval)
@@ -47,20 +42,24 @@ contains
         real(8) :: amix, a(size(n)), ai(size(n)), z2(size(n)), nij
         real(8) :: bmix
         real(8) :: b_v
+        real(8) :: aij(size(n), size(n)), bij(size(n), size(n))
         integer :: i, j
 
-        a = ac * (1.0 + k * (1.0 - sqrt(t/tc)))**2
+        a = sqrt(ac * (1.0 + k * (1.0 - sqrt(t/tc)))**2)
         
         amix = 0.0
         bmix = 0.0
-        
-        do i=1,size(n)
-            do j=1,size(n)
+
+        do i=1,size(n)-1
+            do j=i+1,size(n)
                 nij = n(i) * n(j)
-                amix = amix + nij * sqrt(a(i) * a(j)) * (1 - kij(i, j))
-                bmix = bmix + nij * 0.5 * (b(i) + b(j)) * (1 - lij(i, j))
+                amix = amix + 2 * nij * (a(i) * a(j)) * (1 - kij(i, j))
+                bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))
              end do
         end do
+
+        amix = amix + sum(n**2*a**2)
+        bmix = bmix + sum(n**2 * b)
 
         bmix = bmix/sum(n)
 
