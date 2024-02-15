@@ -85,7 +85,7 @@ contains
     end subroutine
     
     subroutine main()
-        integer :: n=10
+        integer :: n=20
         logical :: allderivs=.false.
 
         call run_bench(n, allderivs, "Analytic PR76")
