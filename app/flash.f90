@@ -7,8 +7,8 @@ program flasher
 
     real(pr) :: tc(2), pc(2), w(2)
 
-    real(pr) :: n(2), p, v, t, k0(2)
-    integer :: iters, i, j
+    real(pr) :: n(2), t, p, k0(2)
+    integer :: iter
 
     print *, "FLASH EXAMPLE:"
     

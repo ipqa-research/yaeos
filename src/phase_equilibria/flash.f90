@@ -10,14 +10,13 @@ contains
    type(EquilibriaState) function flash(self, z, t, v_spec, p_spec, k0, iters)
       !! This algorithm assumes that the specified T and P correspond to
       !! vapor-liquid separation predicted by the provided model (0<beta<1)
-      class(ArModel), intent(in) :: self
+      class(ArModel), intent(in) :: self !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), intent(in) :: k0(:) !! Initial K factors (y/x)
-      
-      integer, optional, intent(out) :: iters
+      integer, optional, intent(out) :: iters !! Number of iterations
 
       logical :: stopflash
 
