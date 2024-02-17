@@ -21,7 +21,6 @@ module legacy_ar_models
    !  Cubic EoS Possible parameters
    ! --------------------------------------------------------------------------
    ! Critical constants
-
    real(pr), allocatable :: tc(:) !! Critical temperature [K]
    real(pr), allocatable :: pc(:) !! Critical pressure [bar]
    real(pr), allocatable :: dc(:) !! Critical density [mol/L]
