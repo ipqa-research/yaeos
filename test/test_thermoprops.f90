@@ -65,7 +65,7 @@ contains
 
       real(pr) :: lnfug_val(2), dlnphidp_val(2), dlnphidt_val(2)
 
-      integer :: root_type
+      character(len=:), allocatable :: root_type
       
       lnfug_val =   [2.0759140949373416, -2.2851989270402058]
       dlnphidp_val = [-0.99059224575177762, -0.99388122357848807]
@@ -77,7 +77,7 @@ contains
       p = 1
       t = 150
 
-      root_type = 1
+      root_type = "liquid" 
 
       call fugacity_tp(eos, &
          z, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
