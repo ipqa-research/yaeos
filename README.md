@@ -5,7 +5,6 @@
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/fedebenelli/yaeos/blob/main/LICENSE)
 [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml)
 
-# YA_EoS
 
 ![logo](media/logo.svg){width=50%}
 
@@ -37,7 +36,7 @@ possible. Also providing our models too!
 For now, we only include residual Helmholtz model (like Cubic or Saft Equations
 of State). But we'll be adding other models like $G^E$ (UNIFAC for example).
 
-## A little taste of `yaeos`
+# A little taste of `yaeos`
 A lot of users get the bad picture of Fortran being old and archaic since most
 of the codes they've seen are written in ancient `F77`.
 
@@ -70,7 +69,7 @@ call pressure(model, z, V, T, P, dPdN=dPdN)
 print *, dPdN
 ```
 
-## How to install/run it
+# How to install/run it
 `yaeos` is intended to use as a [`fpm`](fpm.fortran-lang.org)
 
 You can either:
@@ -96,7 +95,7 @@ You can either:
 > ```
 
 
-## Including new models with Automatic Differentiation.
+# Including new models with Automatic Differentiation.
 We are using the `hyperdual` module developed by [Philipp Rehner](https://github.com/prehner) and [Gernot Bauer](https://github.com/g-bauer)
 
 > The automatic differentiation API isn't fully optimized yet so performance is
@@ -150,7 +149,7 @@ eos%parameters = [1, 2, 3]
 call fugacity_vt(eos, n, v, t, lnfug=lnfug, dlnphidn=dlnphidn)
 ```
 
-## Documentation
+# Documentation
 The latest API documentation for the `main` branch can be found
 [here](https://ipqa-research.github.io/yaeos). This was generated from the source
 code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford). We're
