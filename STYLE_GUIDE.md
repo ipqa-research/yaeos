@@ -11,7 +11,7 @@ This style guide is a living document and proposed changes may be adopted after 
 * Do not use obsolescent or deleted language features
   E.g., `common`, `pause`, `entry`, arithmetic `if` and computed `goto`
 * Do not use vendor extensions in the form of non-standard syntax and vendor supplied intrinsic procedures
-  E.g., `real*8` or `etime()`
+  E.g., `real*8` or `etime()`, use `real(pr)`
 
 ## File naming conventions
 
@@ -31,6 +31,8 @@ This style guide is a living document and proposed changes may be adopted after 
 By setting and following a convention for indentation and whitespace, code
 reviews and git-diffs can focus on the semantics of the proposed changes rather
 than style and formatting.
+
+We recommend ~~enforce~~ the use of `findent` to format your files.
 
 * The body of every Fortran construct should be indented by __four (4) spaces__
 * Line length *should be limited to 80 characters* and __must not exceed 132__

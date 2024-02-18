@@ -7,7 +7,7 @@
 
 # YA_EoS
 
-![logo](doc/media/logo.png)
+![logo](media/logo.svg){width=50%}
 
 There are multiple open source equations of state libraries, like:
 
