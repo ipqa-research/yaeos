@@ -163,14 +163,8 @@ Our code style can be read at [Style Guide](STYLE_GUIDE.md)
 We encourage the use of
 [commitizen](https://commitizen-tools.github.io/commitizen/) styling on commit
 messages.
-<!-- TODO
-
--->
+<!-- TODO -->
 
 ## Join The Project Team
 mail me
 <!-- TODO -->
-
-<!-- omit in toc -->
-## Attribution
-This guide is based on the **contributing-gen**. [Make your own](https://github.com/bttger/contributing-gen)!
