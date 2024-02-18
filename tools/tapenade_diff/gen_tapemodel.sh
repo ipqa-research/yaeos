@@ -3,7 +3,8 @@ mkdir -p "$OUTDIR"
 rm "$OUTDIR/*"
 rm ./tapeout/*
 
-infile=pr
+infile="$1"
+
 name=$(basename ${infile})
 modflag="YAEOSD"
 ADFirstAidKitDIR=../src/adiff/autodiff_api/tapenade #ADFirstAidKit
