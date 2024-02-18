@@ -99,7 +99,61 @@
   
   <div class="row">
     <div class="col-md-9 col-md-push-3" id='text'>
-      
+      <p>Most of thermodynamic properties calculated in <code>yaeos</code> heavily depend on
+different kind of models and their respective derivatives.
+Since obtaining the derivatives of complex models can be a tedious and
+error-prone task. We provide two different ways of getting them automatically
+(in some cases with some performance-cost), but there is also the possibility
+of using anallyitical obtained expressions instead.</p>
+<p>The calculation of thermodynamic properties heavily depends on </p>
+<p>On <code>yaeos</code> there are three different ways of adding your own model:W</p>
+<div class="toc">
+<ul>
+<li><a href="#residual-helmholtz-models">Residual Helmholtz models</a><ul>
+<li><a href="#using-operator-overloading-automatic-differentiation-with-hyperdual-numbers">Using operator overloading automatic differentiation with hyperdual numbers</a></li>
+<li><a href="#using-source-to-source-automatic-differentiation-with-tapenade">Using source-to-source automatic differentiation with tapenade</a></li>
+<li><a href="#using-analytical-obtained-expressions">Using analytical obtained expressions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="residual-helmholtz-models">Residual Helmholtz models</h1>
+<p>Residual Helmholtz models are the basis to obtain the residual properties.</p>
+<p>The main basis in <code>yaeos</code> to define a new object that extends the <code>abstract type</code> called <code>ArModel</code>. Which enforces the expected functionality of these
+kind of models.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span><span class="w"></span>
+
+<span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MyNewModel</span><span class="w"></span>
+<span class="k">end type</span><span class="w"></span>
+</code></pre></div>
+
+<p>The definition of an <code>ArModel</code> expects that two procedures are defined:</p>
+<ul>
+<li><a href="../../interface/abs_residual_helmholtz.html">residual_helmholtz</a>: Procedure to calculate residual Helmholtz energy and it&rsquo;s derivatives</li>
+<li><a href="../../interface/abs_volume_initializer.html">volume_initializer</a>: Volume initializer to find a liquid root, given a pressure and temperature.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span><span class="w"></span>
+
+<span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MyNewModel</span><span class="w"></span>
+<span class="k">contains</span>
+<span class="k">    procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">residual_helmholtz</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">an_Ar_implementation</span><span class="w"></span>
+<span class="w">    </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">volume_initializer</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">an_v0_implementation</span><span class="w"></span>
+<span class="k">end type</span><span class="w"></span>
+</code></pre></div>
+
+<p>Satisfying those requirements, our model will be ready to make calculations!</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pressure</span><span class="w"></span>
+<span class="k">use </span><span class="n">my_model</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">MyNewModel</span><span class="w"></span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">MyNewModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span><span class="w"></span>
+
+<span class="c">! Assuming model parameters are set-up</span>
+<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
+<h2 id="using-operator-overloading-automatic-differentiation-with-hyperdual-numbers">Using operator overloading automatic differentiation with hyperdual numbers</h2>
+<h2 id="using-source-to-source-automatic-differentiation-with-tapenade">Using source-to-source automatic differentiation with tapenade</h2>
+<h2 id="using-analytical-obtained-expressions">Using analytical obtained expressions</h2>
     </div>
     <div class="col-md-3 col-md-pull-9">
       <hr class="visible-xs visible-sm">
@@ -143,7 +197,7 @@
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-18 17:30            </p>
+ on 2024-02-18 22:42            </p>
         </div>
       </div>
       <br>

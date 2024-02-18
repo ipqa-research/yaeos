@@ -1,7 +1,7 @@
 module yaeos_thermoprops
-   !! Residual thermodyamic properties using residual Helmholtz model.
+   !! **Residual thermodyamic properties using residual Helmholtz model.**
    !! 
-   !! ## Available properties
+   !! **Available properties**
    !! - pressure(n, V, T)
    !! - fugacity(n, V, T)
    !! - fugacity(n, P, T, root=[vapor, liquid, stable])
