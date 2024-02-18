@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Yet another Equation of State (library)">
+   <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>PengRobinson76 &ndash; Yaeos</title>
+    <title>PengRobinson76 &ndash; yaeos</title>
 
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
@@ -39,7 +39,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="../index.html">Yaeos </a>
+          <a class="navbar-brand" href="../index.html">yaeos </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -90,13 +90,13 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 1.5% of total for procedures.">34 statements</a>
+    title=" 1.6% of total for procedures.">39 statements</a>
      </li> 
-    <li><i class="fa fa-code"></i><a href="../src/pr76.f90"> Source File</a></li>
+    <li><i class="fa fa-code"></i><a href="../src/implementations.f90"> Source File</a></li>
   </ul>
   <ol class="breadcrumb in-well text-right">
-     <li><a href='../sourcefile/pr76.f90.html'>pr76.f90</a></li>
-     <li><a href='../module/yaeos_models_ar_cubic_pengrobinson76.html'>yaeos_models_ar_cubic_pengrobinson76</a></li>
+     <li><a href='../sourcefile/implementations.f90.html'>implementations.f90</a></li>
+     <li><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></li>
      <li class="active">PengRobinson76</li>
   </ol>
 </div>
@@ -121,9 +121,9 @@
     <div class="list-group">
       <a class="list-group-item" href="../proc/pengrobinson76.html#variable-alpha~4">alpha</a>
       <a class="list-group-item" href="../proc/pengrobinson76.html#variable-composition">composition</a>
-      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-i~21">i</a>
+      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-i~6">i</a>
       <a class="list-group-item" href="../proc/pengrobinson76.html#variable-mixrule~2">mixrule</a>
-      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-nc~18">nc</a>
+      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-nc~8">nc</a>
     </div>
   </div>
 </div>
@@ -134,7 +134,23 @@
     
     <div class="col-md-9" id='text'>
     <h2>public function PengRobinson76(tc, pc, w, kij, lij) result(model)</h2>
-    
+        <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      <li class="list-group-item">
+  <ul class="list-inline">
+    <li><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></li>
+    <li><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></li>
+    <li><a href='../module/yaeos_substance.html'>yaeos_substance</a></li>
+    <li><a href='../module/yaeos_constants.html'>yaeos_constants</a></li>
+    <li><a href='../module/yaeos_models_ar_cubic_alphas.html'>yaeos_models_ar_cubic_alphas</a></li>
+  </ul>
+      </li>
+      </ul>
+    </div>
+
 
     <p>PengRobinson76.</p>
 <p>Using the critical constants setup the parameters to use the 
@@ -218,9 +234,9 @@ defined outside the function.</p>
     <div class="list-group">
       <a class="list-group-item" href="../proc/pengrobinson76.html#variable-alpha~4">alpha</a>
       <a class="list-group-item" href="../proc/pengrobinson76.html#variable-composition">composition</a>
-      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-i~21">i</a>
+      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-i~6">i</a>
       <a class="list-group-item" href="../proc/pengrobinson76.html#variable-mixrule~2">mixrule</a>
-      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-nc~18">nc</a>
+      <a class="list-group-item" href="../proc/pengrobinson76.html#variable-nc~8">nc</a>
     </div>
   </div>
 </div>
@@ -245,7 +261,7 @@ defined outside the function.</p>
   <td><strong>composition</strong></td><td></td><td></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-i~21"></span>integer,</td>
+  <td><span class="anchor" id="variable-i~6"></span>integer,</td>
 <td>private</td>  <td></td><td>::</td>
   <td><strong>i</strong></td><td></td><td></td><td></td>
 </tr>
@@ -255,7 +271,7 @@ defined outside the function.</p>
   <td><strong>mixrule</strong></td><td></td><td></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-nc~18"></span>integer,</td>
+  <td><span class="anchor" id="variable-nc~8"></span>integer,</td>
 <td>private</td>  <td></td><td>::</td>
   <td><strong>nc</strong></td><td></td><td></td><td></td>
 </tr>
@@ -281,14 +297,14 @@ defined outside the function.</p>
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
+        <div class="col-xs-6 col-md-6"><p>yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-11 21:16            </p>
+ on 2024-02-18 17:30            </p>
         </div>
       </div>
       <br>

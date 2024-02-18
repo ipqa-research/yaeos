@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Yet another Equation of State (library)">
+   <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>residual_helmholtz &ndash; Yaeos</title>
+    <title>residual_helmholtz &ndash; yaeos</title>
 
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
@@ -39,7 +39,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="../index.html">Yaeos </a>
+          <a class="navbar-brand" href="../index.html">yaeos </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -90,7 +90,7 @@
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
     data-placement="bottom" data-html="true"
-    title=" 0.3% of total for procedures.">6 statements</a>
+    title=" 3.9% of total for procedures.">95 statements</a>
      </li> 
     <li><i class="fa fa-code"></i><a href="../src/tapenade_ar_api.f90"> Source File</a></li>
   </ul>
@@ -115,98 +115,149 @@
     <div id="sidebar">
   <h3>Contents</h3>
  
-<em>None</em>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arval~6">arval</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvalb~3">arvalb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvald~4">arvald</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvald0~2">arvald0</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvaldb~2">arvaldb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvaldd~2">arvaldd</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-df">df</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-df2">df2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-i~24">i</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-nb~3">nb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-nc~21">nc</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-nd~7">nd</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-ndb~2">ndb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-tb~3">tb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-td~4">td</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-td0~2">td0</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-tdb~2">tdb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vb~3">vb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vd~4">vd</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vd0~2">vd0</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vdb~2">vdb</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
+  <div id="funcs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_arnx">get_ArnX</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_dardx2">get_dArdX2</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-reset_vars~2">reset_vars</a>
+    </div>
+  </div>
+</div>
 
 </div>
 
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private subroutine residual_helmholtz(n, v, t, ar, dardn, dardv, dardt, dardn2, darnv, dardnt, dardvt, dardv2, dardt2)</h2>
+    <h2>private subroutine residual_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)</h2>
     
 
+    <p>Residual Helmholtz model generic interface</p>
 
     <h3>Arguments</h3>
       <table class="table table-striped varlist">
 <thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
 <tbody>
 <tr>
-  <td><span class="anchor" id="variable-n~16"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-self~22"></span>class(<a href='../type/armodeltapenade.html'>ArModelTapenade</a>),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>self</strong></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-n~23"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>n</strong>(:)</td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-v~18"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-v~20"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>v</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-t~22"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-t~27"></span>real(kind=pr),</td>
 <td>intent(in)</td>
   <td></td>  <td></td><td>::</td>
   <td><strong>t</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-ar~7"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-ar~12"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>ar</strong></td><td></td>
+  <td><strong>Ar</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardn"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-arv~9"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardn</strong>(size(n))</td><td></td>
+  <td><strong>ArV</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardv"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-art~6"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardv</strong></td><td></td>
+  <td><strong>ArT</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardt"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-artv~9"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardt</strong></td><td></td>
+  <td><strong>ArTV</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardn2"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-arv2~10"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardn2</strong>(size(n),size(n))</td><td></td>
+  <td><strong>ArV2</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-darnv"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-art2~4"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>darnv</strong>(size(n))</td><td></td>
+  <td><strong>ArT2</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardnt"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-arn~16"></span>real(kind=pr),</td>
 <td>intent(out),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardnt</strong>(size(n))</td><td></td>
+  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
+  <td><strong>Arn</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardvt"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-arvn~16"></span>real(kind=pr),</td>
 <td>intent(out),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardvt</strong></td><td></td>
+  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
+  <td><strong>ArVn</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardv2"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-artn~15"></span>real(kind=pr),</td>
 <td>intent(out),</td>
-  <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardv2</strong></td><td></td>
+  <td>optional</td>  <td>dimension(size(n))</td><td>::</td>
+  <td><strong>ArTn</strong></td><td></td>
 </tr>
 <tr>
-  <td><span class="anchor" id="variable-dardt2"></span>real(kind=pr),</td>
+  <td><span class="anchor" id="variable-arn2~15"></span>real(kind=pr),</td>
 <td>intent(out),</td>
   <td>optional</td>  <td></td><td>::</td>
-  <td><strong>dardt2</strong></td><td></td>
+  <td><strong>Arn2</strong>(size(n),size(n))</td><td></td>
 </tr>
 </tbody>
 </table>
@@ -216,19 +267,237 @@
     <section class="visible-xs visible-sm hidden-md">
       <h3>Contents</h3>
  
-<em>None</em>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arval~6">arval</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvalb~3">arvalb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvald~4">arvald</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvald0~2">arvald0</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvaldb~2">arvaldb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-arvaldd~2">arvaldd</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-df">df</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-df2">df2</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-i~24">i</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-nb~3">nb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-nc~21">nc</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-nd~7">nd</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-ndb~2">ndb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-tb~3">tb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-td~4">td</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-td0~2">td0</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-tdb~2">tdb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vb~3">vb</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vd~4">vd</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vd0~2">vd0</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-vdb~2">vdb</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
+  <div id="funcs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_arnx">get_ArnX</a>
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_dardx2">get_dArdX2</a>
+    </div>
+  </div>
+</div>
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-reset_vars~2">reset_vars</a>
+    </div>
+  </div>
+</div>
 
     </section>
     <br class="visible-xs visible-sm hidden-md">
 
 
+    <section>    
+      <h2>Variables</h2>
+    <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th><th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" id="variable-arval~6"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>arval</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arvalb~3"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>arvalb</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arvald~4"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>arvald</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arvald0~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>arvald0</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arvaldb~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>arvaldb</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-arvaldd~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>arvaldd</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-df"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>df</strong>(size(n)+2)</td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-df2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>df2</strong>(size(n)+2,size(n)+2)</td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-i~24"></span>integer,</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>i</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-nb~3"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>nb</strong>(size(n))</td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-nc~21"></span>integer,</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>nc</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-nd~7"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>nd</strong>(size(n))</td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-ndb~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>ndb</strong>(size(n))</td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-tb~3"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>tb</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-td~4"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>td</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-td0~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>td0</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-tdb~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>tdb</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-vb~3"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>vb</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-vd~4"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>vd</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-vd0~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>vd0</strong></td><td></td><td></td><td></td>
+</tr>
+<tr>
+  <td><span class="anchor" id="variable-vdb~2"></span>real(kind=pr),</td>
+<td>private</td>  <td></td><td>::</td>
+  <td><strong>vdb</strong></td><td></td><td></td><td></td>
+</tr>
+</tbody>
+</table>
+
+    </section>
+    <br>
     
     
 
     
     
+ 
+    <section>
+    <h2>Functions</h2>
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_arnx"></span><h3>function get_ArnX(var)</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>character(len=*),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>var</strong></td><td></td>
+</tr>
+</tbody>
+</table>
+
+<h4>Return Value <small>real(kind=pr)(size(n))</small></h4>  
+
+  </div>
+  </div>
+
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_dardx2"></span><h3>function get_dArdX2(var)</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Intent</th><th>Optional</th><th>Attributes</th><th></th><th>Name</th><th></th></thead>
+<tbody>
+<tr>
+  <td><span class="anchor" ></span>character(len=*),</td>
+<td>intent(in)</td>
+  <td></td>  <td></td><td>::</td>
+  <td><strong>var</strong></td><td></td>
+</tr>
+</tbody>
+</table>
+
+<h4>Return Value <small>real(kind=pr)</small></h4>  
+
+  </div>
+  </div>
+
+    </section>
+    <br>
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-reset_vars~2"></span><h3>subroutine reset_vars()</h3></div>
+  <div class="panel-body">
+           
+<h4>Arguments</h4>      <em>None</em>
+
+  </div>
+  </div>
+
+    </section>    
     
     
     </div>
@@ -239,14 +508,14 @@
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
+        <div class="col-xs-6 col-md-6"><p>yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-11 21:16            </p>
+ on 2024-02-18 17:30            </p>
         </div>
       </div>
       <br>

@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Yet another Equation of State (library)">
+   <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="./favicon.png">
 
-    <title> Yaeos </title>
+    <title> yaeos </title>
 
     <link href="./css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/pygments.css" rel="stylesheet">
@@ -39,7 +39,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="./index.html">Yaeos </a>
+          <a class="navbar-brand" href="./index.html">yaeos </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -80,7 +80,10 @@
     <div class="container">
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <p>Yet another Equation of State (library)</p>
+        <p>Calculation of thermodynamic properties and phase-equilibria with
+Equation of State. Keeping high performance with the power of Fortran
+and the possiblity of using either automatic differentiation and
+anallytical derivatives.</p>
 	<p> Find us on&hellip;</p>
         <p>
           <a class="btn btn-lg btn-primary" href="https://github.com/fedebenelli/yaeos" role="button">GitHub</a>
@@ -89,15 +92,23 @@
 
       <div class="row" id='text'>
         <div class="col-md-8">
-          <h1>Yaeos</h1>
-          <p><a href="https://github.com/fedebenelli"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-fedebenelli-blue.svg?style=social&amp;logo=github"></a>
+          <h1>yaeos</h1>
+          <div class="toc">
+<ul>
+<li><a href="#a-little-taste-of-yaeos">A little taste of yaeos</a></li>
+<li><a href="#how-to-installrun-it">How to install/run it</a></li>
+<li><a href="#including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</a></li>
+<li><a href="#documentation">Documentation</a></li>
+</ul>
+</div>
+<p><a href="https://github.com/fedebenelli"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-fedebenelli-blue.svg?style=social&amp;logo=github"></a>
 <a href="https://fortran-lang.org"><img alt="Fortran" src="https://img.shields.io/badge/Fortran-734f96?logo=fortran&amp;style=flat"></a>
 <a href="https://fpm.fortran-lang.org"><img alt="fpm" src="https://img.shields.io/badge/fpm-Fortran_package_manager-734f96"></a>
 <a href="https://fedebenelli.github.io/yaeos/"><img alt="Documentation" src="https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg"></a>
 <a href="https://github.com/fedebenelli/yaeos/blob/main/LICENSE"><img alt="License: MPL 2.0" src="https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg"></a>
 <a href="https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml"><img alt="CI" src="https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg"></a></p>
-<h1 id="ya_eos">YA_EoS</h1>
-<p>There are multiple open source equation of state libraries, like:</p>
+<p><img alt="logo" src="media/logo.svg" width="50%"></p>
+<p>There are multiple open source equations of state libraries, like:</p>
 <ul>
 <li><a href="https://github.com/ClapeyronThermo/Clapeyron.jl">Clapeyron</a> <code>julia</code></li>
 <li><a href="https://github.com/feos-org/feos">FeOs</a> <code>rust</code> with <code>Python</code> bindings</li>
@@ -107,34 +118,88 @@
 <li><a href="https://github.com/CoolProp/CoolProp">CoolProp</a> <code>C++</code> with <code>Python</code> bindings</li>
 </ul>
 <p>Here we are presenting yet another (still in development) one, that tackles the
-same problem just, in another way. Mostly exploiting readability and
-extensiblity of Modern Fortran for scientists to have an easy way to implement
-new thermodynamic models without dealing with lower level languages but still
-getting decent performance. 
-And also this framework provides the possiblility of using analitically obtained
-derivatives so both options are easy available.</p>
+same problem just, in another way. Mostly exploiting the readability and
+extensibility of Modern Fortran for scientists to have an easy way to implement
+new thermodynamic models without dealing with lower-level languages but still
+getting decent performance.
+And also this framework provides the possibility of using analytically obtained
+derivatives so both options are easily available.</p>
 <blockquote>
 <p>This is an experimental work in progress and we recommend the before
 mentioned libraries if you are intending to use some of this in real work.
 Big part of the code comes from a refactoring process of older codes so
 not all parts are easily readable, yet.</p>
 </blockquote>
-<p>We focus mainly in that the addition of a new thermodynamic model is as easy as
-possible. Also providing our own models too!</p>
-<p>For now we only include residual helmholtz model (like Cubic or Saft Equations
+<p>We focus mainly on that the addition of a new thermodynamic model as easily as
+possible. Also providing our models too!</p>
+<p>For now, we only include residual Helmholtz model (like Cubic or Saft Equations
 of State). But we&rsquo;ll be adding other models like $G^E$ (UNIFAC for example).</p>
-<h2 id="including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</h2>
+<h1 id="a-little-taste-of-yaeos">A little taste of <code>yaeos</code></h1>
+<p>A lot of users get the bad picture of Fortran being old and archaic since most
+of the codes they&rsquo;ve seen are written in ancient <code>F77</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="w"></span>
+
+<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="w">   </span><span class="c">! Number of components</span>
+<span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="c">! variables to calculate</span>
+<span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="c">! Model</span>
+
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]</span><span class="w"></span>
+<span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="mf">0.</span><span class="p">]</span><span class="w"></span>
+<span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="mf">4.</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">0.</span><span class="p">]</span><span class="w"></span>
+<span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.03</span><span class="p">]</span><span class="w"></span>
+<span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">reshape</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">])</span><span class="w"></span>
+<span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span><span class="w"></span>
+
+<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span><span class="w"></span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="w"></span>
+
+<span class="c">! Obtain derivatives adding them as optional arguments! </span>
+<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span><span class="o">=</span><span class="n">dPdN</span><span class="p">)</span><span class="w"></span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span><span class="w"></span>
+</code></pre></div>
+
+<h1 id="how-to-installrun-it">How to install/run it</h1>
+<p><code>yaeos</code> is intended to use as a <a href="fpm.fortran-lang.org"><code>fpm</code></a></p>
+<p>You can either:</p>
+<ul>
+<li>Generate a new project that uses <code>yaeos</code> as a dependency</li>
+</ul>
+<blockquote>
+<p><code>bash
+ fpm new my_project</code></p>
+<p>In the <code>fpm.toml</code> file add:
+<code>toml
+[dependencies]
+yaeos = {git="https://github.com/ipqa-research/yaeos"}</code></p>
+</blockquote>
+<ul>
+<li>Clone this repository and just modify the executables in the <code>app</code> directory</li>
+</ul>
+<blockquote>
+<p><code>bash
+git clone https://github.com/ipqa-research/yaeos
+cd yaeos
+fpm run</code></p>
+</blockquote>
+<h1 id="including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</h1>
 <p>We are using the <code>hyperdual</code> module developed by <a href="https://github.com/prehner">Philipp Rehner</a> and <a href="https://github.com/g-bauer">Gernot Bauer</a></p>
 <blockquote>
 <p>The automatic differentiation API isn&rsquo;t fully optimized yet so performance is
 much slower than it should be.</p>
 </blockquote>
 <div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">YourNewModel</span><span class="w"></span>
-<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">Substances</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">composition</span><span class="w"></span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">parameters</span><span class="p">(:)</span><span class="w"></span>
-<span class="w">    </span><span class="k">contains</span>
-<span class="k">      procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">arfun</span><span class="w"></span>
-<span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v0</span><span class="w"></span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">Substances</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">composition</span><span class="w"></span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">parameters</span><span class="p">(:)</span><span class="w"> </span><span class="c">! A vector of parameters</span>
+<span class="k">contains</span>
+<span class="k">   procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">arfun</span><span class="w"></span>
+<span class="w">   </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v0</span><span class="w"></span>
 <span class="k">end type</span><span class="w"></span>
 </code></pre></div>
 
@@ -146,7 +211,7 @@ much slower than it should be.</p>
 <span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar_value</span><span class="w"> </span><span class="c">! Residual Helmholtz Energy</span>
 
 <span class="w">   </span><span class="c">! A very complicated residual helmholtz function of a mixture</span>
-<span class="w">   </span><span class="n">Ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<span class="w">   </span><span class="n">Ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">parameters</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 <span class="k">end subroutine</span>
 
 <span class="k">function </span><span class="n">v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"></span>
@@ -172,7 +237,7 @@ like:</p>
 <span class="k">call </span><span class="n">fugacity_vt</span><span class="p">(</span><span class="n">eos</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">lnfug</span><span class="o">=</span><span class="n">lnfug</span><span class="p">,</span><span class="w"> </span><span class="n">dlnphidn</span><span class="o">=</span><span class="n">dlnphidn</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
-<h2 id="documentation">Documentation</h2>
+<h1 id="documentation">Documentation</h1>
 <p>The latest API documentation for the <code>main</code> branch can be found
 <a href="https://ipqa-research.github.io/yaeos">here</a>. This was generated from the source
 code using <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>. We&rsquo;re
@@ -184,6 +249,7 @@ working in extending it more.</p>
           <h4>Federico Benelli</h4>
           <p>PhD student with focus on reservoir PVT simulation.</p>
             <div class="text-center"><div class="btn-group" role="group">
+              <a class="btn btn-lg btn-primary" href="mailto:federico.benelli@mi.unc.edu.ar"><i class="fa fa-envelope fa-lg"></i></a>
               <a class="btn btn-lg btn-primary" href="https://github.com/fedebenelli"><i class="fa fa-github fa-lg"></i></a>
             </div></div>
        </div>
@@ -211,11 +277,11 @@ working in extending it more.</p>
                     <li><a href='./module/hyperdual_mod.html'>hyperdual_mod</a></li>
                     <li><a href='./module/legacy_ar_models.html'>legacy_ar_models</a></li>
                     <li><a href='./module/legacy_thermo_properties.html'>legacy_thermo_properties</a></li>
+                    <li><a href='./module/tapenade_interfaces.html'>tapenade_interfaces</a></li>
                     <li><a href='./module/yaeos.html'>yaeos</a></li>
                     <li><a href='./module/yaeos_ar_models_hyperdual.html'>yaeos_ar_models_hyperdual</a></li>
                     <li><a href='./module/yaeos_autodiff.html'>yaeos_autodiff</a></li>
                     <li><a href='./module/yaeos_constants.html'>yaeos_constants</a></li>
-                    <li><a href='./module/yaeos_equilibria.html'>yaeos_equilibria</a></li>
 </ul>
           </div>
 		  <div class="col-xs-6 col-sm-3">
@@ -238,12 +304,12 @@ working in extending it more.</p>
                     <li><a href='./type/alphasoave.html'>AlphaSoave</a></li>
                     <li><a href='./type/armodel.html'>ArModel</a></li>
                     <li><a href='./type/armodeladiff.html'>ArModelAdiff</a></li>
+                    <li><a href='./type/armodeltapenade.html'>ArModelTapenade</a></li>
                     <li><a href='./type/cubiceos.html'>CubicEoS</a></li>
                     <li><a href='./type/cubicmixrule.html'>CubicMixRule</a></li>
                     <li><a href='./type/equilibriastate.html'>EquilibriaState</a></li>
                     <li><a href='./type/hyperdual.html'>hyperdual</a></li>
                     <li><a href='./type/qmr.html'>QMR</a></li>
-                    <li><a href='./type/substances.html'>Substances</a></li>
 </ul>
           </div>
       </div>
@@ -252,14 +318,14 @@ working in extending it more.</p>
     <footer>
       <div class="container">
       <div class="row">
-        <div class="col-xs-6 col-md-6"><p>Yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
+        <div class="col-xs-6 col-md-6"><p>yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
         </div>
         <div class="col-xs-6 col-md-6">
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-11 21:16            </p>
+ on 2024-02-18 17:30            </p>
         </div>
       </div>
       <br>
