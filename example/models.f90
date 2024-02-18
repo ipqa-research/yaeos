@@ -1,4 +1,4 @@
-module models
+module example_models
     use yaeos, only: pr, R, CubicEoS
 
 contains

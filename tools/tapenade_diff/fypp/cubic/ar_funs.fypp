@@ -1,0 +1,16 @@
+#: def generic_cubic(params=False, vars=False, eqs=False)
+    #: if params
+        real(8), allocatable :: ac(:), b(:)
+        real(8), allocatable :: del1(:), del2(:)
+    #: elif vars
+        ! Generic Cubic Variables
+        real(8) :: b_v
+    #: elif eqs
+        b_v = bmix/v
+        arval = (&
+                - sum(n) * log(1.0 - b_v) &
+                - amix / (R*t*bmix)*1.0 / (dmix1 - dmix2) &
+                * log((1.0 + d1 * b_v) / (1.0 + dmix2 * b_v)) &
+        ) * (R * t)
+    #: endif
+#: enddef generic_cubic
