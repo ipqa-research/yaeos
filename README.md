@@ -6,7 +6,7 @@
 [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml)
 
 
-![logo](media/logo.svg){width=50%}
+![logo](media/logo.png){width=50%}
 
 There are multiple open source equations of state libraries, like:
 
