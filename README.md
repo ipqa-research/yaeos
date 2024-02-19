@@ -76,24 +76,24 @@ You can either:
 
 - Generate a new project that uses `yaeos` as a dependency
 
->  ```bash
->  fpm new my_project
->  ```
+```bash
+fpm new my_project
+```
 
-> In the `fpm.toml` file add:
-> ```toml
-> [dependencies]
-> yaeos = {git="https://github.com/ipqa-research/yaeos"}
-> ```
+In the `fpm.toml` file add:
+
+```toml
+[dependencies]
+yaeos = {git="https://github.com/ipqa-research/yaeos"}
+```
 
 - Clone this repository and just modify the executables in the `app` directory
 
-> ```bash
-> git clone https://github.com/ipqa-research/yaeos
-> cd yaeos
-> fpm run
-> ```
-
+```bash
+git clone https://github.com/ipqa-research/yaeos
+cd yaeos
+fpm run
+```
 
 # Including new models with Automatic Differentiation.
 We are using the `hyperdual` module developed by [Philipp Rehner](https://github.com/prehner) and [Gernot Bauer](https://github.com/g-bauer)
