@@ -74,6 +74,26 @@ contains
       end block residual
    end subroutine
 
+   subroutine temperature_dependence(self, T, psi, dpsidt, dpsidt2)
+      class(UNIFAC) :: self
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: psi(:, :)
+      real(pr), optional, intent(out) :: dpsidt(:, :)
+      real(pr), optional, intent(out) :: dpsidt2(:, :)
+
+      integer :: i, j
+      integer :: i_main, j_main
+
+
+      do concurrent(i=1:self%ngroups, j=1:self%ngroups)
+         i_main = self%groups_stew%main_groups(i)
+         j_main = self%groups_stew%main_groups(j)
+
+         psi(i, j) = exp(self%Eij(i_main, j_main) / T)
+      end do
+
+   end subroutine
+
    subroutine group_fraction(self, x, gf, dgfdx, dgfdx2)
       type(UNIFAC) :: self
       real(pr), intent(in) :: x(:)
@@ -141,6 +161,9 @@ contains
       end associate
    end subroutine
 
+   subroutine group_residual()
+   end subroutine
+
    type(UNIFAC) function setup_unifac(molecules, Eij, Qk, Rk)
       type(Groups), intent(in) :: molecules(:)
       
@@ -155,6 +178,7 @@ contains
 
       allocate(soup%groups_indexes(0))
       allocate(soup%number_of_groups(0))
+      allocate(soup%main_groups(0))
 
       ! Get all the groups indexes and counts into a single stew of groups.
       do i=1,size(molecules)
@@ -164,6 +188,7 @@ contains
             if (all(soup%groups_indexes - gi  /= 0)) then
                ! Add group if it wasn't included yet
                soup%groups_indexes = [soup%groups_indexes, gi]
+               soup%main_groups = [soup%main_groups, molecules(i)%main_groups(gi)]
                soup%number_of_groups = [soup%number_of_groups, 0]
             end if
 
@@ -171,6 +196,8 @@ contains
                soup%number_of_groups(gi) + molecules(i)%number_of_groups(gi)
          end do
       end do
+
+      print *, soup%main_groups
 
       setup_unifac%groups_stew = soup
 
@@ -206,7 +233,6 @@ program main
              Qk=[0.848_pr, 0.540_pr, 1.2_pr],&
              Rk=[0.9011_pr, 0.6744_pr, 1.0_pr]&
         )
-
 
    call group_fraction(model, x, gf)
    call group_area_fraction(model, x, gf=gf, theta=theta)
