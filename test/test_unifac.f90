@@ -1,13 +1,15 @@
 module yaeos_models_ge_group_contribution_unifac
    ! use yaeos_constants, only: pr, R
    ! use yaeos_models_ge, only: GeModel
+   implicit none
    integer, parameter :: pr=8
    real(pr), parameter :: R=0.0831
 
-   integer, parameter :: ng = 3
 
    ! Test groups:
    ! CH3, CH2, OH
+
+
 
    type :: Groups
       integer, allocatable :: groups_ids(:) !! Indexes (ids) of each group
@@ -39,15 +41,15 @@ contains
       class(UNIFAC) :: self !! Model
       real(pr), intent(in) ::n(:) !! Moles vector
       real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(out) :: Ge !! Excess Gibbs
-      real(pr), intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
-      real(pr), intent(out) :: GeT2 !! \(\frac{d^2G^E}{dT^2}\)
-      real(pr), intent(out) :: Gen(size(n))
-      real(pr), intent(out) :: GeTn(size(n))
-      real(pr), intent(out) :: Gen2(size(n), size(n))
+      real(pr), optional, intent(out) :: Ge !! Excess Gibbs
+      real(pr), optional, intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
+      real(pr), optional, intent(out) :: GeT2 !! \(\frac{d^2G^E}{dT^2}\)
+      real(pr), optional, intent(out) :: Gen(size(n))
+      real(pr), optional, intent(out) :: GeTn(size(n))
+      real(pr), optional, intent(out) :: Gen2(size(n), size(n))
 
       real(pr) :: x(size(n))
-      real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n))
+      real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n)), ln_activity(size(n))
 
 
       integer :: i, j, nc
@@ -56,24 +58,61 @@ contains
 
       nc = size(self%molecules)
 
-      combinatorial: block
-         real(pr) :: theta(size(n)), phi(size(n)), L(size(n))
-         associate (q => self%molecules%surface_area, r => self%molecules%volume, z => self%z)
-            theta = x * q / sum(x * q)
-            phi = x * r / sum(x * r)
-            L = 0.5_pr * z * (r - q) - (r - 1)
-            ln_gamma_c = log(phi/x) + z/2*q * log(theta/phi) + L - phi/x * sum(x*L)
-         end associate
-      end block combinatorial
+      ln_activity = 0
 
-      residual: block
+      call combinatorial_activity(self, x, ln_gamma_c)
+      call residual_activity(self, x, T, ln_gamma_r)
+      ln_activity = ln_gamma_c + ln_gamma_r
+      
+      if (present(Ge)) Ge = sum(x * ln_activity)
+   end subroutine
 
-         do i=1,size(self%molecules)
+   subroutine residual_activity(self, x, T, ln_gamma_r)
+      class(UNIFAC) :: self
+      real(pr), intent(in) :: x(:)
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: ln_gamma_r(:)
 
-            ! Theta_i
-            !TODO: This should be in the init
+      real(pr) :: ln_Gamma(size(self%groups_stew%groups_ids))
+      real(pr) :: ln_Gamma_i(size(self%groups_stew%groups_ids))
+
+      real(pr) :: xpure(size(x))
+      integer :: i, k, nc
+
+      ln_gamma = 0
+      nc = size(self%molecules)
+
+      call group_big_gamma(self, x, T, ln_Gamma)
+      do i=1,nc
+         xpure = 0
+         xpure(i) = 1
+
+         ln_gamma_i = 0
+         call group_big_gamma(self, xpure, T, ln_Gamma_i)
+         do k=1,size(self%molecules(i)%groups_ids)
+            ln_gamma_r(i) = ln_gamma_r(i) + self%molecules(i)%number_of_groups(k) * (ln_gamma(k) - ln_gamma_i(k))
          end do
-      end block residual
+      end do
+   end subroutine
+
+   subroutine combinatorial_activity(self, x, ln_gamma_c)
+      class(UNIFAC) :: self
+      real(pr), intent(in) :: x(:)
+      real(pr), intent(out) :: ln_gamma_c(:)
+
+      real(pr) :: theta(size(x)), phi(size(x)), L(size(x))
+
+      associate (&
+         q => self%molecules%surface_area,&
+         r => self%molecules%volume,&
+         z => self%z &
+         )
+
+         theta = x * q / sum(x * q)
+         phi = x * r / sum(x * r)
+         L = 0.5_pr * z * (r - q) - (r - 1)
+         ln_gamma_c = log(phi/x) + z/2*q * log(theta/phi) + L - phi/x * sum(x*L)
+      end associate
    end subroutine
 
    subroutine temperature_dependence(self, T, psi, dpsidt, dpsidt2)
@@ -90,7 +129,6 @@ contains
       do concurrent(i=1:self%ngroups, j=1:self%ngroups)
          ig = self%groups_stew%groups_ids(i)
          jg = self%groups_stew%groups_ids(j)
-         print *, ig, jg, self%Eij(ig, jg)
          psi(i, j) = exp(-self%Eij(ig, jg) / T)
       end do
 
@@ -101,7 +139,7 @@ contains
       real(pr), intent(in) :: x(:)
       real(pr), intent(out) :: gf(:)
       real(pr), optional, intent(out) :: dgfdx(self%ngroups, self%ngroups)
-      real(pr), optional, intent(out) :: dgfdx2(ng, ng, ng)
+      real(pr), optional, intent(out) :: dgfdx2(:, :, :)
 
       integer :: i, j, k, nc
 
@@ -113,14 +151,19 @@ contains
          total_groups = 0
          do i=1,nc
             do j=1,size(molecules(i)%number_of_groups)
-               total_groups = total_groups + x(i) * molecules(i)%number_of_groups(j)
+               total_groups = total_groups &
+                  + x(i) * molecules(i)%number_of_groups(j)
             end do
          end do
 
          gf = 0
+
          do i=1,nc
             do j=1,size(molecules(i)%number_of_groups)
-               k = molecules(i)%groups_ids(j)
+               k = findloc(&
+                  self%groups_stew%groups_ids,&
+                  molecules(i)%groups_ids(j), dim=1 &
+                  )
                gf(k) = gf(k) + x(i) * molecules(i)%number_of_groups(i)
             end do
          end do
@@ -138,12 +181,12 @@ contains
       real(pr), intent(in) :: x(:)
 
       real(pr), intent(in) :: gf(:)
-      real(pr), optional, intent(in) :: dgfdx(ng, ng)
-      real(pr), optional, intent(in) :: dgfdx2(ng, ng, ng)
+      real(pr), optional, intent(in) :: dgfdx(:, :)
+      real(pr), optional, intent(in) :: dgfdx2(:, :, :)
 
-      real(pr), intent(out) :: theta(ng)
-      real(pr), optional, intent(out) :: dthetadx(ng, ng)
-      real(pr), optional, intent(out) :: dthetadx2(ng, ng, ng)
+      real(pr), intent(out) :: theta(:)
+      real(pr), optional, intent(out) :: dthetadx(:, :)
+      real(pr), optional, intent(out) :: dthetadx2(:, :, :)
 
 
       real(pr) :: total_groups_area
@@ -151,11 +194,11 @@ contains
 
       associate(group_area => self%group_area, stew => self%groups_stew)
 
-         theta = gf * group_area
+         theta = gf * group_area(self%groups_stew%groups_ids)
 
          do i=1,size(stew%groups_ids)
             gi = stew%groups_ids(i)
-            total_groups_area = total_groups_area + group_area(gi) * gf(gi)
+            total_groups_area = total_groups_area + group_area(gi) * gf(i)
          end do
 
          theta = theta/total_groups_area
@@ -163,12 +206,52 @@ contains
       end associate
    end subroutine
 
-   subroutine group_residual()
+   subroutine group_big_gamma(self, x, T, ln_Gamma)
+      class(UNIFAC) :: self
+      real(pr), intent(in) :: x(:)
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: ln_Gamma(:)
+
+      real(pr) :: gf(size(self%groups_stew%groups_ids))
+      real(pr) :: theta(size(self%groups_stew%groups_ids))
+      real(pr) :: psi(&
+         size(self%groups_stew%groups_ids),&
+         size(self%groups_stew%groups_ids) &
+         )
+
+      integer :: ng
+      integer :: n, m, k, gi
+
+      real(pr) :: up, down
+
+      ng = size(self%groups_stew%groups_ids)
+      call group_fraction(self, x, gf=gf)
+      call group_area_fraction(self, x, gf=gf, theta=theta)
+      call temperature_dependence(self, T, psi)
+
+      do k=1,ng
+
+         gi = self%groups_stew%groups_ids(k)
+
+         up = 0
+         do  m=1,ng
+            down = 0
+            do n=1,ng
+               down = down + theta(n) * psi(n, m)
+            end do
+            up = up + theta(m) * psi(k, m) / down
+         end do
+
+         ln_Gamma(k) = self%group_area(gi) * (&
+            1 - log(sum(theta * psi(:, k))) - up &
+            )
+
+      end do
    end subroutine
 
    type(UNIFAC) function setup_unifac(molecules, Eij, Qk, Rk)
       type(Groups), intent(in) :: molecules(:)
-      
+
       real(pr), optional, intent(in) :: Eij(:, :)
       real(pr), optional, intent(in) :: Qk(:)
       real(pr), optional, intent(in) :: Rk(:)
@@ -181,23 +264,37 @@ contains
       allocate(soup%groups_ids(0))
       allocate(soup%number_of_groups(0))
 
-      ! Get all the groups indexes and counts into a single stew of groups.
-      do i=1,size(molecules)
-         do j=1,size(molecules(i)%groups_ids)
-            gi = molecules(i)%groups_ids(j)
+      associate(&
+         r => setup_unifac%molecules%volume, &
+         q => setup_unifac%molecules%surface_area &
+         )
 
-            if (all(soup%groups_ids - gi  /= 0)) then
-               ! Add group if it wasn't included yet
-               soup%groups_ids = [soup%groups_ids, gi]
-               soup%number_of_groups = [soup%number_of_groups, 0]
-            end if
+         ! Get all the groups indexes and counts into a single stew of groups.
+         do i=1,size(molecules)
 
-            gi = findloc(soup%groups_ids - gi, 0, dim=1)
+            r(i) = 0
+            q(i) = 0
 
-            soup%number_of_groups(gi) = soup%number_of_groups(gi) &
-               + molecules(i)%number_of_groups(gi)
+            do j=1,size(molecules(i)%groups_ids)
+               gi = molecules(i)%groups_ids(j)
+
+               r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk(gi)
+               q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk(gi)
+
+               if (all(soup%groups_ids - gi  /= 0)) then
+                  ! Add group if it wasn't included yet
+                  soup%groups_ids = [soup%groups_ids, gi]
+                  soup%number_of_groups = [soup%number_of_groups, 0]
+               end if
+
+               gi = findloc(soup%groups_ids - gi, 0, dim=1)
+
+               soup%number_of_groups(gi) = soup%number_of_groups(gi) &
+                  + molecules(i)%number_of_groups(gi)
+            end do
          end do
-      end do
+
+      end associate
 
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
@@ -216,15 +313,17 @@ program main
    type(Groups) :: molecules(2)
    type(UNIFAC) :: model
    real(pr) :: x(2) = [0.3, 0.7]
-   real(pr) :: gf(ng), theta(ng)
-   
+
    real(pr), allocatable :: Aij(:, :)
-   real(pr) :: Qk(179), Rk(179)
+   real(pr), allocatable :: Qk(:), Rk(:)
+
    real(pr) :: psi(3, 3)
 
    integer :: i, j, gi
-   call load_npy("test/data/aij.npy", Aij)
-   print *, aij(14, 14)
+
+   call load_npy("data/unifac_aij.npy", Aij)
+   call load_npy("data/unifac_Qk.npy", Qk)
+   call load_npy("data/unifac_Rk.npy", Rk)
 
    ! Ethane [CH3]
    molecules(1)%groups_ids = [1]
@@ -234,29 +333,14 @@ program main
    molecules(2)%groups_ids = [1, 2, 14]
    molecules(2)%number_of_groups = [1, 1, 1]
 
-   Qk(1) = 0.848
-   Qk(2) = 0.540
-   Qk(14) = 1.2
-
-   Rk(1) = 0.9011_pr
-   Rk(2) = 0.6744_pr
-   Rk(14) =  1.0_pr
    model = setup_unifac(&
-             molecules, &
-             Eij=Aij, &
-             Qk=Qk, &
-             Rk=Rk &
-        )
+      molecules, &
+      Eij=Aij, &
+      Qk=Qk, &
+      Rk=Rk &
+      )
 
-   ! call group_fraction(model, x, gf)
-   ! call group_area_fraction(model, x, gf=gf, theta=theta)
-
-
-   ! print *, gf
-   ! print *, theta
    psi = 0
    call temperature_dependence(model, 200._pr, psi)
-   print *, psi(1, :)
-   print *, psi(2, :)
-   print *, psi(3, :)
+   call excess_gibbs(model, x, 200._pr)
 end program
