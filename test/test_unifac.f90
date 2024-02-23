@@ -10,8 +10,7 @@ module yaeos_models_ge_group_contribution_unifac
    ! CH3, CH2, OH
 
    type :: Groups
-      integer, allocatable :: main_groups(:) !! Main group at which each subgroup belongs
-      integer, allocatable :: groups_indexes(:) !! Indexes (ids) of each group
+      integer, allocatable :: groups_ids(:) !! Indexes (ids) of each group
       integer, allocatable :: number_of_groups(:) !! \(\nu\)
       real(pr) :: surface_area !! q
       real(pr) :: volume !! r
@@ -28,6 +27,9 @@ module yaeos_models_ge_group_contribution_unifac
 
       type(Groups), allocatable :: molecules(:)
       type(Groups) :: groups_stew
+   end type
+
+   type :: TemperatureFunction
    end type
 
 contains
@@ -82,14 +84,14 @@ contains
       real(pr), optional, intent(out) :: dpsidt2(:, :)
 
       integer :: i, j
-      integer :: i_main, j_main
+      integer :: ig, jg
 
 
       do concurrent(i=1:self%ngroups, j=1:self%ngroups)
-         i_main = self%groups_stew%main_groups(i)
-         j_main = self%groups_stew%main_groups(j)
-
-         psi(i, j) = exp(self%Eij(i_main, j_main) / T)
+         ig = self%groups_stew%groups_ids(i)
+         jg = self%groups_stew%groups_ids(j)
+         print *, ig, jg, self%Eij(ig, jg)
+         psi(i, j) = exp(-self%Eij(ig, jg) / T)
       end do
 
    end subroutine
@@ -118,7 +120,7 @@ contains
          gf = 0
          do i=1,nc
             do j=1,size(molecules(i)%number_of_groups)
-               k = molecules(i)%groups_indexes(j)
+               k = molecules(i)%groups_ids(j)
                gf(k) = gf(k) + x(i) * molecules(i)%number_of_groups(i)
             end do
          end do
@@ -151,8 +153,8 @@ contains
 
          theta = gf * group_area
 
-         do i=1,size(stew%groups_indexes)
-            gi = stew%groups_indexes(i)
+         do i=1,size(stew%groups_ids)
+            gi = stew%groups_ids(i)
             total_groups_area = total_groups_area + group_area(gi) * gf(gi)
          end do
 
@@ -176,30 +178,29 @@ contains
 
       setup_unifac%molecules = molecules
 
-      allocate(soup%groups_indexes(0))
+      allocate(soup%groups_ids(0))
       allocate(soup%number_of_groups(0))
-      allocate(soup%main_groups(0))
 
       ! Get all the groups indexes and counts into a single stew of groups.
       do i=1,size(molecules)
-         do j=1,size(molecules(i)%groups_indexes)
-            gi = molecules(i)%groups_indexes(j)
+         do j=1,size(molecules(i)%groups_ids)
+            gi = molecules(i)%groups_ids(j)
 
-            if (all(soup%groups_indexes - gi  /= 0)) then
+            if (all(soup%groups_ids - gi  /= 0)) then
                ! Add group if it wasn't included yet
-               soup%groups_indexes = [soup%groups_indexes, gi]
-               soup%main_groups = [soup%main_groups, molecules(i)%main_groups(gi)]
+               soup%groups_ids = [soup%groups_ids, gi]
                soup%number_of_groups = [soup%number_of_groups, 0]
             end if
 
-            soup%number_of_groups(gi) = &
-               soup%number_of_groups(gi) + molecules(i)%number_of_groups(gi)
+            gi = findloc(soup%groups_ids - gi, 0, dim=1)
+
+            soup%number_of_groups(gi) = soup%number_of_groups(gi) &
+               + molecules(i)%number_of_groups(gi)
          end do
       end do
 
-      print *, soup%main_groups
-
       setup_unifac%groups_stew = soup
+      setup_unifac%ngroups = size(soup%number_of_groups)
 
       if (present(Eij)) setup_unifac%Eij = Eij
       if (present(Qk)) setup_unifac%group_area = Qk
@@ -209,34 +210,53 @@ end module
 
 program main
    use yaeos_models_ge_group_contribution_unifac
+   use stdlib_io_npy, only: load_npy
    implicit none
 
    type(Groups) :: molecules(2)
    type(UNIFAC) :: model
    real(pr) :: x(2) = [0.3, 0.7]
    real(pr) :: gf(ng), theta(ng)
+   
+   real(pr), allocatable :: Aij(:, :)
+   real(pr) :: Qk(179), Rk(179)
+   real(pr) :: psi(3, 3)
 
    integer :: i, j, gi
+   call load_npy("test/data/aij.npy", Aij)
+   print *, aij(14, 14)
 
    ! Ethane [CH3]
-   molecules(1)%main_groups = [1]
-   molecules(1)%groups_indexes = [1]
+   molecules(1)%groups_ids = [1]
    molecules(1)%number_of_groups = [2]
 
    ! Ethanol [CH3, CH2, OH]
-   molecules(2)%main_groups = [1, 1, 2]
-   molecules(2)%groups_indexes = [1, 2, 3]
+   molecules(2)%groups_ids = [1, 2, 14]
    molecules(2)%number_of_groups = [1, 1, 1]
 
+   Qk(1) = 0.848
+   Qk(2) = 0.540
+   Qk(14) = 1.2
+
+   Rk(1) = 0.9011_pr
+   Rk(2) = 0.6744_pr
+   Rk(14) =  1.0_pr
    model = setup_unifac(&
              molecules, &
-             Qk=[0.848_pr, 0.540_pr, 1.2_pr],&
-             Rk=[0.9011_pr, 0.6744_pr, 1.0_pr]&
+             Eij=Aij, &
+             Qk=Qk, &
+             Rk=Rk &
         )
 
-   call group_fraction(model, x, gf)
-   call group_area_fraction(model, x, gf=gf, theta=theta)
+   ! call group_fraction(model, x, gf)
+   ! call group_area_fraction(model, x, gf=gf, theta=theta)
 
-   print *, gf
-   print *, theta
+
+   ! print *, gf
+   ! print *, theta
+   psi = 0
+   call temperature_dependence(model, 200._pr, psi)
+   print *, psi(1, :)
+   print *, psi(2, :)
+   print *, psi(3, :)
 end program
