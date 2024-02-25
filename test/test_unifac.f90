@@ -5,12 +5,6 @@ module yaeos_models_ge_group_contribution_unifac
    integer, parameter :: pr=8
    real(pr), parameter :: R=0.0831
 
-
-   ! Test groups:
-   ! CH3, CH2, OH
-
-
-
    type :: Groups
       integer, allocatable :: groups_ids(:) !! Indexes (ids) of each group
       integer, allocatable :: number_of_groups(:) !! \(\nu\)
@@ -27,7 +21,8 @@ module yaeos_models_ge_group_contribution_unifac
       real(pr), allocatable :: group_area(:) !! Q_k
       real(pr), allocatable :: group_volume(:) !! R_k
 
-      type(Groups), allocatable :: molecules(:)
+      type(Groups), allocatable :: molecules(:) 
+         !! Substances present in the system
       type(Groups) :: groups_stew
    end type
 
@@ -63,6 +58,8 @@ contains
       call combinatorial_activity(self, x, ln_gamma_c)
       call residual_activity(self, x, T, ln_gamma_r)
       ln_activity = ln_gamma_c + ln_gamma_r
+
+      print *, exp(ln_activity)
       
       if (present(Ge)) Ge = sum(x * ln_activity)
    end subroutine
@@ -125,7 +122,6 @@ contains
       integer :: i, j
       integer :: ig, jg
 
-
       do concurrent(i=1:self%ngroups, j=1:self%ngroups)
          ig = self%groups_stew%groups_ids(i)
          jg = self%groups_stew%groups_ids(j)
@@ -138,15 +134,17 @@ contains
       type(UNIFAC) :: self
       real(pr), intent(in) :: x(:)
       real(pr), intent(out) :: gf(:)
-      real(pr), optional, intent(out) :: dgfdx(self%ngroups, self%ngroups)
+      real(pr), optional, intent(out) :: dgfdx(:, :)
       real(pr), optional, intent(out) :: dgfdx2(:, :, :)
 
       integer :: i, j, k, nc
 
-      real(pr) :: total_groups
+      real(pr) :: total_groups, total_group_k(size(gf))
       associate(molecules => self%molecules)
 
          nc = size(x)
+
+         total_group_k = self%groups_stew%number_of_groups
 
          total_groups = 0
          do i=1,nc
@@ -164,11 +162,18 @@ contains
                   self%groups_stew%groups_ids,&
                   molecules(i)%groups_ids(j), dim=1 &
                   )
-               gf(k) = gf(k) + x(i) * molecules(i)%number_of_groups(i)
+               
+               gf(k) = gf(k) + x(i) * molecules(i)%number_of_groups(j)
+               if (present(dgfdx)) then
+                  dgfdx(k, i) = dgfdx(k, i) &
+                              + (1 * total_group_k(k))/total_groups &
+                              * molecules(i)%number_of_groups(j)
+               end if
             end do
          end do
 
          gf = gf/total_groups
+         if (present(dgfdx)) dgfdx = dgfdx/total_groups
       end associate
    end subroutine
 
@@ -318,6 +323,7 @@ program main
    real(pr), allocatable :: Qk(:), Rk(:)
 
    real(pr) :: psi(3, 3)
+   real(pr) :: gf(3), dgdx(3, 2)
 
    integer :: i, j, gi
 
@@ -343,4 +349,12 @@ program main
    psi = 0
    call temperature_dependence(model, 200._pr, psi)
    call excess_gibbs(model, x, 200._pr)
+
+   dgdx = 0
+   call group_fraction(model, x, gf, dgdx)
+
+   print *, gf
+   print *, dgdx(1, :)
+   print *, dgdx(2, :)
+   print *, dgdx(3, :)
 end program
