@@ -1,14 +1,16 @@
 ---
 title: User documentation
 ordered_subpage: usage
+                 theory
                  contributing
 ---
 
 # Welcome to `yaeos` user documentation
-
 `yaeos` is a Fortran library that handles thermodynamic Equations of State-based
 calculations, mostly phase-equilibria related ones and properties estimation
 ones.
+
+This is a work-in-progress library (and documentation) so don't hesisate to report any problem/requirement as an issue in [our GitHub page](https://github.com/ipqa-research/yaeos/issues).
 
 ## Basic usage
 The base object that represents most of `yaeos` functionality is the `ArModel`

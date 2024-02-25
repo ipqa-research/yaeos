@@ -1,7 +1,8 @@
 module yaeos_thermoprops
-   !! **Residual thermodyamic properties using residual Helmholtz model.**
+   !! Residual thermodyamic properties using residual Helmholtz model.
    !! 
-   !! **Available properties**
+   !! Available properties:
+   !!
    !! - pressure(n, V, T)
    !! - fugacity(n, V, T)
    !! - fugacity(n, P, T, root=[vapor, liquid, stable])
@@ -196,6 +197,8 @@ contains
 
    recursive subroutine VCALC(self, root_type, nc, rn, T, P, V, max_iters)
       !! Volume solver at a given pressure.
+      !
+      ! This routine still requires some work to be easier to understand
       use iso_fortran_env, only: error_unit
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: self
