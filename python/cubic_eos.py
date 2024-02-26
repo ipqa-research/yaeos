@@ -50,3 +50,5 @@ v = 1
 t = 150
 
 m1.fugacity(n, v, t)
+
+print(m1.fugacity(n, v, t))
