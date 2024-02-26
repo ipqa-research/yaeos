@@ -1,18 +1,38 @@
 module yaeos_thermoprops
-   !! Residual thermodyamic properties using residual Helmholtz model
+   !! Residual thermodyamic properties using residual Helmholtz model.
+   !! 
+   !! Available properties:
+   !!
+   !! - pressure(n, V, T)
+   !! - fugacity(n, V, T)
+   !! - fugacity(n, P, T, root=[vapor, liquid, stable])
+   !! - volume
+   !!
+   !! Calculate thermodynamic properties using Helmholtz energy as a basis.
+   !! All the routines in this module work with the logic:
+   !! 
+   !! ```fortran
+   !! call foo(x, V, T, [dfoodv, dfoodt, ...])
+   !! ```
+   !! Where the user can call the routine of the desired property. And include 
+   !! as optional values the desired derivatives of said properties.
    use yaeos_constants, only: R, pr
    use yaeos_models_ar, only: ArModel
    implicit none
 contains
    subroutine pressure(self, n, v, t, p, dpdv, dpdt, dpdn)
-      class(ArModel), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: t
-      real(pr), intent(in) :: v
-      real(pr), intent(out) :: p
-      real(pr), optional, intent(out) :: dpdv
-      real(pr), optional, intent(out) :: dpdt
-      real(pr), optional, intent(out) :: dpdn(:)
+      !! Pressure calculation.
+      !!
+      !! Calculate pressure using residual helmholtz models.
+      !!
+      class(ArModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector 
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(out) :: p !! Pressure [bar]
+      real(pr), optional, intent(out) :: dpdv !! \(\frac{dP}}{dV}\)
+      real(pr), optional, intent(out) :: dpdt !! \(\frac{dP}}{dT}\)
+      real(pr), optional, intent(out) :: dpdn(:) !! \(\frac{dP}}{dn_i}\)
 
       real(pr) :: totn
 
@@ -34,14 +54,25 @@ contains
    subroutine fugacity_tp(self, &
          n, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
       )
+      !! Calculate logarithm of fugacity, given pressure and temperature.
+      !! 
+      !! This routine will obtain the desired volume root at the specified
+      !! pressure and calculate fugacity at that point.
+      !!
+      !! @note
+      !! While the natural output variable is \(ln f_i\). The calculated
+      !! derivatives will be the derivatives of the fugacity coefficient
+      !! \(ln \phi_i\)
+      !! @endnote
+      !!
       use iso_fortran_env, only: error_unit
-      class(ArModel), intent(in) :: self
+      class(ArModel), intent(in) :: self !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
-      integer, intent(in) :: root_type !! Type of root desired (-1 vapor, 1 liquid, 0 lower Gr)
+      character(len=*), intent(in) :: root_type !! Type of root desired ["liquid", "vapor", "stable"]
       real(pr), intent(in) :: t    !! Temperature [K]
       real(pr), intent(in) :: p    !! Pressure [bar]
 
-      real(pr), intent(out) :: lnfug(size(n)) !! \(\ln(\phi*p)\) vector
+      real(pr), intent(out) :: lnfug(size(n)) !! \(\ln(f_i)\) vector
       real(pr), optional, intent(out) :: v !! Volume [L]
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
@@ -60,12 +91,20 @@ contains
    subroutine fugacity_vt(self, &
          n, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
       )
-      class(ArModel) :: self
+      !! Calculate fugacity given volume and temperature.
+      !!
+      !!@note
+      !!While the natural output variable is \(ln f_i\). The calculated
+      !!derivatives will be the derivatives of the fugacity coefficient
+      !!\(ln \phi_i\)
+      !!@endnote
+      !!
+      class(ArModel) :: self !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       real(pr), intent(in) :: v !! Volume [L]
       real(pr), intent(in) :: t !! Temperature [K]
 
-      real(pr), optional, intent(out) :: p    !! Pressure [bar]
+      real(pr), optional, intent(out) :: p !! Pressure [bar]
       real(pr), optional, intent(out) :: lnfug(size(n)) !! \(\ln(\phi*p)\) vector
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
@@ -133,12 +172,14 @@ contains
    end subroutine
 
    subroutine PUREFUG_CALC(self, nc, icomp, T, P, V, fug)
-      !! Fugacity of a pure component
-      class(ArModel), intent(in) :: self
-      integer, intent(in)  :: nc
-      integer,  intent(in) :: icomp
-      real(pr), intent(in) :: T, P, V
-      real(pr), intent(out) :: fug
+      !! Fugacity of a pure component.
+      class(ArModel), intent(in) :: self !! model
+      integer, intent(in)  :: nc !! Number of components
+      integer,  intent(in) :: icomp !! Component index
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(out) :: fug !! Fugacity of component `icomp`
 
       real(pr) :: n(nc), Ar, Arn(nc)
       real(pr) :: RT, Z, lnfug
@@ -154,12 +195,14 @@ contains
       fug = exp(fug)
    end subroutine purefug_calc
 
-   recursive subroutine VCALC(self, ITYP, nc, rn, T, P, V, max_iters)
-      !! ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE
+   recursive subroutine VCALC(self, root_type, nc, rn, T, P, V, max_iters)
+      !! Volume solver at a given pressure.
+      !
+      ! This routine still requires some work to be easier to understand
       use iso_fortran_env, only: error_unit
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: self
-      integer, intent(in) :: ITYP !! Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]
+      character(len=*), intent(in) :: root_type !! Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]
       integer, intent(in) :: nc  !! Number of components
       real(pr), intent(in) ::  rn(nc) !! Mixture moles
       real(pr), intent(in) :: T !! Temperature [K]
@@ -188,7 +231,7 @@ contains
 
       ZETMIN = 0._pr
       ZETMAX = 1._pr - 0.01*T/(10000*B)  ! improvement for cases with heavy components
-      if (ITYP .gt. 0) then
+      if (root_type == "liquid") then
          ZETA = 0.5_pr
       else
          ! IDEAL GAS ESTIMATE
@@ -226,7 +269,7 @@ contains
       if (iter >= maximum_iterations) write(error_unit, *) &
          "WARN: Volume solver exceeded maximum number of iterations"
 
-      if (ITYP .eq. 0) then
+      if (root_type == "stable") then
          ! FIRST RUN WAS VAPOUR; RERUN FOR LIQUID
          if (FIRST_RUN) then
             VVAP = V
