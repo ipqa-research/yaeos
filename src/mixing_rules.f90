@@ -21,7 +21,7 @@ module yaeos_models_ar_genericcubic_quadratic_mixing
       real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
       procedure(get_aij), pointer :: aij => kij_constant
          !! Procedure to calculate \(a_{ij}\) matrix. Can be overloaded
-         !! by any method that respects the interface [[get_aij(interface)]].
+         !! by any method that respets the interface [[get_aij(interface)]].
    contains
       procedure :: Dmix !! Attractive parameter mixing rule
       procedure :: Bmix !! Repulsive parameter mixing rule
@@ -69,7 +69,7 @@ contains
       class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: n(:) !! Moles vector [mol]
-      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters (\a_i\)
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
       real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
       real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
 
@@ -172,7 +172,7 @@ contains
       self, a, dadt, dadt2, &
       aij, daijdt, daijdt2 &
       )
-      !! Combining rule that uses constant k_{ij} values.
+      !! Combining rule that uses constant \(k_{ij}\) values.
       class(QMR) :: self
       real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a\)
       real(pr), intent(in) :: dadt(:) !! \(\frac{da}{dT}\)
