@@ -15,16 +15,16 @@ module yaeos_models_ar_genericcubic_quadratic_mixing
       !!
       !! By default the attractive parameter matrix is calculated with:
       !! \[a_{ij} = \sqrt{a_i a_j}(1 - k_{ij})\]
-      !! generating the a_{ij} matrix, but this procedure can be overriden
+      !! generating the \(a_{ij}\) matrix, but this procedure can be overriden
       !! replacing the `aij` pointer procedure.
       real(pr), allocatable :: k(:, :) !! Attractive Binary Interatction parameter matrix
       real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
-      procedure(get_aij), pointer :: aij => kij_constant 
+      procedure(get_aij), pointer :: aij => kij_constant
          !! Procedure to calculate \(a_{ij}\) matrix. Can be overloaded
          !! by any method that respects the interface [[get_aij(interface)]].
    contains
       procedure :: Dmix !! Attractive parameter mixing rule
-      procedure :: Bmix !! Repulsive parameter mixing rule 
+      procedure :: Bmix !! Repulsive parameter mixing rule
    end type
 
    abstract interface
@@ -64,7 +64,7 @@ contains
       !!
       !! ```fortran
       !! type(QMR) :: my_mixing_rule
-      !! my_mixing_rule%get_aij => new_aij_procedure
+      !! my_mixing_rule%aij => new_aij_procedure
       !! ```
       class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: T !! Temperature [K]
@@ -76,9 +76,9 @@ contains
       real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
       real(pr), intent(out) :: dDdT !! \(\frac{dD}{dT}\)
       real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
-      real(pr), intent(out) :: dDi(:) !! \(frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
       real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
-      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}\)
+      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
 
       integer :: i, j, nc
       real(pr) :: aux, aux2
