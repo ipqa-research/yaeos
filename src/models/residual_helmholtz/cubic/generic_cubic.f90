@@ -83,12 +83,12 @@ contains
       real(pr), optional, intent(out) :: ar !! Residual Helmholtz
       real(pr), optional, intent(out) :: arv !! \(\frac{dAr}{dV}\)
       real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
-      real(pr), optional, intent(out) :: artv !! \(\frac{d^2Ar}{dTV}\)
+      real(pr), optional, intent(out) :: artv !! \(\frac{d^2Ar}{dTdV}\)
       real(pr), optional, intent(out) :: arv2 !! \(\frac{d^2Ar}{dV^2}\)
       real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
       real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
-      real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
-      real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
+      real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVdn_i}\)
+      real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTdn_i}\)
       real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
 
 
