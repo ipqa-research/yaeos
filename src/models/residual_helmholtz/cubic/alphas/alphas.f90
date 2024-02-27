@@ -7,7 +7,7 @@ module yaeos_models_ar_cubic_alphas
 
    type, extends(AlphaFunction) :: AlphaSoave
       !! Soave \(\alpha\) function.
-      !! \( \alpha(T_r) = (1 + k (1 - \sqrt{Tr})^2 \)
+      !! \( \alpha(T_r) = (1 + k (1 - \sqrt{Tr}))^2 \)
       real(pr), allocatable :: k(:) !! \(k\) parameter.
    contains
       procedure :: alpha !! Alpha function
@@ -26,7 +26,7 @@ contains
       associate(k => self%k)
          a = (1 + k*(1 - sqrt(Tr)))**2
          dadT = k*(k*(sqrt(Tr) - 1) - 1)/sqrt(Tr)
-         dadT2 = (1.0d0/2.0d0)*k*(k + 1)/Tr**(1.5_pr)
+         dadT2 = (1.0_pr/2.0_pr)*k*(k + 1)/Tr**(1.5_pr)
       end associate
 
    end subroutine
