@@ -19,7 +19,9 @@ module yaeos_models_ar_genericcubic_quadratic_mixing
       !! replacing the `aij` pointer procedure.
       real(pr), allocatable :: k(:, :) !! Attractive Binary Interatction parameter matrix
       real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
-      procedure(get_aij), pointer :: aij => kij_constant
+      procedure(get_aij), pointer :: aij => kij_constant 
+         !! Procedure to calculate \(a_{ij}\) matrix. Can be overloaded
+         !! by any method that respects the interface [[get_aij(interface)]].
    contains
       procedure :: Dmix !! Attractive parameter mixing rule
       procedure :: Bmix !! Repulsive parameter mixing rule 
@@ -27,6 +29,10 @@ module yaeos_models_ar_genericcubic_quadratic_mixing
 
    abstract interface
       subroutine get_aij(self, ai, daidt, daidt2, aij, daijdt, daijdt2)
+         !! Combining rule for the attractive parameter.
+         !!
+         !! From previously calculated attractive parameters calculate the
+         !! \(a_{ij}\) matrix and it's corresponding derivatives.
          import pr, QMR
          class(QMR) :: self
          real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
@@ -40,19 +46,39 @@ contains
       ai, daidt, daidt2, &
       D, dDdT, dDdT2, dDi, dDidT, dDij)
       !! Attractive parameter mixing rule with quadratic mix.
-      class(QMR), intent(in) :: self
+      !!
+      !! Takes the all the pure components attractive parameters and their
+      !! derivatives with respect to temperature and mix them with the
+      !! Van der Waals quadratic mixing rule:
+      !!
+      !! \[
+      !!   D = \sum_i \sum_j n_i n_j a_{ij} = n^2 a_{mix}
+      !! \]
+      !!
+      !! Inside the routine the \(a_{ij}\) matrix is calculated using the
+      !! procedure contained in the `QMR` object, this procedures defaults
+      !! to the common combining rule: \(a_{ij} = \sqrt{a_i a_j} (1 - k_{ij}) \)
+      !!
+      !! The procedure can be overloaded by a common one that respects the
+      !! interface [[get_aij(interface)]]
+      !!
+      !! ```fortran
+      !! type(QMR) :: my_mixing_rule
+      !! my_mixing_rule%get_aij => new_aij_procedure
+      !! ```
+      class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: n(:) !! Moles vector
-      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters (\a\)
-      real(pr), intent(in) :: daidt(:) !! \(\frac{da}{dT}\)
-      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a}{dT^2}\)
-      
-      real(pr), intent(out) :: D !! Mixture attractive parameter
+      real(pr), intent(in) :: n(:) !! Moles vector [mol]
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters (\a_i\)
+      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
+      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
       real(pr), intent(out) :: dDdT !! \(\frac{dD}{dT}\)
       real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
       real(pr), intent(out) :: dDi(:) !! \(frac{dD}{dn_i}\)
-      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\\)
-      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\\)
+      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
+      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}\)
 
       integer :: i, j, nc
       real(pr) :: aux, aux2
@@ -97,10 +123,18 @@ contains
 
    subroutine Bmix(self, n, bi, B, dBi, dBij)
       !! Mixture repulsive parameter.
-      class(QMR), intent(in) :: self
-      real(pr), intent(in) :: n(:) !! Moles vector
-      real(pr), intent(in) :: bi(:) !! Pure components repulsive parameters
-      real(pr), intent(out) :: B !! Mixture repulsive parameter
+      !!
+      !! Calculate the mixture's repulsive parameter and it's derivatives
+      !! with respect to composition:
+      !!
+      !! \[
+      !!    B = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
+      !! \]
+      !!
+      class(QMR), intent(in) :: self !! Mixing rule object.
+      real(pr), intent(in) :: n(:) !! Moles vector.
+      real(pr), intent(in) :: bi(:) !! Pure components repulsive parameters.
+      real(pr), intent(out) :: B !! Mixture repulsive parameter.
       real(pr), intent(out) :: dBi(:) !! \(\frac{dB}{dn_i}\)
       real(pr), intent(out) :: dBij(:, :) !!\(\frac{d^2B}{dn_{ij}}\)
 
@@ -138,7 +172,7 @@ contains
       self, a, dadt, dadt2, &
       aij, daijdt, daijdt2 &
       )
-      !! Combining rule that uses constant K_{ij} values.
+      !! Combining rule that uses constant k_{ij} values.
       class(QMR) :: self
       real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a\)
       real(pr), intent(in) :: dadt(:) !! \(\frac{da}{dT}\)
