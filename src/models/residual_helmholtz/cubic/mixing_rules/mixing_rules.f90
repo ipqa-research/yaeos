@@ -172,7 +172,7 @@ contains
       self, a, dadt, dadt2, &
       aij, daijdt, daijdt2 &
       )
-      !! Combining rule that uses constant k_{ij} values.
+      !! Combining rule that uses constant \(k_{ij}\) values.
       class(QMR) :: self
       real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a\)
       real(pr), intent(in) :: dadt(:) !! \(\frac{da}{dT}\)
