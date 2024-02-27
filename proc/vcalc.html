@@ -79,20 +79,20 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 2.7% of total for procedures.">65 statements</a>
+                 title=" 2.6% of total for procedures.">62 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/thermoprops.f90"> Source File</a>
+              <a href="../src/legacy.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/thermoprops.f90.html'>thermoprops.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/legacy.f90.html'>legacy.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></li>
             <li class="breadcrumb-item active" aria-current="page">VCALC</li>
           </ol>
         </nav>
@@ -121,10 +121,15 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/vcalc.html#variable-at">AT</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-avap">AVAP</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-ar~8">Ar</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-arv~6">ArV</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-ar~6">Ar</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-artv~6">ArTV</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-artn~13">ArTn</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-arv~5">ArV</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-arv2~6">ArV2</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-b~2">B</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-arvn~13">ArVn</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-arn~13">Arn</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-arn2~13">Arn2</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-b~3">B</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-cpv">CPV</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-first_run">FIRST_RUN</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-s3r">S3R</a>
@@ -135,9 +140,9 @@
             <a class="list-group-item" href="../proc/vcalc.html#variable-del">del</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-der">der</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-iter">iter</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-maximum_iterations">maximum_iterations</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-nder~4">nder</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-pcalc">pcalc</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-totn~4">totn</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-totn~9">totn</a>
         </div>
       </div>
     </div>
@@ -167,24 +172,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public recursive subroutine VCALC(self, root_type, nc, rn, T, P, V, max_iters)  
+    <h2>public recursive subroutine VCALC(ITYP, nc, ntemp, rn, T, P, V)  
 </h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item">stdlib_optval</li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+    
 
-
-    <p>Volume solver at a given pressure.</p>
+    <p>ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE</p>
 
 
     <h3>Arguments</h3>
@@ -200,37 +192,22 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~15"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>),
+              <span class="anchor" id="variable-ityp"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>ITYP</strong></td>
             <td>
-                
+                <p>TYPE OF ROOT DESIRED (-1 vapor, 1 liquid, 0 lower Gibbs energy phase)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~2"></span>
-              character(len=*),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>root_type</strong></td>
-            <td>
-                <p>Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~6"></span>
+              <span class="anchor" id="variable-nc~18"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -240,12 +217,27 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                <p>Number of components</p>
+                <p>NO. OF COMPONENTS</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-rn"></span>
+              <span class="anchor" id="variable-ntemp~4"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ntemp</strong></td>
+            <td>
+                <p>1 if T-derivatives are required</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rn~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -255,12 +247,12 @@
             <td>::</td>
             <td><strong>rn</strong>(nc)</td>
             <td>
-                <p>Mixture moles</p>
+                <p>FEED MOELS</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~3"></span>
+              <span class="anchor" id="variable-t~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -270,7 +262,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                <p>Temperature [K]</p>
+                <p>TEMPERATURE</p>
             </td>
         </tr>
         <tr>
@@ -285,12 +277,12 @@
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-                <p>Pressure [bar]</p>
+                <p>PRESURE</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~2"></span>
+              <span class="anchor" id="variable-v~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -300,22 +292,7 @@
             <td>::</td>
             <td><strong>V</strong></td>
             <td>
-                <p>Volume [L]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-max_iters"></span>
-              integer,
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>max_iters</strong></td>
-            <td>
-                <p>Maxiumum number of iterations, defaults to 100</p>
+                <p>VOLUME</p>
             </td>
         </tr>
     </tbody>
@@ -372,7 +349,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~8"></span>
+              <span class="anchor" id="variable-ar~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -389,7 +366,41 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~6"></span>
+              <span class="anchor" id="variable-artv~6"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArTV</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-artn~13"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArTn</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arv~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -423,7 +434,58 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~2"></span>
+              <span class="anchor" id="variable-arvn~13"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArVn</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arn~13"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Arn</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arn2~13"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Arn2</strong>(nc,nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -610,7 +672,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-maximum_iterations"></span>
+              <span class="anchor" id="variable-nder~4"></span>
               integer,
             </td>
               <td>public</td>
@@ -618,7 +680,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>maximum_iterations</strong></td>
+            <td><strong>nder</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -644,7 +706,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-totn~4"></span>
+              <span class="anchor" id="variable-totn~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -689,7 +751,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-27 02:06              </p>
+ on 2024-02-27 02:41              </p>
           </div>
         </div>
         <br>

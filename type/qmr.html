@@ -119,8 +119,8 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/qmr.html#variable-aij~3">aij</a>
-            <a class="list-group-item" href="../type/qmr.html#variable-k~6">k</a>
+            <a class="list-group-item" href="../type/qmr.html#variable-aij">aij</a>
+            <a class="list-group-item" href="../type/qmr.html#variable-k">k</a>
             <a class="list-group-item" href="../type/qmr.html#variable-l">l</a>
         </div>
       </div>
@@ -148,7 +148,7 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/qmr.html#boundprocedure-bmix~6">Bmix</a>
+            <a class="list-group-item" href="../type/qmr.html#boundprocedure-bmix~3">Bmix</a>
             <a class="list-group-item" href="../type/qmr.html#boundprocedure-dmix~2">Dmix</a>
         </div>
       </div>
@@ -190,7 +190,7 @@ replacing the <code>aij</code> pointer procedure.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-aij~3"></span>
+              <span class="anchor" id="variable-aij"></span>
               procedure(<a href='../interface/get_aij.html'>get_aij</a>),
             </td>
               <td>public,</td>
@@ -202,12 +202,13 @@ replacing the <code>aij</code> pointer procedure.</p>
 <td>=&gt; </td>
                 <td>kij_constant</td>
             <td>
-                
+                <p>Procedure to calculate <script type="math/tex">a_{ij}</script> matrix. Can be overloaded
+by any method that respects the interface <a href="../interface/get_aij.html">get_aij</a>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~6"></span>
+              <span class="anchor" id="variable-k"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -252,7 +253,7 @@ replacing the <code>aij</code> pointer procedure.</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-bmix~6"></span>
+      <span class="anchor" id="boundprocedure-bmix~3"></span>
       <h3>
           procedure, public ::
   <strong>Bmix</strong>
@@ -270,7 +271,7 @@ replacing the <code>aij</code> pointer procedure.</p>
 </h3>
     
 
-  <p>Mixture repulsive parameter.</p>
+  <p>Mixture repulsive parameter.</p><a href="../proc/bmix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -295,7 +296,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -310,7 +311,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-<p>Moles vector</p>
+<p>Moles vector.</p>
             </td>
         </tr>
         <tr>
@@ -325,7 +326,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>bi</strong>(:)</td>
             <td>
-<p>Pure components repulsive parameters</p>
+<p>Pure components repulsive parameters.</p>
             </td>
         </tr>
         <tr>
@@ -340,7 +341,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>B</strong></td>
             <td>
-<p>Mixture repulsive parameter</p>
+<p>Mixture repulsive parameter.</p>
             </td>
         </tr>
         <tr>
@@ -407,7 +408,7 @@ replacing the <code>aij</code> pointer procedure.</p>
 </h3>
     
 
-  <p>Attractive parameter mixing rule with quadratic mix.</p>
+  <p>Attractive parameter mixing rule with quadratic mix.</p><a href="../proc/dmix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -432,7 +433,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -447,7 +448,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-<p>Moles vector</p>
+<p>Moles vector [mol]</p>
             </td>
         </tr>
         <tr>
@@ -477,7 +478,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>ai</strong>(:)</td>
             <td>
-<p>Pure components attractive parameters (\a)</p>
+<p>Pure components attractive parameters (\a_i)</p>
             </td>
         </tr>
         <tr>
@@ -493,7 +494,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td><strong>daidt</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{da}{dT}</script>
+<script type="math/tex">\frac{da_i}{dT}</script>
 </p>
             </td>
         </tr>
@@ -510,7 +511,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td><strong>daidt2</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2a}{dT^2}</script>
+<script type="math/tex">\frac{d^2a_i}{dT^2}</script>
 </p>
             </td>
         </tr>
@@ -526,7 +527,8 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td>::</td>
             <td><strong>D</strong></td>
             <td>
-<p>Mixture attractive parameter</p>
+<p>Mixture attractive parameter <script type="math/tex">n^2a_{mix}</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -593,7 +595,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td><strong>dDidT</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2D}{dTn_i}\</script>
+<script type="math/tex">\frac{d^2D}{dTn_i}</script>
 </p>
             </td>
         </tr>
@@ -610,7 +612,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <td><strong>dDij</strong>(:,:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2D}{dn_{ij}}\</script>
+<script type="math/tex">\frac{d^2D}{dn_{ij}</script>
 </p>
             </td>
         </tr>
@@ -641,7 +643,7 @@ replacing the <code>aij</code> pointer procedure.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-27 02:06              </p>
+ on 2024-02-27 02:41              </p>
           </div>
         </div>
         <br>
