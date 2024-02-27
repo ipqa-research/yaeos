@@ -21,7 +21,7 @@ module yaeos_models_ar_genericcubic_quadratic_mixing
       real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
       procedure(get_aij), pointer :: aij => kij_constant
          !! Procedure to calculate \(a_{ij}\) matrix. Can be overloaded
-         !! by any method that respects the interface [[get_aij(interface)]].
+         !! by any method that respets the interface [[get_aij(interface)]].
    contains
       procedure :: Dmix !! Attractive parameter mixing rule
       procedure :: Bmix !! Repulsive parameter mixing rule
