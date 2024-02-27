@@ -1,82 +1,69 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>All Procedures &ndash; yaeos
 </title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
-    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
-    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="../js/svg-pan-zoom.min.js"></script>
-
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">yaeos </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href='../page/index.html'>User documentation</a></li>
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-              data-toggle="dropdown" role="button"
-              aria-haspopup="true"
-     aria-expanded="false">Contents <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-            <li><a href="../lists/files.html">Source Files</a></li>
-            <li><a href="../lists/modules.html">Modules</a></li>
-            <li><a href="../lists/procedures.html">Procedures</a></li>
-            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
-                   <li><a href="../lists/types.html">Derived Types</a></li>
-       
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
             </ul>
-        
-            </li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
-                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
-          </ul>
-        <form action="../search.html" class="navbar-form navbar-right" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
         </div>
-<!--
-        <button type="submit" class="btn btn-default">Submit</button>
--->
-        </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+      </nav>
+    </div>
 
     <div class="container">
       <div class="row">
@@ -85,183 +72,1042 @@
 			 <table class="table table-striped">
 			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
 			 <tbody>
-			   <tr><td><a href='../interface/abs.html'>abs</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/abshyperdual.html'>absHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/acos.html'>acos</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/acoshyperdual.html'>acosHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/addhyperdualhyperdual.html'>AddHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/addhyperdualreal.html'>AddHyperDualReal</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/addrealhyperdual.html'>AddRealHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/admm_rebase.html'>ADMM_REBASE</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/admm_rebaseshadowed.html'>ADMM_REBASESHADOWED</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/admm_register.html'>ADMM_REGISTER</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/admm_registershadowed.html'>ADMM_REGISTERSHADOWED</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/admm_unregister.html'>ADMM_UNREGISTER</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/admm_unregistershadowed.html'>ADMM_UNREGISTERSHADOWED</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/aijtder.html'>aijTder</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/alpha.html'>alpha</a></td><td><a href='../module/yaeos_models_ar_cubic_alphas.html'>yaeos_models_ar_cubic_alphas</a></td><td>Subroutine</td><td><p>Soave <script type="math/tex">\alpha</script> function and it&rsquo;s derivatives.</p></td></tr>
-			   <tr><td><a href='../proc/ar_rkpr.html'>ar_rkpr</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/ar_srkpr.html'>ar_srkpr</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
-use the general interface</p></td></tr>
-			   <tr><td><a href='../proc/arvnder.html'>ArVnder</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../interface/asin.html'>asin</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/asinhyperdual.html'>asinHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/assignment%20%28%3D%29.html'>assignment (=)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/atan.html'>atan</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/atan2.html'>atan2</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/atan2hyperdual.html'>atan2HyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/atanhyperdual.html'>atanHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/atder.html'>aTder</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/betalimits.html'>betalimits</a></td><td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/betato01.html'>betato01</a></td><td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/bmix.html'>Bmix</a></td><td><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></td><td>Subroutine</td><td><p>Mixture repulsive parameter.</p></td></tr>
-			   <tr><td><a href='../proc/bnder.html'>Bnder</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../interface/cos.html'>cos</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/cosh.html'>cosh</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/coshhyperdual.html'>coshHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/coshyperdual.html'>cosHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/cubic_v0.html'>cubic_v0</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/dandtnder.html'>DandTnder</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/deltander.html'>DELTAnder</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/dividehyperdualhyperdual.html'>DivideHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/dividehyperdualreal.html'>DivideHyperDualReal</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/dividerealhyperdual.html'>DivideRealHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/dmix.html'>Dmix</a></td><td><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></td><td>Subroutine</td><td><p>Attractive parameter mixing rule with quadratic mix.</p></td></tr>
-			   <tr><td><a href='../proc/eq_dd.html'>eq_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/eq_di.html'>eq_di</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/eq_dr.html'>eq_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/eq_id.html'>eq_id</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/eq_rd.html'>eq_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/equalhyperdualhyperdual.html'>EqualHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/equalhyperdualreal.html'>EqualHyperDualReal</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../interface/exp.html'>exp</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/exphyperdual.html'>expHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/flash.html'>flash</a></td><td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td><td>Function</td><td><p>This algorithm assumes that the specified T and P correspond to
-vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p></td></tr>
-			   <tr><td><a href='../proc/fugacity_tp.html'>fugacity_tp</a></td><td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td><td>Subroutine</td><td><p>Calculate logarithm of fugacity, given pressure and temperature.</p><a href="../proc/fugacity_tp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/fugacity_vt.html'>fugacity_vt</a></td><td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td><td>Subroutine</td><td><p>Calculate fugacity given volume and temperature.</p><a href="../proc/fugacity_vt.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/ge_dd.html'>ge_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ge_di.html'>ge_di</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ge_dr.html'>ge_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ge_id.html'>ge_id</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ge_rd.html'>ge_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/genericcubic_ar.html'>GenericCubic_Ar</a></td><td><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></td><td>Subroutine</td><td><p>Residual Helmholtz Energy for a generic Cubic Equation of State.</p><a href="../proc/genericcubic_ar.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/get_v0.html'>get_v0</a></td><td><a href='../module/yaeos_tapenade_ar_api.html'>yaeos_tapenade_ar_api</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/get_zc_oma_omb.html'>get_Zc_OMa_OMb</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>Calculate Zc, OMa and OMb from the delta_1 parameter.</p></td></tr>
-			   <tr><td><a href='../proc/gt_dd.html'>gt_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/gt_di.html'>gt_di</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/gt_dr.html'>gt_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/gt_id.html'>gt_id</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/gt_rd.html'>gt_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/helmrkpr.html'>HelmRKPR</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>Calculate the reduced residual Helmholtz Energy and it&rsquo;s derivatives with the RKPR EOS</p></td></tr>
-			   <tr><td><a href='../proc/helmsrkpr.html'>HelmSRKPR</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../interface/int.html'>int</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/inthyperdual.html'>intHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/kij_constant.html'>kij_constant</a></td><td><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></td><td>Subroutine</td><td><p>Combining rule that uses constant K_{ij} values.</p></td></tr>
-			   <tr><td><a href='../proc/le_dd.html'>le_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/le_di.html'>le_di</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/le_dr.html'>le_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/le_id.html'>le_id</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/le_rd.html'>le_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/log.html'>log</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/log10.html'>log10</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/log10hyperdual.html'>log10HyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/loghyperdual.html'>logHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/lt_dd.html'>lt_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/lt_di.html'>lt_di</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/lt_dr.html'>lt_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/lt_id.html'>lt_id</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/lt_rd.html'>lt_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/max.html'>max</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/max_dd.html'>max_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/max_ddd.html'>max_ddd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/max_dr.html'>max_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/max_rd.html'>max_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/min.html'>min</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/min_dd.html'>min_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/min_dr.html'>min_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/min_rd.html'>min_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/minushyperdualhyperdual.html'>MinusHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/multiplyhyperdualhyperdual.html'>MultiplyHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/multiplyhyperdualint.html'>MultiplyHyperDualInt</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/multiplyhyperdualreal.html'>MultiplyHyperDualReal</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/multiplyinthyperdual.html'>MultiplyIntHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/multiplyrealhyperdual.html'>MultiplyRealHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ne_dd.html'>ne_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ne_di.html'>ne_di</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ne_dr.html'>ne_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ne_id.html'>ne_id</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/ne_rd.html'>ne_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/nint.html'>nint</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/ninthyperdual.html'>nintHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28ASTERISK%29.html'>operator (*)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28ASTERISKASTERISK%29.html'>operator (**)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28%2B%29.html'>operator (+)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28%2B%29~2.html'>operator (+)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28-%29.html'>operator (-)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28-%29~2.html'>operator (-)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28.eq.%29.html'>operator (.eq.)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28.ge.%29.html'>operator (.ge.)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28.gt.%29.html'>operator (.gt.)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28.le.%29.html'>operator (.le.)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28.lt.%29.html'>operator (.lt.)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28.ne.%29.html'>operator (.ne.)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/operator%20%28SLASH%29.html'>operator (/)</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/pengrobinson76.html'>PengRobinson76</a></td><td><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></td><td>Function</td><td><p>PengRobinson76.</p><a href="../proc/pengrobinson76.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/pengrobinson78.html'>PengRobinson78</a></td><td><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></td><td>Function</td><td><p>PengRobinson78.</p><a href="../proc/pengrobinson78.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/plushyperdualhyperdual.html'>PlusHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/popinteger4.html'>popinteger4</a></td><td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/poppointer8.html'>POPPOINTER8</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/popreal8.html'>popreal8</a></td><td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/powerhyperdualhyperdual.html'>PowerHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/powerhyperdualint.html'>PowerHyperDualInt</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/powerhyperdualreal.html'>PowerHyperDualReal</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/pr76_factory.html'>PR76_factory</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>PengRobinson 76 factory</p><a href="../proc/pr76_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/pr78_factory.html'>PR78_factory</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>PengRobinson 78 factory</p><a href="../proc/pr78_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/pressure.html'>pressure</a></td><td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td><td>Subroutine</td><td><p>Pressure calculation.</p><a href="../proc/pressure.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/purefug_calc.html'>PUREFUG_CALC</a></td><td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td><td>Subroutine</td><td><p>Fugacity of a pure component.</p></td></tr>
-			   <tr><td><a href='../proc/purefug_calc~2.html'>PUREFUG_CALC</a></td><td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td><td>Subroutine</td><td><p>Fugacity of a pure component</p></td></tr>
-			   <tr><td><a href='../interface/pushcontrol1b.html'>pushcontrol1b</a></td><td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/pushinteger4.html'>pushinteger4</a></td><td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/pushpointer8.html'>PUSHPOINTER8</a></td><td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/pushreal8.html'>pushreal8</a></td><td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/rachford_rice.html'>rachford_rice</a></td><td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../interface/real.html'>real</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/realhyperdual.html'>realHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/residual_helmholtz~2.html'>residual_helmholtz</a></td><td><a href='../module/yaeos_ar_models_hyperdual.html'>yaeos_ar_models_hyperdual</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/residual_helmholtz.html'>residual_helmholtz</a></td><td><a href='../module/yaeos_tapenade_ar_api.html'>yaeos_tapenade_ar_api</a></td><td>Subroutine</td><td><p>Residual Helmholtz model generic interface</p></td></tr>
-			   <tr><td><a href='../proc/setup.html'>setup</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>Setup the basics variables that describe the model.</p></td></tr>
-			   <tr><td><a href='../interface/sign.html'>sign</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/sign_dd.html'>sign_dd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/sign_dr.html'>sign_dr</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/sign_rd.html'>sign_rd</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/sin.html'>sin</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/sinh.html'>sinh</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/sinhhyperdual.html'>sinhHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/sinhyperdual.html'>sinHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/soaveredlichkwong.html'>SoaveRedlichKwong</a></td><td><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></td><td>Function</td><td><p>SoaveRedlichKwong.</p><a href="../proc/soaveredlichkwong.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/solve_rr.html'>solve_rr</a></td><td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td><td>Subroutine</td><td><p>Solve the Rachford-Rice Equation.</p></td></tr>
-			   <tr><td><a href='../interface/sqrt.html'>sqrt</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/sqrthyperdual.html'>sqrtHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/srk_factory.html'>SRK_factory</a></td><td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td><td>Subroutine</td><td><p>SoaveRedlichKwong factory</p><a href="../proc/srk_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
-			   <tr><td><a href='../proc/subtracthyperdualhyperdual.html'>SubtractHyperDualHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/subtracthyperdualreal.html'>SubtractHyperDualReal</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/subtractrealhyperdual.html'>SubtractRealHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/sum.html'>sum</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/sumhyperdual.html'>SumHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/sumhyperdual2.html'>SumHyperDual2</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../interface/tan.html'>tan</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../interface/tanh.html'>tanh</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Interface</td><td></td></tr>
-			   <tr><td><a href='../proc/tanhhyperdual.html'>tanhHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/tanhyperdual.html'>tanHyperDual</a></td><td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td><td>Function</td><td></td></tr>
-			   <tr><td><a href='../proc/termo.html'>TERMO</a></td><td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td><td>Subroutine</td><td></td></tr>
-			   <tr><td><a href='../proc/v0.html'>v0</a></td><td><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></td><td>Function</td><td><p>Cubic EoS volume initializer.
+			   <tr>
+                 <td><a href='../interface/abs.html'>abs</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/abshyperdual.html'>absHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/acos.html'>acos</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/acoshyperdual.html'>acosHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/addhyperdualhyperdual.html'>AddHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/addhyperdualreal.html'>AddHyperDualReal</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/addrealhyperdual.html'>AddRealHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/admm_rebase.html'>ADMM_REBASE</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/admm_rebaseshadowed.html'>ADMM_REBASESHADOWED</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/admm_register.html'>ADMM_REGISTER</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/admm_registershadowed.html'>ADMM_REGISTERSHADOWED</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/admm_unregister.html'>ADMM_UNREGISTER</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/admm_unregistershadowed.html'>ADMM_UNREGISTERSHADOWED</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/aijtder.html'>aijTder</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/alpha.html'>alpha</a></td>
+                 <td><a href='../module/yaeos_models_ar_cubic_alphas.html'>yaeos_models_ar_cubic_alphas</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Soave <script type="math/tex">\alpha</script> function and it&rsquo;s derivatives.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ar_rkpr.html'>ar_rkpr</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ar_srkpr.html'>ar_srkpr</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
+use the general interface</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/arvnder.html'>ArVnder</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/asin.html'>asin</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/asinhyperdual.html'>asinHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/assignment (=).html'>assignment (=)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/atan.html'>atan</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/atan2.html'>atan2</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/atan2hyperdual.html'>atan2HyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/atanhyperdual.html'>atanHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/atder.html'>aTder</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/betalimits.html'>betalimits</a></td>
+                 <td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/betato01.html'>betato01</a></td>
+                 <td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/bmix.html'>Bmix</a></td>
+                 <td><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Mixture repulsive parameter.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/bnder.html'>Bnder</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/cos.html'>cos</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/cosh.html'>cosh</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/coshhyperdual.html'>coshHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/coshyperdual.html'>cosHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/cubic_v0.html'>cubic_v0</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/dandtnder.html'>DandTnder</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/deltander.html'>DELTAnder</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/dividehyperdualhyperdual.html'>DivideHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/dividehyperdualreal.html'>DivideHyperDualReal</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/dividerealhyperdual.html'>DivideRealHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/dmix.html'>Dmix</a></td>
+                 <td><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Attractive parameter mixing rule with quadratic mix.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/eq_dd.html'>eq_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/eq_di.html'>eq_di</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/eq_dr.html'>eq_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/eq_id.html'>eq_id</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/eq_rd.html'>eq_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/equalhyperdualhyperdual.html'>EqualHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/equalhyperdualreal.html'>EqualHyperDualReal</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/exp.html'>exp</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/exphyperdual.html'>expHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/flash.html'>flash</a></td>
+                 <td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td>
+                 <td>Function</td>
+                 <td><p>This algorithm assumes that the specified T and P correspond to
+vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/fugacity_tp.html'>fugacity_tp</a></td>
+                 <td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Calculate logarithm of fugacity, given pressure and temperature.</p><a href="../proc/fugacity_tp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/fugacity_vt.html'>fugacity_vt</a></td>
+                 <td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Calculate fugacity given volume and temperature.</p><a href="../proc/fugacity_vt.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ge_dd.html'>ge_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ge_di.html'>ge_di</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ge_dr.html'>ge_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ge_id.html'>ge_id</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ge_rd.html'>ge_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/genericcubic_ar.html'>GenericCubic_Ar</a></td>
+                 <td><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Residual Helmholtz Energy for a generic Cubic Equation of State.</p><a href="../proc/genericcubic_ar.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/get_v0.html'>get_v0</a></td>
+                 <td><a href='../module/yaeos_tapenade_ar_api.html'>yaeos_tapenade_ar_api</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/get_zc_oma_omb.html'>get_Zc_OMa_OMb</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Calculate Zc, OMa and OMb from the delta_1 parameter.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/gt_dd.html'>gt_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/gt_di.html'>gt_di</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/gt_dr.html'>gt_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/gt_id.html'>gt_id</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/gt_rd.html'>gt_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/helmrkpr.html'>HelmRKPR</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Calculate the reduced residual Helmholtz Energy and it&rsquo;s derivatives with the RKPR EOS</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/helmsrkpr.html'>HelmSRKPR</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/int.html'>int</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/inthyperdual.html'>intHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/kij_constant.html'>kij_constant</a></td>
+                 <td><a href='../module/yaeos_models_ar_genericcubic_quadratic_mixing.html'>yaeos_models_ar_genericcubic_quadratic_mixing</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Combining rule that uses constant K_{ij} values.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/le_dd.html'>le_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/le_di.html'>le_di</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/le_dr.html'>le_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/le_id.html'>le_id</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/le_rd.html'>le_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/log.html'>log</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/log10.html'>log10</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/log10hyperdual.html'>log10HyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/loghyperdual.html'>logHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/lt_dd.html'>lt_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/lt_di.html'>lt_di</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/lt_dr.html'>lt_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/lt_id.html'>lt_id</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/lt_rd.html'>lt_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/max.html'>max</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/max_dd.html'>max_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/max_ddd.html'>max_ddd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/max_dr.html'>max_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/max_rd.html'>max_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/min.html'>min</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/min_dd.html'>min_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/min_dr.html'>min_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/min_rd.html'>min_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/minushyperdualhyperdual.html'>MinusHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/multiplyhyperdualhyperdual.html'>MultiplyHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/multiplyhyperdualint.html'>MultiplyHyperDualInt</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/multiplyhyperdualreal.html'>MultiplyHyperDualReal</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/multiplyinthyperdual.html'>MultiplyIntHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/multiplyrealhyperdual.html'>MultiplyRealHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ne_dd.html'>ne_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ne_di.html'>ne_di</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ne_dr.html'>ne_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ne_id.html'>ne_id</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ne_rd.html'>ne_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/nint.html'>nint</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ninthyperdual.html'>nintHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (ASTERISK).html'>operator (*)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (ASTERISKASTERISK).html'>operator (**)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (+).html'>operator (+)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (+)~2.html'>operator (+)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (-).html'>operator (-)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (-)~2.html'>operator (-)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (.eq.).html'>operator (.eq.)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (.ge.).html'>operator (.ge.)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (.gt.).html'>operator (.gt.)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (.le.).html'>operator (.le.)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (.lt.).html'>operator (.lt.)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (.ne.).html'>operator (.ne.)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/operator (SLASH).html'>operator (/)</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pengrobinson76.html'>PengRobinson76</a></td>
+                 <td><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></td>
+                 <td>Function</td>
+                 <td><p>PengRobinson76.</p><a href="../proc/pengrobinson76.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pengrobinson78.html'>PengRobinson78</a></td>
+                 <td><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></td>
+                 <td>Function</td>
+                 <td><p>PengRobinson78.</p><a href="../proc/pengrobinson78.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/plushyperdualhyperdual.html'>PlusHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/popinteger4.html'>popinteger4</a></td>
+                 <td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/poppointer8.html'>POPPOINTER8</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/popreal8.html'>popreal8</a></td>
+                 <td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/powerhyperdualhyperdual.html'>PowerHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/powerhyperdualint.html'>PowerHyperDualInt</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/powerhyperdualreal.html'>PowerHyperDualReal</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pr76_factory.html'>PR76_factory</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>PengRobinson 76 factory</p><a href="../proc/pr76_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pr78_factory.html'>PR78_factory</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>PengRobinson 78 factory</p><a href="../proc/pr78_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pressure.html'>pressure</a></td>
+                 <td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Pressure calculation.</p><a href="../proc/pressure.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/purefug_calc.html'>PUREFUG_CALC</a></td>
+                 <td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Fugacity of a pure component</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/purefug_calc~2.html'>PUREFUG_CALC</a></td>
+                 <td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Fugacity of a pure component.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushcontrol1b.html'>pushcontrol1b</a></td>
+                 <td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushinteger4.html'>pushinteger4</a></td>
+                 <td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushpointer8.html'>PUSHPOINTER8</a></td>
+                 <td><a href='../module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushreal8.html'>pushreal8</a></td>
+                 <td><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/rachford_rice.html'>rachford_rice</a></td>
+                 <td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/real.html'>real</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/realhyperdual.html'>realHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/residual_helmholtz.html'>residual_helmholtz</a></td>
+                 <td><a href='../module/yaeos_tapenade_ar_api.html'>yaeos_tapenade_ar_api</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Residual Helmholtz model generic interface</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/residual_helmholtz~2.html'>residual_helmholtz</a></td>
+                 <td><a href='../module/yaeos_ar_models_hyperdual.html'>yaeos_ar_models_hyperdual</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/setup.html'>setup</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Setup the basics variables that describe the model.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sign.html'>sign</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sign_dd.html'>sign_dd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sign_dr.html'>sign_dr</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sign_rd.html'>sign_rd</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sin.html'>sin</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sinh.html'>sinh</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sinhhyperdual.html'>sinhHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sinhyperdual.html'>sinHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/soaveredlichkwong.html'>SoaveRedlichKwong</a></td>
+                 <td><a href='../module/yaeos_models_ar_cubic_implementations.html'>yaeos_models_ar_cubic_implementations</a></td>
+                 <td>Function</td>
+                 <td><p>SoaveRedlichKwong.</p><a href="../proc/soaveredlichkwong.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/solve_rr.html'>solve_rr</a></td>
+                 <td><a href='../module/yaeos_equilibria_flash.html'>yaeos_equilibria_flash</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Solve the Rachford-Rice Equation.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sqrt.html'>sqrt</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sqrthyperdual.html'>sqrtHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/srk_factory.html'>SRK_factory</a></td>
+                 <td><a href='../module/legacy_ar_models.html'>legacy_ar_models</a></td>
+                 <td>Subroutine</td>
+                 <td><p>SoaveRedlichKwong factory</p><a href="../proc/srk_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/subtracthyperdualhyperdual.html'>SubtractHyperDualHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/subtracthyperdualreal.html'>SubtractHyperDualReal</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/subtractrealhyperdual.html'>SubtractRealHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sum.html'>sum</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sumhyperdual.html'>SumHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/sumhyperdual2.html'>SumHyperDual2</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/tan.html'>tan</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/tanh.html'>tanh</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/tanhhyperdual.html'>tanhHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/tanhyperdual.html'>tanHyperDual</a></td>
+                 <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/termo.html'>TERMO</a></td>
+                 <td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/v0.html'>v0</a></td>
+                 <td><a href='../module/yaeos_models_ar_genericcubic.html'>yaeos_models_ar_genericcubic</a></td>
+                 <td>Function</td>
+                 <td><p>Cubic EoS volume initializer.
 For a Cubic Equation of State, the covolume calculated with the mixing
 rule is a good estimate for the initial volume solver on the liquid
-region.</p></td></tr>
-			   <tr><td><a href='../proc/vcalc.html'>VCALC</a></td><td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td><td>Subroutine</td><td><p>Volume solver at a given pressure.</p></td></tr>
-			   <tr><td><a href='../proc/vcalc~2.html'>VCALC</a></td><td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td><td>Subroutine</td><td><p>ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE</p></td></tr>
-			   <tr><td><a href='../proc/ztvtermo.html'>zTVTERMO</a></td><td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td><td>Subroutine</td><td><p>Calculation of lnphi<em>P and derivatives
+region.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/vcalc.html'>VCALC</a></td>
+                 <td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td>
+                 <td>Subroutine</td>
+                 <td><p>ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/vcalc~2.html'>VCALC</a></td>
+                 <td><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Volume solver at a given pressure.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ztvtermo.html'>zTVTERMO</a></td>
+                 <td><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Calculation of lnphi<em>P and derivatives
  rn        mixture mole numbers                       (input)
  t         temperature (k)                            (input)
  v         volume      (L)                            (input)
@@ -269,55 +1115,51 @@ region.</p></td></tr>
  PHILOG    vector of ln(phi(i)</em>P)                     (output)  0 &lt; INDIC &lt; 5
  DLPHIT    t-derivative of ln(phi(i)) (const P, n)    (output)  0 &lt; INDIC = 2 or 4
  DLPHIP    P-derivative of ln(phi(i)) (const T, n)    (output)  0 &lt; INDIC &lt; 5
- FUGN      comp-derivative of ln(phi(i)) (const t &amp; P)(output)  2 &lt; INDIC</p><a href="../proc/ztvtermo.html" class="pull-right"><emph>Read more&hellip;</emph></a></td></tr>
+ FUGN      comp-derivative of ln(phi(i)) (const t &amp; P)(output)  2 &lt; INDIC</p><a href="../proc/ztvtermo.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
 			 </tbody></table>
              
         </div>
       </div>
-    <hr>    
+      <hr>
     </div> <!-- /container -->
     <footer>
       <div class="container">
-      <div class="row">
-        <div class="col-xs-6 col-md-6"><p>yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
+        <div class="row justify-content-between">
+          <div class="col"><p>yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
 </p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-02-27 01:00              </p>
+          </div>
         </div>
-        <div class="col-xs-6 col-md-6">
-          <p class="text-right">
-            Documentation generated by 
-            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-26 13:19            </p>
-        </div>
-      </div>
-      <br>
-      </div> <!-- /container -->    
+        <br>
+      </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+    <!-- Bootstrap core JavaScript -->
     <!-- Placed at the end of the document so the pages load faster -->
-<!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
--->
-    <script src="../js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
     <!-- MathJax JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-      });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script src="../tipuesearch/tipuesearch_content.js"></script>
-    <script src="../tipuesearch/tipuesearch_set.js"></script>
-    <script src="../tipuesearch/tipuesearch.js"></script>
-    
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>
