@@ -69,7 +69,7 @@ contains
       class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: n(:) !! Moles vector [mol]
-      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters (\a_i\)
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
       real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
       real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
 
