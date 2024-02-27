@@ -79,20 +79,20 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 0.6% of total for procedures.">15 statements</a>
+                 title=" 0.7% of total for procedures.">18 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/legacy.f90"> Source File</a>
+              <a href="../src/thermoprops.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/legacy.f90.html'>legacy.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/legacy_thermo_properties.html'>legacy_thermo_properties</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/thermoprops.f90.html'>thermoprops.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos_thermoprops.html'>yaeos_thermoprops</a></li>
             <li class="breadcrumb-item active" aria-current="page">PUREFUG_CALC</li>
           </ol>
         </nav>
@@ -119,18 +119,12 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-ar~3">Ar</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-artv~3">ArTV</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-artn~9">ArTn</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-arv2~3">ArV2</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-arvn~9">ArVn</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-arn~9">Arn</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-arn2~9">Arn2</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-arv">Arv</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-rt~3">RT</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-z~3">Z</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-philog">philog</a>
-            <a class="list-group-item" href="../proc/purefug_calc.html#variable-rn~8">rn</a>
+            <a class="list-group-item" href="../proc/purefug_calc.html#variable-ar~7">Ar</a>
+            <a class="list-group-item" href="../proc/purefug_calc.html#variable-arn~6">Arn</a>
+            <a class="list-group-item" href="../proc/purefug_calc.html#variable-rt~2">RT</a>
+            <a class="list-group-item" href="../proc/purefug_calc.html#variable-z~2">Z</a>
+            <a class="list-group-item" href="../proc/purefug_calc.html#variable-lnfug~3">lnfug</a>
+            <a class="list-group-item" href="../proc/purefug_calc.html#variable-n~18">n</a>
         </div>
       </div>
     </div>
@@ -160,11 +154,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine PUREFUG_CALC(nc, icomp, T, P, V, phi)  
+    <h2>public  subroutine PUREFUG_CALC(self, nc, icomp, T, P, V, fug)  
 </h2>
     
 
-    <p>Fugacity of a pure component</p>
+    <p>Fugacity of a pure component.</p>
 
 
     <h3>Arguments</h3>
@@ -180,7 +174,22 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~11"></span>
+              <span class="anchor" id="variable-self~14"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+                <p>model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~5"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -190,7 +199,7 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                
+                <p>Number of components</p>
             </td>
         </tr>
         <tr>
@@ -205,12 +214,12 @@
             <td>::</td>
             <td><strong>icomp</strong></td>
             <td>
-                
+                <p>Component index</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~6"></span>
+              <span class="anchor" id="variable-t~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -220,7 +229,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -235,12 +244,12 @@
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-                
+                <p>Pressure [bar]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~3"></span>
+              <span class="anchor" id="variable-v"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -250,12 +259,12 @@
             <td>::</td>
             <td><strong>V</strong></td>
             <td>
-                
+                <p>Volume [L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-phi"></span>
+              <span class="anchor" id="variable-fug"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -263,9 +272,9 @@
               
             </td>
             <td>::</td>
-            <td><strong>phi</strong></td>
+            <td><strong>fug</strong></td>
             <td>
-                
+                <p>Fugacity of component <code>icomp</code></p>
             </td>
         </tr>
     </tbody>
@@ -288,7 +297,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~3"></span>
+              <span class="anchor" id="variable-ar~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -305,75 +314,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArTV</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-artn~9"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArTn</strong>(nc)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arv2~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArV2</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arvn~9"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArVn</strong>(nc)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arn~9"></span>
+              <span class="anchor" id="variable-arn~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -390,41 +331,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~9"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Arn2</strong>(nc,nc)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arv"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Arv</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-rt~3"></span>
+              <span class="anchor" id="variable-rt~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -441,7 +348,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~3"></span>
+              <span class="anchor" id="variable-z~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -458,7 +365,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-philog"></span>
+              <span class="anchor" id="variable-lnfug~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -466,7 +373,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>philog</strong></td>
+            <td><strong>lnfug</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -475,7 +382,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-rn~8"></span>
+              <span class="anchor" id="variable-n~18"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -483,7 +390,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>rn</strong>(nc)</td>
+            <td><strong>n</strong>(nc)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -520,7 +427,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-02-27 01:00              </p>
+ on 2024-02-27 02:06              </p>
           </div>
         </div>
         <br>
