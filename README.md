@@ -8,6 +8,8 @@
 
 ![logo](media/logo.png){width=50%}
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ipqa-research/yaeos)
+
 There are multiple open source equations of state libraries, like:
 
 - [Clapeyron](https://github.com/ClapeyronThermo/Clapeyron.jl) `julia`
