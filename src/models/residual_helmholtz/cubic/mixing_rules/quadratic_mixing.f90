@@ -1,4 +1,4 @@
-module yaeos_models_ar_genericcubic_quadratic_mixing
+module yaeos_models_ar_cubic_quadratic_mixing
    !! Quadratic Mixing Rules for Cubic EoS.
    use yaeos_constants, only: pr
    use yaeos_substance, only: substances
@@ -25,6 +25,12 @@ module yaeos_models_ar_genericcubic_quadratic_mixing
    contains
       procedure :: Dmix !! Attractive parameter mixing rule
       procedure :: Bmix !! Repulsive parameter mixing rule
+      procedure :: D1mix => D1mix_constant
+   end type
+
+   type, extends(QMR) :: RKPR_QMR
+   contains
+      procedure :: D1mix => RKPR_D1Mix
    end type
 
    abstract interface
@@ -167,6 +173,49 @@ contains
          end do
       end do
    end subroutine
+
+   subroutine D1mix_constant(self, n, d1i, D1, dD1i, dD1ij)
+      class(QMR), intent(in) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: d1i(:)
+      real(pr), intent(out) :: D1
+      real(pr), intent(out) :: dD1i(:)
+      real(pr), intent(out) :: dD1ij(:, :)
+
+      D1 = d1i(1)
+      dD1i = 0
+      dD1ij = 0
+   end subroutine
+
+   subroutine RKPR_D1mix(self, n, d1i, D1, dD1i, dD1ij)
+   !! RKPR \(\delta_1\) parameter mixing rule.
+   class(RKPR_QMR), intent(in) :: self
+   real(pr), intent(in) :: n(:)
+   real(pr), intent(in) :: d1i(:)
+   real(pr), intent(out) :: D1
+   real(pr), intent(out) :: dD1i(:)
+   real(pr), intent(out) :: dD1ij(:, :)
+
+   integer :: i, j, nc
+   real(pr) :: totn
+
+      nc = size(n)
+      totn = sum(n)
+
+      D1 = 0.0_pr
+      do i = 1, nc
+            D1 = D1 + n(i) * d1i(i)
+      end do
+
+      D1 = D1/totn
+
+      do i = 1, nc
+            dD1i(i) = (d1i(i) - D1)/totn
+            do j = 1, nc
+               dD1ij(i, j) = (2.0_pr*D1 - d1i(i) - d1i(j))/totn**2
+            end do
+      end do
+end subroutine RKPR_D1mix
 
    subroutine kij_constant(&
       self, a, dadt, dadt2, &
