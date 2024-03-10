@@ -251,14 +251,10 @@ end subroutine RKPR_D1mix
             aij_daidt = aij(i, j) * (0.5_pr * inner_sum)
 
             daijdt(i, j) = 0.5_pr * aij(i, j) * (inner_sum) / (a(i)*a(j))
-            daijdt2(i, j) = &
-               aij_daidt / (ai2(i) * ai2(j)) &
-               - aij_daidt * dadt(j) / (a(i) * ai2(j)) &
-               - aij_daidt * dadt(i) / (a(j) * ai2(i)) &
-               + aij(i, j) * (&
-               0.5_pr * (a(i) * dadt2(j) + a(j) * dadt2(i)) &
-               + dadt(i) * dadt(j)&
-               ) / (a(i) * a(j))
+            daijdT2(i, j) = &
+                  (1 - self%k(i, j))*(dadT(j)*dadT(i)/sqrt(a(i)*a(j)) &
+                                 + sqrt(a(i)/a(j))*(dadT2(j) - dadT(j)**2/(2*a(j))) &
+                                 + sqrt(a(j)/a(i))*(dadT2(i) - dadT(i)**2/(2*a(i))))/2
 
             aij(j, i) = aij(i, j)
             daijdt(j, i) = daijdt(i, j)
