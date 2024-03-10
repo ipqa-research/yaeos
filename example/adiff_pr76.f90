@@ -99,16 +99,12 @@ contains
 
         integer, parameter :: n=2
         real(pr) :: tc(n), pc(n), w(n), kij(n, n), lij(n, n)
-        real(pr) :: z(n), lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n, n), v, t, p
+        real(pr) :: z(n), v, t
         real(pr) :: ar
         real(pr) :: art, arv, arv2, art2, artv
         real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n) 
 
-        real(8) :: time, std, mean
-        real(8) :: et, st
-        integer :: i, nevals=1e3
-
-        z = [0.3_pr, 0.7_pr]
+       z = [0.3_pr, 0.7_pr]
         tc = [190._pr, 310._pr]
         pc = [14._pr, 30._pr]
         w = [0.001_pr, 0.03_pr]
