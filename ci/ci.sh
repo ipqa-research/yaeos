@@ -45,7 +45,7 @@ run_test() {
 }
 
 run_coverage() {
-    COVER=$(gcovr \
+    gcovr \
         --exclude "build" \
         --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
@@ -54,9 +54,7 @@ run_coverage() {
         --exclude "src/legacy/*" \
         --exclude "app"\
         --exclude "tools" \
-        --fail-under-line 90)
-    echo "$COVER"
-    COVER=$(echo "$COVER" | grep TOTAL | awk '{print $4}' | tr -d '%')
+        --fail-under-line 90
 }
 
 resumee() {
@@ -76,7 +74,7 @@ case $1 in
     "coverage") run_coverage;;
     *)
         run_test
-        run_coverage;;
+        run_coverage
+        resumee;;
 esac
 
-resumee
