@@ -136,6 +136,7 @@ contains
       call self%mixrule%Dmix(&
          n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
          )
+      print *, "B: ", Bmix
 
       ! The f's and g's used here are for Ar, not F (reduced Ar)
       ! This requires to multiply by R all g, f and its derivatives as defined by Mollerup
