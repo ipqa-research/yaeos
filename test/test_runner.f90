@@ -5,7 +5,7 @@ program tester
     use test_legacy, only: suite_legacy => collect_suite
     use test_cubic_alphas, only: suite_alphas => collect_suite
     use test_cubic_implementations, only: suite_implementations => collect_suite
-    use test_autodiff_api_hyperdual, only: suite_autodiff_hd => collect_suite
+    use test_autodiff_api, only: suite_autodiff_hd => collect_suite
     use test_thermoprops, only: suite_thermoprops => collect_suite
     use test_flash, only: suite_flash => collect_suite
 
