@@ -48,6 +48,7 @@ run_coverage() {
     COVER=$(gcovr \
         --exclude "build" \
         --exclude "test/test_runner.f90" \
+        --exclude "test/fixtures/taperobinson.f90" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
