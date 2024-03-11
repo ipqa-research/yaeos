@@ -51,7 +51,7 @@ contains
         integer :: i, j
 
         associate(pc => self%pc, ac => self%ac, b => self%b, k => self%k, &
-                  kij => self%kij, lij => self%kij, tc => self%tc &
+                  kij => self%kij, lij => self%lij, tc => self%tc &
         )
             a = 1.0_pr + k * (1.0_pr - sqrt(t/tc))
             a = ac * a ** 2

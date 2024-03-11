@@ -61,7 +61,7 @@ contains
         w = [0.001_pr, 0.03_pr]
 
         kij = reshape([0., 0.1, 0.1, 0.], [n,n]) 
-        lij = kij / 2 
+        lij = 0.5_pr * kij
         eos = setup(tc, pc, w, kij, lij)
     end function
 end module
