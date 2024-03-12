@@ -13,9 +13,9 @@ module yaeos_models_ge_group_contribution_unifac
    end type
 
    type :: UNIFAC
-      ! UNIFAC parameters
+      !! UNIFAC parameters
       integer :: ngroups !! Total number of individual groups
-      real(pr) :: z = 10
+      real(pr) :: z = 10 !! Model constant
       real(pr), allocatable :: Eij(:, :) !! Groups interactions
 
       real(pr), allocatable :: group_area(:) !! Q_k
@@ -24,9 +24,9 @@ module yaeos_models_ge_group_contribution_unifac
       type(Groups), allocatable :: molecules(:) 
          !! Substances present in the system
       type(Groups) :: groups_stew
-   end type
-
-   type :: TemperatureFunction
+         !! All the groups present in the system
+   contains
+      procedure :: temperature_dependence => temperature_dependence
    end type
 
 contains
@@ -58,8 +58,6 @@ contains
       call combinatorial_activity(self, x, ln_gamma_c)
       call residual_activity(self, x, T, ln_gamma_r)
       ln_activity = ln_gamma_c + ln_gamma_r
-
-      print *, exp(ln_activity)
       
       if (present(Ge)) Ge = sum(x * ln_activity)
    end subroutine
@@ -158,12 +156,15 @@ contains
 
          do i=1,nc
             do j=1,size(molecules(i)%number_of_groups)
+               ! Get the index of group j of molecule i in the whole system's
+               ! groups
                k = findloc(&
                   self%groups_stew%groups_ids,&
                   molecules(i)%groups_ids(j), dim=1 &
                   )
                
                gf(k) = gf(k) + x(i) * molecules(i)%number_of_groups(j)
+               
                if (present(dgfdx)) then
                   dgfdx(k, i) = dgfdx(k, i) &
                               + (1 * total_group_k(k))/total_groups &
@@ -185,14 +186,13 @@ contains
       type(UNIFAC) :: self
       real(pr), intent(in) :: x(:)
 
-      real(pr), intent(in) :: gf(:)
-      real(pr), optional, intent(in) :: dgfdx(:, :)
+      real(pr), intent(in) :: gf(:) !! Group fraction
+      real(pr), optional, intent(in) :: dgfdx(:, :) 
       real(pr), optional, intent(in) :: dgfdx2(:, :, :)
 
-      real(pr), intent(out) :: theta(:)
+      real(pr), intent(out) :: theta(:) !! Group area fraction
       real(pr), optional, intent(out) :: dthetadx(:, :)
       real(pr), optional, intent(out) :: dthetadx2(:, :, :)
-
 
       real(pr) :: total_groups_area
       integer :: i, gi
@@ -213,9 +213,9 @@ contains
 
    subroutine group_big_gamma(self, x, T, ln_Gamma)
       class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:)
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: ln_Gamma(:)
+      real(pr), intent(in) :: x(:) !! Molar fractions
+      real(pr), intent(in) :: T !! Temperature
+      real(pr), intent(out) :: ln_Gamma(:) !! \(\ln \Gamma_i\)
 
       real(pr) :: gf(size(self%groups_stew%groups_ids))
       real(pr) :: theta(size(self%groups_stew%groups_ids))
@@ -235,7 +235,6 @@ contains
       call temperature_dependence(self, T, psi)
 
       do k=1,ng
-
          gi = self%groups_stew%groups_ids(k)
 
          up = 0
@@ -249,19 +248,18 @@ contains
 
          ln_Gamma(k) = self%group_area(gi) * (&
             1 - log(sum(theta * psi(:, k))) - up &
-            )
-
+         )
       end do
    end subroutine
 
    type(UNIFAC) function setup_unifac(molecules, Eij, Qk, Rk)
-      type(Groups), intent(in) :: molecules(:)
-
-      real(pr), optional, intent(in) :: Eij(:, :)
-      real(pr), optional, intent(in) :: Qk(:)
-      real(pr), optional, intent(in) :: Rk(:)
+      !! UNIFAC model initialization.
+      type(Groups), intent(in) :: molecules(:) !! Molecules
+      real(pr), intent(in) :: Eij(:, :) !! Interaction Matrix
+      real(pr), intent(in) :: Qk(:) !! Group areas
+      real(pr), intent(in) :: Rk(:) !! Group volumes
+      
       type(Groups) :: soup
-
       integer :: gi, i, j
 
       setup_unifac%molecules = molecules
@@ -269,20 +267,22 @@ contains
       allocate(soup%groups_ids(0))
       allocate(soup%number_of_groups(0))
 
+      ! ========================================================================
+      ! Count all the individual groups and each molecule volume and area
+      ! ------------------------------------------------------------------------
       associate(&
          r => setup_unifac%molecules%volume, &
          q => setup_unifac%molecules%surface_area &
-         )
-
+      )
          ! Get all the groups indexes and counts into a single stew of groups.
          do i=1,size(molecules)
-
             r(i) = 0
             q(i) = 0
 
             do j=1,size(molecules(i)%groups_ids)
                gi = molecules(i)%groups_ids(j)
-
+               
+               ! Calculate molecule i volume and area
                r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk(gi)
                q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk(gi)
 
@@ -291,22 +291,23 @@ contains
                   soup%groups_ids = [soup%groups_ids, gi]
                   soup%number_of_groups = [soup%number_of_groups, 0]
                end if
-
+              
+               ! Find where is the group located in the main soup of 
+               ! groups.
                gi = findloc(soup%groups_ids - gi, 0, dim=1)
 
                soup%number_of_groups(gi) = soup%number_of_groups(gi) &
                   + molecules(i)%number_of_groups(gi)
             end do
          end do
-
       end associate
+      ! ========================================================================
 
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
-
-      if (present(Eij)) setup_unifac%Eij = Eij
-      if (present(Qk)) setup_unifac%group_area = Qk
-      if (present(Rk)) setup_unifac%group_volume = Rk
+      setup_unifac%Eij = Eij
+      setup_unifac%group_area = Qk
+      setup_unifac%group_volume = Rk
    end function
 end module
 
@@ -324,8 +325,6 @@ program main
 
    real(pr) :: psi(3, 3)
    real(pr) :: gf(3), dgdx(3, 2)
-
-   integer :: i, j, gi
 
    call load_npy("data/unifac_aij.npy", Aij)
    call load_npy("data/unifac_Qk.npy", Qk)
