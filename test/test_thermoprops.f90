@@ -416,15 +416,5 @@ contains
         call check(&
             error, rel_error(lefths, righths) < 1e-14 &
             )
-
     end subroutine cp_and_cv
-
-    elemental function rel_error(x, y)
-        use yaeos, only: pr
-        real(pr), intent(in) :: x, y
-        real(pr) :: rel_error
-
-        rel_error = abs(x - y)/abs(x)
-
-    end function rel_error
 end module test_thermoprops
