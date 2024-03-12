@@ -1,10 +1,10 @@
-module hyperdual_pr76
+module autodiff_hyperdual_pr76
     use yaeos_constants, only: pr, R
     use yaeos_ar_models_hyperdual
     use yaeos_substance, only: Substances
     implicit none
 
-    type, extends(ArModelAdiff) :: PR76
+    type, extends(ArModelAdiff) :: hdPR76
         type(Substances) :: composition
         real(pr), allocatable :: kij(:, :), lij(:, :)
         real(pr), allocatable :: ac(:), b(:), k(:)
@@ -19,7 +19,7 @@ module hyperdual_pr76
 
 contains
 
-    type(PR76) function setup(tc_in, pc_in, w_in, kij_in, lij_in) result(self)
+    type(hdPR76) function setup(tc_in, pc_in, w_in, kij_in, lij_in) result(self)
         !! Seup an Autodiff_PR76 model
         real(pr) :: tc_in(:)
         real(pr) :: pc_in(:)
@@ -40,7 +40,7 @@ contains
     end function
 
     function arfun(self, n, v, t) result(ar)
-        class(PR76) :: self
+        class(hdPR76) :: self
         type(hyperdual), intent(in) :: n(:), v, t
         type(hyperdual) :: ar
     
@@ -85,7 +85,7 @@ contains
 
     function v0(self, n, p, t)
         !! Initialization of volume
-        class(PR76), intent(in) :: self
+        class(hdPR76), intent(in) :: self
         real(pr), intent(in) :: n(:)
         real(pr), intent(in) :: p
         real(pr), intent(in) :: t
@@ -93,48 +93,4 @@ contains
 
         v0 = sum(n * self%b) / sum(n)
     end function
-
-    subroutine main 
-        class(ArModel), allocatable :: eos
-
-        integer, parameter :: n=2
-        real(pr) :: tc(n), pc(n), w(n), kij(n, n), lij(n, n)
-        real(pr) :: z(n), v, t
-        real(pr) :: ar
-        real(pr) :: art, arv, arv2, art2, artv
-        real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n) 
-
-       z = [0.3_pr, 0.7_pr]
-        tc = [190._pr, 310._pr]
-        pc = [14._pr, 30._pr]
-        w = [0.001_pr, 0.03_pr]
-
-        kij = reshape([0._pr, 0.1_pr, 0.1_pr, 0._pr], [n,n]) 
-        lij = kij / 2._pr
-
-        eos = setup(tc, pc, w, kij, lij)
-        v = 1
-        t = 150
-
-        call eos%residual_helmholtz(&
-                z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
-                ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-        )
-        print *, "Ar:  ", ar
-
-        print *, "ArV: ", arV
-        print *, "ArT: ", arT
-
-        print *, "ArT2: ", arT2
-        print *, "ArV2: ", ArV2
-
-        print *, "Arn:  ", arn
-        
-        print *, "ArTV: ", ArTV
-
-        print *, "ArVn: ", ArVn
-        print *, "ArTn: ", ArTn
-
-        print *, "Arn2: ", Arn2
-    end subroutine
 end module

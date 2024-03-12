@@ -1,5 +1,7 @@
 module test_thermoprops
     use testdrive, only: new_unittest, unittest_type, error_type, check
+    use auxiliar_functions, only: rel_error
+
     implicit none
 
 contains
@@ -23,16 +25,17 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(CubicEoS) :: eos
 
-        real(pr) :: lnfug(2), dlnphidp(2), dlnphidt(2), dlnphidn(2,2)
 
+        real(pr) :: lnfug(2), dlnphidp(2), dlnphidt(2), dlnphidn(2, 2)
         real(pr), allocatable :: z(:)
         real(pr) ::  v, t, p
 
         real(pr) :: lnfug_val(2), dlnphidp_val(2), dlnphidt_val(2)
 
-        lnfug_val =   [2.0759140949373416, -2.2851989270402058]
-        dlnphidp_val = [  -0.99059224575177762, -0.99388122357848807]
-        dlnphidt_val = [ 3.0263769083149254E-002,  7.6204871541712640E-002]
+
+        lnfug_val = [2.0759140949373416, -2.2851989270402058]
+        dlnphidp_val = [-0.99059224575177762, -0.99388122357848807]
+        dlnphidt_val = [3.0263769083149254E-002, 7.6204871541712640E-002]
 
         eos = binary_PR76()
 
@@ -40,18 +43,18 @@ contains
         v = 8.8780451065729321E-002_pr
         t = 150
 
-
         call fugacity_vt(eos, &
             z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
             )
 
-        call check(&
+
+        call check( &
             error, maxval(abs(lnfug - lnfug_val)) < 1e-5 &
             )
-        call check(&
+        call check( &
             error, maxval(abs(dlnphidp - dlnphidp_val)) < 1e-5 &
             )
-        call check(&
+        call check( &
             error, maxval(abs(dlnphidt - dlnphidt_val)) < 1e-5 &
             )
     end subroutine test_fugacity_VT
@@ -62,7 +65,8 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(CubicEoS) :: eos
 
-        real(pr) :: lnfug(2), dlnphidp(2), dlnphidt(2), dlnphidn(2,2)
+
+        real(pr) :: lnfug(2), dlnphidp(2), dlnphidt(2), dlnphidn(2, 2)
 
         real(pr), allocatable :: z(:)
         real(pr) ::  v, t, p
@@ -71,9 +75,10 @@ contains
 
         character(len=:), allocatable :: root_type
 
-        lnfug_val =   [2.0759140949373416, -2.2851989270402058]
+
+        lnfug_val = [2.0759140949373416, -2.2851989270402058]
         dlnphidp_val = [-0.99059224575177762, -0.99388122357848807]
-        dlnphidt_val = [ 3.0263769083149254E-002,  7.6204871541712640E-002]
+        dlnphidt_val = [3.0263769083149254E-002, 7.6204871541712640E-002]
 
         eos = binary_PR76()
         z = [0.3, 0.7]

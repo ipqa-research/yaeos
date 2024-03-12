@@ -29,7 +29,7 @@ module yaeos_models
    use yaeos_models_ar_cubic_alphas
 
    ! Mixing Rules
-   use yaeos_models_ar_genericcubic_quadratic_mixing
+   use yaeos_models_ar_cubic_quadratic_mixing
 
    ! Implemented models
    use yaeos_models_ar_cubic_implementations

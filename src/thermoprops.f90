@@ -80,12 +80,9 @@ contains
 
       real(pr) :: v_in, p_in
 
-      call VCALC(self, root_type, size(n), n, T, P, V_in)
+      call VCALC(self, n, P, T, V_in, root_type)
       call fugacity_vt(self, n, v_in, T, P_in, lnfug, dlnphidp, dlnphidt, dlnphidn)
-      
       if(present(v)) v = v_in
-      ! if(abs(p-p_in) > 1e-5) write(error_unit, *) &
-      !  "WARN: Possible wrong root calculating fugacity!" , p, p_in
    end subroutine fugacity_tp
 
    subroutine fugacity_vt(self, &
@@ -196,93 +193,115 @@ contains
       fug = exp(fug)
    end subroutine purefug_calc
 
-   recursive subroutine VCALC(self, root_type, nc, rn, T, P, V, max_iters)
+   subroutine VCALC(self, n, P, T, V, root_type, max_iters)
       !! Volume solver at a given pressure.
-      !
-      ! This routine still requires some work to be easier to understand
+      !!
+      !! Obtain the volume using the method described by Michelsen and Møllerup.
+      !! While \(P(V, T)\) can be obtained with a simple Newton method, a better
+      !! approach is solving \(P(B/V, T)\) where \(B\) is the EoS covolume.
+      !! This method is easier to solve because:
+      !! \[
+      !!    V(P, T) \in [0, \infty)
+      !! \]
+      !! and
+      !! \[
+      !!    \frac{B}{V}(P, T) \in [0, 1]
+      !! \]
+      !! 
+      !! At chapter 3 page 94 of Michelsen and Møllerup's book a more complete
+      !! explanation can be seen
       use iso_fortran_env, only: error_unit
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: self
-      character(len=*), intent(in) :: root_type !! Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]
-      integer, intent(in) :: nc  !! Number of components
-      real(pr), intent(in) ::  rn(nc) !! Mixture moles
+      real(pr), intent(in) ::  n(:) !! Mixture moles
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(out) :: V !! Volume [L]
+      character(len=*), optional, intent(in) :: root_type !! Type of root ["vapor" | "liquid" | "stable"]
       integer, optional, intent(in) :: max_iters !! Maxiumum number of iterations, defaults to 100
 
+      character(len=10) :: root
+
       real(pr) ::  Ar, ArV, ArV2
-      logical :: FIRST_RUN
 
       real(pr) :: totn
-      real(pr) :: B, CPV, S3R
+      real(pr) :: B !! Covolume
       real(pr) :: ZETMIN, ZETA, ZETMAX
       real(pr) :: del, pcalc, der, AT, AVAP, VVAP
 
       integer :: iter, maximum_iterations
 
       maximum_iterations = optval(max_iters, 100)
+      root = optval(root_type, "stable")
 
-      FIRST_RUN = .true.
-      TOTN = sum(rn)
-      CPV = self%get_v0(rn, p, t)
-      B = CPV
-      S3R = 1._pr/CPV
+      TOTN = sum(n)
+      B = self%get_v0(n, p, t)
       ITER = 0
 
       ZETMIN = 0._pr
-      ZETMAX = 1._pr - 0.01*T/(10000*B)  ! improvement for cases with heavy components
-      if (root_type == "liquid") then
+      ZETMAX = 1._pr
+
+      select case(root_type)
+      case("liquid")
          ZETA = 0.5_pr
-      else
-         ! IDEAL GAS ESTIMATE
-         ZETA = min(.5D0, CPV*P/(TOTN*R*T))
-      end if
-  100 continue
-      DEL = 1
-      pcalc = 2*p
-
-      do while(abs(DEL) > 1.e-10_pr .and. iter < maximum_iterations)
-         V = CPV/ZETA
-         ITER = ITER + 1
-         call self%residual_helmholtz(&
-            rn, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2 &
-         )
-         PCALC = TOTN*R*T/V - ArV
-
-         if (PCALC .gt. P) then
-            ZETMAX = ZETA
-         else
-            ZETMIN = ZETA
-         end if
-
-         ! AT is something close to Gr(P,T)
-         AT = (Ar + V*P)/(T*R) - TOTN*log(V)
-
-         DER = (ArV2*V**2 + TOTN*R*T)*S3R  ! this is dPdrho/B
-         DEL = -(PCALC - P)/DER
-         ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
-
-         if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) &
-            ZETA = .5_pr*(ZETMAX + ZETMIN)
-      end do
-
-      if (iter >= maximum_iterations) write(error_unit, *) &
-         "WARN: Volume solver exceeded maximum number of iterations"
-
-      if (root_type == "stable") then
-         ! FIRST RUN WAS VAPOUR; RERUN FOR LIQUID
-         if (FIRST_RUN) then
+         call solve_point(P, V, Pcalc, AT, iter)
+      case("vapor","stable")
+         ZETA = min(0.5_pr, B*P/(TOTN*R*T))
+         call solve_point(P, V, Pcalc, AT, iter)
+         
+         if (root_type == "stable") then
+            ! Run first for vapor and then for liquid
             VVAP = V
             AVAP = AT
-            FIRST_RUN = .false.
             ZETA = 0.5_pr
-            ZETMAX = 1._pr - 0.01_pr*T/500._pr
-            goto 100
-         else
+            ZETMAX = 1._pr
+            call solve_point(P, V, Pcalc, AT, iter)
             if (AT .gt. AVAP) V = VVAP
          end if
-      end if
+      case default
+         write(error_unit, *) "ERROR [VCALC]: Wrong specification"
+         call exit(1)
+      end select
+
+   contains
+      subroutine solve_point(P, V, Pcalc, AT, iter)
+         real(pr), intent(in) :: P !! Objective pressure [bar]
+         real(pr), intent(out) :: V !! Obtained volume [L]
+         real(pr), intent(out) :: Pcalc !! Calculated pressure at V [bar]
+         real(pr), intent(out) :: AT !!
+         integer, intent(out) :: iter 
+
+         iter = 0
+         DEL = 1
+         pcalc = 2*p
+         do while(abs(DEL) > 1.e-10_pr .and. iter < maximum_iterations)
+            V = B/ZETA
+            iter = iter + 1
+            call self%residual_helmholtz(&
+               n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2 &
+            )
+            Pcalc = TOTN*R*T/V - ArV
+
+            if (Pcalc .gt. P) then
+               ZETMAX = ZETA
+            else
+               ZETMIN = ZETA
+            end if
+
+            ! AT is something close to Gr(P,T)
+            AT = (Ar + V*P)/(T*R) - TOTN*log(V)
+
+            DER = (ArV2*V**2 + TOTN*R*T)/B  ! this is dPdrho/B
+            DEL = -(Pcalc - P)/DER
+            ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
+
+            if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) &
+               ZETA = .5_pr*(ZETMAX + ZETMIN)
+         end do
+         
+         if (iter >= maximum_iterations) write(error_unit, *) &
+            "WARN: Volume solver exceeded maximum number of iterations"
+      end subroutine
    end subroutine vcalc
    
    ! ==========================================================================
