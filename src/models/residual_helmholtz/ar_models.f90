@@ -36,6 +36,21 @@ module yaeos_models_ar
          self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
          )
          !! Residual Helmholtz model generic interface.
+         !!
+         !! This interface represents how an Ar model should be implemented.
+         !! By our standard, a Resiudal Helmholtz model takes as input:
+         !!
+         !! - The mixture's number of moles vector.
+         !! - Volume, by default in liters.
+         !! - Temperature, by default in Kelvin.
+         !!
+         !! All the output arguments are optional. While this keeps a long
+         !! signature for the implementation, this is done this way to take
+         !! advantage of any inner optimizations to calculate derivatives
+         !! inside the procedure.
+         !!
+         !! Once the model is implemented, the signature can be short like
+         !! `model%residual_helmholtz(n, v, t, ArT2=dArdT2)`
          import ArModel, pr
          class(ArModel), intent(in) :: self !! ArModel
          real(pr), intent(in) :: n(:) !! Moles vector

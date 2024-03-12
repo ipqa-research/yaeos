@@ -30,8 +30,8 @@ end type
 
 The definition of an `ArModel` expects that two procedures are defined:
 
-- [residual_helmholtz](../../interface/abs_residual_helmholtz.html): Procedure to calculate residual Helmholtz energy and it's derivatives
-- [volume_initializer](../../interface/abs_volume_initializer.html): Volume initializer to find a liquid root, given a pressure and temperature.
+- [[abs_residual_helmholtz(interface)]]: Procedure to calculate residual Helmholtz energy and it's derivatives
+- [[abs_volume_initializer(interface)]]: Volume initializer to find a liquid root, given a pressure and temperature.
 
 ```fortran
 use yaeos, only: ArModel

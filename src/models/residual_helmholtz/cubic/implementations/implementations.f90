@@ -37,7 +37,7 @@ contains
         use yaeos_substance, only: Substances
         use yaeos_models_ar_genericcubic, only: CubicEoS
         use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-        use yaeos_models_ar_genericcubic_quadratic_mixing, only: QMR
+        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR
         real(pr), intent(in) :: tc(:) !! Critical Temperatures [K]
         real(pr), intent(in) :: pc(:) !! Critical Pressures [bar]
         real(pr), intent(in) :: w(:) !! Acentric Factors
@@ -106,7 +106,7 @@ contains
         use yaeos_substance, only: Substances
         use yaeos_models_ar_genericcubic, only: CubicEoS
         use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-        use yaeos_models_ar_genericcubic_quadratic_mixing, only: QMR
+        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR
         real(pr), intent(in) :: tc(:) !! Critical Temperatures [K]
         real(pr), intent(in) :: pc(:) !! Critical Pressures [bar]
         real(pr), intent(in) :: w(:) !! Acentric Factors
@@ -176,7 +176,7 @@ contains
         use yaeos_substance, only: Substances
         use yaeos_models_ar_genericcubic, only: CubicEoS
         use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-        use yaeos_models_ar_genericcubic_quadratic_mixing, only: QMR
+        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR
         real(pr), intent(in) :: tc(:) !! Critical temperature [K]
         real(pr), intent(in) :: pc(:) !! Critical pressure [bar]
         real(pr), intent(in) :: w(:) !! Acentric factor

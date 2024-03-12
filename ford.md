@@ -10,7 +10,7 @@ author_description: PhD student with focus on reservoir PVT simulation.
 email: federico.benelli@mi.unc.edu.ar
 github: https://github.com/fedebenelli
 src_dir: src
-exclude_dir: test doc
+exclude_dir: test doc src/adiff/hyperdual.f90 src/adiff/autodiff_api/tapenade
 output_dir: doc/ford_site
 preprocessor: gfortran -E
 display: public
@@ -26,7 +26,7 @@ print_creation_date: true
 creation_date: %Y-%m-%d %H:%M %z
 md_extensions: markdown.extensions.toc
                markdown.extensions.smarty
-graph: false
+graph: true
 license: MPL
 page_dir: doc/page
 media_dir: doc/media

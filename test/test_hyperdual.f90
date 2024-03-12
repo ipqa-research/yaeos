@@ -4,7 +4,6 @@ program main
     implicit none
     type(hyperdual) :: x, y, z
 
-
     x = 2.0_pr
     y = 3.0_pr
 
@@ -23,5 +22,5 @@ contains
     function f(x, y)
         type(hyperdual) :: x, y, f
         f = sqrt(x*y)
-    end function
-end program
+    end function f
+end program main
