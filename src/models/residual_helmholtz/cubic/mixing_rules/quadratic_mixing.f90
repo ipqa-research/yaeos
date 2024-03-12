@@ -40,7 +40,7 @@ module yaeos_models_ar_cubic_quadratic_mixing
             !! From previously calculated attractive parameters calculate the
             !! \(a_{ij}\) matrix and it's corresponding derivatives.
             import pr, QMR
-            class(QMR) :: self
+            class(QMR), intent(in) :: self
             real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
             real(pr), intent(out):: aij(:, :), daijdt(:, :), daijdt2(:, :)
         end subroutine get_aij
@@ -222,7 +222,7 @@ contains
         aij, daijdt, daijdt2 &
         )
         !! Combining rule that uses constant \(k_{ij}\) values.
-        class(QMR) :: self
+        class(QMR), intent(in) :: self
         real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a\)
         real(pr), intent(in) :: dadt(:) !! \(\frac{da}{dT}\)
         real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a}{dT^2}\)
