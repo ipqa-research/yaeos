@@ -129,10 +129,10 @@ contains
       Z = V/(TOTN*RT) ! this is Z/P
 
       if (present(lnfug) .and. .not. (&
-               present(dlnphidn) &
-         .and. present(dlnphidp) &
-         .and. present(dlnphidt) &
-         .and. present(p) &
+              present(dlnphidn) &
+         .or. present(dlnphidp) &
+         .or. present(dlnphidt) &
+         .or. present(p) &
       )) then
          call self%residual_helmholtz(n, v, t, Arn=Arn)
          lnfug(:) = Arn(:)/RT - log(Z)
@@ -151,7 +151,8 @@ contains
       
       lnfug(:) = Arn(:)/RT - log(Z)
 
-      P = TOTN*RT/V - ArV
+      if (present(P)) P = TOTN*RT/V - ArV
+      
       dPdV = -ArV2 - RT*TOTN/V**2
       dPdT = -ArTV + TOTN*R/V
       dPdN(:) = RT/V - ArVn(:)
@@ -283,5 +284,131 @@ contains
          end if
       end if
    end subroutine vcalc
+   
    ! ==========================================================================
+   ! Residual Enthalpy
+   ! --------------------------------------------------------------------------
+   subroutine enthalpy_residual_vt(self, n, v, t, Hr, HrT, HrV, Hrn)
+      !! Calculate residual enthalpy given volume and temperature.
+      class(ArModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(out) :: Hr !! Residual enthalpy [bar L / mol]
+      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
+      real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}}{dV}\)
+      real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
+
+      real(pr) :: Ar, ArV, ArT, Arn(size(n))
+      real(pr) :: ArV2, ArT2, ArTV, ArVn(size(n)), ArTn(size(n))
+
+      call self%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+      )
+
+      Hr = Ar - t*ArT - v*ArV
+
+      if (present(HrT)) HrT = - t*ArT2 - v*ArTV
+      if (present(HrV)) HrV = - t*ArTV - v*ArV2
+      if (present(HrN)) HrN(:) = Arn(:) - t*ArTn(:) - v*ArVn(:)
+   end subroutine
+
+   ! ==========================================================================
+   ! Residual Gibbs energy
+   ! --------------------------------------------------------------------------
+   subroutine gibbs_residual_vt(self, n, v, t, Gr, GrT, GrV, Grn)
+      !! Calculate residual Gibbs energy given volume and temperature.
+      class(ArModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(out) :: Gr !! Gibbs energy [bar L / mol]
+      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
+      real(pr), optional, intent(out) :: GrV !! \(\frac{dG^r}}{dV}\)
+      real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
+
+      real(pr) :: Ar, ArV, ArT, Arn(size(n))
+      real(pr) :: p, dpdv, dpdt, dpdn(size(n)), z, ntot
+
+      ntot = sum(n)
+      call pressure(self, n, v, t, p, dpdv=dpdv, dpdt=dpdt, dpdn=dpdn)
+      z = p*v/(ntot*R*t)
+
+      call self%residual_helmholtz(n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn)
+
+      Gr = Ar + p*v - ntot*R*t
+
+      if (present(GrT)) GrT = ArT + v*dpdt - ntot*R
+      if (present(GrV)) GrV = ArV + v*dpdv + p
+      if (present(GrN)) GrN(:) = Arn(:) + v*dpdn(:) - R*t
+   end subroutine
+
+   ! ==========================================================================
+   ! Residual entropy
+   ! --------------------------------------------------------------------------
+   subroutine entropy_residual_vt(self, n, v, t, Sr, SrT, SrV, Srn)
+      !! Calculate residual entropy given volume and temperature.
+      class(ArModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(out) :: Sr !! Entropy [bar L / K / mol]
+      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
+      real(pr), optional, intent(out) :: SrV !! \(\frac{dS^r}}{dV}\)
+      real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
+
+      real(pr) :: Ar, ArT, ArT2, ArTV, ArTn(size(n))
+
+      call self%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArT=ArT, ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
+      )
+
+      Sr = - ArT
+
+      if (present(SrT)) SrT = - ArT2
+      if (present(SrV)) SrV = - ArTV
+      if (present(SrN)) SrN = - ArTn
+   end subroutine
+
+   ! ==========================================================================
+   ! Residual Cv
+   ! --------------------------------------------------------------------------
+   subroutine Cv_residual_vt(self, n, v, t, Cv)
+      !! Calculate residual heat capacity volume constant given v and t.
+      class(ArModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(out) :: Cv !! heat capacity v constant [bar L / K / mol]
+
+      real(pr) :: Ar, ArT2
+
+      call self%residual_helmholtz(n, v, t, Ar=Ar, ArT2=ArT2)
+
+      Cv = -t*ArT2
+   end subroutine
+
+   ! ==========================================================================
+   ! Residual Cp
+   ! --------------------------------------------------------------------------
+   subroutine Cp_residual_vt(self, n, v, t, Cp)
+      !! Calculate residual heat capacity pressure constant given v and t.
+      class(ArModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: t !! Temperature [K]
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(out) :: Cp !! heat capacity p constant [bar L / K / mol]
+
+      real(pr) :: Ar, ArT2, Cv, p, dpdt, dpdv, ntot
+
+      ntot = sum(n)
+
+      call self%residual_helmholtz(n, v, t, Ar=Ar, ArT2=ArT2)
+
+      call Cv_residual_vt(self, n, v, t, Cv)
+
+      call pressure(self, n, v, t, p, dpdv=dpdv, dpdt=dpdt)
+
+      Cp = Cv - t*dpdt**2/dpdv - ntot*R
+   end subroutine
 end module
