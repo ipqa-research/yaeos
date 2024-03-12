@@ -144,7 +144,7 @@ contains
 
         ! test against fugacity coefficient derivatives
         ! (Michelsen and Mollerup chapter 2 eq 37)
-        call fugacity_vt(eos, z, v, t, lnfug=lnfug, dlnphidt=dlnphidt)
+        call fugacity_vt(eos, z, v, t, lnphip=lnfug, dlnphidt=dlnphidt)
 
         Hr_fromphi = -1_pr * sum(z * dlnphidT) * R * t**2 ! Hr(T,P) = Hr(T,V)
 
@@ -231,7 +231,7 @@ contains
 
         ! test against fugacity coefficient
         ! (Michelsen and Mollerup chapter 2 eq 31)
-        call fugacity_vt(eos, z, v, t, lnfug=lnfug)
+        call fugacity_vt(eos, z, v, t, lnphip=lnfug)
 
         lnfugcoeffs = lnfug - log(p) ! lnfug is = ln(phi * p)
 

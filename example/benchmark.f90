@@ -49,7 +49,7 @@ contains
         if (dn) then
             call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
         else
-            call fugacity_vt(model, z, V, T, lnfug=lnfug)
+            call fugacity_vt(model, z, V, T, lnphip=lnfug)
         end if
     end subroutine
 
