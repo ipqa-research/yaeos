@@ -12,5 +12,4 @@ program examples
     call benchmarks
     print *, "Flash example"
     call run_flashes
-    call run_mixture
 end program
