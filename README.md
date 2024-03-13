@@ -1,3 +1,5 @@
+<p align="center">
+
 [![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
 [![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
 [![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://fedebenelli.github.io/yaeos/)
@@ -5,7 +7,6 @@
 [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml)
 ![Codecov](https://img.shields.io/codecov/c/github/ipqa-research/yaeos)
 
-<p align="center">
 <img src="media/logo.png" width="50%"/>
 </p>
 
