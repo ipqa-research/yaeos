@@ -79,7 +79,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 6.3% of total for modules and submodules.">174 statements</a>
+                 title=" 8.6% of total for modules and submodules.">258 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -129,10 +129,15 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-cp_residual_vt">Cp_residual_vt</a>
+            <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-cv_residual_vt">Cv_residual_vt</a>
             <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-purefug_calc">PUREFUG_CALC</a>
             <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-vcalc">VCALC</a>
+            <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-enthalpy_residual_vt">enthalpy_residual_vt</a>
+            <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-entropy_residual_vt">entropy_residual_vt</a>
             <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-fugacity_tp">fugacity_tp</a>
             <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-fugacity_vt">fugacity_vt</a>
+            <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-gibbs_residual_vt">gibbs_residual_vt</a>
             <a class="list-group-item" href="../module/yaeos_thermoprops.html#proc-pressure">pressure</a>
         </div>
       </div>
@@ -497,7 +502,207 @@ modules which it uses.
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-purefug_calc"></span> <h3>public  subroutine <a href='../proc/purefug_calc.html'>PUREFUG_CALC</a>(self, nc, icomp, T, P, V, fug)  
+    <div class="card-header codesum"><span class="anchor" id="proc-cp_residual_vt"></span> <h3>public  subroutine <a href='../proc/cp_residual_vt.html'>Cp_residual_vt</a>(eos, n, v, t, Cp)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate residual heat capacity pressure constant given v and t.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~10"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~27"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~19"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~23"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cp"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Cp</strong></td>
+            <td>
+<p>heat capacity p constant [bar L / K / mol]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-cv_residual_vt"></span> <h3>public  subroutine <a href='../proc/cv_residual_vt.html'>Cv_residual_vt</a>(eos, n, v, t, Cv)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate residual heat capacity volume constant given v and t.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~9"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~26"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~18"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~22"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cv"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Cv</strong></td>
+            <td>
+<p>heat capacity v constant [bar L / K / mol]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-purefug_calc"></span> <h3>public  subroutine <a href='../proc/purefug_calc.html'>PUREFUG_CALC</a>(eos, nc, icomp, T, P, V, fug)  
 </h3></div>
     <div class="card-body">
           
@@ -516,7 +721,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~6"></span>
+              <span class="anchor" id="variable-eos~4"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -524,14 +729,14 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
 <p>model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~4"></span>
+              <span class="anchor" id="variable-nc~9"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -561,7 +766,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t"></span>
+              <span class="anchor" id="variable-t~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -627,11 +832,11 @@ modules which it uses.
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-vcalc"></span> <h3>public recursive subroutine <a href='../proc/vcalc.html'>VCALC</a>(self, root_type, nc, rn, T, P, V, max_iters)  
+    <div class="card-header codesum"><span class="anchor" id="proc-vcalc"></span> <h3>public  subroutine <a href='../proc/vcalc.html'>VCALC</a>(eos, n, P, T, V, root_type, max_iters)  
 </h3></div>
     <div class="card-body">
           
-  <p>Volume solver at a given pressure.</p>
+  <p>Volume solver at a given pressure.</p><a href="../proc/vcalc.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -646,7 +851,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~7"></span>
+              <span class="anchor" id="variable-eos~5"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -654,44 +859,14 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~2"></span>
-              character(len=*),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>root_type</strong></td>
-            <td>
-<p>Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~5"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nc</strong></td>
-            <td>
-<p>Number of components</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-rn"></span>
+              <span class="anchor" id="variable-n~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -699,24 +874,9 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>rn</strong>(nc)</td>
+            <td><strong>n</strong>(:)</td>
             <td>
 <p>Mixture moles</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-<p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -736,6 +896,21 @@ modules which it uses.
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-t~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-v~2"></span>
               real(kind=pr),
             </td>
@@ -747,6 +922,21 @@ modules which it uses.
             <td><strong>V</strong></td>
             <td>
 <p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root_type~2"></span>
+              character(len=*),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root_type</strong></td>
+            <td>
+<p>Type of root [&ldquo;vapor&rdquo; | &ldquo;liquid&rdquo; | &ldquo;stable&rdquo;]</p>
             </td>
         </tr>
         <tr>
@@ -772,7 +962,309 @@ modules which it uses.
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-fugacity_tp"></span> <h3>public  subroutine <a href='../proc/fugacity_tp.html'>fugacity_tp</a>(self, n, t, p, v, root_type, lnfug, dlnphidp, dlnphidt, dlnphidn)  
+    <div class="card-header codesum"><span class="anchor" id="proc-enthalpy_residual_vt"></span> <h3>public  subroutine <a href='../proc/enthalpy_residual_vt.html'>enthalpy_residual_vt</a>(eos, n, v, t, Hr, HrT, HrV, Hrn)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate residual enthalpy given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~6"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~23"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~15"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~19"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hr"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hr</strong></td>
+            <td>
+<p>Residual enthalpy [bar L / mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hrt"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>HrT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^r}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hrv"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>HrV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^r}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hrn"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hrn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^r}}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-entropy_residual_vt"></span> <h3>public  subroutine <a href='../proc/entropy_residual_vt.html'>entropy_residual_vt</a>(eos, n, v, t, Sr, SrT, SrV, Srn)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate residual entropy given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~8"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~25"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~17"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~21"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sr"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Sr</strong></td>
+            <td>
+<p>Entropy [bar L / K / mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-srt"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>SrT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^r}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-srv"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>SrV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^r}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-srn"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Srn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^r}}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-fugacity_tp"></span> <h3>public  subroutine <a href='../proc/fugacity_tp.html'>fugacity_tp</a>(eos, n, t, p, v, root_type, lnphip, dlnphidp, dlnphidt, dlnphidn)  
 </h3></div>
     <div class="card-body">
           
@@ -791,7 +1283,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~4"></span>
+              <span class="anchor" id="variable-eos~2"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -799,14 +1291,14 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
 <p>Model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~10"></span>
+              <span class="anchor" id="variable-n~19"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -821,7 +1313,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~11"></span>
+              <span class="anchor" id="variable-t~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -836,7 +1328,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~5"></span>
+              <span class="anchor" id="variable-p~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -851,7 +1343,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~8"></span>
+              <span class="anchor" id="variable-v~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -881,7 +1373,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnfug"></span>
+              <span class="anchor" id="variable-lnphip"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -889,7 +1381,7 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>lnfug</strong>(size(n))</td>
+            <td><strong>lnphip</strong>(size(n))</td>
             <td>
 <p>
 <script type="math/tex">\ln(f_i)</script> vector</p>
@@ -927,167 +1419,6 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidn"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dlnphidn</strong>(size(n),size(n))</td>
-            <td>
-<p>ln(phi) compositional derivative</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-fugacity_vt"></span> <h3>public  subroutine <a href='../proc/fugacity_vt.html'>fugacity_vt</a>(self, n, v, t, p, lnfug, dlnphidp, dlnphidt, dlnphidn)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Calculate fugacity given volume and temperature.</p><a href="../proc/fugacity_vt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~5"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-<p>Model</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n~11"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n</strong>(:)</td>
-            <td>
-<p>Mixture mole numbers</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-v~9"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>v</strong></td>
-            <td>
-<p>Volume [L]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>t</strong></td>
-            <td>
-<p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p~6"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>p</strong></td>
-            <td>
-<p>Pressure [bar]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnfug~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lnfug</strong>(size(n))</td>
-            <td>
-<p>
-<script type="math/tex">\ln(\phi*p)</script> vector</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dlnphidp~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dlnphidp</strong>(size(n))</td>
-            <td>
-<p>ln(phi) Presssure derivative</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dlnphidt~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dlnphidt</strong>(size(n))</td>
-            <td>
-<p>ln(phi) Temp derivative</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
               <span class="anchor" id="variable-dlnphidn~2"></span>
               real(kind=pr),
             </td>
@@ -1109,7 +1440,322 @@ modules which it uses.
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-pressure"></span> <h3>public  subroutine <a href='../proc/pressure.html'>pressure</a>(self, n, v, t, p, dpdv, dpdt, dpdn)  
+    <div class="card-header codesum"><span class="anchor" id="proc-fugacity_vt"></span> <h3>public  subroutine <a href='../proc/fugacity_vt.html'>fugacity_vt</a>(eos, n, v, t, p, lnphip, dlnphidp, dlnphidt, dlnphidn)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate fugacity coefficent given volume and temperature.</p><a href="../proc/fugacity_vt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~3"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~20"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Mixture mole numbers</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~18"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+<p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphip~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnphip</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\ln(\phi_i*P)</script> vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphidp~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnphidp</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(phi_i)</script> Presssure derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphidt~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnphidt</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(phi_i)</script> Temp derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphidn~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnphidn</strong>(size(n),size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(phi_i)</script> compositional derivative</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-gibbs_residual_vt"></span> <h3>public  subroutine <a href='../proc/gibbs_residual_vt.html'>gibbs_residual_vt</a>(eos, n, v, t, Gr, GrT, GrV, Grn)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate residual Gibbs energy given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~7"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~24"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~20"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gr"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gr</strong></td>
+            <td>
+<p>Gibbs energy [bar L / mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-grt"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GrT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dG^r}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-grv"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GrV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dG^r}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-grn"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Grn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dG^r}}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-pressure"></span> <h3>public  subroutine <a href='../proc/pressure.html'>pressure</a>(eos, n, v, t, p, dpdv, dpdt, dpdn)  
 </h3></div>
     <div class="card-body">
           
@@ -1128,7 +1774,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~3"></span>
+              <span class="anchor" id="variable-eos"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1136,14 +1782,14 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
 <p>Model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~9"></span>
+              <span class="anchor" id="variable-n~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1158,7 +1804,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~7"></span>
+              <span class="anchor" id="variable-v~12"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1173,7 +1819,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~10"></span>
+              <span class="anchor" id="variable-t~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1188,7 +1834,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~4"></span>
+              <span class="anchor" id="variable-p~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1279,7 +1925,7 @@ modules which it uses.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-03-04 19:41              </p>
+ on 2024-03-13 18:11              </p>
           </div>
         </div>
         <br>

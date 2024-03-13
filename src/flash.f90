@@ -48,22 +48,23 @@ contains
       ! ------------------------------------------------------------------------
       if (present(v_spec) .and. present(p_spec)) then
          write (*, *) "ERROR: Can't specify pressure and volume in Flash"
-      else if ( present(v_spec) ) then
-         spec = "TV"
-         v = v_spec
+         return
+      ! else if ( present(v_spec) ) then
+      !    spec = "TV"
+      !    v = v_spec
       else if ( present(p_spec) ) then
          spec = "TP"
          p = p_spec
       end if
 
-      if (spec == 'TV' .or. spec == 'isoV') then
-         Vx = 0.0
-         ! if (FIRST) then  
-            ! the EoS one-phase pressure will be used to estimate Wilson K factors
-            call pressure(self, z, v_spec, t, p=p)
-            if (P < 0) P = 1.0
-         ! end if
-      end if
+      ! if (spec == 'TV' .or. spec == 'isoV') then
+      !    Vx = 0.0
+      !    ! if (FIRST) then  
+      !       ! the EoS one-phase pressure will be used to estimate Wilson K factors
+      !       call pressure(self, z, v_spec, t, p=p)
+      !       if (P < 0) P = 1.0
+      !    ! end if
+      ! end if
 
       K = K0
       
@@ -100,13 +101,13 @@ contains
 
          ! new for TV Flash
          select case (spec)
-         case("TV", "isoV")
-            ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            ! TODO: Add TV specification
+         ! case("TV", "isoV")
+         !    ! find Vy,Vx (vV and vL) from V balance and P equality equations
+         !    ! TODO: Add TV specification
          case("TP")
             ! for TP Flash
-            call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnfug=lnfug_y)
-            call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnfug=lnfug_x)
+            call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
          end select
 
          dKold = dK
@@ -137,8 +138,8 @@ contains
       end do
 
       if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
-      if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
-      if (spec == 'TV' .or. spec == 'isoV') P = Pv
+      ! if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
+      ! if (spec == 'TV' .or. spec == 'isoV') P = Pv
       
       if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
          P = -1.0

@@ -79,7 +79,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 2.7% of total for procedures.">65 statements</a>
+                 title=" 2.8% of total for procedures.">73 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -121,23 +121,19 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/vcalc.html#variable-at">AT</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-avap">AVAP</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-ar~5">Ar</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-arv~4">ArV</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-arv2~4">ArV2</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-b">B</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-cpv">CPV</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-first_run">FIRST_RUN</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-s3r">S3R</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-ar~8">Ar</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-arv~6">ArV</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-arv2~6">ArV2</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-b~2">B</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-vvap">VVAP</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-zeta">ZETA</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-zetmax">ZETMAX</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-zetmin">ZETMIN</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-del">del</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-der">der</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-iter">iter</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-maximum_iterations">maximum_iterations</a>
             <a class="list-group-item" href="../proc/vcalc.html#variable-pcalc">pcalc</a>
-            <a class="list-group-item" href="../proc/vcalc.html#variable-totn~3">totn</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-root">root</a>
+            <a class="list-group-item" href="../proc/vcalc.html#variable-totn~4">totn</a>
         </div>
       </div>
     </div>
@@ -152,7 +148,18 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/vcalc.html#proc-solve_point">solve_point</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -167,7 +174,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public recursive subroutine VCALC(self, root_type, nc, rn, T, P, V, max_iters)  
+    <h2>public  subroutine VCALC(eos, n, P, T, V, root_type, max_iters)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -300,6 +307,20 @@ modules which it uses.
 
 
     <p>Volume solver at a given pressure.</p>
+<p>Obtain the volume using the method described by Michelsen and Møllerup.
+While <script type="math/tex">P(V, T)</script> can be obtained with a simple Newton method, a better
+approach is solving <script type="math/tex">P(B/V, T)</script> where <script type="math/tex">B</script> is the EoS covolume.
+This method is easier to solve because:
+<script type="math/tex; mode=display">
+   V(P, T) \in [0, \infty)
+</script>
+and
+<script type="math/tex; mode=display">
+   \frac{B}{V}(P, T) \in [0, 1]
+</script>
+</p>
+<p>At chapter 3 page 94 of Michelsen and Møllerup&rsquo;s book a more complete
+explanation can be seen</p>
 
 
     <h3>Arguments</h3>
@@ -315,7 +336,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~7"></span>
+              <span class="anchor" id="variable-eos~5"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -323,44 +344,14 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~2"></span>
-              character(len=*),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>root_type</strong></td>
-            <td>
-                <p>Type of root [-1: vapor, 1:liquid, 0:lower Gibbs energy phase]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~5"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nc</strong></td>
-            <td>
-                <p>Number of components</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-rn"></span>
+              <span class="anchor" id="variable-n~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -368,24 +359,9 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>rn</strong>(nc)</td>
+            <td><strong>n</strong>(:)</td>
             <td>
                 <p>Mixture moles</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -405,6 +381,21 @@ modules which it uses.
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-t~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+                <p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-v~2"></span>
               real(kind=pr),
             </td>
@@ -416,6 +407,21 @@ modules which it uses.
             <td><strong>V</strong></td>
             <td>
                 <p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root_type~2"></span>
+              character(len=*),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root_type</strong></td>
+            <td>
+                <p>Type of root [&ldquo;vapor&rdquo; | &ldquo;liquid&rdquo; | &ldquo;stable&rdquo;]</p>
             </td>
         </tr>
         <tr>
@@ -448,11 +454,11 @@ modules which it uses.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~vcalc~~CallsGraph Pages: 1 -->
-<svg id="procvcalcCallsGraph" width="317pt" height="116pt"
- viewBox="0.00 0.00 317.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg id="procvcalcCallsGraph" width="469pt" height="116pt"
+ viewBox="0.00 0.00 469.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="proc~~vcalc~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
 <title>proc~~vcalc~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 313,-112 313,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 465,-112 465,4 -4,4"/>
 <!-- proc~vcalc -->
 <g id="proc~~vcalc~~CallsGraph_node1" class="node">
 <title>proc~vcalc</title>
@@ -462,38 +468,53 @@ modules which it uses.
 <!-- get_v0 -->
 <g id="proc~~vcalc~~CallsGraph_node2" class="node">
 <title>get_v0</title>
-<polygon fill="#777777" stroke="#777777" points="280,-108 226,-108 226,-84 280,-84 280,-108"/>
-<text text-anchor="middle" x="253" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+<polygon fill="#777777" stroke="#777777" points="282,-108 228,-108 228,-84 282,-84 282,-108"/>
+<text text-anchor="middle" x="255" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
 </g>
 <!-- proc~vcalc&#45;&gt;get_v0 -->
 <g id="proc~~vcalc~~CallsGraph_edge1" class="edge">
 <title>proc~vcalc&#45;&gt;get_v0</title>
-<path fill="none" stroke="#000000" d="M130.36,-66.04C157.69,-72.77 191.16,-81.01 216.07,-87.15"/>
-<polygon fill="#000000" stroke="#000000" points="215.29,-90.56 225.84,-89.56 216.97,-83.77 215.29,-90.56"/>
+<path fill="none" stroke="#000000" d="M130.93,-66.04C158.58,-72.77 192.45,-81.01 217.65,-87.15"/>
+<polygon fill="#000000" stroke="#000000" points="216.99,-90.59 227.53,-89.56 218.65,-83.79 216.99,-90.59"/>
+</g>
+<!-- none~solve_point -->
+<g id="proc~~vcalc~~CallsGraph_node3" class="node">
+<title>none~solve_point</title>
+<g id="a_proc~~vcalc~~CallsGraph_node3"><a xlink:href="../proc/vcalc.html#proc-solve_point" xlink:title="VCALC::solve_point">
+<polygon fill="#d9534f" stroke="#d9534f" points="313,-66 197,-66 197,-42 313,-42 313,-66"/>
+<text text-anchor="middle" x="255" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">VCALC::solve_point</text>
+</a>
+</g>
+</g>
+<!-- proc~vcalc&#45;&gt;none~solve_point -->
+<g id="proc~~vcalc~~CallsGraph_edge2" class="edge">
+<title>proc~vcalc&#45;&gt;none~solve_point</title>
+<path fill="none" stroke="#000000" d="M161.19,-54C169.72,-54 178.34,-54 186.71,-54"/>
+<polygon fill="#000000" stroke="#000000" points="186.78,-57.5 196.78,-54 186.78,-50.5 186.78,-57.5"/>
 </g>
 <!-- optval -->
-<g id="proc~~vcalc~~CallsGraph_node3" class="node">
+<g id="proc~~vcalc~~CallsGraph_node4" class="node">
 <title>optval</title>
-<polygon fill="#777777" stroke="#777777" points="280,-66 226,-66 226,-42 280,-42 280,-66"/>
-<text text-anchor="middle" x="253" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optval</text>
+<polygon fill="#777777" stroke="#777777" points="282,-24 228,-24 228,0 282,0 282,-24"/>
+<text text-anchor="middle" x="255" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optval</text>
 </g>
 <!-- proc~vcalc&#45;&gt;optval -->
-<g id="proc~~vcalc~~CallsGraph_edge2" class="edge">
+<g id="proc~~vcalc~~CallsGraph_edge3" class="edge">
 <title>proc~vcalc&#45;&gt;optval</title>
-<path fill="none" stroke="#000000" d="M161.26,-54C180.13,-54 199.36,-54 215.24,-54"/>
-<polygon fill="#000000" stroke="#000000" points="215.64,-57.5 225.64,-54 215.64,-50.5 215.64,-57.5"/>
+<path fill="none" stroke="#000000" d="M130.93,-41.96C158.58,-35.23 192.45,-26.99 217.65,-20.85"/>
+<polygon fill="#000000" stroke="#000000" points="218.65,-24.21 227.53,-18.44 216.99,-17.41 218.65,-24.21"/>
 </g>
 <!-- residual_helmholtz -->
-<g id="proc~~vcalc~~CallsGraph_node4" class="node">
+<g id="proc~~vcalc~~CallsGraph_node5" class="node">
 <title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="309,-24 197,-24 197,0 309,0 309,-24"/>
-<text text-anchor="middle" x="253" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+<polygon fill="#777777" stroke="#777777" points="461,-66 349,-66 349,-42 461,-42 461,-66"/>
+<text text-anchor="middle" x="405" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
 </g>
-<!-- proc~vcalc&#45;&gt;residual_helmholtz -->
-<g id="proc~~vcalc~~CallsGraph_edge3" class="edge">
-<title>proc~vcalc&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M130.36,-41.96C149.98,-37.13 172.76,-31.52 193.27,-26.47"/>
-<polygon fill="#000000" stroke="#000000" points="194.26,-29.83 203.13,-24.04 192.59,-23.03 194.26,-29.83"/>
+<!-- none~solve_point&#45;&gt;residual_helmholtz -->
+<g id="proc~~vcalc~~CallsGraph_edge4" class="edge">
+<title>none~solve_point&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M313.22,-54C321.55,-54 330.17,-54 338.65,-54"/>
+<polygon fill="#000000" stroke="#000000" points="338.88,-57.5 348.88,-54 338.88,-50.5 338.88,-57.5"/>
 </g>
 </g>
 </svg>
@@ -760,7 +781,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~5"></span>
+              <span class="anchor" id="variable-ar~8"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -777,7 +798,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~4"></span>
+              <span class="anchor" id="variable-arv~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -794,7 +815,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~4"></span>
+              <span class="anchor" id="variable-arv2~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -811,7 +832,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b"></span>
+              <span class="anchor" id="variable-b~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -823,58 +844,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-cpv"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>CPV</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-first_run"></span>
-              logical,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>FIRST_RUN</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-s3r"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>S3R</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
+                <p>Covolume</p>
             </td>
         </tr>
         <tr>
@@ -947,40 +917,6 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>del</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-der"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>der</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
               <span class="anchor" id="variable-iter"></span>
               integer,
             </td>
@@ -1032,7 +968,24 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-totn~3"></span>
+              <span class="anchor" id="variable-root"></span>
+              character(len=10),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-totn~4"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -1059,6 +1012,109 @@ implementation in a submodule of an interface in a parent module.
     
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_point"></span> <h3> subroutine <a href='vcalc.html#proc-solve_point'>solve_point</a>(P, V, Pcalc, AT, iter)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+<p>Objective pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Obtained volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pcalc"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Pcalc</strong></td>
+            <td>
+<p>Calculated pressure at V [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-at~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>AT</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iter~2"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iter</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+    </section>    
 
     
     
@@ -1077,7 +1133,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-03-04 19:41              </p>
+ on 2024-03-13 18:11              </p>
           </div>
         </div>
         <br>

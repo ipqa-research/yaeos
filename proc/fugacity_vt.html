@@ -79,7 +79,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 2.0% of total for procedures.">48 statements</a>
+                 title=" 1.8% of total for procedures.">48 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -119,23 +119,23 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-ar~3">Ar</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artv~3">ArTV</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artn~2">ArTn</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv~3">ArV</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv2~3">ArV2</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arvn~3">ArVn</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn~2">Arn</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn2~2">Arn2</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-ar~6">Ar</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artv~5">ArTV</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artn~5">ArTn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv~5">ArV</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv2~5">ArV2</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arvn~6">ArVn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn~5">Arn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn2~5">Arn2</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-rt">RT</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-z">Z</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdn">dPdN</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdt">dPdT</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdv">dPdV</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-i~2">i</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-j">j</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-nc~3">nc</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-totn~2">totn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-i~15">i</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-j~4">j</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-nc~8">nc</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-totn~3">totn</a>
         </div>
       </div>
     </div>
@@ -165,14 +165,14 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine fugacity_vt(self, n, v, t, p, lnfug, dlnphidp, dlnphidt, dlnphidn)  
+    <h2>public  subroutine fugacity_vt(eos, n, v, t, p, lnphip, dlnphidp, dlnphidt, dlnphidn)  
 </h2>
     
 
-    <p>Calculate fugacity given volume and temperature.</p>
+    <p>Calculate fugacity coefficent given volume and temperature.</p>
 <div class="alert alert-info">
 <p class="alert-title h4">Note</p>
-<p>While the natural output variable is <script type="math/tex">ln f_i</script>. The calculated
+<p>While the natural output variable is <script type="math/tex">ln \phi_i P</script>. The calculated
 derivatives will be the derivatives of the fugacity coefficient
 <script type="math/tex">ln \phi_i</script>
 </p>
@@ -192,7 +192,7 @@ derivatives will be the derivatives of the fugacity coefficient
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~5"></span>
+              <span class="anchor" id="variable-eos~3"></span>
               class(<a href='../type/armodel.html'>ArModel</a>)
             </td>
 <td></td>
@@ -200,14 +200,14 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
                 <p>Model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~11"></span>
+              <span class="anchor" id="variable-n~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -222,7 +222,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~9"></span>
+              <span class="anchor" id="variable-v~14"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -237,7 +237,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~12"></span>
+              <span class="anchor" id="variable-t~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -252,7 +252,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~6"></span>
+              <span class="anchor" id="variable-p~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -267,7 +267,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnfug~2"></span>
+              <span class="anchor" id="variable-lnphip~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -275,10 +275,10 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>lnfug</strong>(size(n))</td>
+            <td><strong>lnphip</strong>(size(n))</td>
             <td>
                 <p>
-<script type="math/tex">\ln(\phi*p)</script> vector</p>
+<script type="math/tex">\ln(\phi_i*P)</script> vector</p>
             </td>
         </tr>
         <tr>
@@ -293,7 +293,8 @@ derivatives will be the derivatives of the fugacity coefficient
             <td>::</td>
             <td><strong>dlnphidp</strong>(size(n))</td>
             <td>
-                <p>ln(phi) Presssure derivative</p>
+                <p>
+<script type="math/tex">ln(phi_i)</script> Presssure derivative</p>
             </td>
         </tr>
         <tr>
@@ -308,12 +309,13 @@ derivatives will be the derivatives of the fugacity coefficient
             <td>::</td>
             <td><strong>dlnphidt</strong>(size(n))</td>
             <td>
-                <p>ln(phi) Temp derivative</p>
+                <p>
+<script type="math/tex">ln(phi_i)</script> Temp derivative</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidn~2"></span>
+              <span class="anchor" id="variable-dlnphidn~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -323,7 +325,8 @@ derivatives will be the derivatives of the fugacity coefficient
             <td>::</td>
             <td><strong>dlnphidn</strong>(size(n),size(n))</td>
             <td>
-                <p>ln(phi) compositional derivative</p>
+                <p>
+<script type="math/tex">ln(phi_i)</script> compositional derivative</p>
             </td>
         </tr>
     </tbody>
@@ -595,7 +598,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~3"></span>
+              <span class="anchor" id="variable-ar~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -612,7 +615,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~3"></span>
+              <span class="anchor" id="variable-artv~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -629,7 +632,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~2"></span>
+              <span class="anchor" id="variable-artn~5"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -646,7 +649,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~3"></span>
+              <span class="anchor" id="variable-arv~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -663,7 +666,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~3"></span>
+              <span class="anchor" id="variable-arv2~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -680,7 +683,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~3"></span>
+              <span class="anchor" id="variable-arvn~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -697,7 +700,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~2"></span>
+              <span class="anchor" id="variable-arn~5"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -714,7 +717,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~2"></span>
+              <span class="anchor" id="variable-arn2~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -816,7 +819,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~2"></span>
+              <span class="anchor" id="variable-i~15"></span>
               integer,
             </td>
               <td>public</td>
@@ -833,7 +836,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j"></span>
+              <span class="anchor" id="variable-j~4"></span>
               integer,
             </td>
               <td>public</td>
@@ -850,7 +853,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~3"></span>
+              <span class="anchor" id="variable-nc~8"></span>
               integer,
             </td>
               <td>public</td>
@@ -867,7 +870,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-totn~2"></span>
+              <span class="anchor" id="variable-totn~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -912,7 +915,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-03-04 19:41              </p>
+ on 2024-03-13 18:11              </p>
           </div>
         </div>
         <br>
