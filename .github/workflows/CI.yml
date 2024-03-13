@@ -49,24 +49,23 @@ jobs:
            --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${{ matrix.gcc_v }} \
            --slave /usr/bin/gcov gcov /usr/bin/gcov-${{ matrix.gcc_v }}
 
-    # - name: Compile
-    #   run: fpm build --profile release
+    - name: Install NLopt
+      run:
+        sudo apt-get install libnlopt-dev
+
+    - name: Compile
+      run: fpm build --profile release
 
     - name: Run tests
       run: |
         fpm test --profile debug --flag -coverage
         bash ci/ci.sh
+    
+    - name: Coverage
+      run: bash ci/ci.sh coverage
 
-    # - name: Create coverage report
-    #   run: |
-    #     mkdir -p ${{ env.COV_DIR }}
-    #     lcov --capture --initial --base-directory . --directory build/gfortran_*/ --output-file ${{ env.COV_DIR }}/coverage.base
-    #     lcov --capture --base-directory . --directory build/gfortran_*/ --output-file ${{ env.COV_DIR }}/coverage.capture
-    #     lcov --add-tracefile ${{ env.COV_DIR }}/coverage.base --add-tracefile ${{ env.COV_DIR }}/coverage.capture --output-file ${{ env.COV_DIR }}/coverage.info
-    #   env:
-    #     COV_DIR: build/coverage
-
-    # - name: Upload coverage report
-    #   uses: codecov/codecov-action@v2
-    #   with:
-    #     files: build/coverage/coverage.info
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        slug: ipqa-research/yaeos
