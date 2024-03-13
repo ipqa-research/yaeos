@@ -175,12 +175,17 @@ contains
     end subroutine Bmix
 
     subroutine D1mix_constant(self, n, d1i, D1, dD1i, dD1ij)
-        class(QMR), intent(in) :: self
-        real(pr), intent(in) :: n(:)
-        real(pr), intent(in) :: d1i(:)
-        real(pr), intent(out) :: D1
-        real(pr), intent(out) :: dD1i(:)
-        real(pr), intent(out) :: dD1ij(:, :)
+        !! Constant \(\delta_1\) parameter.
+        !!
+        !! Most Cubic EoS keep a constant value for their \(\delta_1\) parameter.
+        !! This procedure assumes that all the components have the same \(delta_1\)
+        !! and takes the first value as the one of the mixture.
+        class(QMR), intent(in) :: self !! Mixing rule
+        real(pr), intent(in) :: n(:) !! Moles vector
+        real(pr), intent(in) :: d1i(:) !! \(\delta_1\) parameter
+        real(pr), intent(out) :: D1 !! Mixture's \(\Delta_1\)
+        real(pr), intent(out) :: dD1i(:) !! \(\frac{dDelta_1}{dn_i} = 0\)
+        real(pr), intent(out) :: dD1ij(:, :) !! \(\frac{d^2Delta_1}{dn_{ij}} = 0\)
 
         D1 = d1i(1)
         dD1i = 0
@@ -189,6 +194,15 @@ contains
 
     subroutine RKPR_D1mix(self, n, d1i, D1, dD1i, dD1ij)
         !! RKPR \(\delta_1\) parameter mixing rule.
+        !!
+        !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each 
+        !! component, so a proper mixing rule should be provided. A linear
+        !! combination is used.
+        !!
+        !! \[
+        !!     \Delta_1 = \sum_i^N n_i \delta_{1i}
+        !! \]
+        !!
         class(QMR_RKPR), intent(in) :: self
         real(pr), intent(in) :: n(:)
         real(pr), intent(in) :: d1i(:)
@@ -222,20 +236,22 @@ contains
         aij, daijdt, daijdt2 &
         )
         !! Combining rule that uses constant \(k_{ij}\) values.
+        !!
+        !! \[
+        !!  a_{ij} = \sqrt{a_i a_j} (1 - k_{ij})
+        !! ]
         class(QMR), intent(in) :: self
-        real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a\)
-        real(pr), intent(in) :: dadt(:) !! \(\frac{da}{dT}\)
-        real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a}{dT^2}\)
+        real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a_i\)
+        real(pr), intent(in) :: dadt(:) !! \(\frac{da_i}{dT}\)
+        real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a_i}{dT^2}\)
         real(pr), intent(out) :: aij(:, :) !! \(a_{ij}\) Matrix
-        real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}}{dT}\)
-        real(pr), intent(out) :: daijdt2(:, :)!! \(\frac{d^2a_{ij}}{dT^2}\)
+        real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}{dT}\)
+        real(pr), intent(out) :: daijdt2(:, :)!! \(\frac{d^2a_{ij}{dT^2}\)
 
         integer :: i, j
         real(pr) :: sqrt_aii_ajj
-        real(pr) :: ai2(size(a)), inner_sum, inner_sum_2
+        real(pr) :: inner_sum
         real(pr) :: aij_daidt
-
-        ai2 = a * a
 
         do i=1, size(a)
             aij(i, i) = a(i)
@@ -248,10 +264,9 @@ contains
                 aij(i, j)    = sqrt_aii_ajj * (1 - self%k(i, j))
 
                 inner_sum = a(i) * dadt(j) + a(j) * dadt(i)
-                aij_daidt = aij(i, j) * (0.5_pr * inner_sum)
-
                 daijdt(i, j) = 0.5_pr * aij(i, j) * (inner_sum) / (a(i)*a(j))
-                daijdT2(i, j) = &
+                
+                daijdt2(i, j) = &
                     (1 - self%k(i, j))*(dadT(j)*dadT(i)/sqrt(a(i)*a(j)) &
                     + sqrt(a(i)/a(j))*(dadT2(j) - dadT(j)**2/(2*a(j))) &
                     + sqrt(a(j)/a(i))*(dadT2(i) - dadT(i)**2/(2*a(i))))/2

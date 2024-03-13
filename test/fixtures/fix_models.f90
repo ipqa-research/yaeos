@@ -48,6 +48,22 @@ contains
 
         eos = SoaveRedlichKwong(tc, pc, w, kij, lij)
     end function
+    
+    type(CubicEoS) function binary_RKPR() result(eos)
+        use yaeos, only: RKPR
+        integer, parameter :: n=2
+        real(pr) :: tc(n), pc(n), w(n), zc(n)
+        real(pr) :: kij(n, n), lij(n, n)
+        tc = [190._pr, 310._pr]
+        pc = [14._pr, 30._pr]
+        w = [0.001_pr, 0.03_pr]
+        zc = [0.23, 0.26]
+
+        kij = reshape([0., 0.1, 0.1, 0.], [n,n]) 
+        lij = kij / 2 
+
+        eos = RKPR(tc, pc, w, zc, kij, lij)
+    end function
 
     type(hdPR76) function binary_PR76_hd() result(eos)
         use autodiff_hyperdual_pr76, only: setup

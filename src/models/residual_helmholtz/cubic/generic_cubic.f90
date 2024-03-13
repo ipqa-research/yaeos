@@ -79,13 +79,18 @@ contains
    subroutine GenericCubic_Ar(&
       self, n, V, T, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
       )
-      !! Residual Helmholtz Energy for a generic Cubic Equation of State with
-      !! two constants parameters.
+      !! Residual Helmholtz Energy for a generic Cubic Equation of State.
       !!
       !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
       !! defined by Michelsen and Møllerup:
       !!
       !! \[P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}\]
+      !!
+      !! This routine assumes that the \(\delta_1\) is not a constant parameter
+      !! (as it uses to be in classical Cubic EoS) to be compatible with the
+      !! three parameter EoS RKPR where \(delta_1\) is not a constant and
+      !! has its own mixing rule.
+      !!
       use yaeos_constants, only: R
       class(CubicEoS), intent(in) :: self
       real(pr), intent(in) :: n(:) !! Number of moles
@@ -122,23 +127,32 @@ contains
       nc = size(n)
       TOTN = sum(n)
 
-      call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
-      D2 = (1._pr - D1)/(1._pr + D1)
+     
       Tr = T/self%components%Tc
+     
+      ! ========================================================================
+      ! Attractive parameter and derivatives
+      ! ------------------------------------------------------------------------
       call self%alpha%alpha(Tr, a, dadt, dadt2)
-      call self%mixrule%Bmix(n, self%b, Bmix, dBi, dBij)
-
-
       a = self%ac * a
       dadt = self%ac * dadt / self%components%Tc
       dadt2 = self%ac * dadt2 / self%components%Tc**2
-
+      
+      ! ========================================================================
+      ! Mixing rules
+      ! ------------------------------------------------------------------------
+      call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
+      call self%mixrule%Bmix(n, self%b, Bmix, dBi, dBij)
       call self%mixrule%Dmix(&
          n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
          )
+      D2 = (1._pr - D1)/(1._pr + D1)
 
+      ! ========================================================================
+      ! Main functions defined by Møllerup
       ! The f's and g's used here are for Ar, not F (reduced Ar)
-      ! This requires to multiply by R all g, f and its derivatives as defined by Mollerup
+      ! This requires to multiply by R all g, f
+      ! ------------------------------------------------------------------------
       f = log((V + D1*Bmix)/(V + D2*Bmix))/Bmix/(D1 - D2)
       g = R*log(1 - Bmix/V)
       fv = -1/((V + D1*Bmix)*(V + D2*Bmix))
@@ -158,15 +172,17 @@ contains
             + 4/(V + D2*Bmix)**2/(1 + D1)**4) - 2*fD1*(1 + 2/(1 + D1)**2)
             fD1D1 = fD1D1/(D1 - D2)
 
-      ! Reduced Helmholtz Energy and derivatives
-      if (present(Ar)) Ar = -TOTN*g*T - D*f
-      if (present(ArV)) ArV = -TOTN*gv*T - D*fv
-      if (present(ArV2)) ArV2 = -TOTN*gv2*T - D*fv2
-
       AUX = R*T/(V - Bmix)
       FFB = TOTN*AUX - D*fB
       FFBV = -TOTN*AUX/(V - Bmix) + D*(2*fv + V*fv2)/Bmix
       FFBB = TOTN*AUX/(V - Bmix) - D*(2*f + 4*V*fv + V**2*fv2)/Bmix**2
+
+      ! ========================================================================
+      ! Reduced Helmholtz Energy and derivatives
+      ! ------------------------------------------------------------------------
+      if (present(Ar)) Ar = -TOTN*g*T - D*f
+      if (present(ArV)) ArV = -TOTN*gv*T - D*fv
+      if (present(ArV2)) ArV2 = -TOTN*gv2*T - D*fv2
 
       if (present(Arn))  Arn(:)  = -g*T + FFB*dBi(:) - f*dDi(:) - D*fD1 * dD1i(:)
       if (present(ArVn)) ArVn(:) = -gv*T + FFBV*dBi(:) - fv*dDi(:) - D*fVD1*dD1i(:)
