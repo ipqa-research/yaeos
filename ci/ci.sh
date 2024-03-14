@@ -54,6 +54,18 @@ run_coverage() {
         --exclude "src/legacy/*" \
         --exclude "app"\
         --exclude "tools" \
+        --fail-under-line 90 \
+        --jacoco coverage.xml
+    
+    gcovr \
+        --exclude "build" \
+        --exclude "test/test_runner.f90" \
+        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "src/adiff/hyperdual.f90" \
+        --exclude "example" \
+        --exclude "src/legacy/*" \
+        --exclude "app"\
+        --exclude "tools" \
         --fail-under-line 90
 }
 
