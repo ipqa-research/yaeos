@@ -21,7 +21,6 @@ program flasher
     P = 60
     t = 294
     k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
-    print *, k0
     
     flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iter)
     
