@@ -255,14 +255,16 @@ contains
       end associate
    end subroutine group_area_fraction
 
-   subroutine group_big_gamma(self, x, T, ln_Gamma)
+   subroutine group_big_gamma(self, x, T, ln_Gamma, dln_Gammadx)
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:) !! Molar fractions
       real(pr), intent(in) :: T !! Temperature
       real(pr), intent(out) :: ln_Gamma(:) !! \(\ln \Gamma_i\)
+      real(pr), optional, intent(out) :: dln_Gammadx(:, :) !!
 
       real(pr) :: gf(size(self%groups_stew%groups_ids))
       real(pr) :: theta(size(self%groups_stew%groups_ids))
+      real(pr) :: dthetadx(size(self%groups_stew%groups_ids), size(x))
       real(pr) :: psi(&
          size(self%groups_stew%groups_ids),&
          size(self%groups_stew%groups_ids) &
@@ -270,28 +272,54 @@ contains
 
       integer :: ng
       integer :: n, m, k, gi
+      integer :: i
 
-      real(pr) :: up, down
+      logical :: dx
+
+      real(pr) :: up, updx(size(x))
+      real(pr) :: updown, updowndx(size(x))
+      real(pr) :: down(size(theta)), downdx(size(theta), size(x))
 
       ng = size(self%groups_stew%groups_ids)
-      call group_area_fraction(self, x, theta=theta)
+
+      dx = present(dln_Gammadx)
+
+
+      if (dx) then
+         dln_Gammadx = 0
+         call group_area_fraction(self, x, theta=theta, dthetadx=dthetadx)
+      else
+         call group_area_fraction(self, x, theta=theta)
+      end if
+
+      
       call self%psi_function%psi(self%groups_stew, T, psi)
+
+      down = 0
+      do concurrent(m=1:ng, n=1:ng)
+         down(m) = down(m) + theta(n) * psi(n, m)
+         if(dx) then
+            downdx(m, :) = downdx(m, :) + dthetadx(m, :) * psi(n, m)
+         end if
+      end do
 
       do k=1,ng
          gi = self%groups_stew%groups_ids(k)
-
-         up = 0
-         do  m=1,ng
-            down = 0
-            do n=1,ng
-               down = down + theta(n) * psi(n, m)
-            end do
-            up = up + theta(m) * psi(k, m) / down
-         end do
+         updown = sum(theta(:) * psi(k, :)/down(:))
 
          ln_Gamma(k) = self%group_area(gi) * (&
-            1 - log(sum(theta * psi(:, k))) - up &
-            )
+            1 - log(sum(theta(:) * psi(:, k))) - updown &
+         )
+
+         if (dx) then
+            do i=1,size(x)
+               dln_Gammadx(k, i) = self%group_area(gi) * (&
+                  - sum(psi(:, k) * dthetadx(:, i))/sum(theta(:) * psi(:, k)) &
+                  - sum(psi(k, :) * dthetadx(:, i)/down(:)) &
+                  + sum(downdx(:, i) * theta(:) * psi(k, :)/down**2) &
+               )
+            end do
+         end if
       end do
    end subroutine group_big_gamma
 
