@@ -54,5 +54,15 @@ program main
    end do
 
    call ln_activity_coefficient(model, x, 200.0_pr, lngamma)
+   print *, "lngamma: "
    print *, lngamma
+   !  0.80338267603153490       -9.7236411677591672E-002 -0.30836537797129104     
+
+   call group_big_gamma(model, X, 200._pr, theta, dthetadx)
+   print *, ""
+   print *, theta
+   print *, ""
+   do i=1,ng
+      print *, dthetadx(i, :)
+   end do
 end program main
