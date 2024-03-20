@@ -299,7 +299,7 @@ contains
       do concurrent(m=1:ng, n=1:ng)
          down(m) = down(m) + theta(n) * psi(n, m)
          if(dx) then
-            downdx(m, :) = downdx(m, :) + dthetadx(m, :) * psi(n, m)
+            downdx(m, :) = downdx(m, :) + dthetadx(n, :) * psi(n, m)
          end if
       end do
 
