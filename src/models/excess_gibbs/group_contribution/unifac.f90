@@ -1,29 +1,50 @@
 module yaeos_models_ge_group_contribution_unifac
+   !! UNIFAC module
    use yaeos_constants, only: pr, R
    use yaeos_models_ge, only: GeModel
    implicit none
 
    type :: Groups
-      integer, allocatable :: groups_ids(:) !! Indexes (ids) of each group
-      integer, allocatable :: number_of_groups(:) !! \(\nu\)
-      real(pr) :: surface_area !! q
-      real(pr) :: volume !! r
+      !! Group derived type.
+      !! 
+      !! This type represent a molecule and it's groups
+      !!
+      integer, allocatable :: groups_ids(:) 
+         !! Indexes (ids) of each group in the main group matrix
+      integer, allocatable :: number_of_groups(:)
+         !! Count of each group in the molecule
+      real(pr) :: surface_area 
+         !! Molecule surface area \(q\)
+      real(pr) :: volume 
+         !! Molecule volume \(r\)
    end type Groups
 
    type, extends(GeModel) :: UNIFAC
-      !! UNIFAC parameters
-      integer :: ngroups !! Total number of individual groups
-      real(pr) :: z = 10 !! Model constant
-      
-      real(pr), allocatable :: group_area(:) !! Q_k
-      real(pr), allocatable :: group_volume(:) !! R_k
-
-      class(PsiFunction), allocatable :: psi_function
-
-      type(Groups), allocatable :: molecules(:) !! Substances present in the system
-      type(Groups) :: groups_stew !! All the groups present in the system
+      !! UNIFAC model derived type
+      !!
+      !! This type holds the needed parameters for using a UNIFAC \(G^E\) model
+      !! mainly group areas, volumes and what temperature dependence function
+      !! \(\psi(T)\) to use.
+      !! It also holds the individual molecules of a particular system and 
+      !! the set of all groups in the system as a "stew" of groups instead of
+      !! being them included in particular molecules.
+      integer :: ngroups 
+         !! Total number of individual groups
+      real(pr) :: z = 10 
+         !! Model constant
+      real(pr), allocatable :: group_area(:) 
+         !! Group areas \(Q_k\)
+      real(pr), allocatable :: group_volume(:) 
+         !! Group volumes \(R_k\)
+      class(PsiFunction), allocatable :: psi_function    
+         !! Temperature dependance function of the model
+      type(Groups), allocatable :: molecules(:) 
+         !! Substances present in the system
+      type(Groups) :: groups_stew 
+         !! All the groups present in the system
    contains
       procedure :: excess_gibbs
+      procedure :: ln_activity_coefficient
    end type UNIFAC
 
    type, abstract :: PsiFunction
@@ -32,6 +53,10 @@ module yaeos_models_ge_group_contribution_unifac
    end type PsiFunction
 
    type, extends(PsiFunction) :: UNIFACPsi
+      !! Original UNIFAC \(psi\) function
+      !! \[
+      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
+      !! \]
       real(pr), allocatable :: Eij(:, :)
    contains
       procedure :: psi => UNIFAC_temperature_dependence
@@ -232,7 +257,8 @@ contains
                   dtga_dx(l) = dtga_dx(l) + molecs(l)%number_of_groups(m) * group_area(gi)
                end if
 
-               total_groups_area = total_groups_area + x(l) * molecs(l)%number_of_groups(m) * group_area(gi)
+               total_groups_area = total_groups_area &
+                  + x(l) * molecs(l)%number_of_groups(m) * group_area(gi)
             end do
          end do
 
@@ -254,48 +280,72 @@ contains
          end if
       end associate
    end subroutine group_area_fraction
-
-   subroutine group_big_gamma(self, x, T, ln_Gamma, dln_Gammadx)
+   
+   subroutine group_big_gamma(self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadx2)
       class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:) !! Molar fractions
+      real(pr), intent(in) :: x(:) !< Molar fractions
       real(pr), intent(in) :: T !! Temperature
       real(pr), intent(out) :: ln_Gamma(:) !! \(\ln \Gamma_i\)
       real(pr), optional, intent(out) :: dln_Gammadx(:, :) !!
+      real(pr), optional, intent(out) :: dln_Gammadx2(:, :, :) !!
 
-      real(pr) :: gf(size(self%groups_stew%groups_ids))
       real(pr) :: theta(size(self%groups_stew%groups_ids))
+         !! Group area fractions
       real(pr) :: dthetadx(size(self%groups_stew%groups_ids), size(x))
+         !! First derivative of group area fractions with composition
+      real(pr) :: dthetadx2(size(self%groups_stew%groups_ids), size(x), size(x))
+         !! Second derivative of group area fractions with composition
       real(pr) :: psi(&
          size(self%groups_stew%groups_ids),&
          size(self%groups_stew%groups_ids) &
          )
 
-      integer :: ng
+      ! Number of groups and components
+      integer :: ng, nc
+
+      ! Indexes used for groups
       integer :: n, m, k, gi
-      integer :: i
+      
+      ! Indexes for components
+      integer :: i, j
 
-      logical :: dx
+      logical :: dx, dx2
 
-      real(pr) :: up, updx(size(x))
+      ! Auxiliar variables to ease calculations
       real(pr) :: updown, updowndx(size(x))
       real(pr) :: down(size(theta)), downdx(size(theta), size(x))
 
       ng = size(self%groups_stew%groups_ids)
-
+      nc = size(x)
       dx = present(dln_Gammadx)
+      dx2 = present(dln_gammadx2)
 
-
-      if (dx) then
+      ! ========================================================================
+      ! Calculate only the needed derivatives of the area fractions
+      ! ------------------------------------------------------------------------
+      if (dx2) then
+         dln_Gammadx = 0
+         dln_Gammadx2 = 0
+         call group_area_fraction(&
+            self, x, theta=theta, dthetadx=dthetadx, dthetadx2=dthetadx2 &
+         )
+      else if (dx) then
          dln_Gammadx = 0
          call group_area_fraction(self, x, theta=theta, dthetadx=dthetadx)
       else
          call group_area_fraction(self, x, theta=theta)
       end if
 
-      
+      ! ========================================================================
+      ! Temperature dependance
+      ! ------------------------------------------------------------------------
       call self%psi_function%psi(self%groups_stew, T, psi)
-
+      
+      ! ========================================================================
+      ! This parameters are used to avoid repeated calculations
+      ! ------------------------------------------------------------------------
       down = 0
+      downdx = 0
       do concurrent(m=1:ng, n=1:ng)
          down(m) = down(m) + theta(n) * psi(n, m)
          if(dx) then
@@ -304,21 +354,25 @@ contains
       end do
 
       do k=1,ng
+         ! Get the group index on the main matrix
          gi = self%groups_stew%groups_ids(k)
          updown = sum(theta(:) * psi(k, :)/down(:))
 
          ln_Gamma(k) = self%group_area(gi) * (&
             1 - log(sum(theta(:) * psi(:, k))) - updown &
          )
-
          if (dx) then
-            do i=1,size(x)
-               dln_Gammadx(k, i) = self%group_area(gi) * (&
-                  - sum(psi(:, k) * dthetadx(:, i))/sum(theta(:) * psi(:, k)) &
-                  - sum(psi(k, :) * dthetadx(:, i)/down(:)) &
-                  + sum(downdx(:, i) * theta(:) * psi(k, :)/down**2) &
+            do concurrent(i=1:nc)
+               dln_Gammadx(k, i) = self%group_area(gi) * ( &
+                  - sum(dthetadx(:, i) * psi(:, k))/sum(theta(:) * psi(:, k)) &
+                  - sum(dthetadx(:, i) * psi(k, :) / down(:))                 &
+                  + sum(downdx(:, i) * theta(:) * psi(k, :) / down(:)**2)     &
                )
             end do
+            if (dx2) then
+               do concurrent(j=1:nc)
+               end do
+            end if
          end if
       end do
    end subroutine group_big_gamma
@@ -327,8 +381,8 @@ contains
       !! UNIFAC model initialization.
       type(Groups), intent(in) :: molecules(:) !! Molecules
       real(pr), intent(in) :: Eij(:, :) !! Interaction Matrix
-      real(pr), intent(in) :: Qk(:) !! Group areas
-      real(pr), intent(in) :: Rk(:) !! Group volumes
+      real(pr), intent(in) :: Qk(:) !! Group k areas
+      real(pr), intent(in) :: Rk(:) !! Group k volumes
 
       type(Groups) :: soup
       type(UNIFACPsi) :: psi_function
