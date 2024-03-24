@@ -45,17 +45,28 @@ run_test() {
 }
 
 run_coverage() {
-    COVER=$(gcovr \
+    gcovr \
         --exclude "build" \
         --exclude "test/test_runner.f90" \
+        --exclude "test/fixtures/taperobinson.f90" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "app"\
         --exclude "tools" \
-        --fail-under-branch 90)
-    echo "$COVER"
-    COVER=$(echo "$COVER" | grep TOTAL | awk '{print $4}' | tr -d '%')
+        --fail-under-line 90 \
+        --jacoco coverage.xml
+    
+    gcovr \
+        --exclude "build" \
+        --exclude "test/test_runner.f90" \
+        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "src/adiff/hyperdual.f90" \
+        --exclude "example" \
+        --exclude "src/legacy/*" \
+        --exclude "app"\
+        --exclude "tools" \
+        --fail-under-line 90
 }
 
 python_wrappers(){
@@ -83,7 +94,7 @@ case $1 in
     "coverage") run_coverage;;
     *)
         run_test
-        run_coverage;;
+        run_coverage
+        resumee;;
 esac
-
 resumee

@@ -1,5 +1,5 @@
 module yaeos_substance
-    !! Ya_EoS Subtance module.
+    !! yaeos Subtance module.
     !!
     !! Module containing pure components properties and parameters.
     use yaeos_constants, only: pr
