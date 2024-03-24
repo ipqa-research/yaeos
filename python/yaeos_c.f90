@@ -1,10 +1,21 @@
 module yaeos_c
    !! C interface to yaeos subroutines
    use iso_c_binding, only: c_double, c_int
-   use yaeos, only: ArModel, PengRobinson76, fugacity_vt, CubicEoS
+   use yaeos, only: &
+                    & ArModel, & ! Ar Model
+                    ! Cubic Models
+                    & SoaveRedlichKwong, PengRobinson76, PengRobinson78, &
+                    ! Thermodynamic properties
+                    & fugacity_vt
    implicit none
 
+   type :: ModelContainer
+      integer :: id
+      class(ArModel), pointer :: model
+   end type
+
    class(ArModel), allocatable, private :: model
+   class(ModelContainer), allocatable :: models(:)
 
    integer(c_int) :: running_model=0
 
@@ -14,8 +25,13 @@ contains
       real(c_double), intent(in) :: tc(:), pc(:), w(:), kij(:, :), lij(:, :)
       model = PengRobinson76(tc, pc, w, kij, lij)
    end subroutine
+   
+   subroutine srk(tc, pc, w, kij, lij)
+      real(c_double), intent(in) :: tc(:), pc(:), w(:), kij(:, :), lij(:, :)
+      model = SoaveRedlichKwong(tc, pc, w, kij, lij)
+   end subroutine
 
-   subroutine fugacity(n, v, t, lnfug, dlnphidp, dlnphidt, dlnphidn)
+   subroutine fug_vt(n, v, t, lnfug, dlnphidp, dlnphidt, dlnphidn)
       real(c_double), intent(in) :: n(:), v, t
       real(c_double), intent(out) :: lnfug(size(n))
       real(c_double) :: p
