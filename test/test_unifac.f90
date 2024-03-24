@@ -13,10 +13,14 @@ program main
 
    real(pr), allocatable :: Aij(:, :)
    real(pr), allocatable :: Qk(:), Rk(:)
+   real(pr) :: dx=1e-5, theta_dx(ng)
 
    real(pr) :: psi(ng, ng)
    real(pr) :: theta(ng), dthetadx(ng, nc)
    real(pr) :: lngamma(nc)
+
+   integer(8) :: rate, st, et
+   call system_clock(count_rate=rate)
 
    call load_npy("data/unifac_aij.npy", Aij)
    call load_npy("data/unifac_Qk.npy", Qk)
@@ -41,28 +45,49 @@ program main
       Rk=Rk &
    )
 
-   psi = 0
-   call model%psi_function%psi(model%groups_stew, 200._pr, psi)
-   call excess_gibbs(model, x, 200._pr)
+   ! call model%psi_function%psi(model%groups_stew, 200._pr, psi)
+   ! call excess_gibbs(model, x, 200._pr)
 
-   call group_area_fraction(model, x, theta, dthetadx)
-   print *, theta
+   ! call group_area_fraction(model, x, theta, dthetadx)
+   ! print *, "theta:"
+   ! print *, theta
+   ! print *, "dthetadx:"
+   ! do i=1,ng
+   !    print *, dthetadx(i, :)
+   ! end do
 
-   print *, "Derivs:"
-   do i=1,ng
-      print *, dthetadx(i, :)
-   end do
-
-   call ln_activity_coefficient(model, x, 200.0_pr, lngamma)
-   print *, "lngamma: "
-   print *, lngamma
+   ! call ln_activity_coefficient(model, x, 200.0_pr, lngamma)
+   ! print *, "lngamma: "
+   ! print *, lngamma
    !  0.80338267603153490       -9.7236411677591672E-002 -0.30836537797129104     
 
+   call system_clock(count=st)
+   do i=1,1e6
    call group_big_gamma(model, X, 200._pr, theta, dthetadx)
-   print *, ""
-   print *, theta
-   print *, ""
-   do i=1,ng
-      print *, dthetadx(i, :)
    end do
+   call system_clock(count=et)
+   print *, real(et-st, pr)/real(rate, pr)
+   ! print *, "lnGamma:"
+   ! print *, theta
+   ! print *, "lnGammadx:"
+   ! do i=1,ng
+   !    print *, dthetadx(i, :)
+   ! end do
+
+   ! numdiff: block
+   !    integer :: i
+   !    print *, "numdiff"
+   !    do i=1,3
+   !       x(i) = x(i) - dx
+   !       call group_big_gamma(model, X, 200._pr, theta)
+   !       x(i) = x(i) + 2*dx
+   !       call group_big_gamma(model, X, 200._pr, theta_dx)
+   !       dthetadx(:, i) = (theta_dx-theta)/(2*dx)
+   !       x(i) = x(i) - dx
+   !    end do
+   !    do i=1,ng
+   !       print *, dthetadx(i, :)
+   !    end do
+   ! end block numdiff
+
 end program main
