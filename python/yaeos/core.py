@@ -8,7 +8,6 @@ from yaeos import yaeos_c as yaeos
 
 
 class ArModel(ABC):
-
     @abstractmethod
     def setup_fun(self):
         raise NotImplementedError
@@ -22,6 +21,7 @@ class ArModel(ABC):
                 yaeos.running_model = self.id
                 self.setup_fun()
             return foo(self, *args, **kwargs)
+
         return checker
 
     @assure_model
@@ -30,13 +30,18 @@ class ArModel(ABC):
 
 
 class PengRobinson76(ArModel):
-    def __init__(self, tc, pc, w, kij, lij):
+    name = "PengRobinson76"
+
+    def __init__(self, tc, pc, w, kij=None, lij=None):
+        self.id = np.array(id(self), np.int64)
+
+        n = len(tc)
         self.tc = tc
         self.pc = pc
         self.w = w
-        self.kij = kij
-        self.lij = lij
-        self.id = np.array(id(self), np.int64)
+
+        self.kij = kij if kij else np.zeros((n, n))
+        self.lij = lij if lij else np.zeros((n, n))
 
     def setup_fun(self):
         yaeos.pr76(self.tc, self.pc, self.w, self.kij, self.lij)
@@ -50,11 +55,11 @@ def run_models():
     kij = np.zeros((2, 2))
     kij[0, 1] = 0.1
     kij[1, 0] = 0.1
-    
-    lij = kij/2
+
+    lij = kij / 2
 
     m1 = PengRobinson76(tc, pc, w, kij, lij)
-    m2 = PengRobinson76(tc/2, pc, w, kij, lij)
+    m2 = PengRobinson76(tc / 2, pc, w, kij, lij)
 
     n = [0.3, 0.7]
     v = 1
