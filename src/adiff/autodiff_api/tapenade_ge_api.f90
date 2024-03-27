@@ -95,7 +95,6 @@ contains
       if (present(Gen2)) then
          do i=1, nc
             call reset_vars
-
             gedb = 1
             if (i <= nc) then
                nd(i) = 1
@@ -125,6 +124,7 @@ contains
       if (present(GeTn)) GeTn = get_GenT()
       if (present(GeT2)) GeT2 = get_dGedT2()
 
+      call reset_vars
       if (present(Ge)) call self%ge(n, t, ge)
 
    contains

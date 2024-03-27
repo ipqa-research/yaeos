@@ -4,12 +4,13 @@ program main
    use stdlib_io_npy, only: load_npy
    implicit none
 
-   integer, parameter :: nc = 3, ng = 4
+   integer, parameter :: nc = 2, ng = 3
    integer :: i
 
    type(Groups) :: molecules(nc)
    type(UNIFAC) :: model
-   real(pr) :: x(nc) = [0.2, 0.7, 0.1]
+   ! real(pr) :: x(nc) = [0.2, 0.7, 0.1]
+   real(pr) :: x(nc) = [0.3, 0.7]
 
    real(pr), allocatable :: Aij(:, :)
    real(pr), allocatable :: Qk(:), Rk(:)
@@ -35,8 +36,8 @@ program main
    molecules(2)%number_of_groups = [1, 1, 1]
    
    ! Methylamine [H3C-NH2]
-   molecules(3)%groups_ids = [28]
-   molecules(3)%number_of_groups = [1]
+   ! molecules(3)%groups_ids = [28]
+   ! molecules(3)%number_of_groups = [1]
 
    model = setup_unifac(&
       molecules, &
@@ -46,7 +47,10 @@ program main
    )
 
    ! call model%psi_function%psi(model%groups_stew, 200._pr, psi)
-   ! call excess_gibbs(model, x, 200._pr)
+   call model%ln_activity_coefficient(x, 150._pr, lngamma)
+   print *, exp(lngamma)
+   call ln_activity_coefficient(model, x, 150._pr, lngamma)
+   print *, exp(lngamma)
 
    ! call group_area_fraction(model, x, theta, dthetadx)
    ! print *, "theta:"
@@ -61,12 +65,12 @@ program main
    ! print *, lngamma
    !  0.80338267603153490       -9.7236411677591672E-002 -0.30836537797129104     
 
-   call system_clock(count=st)
-   do i=1,1e6
-   call group_big_gamma(model, X, 200._pr, theta, dthetadx)
-   end do
-   call system_clock(count=et)
-   print *, real(et-st, pr)/real(rate, pr)
+   ! call system_clock(count=st)
+   ! do i=1,1e6
+   ! call group_big_gamma(model, X, 200._pr, theta, dthetadx)
+   ! end do
+   ! call system_clock(count=et)
+   ! print *, real(et-st, pr)/real(rate, pr)
    ! print *, "lnGamma:"
    ! print *, theta
    ! print *, "lnGammadx:"

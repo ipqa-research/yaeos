@@ -16,18 +16,6 @@ MODULE yaeos_models_ge_NRTL
    end type NRTL
 
 CONTAINS
-   FUNCTION SETUP(a_mat, b_mat, c_mat) RESULT (model)
-      IMPLICIT NONE
-      REAL(pr), INTENT(IN) :: a_mat(:, :)
-      REAL(pr), INTENT(IN) :: b_mat(:, :)
-      REAL(pr), INTENT(IN) :: c_mat(:, :)
-      type(NRTL) :: model
-
-      model%a = a_mat
-      model%b = b_mat
-      model%c = c_mat
-   end function SETUP
-
    SUBROUTINE EXCESS_GIBBS_D_D_D(model, n, nd, t, td1, td0, td, ge, ged1&
    &   , ged0, ged0d, ged, gedd0, gedd, geddd)
       IMPLICIT NONE
