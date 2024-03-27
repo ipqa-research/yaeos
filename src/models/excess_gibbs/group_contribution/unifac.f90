@@ -44,7 +44,6 @@ module yaeos_models_ge_group_contribution_unifac
          !! All the groups present in the system
    contains
       procedure :: excess_gibbs
-      procedure :: ln_activity_coefficient
    end type UNIFAC
 
    type, abstract :: PsiFunction
@@ -105,6 +104,7 @@ contains
       ln_activity = ln_gamma_c + ln_gamma_r
 
       if (present(Ge)) Ge = sum(x * ln_activity)
+      if (present(GeN)) Gen = ln_activity * (R*T)
    end subroutine excess_gibbs
 
    subroutine residual_activity(self, x, T, ln_gamma_r)
@@ -156,37 +156,37 @@ contains
    end subroutine combinatorial_activity
 
    subroutine ln_activity_coefficient(&
-      self, x, T, ln_gamma, &
-      dln_gammadt, dln_gammadt2, dln_gammadx, dln_gammadtx, dln_gammadx2 &
+      self, n, T, lngamma, &
+      dln_gammadt, dln_gammadt2, dln_gammadn, dln_gammadtn, dln_gammadn2 &
       )
       class(UNIFAC), intent(in) :: self
-      real(pr), intent(in) :: x(:)
+      real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: T
-      real(pr), intent(out) :: ln_gamma(:)
+      real(pr), intent(out) :: lngamma(:)
       real(pr), optional, intent(out) :: dln_gammadt(:)
       real(pr), optional, intent(out) :: dln_gammadt2(:)
-      real(pr), optional, intent(out) :: dln_gammadx(:, :)
-      real(pr), optional, intent(out) :: dln_gammadtx(:, :)
-      real(pr), optional, intent(out) :: dln_gammadx2(:, :, :)
+      real(pr), optional, intent(out) :: dln_gammadn(:, :)
+      real(pr), optional, intent(out) :: dln_gammadtn(:, :)
+      real(pr), optional, intent(out) :: dln_gammadn2(:, :, :)
 
-      real(pr) :: ln_gamma_c(size(x))
-      real(pr) :: dln_gamma_c_dt(size(x))
-      real(pr) :: dln_gamma_c_dt2(size(x))
-      real(pr) :: dln_gamma_c_dx (size(x), size(x))
-      real(pr) :: dln_gamma_c_dtx(size(x), size(x))
-      real(pr) :: dln_gamma_c_dx2(size(x), size(x), size(x))
+      real(pr) :: ln_gamma_c(size(n))
+      real(pr) :: dln_gamma_c_dt(size(n))
+      real(pr) :: dln_gamma_c_dt2(size(n))
+      real(pr) :: dln_gamma_c_dn (size(n), size(n))
+      real(pr) :: dln_gamma_c_dtn(size(n), size(n))
+      real(pr) :: dln_gamma_c_dn2(size(n), size(n), size(n))
 
-      real(pr) :: ln_gamma_r(size(x))
-      real(pr) :: dln_gamma_r_dt(size(x))
-      real(pr) :: dln_gamma_r_dt2(size(x))
-      real(pr) :: dln_gamma_r_dx (size(x), size(x))
-      real(pr) :: dln_gamma_r_dtx(size(x), size(x))
-      real(pr) :: dln_gamma_r_dx2(size(x), size(x), size(x))
+      real(pr) :: ln_gamma_r(size(n))
+      real(pr) :: dln_gamma_r_dt(size(n))
+      real(pr) :: dln_gamma_r_dt2(size(n))
+      real(pr) :: dln_gamma_r_dn (size(n), size(n))
+      real(pr) :: dln_gamma_r_dtn(size(n), size(n))
+      real(pr) :: dln_gamma_r_dn2(size(n), size(n), size(n))
 
-      call combinatorial_activity(self, x, ln_gamma_c)
-      call residual_activity(self, x, T, ln_gamma_r)
+      call combinatorial_activity(self, n, ln_gamma_c)
+      call residual_activity(self, n, T, ln_gamma_r)
 
-      ln_gamma = ln_gamma_c + ln_gamma_r
+      lngamma = ln_gamma_c + ln_gamma_r
    end subroutine ln_activity_coefficient
 
    subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)

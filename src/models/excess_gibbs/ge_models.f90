@@ -1,12 +1,13 @@
 module yaeos_models_ge
    !! Excess Gibbs Models.
-   use yaeos_constants, only: pr
+   use yaeos_constants, only: pr, R
    implicit none
 
    type, abstract :: GeModel
       !! Excess Gibbs energy model.
    contains
       procedure(excess_gibbs), deferred :: excess_gibbs
+      procedure :: ln_activity_coefficient => ln_activity_coefficient
    end type
 
    abstract interface
@@ -24,4 +25,18 @@ module yaeos_models_ge
          real(pr), optional, intent(out) :: Gen2(size(n), size(n))
       end subroutine
    end interface
+
+contains
+
+   subroutine ln_activity_coefficient(self, n, T, lngamma)
+      class(GeModel), intent(in) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: T
+      real(pr), intent(out) :: lngamma(:)
+
+      real(pr) :: ge, dgedn(size(n))
+
+      call self%excess_gibbs(n, t, ge=ge, gen=dgedn)
+      lngamma = dgedn/(R*T)
+   end subroutine
 end module
