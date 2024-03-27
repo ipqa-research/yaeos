@@ -3,7 +3,11 @@ program examples
     use hyperdual_pr76, only: run_hyperdual_pr76 => main
     use flashing, only: run_flashes => main
     use TapeRobinson, only: run_tape_pr76 => main
+    use tape_nrtl, only: run_tape_nrtl => main
 
+    print *, "Running Tapenade generated NRTL model"
+    call run_tape_nrtl
+    call exit
     print *, "Running Tapenade generated PR76"
     call run_tape_pr76
     print *, "Running Hyperdual generated PR76"
