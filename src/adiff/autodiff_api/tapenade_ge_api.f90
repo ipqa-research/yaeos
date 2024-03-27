@@ -8,43 +8,46 @@ module yaeos_tapenade_ge_api
    private
 
    public :: GeModelTapenade
-
-   type, extends(GeModel) :: GeModelTapenade
-      procedure(tapenade_ge), pointer, nopass :: ge
-      procedure(tapenade_ge_d), pointer, nopass :: ge_d
-      procedure(tapenade_ge_b), pointer, nopass :: ge_b
-      procedure(tapenade_ge_d_b), pointer, nopass :: ge_d_b
-      procedure(tapenade_ge_d_d), pointer, nopass :: ge_d_d
+   type, abstract, extends(GeModel) :: GeModelTapenade
    contains
+      procedure(tapenade_ge), deferred  :: ge
+      procedure(tapenade_ge_d), deferred :: ge_d
+      procedure(tapenade_ge_b), deferred :: ge_b
+      procedure(tapenade_ge_d_b), deferred :: ge_d_b
+      procedure(tapenade_ge_d_d), deferred :: ge_d_d
       procedure :: excess_gibbs => excess_gibbs
    end type
 
    abstract interface
-      subroutine tapenade_ge(n, t, ge)
-         import pr
+      subroutine tapenade_ge(model, n, t, ge)
+         import GeModelTapenade, pr
+         class(GeModelTapenade) :: model
          real(pr), intent(in) :: n(:), t
          real(pr), intent(out) :: ge
       end subroutine
 
-      subroutine tapenade_ge_d(n, nd, t, td, ge, ged)
-         import pr
+      subroutine tapenade_ge_d(model, n, nd, t, td, ge, ged)
+         import pr, GeModelTapenade
+         class(GeModelTapenade) :: model
          real(pr), intent(in) :: n(:), t
          real(pr), intent(in) :: nd(:), td
          real(pr), intent(out) :: ge, ged
       end subroutine
 
-      subroutine tapenade_ge_b(n, nb, t, tb, ge, geb)
-         import pr
+      subroutine tapenade_ge_b(model, n, nb, t, tb, ge, geb)
+         import pr, GeModelTapenade
+         class(GeModelTapenade) :: model
          real(pr), intent(in) :: n(:), t
          real(pr) :: geb
          real(pr) :: nb(:), tb
          real(pr) :: ge
       end subroutine
 
-      subroutine tapenade_ge_d_b(&
+      subroutine tapenade_ge_d_b(model, &
          n, nb, nd, ndb, t, tb, td, tdb, &
          ge, geb, ged, gedb)
-         import pr
+         import pr, GeModelTapenade
+         class(GeModelTapenade) :: model
          real(pr), intent(in) :: n(:), t
          real(pr) :: ge
 
@@ -58,8 +61,9 @@ module yaeos_tapenade_ge_api
          real(pr) :: gedb
       end subroutine
 
-      subroutine tapenade_ge_d_d(n, nd, t, td0, td, ge, ged0, ged, gedd)
-         import pr
+      subroutine tapenade_ge_d_d(model, n, nd, t, td0, td, ge, ged0, ged, gedd)
+         import pr, GeModelTapenade
+         class(GeModelTapenade) :: model
          real(pr), intent(in) :: n(:), t
          real(pr), intent(in) :: td0
          real(pr), intent(in) :: nd(:), td
@@ -121,7 +125,7 @@ contains
       if (present(GeTn)) GeTn = get_GenT()
       if (present(GeT2)) GeT2 = get_dGedT2()
 
-      if (present(Ge)) Ge = ge
+      if (present(Ge)) call self%ge(n, t, ge)
 
    contains
       subroutine reset_vars
@@ -170,17 +174,5 @@ contains
             )
          get_GenT = nb
       end function
-   end subroutine
-
-   subroutine ln_activity_coefficient(self, n, T, lngamma)
-      class(GeModelTapenade), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: lngamma(:)
-
-      real(pr) :: ge, dgedn(size(n))
-
-      call self%excess_gibbs(n, t, ge=ge, gen=dgedn)
-      lngamma = dgedn/(R*T)
    end subroutine
 end module
