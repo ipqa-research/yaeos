@@ -68,8 +68,8 @@ contains
         logical :: all_derivs
         logical :: f_p
         character(len=*), intent(in) :: eos
-        real(8) :: time, std, mean
-        real(8) :: et, st
+        real(pr) :: time, std, mean
+        real(pr) :: et, st
         integer :: i, n
         time = 0
         std = 0
@@ -96,16 +96,16 @@ contains
     subroutine main()
         integer :: n=20
         logical :: allderivs=.false.
-        logical :: fug_p = .true.
+        logical :: fug_p = .false.
 
-        ! call run_bench(n, allderivs, "Analytic PR76")
+        call run_bench(n, allderivs, fug_p, "Analytic PR76")
         ! call run_bench(n, allderivs, "Tape PR76")
-        ! call run_bench(n, allderivs, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Adiff PR76")
 
         allderivs = .true.
-        call run_bench(n, fug_p, allderivs, "Analytic PR76")
+        call run_bench(n, allderivs, fug_p, "Analytic PR76")
         ! call run_bench(n, fug_p, allderivs, "Tape PR76")
-        ! call run_bench(n, fug_p, allderivs, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Adiff PR76")
     end subroutine
 
 end module
