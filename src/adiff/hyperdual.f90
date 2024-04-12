@@ -1,5 +1,5 @@
 module hyperdual_mod
-   !-| Hyperdual number definition & type declaration
+   !> Hyperdual number definition & type declaration
    !
    ! Original code provided by Philipp Rehner and Gernot Bauer,
    ! Institute of Thermodynamics and Thermal Process Engineering (ITT),
@@ -94,10 +94,10 @@ module hyperdual_mod
       !  + f_2 \varepsilon_2 + f_{12} \varepsilon_1 \varepsilon_2 \f$.
       !  Calculations specificaions are defined in module hyperdual_mod.
       ! sequence
-      real(pr) :: f0 = 0  !| real part of the hyperdual number
-      real(pr) :: f1 = 0  !| \f$\varepsilon_1\f$-part of  the hyperdual number
-      real(pr) :: f2 = 0  !| \f$\varepsilon_2\f$-part of  the hyperdual number
-      real(pr) :: f12 = 0 !| \f$\varepsilon_1\varepsilon_2\f$-part of the
+      real(pr) :: f0 = 0  !! real part of the hyperdual number
+      real(pr) :: f1 = 0  !! \f$\varepsilon_1\f$-part of  the hyperdual number
+      real(pr) :: f2 = 0  !! \f$\varepsilon_2\f$-part of  the hyperdual number
+      real(pr) :: f12 = 0 !! \f$\varepsilon_1\varepsilon_2\f$-part of the
    end type hyperdual
 
    !---------------------------------------------------------------------

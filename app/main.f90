@@ -56,6 +56,8 @@ program main
     print *, "ArV2: ", ArV2
     
     print *, "ArTV: ", ArTV
+    
+    print *, "Arn: ", Arn
 
     print *, "ArVn: ", ArVn
     print *, "ArTn: ", ArTn

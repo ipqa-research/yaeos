@@ -1,13 +1,17 @@
-project: Yaeos
-summary: Yet another Equation of State (library)
+---
+project: yaeos
+summary: Calculation of thermodynamic properties and phase-equilibria with
+         Equation of State. Keeping high performance with the power of Fortran
+         and the possiblity of using either automatic differentiation and
+         anallytical derivatives.
 project_github: https://github.com/fedebenelli/yaeos
 author: Federico Benelli
 author_description: PhD student with focus on reservoir PVT simulation.
-author_email: federico.benelli@mi.unc.edu.ar
+email: federico.benelli@mi.unc.edu.ar
 github: https://github.com/fedebenelli
-src_dir: ../src
-exclude_dir: ../test ../doc
-output_dir: ../doc/ford_site
+src_dir: src
+exclude_dir: test doc src/adiff/hyperdual.f90 src/adiff/autodiff_api/tapenade
+output_dir: doc/ford_site
 preprocessor: gfortran -E
 display: public
          protected
@@ -24,6 +28,10 @@ md_extensions: markdown.extensions.toc
                markdown.extensions.smarty
 graph: true
 license: MPL
-page_dir:pages
+page_dir: doc/page
+media_dir: doc/media
+---
 
-{!../README.md!}
+[TOC]
+
+{!README.md!}

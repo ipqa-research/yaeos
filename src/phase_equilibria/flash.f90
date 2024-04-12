@@ -10,14 +10,13 @@ contains
    type(EquilibriaState) function flash(self, z, t, v_spec, p_spec, k0, iters)
       !! This algorithm assumes that the specified T and P correspond to
       !! vapor-liquid separation predicted by the provided model (0<beta<1)
-      class(ArModel), intent(in) :: self
+      class(ArModel), intent(in) :: self !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), intent(in) :: k0(:) !! Initial K factors (y/x)
-      
-      integer, optional, intent(out) :: iters
+      integer, optional, intent(out) :: iters !! Number of iterations
 
       logical :: stopflash
 
@@ -49,22 +48,23 @@ contains
       ! ------------------------------------------------------------------------
       if (present(v_spec) .and. present(p_spec)) then
          write (*, *) "ERROR: Can't specify pressure and volume in Flash"
-      else if ( present(v_spec) ) then
-         spec = "TV"
-         v = v_spec
+         return
+      ! else if ( present(v_spec) ) then
+      !    spec = "TV"
+      !    v = v_spec
       else if ( present(p_spec) ) then
          spec = "TP"
          p = p_spec
       end if
 
-      if (spec == 'TV' .or. spec == 'isoV') then
-         Vx = 0.0
-         ! if (FIRST) then  
-            ! the EoS one-phase pressure will be used to estimate Wilson K factors
-            call pressure(self, z, v_spec, t, p=p)
-            if (P < 0) P = 1.0
-         ! end if
-      end if
+      ! if (spec == 'TV' .or. spec == 'isoV') then
+      !    Vx = 0.0
+      !    ! if (FIRST) then  
+      !       ! the EoS one-phase pressure will be used to estimate Wilson K factors
+      !       call pressure(self, z, v_spec, t, p=p)
+      !       if (P < 0) P = 1.0
+      !    ! end if
+      ! end if
 
       K = K0
       
@@ -101,13 +101,13 @@ contains
 
          ! new for TV Flash
          select case (spec)
-         case("TV", "isoV")
-            ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            ! TODO: Add TV specification
+         ! case("TV", "isoV")
+         !    ! find Vy,Vx (vV and vL) from V balance and P equality equations
+         !    ! TODO: Add TV specification
          case("TP")
             ! for TP Flash
-            call fugacity_tp(self, y, T, P, V=Vy, root_type=0, lnfug=lnfug_y)
-            call fugacity_tp(self, x, T, P, V=Vx, root_type=1, lnfug=lnfug_x)
+            call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
          end select
 
          dKold = dK
@@ -138,13 +138,16 @@ contains
       end do
 
       if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
-      if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
-      if (spec == 'TV' .or. spec == 'isoV') P = Pv
+      ! if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
+      ! if (spec == 'TV' .or. spec == 'isoV') P = Pv
       
       if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
          P = -1.0
          flash%x = x/x
          flash%y = y/y
+         flash%iters = iters
+         flash%p = p
+         flash%t = t
          return
       end if
 
@@ -224,10 +227,11 @@ contains
    end subroutine
 
    subroutine solve_rr(z, K, beta, beta_min, beta_max)
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: K(:)
-      real(pr), intent(in) :: beta_min
-      real(pr), intent(in) :: beta_max
+      !! Solve the Rachford-Rice Equation.
+      real(pr), intent(in) :: z(:) !! Mole fractions vector
+      real(pr), intent(in) :: K(:) !! K-factors
+      real(pr), intent(out) :: beta_min !! 
+      real(pr), intent(out) :: beta_max
       real(pr), intent(out) :: beta
 
       real(pr) :: g, dgdb
@@ -236,16 +240,16 @@ contains
       g = 1.0
       step = 1.0
 
+      call betalimits(z, k, beta_min, beta_max)
+
       do while (abs(g) > 1.d-5 .and. abs(step) > 1.d-10)
          call rachford_rice(z, k, beta, g, dgdb)
          step = -g/dgdb
          beta = beta + step
          do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10) 
-            ! much better (GUARANTED!) 3/3/15
             step = step/2
             beta = beta - step
          end do
-
       end do
    end subroutine
 
