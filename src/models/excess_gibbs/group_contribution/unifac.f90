@@ -102,6 +102,7 @@ contains
       call combinatorial_activity(self, x, ln_gamma_c)
       call residual_activity(self, x, T, ln_gamma_r)
       ln_activity = ln_gamma_c + ln_gamma_r
+      print *, ln_activity
 
       if (present(Ge)) Ge = sum(x * ln_activity)
       if (present(GeN)) Gen = ln_activity * (R*T)
@@ -187,6 +188,7 @@ contains
       call residual_activity(self, n, T, ln_gamma_r)
 
       lngamma = ln_gamma_c + ln_gamma_r
+      print *, lngamma
    end subroutine ln_activity_coefficient
 
    subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)
@@ -207,6 +209,10 @@ contains
          ig = systems_groups%groups_ids(i)
          jg = systems_groups%groups_ids(j)
          psi(i, j) = exp(-self%Eij(ig, jg) / T)
+         if (present(dpsidt)) &
+            dpsidt(i, j) = self%Eij(ig, jg) * psi(i, j) / T**2
+         if (present(dpsidt2)) &
+            dpsidt2(i, j) = self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
       end do
 
    end subroutine UNIFAC_temperature_dependence
@@ -281,11 +287,13 @@ contains
       end associate
    end subroutine group_area_fraction
    
-   subroutine group_big_gamma(self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadx2)
+   subroutine group_big_gamma(self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2)
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:) !< Molar fractions
       real(pr), intent(in) :: T !! Temperature
       real(pr), intent(out) :: ln_Gamma(:) !! \(\ln \Gamma_i\)
+      real(pr), optional, intent(out) :: dln_Gammadt(:) !! \(\ln \Gamma_i\)
+      real(pr), optional, intent(out) :: dln_Gammadt2(:) !! \(\ln \Gamma_i\)
       real(pr), optional, intent(out) :: dln_Gammadx(:, :) !!
       real(pr), optional, intent(out) :: dln_Gammadx2(:, :, :) !!
 
@@ -299,6 +307,15 @@ contains
          size(self%groups_stew%groups_ids),&
          size(self%groups_stew%groups_ids) &
          )
+         !! \(\psi(T)\) parameter
+      real(pr) :: dpsidt(&
+         size(self%groups_stew%groups_ids),&
+         size(self%groups_stew%groups_ids) &
+         )
+      real(pr) :: dpsidt2(&
+         size(self%groups_stew%groups_ids),&
+         size(self%groups_stew%groups_ids) &
+         )
 
       ! Number of groups and components
       integer :: ng, nc
@@ -309,14 +326,17 @@ contains
       ! Indexes for components
       integer :: i, j
 
-      logical :: dx, dx2
+      logical :: dx, dx2, dt, dt2
 
       ! Auxiliar variables to ease calculations
-      real(pr) :: updown, updowndx(size(x))
-      real(pr) :: down(size(theta)), downdx(size(theta), size(x))
+      real(pr) :: updown, updowndt, updowndx(size(x))
+      real(pr) :: down(size(theta)), downdt(size(theta)), &
+                  downdt2(size(theta)), downdx(size(theta), size(x))
 
       ng = size(self%groups_stew%groups_ids)
       nc = size(x)
+      dt = present(dln_Gammadt)
+      dt2 = present(dln_Gammadt2)
       dx = present(dln_Gammadx)
       dx2 = present(dln_gammadx2)
 
@@ -339,8 +359,13 @@ contains
       ! ========================================================================
       ! Temperature dependance
       ! ------------------------------------------------------------------------
-      call self%psi_function%psi(self%groups_stew, T, psi)
-      
+      if (dt2) then
+         call self%psi_function%psi(self%groups_stew, T, psi, dpsidt, dpsidt2)
+      else if(dt) then
+         call self%psi_function%psi(self%groups_stew, T, psi, dpsidt)
+      else
+         call self%psi_function%psi(self%groups_stew, T, psi)
+      end if
       ! ========================================================================
       ! This parameters are used to avoid repeated calculations
       ! ------------------------------------------------------------------------
@@ -348,9 +373,9 @@ contains
       downdx = 0
       do concurrent(m=1:ng, n=1:ng)
          down(m) = down(m) + theta(n) * psi(n, m)
-         if(dx) then
-            downdx(m, :) = downdx(m, :) + dthetadx(n, :) * psi(n, m)
-         end if
+         if (dt)  downdt(m) = downdt(m) + theta(n) * dpsidt(n, m)
+         if (dt2) downdt2(m) = downdt(m) + theta(n) * dpsidt2(n, m)
+         if(dx)   downdx(m, :) = downdx(m, :) + dthetadx(n, :) * psi(n, m)
       end do
 
       do k=1,ng
@@ -361,6 +386,24 @@ contains
          ln_Gamma(k) = self%group_area(gi) * (&
             1 - log(sum(theta(:) * psi(:, k))) - updown &
          )
+
+         temp_deriv: block
+         real(pr) :: F(ng), Z(ng)
+         if (dt) then
+            do i=1,ng
+               F(i) = sum(theta(:) * dpsidt(:, i))
+               Z(i) = 1/sum(theta(:) * psi(:, i))
+            end do
+
+            dln_Gammadt(k) = self%group_area(gi) * (&
+               sum(&
+                  Z(:) * (&
+                   theta(:) * dpsidt(k, :) + theta(:) * psi(k, :) * F(:)* Z(:) &
+                  ) - F(k) * Z(k)) &
+            )
+         end if
+         end block temp_deriv
+
          if (dx) then
             do concurrent(i=1:nc)
                dln_Gammadx(k, i) = self%group_area(gi) * ( &
