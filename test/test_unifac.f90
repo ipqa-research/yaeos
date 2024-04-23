@@ -4,18 +4,20 @@ program main
    use stdlib_io_npy, only: load_npy
    implicit none
 
-   integer, parameter :: nc = 3, ng = 4
    integer :: i
 
-   type(Groups) :: molecules(nc)
    type(UNIFAC) :: model
+   integer, parameter :: nc = 3, ng = 4
    real(pr) :: x(nc) = [0.2, 0.7, 0.1], T=150
+   
+   ! integer, parameter :: nc = 2, ng = 3
    ! real(pr) :: x(nc) = [0.3, 0.7], T=150
 
    real(pr), allocatable :: Aij(:, :)
    real(pr), allocatable :: Qk(:), Rk(:)
    real(pr) :: dx=1e-5, dpsidt_num(ng, ng), dpsidt(ng, ng)
 
+   type(Groups) :: molecules(nc)
    real(pr) :: psi(ng, ng)
    real(pr) :: theta(ng), dthetadx(ng, nc)
    real(pr) :: lngamma(nc)
@@ -47,27 +49,42 @@ program main
       Rk=Rk &
    )
 
-
    ! call model%psi_function%psi(model%groups_stew, T, psi, dpsidt=dpsidt)
+   ! print *, "psi"
    ! do i=1,ng
    !    print *, dpsidt(:, i)
    ! end do
 
+   block
+      integer :: i, j
+      associate (ids => model%groups_stew%groups_ids)
+      do i=1,size(model%groups_stew%groups_ids)
+         exit
+         do j=1,size(model%groups_stew%groups_ids)
+            print *, ids(i),ids(j), Aij(ids(i), ids(j))
+         end do
+      end do
+      end associate
+   end block
+
 
    call model%ln_activity_coefficient(x, T, lngamma)
-   print *, "lngamma1: ", lngamma
-   call ln_activity_coefficient(model, x, T, lngamma)
    print *, "lngamma: ", lngamma
-   ! call ln_activity_coefficient(model, x, 150._pr, lngamma)
-   ! print *, exp(lngamma)
+   ! call ln_activity_coefficient(model, x, T, lngamma)
+   ! print *, "lngamma: ", lngamma
 
-   call group_big_gamma(model, x, T, ln_Gamma, dln_gammadt=dln_Gammadt)
-   call group_big_gamma(model, x, T+dx, dln_Gammadt_num)
+   ! call group_big_gamma(model, x, T, ln_Gamma, dln_gammadt=dln_Gammadt)
+   ! call group_big_gamma(model, x, T+dx, dln_Gammadt_num)
 
-   print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
-   print *, "anal: ", dln_gammadt
+   ! print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
+   ! print *, "anal: ", dln_gammadt
 
-   call group_area_fraction(model, x, theta, dthetadx)
-   print *, "theta:", theta
-
+   call group_big_gamma(model, x, T, ln_Gamma=ln_Gamma)
+   print *, "ln_Gamma: ", ln_Gamma
+   do i=1, nc
+      x = 0
+      x(i) = 1
+      call group_big_gamma(model, x, T, ln_Gamma)
+      print *, "ln_gamma_pure:", ln_gamma
+   end do
 end program main

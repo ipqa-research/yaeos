@@ -62,7 +62,9 @@ module yaeos_models_ge_group_contribution_unifac
    end type
 
    abstract interface
-      subroutine temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)
+      subroutine temperature_dependence(&
+            self, systems_groups, T, psi, dpsidt, dpsidt2&
+         )
          import pr, PsiFunction, Groups
          class(PsiFunction) :: self
          class(Groups) :: systems_groups
@@ -102,7 +104,6 @@ contains
       call combinatorial_activity(self, x, ln_gamma_c)
       call residual_activity(self, x, T, ln_gamma_r)
       ln_activity = ln_gamma_c + ln_gamma_r
-      print *, ln_activity
 
       if (present(Ge)) Ge = sum(x * ln_activity)
       if (present(GeN)) Gen = ln_activity * (R*T)
@@ -121,19 +122,21 @@ contains
       integer :: i, k, nc
 
       ln_gamma = 0
+      ln_gamma_r = 0
       nc = size(self%molecules)
 
       call group_big_gamma(self, x, T, ln_Gamma)
       do i=1,nc
          xpure = 0
          xpure(i) = 1
-
-         ln_gamma_i = 0
          call group_big_gamma(self, xpure, T, ln_Gamma_i)
+         print *, ln_gamma_i
          do k=1,size(self%molecules(i)%groups_ids)
             ln_gamma_r(i) = ln_gamma_r(i) + self%molecules(i)%number_of_groups(k) * (ln_gamma(k) - ln_gamma_i(k))
+            print *, i, self%molecules(i)%groups_ids(k), self%molecules(i)%number_of_groups(k)
          end do
       end do
+      print *, ln_gamma_r
    end subroutine residual_activity
 
    subroutine combinatorial_activity(self, x, ln_gamma_c)
@@ -188,7 +191,6 @@ contains
       call residual_activity(self, n, T, ln_gamma_r)
 
       lngamma = ln_gamma_c + ln_gamma_r
-      print *, lngamma
    end subroutine ln_activity_coefficient
 
    subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)
@@ -340,6 +342,9 @@ contains
       dx = present(dln_Gammadx)
       dx2 = present(dln_gammadx2)
 
+      ! Initializate as zero
+      ln_gamma = 0
+
       ! ========================================================================
       ! Calculate only the needed derivatives of the area fractions
       ! ------------------------------------------------------------------------
@@ -360,8 +365,11 @@ contains
       ! Temperature dependance
       ! ------------------------------------------------------------------------
       if (dt2) then
+         dln_Gammadt = 0
+         dln_Gammadt2 = 0
          call self%psi_function%psi(self%groups_stew, T, psi, dpsidt, dpsidt2)
       else if(dt) then
+         dln_Gammadt = 0
          call self%psi_function%psi(self%groups_stew, T, psi, dpsidt)
       else
          call self%psi_function%psi(self%groups_stew, T, psi)
@@ -380,28 +388,30 @@ contains
 
       do k=1,ng
          ! Get the group index on the main matrix
+         if (theta(k) == 0) cycle
          gi = self%groups_stew%groups_ids(k)
          updown = sum(theta(:) * psi(k, :)/down(:))
 
          ln_Gamma(k) = self%group_area(gi) * (&
-            1 - log(sum(theta(:) * psi(:, k))) - updown &
+           1 - log(sum(theta(:) * psi(:, k))) - updown &
          )
 
          temp_deriv: block
-         real(pr) :: F(ng), Z(ng)
-         if (dt) then
-            do i=1,ng
-               F(i) = sum(theta(:) * dpsidt(:, i))
-               Z(i) = 1/sum(theta(:) * psi(:, i))
-            end do
+            real(pr) :: F(ng), Z(ng)
+            if (dt) then
+               do i=1,ng
+                  F(i) = sum(theta(:) * dpsidt(:, i))
+                  Z(i) = 1/sum(theta(:) * psi(:, i))
+               end do
 
-            dln_Gammadt(k) = self%group_area(gi) * (&
-               sum(&
-                  Z(:) * (&
-                   theta(:) * dpsidt(k, :) + theta(:) * psi(k, :) * F(:)* Z(:) &
-                  ) - F(k) * Z(k)) &
-            )
-         end if
+               dln_Gammadt(k) = self%group_area(gi) * (&
+                  sum(&
+                     Z(:) * (&
+                        theta(:) * dpsidt(:, k) &
+                     + theta(:) * psi(:, k) * F(:)* Z(:) &
+                     ))  - F(k) * Z(k) &
+                  )
+            end if
          end block temp_deriv
 
          if (dx) then
