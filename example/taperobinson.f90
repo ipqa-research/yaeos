@@ -211,14 +211,14 @@ CONTAINS
     temp16 = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      temp7d = 0.0_8
+      temp7d = 0.0_pr
     ELSEWHERE
       temp7d = arg1d1(:)/(2.0*temp16)
     END WHERE
     temp7 = temp16
     mask0(:) = arg1(:) .EQ. 0.0
-    WHERE (mask0(:)) tempd = 0.0_8
-    tempdd = 0.0_8
+    WHERE (mask0(:)) tempd = 0.0_pr
+    tempdd = 0.0_pr
     mask1(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask1(:)) 
       temp16 = arg1d0(:)/(2.0*temp7)
@@ -228,22 +228,22 @@ CONTAINS
     tempd0 = temp7d
     temp = temp7
     mask2(:) = arg1(:) .EQ. 0.0
-    WHERE (mask2(:)) result1d = 0.0_8
-    result1dd = 0.0_8
+    WHERE (mask2(:)) result1d = 0.0_pr
+    result1dd = 0.0_pr
     mask3(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask3(:)) 
       temp16 = arg1d(:)/(2.0*temp)
       temp7d = -(temp16*tempd0/temp)
       temp7 = temp16
     END WHERE
-    result1ddd = 0.0_8
+    result1ddd = 0.0_pr
     mask4(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask4(:)) 
       temp16 = temp7*tempd/temp
       result1ddd = -((tempd*temp7d+temp7*tempdd-temp16*tempd0)/temp)
       result1dd = -temp16
     END WHERE
-    result1dd0 = 0.0_8
+    result1dd0 = 0.0_pr
     mask5(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask5(:)) 
       result1dd0 = temp7d
@@ -270,14 +270,14 @@ CONTAINS
     temp16 = SQRT(arg2(:))
     mask6(:) = arg2(:) .EQ. 0.0
     WHERE (mask6(:)) 
-      temp7d = 0.0_8
+      temp7d = 0.0_pr
     ELSEWHERE
       temp7d = arg2d1(:)/(2.0*temp16)
     END WHERE
     temp7 = temp16
     mask7(:) = arg2(:) .EQ. 0.0
-    WHERE (mask7(:)) temp0d = 0.0_8
-    temp0dd = 0.0_8
+    WHERE (mask7(:)) temp0d = 0.0_pr
+    temp0dd = 0.0_pr
     mask8(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask8(:)) 
       temp16 = arg2d0(:)/(2.0*temp7)
@@ -287,15 +287,15 @@ CONTAINS
     temp0d0 = temp7d
     temp0 = temp7
     mask9(:) = arg2(:) .EQ. 0.0
-    WHERE (mask9(:)) ad = 0.0_8
-    add = 0.0_8
+    WHERE (mask9(:)) ad = 0.0_pr
+    add = 0.0_pr
     mask10(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask10(:)) 
       temp16 = arg2d(:)/(2.0*temp0)
       temp7d = (arg2dd0(:)-temp16*2.0*temp0d0)/(2.0*temp0)
       temp7 = temp16
     END WHERE
-    addd = 0.0_8
+    addd = 0.0_pr
     mask11(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask11(:)) 
       temp16 = (arg2dd(:)-2.0*temp7*temp0d)/(2.0*temp0)
@@ -303,7 +303,7 @@ CONTAINS
 &       temp0d0)/(2.0*temp0)
       add = temp16
     END WHERE
-    add0 = 0.0_8
+    add0 = 0.0_pr
     mask12(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask12(:)) 
       add0 = temp7d
@@ -315,14 +315,14 @@ CONTAINS
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
-    amixd0 = 0.0_8
-    amixdd = 0.0_8
-    amixddd = 0.0_8
-    amixd1 = 0.0_8
-    amixd0d = 0.0_8
-    amixdd0 = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
+    amixd0 = 0.0_pr
+    amixdd = 0.0_pr
+    amixddd = 0.0_pr
+    amixd1 = 0.0_pr
+    amixd0d = 0.0_pr
+    amixdd0 = 0.0_pr
     DO i=1,SIZE(n)-1
       DO j=i+1,SIZE(n)
         nijd = n(j)*nd(i) + n(i)*nd(j)
@@ -566,14 +566,14 @@ CONTAINS
     temp7 = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      tempd = 0.0_8
+      tempd = 0.0_pr
     ELSEWHERE
       tempd = arg1d0(:)/(2.0*temp7)
     END WHERE
     temp = temp7
     mask0(:) = arg1(:) .EQ. 0.0
-    WHERE (mask0(:)) result1d = 0.0_8
-    result1dd = 0.0_8
+    WHERE (mask0(:)) result1d = 0.0_pr
+    result1dd = 0.0_pr
     mask1(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask1(:)) 
       temp7 = arg1d(:)/(2.0*temp)
@@ -591,14 +591,14 @@ CONTAINS
     temp7 = SQRT(arg2(:))
     mask2(:) = arg2(:) .EQ. 0.0
     WHERE (mask2(:)) 
-      temp0d = 0.0_8
+      temp0d = 0.0_pr
     ELSEWHERE
       temp0d = arg2d0(:)/(2.0*temp7)
     END WHERE
     temp0 = temp7
     mask3(:) = arg2(:) .EQ. 0.0
-    WHERE (mask3(:)) ad = 0.0_8
-    add = 0.0_8
+    WHERE (mask3(:)) ad = 0.0_pr
+    add = 0.0_pr
     mask4(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask4(:)) 
       temp7 = arg2d(:)/(2.0*temp0)
@@ -609,10 +609,10 @@ CONTAINS
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
-    amixd0 = 0.0_8
-    amixdd = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
+    amixd0 = 0.0_pr
+    amixdd = 0.0_pr
     DO i=1,SIZE(n)-1
       DO j=i+1,SIZE(n)
         nijd = n(j)*nd(i) + n(i)*nd(j)
@@ -799,7 +799,7 @@ CONTAINS
     temp = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      result1d = 0.0_8
+      result1d = 0.0_pr
     ELSEWHERE
       result1d = arg1d(:)/(2.0*temp)
     END WHERE
@@ -809,15 +809,15 @@ CONTAINS
     temp0 = SQRT(arg2(:))
     mask0(:) = arg2(:) .EQ. 0.0
     WHERE (mask0(:)) 
-      ad = 0.0_8
+      ad = 0.0_pr
     ELSEWHERE
       ad = arg2d(:)/(2.0*temp0)
     END WHERE
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
     DO i=1,SIZE(n)-1
       ad_from = i + 1
       DO j=ad_from,SIZE(n)
@@ -916,16 +916,16 @@ CONTAINS
     temp1b = -(bmix*bmixb/temp1**2) - (bmixd-temp9*temp7)*tempb2/temp1 -&
 &     temp7*tempb1
     bmixb = bmixb/temp1 + tempb1
-    arg11b = 0.0_8
+    arg11b = 0.0_pr
     arg11b = bmixb
-    arg11db = 0.0_8
+    arg11db = 0.0_pr
     arg11db = bmixdb
-    arg10b = 0.0_8
+    arg10b = 0.0_pr
     arg10b = amixb
-    arg10db = 0.0_8
+    arg10db = 0.0_pr
     arg10db = amixdb
-    ab = 0.0_8
-    adb = 0.0_8
+    ab = 0.0_pr
+    adb = 0.0_pr
     tempb3 = 2*a**2*arg10db
     nb = nb + temp2b + temp1b + 2*n*b*arg11b + nd*b*2*arg11db + 2*n*a**2&
 &     *arg10b + 2**2*n*a*ad*arg10db + nd*tempb3
@@ -963,15 +963,15 @@ CONTAINS
         ndb(j) = ndb(j) + n(i)*nijdb
       END DO
     END DO
-    temp0b = 0.0_8
+    temp0b = 0.0_pr
     temp0b = ab
-    arg2db = 0.0_8
-    arg2b = 0.0_8
-    result1b = 0.0_8
-    result1db = 0.0_8
-    tempb = 0.0_8
-    arg1db = 0.0_8
-    arg1b = 0.0_8
+    arg2db = 0.0_pr
+    arg2b = 0.0_pr
+    result1b = 0.0_pr
+    result1db = 0.0_pr
+    tempb = 0.0_pr
+    arg1db = 0.0_pr
+    arg1b = 0.0_pr
     mask1(:) = .NOT.mask0(:)
     WHERE (mask1(:)) 
       tempb0 = adb/(2.0*temp0)
@@ -981,7 +981,7 @@ CONTAINS
     tempb0 = -(ac*2*k*arg2db)
     mask2 = arg2 .EQ. 0.0
     WHERE (mask2) 
-      arg2b = 0.0_8
+      arg2b = 0.0_pr
     ELSEWHERE
       arg2b = temp0b/(2.0*SQRT(arg2))
     END WHERE
@@ -996,14 +996,14 @@ CONTAINS
     END WHERE
     mask4 = arg1 .EQ. 0.0
     WHERE (mask4) 
-      arg1b = 0.0_8
+      arg1b = 0.0_pr
     ELSEWHERE
       arg1b = tempb/(2.0*SQRT(arg1))
     END WHERE
     tb = tb + SUM(arg1b/tc)
     tdb = tdb + SUM(arg1db/tc)
-    arvalb = 0.0_8
-    arvaldb = 0.0_8
+    arvalb = 0.0_pr
+    arvaldb = 0.0_pr
   END SUBROUTINE AR_D_B
 
 !  Differentiation of ar in forward (tangent) mode (with options noISIZE):
@@ -1055,7 +1055,7 @@ CONTAINS
     temp = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      result1d = 0.0_8
+      result1d = 0.0_pr
     ELSEWHERE
       result1d = arg1d(:)/(2.0*temp)
     END WHERE
@@ -1065,15 +1065,15 @@ CONTAINS
     temp0 = SQRT(arg2(:))
     mask0(:) = arg2(:) .EQ. 0.0
     WHERE (mask0(:)) 
-      ad = 0.0_8
+      ad = 0.0_pr
     ELSEWHERE
       ad = arg2d(:)/(2.0*temp0)
     END WHERE
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
     DO i=1,SIZE(n)-1
       DO j=i+1,SIZE(n)
         nijd = n(j)*nd(i) + n(i)*nd(j)
@@ -1186,7 +1186,7 @@ CONTAINS
     bmix = bmix/SUM(n)
     b_v = bmix/v
     arg12 = (1.0+del1*b_v)/(1.0+del2*b_v)
-    nb = 0.0_8
+    nb = 0.0_pr
     temp0 = LOG(-b_v + 1.0)
     temp1 = SUM(n)
     temp2 = r*(del1-del2)*t*bmix
@@ -1208,12 +1208,12 @@ CONTAINS
     temp = SUM(n)
     nb = nb - bmix*bmixb/temp**2
     bmixb = bmixb/temp
-    arg11b = 0.0_8
+    arg11b = 0.0_pr
     arg11b = bmixb
-    arg10b = 0.0_8
+    arg10b = 0.0_pr
     arg10b = amixb
     nb = nb + 2*n*b*arg11b + 2*n*a**2*arg10b
-    ab = 0.0_8
+    ab = 0.0_pr
     ab = 2*a*n**2*arg10b
     CALL POPINTEGER4(ad_to0)
     DO i=ad_to0,1,-1
@@ -1229,22 +1229,22 @@ CONTAINS
         nb(j) = nb(j) + n(i)*nijb
       END DO
     END DO
-    arg2b = 0.0_8
+    arg2b = 0.0_pr
     WHERE (arg2 .EQ. 0.0) 
-      arg2b = 0.0_8
+      arg2b = 0.0_pr
     ELSEWHERE
       arg2b = ab/(2.0*SQRT(arg2))
     END WHERE
-    result1b = 0.0_8
+    result1b = 0.0_pr
     result1b = -(k*2*(k*(1.0-result1)+1.0)*ac*arg2b)
-    arg1b = 0.0_8
+    arg1b = 0.0_pr
     WHERE (arg1 .EQ. 0.0) 
-      arg1b = 0.0_8
+      arg1b = 0.0_pr
     ELSEWHERE
       arg1b = result1b/(2.0*SQRT(arg1))
     END WHERE
     tb = tb + SUM(arg1b/tc)
-    arvalb = 0.0_8
+    arvalb = 0.0_pr
   END SUBROUTINE AR_B
 
   SUBROUTINE AR(n, v, t, arval)

@@ -133,13 +133,13 @@ contains
       gd1 = -(exp(-(model%c*tau))*model%c*taud1)
       g = exp(-(model%c*tau))
       ge = 0
-      ged = 0.0_8
-      gedd = 0.0_8
-      ged0 = 0.0_8
-      gedd0 = 0.0_8
-      geddd = 0.0_8
-      ged0d = 0.0_8
-      ged1 = 0.0_8
+      ged = 0.0_pr
+      gedd = 0.0_pr
+      ged0 = 0.0_pr
+      gedd0 = 0.0_pr
+      geddd = 0.0_pr
+      ged0d = 0.0_pr
+      ged1 = 0.0_pr
       do i = 1, size(n)
          temp4d = xd(:)*taud1(:, i) + x(:)*taudd0(:, i)
          temp4 = xd(:)*tau(:, i) + x(:)*taud(:, i)
@@ -272,9 +272,9 @@ contains
       gd0 = -(exp(-(model%c*tau))*model%c*taud0)
       g = exp(-(model%c*tau))
       ge = 0
-      ged = 0.0_8
-      gedd = 0.0_8
-      ged0 = 0.0_8
+      ged = 0.0_pr
+      gedd = 0.0_pr
+      ged0 = 0.0_pr
       do i = 1, size(n)
          temp4 = xd(:)*tau(:, i) + x(:)*taud(:, i)
          arg1dd(:) = temp4*gd0(:, i) + g(:, i)*(xd(:)*taud0(:, i) + x(:)*&
@@ -377,7 +377,7 @@ contains
       gd = -(exp(-(model%c*tau))*model%c*taud)
       g = exp(-(model%c*tau))
       ge = 0
-      ged = 0.0_8
+      ged = 0.0_pr
       do i = 1, size(n)
          arg10 = size(n)
          call PUSHREAL8ARRAY(arg1d, arg10)
@@ -411,12 +411,12 @@ contains
       tdb = tdb + ge*tempb2
       tb = tb + ged*tempb2 + ge*tempb5
       nb = nb + temp1b
-      taudb = 0.0_8
-      taub = 0.0_8
-      gb = 0.0_8
-      xdb = 0.0_8
-      xb = 0.0_8
-      gdb = 0.0_8
+      taudb = 0.0_pr
+      taub = 0.0_pr
+      gb = 0.0_pr
+      xdb = 0.0_pr
+      xb = 0.0_pr
+      gdb = 0.0_pr
       call POPINTEGER4(ad_to)
       do i = ad_to, 1, -1
          tempb2 = gedb/temp
@@ -424,8 +424,8 @@ contains
          temp5 = sum(arg2d(:))
          temp1 = x(i)*temp0/temp
          temp1b = geb - temp5*tempb2
-         arg1db = 0.0_8
-         arg2db = 0.0_8
+         arg1db = 0.0_pr
+         arg2db = 0.0_pr
          temp4 = sum(arg1d(:))
          temp0b = xd(i)*tempb2
          xdb(i) = xdb(i) + temp0*tempb2
@@ -436,10 +436,10 @@ contains
          tempb2 = x(i)*temp1b/temp
          temp0b = temp0b + tempb2
          tempb = tempb - temp0*tempb2/temp
-         arg1b = 0.0_8
+         arg1b = 0.0_pr
          call POPREAL8(temp0)
          arg1b = temp0b
-         arg2b = 0.0_8
+         arg2b = 0.0_pr
          call POPREAL8(temp)
          arg2b = tempb
          gb(:, i) = gb(:, i) + x*arg2b + xd*arg2db + x*tau(:, i)*arg1b + (&
@@ -469,8 +469,8 @@ contains
       tdb = tdb + tempb2
       nb = nb + xb/temp + tempb1 + tempb
       ndb = ndb + tempb0 - sum(temp2*tempb0)
-      gedb = 0.0_8
-      geb = 0.0_8
+      gedb = 0.0_pr
+      geb = 0.0_pr
    end subroutine EXCESS_GIBBS_D_B
 
    subroutine EXCESS_GIBBS_D(model, n, nd, t, td, ge, ged)
@@ -506,7 +506,7 @@ contains
       gd = -(exp(-(model%c*tau))*model%c*taud)
       g = exp(-(model%c*tau))
       ge = 0
-      ged = 0.0_8
+      ged = 0.0_pr
       do i = 1, size(n)
          arg1d(:) = g(:, i)*(tau(:, i)*xd(:) + x(:)*taud(:, i)) + x(:)*tau(:&
          &       , i)*gd(:, i)
@@ -562,20 +562,20 @@ contains
          ge = ge + x(i)*sum(arg1(:))/sum(arg2(:))
       end do
       call PUSHINTEGER4(i - 1)
-      nb = 0.0_8
+      nb = 0.0_pr
       nb = t*ge*r*geb
       tempb0 = sum(n)*r*geb
       geb = t*tempb0
       tb = ge*tempb0
-      taub = 0.0_8
-      gb = 0.0_8
-      xb = 0.0_8
+      taub = 0.0_pr
+      gb = 0.0_pr
+      xb = 0.0_pr
       call POPINTEGER4(ad_to)
       do i = ad_to, 1, -1
          arg1(:) = x(:)*tau(:, i)*g(:, i)
          arg2(:) = x(:)*g(:, i)
-         arg1b = 0.0_8
-         arg2b = 0.0_8
+         arg1b = 0.0_pr
+         arg2b = 0.0_pr
          temp = sum(arg2(:))
          temp0 = sum(arg1(:))
          tempb = geb/temp
@@ -590,7 +590,7 @@ contains
       tb = tb - sum(model%b*taub)/t**2
       temp = sum(n)
       nb = nb + xb/temp - sum(n*xb)/temp**2
-      geb = 0.0_8
+      geb = 0.0_pr
    end subroutine EXCESS_GIBBS_B
 
    subroutine EXCESS_GIBBS(model, n, t, ge)
