@@ -1,9 +1,10 @@
 module yaeos_models_ge
    !! Excess Gibbs Models.
    use yaeos_constants, only: pr, R
+   use yaeos_models_base, only: BaseModel
    implicit none
 
-   type, abstract :: GeModel
+   type, extends(BaseModel), abstract :: GeModel
       !! Excess Gibbs energy model.
    contains
       procedure(excess_gibbs), deferred :: excess_gibbs

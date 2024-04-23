@@ -25,7 +25,6 @@ module yaeos_models_ar_genericcubic
       !!
       !! Generic Cubic Equation of State as defined by Michelsen and Mollerup
       !! with constant \(\delta_1\) and \(\delta_2\) parameters.
-      class(Substances), allocatable :: components
       class(CubicMixRule), allocatable :: mixrule
       class(AlphaFunction), allocatable :: alpha
       real(pr), allocatable :: ac(:) !! Attractive critical parameter

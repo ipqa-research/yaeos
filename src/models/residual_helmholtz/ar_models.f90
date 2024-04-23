@@ -12,9 +12,10 @@ module yaeos_models_ar
    !! @note Later on, third derivative with respect to volume will be included
    !! since it's importance on calculation of critical points.
    use yaeos_constants, only: pr
+   use yaeos_models_base, only: BaseModel
    implicit none
 
-   type, abstract :: ArModel
+   type, abstract, extends(BaseModel) :: ArModel
       !! Abstract residual Helmholtz model.
       !!
       !! This derived type defines the basics needed for the calculation
