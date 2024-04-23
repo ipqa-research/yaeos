@@ -261,7 +261,7 @@ contains
          end if
       case default
          write(error_unit, *) "ERROR [VCALC]: Wrong specification"
-         call exit(1)
+         error stop 1
       end select
    contains
       subroutine solve_point(P, V, Pcalc, AT, iter)
