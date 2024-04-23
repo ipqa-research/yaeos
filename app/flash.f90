@@ -7,7 +7,7 @@ program flasher
     implicit none
 
     ! Variables definition:
-    class(ArModel), allocatable :: model !! Model to use 
+    class(ArModel), allocatable :: model !! Model to use
     type(EquilibriaState) :: flash_result !! Result of Flash calculation
 
     real(pr) :: tc(2), pc(2), w(2)
@@ -25,7 +25,7 @@ program flasher
     w = [0.0115478, 0.200164]           ! Acentric factors
 
     ! Use the PengRobinson76 model
-    model = PengRobinson76(tc, pc, w) 
+    model = PengRobinson76(tc, pc, w)
 
     ! Set pressure and temperatures
     P = 60
@@ -36,7 +36,7 @@ program flasher
 
     ! Calculate flashes
     flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iter)
-   
+
     ! Print results with format statements
     print "(A,5x, *(F6.4,x))", "X:", flash_result%x
     print "(A,5x, *(F6.4,x))", "Y:", flash_result%y
