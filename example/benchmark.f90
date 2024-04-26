@@ -99,13 +99,13 @@ contains
         logical :: fug_p = .false.
 
         call run_bench(n, allderivs, fug_p, "Analytic PR76")
-        ! call run_bench(n, allderivs, "Tape PR76")
-        call run_bench(n, allderivs, fug_p, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Tape PR76")
+        ! call run_bench(n, allderivs, fug_p, "Adiff PR76")
 
         allderivs = .true.
         call run_bench(n, allderivs, fug_p, "Analytic PR76")
-        ! call run_bench(n, fug_p, allderivs, "Tape PR76")
-        call run_bench(n, allderivs, fug_p, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Tape PR76")
+        ! call run_bench(n, allderivs, fug_p, "Adiff PR76")
     end subroutine
 
 end module
