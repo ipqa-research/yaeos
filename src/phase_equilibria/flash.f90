@@ -161,11 +161,13 @@ contains
          flash%x = y
          flash%vy = Vx
          flash%vx = vy
+         flash%beta = 1 - beta
       else
          flash%x = x
          flash%y = y
          flash%vx = Vx
          flash%vy = vy
+         flash%beta = beta
       end if
    end function flash
 
