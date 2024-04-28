@@ -1,5 +1,5 @@
 program main
-    use yaeos, only: pr, ArModel, PengRobinson76, vcalc
+    use yaeos, only: pr, ArModel, PengRobinson76, volume
     implicit none
     class(ArModel), allocatable :: eos
 
@@ -34,7 +34,7 @@ program main
         print *, "# ", t
         do i=0,n_p_points-1
             p = p0 + dp * i
-            call vcalc(eos, n, p, t, v, root_type="stable")
+            call volume(eos, n, p, t, v, root_type="stable")
             print *, v, p
         end do
         print *, ""
