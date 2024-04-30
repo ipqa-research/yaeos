@@ -15,7 +15,7 @@ contains
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
-      real(pr), intent(in) :: k0(:) !! Initial K factors (y/x)
+      real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
       integer, optional, intent(out) :: iters !! Number of iterations
 
       logical :: stopflash
@@ -32,11 +32,11 @@ contains
       real(pr), dimension(size(z)) :: lnfug_y, lnfug_x
       real(pr), dimension(size(z)) :: K, dK, lnK, dKold, lnKold
       real(pr), dimension(size(z), size(z)) :: dlnphidn
-      
+
       real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
       real(pr) :: bmin, bmax, Vy, Vx
 
-      real(pr) :: aux, bx, savek(size(z)), log_k2(size(z))
+      real(pr) :: bx, savek(size(z)), log_k2(size(z))
       real(pr) :: DPVl, dpvv, dVydVl, h, pl, pold, pold2, pv, step, stepv
       real(pr) :: told, told2
 
@@ -49,28 +49,37 @@ contains
       if (present(v_spec) .and. present(p_spec)) then
          write (*, *) "ERROR: Can't specify pressure and volume in Flash"
          return
-      ! else if ( present(v_spec) ) then
-      !    spec = "TV"
-      !    v = v_spec
+         ! else if ( present(v_spec) ) then
+         !    spec = "TV"
+         !    v = v_spec
       else if ( present(p_spec) ) then
          spec = "TP"
          p = p_spec
+      else if (present(v_spec)) then
+         spec = "TV"
+         v = v_spec
       end if
 
-      ! if (spec == 'TV' .or. spec == 'isoV') then
-      !    Vx = 0.0
-      !    ! if (FIRST) then  
-      !       ! the EoS one-phase pressure will be used to estimate Wilson K factors
-      !       call pressure(self, z, v_spec, t, p=p)
-      !       if (P < 0) P = 1.0
-      !    ! end if
-      ! end if
+      if (spec == 'TV' .or. spec == 'isoV') then
+         Vx = 0.0
+         if (.not. present(k0)) then
+            ! the EoS one-phase pressure will be used to estimate Wilson K factors
+            call pressure(self, z, v_spec, t, p=p)
+            if (P < 0) P = 1.0
+         end if
+      end if
 
-      K = K0
-      
+      if (present(K0)) then
+         K = K0
+      else
+         K = (self%components%Pc/P) &
+            * exp(5.373_pr*(1 + self%components%w)&
+            * (1 - self%components%Tc/T))
+      end if
+
       call betato01(z, K)  ! adapted 26/11/2014
       lnK = log(K)
-      
+
       ! now we must have  g0>0 and g1<0 and therefore 0<beta<1 (M&M page 252)
       call betalimits(z, K, bmin, bmax)
       beta = (bmin + bmax)/2  ! first guess for beta
@@ -82,11 +91,11 @@ contains
       do while (maxval(abs(dK)) > 1.d-6)
          iters = iters + 1
 
-         if (maxval(abs(dK)) > 1.10_pr) then  
+         if (maxval(abs(dK)) > 1.10_pr) then
             ! 26/11/2014
             g0 = sum(z*K) - 1._pr
             g1 = 1._pr - sum(z/K)
-            if (g0 < 0 .or. g1 > 0) then  
+            if (g0 < 0 .or. g1 > 0) then
                ! bring beta back to range, by touching K
                call betato01(z, K)
                call betalimits(z, K, bmin, bmax)
@@ -100,10 +109,12 @@ contains
          x = y/K
 
          select case (spec)
-         case("TV", "isoV")
+          case("TV", "isoV")
             ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            ! TODO: Add TV specification
-         case("TP")
+            call tv_loop_solve_pressures(self, T, V, beta, x, y, Vx, Vy, P)
+            call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+          case("TP")
             ! for TP Flash
             call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
             call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
@@ -114,16 +125,14 @@ contains
 
          lnK = lnfug_x - lnfug_y
          dK = lnK - lnKold
-         
-         aux = sum(dK + dKold)
 
-         if (iters > 10 .and. abs(aux) < 0.05) then 
+         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05) then
             ! oscilation behavior detected (27/06/15)
             lnK = (lnK + lnKold)/2
          end if
 
          K = exp(lnK)
-         
+
          call betalimits(z, K, bmin, bmax)  ! 26/06/15
          if ((beta < bmin) .or. (bmax < beta)) then
             beta = (bmin + bmax)/2
@@ -139,7 +148,7 @@ contains
       if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
       ! if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
       ! if (spec == 'TV' .or. spec == 'isoV') P = Pv
-      
+
       if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
          P = -1.0
          flash%x = x/x
@@ -217,21 +226,21 @@ contains
       real(pr), intent(in) :: K(:)
       real(pr), intent(in) :: beta
 
-      real(pr), intent(out) :: rr 
+      real(pr), intent(out) :: rr
       real(pr), intent(out) :: drrdb
 
       real(pr) :: denom(size(z))
-      
+
       denom = 1 + beta*(K - 1._pr)
       rr = sum(z*(K - 1._pr)/denom)
       drrdb = -sum(z*(K - 1._pr)**2/denom**2)
-   end subroutine
+   end subroutine rachford_rice
 
    subroutine solve_rr(z, K, beta, beta_min, beta_max)
       !! Solve the Rachford-Rice Equation.
       real(pr), intent(in) :: z(:) !! Mole fractions vector
       real(pr), intent(in) :: K(:) !! K-factors
-      real(pr), intent(out) :: beta_min !! 
+      real(pr), intent(out) :: beta_min !!
       real(pr), intent(out) :: beta_max
       real(pr), intent(out) :: beta
 
@@ -247,54 +256,92 @@ contains
          call rachford_rice(z, k, beta, g, dgdb)
          step = -g/dgdb
          beta = beta + step
-         do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10) 
+         do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10)
             step = step/2
             beta = beta - step
          end do
       end do
-   end subroutine
+   end subroutine solve_rr
 
-   ! subroutine tv_loop
-   !    dVydVl = -(1 - beta)/beta
-   !    ! call Bcalc(n, x, T, Bx)
-   !    ! TODO: Add this intiial volume
+   subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
+      use yaeos_thermoprops, only: fugacity_vt, pressure
+      use iso_fortran_env, only: error_unit
 
-   !    if (Vx < Bx) Vx = 1.625*Bx  ! First evaluation will be with Vx = 1.5*Bx
-   !    ! Pl = -1.0
-   !    call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, lnfug_y, dlnphidp, dlnphitp, dlnphidn)  ! 26/06/15
-   !    do while (Pl < 0 .or. DPVl >= 0)
-   !       Vx = Vx - 0.2*(Vx - Bx)
-   !       call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
-   !    end do
-   !    Vy = (v - (1 - beta)*Vx)/beta
-   !    h = 1.0
-   !    iterv = 0
+      class(ArModel), intent(in) :: model
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Total volume [L/mol]
+      real(pr), intent(in) :: beta !! Molar fraction of light-phase
+      real(pr), intent(in) :: x(:) !! Molar fractions of heavy-phase
+      real(pr), intent(in) :: y(:) !! Molar fractions of light-phase
+      real(pr), intent(in out) :: Vx !! Heavy-phase molar volume [L/mol]
+      real(pr), intent(in out) :: Vy !! Light-Phase molar volume [L/mol]
+      real(pr), intent(out) :: P !! Pressure [bar]
 
-   !    stopflash = .false.
-   !    do while (abs(h) > 1.d-4)  ! Newton for solving P equality, with Vx as independent variable
-   !       iterv = iterv + 1
-   !       if (iterv >= 100) then
-   !          write (2, *) 'volume convergence problems'
-   !          P = -1.0
-   !          stopflash = .true.
-   !          exit
-   !       end if
-   !       call zTVTERMO(n, 0, T, x, Vx, Pl, DPVl, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
-   !       call zTVTERMO(n, 0, T, y, Vy, Pv, DPVv, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
-   !       h = Pv - Pl
-   !       dh = -DPVv*dVydVl - DPVl
-   !       stepv = -h/dh
-   !       if (iterv >= 10) stepv = stepv/2
-   !       Vx = Vx + stepv
-   !       do while (Vx < 1.001*Bx)
-   !          stepv = stepv/2
-   !          Vx = Vx - stepv
-   !       end do
-   !       Vy = (v - (1 - beta)*Vx)/beta
-   !    end do
-   !    if (stopflash .eqv. .true.) exit
+      real(pr) :: Bx !! Liquid phase covolume
+      real(pr) :: dVydVl !! Derivative of Vy wrt Vx
 
-   !    call zTVTERMO(n, 1, T, x, Vx, Pl, DPVl, PHILOGx, dlnphidp, dlnphitp, dlnphidn)
-   !    call zTVTERMO(n, 1, T, y, Vy, Pv, DPVv, lnfug_y, dlnphidp, dlnphitp, dlnphidn)
-   ! end subroutine
-end module
+      ! Pressure equality newton functions
+      real(pr) :: h !! Pressure equality
+      real(pr) :: dh  !! dh/
+      real(pr) :: stepv
+
+      real(pr) :: dPVl, dPVv
+      real(pr) :: Pl, Pv
+
+      integer :: iterv
+      logical :: stopflash
+
+      dVydVl = -(1 - beta)/beta
+      Bx = model%get_v0(x, 0.1_pr, T)
+
+      ! First evaluation will be with Vx = 1.5*Bx
+      if (Vx < Bx) Vx = 1.625_pr*Bx
+
+      call pressure(model, x, Vx, T, Pl, dpdv=dPVl)
+
+      do while (Pl < 0 .or. dPVl >= 0)
+         Vx = Vx - 0.2*(Vx - Bx)
+         call pressure(model, x, vX, T, Pl, dpdv=dPVl)
+      end do
+
+      Vy = (V - (1 - beta)*Vx)/beta
+
+      h = 1.0
+      iterv = 0
+      stopflash = .false.
+      do while (abs(h) > 1.d-4)
+         ! Newton for solving P equality, with Vx as independent variable
+         iterv = iterv + 1
+
+         call pressure(model, x, Vx, T, Pl, dpdv=dPVl)
+         call pressure(model, y, Vy, T, Pv, dpdv=dPVv)
+
+         h = Pv - Pl
+         dh = -DPVv*dVydVl - DPVl
+         stepv = -h/dh
+
+         if (iterv >= 10) stepv = stepv/2
+
+         Vx = Vx + stepv
+
+         do while (Vx < 1.001*Bx)
+            stepv = stepv/2
+            Vx = Vx - stepv
+         end do
+
+         Vy = (v - (1 - beta)*Vx)/beta
+
+         if (iterv >= 100) then
+            write (error_unit, *) "WARN(FLASH_VT): volume convergence problems"
+            P = -1.0
+            stopflash = .true.
+            exit
+         end if
+      end do
+
+      call pressure(model, x, Vx, T, Pl, dpdv=dPVl)
+      call pressure(model, y, Vy, T, Pv, dpdv=dPVv)
+
+      P = (Pl + Pv)*0.5_pr
+   end subroutine tv_loop_solve_pressures
+end module yaeos_equilibria_flash
