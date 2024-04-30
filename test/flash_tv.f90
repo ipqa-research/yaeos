@@ -44,8 +44,12 @@ program flash_tv
    beta = flash_result%beta
    vx = flash_result%vx
    vy = flash_result%vy
-   K = y/x
-   V = beta *vy + (1-beta)*vx
+
+   K = (model%components%Pc/5._pr) &
+            * exp(5.373_pr*(1 + model%components%w)&
+            * (1 - model%components%Tc/T))
+   
+    V = beta *vy + (1-beta)*vx
 
    print *, "true Results"
    print *, flash_result%vx, flash_result%vy, flash_result%beta, beta * vy + (1-beta)*vx
@@ -73,7 +77,6 @@ program flash_tv
       dx = solve_system(dF, -F)
 
       if (any(isnan(dx)) .or. any(isnan(F))) then
-         print *, "reducing"
          K = K - dxold(:nc)
          beta = beta - dxold(nc+1)
          vx = vx - dxold(nc+2)
@@ -82,7 +85,7 @@ program flash_tv
          dx = dxold/2
       end if
 
-      ! print *, its, F
+      print *, its, F
 
       do while (beta + dx(nc+1) > 1 .or. beta + dx(nc+1) < 0)
          dx = dx/5
@@ -104,7 +107,6 @@ program flash_tv
    print *, vx, vy, beta, beta*vy + (1-beta)*vx
    print *, x
    print *, y
-
 
 contains
    subroutine flash_TV_F(model, z, T, V, K, beta, vx, vy, F, dF)
