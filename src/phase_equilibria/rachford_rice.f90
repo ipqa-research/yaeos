@@ -29,29 +29,24 @@ contains
    subroutine betalimits(z, K, bmin, bmax)
       !! Define beta limits to avoid overshooting when solving the Rachford-Rice
       !! equation.
+      !!
+      !! This is based on the assumtion that either \(y_i < 1\) and \(x_i < 1\).
       real(pr), intent(in) :: z(:) !! Molar fractions vector
       real(pr), intent(in) :: K(:) !! K-factors
       real(pr), intent(out) :: bmin !! Minimum beta value
       real(pr), intent(out) :: bmax  !! Maximum beta value
 
       real(pr), dimension(size(z)) :: vmin, vmax
-      integer :: i, in, ix
 
-      in = 0
-      ix = 0
       vmin = 0.d0
       ! max=1.001d0    ! modified  3/3/15 (not to generate false separations with beta 0.9999...)
       vmax = 1.00001_pr ! modified 28/6/15 (to prevent overshooting in the Newton for solving RR eq.)
 
-      do i = 1, size(z)
-         if (K(i)*z(i) > 1) then
-            in = in + 1
-            vmin(in) = (K(i)*z(i) - 1._pr)/(K(i) - 1._pr)
-         else if (K(i) < z(i)) then
-            ix = ix + 1
-            vmax(ix) = (1._pr - z(i))/(1._pr - K(i))
-         end if
-      end do
+      where (K * z > 1)
+        vmin = (K * z - 1._pr) / (K - 1._pr)
+      elsewhere (K < z)
+        vmax = (1 - z)/(1 - K)
+      end where
 
       bmin = maxval(vmin)
       bmax = minval(vmax)
