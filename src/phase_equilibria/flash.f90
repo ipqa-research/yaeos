@@ -3,6 +3,7 @@ module yaeos_equilibria_flash
    use yaeos_models, only: ArModel
    use yaeos_equilibria_equilibria_state, only: EquilibriaState
    use yaeos_thermoprops, only: fugacity_vt, fugacity_tp, pressure
+   use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    implicit none
 
 contains
@@ -49,10 +50,7 @@ contains
       if (present(v_spec) .and. present(p_spec)) then
          write (*, *) "ERROR: Can't specify pressure and volume in Flash"
          return
-         ! else if ( present(v_spec) ) then
-         !    spec = "TV"
-         !    v = v_spec
-      else if ( present(p_spec) ) then
+      else if (present(p_spec)) then
          spec = "TP"
          p = p_spec
       else if (present(v_spec)) then
@@ -179,91 +177,9 @@ contains
       end if
    end function flash
 
-   subroutine betato01(z, K)
-      implicit none
-      real(pr), intent(in) :: z(:) ! composition of the system
-      real(pr) :: K(:) ! K factors (modified in this routine)
-      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on K factors
-
-      g1 = 1.0
-      do while (g0 < 0 .or. g1 > 0)
-         g0 = sum(z*K) - 1.D0
-         g1 = 1.D0 - sum(z/K)
-         if (g0 < 0) then
-            K = 1.1*K  ! increased volatiliy will bring the solution from subcooled liquid into VLE
-         else if (g1 > 0) then
-            K = 0.9*K  ! decreased volatiliy will bring the solution from superheated vapor into VLE
-         end if
-      end do
-   end subroutine betato01
-
-   subroutine betalimits(z, K, bmin, bmax)
-      real(pr), intent(in) :: z(:), K(:)  ! composition of the system and K factors
-      real(pr), intent(out) :: bmin, bmax
-      real(pr), dimension(size(z)) :: vmin, vmax
-      integer :: i, in, ix
-
-      in = 0
-      ix = 0
-      vmin = 0.d0
-      ! max=1.001d0    ! modified  3/3/15 (not to generate false separations with beta 0.9999...)
-      vmax = 1.00001d0 ! modified 28/6/15 (to prevent overshooting in the Newton for solving RR eq.)
-      do i = 1, size(z)
-         if (K(i)*z(i) > 1) then
-            in = in + 1
-            vmin(in) = (K(i)*z(i) - 1.d0)/(K(i) - 1.d0)
-         else if (K(i) < z(i)) then
-            ix = ix + 1
-            vmax(ix) = (1.d0 - z(i))/(1.d0 - K(i))
-         end if
-      end do
-      bmin = maxval(vmin)
-      bmax = minval(vmax)
-   end subroutine betalimits
-
-   subroutine rachford_rice(z, K, beta, rr, drrdb)
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: K(:)
-      real(pr), intent(in) :: beta
-
-      real(pr), intent(out) :: rr
-      real(pr), intent(out) :: drrdb
-
-      real(pr) :: denom(size(z))
-
-      denom = 1 + beta*(K - 1._pr)
-      rr = sum(z*(K - 1._pr)/denom)
-      drrdb = -sum(z*(K - 1._pr)**2/denom**2)
-   end subroutine rachford_rice
-
-   subroutine solve_rr(z, K, beta, beta_min, beta_max)
-      !! Solve the Rachford-Rice Equation.
-      real(pr), intent(in) :: z(:) !! Mole fractions vector
-      real(pr), intent(in) :: K(:) !! K-factors
-      real(pr), intent(out) :: beta_min !!
-      real(pr), intent(out) :: beta_max
-      real(pr), intent(out) :: beta
-
-      real(pr) :: g, dgdb
-      real(pr) :: step
-
-      g = 1.0
-      step = 1.0
-
-      call betalimits(z, k, beta_min, beta_max)
-
-      do while (abs(g) > 1.d-5 .and. abs(step) > 1.d-10)
-         call rachford_rice(z, k, beta, g, dgdb)
-         step = -g/dgdb
-         beta = beta + step
-         do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10)
-            step = step/2
-            beta = beta - step
-         end do
-      end do
-   end subroutine solve_rr
-
    subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
+      !! Solve pressure equality between two phases at a given temperature,
+      !! volume, vapor molar fractions and compositions.
       use yaeos_thermoprops, only: fugacity_vt, pressure
       use iso_fortran_env, only: error_unit
 
@@ -278,46 +194,44 @@ contains
       real(pr), intent(out) :: P !! Pressure [bar]
 
       real(pr) :: Bx !! Liquid phase covolume
-      real(pr) :: dVydVl !! Derivative of Vy wrt Vx
+      real(pr) :: dVydVx !! Derivative of Vy wrt Vx
 
       ! Pressure equality newton functions
       real(pr) :: h !! Pressure equality
       real(pr) :: dh  !! dh/
       real(pr) :: stepv
 
-      real(pr) :: dPVl, dPVv
-      real(pr) :: Pl, Pv
+      real(pr) :: dPxdV, dPydV
+      real(pr) :: Px, Py
 
       integer :: iterv
-      logical :: stopflash
 
-      dVydVl = -(1 - beta)/beta
+      dVydVx = -(1 - beta)/beta
       Bx = model%get_v0(x, 0.1_pr, T)
 
       ! First evaluation will be with Vx = 1.5*Bx
       if (Vx < Bx) Vx = 1.625_pr*Bx
 
-      call pressure(model, x, Vx, T, Pl, dpdv=dPVl)
+      call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
 
-      do while (Pl < 0 .or. dPVl >= 0)
+      do while (Px < 0 .or. dPxdV >= 0)
          Vx = Vx - 0.2*(Vx - Bx)
-         call pressure(model, x, vX, T, Pl, dpdv=dPVl)
+         call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
       end do
 
       Vy = (V - (1 - beta)*Vx)/beta
 
       h = 1.0
       iterv = 0
-      stopflash = .false.
       do while (abs(h) > 1.d-4)
          ! Newton for solving P equality, with Vx as independent variable
          iterv = iterv + 1
 
-         call pressure(model, x, Vx, T, Pl, dpdv=dPVl)
-         call pressure(model, y, Vy, T, Pv, dpdv=dPVv)
+         call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
+         call pressure(model, y, Vy, T, Py, dpdv=dPydV)
 
-         h = Pv - Pl
-         dh = -DPVv*dVydVl - DPVl
+         h = Py - Px
+         dh = -dPydV * dVydVx - dPxdV
          stepv = -h/dh
 
          if (iterv >= 10) stepv = stepv/2
@@ -332,16 +246,14 @@ contains
          Vy = (v - (1 - beta)*Vx)/beta
 
          if (iterv >= 100) then
-            write (error_unit, *) "WARN(FLASH_VT): volume convergence problems"
+            write (error_unit, *) "WARN(FLASH_VT): volume convergence problems", Px, Py
             P = -1.0
-            stopflash = .true.
             exit
          end if
       end do
 
-      call pressure(model, x, Vx, T, Pl, dpdv=dPVl)
-      call pressure(model, y, Vy, T, Pv, dpdv=dPVv)
-
-      P = (Pl + Pv)*0.5_pr
+      call pressure(model, x, Vx, T, Px)
+      call pressure(model, y, Vy, T, Py)
+      P = (Px + Py) * 0.5_pr
    end subroutine tv_loop_solve_pressures
 end module yaeos_equilibria_flash
