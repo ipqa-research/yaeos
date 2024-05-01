@@ -15,6 +15,7 @@ contains
       !!
       !! Calculates the bubble temperature of a multicomponent mixture.
       use stdlib_optval, only: optval
+      use yaeos_thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -38,7 +39,7 @@ contains
       if (present (p0)) then
          p = p0
       else
-         p = 500
+         call pressure(model, z, T, 10._pr, P=P)
       end if
 
       if (present(y0)) then
