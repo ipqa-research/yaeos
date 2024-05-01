@@ -58,37 +58,37 @@ contains
 
       integer, parameter :: nc = 2
 
-      real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
-      real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
-      real(pr) :: vx = 8.4918883298198036E-002
-      real(pr) :: vy = 0.32922132295944545
+      real(pr) :: x(nc) = [6.8598497458814592E-002,  0.93140153234346601]
+      real(pr) :: y(nc) = [0.61055654015073813, 0.38944348965161085]
+      real(pr) :: vx = 9.3682339483042124E-002
+      real(pr) :: vy = 2.3935064128338039     
+      real(pr) :: beta = 0.61148923421371815
+      real(pr) :: P = 6.097517429661468
 
       class(ArModel), allocatable :: model
       type(EquilibriaState) :: flash_result
 
       real(pr) :: tc(nc), pc(nc), w(nc)
       real(pr) :: n(nc), t, k0(nc), v
-      integer :: iters
+      integer :: iters, i
 
       n = [0.4, 0.6]
       model = binary_PR76()
 
-      V = 1.57_pr
-      t = 200
-      ! k0 = (PC/10._pr)*exp(5.373*(1 + w)*(1 - TC/T))
+      V = 1.5_pr
+      t = 210
+      k0 = (model%components%Pc/10._pr) &
+            * exp(5.373_pr*(1 + model%components%w)&
+            * (1 - model%components%Tc/T))
 
-      flash_result = flash(model, n, t=t, v_spec=v, iters=iters)
+      flash_result = flash(model, n, t=t, v_spec=v, k0=k0, iters=iters)
 
-      print *, "TV"
-      print *, flash_result%x
-      print *, flash_result%y
-      print *, flash_result%vx
-      print *, flash_result%vy
-      print *, flash_result%p
-      print *, flash_result%beta
-      print *, flash_result%beta * flash_result%vy + (1-flash_result%beta) * flash_result%vx
-      print *, "=========="
-
+      call check(error, maxval(abs(flash_result%x - x)) < 1e-5)
+      call check(error, maxval(abs(flash_result%y - y)) < 1e-5)
+      call check(error, abs(flash_result%vx - vx)  < 1e-5)
+      call check(error, abs(flash_result%vy - vy)  < 1e-5)
+      call check(error, abs(flash_result%p - p)  < 1e-5)
+      call check(error, abs(flash_result%beta - beta)  < 1e-5)
    end subroutine test_flash_tv
 
    subroutine test_flash_pt_failed(error)
