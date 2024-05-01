@@ -134,7 +134,7 @@ contains
         !! with respect to composition:
         !!
         !! \[
-        !!    B = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
+        !!    nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
         !! \]
         !!
         class(QMR), intent(in) :: self !! Mixing rule object.
