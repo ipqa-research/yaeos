@@ -179,7 +179,7 @@ contains
 
    subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
       !! Solve pressure equality between two phases at a given temperature,
-      !! volume, vapor molar fractions and compositions.
+      !! total volume, vapor molar fractions and compositions.
       use yaeos_thermoprops, only: fugacity_vt, pressure
       use iso_fortran_env, only: error_unit
 
