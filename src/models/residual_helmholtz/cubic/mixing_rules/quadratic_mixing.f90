@@ -98,7 +98,7 @@ contains
             call self%aij(ai, daidt, daidt2, aij, daijdt, daijdt2)
         else
             write(*, *) "ERROR: aij matrix calculation not defined"
-            call exit(1)
+            error stop 1
         end if
 
         D = 0

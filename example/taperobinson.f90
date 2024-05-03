@@ -15,23 +15,24 @@
 !
 MODULE TAPENADE_PR
   USE YAEOS_TAPENADE_AR_API, ONLY : armodeltapenade
+  use yaeos_constants, only: pr
   IMPLICIT NONE
-  REAL(8), ALLOCATABLE :: kij(:, :), lij(:, :)
-  REAL(8), ALLOCATABLE :: ac(:), b(:), k(:)
-  REAL(8), ALLOCATABLE :: tc(:), pc(:), w(:)
-  REAL(8), PARAMETER :: r=0.08314472
-  REAL(8), PARAMETER :: del1=1.+SQRT(2.)
-  REAL(8), PARAMETER :: del2=1.-SQRT(2.)
+  real(pr), ALLOCATABLE :: kij(:, :), lij(:, :)
+  real(pr), ALLOCATABLE :: ac(:), b(:), k(:)
+  real(pr), ALLOCATABLE :: tc(:), pc(:), w(:)
+  real(pr), PARAMETER :: r=0.08314472
+  real(pr), PARAMETER :: del1=1.+SQRT(2.)
+  real(pr), PARAMETER :: del2=1.-SQRT(2.)
   TYPE(ARMODELTAPENADE) :: model
 
 CONTAINS
   SUBROUTINE SETUP_MODEL(tc_in, pc_in, w_in, kij_in, lij_in)
     IMPLICIT NONE
-    REAL(8) :: tc_in(:)
-    REAL(8) :: pc_in(:)
-    REAL(8) :: w_in(:)
-    REAL(8) :: kij_in(:, :)
-    REAL(8) :: lij_in(:, :)
+    real(pr) :: tc_in(:)
+    real(pr) :: pc_in(:)
+    real(pr) :: w_in(:)
+    real(pr) :: kij_in(:, :)
+    real(pr) :: lij_in(:, :)
     
     tc = tc_in
     pc = pc_in
@@ -64,131 +65,131 @@ CONTAINS
   SUBROUTINE AR_D_D_D(n, nd, v, vd1, vd0, vd, t, td1, td0, td, arval, &
 &   arvald1, arvald0, arvald0d, arvald, arvaldd0, arvaldd, arvalddd)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:), v, t
-    REAL(8), INTENT(IN) :: vd1, td1
-    REAL(8), INTENT(IN) :: vd0, td0
-    REAL(8), INTENT(IN) :: nd(:), vd, td
-    REAL(8), INTENT(OUT) :: arval
-    REAL(8), INTENT(OUT) :: arvald1
-    REAL(8), INTENT(OUT) :: arvald0
-    REAL(8), INTENT(OUT) :: arvald0d
-    REAL(8), INTENT(OUT) :: arvald
-    REAL(8), INTENT(OUT) :: arvaldd0
-    REAL(8), INTENT(OUT) :: arvaldd
-    REAL(8), INTENT(OUT) :: arvalddd
-    REAL(8) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
-    REAL(8) :: amixd1, ad1(SIZE(n))
-    REAL(8) :: amixd0, ad0(SIZE(n))
-    REAL(8) :: amixd0d, ad0d(SIZE(n))
-    REAL(8) :: amixd, ad(SIZE(n)), nijd
-    REAL(8) :: amixdd0, add0(SIZE(n))
-    REAL(8) :: amixdd, add(SIZE(n))
-    REAL(8) :: amixddd, addd(SIZE(n))
-    REAL(8) :: bmix
-    REAL(8) :: bmixd
-    REAL(8) :: b_v
-    REAL(8) :: b_vd1
-    REAL(8) :: b_vd0
-    REAL(8) :: b_vd0d
-    REAL(8) :: b_vd
-    REAL(8) :: b_vdd0
-    REAL(8) :: b_vdd
-    REAL(8) :: b_vddd
-    REAL(8) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
+    real(pr), INTENT(IN) :: n(:), v, t
+    real(pr), INTENT(IN) :: vd1, td1
+    real(pr), INTENT(IN) :: vd0, td0
+    real(pr), INTENT(IN) :: nd(:), vd, td
+    real(pr), INTENT(OUT) :: arval
+    real(pr), INTENT(OUT) :: arvald1
+    real(pr), INTENT(OUT) :: arvald0
+    real(pr), INTENT(OUT) :: arvald0d
+    real(pr), INTENT(OUT) :: arvald
+    real(pr), INTENT(OUT) :: arvaldd0
+    real(pr), INTENT(OUT) :: arvaldd
+    real(pr), INTENT(OUT) :: arvalddd
+    real(pr) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
+    real(pr) :: amixd1, ad1(SIZE(n))
+    real(pr) :: amixd0, ad0(SIZE(n))
+    real(pr) :: amixd0d, ad0d(SIZE(n))
+    real(pr) :: amixd, ad(SIZE(n)), nijd
+    real(pr) :: amixdd0, add0(SIZE(n))
+    real(pr) :: amixdd, add(SIZE(n))
+    real(pr) :: amixddd, addd(SIZE(n))
+    real(pr) :: bmix
+    real(pr) :: bmixd
+    real(pr) :: b_v
+    real(pr) :: b_vd1
+    real(pr) :: b_vd0
+    real(pr) :: b_vd0d
+    real(pr) :: b_vd
+    real(pr) :: b_vdd0
+    real(pr) :: b_vdd
+    real(pr) :: b_vddd
+    real(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     INTRINSIC SQRT
     INTRINSIC SUM
     INTRINSIC LOG
     INTRINSIC SIZE
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d0d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1dd0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1dd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1ddd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d0d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2dd0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2dd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2ddd
-    REAL(8), DIMENSION(SIZE(n)) :: arg10
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d1
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d0
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d0d
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d
-    REAL(8), DIMENSION(SIZE(n)) :: arg10dd0
-    REAL(8), DIMENSION(SIZE(n)) :: arg10dd
-    REAL(8), DIMENSION(SIZE(n)) :: arg10ddd
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11d
-    REAL(8) :: arg12
-    REAL(8) :: arg12d1
-    REAL(8) :: arg12d0
-    REAL(8) :: arg12d0d
-    REAL(8) :: arg12d
-    REAL(8) :: arg12dd0
-    REAL(8) :: arg12dd
-    REAL(8) :: arg12ddd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: tempd0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: tempd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: tempdd
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0d0
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0d
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0dd
-    REAL(8) :: temp1
-    REAL(8) :: temp1d0
-    REAL(8) :: temp1d
-    REAL(8) :: temp1dd
-    REAL(8) :: temp2
-    REAL(8) :: temp3
-    REAL(8) :: temp3d0
-    REAL(8) :: temp3d
-    REAL(8) :: temp4
-    REAL(8) :: temp4d0
-    REAL(8) :: temp4d
-    REAL(8) :: temp4dd
-    REAL(8) :: temp5
-    REAL(8) :: temp5d0
-    REAL(8) :: temp5d
-    REAL(8) :: temp5dd
-    REAL(8) :: temp6
-    REAL(8) :: temp6d0
-    REAL(8) :: temp6d
-    REAL(8) :: temp6dd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp7
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp7d
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp8
-    REAL(8) :: temp9
-    REAL(8) :: temp9d
-    REAL(8) :: temp10
-    REAL(8) :: temp10d
-    REAL(8) :: temp11
-    REAL(8) :: temp11d
-    REAL(8) :: temp12
-    REAL(8) :: temp12d
-    REAL(8) :: temp13
-    REAL(8) :: temp14
-    REAL(8) :: temp14d
-    REAL(8) :: temp15
-    REAL(8) :: temp15d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp16
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp17
-    REAL(8) :: temp18
-    REAL(8) :: temp19
-    REAL(8) :: temp20
-    REAL(8) :: temp21
-    REAL(8) :: temp22
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d0d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1dd0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1dd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1ddd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d0d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2dd0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2dd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2ddd
+    real(pr), DIMENSION(SIZE(n)) :: arg10
+    real(pr), DIMENSION(SIZE(n)) :: arg10d1
+    real(pr), DIMENSION(SIZE(n)) :: arg10d0
+    real(pr), DIMENSION(SIZE(n)) :: arg10d0d
+    real(pr), DIMENSION(SIZE(n)) :: arg10d
+    real(pr), DIMENSION(SIZE(n)) :: arg10dd0
+    real(pr), DIMENSION(SIZE(n)) :: arg10dd
+    real(pr), DIMENSION(SIZE(n)) :: arg10ddd
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11d
+    real(pr) :: arg12
+    real(pr) :: arg12d1
+    real(pr) :: arg12d0
+    real(pr) :: arg12d0d
+    real(pr) :: arg12d
+    real(pr) :: arg12dd0
+    real(pr) :: arg12dd
+    real(pr) :: arg12ddd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp
+    real(pr), DIMENSION(SIZE(tc, 1)) :: tempd0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: tempd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: tempdd
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0d0
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0d
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0dd
+    real(pr) :: temp1
+    real(pr) :: temp1d0
+    real(pr) :: temp1d
+    real(pr) :: temp1dd
+    real(pr) :: temp2
+    real(pr) :: temp3
+    real(pr) :: temp3d0
+    real(pr) :: temp3d
+    real(pr) :: temp4
+    real(pr) :: temp4d0
+    real(pr) :: temp4d
+    real(pr) :: temp4dd
+    real(pr) :: temp5
+    real(pr) :: temp5d0
+    real(pr) :: temp5d
+    real(pr) :: temp5dd
+    real(pr) :: temp6
+    real(pr) :: temp6d0
+    real(pr) :: temp6d
+    real(pr) :: temp6dd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp7
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp7d
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp8
+    real(pr) :: temp9
+    real(pr) :: temp9d
+    real(pr) :: temp10
+    real(pr) :: temp10d
+    real(pr) :: temp11
+    real(pr) :: temp11d
+    real(pr) :: temp12
+    real(pr) :: temp12d
+    real(pr) :: temp13
+    real(pr) :: temp14
+    real(pr) :: temp14d
+    real(pr) :: temp15
+    real(pr) :: temp15d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp16
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp17
+    real(pr) :: temp18
+    real(pr) :: temp19
+    real(pr) :: temp20
+    real(pr) :: temp21
+    real(pr) :: temp22
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask0
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask1
@@ -210,14 +211,14 @@ CONTAINS
     temp16 = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      temp7d = 0.0_8
+      temp7d = 0.0_pr
     ELSEWHERE
       temp7d = arg1d1(:)/(2.0*temp16)
     END WHERE
     temp7 = temp16
     mask0(:) = arg1(:) .EQ. 0.0
-    WHERE (mask0(:)) tempd = 0.0_8
-    tempdd = 0.0_8
+    WHERE (mask0(:)) tempd = 0.0_pr
+    tempdd = 0.0_pr
     mask1(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask1(:)) 
       temp16 = arg1d0(:)/(2.0*temp7)
@@ -227,22 +228,22 @@ CONTAINS
     tempd0 = temp7d
     temp = temp7
     mask2(:) = arg1(:) .EQ. 0.0
-    WHERE (mask2(:)) result1d = 0.0_8
-    result1dd = 0.0_8
+    WHERE (mask2(:)) result1d = 0.0_pr
+    result1dd = 0.0_pr
     mask3(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask3(:)) 
       temp16 = arg1d(:)/(2.0*temp)
       temp7d = -(temp16*tempd0/temp)
       temp7 = temp16
     END WHERE
-    result1ddd = 0.0_8
+    result1ddd = 0.0_pr
     mask4(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask4(:)) 
       temp16 = temp7*tempd/temp
       result1ddd = -((tempd*temp7d+temp7*tempdd-temp16*tempd0)/temp)
       result1dd = -temp16
     END WHERE
-    result1dd0 = 0.0_8
+    result1dd0 = 0.0_pr
     mask5(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask5(:)) 
       result1dd0 = temp7d
@@ -269,14 +270,14 @@ CONTAINS
     temp16 = SQRT(arg2(:))
     mask6(:) = arg2(:) .EQ. 0.0
     WHERE (mask6(:)) 
-      temp7d = 0.0_8
+      temp7d = 0.0_pr
     ELSEWHERE
       temp7d = arg2d1(:)/(2.0*temp16)
     END WHERE
     temp7 = temp16
     mask7(:) = arg2(:) .EQ. 0.0
-    WHERE (mask7(:)) temp0d = 0.0_8
-    temp0dd = 0.0_8
+    WHERE (mask7(:)) temp0d = 0.0_pr
+    temp0dd = 0.0_pr
     mask8(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask8(:)) 
       temp16 = arg2d0(:)/(2.0*temp7)
@@ -286,15 +287,15 @@ CONTAINS
     temp0d0 = temp7d
     temp0 = temp7
     mask9(:) = arg2(:) .EQ. 0.0
-    WHERE (mask9(:)) ad = 0.0_8
-    add = 0.0_8
+    WHERE (mask9(:)) ad = 0.0_pr
+    add = 0.0_pr
     mask10(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask10(:)) 
       temp16 = arg2d(:)/(2.0*temp0)
       temp7d = (arg2dd0(:)-temp16*2.0*temp0d0)/(2.0*temp0)
       temp7 = temp16
     END WHERE
-    addd = 0.0_8
+    addd = 0.0_pr
     mask11(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask11(:)) 
       temp16 = (arg2dd(:)-2.0*temp7*temp0d)/(2.0*temp0)
@@ -302,7 +303,7 @@ CONTAINS
 &       temp0d0)/(2.0*temp0)
       add = temp16
     END WHERE
-    add0 = 0.0_8
+    add0 = 0.0_pr
     mask12(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask12(:)) 
       add0 = temp7d
@@ -314,14 +315,14 @@ CONTAINS
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
-    amixd0 = 0.0_8
-    amixdd = 0.0_8
-    amixddd = 0.0_8
-    amixd1 = 0.0_8
-    amixd0d = 0.0_8
-    amixdd0 = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
+    amixd0 = 0.0_pr
+    amixdd = 0.0_pr
+    amixddd = 0.0_pr
+    amixd1 = 0.0_pr
+    amixd0d = 0.0_pr
+    amixdd0 = 0.0_pr
     DO i=1,SIZE(n)-1
       DO j=i+1,SIZE(n)
         nijd = n(j)*nd(i) + n(i)*nd(j)
@@ -485,74 +486,74 @@ CONTAINS
   SUBROUTINE AR_D_D(n, nd, v, vd0, vd, t, td0, td, arval, arvald0, &
 &   arvald, arvaldd)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:), v, t
-    REAL(8), INTENT(IN) :: vd0, td0
-    REAL(8), INTENT(IN) :: nd(:), vd, td
-    REAL(8), INTENT(OUT) :: arval
-    REAL(8), INTENT(OUT) :: arvald0
-    REAL(8), INTENT(OUT) :: arvald
-    REAL(8), INTENT(OUT) :: arvaldd
-    REAL(8) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
-    REAL(8) :: amixd0, ad0(SIZE(n))
-    REAL(8) :: amixd, ad(SIZE(n)), nijd
-    REAL(8) :: amixdd, add(SIZE(n))
-    REAL(8) :: bmix
-    REAL(8) :: bmixd
-    REAL(8) :: b_v
-    REAL(8) :: b_vd0
-    REAL(8) :: b_vd
-    REAL(8) :: b_vdd
-    REAL(8) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
+    real(pr), INTENT(IN) :: n(:), v, t
+    real(pr), INTENT(IN) :: vd0, td0
+    real(pr), INTENT(IN) :: nd(:), vd, td
+    real(pr), INTENT(OUT) :: arval
+    real(pr), INTENT(OUT) :: arvald0
+    real(pr), INTENT(OUT) :: arvald
+    real(pr), INTENT(OUT) :: arvaldd
+    real(pr) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
+    real(pr) :: amixd0, ad0(SIZE(n))
+    real(pr) :: amixd, ad(SIZE(n)), nijd
+    real(pr) :: amixdd, add(SIZE(n))
+    real(pr) :: bmix
+    real(pr) :: bmixd
+    real(pr) :: b_v
+    real(pr) :: b_vd0
+    real(pr) :: b_vd
+    real(pr) :: b_vdd
+    real(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     INTRINSIC SQRT
     INTRINSIC SUM
     INTRINSIC LOG
     INTRINSIC SIZE
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1dd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2dd
-    REAL(8), DIMENSION(SIZE(n)) :: arg10
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d0
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d
-    REAL(8), DIMENSION(SIZE(n)) :: arg10dd
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11d
-    REAL(8) :: arg12
-    REAL(8) :: arg12d0
-    REAL(8) :: arg12d
-    REAL(8) :: arg12dd
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: tempd
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0d
-    REAL(8) :: temp1
-    REAL(8) :: temp1d
-    REAL(8) :: temp2
-    REAL(8) :: temp3
-    REAL(8) :: temp3d
-    REAL(8) :: temp4
-    REAL(8) :: temp4d
-    REAL(8) :: temp5
-    REAL(8) :: temp5d
-    REAL(8) :: temp6
-    REAL(8) :: temp6d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp7
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp8
-    REAL(8) :: temp9
-    REAL(8) :: temp10
-    REAL(8) :: temp11
-    REAL(8) :: temp12
-    REAL(8) :: temp13
-    REAL(8) :: temp14
-    REAL(8) :: temp15
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1dd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d0
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2dd
+    real(pr), DIMENSION(SIZE(n)) :: arg10
+    real(pr), DIMENSION(SIZE(n)) :: arg10d0
+    real(pr), DIMENSION(SIZE(n)) :: arg10d
+    real(pr), DIMENSION(SIZE(n)) :: arg10dd
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11d
+    real(pr) :: arg12
+    real(pr) :: arg12d0
+    real(pr) :: arg12d
+    real(pr) :: arg12dd
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp
+    real(pr), DIMENSION(SIZE(tc, 1)) :: tempd
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0d
+    real(pr) :: temp1
+    real(pr) :: temp1d
+    real(pr) :: temp2
+    real(pr) :: temp3
+    real(pr) :: temp3d
+    real(pr) :: temp4
+    real(pr) :: temp4d
+    real(pr) :: temp5
+    real(pr) :: temp5d
+    real(pr) :: temp6
+    real(pr) :: temp6d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp7
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp8
+    real(pr) :: temp9
+    real(pr) :: temp10
+    real(pr) :: temp11
+    real(pr) :: temp12
+    real(pr) :: temp13
+    real(pr) :: temp14
+    real(pr) :: temp15
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask0
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask1
@@ -565,14 +566,14 @@ CONTAINS
     temp7 = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      tempd = 0.0_8
+      tempd = 0.0_pr
     ELSEWHERE
       tempd = arg1d0(:)/(2.0*temp7)
     END WHERE
     temp = temp7
     mask0(:) = arg1(:) .EQ. 0.0
-    WHERE (mask0(:)) result1d = 0.0_8
-    result1dd = 0.0_8
+    WHERE (mask0(:)) result1d = 0.0_pr
+    result1dd = 0.0_pr
     mask1(:) = .NOT.arg1(:) .EQ. 0.0
     WHERE (mask1(:)) 
       temp7 = arg1d(:)/(2.0*temp)
@@ -590,14 +591,14 @@ CONTAINS
     temp7 = SQRT(arg2(:))
     mask2(:) = arg2(:) .EQ. 0.0
     WHERE (mask2(:)) 
-      temp0d = 0.0_8
+      temp0d = 0.0_pr
     ELSEWHERE
       temp0d = arg2d0(:)/(2.0*temp7)
     END WHERE
     temp0 = temp7
     mask3(:) = arg2(:) .EQ. 0.0
-    WHERE (mask3(:)) ad = 0.0_8
-    add = 0.0_8
+    WHERE (mask3(:)) ad = 0.0_pr
+    add = 0.0_pr
     mask4(:) = .NOT.arg2(:) .EQ. 0.0
     WHERE (mask4(:)) 
       temp7 = arg2d(:)/(2.0*temp0)
@@ -608,10 +609,10 @@ CONTAINS
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
-    amixd0 = 0.0_8
-    amixdd = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
+    amixd0 = 0.0_pr
+    amixdd = 0.0_pr
     DO i=1,SIZE(n)-1
       DO j=i+1,SIZE(n)
         nijd = n(j)*nd(i) + n(i)*nd(j)
@@ -697,91 +698,91 @@ CONTAINS
   SUBROUTINE AR_D_B(n, nb, nd, ndb, v, vb, vd, vdb, t, tb, td, tdb, &
 &   arval, arvalb, arvald, arvaldb)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:), v, t
-    REAL(8) :: nb(:), vb, tb
-    REAL(8), INTENT(IN) :: nd(:), vd, td
-    REAL(8) :: ndb(:), vdb, tdb
-    REAL(8) :: arval
-    REAL(8) :: arvalb
-    REAL(8) :: arvald
-    REAL(8) :: arvaldb
-    REAL(8) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
-    REAL(8) :: amixb, ab(SIZE(n)), nijb
-    REAL(8) :: amixd, ad(SIZE(n)), nijd
-    REAL(8) :: amixdb, adb(SIZE(n)), nijdb
-    REAL(8) :: bmix
-    REAL(8) :: bmixb
-    REAL(8) :: bmixd
-    REAL(8) :: bmixdb
-    REAL(8) :: b_v
-    REAL(8) :: b_vb
-    REAL(8) :: b_vd
-    REAL(8) :: b_vdb
-    REAL(8) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
+    real(pr), INTENT(IN) :: n(:), v, t
+    real(pr) :: nb(:), vb, tb
+    real(pr), INTENT(IN) :: nd(:), vd, td
+    real(pr) :: ndb(:), vdb, tdb
+    real(pr) :: arval
+    real(pr) :: arvalb
+    real(pr) :: arvald
+    real(pr) :: arvaldb
+    real(pr) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
+    real(pr) :: amixb, ab(SIZE(n)), nijb
+    real(pr) :: amixd, ad(SIZE(n)), nijd
+    real(pr) :: amixdb, adb(SIZE(n)), nijdb
+    real(pr) :: bmix
+    real(pr) :: bmixb
+    real(pr) :: bmixd
+    real(pr) :: bmixdb
+    real(pr) :: b_v
+    real(pr) :: b_vb
+    real(pr) :: b_vd
+    real(pr) :: b_vdb
+    real(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     INTRINSIC SQRT
     INTRINSIC SUM
     INTRINSIC LOG
     INTRINSIC SIZE
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1b
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1db
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1b
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1db
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2b
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2db
-    REAL(8), DIMENSION(SIZE(n)) :: arg10
-    REAL(8), DIMENSION(SIZE(n)) :: arg10b
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d
-    REAL(8), DIMENSION(SIZE(n)) :: arg10db
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11b
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11d
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11db
-    REAL(8) :: arg12
-    REAL(8) :: arg12b
-    REAL(8) :: arg12d
-    REAL(8) :: arg12db
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: tempb
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0b
-    REAL(8) :: temp1
-    REAL(8) :: temp1b
-    REAL(8) :: temp2
-    REAL(8) :: temp2b
-    REAL(8) :: temp3
-    REAL(8) :: temp3b
-    REAL(8) :: temp4
-    REAL(8) :: temp4b
-    REAL(8) :: temp5
-    REAL(8) :: temp5b
-    REAL(8) :: temp6
-    REAL(8) :: temp6b
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1b
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1db
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1b
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1db
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2b
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2db
+    real(pr), DIMENSION(SIZE(n)) :: arg10
+    real(pr), DIMENSION(SIZE(n)) :: arg10b
+    real(pr), DIMENSION(SIZE(n)) :: arg10d
+    real(pr), DIMENSION(SIZE(n)) :: arg10db
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11b
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11d
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11db
+    real(pr) :: arg12
+    real(pr) :: arg12b
+    real(pr) :: arg12d
+    real(pr) :: arg12db
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp
+    real(pr), DIMENSION(SIZE(tc, 1)) :: tempb
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0b
+    real(pr) :: temp1
+    real(pr) :: temp1b
+    real(pr) :: temp2
+    real(pr) :: temp2b
+    real(pr) :: temp3
+    real(pr) :: temp3b
+    real(pr) :: temp4
+    real(pr) :: temp4b
+    real(pr) :: temp5
+    real(pr) :: temp5b
+    real(pr) :: temp6
+    real(pr) :: temp6b
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask0
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: tempb0
-    REAL(8) :: temp7
-    REAL(8) :: tempb1
-    REAL(8) :: temp8
-    REAL(8) :: tempb2
-    REAL(8), DIMENSION(SIZE(n, 1)) :: tempb3
-    REAL(8), DIMENSION(SIZE(n)) :: tempb4
-    REAL(8) :: temp9
-    REAL(8) :: tempb5
-    REAL(8) :: temp10
-    REAL(8) :: temp11
-    REAL(8) :: temp12
-    REAL(8) :: temp13
-    REAL(8) :: tempb6
-    REAL(8) :: tempb7
-    REAL(8) :: tempb8
-    REAL(8) :: tempb9
+    real(pr), DIMENSION(SIZE(tc, 1)) :: tempb0
+    real(pr) :: temp7
+    real(pr) :: tempb1
+    real(pr) :: temp8
+    real(pr) :: tempb2
+    real(pr), DIMENSION(SIZE(n, 1)) :: tempb3
+    real(pr), DIMENSION(SIZE(n)) :: tempb4
+    real(pr) :: temp9
+    real(pr) :: tempb5
+    real(pr) :: temp10
+    real(pr) :: temp11
+    real(pr) :: temp12
+    real(pr) :: temp13
+    real(pr) :: tempb6
+    real(pr) :: tempb7
+    real(pr) :: tempb8
+    real(pr) :: tempb9
     INTEGER :: ad_from
     INTEGER :: ad_to
     INTEGER :: ad_to0
@@ -798,7 +799,7 @@ CONTAINS
     temp = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      result1d = 0.0_8
+      result1d = 0.0_pr
     ELSEWHERE
       result1d = arg1d(:)/(2.0*temp)
     END WHERE
@@ -808,15 +809,15 @@ CONTAINS
     temp0 = SQRT(arg2(:))
     mask0(:) = arg2(:) .EQ. 0.0
     WHERE (mask0(:)) 
-      ad = 0.0_8
+      ad = 0.0_pr
     ELSEWHERE
       ad = arg2d(:)/(2.0*temp0)
     END WHERE
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
     DO i=1,SIZE(n)-1
       ad_from = i + 1
       DO j=ad_from,SIZE(n)
@@ -915,16 +916,16 @@ CONTAINS
     temp1b = -(bmix*bmixb/temp1**2) - (bmixd-temp9*temp7)*tempb2/temp1 -&
 &     temp7*tempb1
     bmixb = bmixb/temp1 + tempb1
-    arg11b = 0.0_8
+    arg11b = 0.0_pr
     arg11b = bmixb
-    arg11db = 0.0_8
+    arg11db = 0.0_pr
     arg11db = bmixdb
-    arg10b = 0.0_8
+    arg10b = 0.0_pr
     arg10b = amixb
-    arg10db = 0.0_8
+    arg10db = 0.0_pr
     arg10db = amixdb
-    ab = 0.0_8
-    adb = 0.0_8
+    ab = 0.0_pr
+    adb = 0.0_pr
     tempb3 = 2*a**2*arg10db
     nb = nb + temp2b + temp1b + 2*n*b*arg11b + nd*b*2*arg11db + 2*n*a**2&
 &     *arg10b + 2**2*n*a*ad*arg10db + nd*tempb3
@@ -962,15 +963,15 @@ CONTAINS
         ndb(j) = ndb(j) + n(i)*nijdb
       END DO
     END DO
-    temp0b = 0.0_8
+    temp0b = 0.0_pr
     temp0b = ab
-    arg2db = 0.0_8
-    arg2b = 0.0_8
-    result1b = 0.0_8
-    result1db = 0.0_8
-    tempb = 0.0_8
-    arg1db = 0.0_8
-    arg1b = 0.0_8
+    arg2db = 0.0_pr
+    arg2b = 0.0_pr
+    result1b = 0.0_pr
+    result1db = 0.0_pr
+    tempb = 0.0_pr
+    arg1db = 0.0_pr
+    arg1b = 0.0_pr
     mask1(:) = .NOT.mask0(:)
     WHERE (mask1(:)) 
       tempb0 = adb/(2.0*temp0)
@@ -980,7 +981,7 @@ CONTAINS
     tempb0 = -(ac*2*k*arg2db)
     mask2 = arg2 .EQ. 0.0
     WHERE (mask2) 
-      arg2b = 0.0_8
+      arg2b = 0.0_pr
     ELSEWHERE
       arg2b = temp0b/(2.0*SQRT(arg2))
     END WHERE
@@ -995,14 +996,14 @@ CONTAINS
     END WHERE
     mask4 = arg1 .EQ. 0.0
     WHERE (mask4) 
-      arg1b = 0.0_8
+      arg1b = 0.0_pr
     ELSEWHERE
       arg1b = tempb/(2.0*SQRT(arg1))
     END WHERE
     tb = tb + SUM(arg1b/tc)
     tdb = tdb + SUM(arg1db/tc)
-    arvalb = 0.0_8
-    arvaldb = 0.0_8
+    arvalb = 0.0_pr
+    arvaldb = 0.0_pr
   END SUBROUTINE AR_D_B
 
 !  Differentiation of ar in forward (tangent) mode (with options noISIZE):
@@ -1011,42 +1012,42 @@ CONTAINS
 !   RW status of diff variables: n:in t:in v:in arval:out
   SUBROUTINE AR_D(n, nd, v, vd, t, td, arval, arvald)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:), v, t
-    REAL(8), INTENT(IN) :: nd(:), vd, td
-    REAL(8), INTENT(OUT) :: arval
-    REAL(8), INTENT(OUT) :: arvald
-    REAL(8) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
-    REAL(8) :: amixd, ad(SIZE(n)), nijd
-    REAL(8) :: bmix
-    REAL(8) :: bmixd
-    REAL(8) :: b_v
-    REAL(8) :: b_vd
-    REAL(8) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
+    real(pr), INTENT(IN) :: n(:), v, t
+    real(pr), INTENT(IN) :: nd(:), vd, td
+    real(pr), INTENT(OUT) :: arval
+    real(pr), INTENT(OUT) :: arvald
+    real(pr) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
+    real(pr) :: amixd, ad(SIZE(n)), nijd
+    real(pr) :: bmix
+    real(pr) :: bmixd
+    real(pr) :: b_v
+    real(pr) :: b_vd
+    real(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     INTRINSIC SQRT
     INTRINSIC SUM
     INTRINSIC LOG
     INTRINSIC SIZE
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2d
-    REAL(8), DIMENSION(SIZE(n)) :: arg10
-    REAL(8), DIMENSION(SIZE(n)) :: arg10d
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11d
-    REAL(8) :: arg12
-    REAL(8) :: arg12d
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: temp
-    REAL(8), DIMENSION(SIZE(ac, 1)) :: temp0
-    REAL(8) :: temp1
-    REAL(8) :: temp2
-    REAL(8) :: temp3
-    REAL(8) :: temp4
-    REAL(8) :: temp5
-    REAL(8) :: temp6
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2d
+    real(pr), DIMENSION(SIZE(n)) :: arg10
+    real(pr), DIMENSION(SIZE(n)) :: arg10d
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11d
+    real(pr) :: arg12
+    real(pr) :: arg12d
+    real(pr), DIMENSION(SIZE(tc, 1)) :: temp
+    real(pr), DIMENSION(SIZE(ac, 1)) :: temp0
+    real(pr) :: temp1
+    real(pr) :: temp2
+    real(pr) :: temp3
+    real(pr) :: temp4
+    real(pr) :: temp5
+    real(pr) :: temp6
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask
     LOGICAL, DIMENSION(SIZE(tc, 1)) :: mask0
     arg1d(:) = td/tc
@@ -1054,7 +1055,7 @@ CONTAINS
     temp = SQRT(arg1(:))
     mask(:) = arg1(:) .EQ. 0.0
     WHERE (mask(:)) 
-      result1d = 0.0_8
+      result1d = 0.0_pr
     ELSEWHERE
       result1d = arg1d(:)/(2.0*temp)
     END WHERE
@@ -1064,15 +1065,15 @@ CONTAINS
     temp0 = SQRT(arg2(:))
     mask0(:) = arg2(:) .EQ. 0.0
     WHERE (mask0(:)) 
-      ad = 0.0_8
+      ad = 0.0_pr
     ELSEWHERE
       ad = arg2d(:)/(2.0*temp0)
     END WHERE
     a = temp0
     amix = 0.0
     bmix = 0.0
-    bmixd = 0.0_8
-    amixd = 0.0_8
+    bmixd = 0.0_pr
+    amixd = 0.0_pr
     DO i=1,SIZE(n)-1
       DO j=i+1,SIZE(n)
         nijd = n(j)*nd(i) + n(i)*nd(j)
@@ -1120,43 +1121,43 @@ CONTAINS
 !   RW status of diff variables: n:out t:out v:out arval:in-zero
   SUBROUTINE AR_B(n, nb, v, vb, t, tb, arval, arvalb)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:), v, t
-    REAL(8) :: nb(:), vb, tb
-    REAL(8) :: arval
-    REAL(8) :: arvalb
-    REAL(8) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
-    REAL(8) :: amixb, ab(SIZE(n)), nijb
-    REAL(8) :: bmix
-    REAL(8) :: bmixb
-    REAL(8) :: b_v
-    REAL(8) :: b_vb
-    REAL(8) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
+    real(pr), INTENT(IN) :: n(:), v, t
+    real(pr) :: nb(:), vb, tb
+    real(pr) :: arval
+    real(pr) :: arvalb
+    real(pr) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
+    real(pr) :: amixb, ab(SIZE(n)), nijb
+    real(pr) :: bmix
+    real(pr) :: bmixb
+    real(pr) :: b_v
+    real(pr) :: b_vb
+    real(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     INTRINSIC SQRT
     INTRINSIC SUM
     INTRINSIC LOG
     INTRINSIC SIZE
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1b
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1b
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2b
-    REAL(8), DIMENSION(SIZE(n)) :: arg10
-    REAL(8), DIMENSION(SIZE(n)) :: arg10b
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11b
-    REAL(8) :: arg12
-    REAL(8) :: arg12b
-    REAL(8) :: temp
-    REAL(8) :: tempb
-    REAL(8) :: temp0
-    REAL(8) :: temp1
-    REAL(8) :: temp2
-    REAL(8) :: temp3
-    REAL(8) :: temp4
-    REAL(8) :: tempb0
-    REAL(8) :: tempb1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1b
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1b
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2b
+    real(pr), DIMENSION(SIZE(n)) :: arg10
+    real(pr), DIMENSION(SIZE(n)) :: arg10b
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11b
+    real(pr) :: arg12
+    real(pr) :: arg12b
+    real(pr) :: temp
+    real(pr) :: tempb
+    real(pr) :: temp0
+    real(pr) :: temp1
+    real(pr) :: temp2
+    real(pr) :: temp3
+    real(pr) :: temp4
+    real(pr) :: tempb0
+    real(pr) :: tempb1
     INTEGER :: ad_from
     INTEGER :: ad_to
     INTEGER :: ad_to0
@@ -1185,7 +1186,7 @@ CONTAINS
     bmix = bmix/SUM(n)
     b_v = bmix/v
     arg12 = (1.0+del1*b_v)/(1.0+del2*b_v)
-    nb = 0.0_8
+    nb = 0.0_pr
     temp0 = LOG(-b_v + 1.0)
     temp1 = SUM(n)
     temp2 = r*(del1-del2)*t*bmix
@@ -1207,12 +1208,12 @@ CONTAINS
     temp = SUM(n)
     nb = nb - bmix*bmixb/temp**2
     bmixb = bmixb/temp
-    arg11b = 0.0_8
+    arg11b = 0.0_pr
     arg11b = bmixb
-    arg10b = 0.0_8
+    arg10b = 0.0_pr
     arg10b = amixb
     nb = nb + 2*n*b*arg11b + 2*n*a**2*arg10b
-    ab = 0.0_8
+    ab = 0.0_pr
     ab = 2*a*n**2*arg10b
     CALL POPINTEGER4(ad_to0)
     DO i=ad_to0,1,-1
@@ -1228,43 +1229,43 @@ CONTAINS
         nb(j) = nb(j) + n(i)*nijb
       END DO
     END DO
-    arg2b = 0.0_8
+    arg2b = 0.0_pr
     WHERE (arg2 .EQ. 0.0) 
-      arg2b = 0.0_8
+      arg2b = 0.0_pr
     ELSEWHERE
       arg2b = ab/(2.0*SQRT(arg2))
     END WHERE
-    result1b = 0.0_8
+    result1b = 0.0_pr
     result1b = -(k*2*(k*(1.0-result1)+1.0)*ac*arg2b)
-    arg1b = 0.0_8
+    arg1b = 0.0_pr
     WHERE (arg1 .EQ. 0.0) 
-      arg1b = 0.0_8
+      arg1b = 0.0_pr
     ELSEWHERE
       arg1b = result1b/(2.0*SQRT(arg1))
     END WHERE
     tb = tb + SUM(arg1b/tc)
-    arvalb = 0.0_8
+    arvalb = 0.0_pr
   END SUBROUTINE AR_B
 
   SUBROUTINE AR(n, v, t, arval)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:), v, t
-    REAL(8), INTENT(OUT) :: arval
-    REAL(8) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
-    REAL(8) :: bmix
-    REAL(8) :: b_v
-    REAL(8) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
+    real(pr), INTENT(IN) :: n(:), v, t
+    real(pr), INTENT(OUT) :: arval
+    real(pr) :: amix, a(SIZE(n)), ai(SIZE(n)), z2(SIZE(n)), nij
+    real(pr) :: bmix
+    real(pr) :: b_v
+    real(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     INTRINSIC SQRT
     INTRINSIC SUM
     INTRINSIC LOG
     INTRINSIC SIZE
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: result1
-    REAL(8), DIMENSION(SIZE(tc, 1)) :: arg2
-    REAL(8), DIMENSION(SIZE(n)) :: arg10
-    REAL(8), DIMENSION(SIZE(n, 1)) :: arg11
-    REAL(8) :: arg12
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: result1
+    real(pr), DIMENSION(SIZE(tc, 1)) :: arg2
+    real(pr), DIMENSION(SIZE(n)) :: arg10
+    real(pr), DIMENSION(SIZE(n, 1)) :: arg11
+    real(pr) :: arg12
     arg1(:) = t/tc
     result1 = SQRT(arg1(:))
     arg2(:) = ac*(1.0+k*(1.0-result1))**2
@@ -1291,10 +1292,10 @@ CONTAINS
 
   PURE FUNCTION VOLUME_INITALIZER(n, p, t) RESULT (v0)
     IMPLICIT NONE
-    REAL(8), INTENT(IN) :: n(:)
-    REAL(8), INTENT(IN) :: p
-    REAL(8), INTENT(IN) :: t
-    REAL(8) :: v0
+    real(pr), INTENT(IN) :: n(:)
+    real(pr), INTENT(IN) :: p
+    real(pr), INTENT(IN) :: t
+    real(pr) :: v0
     INTRINSIC SUM
     v0 = SUM(n*b)/SUM(b)
   END FUNCTION VOLUME_INITALIZER

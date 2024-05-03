@@ -8,6 +8,7 @@ program tester
     use test_cubic_mixrules, only: suite_cubic_mixrules => collect_suite
     use test_autodiff_api, only: suite_autodiff_hd => collect_suite
     use test_thermoprops, only: suite_thermoprops => collect_suite
+    use test_ge_models, only: suite_ge_models => collect_suite
     use test_flash, only: suite_flash => collect_suite
 
     use stdlib_ansi, only: fg_color_green, fg_color_red, operator(//), style_reset
@@ -27,6 +28,7 @@ program tester
         new_testsuite("Cubic MixRules", suite_cubic_mixrules), &
         new_testsuite("Autodiff APIs", suite_autodiff_hd), &
         new_testsuite("Thermoprops", suite_thermoprops), &
+        new_testsuite("Ge Models", suite_ge_models), &
         new_testsuite("Flash", suite_flash) &
         ]
 

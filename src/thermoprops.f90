@@ -72,7 +72,7 @@ contains
       real(pr), intent(in) :: t    !! Temperature [K]
       real(pr), intent(in) :: p    !! Pressure [bar]
 
-      real(pr), intent(out) :: lnphip(size(n)) !! \(\ln(f_i)\) vector
+      real(pr), optional, intent(out) :: lnphip(size(n)) !! \(\ln(f_i)\) vector
       real(pr), optional, intent(out) :: v !! Volume [L]
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
@@ -80,13 +80,16 @@ contains
 
       real(pr) :: v_in, p_in
 
-      call VCALC(eos, n, P, T, V_in, root_type)
+      call volume(eos, n, P, T, V_in, root_type)
       call fugacity_vt(eos, n, v_in, T, P_in, lnphip, dlnphidp, dlnphidt, dlnphidn)
       if(present(v)) v = v_in
+      if(abs(P_in - p)/p > 1e-5) then
+         write(error_unit, *) "WARN: possible bad root solving: ", p_in, p
+      end if
    end subroutine fugacity_tp
 
    subroutine fugacity_vt(eos, &
-         n, V, T, P, lnphip, dlnPhidP, dlnphidT, dlnPhidn &
+         n, V, T, P, lnphip, dlnPhidP, dlnphidT, dlnPhidn, dPdV, dPdT, dPdN &
       )
       !! Calculate fugacity coefficent given volume and temperature.
       !!
@@ -106,12 +109,15 @@ contains
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! \(ln(phi_i)\) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! \(ln(phi_i)\) Presssure derivative
       real(pr), optional, intent(out) :: dlnphidn(size(n), size(n)) !! \(ln(phi_i)\) compositional derivative
+      real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
+      real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
+      real(pr), optional, intent(out) :: dPdN(:) !! \(\frac{dP}{dn_i}\)
 
       real(pr) :: Ar, ArTV, ArV, ArV2
       real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
       real(pr) :: Arn2(size(n), size(n))
 
-      real(pr) :: dPdV, dPdT, dPdN(size(n))
+      real(pr) :: dPdV_in, dPdT_in, dPdN_in(size(n))
 
       real(pr) :: RT, Z
 
@@ -119,7 +125,7 @@ contains
       integer :: nc, i, j
 
 
-      TOTN = sum(n)
+      totn = sum(n)
       nc = size(n)
 
       RT = R*T
@@ -149,24 +155,30 @@ contains
       lnphip(:) = Arn(:)/RT - log(Z)
 
       if (present(P)) P = TOTN*RT/V - ArV
-      
-      dPdV = -ArV2 - RT*TOTN/V**2
-      dPdT = -ArTV + TOTN*R/V
-      dPdN(:) = RT/V - ArVn(:)
 
-      if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1._pr/P
+      dPdV_in = -ArV2 - RT*TOTN/V**2
+      dPdT_in = -ArTV + TOTN*R/V
+      dPdN_in = RT/V - ArVn
+
+      if (present(dlnphidp)) then
+         dlnphidp(:) = -dPdN_in(:)/dPdV_in/RT - 1._pr/P
+      end if
       if (present(dlnphidt)) then
-         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1._pr/T
+         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN_in(:)*dPdT_in/dPdV_in/RT + 1._pr/T
       end if
 
       if (present(dlnphidn)) then
          do i = 1, nc
             do j = i, nc
-               dlnphidn(i, j) = 1._pr/TOTN + (Arn2(i, j) + dPdN(i)*dPdN(j)/dPdV)/RT
+               dlnphidn(i, j) = 1._pr/TOTN + (Arn2(i, j) + dPdN_in(i)*dPdN_in(j)/dPdV_in)/RT
                dlnphidn(j, i) = dlnphidn(i, j)
             end do
          end do
       end if
+
+      if (present(dPdV)) dPdV = dPdV_in
+      if (present(dPdT)) dPdT = dPdT_in
+      if (present(dPdN)) dPdN = dPdN_in
    end subroutine
 
    subroutine PUREFUG_CALC(eos, nc, icomp, T, P, V, fug)
@@ -193,7 +205,7 @@ contains
       fug = exp(lnphi) * P
    end subroutine purefug_calc
 
-   subroutine VCALC(eos, n, P, T, V, root_type, max_iters)
+   subroutine volume(eos, n, P, T, V, root_type, max_iters)
       !! Volume solver at a given pressure.
       !!
       !! Obtain the volume using the method described by Michelsen and Møllerup.
@@ -261,7 +273,7 @@ contains
          end if
       case default
          write(error_unit, *) "ERROR [VCALC]: Wrong specification"
-         call exit(1)
+         error stop 1
       end select
    contains
       subroutine solve_point(P, V, Pcalc, AT, iter)
@@ -279,9 +291,8 @@ contains
          do while(abs(DEL) > 1.e-10_pr .and. iter < maximum_iterations)
             V = B/ZETA
             iter = iter + 1
-            call eos%residual_helmholtz(&
-               n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2 &
-            )
+            call eos%residual_helmholtz(n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
+            
             Pcalc = TOTN*R*T/V - ArV
 
             if (Pcalc .gt. P) then
@@ -297,14 +308,15 @@ contains
             DEL = -(Pcalc - P)/DER
             ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
 
-            if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) &
-               ZETA = .5_pr*(ZETMAX + ZETMIN)
+            if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) then 
+               ZETA = 0.5_pr*(ZETMAX + ZETMIN)
+            end if
          end do
          
          if (iter >= maximum_iterations) write(error_unit, *) &
             "WARN: Volume solver exceeded maximum number of iterations"
       end subroutine
-   end subroutine vcalc
+   end subroutine volume
    
    ! ==========================================================================
    ! Residual Enthalpy

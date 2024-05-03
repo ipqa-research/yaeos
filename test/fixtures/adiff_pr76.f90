@@ -44,7 +44,7 @@ contains
         type(hyperdual), intent(in) :: n(:), v, t
         type(hyperdual) :: ar
     
-        type(hyperdual) :: amix, a(size(n)), ai(size(n)), n2(size(n))
+        type(hyperdual) :: amix, a(size(n)), ai(size(n))
         type(hyperdual) :: bmix
         type(hyperdual) :: b_v, nij
 

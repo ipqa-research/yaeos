@@ -99,11 +99,10 @@ contains
          y = z * K / (1 + beta*(K - 1._pr))
          x = y/K
 
-         ! new for TV Flash
          select case (spec)
-         ! case("TV", "isoV")
-         !    ! find Vy,Vx (vV and vL) from V balance and P equality equations
-         !    ! TODO: Add TV specification
+         case("TV", "isoV")
+            ! find Vy,Vx (vV and vL) from V balance and P equality equations
+            ! TODO: Add TV specification
          case("TP")
             ! for TP Flash
             call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
@@ -161,11 +160,13 @@ contains
          flash%x = y
          flash%vy = Vx
          flash%vx = vy
+         flash%beta = 1 - beta
       else
          flash%x = x
          flash%y = y
          flash%vx = Vx
          flash%vy = vy
+         flash%beta = beta
       end if
    end function flash
 

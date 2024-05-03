@@ -4,12 +4,12 @@ contains
     subroutine main()
         use yaeos_constants, only: pr
         integer, parameter :: n=2
-        real(8) :: z(n), tc(n), pc(n), w(n), kij(n,n), lij(n,n)
+        real(pr) :: z(n), tc(n), pc(n), w(n), kij(n,n), lij(n,n)
 
-        real(8) :: v, t
+        real(pr) :: v, t
 
-        real(8) :: ar, arv, arv2, art, art2, artv
-        real(8) :: arn(n), arvn(n), artn(n), arn2(n,n)
+        real(pr) :: ar, arv, arv2, art, art2, artv
+        real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n)
 
         z = [0.3_pr, 0.7_pr]
         tc = [190._pr, 310._pr]
