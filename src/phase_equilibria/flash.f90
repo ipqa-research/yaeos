@@ -83,31 +83,22 @@ contains
          K = k_wilson(model, t, p)
       end if
 
+      ! Get K values that assure that beta is between 0 and 1
       call betato01(z, K)
+      
       ! now we must have  g0>0 and g1<0 and therefore 0<beta<1 (M&M page 252)
       call betalimits(z, K, bmin, bmax)
       beta = (bmin + bmax)/2  ! first guess for beta
       
       lnK = log(K)
-      ! ========================================================================
 
-      ! Succesive sustitution loop starts here
+      ! ========================================================================
+      ! Solve with successive substitutions
+      ! ------------------------------------------------------------------------
       dK = 1.0
       iters = 0
       do while (maxval(abs(dK)) > 1.d-6)
          iters = iters + 1
-
-         if (maxval(abs(dK)) > 1.10_pr) then
-            ! 26/11/2014
-            g0 = sum(z*K) - 1._pr
-            g1 = 1._pr - sum(z/K)
-            if (g0 < 0 .or. g1 > 0) then
-               ! bring beta back to range, by touching K
-               call betato01(z, K)
-               call betalimits(z, K, bmin, bmax)
-               beta = (bmin + bmax)/2  ! new guess for beta
-            end if
-         end if
 
          call solve_rr(z, K, beta, bmin, bmax)
 
@@ -132,17 +123,30 @@ contains
          lnK = lnfug_x - lnfug_y
          dK = lnK - lnKold
 
+         K = exp(lnK)
+
          if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05) then
             ! oscilation behavior detected (27/06/15)
             lnK = (lnK + lnKold)/2
          end if
 
-         K = exp(lnK)
-
          ! Assure that beta is between the limits
          call betalimits(z, K, bmin, bmax)  ! 26/06/15
          if ((beta < bmin) .or. (bmax < beta)) then
             beta = (bmin + bmax)/2
+         end if
+
+         ! Step is too big, go back
+         if (maxval(abs(dK)) > 1.10_pr) then
+            ! 26/11/2014
+            g0 = sum(z*K) - 1._pr
+            g1 = 1._pr - sum(z/K)
+            if (g0 < 0 .or. g1 > 0) then
+               ! bring beta back to range, by touching K
+               call betato01(z, K)
+               call betalimits(z, K, bmin, bmax)
+               beta = (bmin + bmax)/2  ! new guess for beta
+            end if
          end if
 
          if (iters > 500) then

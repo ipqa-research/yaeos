@@ -72,9 +72,9 @@ contains
       !! Solve the Rachford-Rice Equation.
       real(pr), intent(in) :: z(:) !! Mole fractions vector
       real(pr), intent(in) :: K(:) !! K-factors
-      real(pr), intent(out) :: beta_min !!
-      real(pr), intent(out) :: beta_max
-      real(pr), intent(out) :: beta
+      real(pr), intent(out) :: beta_min !! Lower limit for \(\beta\)
+      real(pr), intent(out) :: beta_max !! Upper limit for \(\beta\) 
+      real(pr), intent(out) :: beta !! \(\beta\) value
 
       real(pr) :: g, dgdb
       real(pr) :: step
