@@ -11,7 +11,7 @@ module yaeos_equilibria_saturation_points
 
 contains
 
-   type(EquilibriaState) function bubble_pressure(model, n, t, p0, y0, max_inner_its)
+   type(EquilibriaState) function bubble_pressure(model, n, t, p0, y0)
       !! Bubble pressure calculation function.
       !!
       !! Calculates the bubble temperature of a multicomponent mixture.
@@ -22,7 +22,6 @@ contains
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: p0 !! Initial pressure [bar]
       real(pr), optional, intent(in) :: y0(:) !! Initial composition
-      integer, optional, intent(in) :: max_inner_its(:) !! Inner iterations
 
       real(pr) :: p, vy, vz
 
@@ -31,7 +30,7 @@ contains
       real(pr) :: lnfug_z(size(n)), dlnphi_dp_z(size(n))
 
       real(pr) :: f, step
-      integer :: its, inner_its
+      integer :: its, iterations
 
       ! =======================================================================
       ! Handle arguments
@@ -48,22 +47,14 @@ contains
       else
          y = z * k_wilson(model, T, P)
       end if
-      inner_its = optval(inner_its, 50)
       ! ========================================================================
 
       ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      do its=1,max_iterations
+      do its=1, iterations
          call fugacity_tp(model, y, T, P, vy, "vapor", lnphip=lnfug_y, dlnphidp=dlnphi_dp_y)
          call fugacity_tp(model, z, T, P, vz, "liquid", lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
-
-         do while (any(isnan(lnfug_y)))
-            inner_its = inner_its + 1
-            p = p/2.0_pr
-            call fugacity_tp(model, y, T, P, vy, "vapor", lnphip=lnfug_y, dlnphidp=dlnphi_dp_y)
-            call fugacity_tp(model, z, T, P, vz, "liquid", lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
-         end do
 
          lnk = lnfug_z - lnfug_y
          k = exp(lnk)
@@ -77,7 +68,7 @@ contains
       end do
       bubble_pressure = EquilibriaState(&
          iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
-         )
+      )
       ! ========================================================================
    end function bubble_pressure
 end module yaeos_equilibria_saturation_points
