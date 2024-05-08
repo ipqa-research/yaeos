@@ -85,11 +85,11 @@ contains
 
       ! Get K values that assure that beta is between 0 and 1
       call betato01(z, K)
-      
+
       ! now we must have  g0>0 and g1<0 and therefore 0<beta<1 (M&M page 252)
       call betalimits(z, K, bmin, bmax)
       beta = (bmin + bmax)/2  ! first guess for beta
-      
+
       lnK = log(K)
 
       ! ========================================================================
