@@ -1,5 +1,5 @@
 program flash_tv
-   use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+   use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp, pressure
    use yaeos__math_linalg, only: solve_system
    use fixtures_models, only: binary_PR76
 
@@ -17,7 +17,7 @@ program flash_tv
    real(pr) :: Fdx(nc+3),dFdx(nc+3, nc+3)
    real(pr) :: dxold(nc+3)
 
-   real(pr) :: K(nc), T=200, V
+   real(pr) :: K(nc), T=200, V, P
    real(pr) :: beta=0.12
 
    real(pr) :: vars(nc+3), dx(nc+3)
@@ -49,7 +49,7 @@ program flash_tv
             * exp(5.373_pr*(1 + model%components%w)&
             * (1 - model%components%Tc/T))
    
-    V = beta *vy + (1-beta)*vx
+   V = beta *vy + (1-beta)*vx
 
    print *, "true Results"
    print *, flash_result%vx, flash_result%vy, flash_result%beta, beta * vy + (1-beta)*vx
@@ -57,17 +57,19 @@ program flash_tv
    print *, flash_result%y
    print *, "------------"
 
-   call flash_TV_DF(model, z, T, V, K, beta, vx, vy, F, dF)
-   ! print *, "numdiff"
-   ! do its = 1,nc+3
-   !    print *, df(its, :)
-   ! end do
+   call flash_TV_DF(model, z, T, V, log(K), beta, vx, vy, F, dF)
+   print *, "numdiff"
+   do its = 1,nc+3
+      print *, df(its, :)
+   end do
 
-   call flash_TV_F(model, z, T, V, K, beta, vx, vy, F, dF)
-   ! print *, "anadiff"
-   ! do its = 1,nc+3
-   !    print *, df(its, :)
-   ! end do
+   call flash_TV_F(model, z, T, V, log(K), beta, vx, vy, F, dF)
+   print *, "anadiff"
+   do its = 1,nc+3
+      print *, df(its, :)
+   end do
+
+   call exit
 
    print *, "solve?"
    do its=1,1000
@@ -109,39 +111,45 @@ program flash_tv
    print *, y
 
 contains
-   subroutine flash_TV_F(model, z, T, V, K, beta, vx, vy, F, dF)
+   subroutine flash_TV_F(model, z, T, V, lnK, beta, vx, vy, F, dF)
       use yaeos, only: fugacity_vt
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:)
       real(pr), intent(in) :: T
       real(pr), intent(in) :: V
-      real(pr), intent(in) :: K(:)
+      real(pr), intent(in) :: lnK(:)
       real(pr), intent(in) :: beta
       real(pr), intent(in) :: vx
       real(pr), intent(in) :: vy
       real(pr), intent(out) :: F(:)
       real(pr), optional, intent(out) :: dF(:, :)
 
-      real(pr) :: x(nc), Px, dPxdn(nc), lnphip_x(nc), dlnPhidx(nc, nc)
-      real(pr) :: y(nc), Py, dPydn(nc), lnphip_y(nc), dlnPhidy(nc, nc)
+      real(pr) :: K(nc)
+      real(pr) :: x(nc), Px, dPxdn(nc), lnphip_x(nc), dlnPhidx(nc, nc), dPxdV
+      real(pr) :: y(nc), Py, dPydn(nc), lnphip_y(nc), dlnPhidy(nc, nc), dPydV
 
-      real(pr) :: dxdK(nc), dydK(nc)
+      real(pr) :: dxdK(nc), dydK(nc), dxdbeta(nc), dydbeta(nc)
+      real(pr) :: dVxdbeta, dVydbeta
 
       integer :: i, j
 
       F = 0
+      K = exp(lnK)
 
       x = z / (beta * (K - 1) + 1)
       y = K * x
 
+      dxdbeta = z * (1-k)/ (beta*(K - 1) + 1)**2
+      dydbeta = K * dxdbeta
+
       dxdK = - beta * z / (beta*(K - 1)+1)**2
       dydK  = x + K * dxdK
 
-      call fugacity_vt(model, x, vx, T, P=Px, dPdN=dPxdn, lnphip=lnphip_x, dlnphidn=dlnPhidx)
-      call fugacity_vt(model, y, vy, T, P=Py, dPdN=dPydn, lnphip=lnphip_y, dlnphidn=dlnPhidy)
+      call fugacity_vt(model, x, vx, T, P=Px, dPdN=dPxdn, lnphip=lnphip_x, dlnphidn=dlnPhidx, dPdV=dPxdV)
+      call fugacity_vt(model, y, vy, T, P=Py, dPdN=dPydn, lnphip=lnphip_y, dlnphidn=dlnPhidy, dPdV=dPydV)
 
-      F(:nc)    = log(K) - lnphip_x + lnphip_y
-      F(nc + 1) = Px - Py
+      F(:nc)    = lnK - lnphip_x + lnphip_y
+      F(nc + 1) = Px !- Py
       F(nc + 2) = V - (beta*Vy + (1-beta)*Vx)
       F(nc + 3) = sum((z * (1 - K)) /(1 + beta*(K - 1)))
 
@@ -149,26 +157,24 @@ contains
          df = 0
          do i=1,nc
             do j=1,nc
-               df(i, j) = &
-                  - dxdK(i) * (dlnPhidx(i, j) + dPxdn(j)/Px) &
-                  + dydK(i) * (dlnphidy(i, j) + dPydn(j)/Py)
-
             end do
-            df(i, i) = df(i, i) + 1/K(i)
          end do
 
-         df(nc+1, :nc) = (dPxdn * dxdK - dPydn * dydK)
+         df(nc+1, :nc) = K * (dPxdn * dxdK - dPydn * dydK)
+         
          df(nc+2, :nc) = 0
-         df(nc+3, :nc) = beta * z * (K-1)/(beta*(K-1)+1)**2 - z/(beta*(K-1)+1)
+         df(nc+2, nc+1) = Vx - Vy
+         
+         df(nc+3, :nc) = K*(beta * z * (K-1)/(beta*(K-1)+1)**2 - z/(beta*(K-1)+1))
       end if
    end subroutine flash_TV_F
 
-   subroutine flash_TV_DF(model, z, T, V, K, beta, vx, vy, F, dF)
+   subroutine flash_TV_DF(model, z, T, V, lnK, beta, vx, vy, F, dF)
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:)
       real(pr), intent(in) :: T
       real(pr), intent(in) :: V
-      real(pr), intent(in) :: K(:)
+      real(pr), intent(in) :: lnK(:)
       real(pr), intent(in) :: beta
       real(pr), intent(in) :: vx
       real(pr), intent(in) :: vy
@@ -177,33 +183,33 @@ contains
 
       real(pr) :: dx
       integer :: i, nc
-      real(pr) :: Kdx(size(z)), betadx, vxdx, vydx, Fdx(size(F))
+      real(pr) :: lnKdx(size(z)), betadx, vxdx, vydx, Fdx(size(F))
 
       nc = size(z)
 
-      dx = 1e-10
+      dx = 1e-5
 
       f = 0
       df = 0
-      call flash_TV_F(model, z, T, V, K, beta, vx, vy, F, dF)
+      call flash_TV_F(model, z, T, V, lnK, beta, vx, vy, F, dF)
 
       do i=1, nc
-         Kdx = K
-         Kdx(i) = K(i) + dx
-         call flash_TV_F(model, z, T, V, Kdx, beta, vx, vy, Fdx)
+         lnKdx = lnK
+         lnKdx(i) = lnK(i) + dx
+         call flash_TV_F(model, z, T, V, lnKdx, beta, vx, vy, Fdx)
          df(:, i) = (Fdx - F)/dx
       end do
 
       betadx = beta + dx
-      call flash_TV_F(model, z, T, V, K, betadx, vx, vy, Fdx)
+      call flash_TV_F(model, z, T, V, lnK, betadx, vx, vy, Fdx)
       df(:, nc+1) = (Fdx - F)/dx
 
       vxdx = vx + dx
-      call flash_TV_F(model, z, T, V, K, beta, vxdx, vy, Fdx)
+      call flash_TV_F(model, z, T, V, lnK, beta, vxdx, vy, Fdx)
       df(:, nc+2) = (Fdx - F)/dx
 
       vydx = vy + dx
-      call flash_TV_F(model, z, T, V, K, beta, vydx, vy, Fdx)
+      call flash_TV_F(model, z, T, V, lnK, beta, vydx, vy, Fdx)
       df(:, nc+3) = (Fdx - F)/dx
    end subroutine flash_TV_DF
 end program flash_tv

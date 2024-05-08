@@ -1,13 +1,13 @@
 module yaeos__phase_equilibria_rachford_rice
-    use yaeos_constants, only: pr
-    implicit none
+   use yaeos_constants, only: pr
+   implicit none
 contains
    subroutine betato01(z, K)
       !! Modify K-factor values to assure that \(\beta\) lies between (0,1)
       implicit none
       real(pr), intent(in) :: z(:) !! Molar fractions of the system
       real(pr) :: K(:) !! K factors \(\frac{y_i}{x_i}\)
-      
+
       real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on K factors
 
       g1 = 1.0
@@ -15,13 +15,13 @@ contains
          g0 = sum(z*K) - 1._pr
          g1 = 1._pr - sum(z/K)
          if (g0 < 0) then
-            ! Increased volatiliy will bring the solution from 
+            ! Increased volatiliy will bring the solution from
             ! subcooled liquid into VLE
-            K = 1.1_pr * K  
+            K = 1.1_pr * K
          else if (g1 > 0) then
-            ! Decreased volatiliy will bring the solution from 
+            ! Decreased volatiliy will bring the solution from
             ! superheated vapor into VLE
-            K = 0.9_pr * K  
+            K = 0.9_pr * K
          end if
       end do
    end subroutine betato01
@@ -43,9 +43,9 @@ contains
       vmax = 1.00001_pr ! modified 28/6/15 (to prevent overshooting in the Newton for solving RR eq.)
 
       where (K * z > 1)
-        vmin = (K * z - 1._pr) / (K - 1._pr)
+         vmin = (K * z - 1._pr) / (K - 1._pr)
       elsewhere (K < z)
-        vmax = (1 - z)/(1 - K)
+         vmax = (1 - z)/(1 - K)
       end where
 
       bmin = maxval(vmin)
@@ -73,7 +73,7 @@ contains
       real(pr), intent(in) :: z(:) !! Mole fractions vector
       real(pr), intent(in) :: K(:) !! K-factors
       real(pr), intent(out) :: beta_min !! Lower limit for \(\beta\)
-      real(pr), intent(out) :: beta_max !! Upper limit for \(\beta\) 
+      real(pr), intent(out) :: beta_max !! Upper limit for \(\beta\)
       real(pr), intent(out) :: beta !! \(\beta\) value
 
       real(pr) :: g, dgdb
@@ -94,5 +94,4 @@ contains
          end do
       end do
    end subroutine solve_rr
-
-end module
+end module yaeos__phase_equilibria_rachford_rice
