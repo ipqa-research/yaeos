@@ -3,6 +3,7 @@ module yaeos_equilibria_saturation_points
    use yaeos_models, only: ArModel
    use yaeos_thermoprops, only: fugacity_vt, fugacity_tp
    use yaeos_equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
    integer :: max_iterations = 100
@@ -45,10 +46,7 @@ contains
       if (present(y0)) then
          y = y0
       else
-         ! K-wilson ininit
-         y = z * (model%components%Pc/P) &
-            * exp(5.373_pr*(1 + model%components%w)&
-            * (1 - model%components%Tc/T))
+         y = z * k_wilson(model, T, P)
       end if
       inner_its = optval(inner_its, 50)
       ! ========================================================================

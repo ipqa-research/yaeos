@@ -4,14 +4,24 @@ module yaeos_equilibria_flash
    use yaeos_equilibria_equilibria_state, only: EquilibriaState
    use yaeos_thermoprops, only: fugacity_vt, fugacity_tp, pressure
    use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
+   use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
 
 contains
 
-   type(EquilibriaState) function flash(self, z, t, v_spec, p_spec, k0, iters)
-      !! This algorithm assumes that the specified T and P correspond to
-      !! vapor-liquid separation predicted by the provided model (0<beta<1)
-      class(ArModel), intent(in) :: self !! Thermodynamic model
+   type(EquilibriaState) function flash(model, z, t, v_spec, p_spec, k0, iters)
+      !! Flash algorithm using sucessive substitutions.
+      !!
+      !! Available specifications:
+      !!
+      !! - TP (with T and P_spec variables)
+      !! - TV (with T and V_spec variables)
+      !!
+      !! This algorithm assumes that the specified T and P/V correspond to
+      !! vapor-liquid separation predicted by the provided model (0<beta<1) and
+      !! solves the equilibria and mass-balance equations with a fixed-point
+      !! method.
+      class(ArModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
@@ -58,11 +68,11 @@ contains
          v = v_spec
       end if
 
-      if (spec == 'TV' .or. spec == 'isoV') then
+      if (spec == 'TV') then
          Vx = 0.0
          if (.not. present(k0)) then
             ! the EoS one-phase pressure will be used to estimate Wilson K factors
-            call pressure(self, z, v_spec, t, p=p)
+            call pressure(model, z, v_spec, t, p=p)
             if (P < 0) P = 1.0
          end if
       end if
@@ -70,17 +80,15 @@ contains
       if (present(K0)) then
          K = K0
       else
-         K = (self%components%Pc/P) &
-            * exp(5.373_pr*(1 + self%components%w)&
-            * (1 - self%components%Tc/T))
+         K = k_wilson(model, t, p)
       end if
 
-      call betato01(z, K)  ! adapted 26/11/2014
-      lnK = log(K)
-
+      call betato01(z, K)
       ! now we must have  g0>0 and g1<0 and therefore 0<beta<1 (M&M page 252)
       call betalimits(z, K, bmin, bmax)
       beta = (bmin + bmax)/2  ! first guess for beta
+      
+      lnK = log(K)
       ! ========================================================================
 
       ! Succesive sustitution loop starts here
@@ -106,16 +114,16 @@ contains
          y = z * K / (1 + beta*(K - 1._pr))
          x = y/K
 
+         ! Calculate fugacities for each kind of specification
          select case (spec)
-          case("TV", "isoV")
+          case("TV")
             ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            call tv_loop_solve_pressures(self, T, V, beta, x, y, Vx, Vy, P)
-            call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
-            call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+            call tv_loop_solve_pressures(model, T, V, beta, x, y, Vx, Vy, P)
+            call fugacity_tp(model, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call fugacity_tp(model, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
           case("TP")
-            ! for TP Flash
-            call fugacity_tp(self, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
-            call fugacity_tp(self, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+            call fugacity_tp(model, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call fugacity_tp(model, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
          end select
 
          dKold = dK
@@ -131,6 +139,7 @@ contains
 
          K = exp(lnK)
 
+         ! Assure that beta is between the limits
          call betalimits(z, K, bmin, bmax)  ! 26/06/15
          if ((beta < bmin) .or. (bmax < beta)) then
             beta = (bmin + bmax)/2
@@ -140,12 +149,12 @@ contains
             p = -1
             return
          end if
-
       end do
 
+      ! ========================================================================
+      ! Format results
+      ! ------------------------------------------------------------------------
       if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
-      ! if (spec == 'TV' .or. spec == 'isoV') write (4, *) T, P, Pv
-      ! if (spec == 'TV' .or. spec == 'isoV') P = Pv
 
       if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
          P = -1.0
@@ -204,7 +213,7 @@ contains
       real(pr) :: dPxdV, dPydV
       real(pr) :: Px, Py
 
-      integer :: iterv
+      integer :: its
 
       dVydVx = -(1 - beta)/beta
       Bx = model%get_v0(x, 0.1_pr, T)
@@ -222,10 +231,10 @@ contains
       Vy = (V - (1 - beta)*Vx)/beta
 
       h = 1.0
-      iterv = 0
+      its = 0
       do while (abs(h) > 1.d-4)
          ! Newton for solving P equality, with Vx as independent variable
-         iterv = iterv + 1
+         its = its + 1
 
          call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
          call pressure(model, y, Vy, T, Py, dpdv=dPydV)
@@ -234,7 +243,7 @@ contains
          dh = -dPydV * dVydVx - dPxdV
          stepv = -h/dh
 
-         if (iterv >= 10) stepv = stepv/2
+         if (its >= 10) stepv = stepv/2
 
          Vx = Vx + stepv
 
@@ -245,10 +254,10 @@ contains
 
          Vy = (v - (1 - beta)*Vx)/beta
 
-         if (iterv >= 100) then
+         if (its >= 100) then
             write (error_unit, *) "WARN(FLASH_VT): volume convergence problems", Px, Py
             P = -1.0
-            exit
+            return
          end if
       end do
 
