@@ -70,14 +70,14 @@ program main
 
    call model%ln_activity_coefficient(x, T, lngamma)
    print *, "lngamma: ", lngamma
-   ! call ln_activity_coefficient(model, x, T, lngamma)
-   ! print *, "lngamma: ", lngamma
+   call ln_activity_coefficient(model, x, T, lngamma)
+   print *, "lngamma: ", lngamma
 
-   ! call group_big_gamma(model, x, T, ln_Gamma, dln_gammadt=dln_Gammadt)
-   ! call group_big_gamma(model, x, T+dx, dln_Gammadt_num)
+   call group_big_gamma(model, x, T, ln_Gamma, dln_gammadt=dln_Gammadt)
+   call group_big_gamma(model, x, T+dx, dln_Gammadt_num)
 
-   ! print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
-   ! print *, "anal: ", dln_gammadt
+   print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
+   print *, "anal: ", dln_gammadt
 
    call group_big_gamma(model, x, T, ln_Gamma=ln_Gamma)
    print *, "ln_Gamma: ", ln_Gamma
