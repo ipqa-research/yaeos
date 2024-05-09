@@ -6,12 +6,12 @@ module yaeos_equilibria_saturation_points
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
-   integer :: max_iterations = 100
+   integer :: max_iterations = 1000
    real(pr) :: step_tol = 0.1_pr
 
 contains
 
-   type(EquilibriaState) function bubble_pressure(model, n, t, p0, y0)
+   type(EquilibriaState) function bubble_pressure(model, n, t, p0, y0, max_iters)
       !! Bubble pressure calculation function.
       !!
       !! Calculates the bubble temperature of a multicomponent mixture.
@@ -22,6 +22,8 @@ contains
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: p0 !! Initial pressure [bar]
       real(pr), optional, intent(in) :: y0(:) !! Initial composition
+      integer, optional, intent(in) :: max_iters
+
 
       real(pr) :: p, vy, vz
 
@@ -47,6 +49,7 @@ contains
       else
          y = z * k_wilson(model, T, P)
       end if
+      iterations = optval(max_iters, max_iterations)
       ! ========================================================================
 
       ! ========================================================================
@@ -61,9 +64,13 @@ contains
 
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
+
+         do while (abs(step) > P/2)
+            step = step/2
+         end do
+
          p = p - step
          y = z*k
-
          if (abs(step) < tol) exit
       end do
       bubble_pressure = EquilibriaState(&
