@@ -166,13 +166,13 @@ contains
          dS = dXdS(ns) * dS
          dXdS = dXdS/dXdS(ns)
 
-         dS = sign(1.0_pr, dS) * minval([ &
+         dS = sign(1.2_pr, dS) * minval([ &
             max(abs(sqrt(X(ns))/10), 0.1_pr), &
             abs(dS)*3/iterations &
             ] &
          )
 
-         dS = sign(1._pr, dS) * maxval([abs(dS), 0.05_pr])
+         dS = sign(1._pr, dS) * maxval([abs(dS), 0.1_pr])
       end subroutine update_specification
    end function pt_boundary_2ph
 end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt

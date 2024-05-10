@@ -53,20 +53,24 @@ contains
       class(ArModel), allocatable :: model
       type(EquilibriaState) :: dew
 
-      real(pr) :: x(nc)  = [0.4, 0.6]
-      real(pr) :: y(nc) = [0.84203837140677695, 0.15796162859550475]
-      real(pr) :: P = 12.124711835829961     
+      real(pr) :: x(nc) = [6.7245630132141868E-002, 0.93275436999337613]
+      real(pr) :: y(nc)  = [0.4, 0.6]
+      real(pr) :: P = 10.867413040635611
 
       real(pr) :: n(nc), k(nc), t
 
       integer :: i
 
       n = [0.4_pr, 0.6_pr]
-      T = 300
+      T = 240
       model = binary_PR76()
 
       k = k_wilson(model, T, P)
-      y = n * k
+      dew = saturation_pressure(model, n, T, kind="dew", p0=17._pr)
+      call check(error, abs(dew%P-P) < abs_tolerance)
+      call check(error, abs(dew%T-T) < abs_tolerance)
+      call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
+      call check(error, maxval(abs(dew%y-y)) < abs_tolerance)
    end subroutine
 
 end module test_saturation

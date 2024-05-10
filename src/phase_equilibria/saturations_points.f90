@@ -87,7 +87,7 @@ contains
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
 
-         do while (abs(step) > P/2)
+         do while (abs(step) > 0.1*P)
             step = step/2
          end do
 
@@ -102,12 +102,12 @@ contains
          )
        case("dew")
          saturation_pressure = EquilibriaState(&
-            iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=1._pr&
-         )
+            iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
+       )
        case("liquid-liquid")
          saturation_pressure = EquilibriaState(&
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
-         )
+      )
       end select
    end function saturation_pressure
 end module yaeos_equilibria_saturation_points

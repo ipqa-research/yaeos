@@ -9,16 +9,24 @@ program phase_diagram
 
    integer, parameter :: nc=2
    integer :: i
-   real(pr) :: n(nc), tc(nc), pc(nc), w(nc)
+   real(pr) :: n(nc), tc(nc), pc(nc), w(nc), kij(nc, nc), lij(nc, nc)
 
    ! Methane/ Butane mixture
    n = [0.4, 0.6]                      ! Composition
-   tc = [190.564, 617.7]              ! Critical temperatures
-   pc = [45.99, 21.1]                 ! Critical pressures
-   w = [0.0115478, 0.492328]           ! Acentric factors
+   ! tc = [190.564, 425.12]              ! Critical temperatures
+   ! pc = [45.99, 37.96]                 ! Critical pressures
+   ! w = [0.0115478, 0.200164]           ! Acentric factors
+
+   tc = [190._pr, 310._pr]
+   pc = [14._pr, 30._pr]
+   w = [0.001_pr, 0.03_pr]
+
+   kij = reshape([0., 0.1, 0.1, 0.], [nc,nc]) 
+   lij = kij / 2 
+   model = PengRobinson76(tc, pc, w, kij, lij)
 
    ! Use the PengRobinson76 model
-   model = PengRobinson76(tc, pc, w)
+   ! model = PengRobinson76(tc, pc, w)
 
    ! Calculate a bubble point
    bubble = saturation_pressure(model, n, 150._pr, kind="bubble")
