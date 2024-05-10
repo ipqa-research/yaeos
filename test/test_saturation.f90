@@ -67,12 +67,6 @@ contains
 
       k = k_wilson(model, T, P)
       y = n * k
-      do i=300,700
-         t = real(i, pr)
-         dew = saturation_pressure(model, n, T, kind="dew", p0=100._pr, y0=y)
-         if (.not. any(isnan(dew%y))) y = dew%y
-         print *, dew%t, dew%p, dew%iters
-      end do
    end subroutine
 
 end module test_saturation

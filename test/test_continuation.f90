@@ -1,7 +1,7 @@
 program test_continuation
     use yaeos_constants, only: pr
     use yaeos__math_continuation, only: continuation
-    use fixtures_models, only: binary_PR76()
+    use fixtures_models, only: binary_PR76
 
     integer, parameter :: max_points=1000
     real(pr) :: XS(max_points, 2)
@@ -10,12 +10,7 @@ program test_continuation
     XS = continuation(&
         circle, &
         X0=[0.1_pr, 0.9_pr], ns0=2, S0=0.9_pr, dS0=0.01_pr, &
-        max_points=max_points)
-
-    do i=1, max_points
-        print *, XS(i, :)
-    end do
-
+        max_points=max_points, solver_tol=1e-5_pr)
 contains
     subroutine circle(X, ns, S, F, dF, dFdS)
         real(pr), intent(in) :: X(:)
