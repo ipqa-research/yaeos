@@ -12,7 +12,8 @@ contains
 
       testsuite = [ &
          new_unittest("Bubble pressure", test_bubble_pressure), &
-         new_unittest("Dew pressure", test_dew_pressure) &
+         new_unittest("Dew pressure", test_dew_pressure), &
+         new_unittest("PT envelope", test_envelope) &
          ]
    end subroutine collect_suite
 
@@ -71,6 +72,24 @@ contains
       call check(error, abs(dew%T-T) < abs_tolerance)
       call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
       call check(error, maxval(abs(dew%y-y)) < abs_tolerance)
+   end subroutine
+
+   subroutine test_envelope(error)
+      use yaeos, only: pr, EquilibriaState, saturation_pressure, ArModel
+      use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: pt_boundary_2ph, PTEnvel2
+      use fixtures_models, only: binary_PR76
+      type(error_type), allocatable, intent(out) :: error
+
+      type(EquilibriaState) :: bubble
+      class(ArModel), allocatable :: model
+      type(PTEnvel2) :: envelope
+      real(pr) :: n(2) = [0.4, 0.6]
+
+      model = binary_PR76()
+
+      bubble = saturation_pressure(model, n, 150._pr, kind="bubble")
+      envelope = pt_boundary_2ph(model, n, bubble, points=200, iterations=30)
+      call check(error, size(envelope%cps) == 1)
    end subroutine
 
 end module test_saturation
