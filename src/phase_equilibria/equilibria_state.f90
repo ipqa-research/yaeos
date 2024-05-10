@@ -11,5 +11,5 @@ module yaeos_equilibria_equilibria_state
       real(pr) :: t !! Temperature [K]
       real(pr) :: p !! Pressure [bar]
       real(pr) :: beta !! Mole fraction of light-phase
-   end type
-end module
+   end type EquilibriaState
+end module yaeos_equilibria_equilibria_state
