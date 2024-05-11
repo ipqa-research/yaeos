@@ -76,7 +76,8 @@ contains
 
    subroutine test_envelope(error)
       use yaeos, only: pr, EquilibriaState, saturation_pressure, ArModel
-      use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: pt_boundary_2ph, PTEnvel2
+      use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: &
+         pt_envelope_2ph, PTEnvel2
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -88,7 +89,7 @@ contains
       model = binary_PR76()
 
       bubble = saturation_pressure(model, n, 150._pr, kind="bubble")
-      envelope = pt_boundary_2ph(model, n, bubble, points=200, iterations=30)
+      envelope = pt_envelope_2ph(model, n, bubble, points=200, iterations=30)
       call check(error, size(envelope%cps) == 1)
    end subroutine
 

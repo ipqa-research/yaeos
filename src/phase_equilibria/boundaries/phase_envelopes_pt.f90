@@ -1,4 +1,5 @@
 module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
+   !! Phase boundaries line on the \(PT\) plane calculation procedures.
    use yaeos_constants, only: pr
    use yaeos_models, only: ArModel
    use yaeos_equilibria_equilibria_state, only: EquilibriaState
@@ -7,28 +8,36 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    implicit none
 
    type :: CriticalPoint
-      real(pr) :: T
-      real(pr) :: P
-   end type
+      !! Critical point
+      real(pr) :: T !! Temperature [K]
+      real(pr) :: P !! Pressure [bar]
+   end type CriticalPoint
 
    type :: PTEnvel2
+      !! Two-phase isopleth.
+      !! Phase boundary line of a fluid at constant composition.
       type(EquilibriaState), allocatable :: points(:)
+      !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
+      !! Critical points found along the line.
    end type PTEnvel2
 
 contains
 
-   function pt_boundary_2ph(&
-         model, z, init_state, points, iterations &
+   function pt_envelope_2ph(&
+      model, z, init_state, points, iterations &
       ) result(envelopes)
+      !! PT two-phase envelope calculation procedure.
+      !!
+      !! Phase envelope calculation using the continuation method.
       use stdlib_optval, only: optval
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      type(EquilibriaState), intent(in) :: init_state
-      integer, optional, intent(in) :: points
-      integer, optional, intent(in) :: iterations
+      class(ArModel), intent(in) :: model !! Thermodyanmic model
+      real(pr), intent(in) :: z(:) !! Vector of molar fractions
+      type(EquilibriaState), intent(in) :: init_state !! Initial state
+      integer, optional, intent(in) :: points !! Maxmimum number of points
+      integer, optional, intent(in) :: iterations !! Point solver maxmimum iterations
       type(PTEnvel2) :: envelopes
-      
+
       integer :: nc
       integer :: ns
 
@@ -61,7 +70,7 @@ contains
          foo, X, ns0=nc+1, S0=log(init_state%T), &
          dS0=0.1_pr, max_points=max_points, solver_tol=1.e-8_pr, &
          update_specification=update_specification &
-      )
+         )
 
       allocate(envelopes%points(0), envelopes%cps(0))
       do i=2, size(XS, dim=1)
@@ -72,19 +81,22 @@ contains
          envelopes%points = [&
             envelopes%points, &
             EquilibriaState(&
-               x=z, Vx=0._pr, y=exp(lnK)*z, Vy=0, &
-               T=exp(lnT), P=exp(lnP), beta=0._pr, iters=0) &
-         ]
+            x=z, Vx=0._pr, y=exp(lnK)*z, Vy=0, &
+            T=exp(lnT), P=exp(lnP), beta=0._pr, iters=0) &
+            ]
 
          if (all(XS(i - 1, :nc) * XS(i, :nc) < 0)) then
             mc = maxloc(abs(XS(i, :nc) - XS(i-1, :nc)), dim=1)
-            Xc = (XS(i, :) - XS(i-1, :))/(XS(i, mc) - XS(i-1,mc)) * (XS(i, mc)) + (XS(i-1, :))
+            Xc = &
+               (XS(i, :) - XS(i-1, :))/(XS(i, mc) - XS(i-1,mc)) &
+               * (XS(i, mc)) + (XS(i-1, :))
             envelopes%cps = [envelopes%cps, CriticalPoint(T=exp(lnT), P=exp(lnP))]
          end if
       end do
 
    contains
       subroutine foo(X, ns, S, F, dF, dFdS)
+         !! Function that needs to be solved at each envelope point
          real(pr), intent(in) :: X(:)
          integer, intent(in) :: ns
          real(pr), intent(in) :: S
@@ -146,12 +158,19 @@ contains
       end subroutine foo
 
       subroutine update_specification(X, ns, S, dS, dXdS, iterations)
+         !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
+         !! Vector of variables \([\lnK_i \dots , lnT, lnP]\)
          integer, intent(in out) :: ns
+         !! Number of specified variable in the vector
          real(pr), intent(in out) :: S
+         !! Variable specification value
          real(pr), intent(in out) :: dS
+         !! Step in specification
          real(pr), intent(in out) :: dXdS(:)
+         !! Variation of variables with respect to specification
          integer, intent(in) :: iterations
+         !! Iterations used in the solver
 
          real(pr) :: P, dP
          real(pr) :: T, dT
@@ -170,9 +189,9 @@ contains
             max(abs(sqrt(X(ns))/10), 0.1_pr), &
             abs(dS)*3/iterations &
             ] &
-         )
+            )
 
          dS = sign(1._pr, dS) * maxval([abs(dS), 0.1_pr])
       end subroutine update_specification
-   end function pt_boundary_2ph
+   end function pt_envelope_2ph
 end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt

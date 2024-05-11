@@ -1,6 +1,7 @@
 program phase_diagram
-   use yaeos, only: ArModel, saturation_pressure, EquilibriaState, PengRobinson76, pr
-   use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: pt_boundary_2ph, PTEnvel2
+   use yaeos, only: &
+      ArModel, saturation_pressure, EquilibriaState, PengRobinson76, pr, &
+      pt_envelope_2ph, PTEnvel2
    implicit none
 
    class(ArModel), allocatable :: model
@@ -33,7 +34,7 @@ program phase_diagram
 
    ! Calculate the whole phase envelope using the bubble point as an initial
    ! state
-   envelope = pt_boundary_2ph(model, n, bubble)
+   envelope = pt_envelope_2ph(model, n, bubble)
 
    print *, "# Envelope"
    print *, "T              P"

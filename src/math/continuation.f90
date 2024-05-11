@@ -1,30 +1,33 @@
 module yaeos__math_continuation
+   !! Implementation of Algower's numerical continuation method.
    use yaeos_constants, only: pr
    use yaeos__math_linalg, only: solve_system
 
    abstract interface
       subroutine continuation_function(X, ns, S, F, dF, dFdS)
          import pr
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: ns
-         real(pr), intent(in) :: S
-         real(pr), intent(out) :: F(:)
-         real(pr), intent(out) :: dF(:, :)
-         real(pr), intent(out) :: dFdS(:)
+         real(pr), intent(in) :: X(:) !! Vector of variables
+         integer, intent(in) :: ns !! Position of specified variable
+         real(pr), intent(in) :: S !! Specification variable value
+         real(pr), intent(out) :: F(:) !! Function value
+         real(pr), intent(out) :: dF(:, :) !! Jacobian \(\frac{dF}{dX})\
+         real(pr), intent(out) :: dFdS(:) !! \(\frac{dF}{dS})\
       end subroutine continuation_function
 
       subroutine process(X, ns, S, dS, dXdS, iterations)
+         !! Subroutine to make variation in the method after a point converged
          import pr
-         real(pr), intent(in out) :: X(:)
-         integer, intent(in out) :: ns
-         real(pr), intent(in out) :: S
-         real(pr), intent(in out) :: dS
-         real(pr), intent(in out) ::  dXdS(:)
-         integer, intent(in) :: iterations
+         real(pr), intent(in out) :: X(:) !! Vector of variables \(X\)
+         integer, intent(in out) :: ns !! Position of specified variable
+         real(pr), intent(in out) :: S !! Specification variable value
+         real(pr), intent(in out) :: dS !! Step of specification in the method
+         real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
+         integer, intent(in) :: iterations !! Iterations needed to converge point
       end subroutine process
 
       subroutine continuation_solver(fun, iters, X, ns, S, max_iters, F, dF, dFdS, tol &
          )
+         !! Solver to solve a point during numerical contination.
          import pr
          procedure(foo) :: fun !! Function to solve
          integer,  intent(out)    :: iters !! Number of iterations needed
@@ -57,16 +60,40 @@ contains
       f, X0, ns0, S0, dS0, max_points, solver_tol, &
       update_specification, postprocess, solver &
       ) result(XS)
-      procedure(continuation_function) :: f
-      real(pr), intent(in) :: X0(:)
-      integer, intent(in) :: ns0
-      real(pr), intent(in) :: S0
-      real(pr), intent(in) :: dS0
-      integer, intent(in) :: max_points
-      real(pr), intent(in) :: solver_tol
+      !! Numerical continuation of a function.
+      !!
+      !! Uses Algower method of numerical continuation to trace a line that
+      !! solves a system of the kind:
+      !!
+      !! \[ F(X,S) = 0 \]
+      !!
+      !! Where \(X\) is the variables vector and \(S)\ is the value of the
+      !! specification.
+      !! The method works with by providing a good set of initial points to
+      !! solve the system of equations with an extrapolation using the previous
+      !! solved point information.
+      procedure(continuation_function) :: f !! Function to trace
+      real(pr), intent(in) :: X0(:) !! Initial point
+      integer, intent(in) :: ns0 !! Initial specification
+      real(pr), intent(in) :: S0 !! Initial specification value
+      real(pr), intent(in) :: dS0 !! Initial \(\deltaS)\
+      integer, intent(in) :: max_points !! Maximum number of points to trace
+      real(pr), intent(in) :: solver_tol !! Point solver tolerance
       procedure(process), optional :: update_specification
+      !! Procedure to select the new specification and define the next step
+      !! \(\DeltaS)\, defaults to:
+      !!
+      !! ```fortran
+      !! ns = maxloc(abs(dXdS), dim=1)
+      !! dS = dXdS(ns)*dS
+      !! dXdS = dXdS/dXdS(ns)
+      !! dS = sign(minval(abs([0.05_pr, dS])), dS)
+      !! ```
       procedure(process), optional :: postprocess
+      !! Any kind of postprocess that could be done after defining the
+      !! next step
       procedure(continuation_solver), optional :: solver
+      !! Solver procedures, uses Newton-Raphson by default
       real(pr) :: XS(max_points, size(X0))
 
       real(pr) :: X(size(X0)), S, fval(size(X0)), dF(size(X0), size(X0)), dFdS(size(X0))
@@ -127,14 +154,14 @@ contains
       use stdlib_optval, only: optval
       use yaeos__math_linalg, only: solve_system
       procedure(foo) :: fun !! Function to solve
-      integer,  intent(out)    :: iters !! Number of iterations needed
+      integer,  intent(out) :: iters !! Number of iterations needed
       real(pr), intent(in out) :: X(:)  !! Variables vector
       integer, intent(in) :: ns
       real(pr), intent(in) :: S
-      integer, intent(in)      :: max_iters !! Maximum iterations
-      real(pr), intent(out)    :: F(:) !! Function values at solved point
-      real(pr), intent(out)    :: df(:, :) !! Jacobian values
-      real(pr), intent(out)    :: dfds(:) !! dFdS
+      integer, intent(in) :: max_iters !! Maximum iterations
+      real(pr), intent(out) :: F(:) !! Function values at solved point
+      real(pr), intent(out) :: df(:, :) !! Jacobian values
+      real(pr), intent(out) :: dfds(:) !! dFdS
       real(pr), optional, intent(in) :: tol
 
       real(pr) :: dX(size(X)), solve_tol
