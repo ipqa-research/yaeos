@@ -336,7 +336,8 @@ contains
       real(pr) :: ArV2, ArT2, ArTV, ArVn(size(n)), ArTn(size(n))
 
       call eos%residual_helmholtz(&
-         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
+         ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn &
       )
 
       Hr = Ar - t*ArT - v*ArV
