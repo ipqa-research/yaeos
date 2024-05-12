@@ -113,7 +113,7 @@ contains
 
       real(pr) :: dPdV, dPdT, dPdN(size(n))
 
-      real(pr) :: RT, Z
+      real(pr) :: RT, Z, p_aux
 
       real(pr) :: totn
       integer :: nc, i, j
@@ -148,13 +148,20 @@ contains
       
       lnphip(:) = Arn(:)/RT - log(Z)
 
-      if (present(P)) P = TOTN*RT/V - ArV
+      if (present(P) .or. present(dlnphidp)) then
+         p_aux = TOTN*RT/V - ArV
+
+         if (present(P)) P = p_aux
+      end if
       
       dPdV = -ArV2 - RT*TOTN/V**2
       dPdT = -ArTV + TOTN*R/V
       dPdN(:) = RT/V - ArVn(:)
 
-      if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1._pr/P
+      if (present(dlnphidp)) then
+         dlnphidp(:) = -dPdN(:)/dPdV/RT - 1._pr/p_aux
+      end if
+   
       if (present(dlnphidt)) then
          dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1._pr/T
       end if
