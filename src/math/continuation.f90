@@ -3,17 +3,21 @@ module yaeos__math_continuation
    use yaeos_constants, only: pr
    use yaeos__math_linalg, only: solve_system
 
+   implicit none
+
    abstract interface
       subroutine continuation_function(X, ns, S, F, dF, dFdS)
          import pr
-         real(pr), intent(in) :: X(:) !! Vector of variables
-         integer, intent(in) :: ns !! Position of specified variable
-         real(pr), intent(in) :: S !! Specification variable value
-         real(pr), intent(out) :: F(:) !! Function value
-         real(pr), intent(out) :: dF(:, :) !! Jacobian \(\frac{dF}{dX})\
-         real(pr), intent(out) :: dFdS(:) !! \(\frac{dF}{dS})\
+         real(pr), intent(in) :: X(:)
+         integer, intent(in) :: ns
+         real(pr), intent(in) :: S
+         real(pr), intent(out) :: F(:)
+         real(pr), intent(out) :: dF(:, :)
+         real(pr), intent(out) :: dFdS(:)
       end subroutine continuation_function
+   end interface
 
+   abstract interface
       subroutine process(X, ns, S, dS, dXdS, iterations)
          !! Subroutine to make variation in the method after a point converged
          import pr
@@ -24,34 +28,25 @@ module yaeos__math_continuation
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
       end subroutine process
-
-      subroutine continuation_solver(fun, iters, X, ns, S, max_iters, F, dF, dFdS, tol &
-         )
-         !! Solver to solve a point during numerical contination.
-         import pr
-         procedure(foo) :: fun !! Function to solve
-         integer,  intent(out)    :: iters !! Number of iterations needed
-         real(pr), intent(in out) :: X(:)  !! Variables vector
-         integer, intent(in) :: ns !! Specification number
-         real(pr), intent(in) :: S !! Specification value
-         integer, intent(in)      :: max_iters !! Maximum iterations
-         real(pr), intent(out)    :: F(:) !! Function values at solved point
-         real(pr), intent(out)    :: df(:, :) !! Jacobian values
-         real(pr), intent(out)    :: dfds(:) !! dFdS
-         real(pr), intent(in) :: tol !! Solver tolerance
-      end subroutine continuation_solver
    end interface
 
    abstract interface
-      subroutine foo(X, ns, S, F, dF, dFdS)
-         import pr
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: ns
-         real(pr), intent(in) :: S
-         real(pr), intent(out) :: F(:)
-         real(pr), intent(out) :: dF(:, :)
-         real(pr), intent(out) :: dFdS(:)
-      end subroutine foo
+      subroutine continuation_solver(&
+         fun, iters, X, ns, S, max_iters, F, dF, dFdS, tol &
+         )
+         !! Solver to solve a point during numerical contination.
+         import pr, continuation_function
+         procedure(continuation_function) :: fun !! Function to solve
+         integer,  intent(out) :: iters !! Number of iterations needed
+         real(pr), intent(in out) :: X(:)  !! Variables vector
+         integer, intent(in) :: ns !! Specification number
+         real(pr), intent(in) :: S !! Specification value
+         integer, intent(in) :: max_iters !! Maximum iterations
+         real(pr), intent(out) :: F(:) !! Function values at solved point
+         real(pr), intent(out) :: df(:, :) !! Jacobian values
+         real(pr), intent(out) :: dfds(:) !! dFdS
+         real(pr), intent(in) :: tol !! Solver tolerance
+      end subroutine continuation_solver
    end interface
 
 contains
@@ -76,7 +71,7 @@ contains
       real(pr), intent(in) :: X0(:) !! Initial point
       integer, intent(in) :: ns0 !! Initial specification
       real(pr), intent(in) :: S0 !! Initial specification value
-      real(pr), intent(in) :: dS0 !! Initial \(\deltaS)\
+      real(pr), intent(in) :: dS0 !! Initial \(\deltaS\)
       integer, intent(in) :: max_points !! Maximum number of points to trace
       real(pr), intent(in) :: solver_tol !! Point solver tolerance
       procedure(process), optional :: update_specification
@@ -153,7 +148,7 @@ contains
       !! Procedure that solves a point with the Newton-Raphson method.
       use stdlib_optval, only: optval
       use yaeos__math_linalg, only: solve_system
-      procedure(foo) :: fun !! Function to solve
+      procedure(continuation_function) :: fun !! Function to solve
       integer,  intent(out) :: iters !! Number of iterations needed
       real(pr), intent(in out) :: X(:)  !! Variables vector
       integer, intent(in) :: ns
