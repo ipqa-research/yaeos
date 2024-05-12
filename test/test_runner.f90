@@ -8,6 +8,7 @@ program tester
     use test_cubic_mixrules, only: suite_cubic_mixrules => collect_suite
     use test_autodiff_api, only: suite_autodiff_hd => collect_suite
     use test_thermoprops, only: suite_thermoprops => collect_suite
+    use test_ge_models, only: suite_ge_models => collect_suite
     use test_flash, only: suite_flash => collect_suite
 
     ! ==========================================================================

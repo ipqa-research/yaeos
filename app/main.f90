@@ -1,5 +1,5 @@
 program main
-    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, GenericCubic_Ar, fugacity_vt, fugacity_tp, vcalc, QMR
+    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, GenericCubic_Ar, fugacity_vt, fugacity_tp, volume, QMR
     use yaeos, only: ArModel, PengRobinson76
     implicit none
 

@@ -1,5 +1,5 @@
 module fixtures_models
-    use yaeos, only: pr, R, CubicEoS
+    use yaeos, only: pr, R, CubicEoS, NRTL
     use autodiff_hyperdual_pr76, only: hdPR76
     use yaeos_tapenade_ar_api, only: ArModelTapenade
 
@@ -97,4 +97,24 @@ contains
         eos = model
     end function
 
+    type(NRTL) function binary_NRTL_tape() result (model)
+        integer, parameter :: n=2
+        real(pr) :: a(n, n), b(n, n), c(n, n)
+
+        real(pr) :: ge, GeT, GeT2, Gen(n), Gen2(n, n), GeTn(n)
+        real(pr) :: lngamma(n)
+
+        a = 0; b = 0; c = 0
+
+        a(1, 2) = 3.458
+        a(2, 1) = -0.801
+
+        b(1, 2) = -586.1
+        b(2, 1) = 246.2
+
+        c(1, 2) = 0.3
+        c(2, 1) = 0.3
+
+        model = NRTL(a, b, c)
+    end function
 end module
