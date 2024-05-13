@@ -172,6 +172,7 @@ contains
          if (maxval(abs(dx/x)) < solve_tol .or. maxval(abs(F)) < solve_tol) exit newton
 
          call fun(X, ns, S, F, dF, dFdS)
+         if (maxval(abs(F)) < solve_tol) exit
 
          dX = solve_system(dF, -F)
 
