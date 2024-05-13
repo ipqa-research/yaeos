@@ -25,7 +25,22 @@ module yaeos_models_ge_NRTL
       procedure :: ge_d_b => excess_gibbs_d_b
       procedure :: ge_d_d => excess_gibbs_d_d
    end type NRTL
+
+   interface NRTL
+      module procedure :: init
+   end interface
 contains
+
+   type(NRTL) function init(a, b, c)
+      real(pr), intent(in) :: a(:, :)
+      real(pr), intent(in) :: b(:, :)
+      real(pr), intent(in) :: c(:, :)
+
+      init%a = a
+      init%b = b
+      init%c = c
+   end function
+
    subroutine EXCESS_GIBBS_D_D_D(model, n, nd, t, td1, td0, td, ge, ged1&
    &   , ged0, ged0d, ged, gedd0, gedd, geddd)
       implicit none

@@ -38,10 +38,10 @@ program flasher
     flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iter)
 
     ! Print results with format statements
-    print "(A,5x, *(F6.4,x))", "X:", flash_result%x
-    print "(A,5x, *(F6.4,x))", "Y:", flash_result%y
+    print "(A,5x, *(F6.4,1x))", "X:", flash_result%x
+    print "(A,5x, *(F6.4,1x))", "Y:", flash_result%y
     print "(A,1x, *(E15.7))", "Vx: ", flash_result%Vx
     print "(A,1x, *(E15.7))", "Vy: ", flash_result%Vy
-    print "(A,x, F10.3)", "P: ", flash_result%p
-    print "(A,x, F10.3)", "T: ", flash_result%T
+    print "(A,1x, F10.3)", "P: ", flash_result%p
+    print "(A,1x, F10.3)", "T: ", flash_result%T
 end program

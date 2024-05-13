@@ -1,4 +1,5 @@
 program main
+   use iso_fortran_env, only: int64
    use yaeos, only: pr
    use yaeos_models_ge_group_contribution_unifac
    use stdlib_io_npy, only: load_npy
@@ -23,7 +24,7 @@ program main
    real(pr) :: lngamma(nc)
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0
 
-   integer(8) :: rate, st, et
+   integer(int64) :: rate, st, et
    call system_clock(count_rate=rate)
 
    call load_npy("data/unifac_aij.npy", Aij)

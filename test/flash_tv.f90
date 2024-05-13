@@ -69,7 +69,7 @@ program flash_tv
       print *, df(its, :)
    end do
 
-   call exit
+   stop
 
    print *, "solve?"
    do its=1,1000
@@ -78,14 +78,14 @@ program flash_tv
       dxold = dx
       dx = solve_system(dF, -F)
 
-      if (any(isnan(dx)) .or. any(isnan(F))) then
-         K = K - dxold(:nc)
-         beta = beta - dxold(nc+1)
-         vx = vx - dxold(nc+2)
-         vy = vy - dxold(nc+3)
+      ! if (any(isnan(dx)) .or. any(isnan(F))) then
+      !    K = K - dxold(:nc)
+      !    beta = beta - dxold(nc+1)
+      !    vx = vx - dxold(nc+2)
+      !    vy = vy - dxold(nc+3)
 
-         dx = dxold/2
-      end if
+      !    dx = dxold/2
+      ! end if
 
       print *, its, F
 

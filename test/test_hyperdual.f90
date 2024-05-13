@@ -12,10 +12,10 @@ program main
 
     z = f(x, y)
 
-    if (abs(z%f0 - 2.4494897427831779) > 1e-5) call exit(1)
-    if (abs(z%f1 - 0.61237243569579447) > 1e-5) call exit(1)
-    if (abs(z%f2 - 0.40824829046386302) > 1e-5) call exit(1)
-    if (abs(z%f12 - 0.10206207261596575) > 1e-5) call exit(1)
+    if (abs(z%f0 - 2.4494897427831779) > 1e-5)   error stop 1
+    if (abs(z%f1 - 0.61237243569579447) > 1e-5)  error stop 1
+    if (abs(z%f2 - 0.40824829046386302) > 1e-5)  error stop 1
+    if (abs(z%f12 - 0.10206207261596575) > 1e-5) error stop 1
 
 contains
 

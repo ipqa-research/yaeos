@@ -8,20 +8,22 @@ contains
       !! Solve a linear sytem AX = b
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: a(size(b), size(b))
+      integer, parameter :: dp = selected_real_kind(15)
 
       real(pr) :: x(size(b))
 
-      real(8) :: a_lapack(size(b), size(b)), b_lapack(size(b))
+      real(dp) :: a_lapack(size(b), size(b)), b_lapack(size(b))
       integer :: n, nrhs, lda, ipiv(size(b)), ldb, info
 
       interface
          subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
+            import dp
             integer :: n
             integer :: nrhs
-            real(8) :: a(n, n)
+            real(dp) :: a(n, n)
             integer :: lda
             integer :: ipiv(n)
-            real(8) :: b(n)
+            real(dp) :: b(n)
             integer :: ldb
             integer :: info
          end subroutine
