@@ -84,13 +84,18 @@ contains
       type(EquilibriaState) :: bubble
       class(ArModel), allocatable :: model
       type(PTEnvel2) :: envelope
-      real(pr) :: n(2) = [0.4, 0.6]
+      real(pr) :: z(2) = [0.4_pr, 0.6_pr]
+      integer :: i
+
+      z = z/sum(z)
 
       model = binary_PR76()
 
-      bubble = saturation_pressure(model, n, 150._pr, kind="bubble")
-      envelope = pt_envelope_2ph(model, n, bubble, points=200, iterations=30)
+      bubble = saturation_pressure(model, z, 150._pr, kind="bubble")
+      print *, bubble%T, bubble%P
+      envelope = pt_envelope_2ph(&
+         model, z, y0=bubble%y, T0=bubble%T, P0=bubble%P &
+      )
       call check(error, size(envelope%cps) == 1)
    end subroutine
-
 end module test_saturation

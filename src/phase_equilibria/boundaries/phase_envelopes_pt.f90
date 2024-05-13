@@ -215,7 +215,7 @@ contains
          dS = dXdS(ns) * dS
          dXdS = dXdS/dXdS(ns)
 
-         dS = sign(1.2_pr, dS) * minval([ &
+         dS = sign(1.0_pr, dS) * minval([ &
             max(abs(sqrt(X(ns))/10), 0.1_pr), &
             abs(dS)*3/iterations &
             ] &
