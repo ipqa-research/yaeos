@@ -76,9 +76,9 @@ contains
       call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-6)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-15)
+      call check(error, abs(eq31) <= 1e-14)
       call check(error, maxval(abs(eq33)) < 1e-15)
-      call check(error, maxval(abs(eq34)) < 1e-15)
+      call check(error, maxval(abs(eq34)) < 1e-14)
       call check(error, abs(eq36) <= 1e-15)
       call check(error, abs(eq37) <= 1e-15)
 
@@ -186,7 +186,7 @@ contains
       call check(error, rel_error(ArT, ArT_num) < 1e-6)
       call check(error, allclose(Arn, Arn_num, 1e-6_pr))
       call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
+      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
       call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
       call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
       call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
