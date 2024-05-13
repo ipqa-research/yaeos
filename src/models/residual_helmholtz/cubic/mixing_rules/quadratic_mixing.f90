@@ -19,7 +19,7 @@ module yaeos_models_ar_cubic_quadratic_mixing
         !! replacing the `aij` pointer procedure.
         real(pr), allocatable :: k(:, :) !! Attractive Binary Interatction parameter matrix
         real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
-        procedure(get_aij), pointer :: aij
+        procedure(get_aij), pointer :: aij => null()
         !! Procedure to calculate \(a_{ij}\) matrix. Can be overloaded
         !! by any method that respets the interface [[get_aij(interface)]].
     contains
