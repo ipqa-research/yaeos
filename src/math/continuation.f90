@@ -110,11 +110,13 @@ contains
       do i=1,max_points
 
          if (present(solver)) then
-            call solver(f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol)
+            call solver(&
+               f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol&
+            )
          else
             call full_newton(&
                f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol &
-               )
+            )
          end if
          if (newton_its >= max_iters) exit
 

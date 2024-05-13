@@ -25,21 +25,45 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
 contains
 
    function pt_envelope_2ph(&
-      model, z, init_state, points, iterations &
+      model, z, init_state, points, iterations, &
+      delta_0, specified_variable_0 &
       ) result(envelopes)
       !! PT two-phase envelope calculation procedure.
       !!
       !! Phase envelope calculation using the continuation method.
+      !! Defaults to solving the saturation temperature and continues with
+      !! an increment in it. The variable to specify can be changed by modifying
+      !! `specified_variable_0` with the corresponding variable number.
+      !! 
+      !! The initial values are provided in the `init_state` object. It can
+      !! be either converged outside with the functions `saturation_pressure` 
+      !! and `saturation_temperature` or estimated manually and setting the
+      !! object.
       use stdlib_optval, only: optval
-      class(ArModel), intent(in) :: model !! Thermodyanmic model
-      real(pr), intent(in) :: z(:) !! Vector of molar fractions
-      type(EquilibriaState), intent(in) :: init_state !! Initial state
-      integer, optional, intent(in) :: points !! Maxmimum number of points
-      integer, optional, intent(in) :: iterations !! Point solver maxmimum iterations
+      class(ArModel), intent(in) :: model 
+         !! Thermodyanmic model
+      real(pr), intent(in) :: z(:) 
+         !! Vector of molar fractions
+      type(EquilibriaState), intent(in) :: init_state 
+         !! Initial state, this can be either a bubble or dew point. It can
+         !! also be an approximation to it.
+      integer, optional, intent(in) :: points 
+         !! Maxmimum number of points
+      integer, optional, intent(in) :: iterations  
+         !! Point solver maxmimum iterations
+      real(pr), optional, intent(in) :: delta_0 
+         !! Initial extrapolation \(\Delta\)
+      integer, optional, intent(in) :: specified_variable_0
+         !! Position of specified variable, since the vector of variables is
+         !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
+         !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
+         !! \(lnT\) and \(nc + 2\) for \(lnT\).
       type(PTEnvel2) :: envelopes
 
-      integer :: nc
-      integer :: ns
+      integer :: nc !! Number of components
+      integer :: ns !! Number of specified variable
+      real(pr) :: dS0 !! Initial specification step
+      real(pr) :: S0 !! Initial specification value
 
       integer :: max_points
       integer :: its, max_iterations
@@ -54,10 +78,13 @@ contains
 
       integer :: i, mc
 
+      ! Handle input
+      nc = size(z)
       max_points = optval(points, 500)
       max_iterations = optval(iterations, 100)
+      ns = optval(specified_variable_0, nc+1)
+      dS0 = optval(delta_0, 0.1_pr)
 
-      nc = size(z)
       lnK => X(:nc)
       lnT => X(nc + 1)
       lnP => X(nc + 2)
@@ -66,9 +93,11 @@ contains
       lnT = log(init_state%T)
       lnP = log(init_state%P)
 
+      S0 = X(ns)
+
       XS = continuation(&
-         foo, X, ns0=nc+1, S0=log(init_state%T), &
-         dS0=0.1_pr, max_points=max_points, solver_tol=1.e-8_pr, &
+         foo, X, ns0=ns, S0=S0, &
+         dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
          update_specification=update_specification &
          )
 
@@ -93,7 +122,6 @@ contains
             envelopes%cps = [envelopes%cps, CriticalPoint(T=exp(lnT), P=exp(lnP))]
          end if
       end do
-
    contains
       subroutine foo(X, ns, S, F, dF, dFdS)
          !! Function that needs to be solved at each envelope point
@@ -160,7 +188,7 @@ contains
       subroutine update_specification(X, ns, S, dS, dXdS, iterations)
          !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
-         !! Vector of variables \([\lnK_i \dots , lnT, lnP]\)
+         !! Vector of variables \([lnK_i \dots , lnT, lnP]\)
          integer, intent(in out) :: ns
          !! Number of specified variable in the vector
          real(pr), intent(in out) :: S
@@ -189,7 +217,7 @@ contains
             max(abs(sqrt(X(ns))/10), 0.1_pr), &
             abs(dS)*3/iterations &
             ] &
-            )
+         )
 
          dS = sign(1._pr, dS) * maxval([abs(dS), 0.1_pr])
       end subroutine update_specification
