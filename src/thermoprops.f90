@@ -118,6 +118,7 @@ contains
       real(pr) :: Arn2(size(n), size(n))
 
       real(pr) :: dPdV_in, dPdT_in, dPdN_in(size(n))
+      real(pr) :: P_in
 
       real(pr) :: RT, Z
 
@@ -154,14 +155,15 @@ contains
 
       lnphip(:) = Arn(:)/RT - log(Z)
 
-      if (present(P)) P = TOTN*RT/V - ArV
+      P_in = TOTN*RT/V - ArV
+      if (present(P)) P = P_in
 
       dPdV_in = -ArV2 - RT*TOTN/V**2
       dPdT_in = -ArTV + TOTN*R/V
       dPdN_in = RT/V - ArVn
 
       if (present(dlnphidp)) then
-         dlnphidp(:) = -dPdN_in(:)/dPdV_in/RT - 1._pr/P
+         dlnphidp(:) = -dPdN_in(:)/dPdV_in/RT - 1._pr/P_in
       end if
       if (present(dlnphidt)) then
          dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN_in(:)*dPdT_in/dPdV_in/RT + 1._pr/T

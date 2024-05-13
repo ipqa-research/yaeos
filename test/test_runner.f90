@@ -39,7 +39,7 @@ program tester
         new_testsuite("Thermoprops", suite_thermoprops), &
         new_testsuite("Ge Models", suite_ge_models), &
         new_testsuite("Flash", suite_flash), &
-        new_testsuite("Saturation Points", suite_saturation) &
+        new_testsuite("Saturation Points", suite_saturation), &
         ! =====================================================================
         ! Armodel particular tests
         ! ---------------------------------------------------------------------
