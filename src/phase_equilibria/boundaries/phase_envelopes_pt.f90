@@ -25,8 +25,8 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
 contains
 
    function pt_envelope_2ph(&
-      model, z, init_state, points, iterations, &
-      delta_0, specified_variable_0 &
+      model, z, y0, T0, P0, &
+      points, iterations, delta_0, specified_variable_0 &
       ) result(envelopes)
       !! PT two-phase envelope calculation procedure.
       !!
@@ -34,23 +34,21 @@ contains
       !! Defaults to solving the saturation temperature and continues with
       !! an increment in it. The variable to specify can be changed by modifying
       !! `specified_variable_0` with the corresponding variable number.
-      !! 
-      !! The initial values are provided in the `init_state` object. It can
-      !! be either converged outside with the functions `saturation_pressure` 
-      !! and `saturation_temperature` or estimated manually and setting the
-      !! object.
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: model 
          !! Thermodyanmic model
       real(pr), intent(in) :: z(:) 
          !! Vector of molar fractions
-      type(EquilibriaState), intent(in) :: init_state 
-         !! Initial state, this can be either a bubble or dew point. It can
-         !! also be an approximation to it.
+      real(pr), intent(in) :: y0(:)
+         !! Incipient phase initial composition
+      real(pr), intent(in) :: T0
+         !! Initial Temperature [K]
+      real(pr), intent(in) :: P0
+         !! Initial Pressure [bar]
       integer, optional, intent(in) :: points 
-         !! Maxmimum number of points
+         !! Maxmimum number of points, defaults to 500
       integer, optional, intent(in) :: iterations  
-         !! Point solver maxmimum iterations
+         !! Point solver maximum iterations, defaults to 100
       real(pr), optional, intent(in) :: delta_0 
          !! Initial extrapolation \(\Delta\)
       integer, optional, intent(in) :: specified_variable_0
@@ -89,9 +87,13 @@ contains
       lnT => X(nc + 1)
       lnP => X(nc + 2)
 
-      lnK = log(init_state%y/init_state%x)
-      lnT = log(init_state%T)
-      lnP = log(init_state%P)
+      where (z /= 0._pr)
+         lnK = log(y0/z)
+      elsewhere
+         lnK = 0
+      end where
+      lnT = log(T0)
+      lnP = log(P0)
 
       S0 = X(ns)
 
