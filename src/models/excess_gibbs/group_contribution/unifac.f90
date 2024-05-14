@@ -93,9 +93,10 @@ contains
       real(pr) :: x(size(n))
       real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n)), ln_activity(size(n))
 
-      write(error_unit, *) "WARN: UNIFAC not fully implemented yet"
 
       integer :: i, j, nc
+      
+      write(error_unit, *) "WARN: UNIFAC not fully implemented yet"
 
       x = n/sum(n)
 
