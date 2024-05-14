@@ -79,6 +79,7 @@ contains
 
    subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       !! Excess Gibbs and derivs procedure
+      use iso_fortran_env, only: error_unit
       class(UNIFAC), intent(in) :: self !! Model
       real(pr), intent(in) ::n(:) !! Moles vector
       real(pr), intent(in) :: t !! Temperature [K]
@@ -92,6 +93,7 @@ contains
       real(pr) :: x(size(n))
       real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n)), ln_activity(size(n))
 
+      write(error_unit, *) "WARN: UNIFAC not fully implemented yet"
 
       integer :: i, j, nc
 
