@@ -1,6 +1,6 @@
 program phase_diagram
    use yaeos, only: &
-      ArModel, saturation_pressure, EquilibriaState, PengRobinson76, pr, &
+      ArModel, saturation_pressure, saturation_temperature, EquilibriaState, PengRobinson76, pr, &
       pt_envelope_2ph, PTEnvel2
    implicit none
 
@@ -28,7 +28,7 @@ program phase_diagram
    ! Calculate a dew point
    bubble = saturation_pressure(model, n, 150.0_pr, kind="bubble", p0=40._pr)
    print *, bubble%T, bubble%p
-   
+
    ! Calculate the whole phase envelope using the information from the converged
    ! dew point
    envelope = pt_envelope_2ph(&
