@@ -77,9 +77,8 @@
             <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip"
-                 data-bs-placement="bottom" data-html="true"
-                 title=" 3.8% of total for procedures.">100 statements</a>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 2.9% of total for procedures.">119 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -121,17 +120,16 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/flash.html#variable-dpvl">DPVl</a>
             <a class="list-group-item" href="../proc/flash.html#variable-k">K</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-vx">Vx</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-vy">Vy</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-aux">aux</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-beta">beta</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-vx~2">Vx</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-vy~2">Vy</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-beta~2">beta</a>
             <a class="list-group-item" href="../proc/flash.html#variable-bmax">bmax</a>
             <a class="list-group-item" href="../proc/flash.html#variable-bmin">bmin</a>
             <a class="list-group-item" href="../proc/flash.html#variable-bx">bx</a>
             <a class="list-group-item" href="../proc/flash.html#variable-dk">dK</a>
             <a class="list-group-item" href="../proc/flash.html#variable-dkold">dKold</a>
             <a class="list-group-item" href="../proc/flash.html#variable-dvydvl">dVydVl</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-dlnphidn">dlnphidn</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-dlnphidn~3">dlnphidn</a>
             <a class="list-group-item" href="../proc/flash.html#variable-dpvv">dpvv</a>
             <a class="list-group-item" href="../proc/flash.html#variable-g0">g0</a>
             <a class="list-group-item" href="../proc/flash.html#variable-g1">g1</a>
@@ -141,7 +139,7 @@
             <a class="list-group-item" href="../proc/flash.html#variable-lnfug_x">lnfug_x</a>
             <a class="list-group-item" href="../proc/flash.html#variable-lnfug_y">lnfug_y</a>
             <a class="list-group-item" href="../proc/flash.html#variable-log_k2">log_k2</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-p">p</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-p~8">p</a>
             <a class="list-group-item" href="../proc/flash.html#variable-pl">pl</a>
             <a class="list-group-item" href="../proc/flash.html#variable-pold">pold</a>
             <a class="list-group-item" href="../proc/flash.html#variable-pold2">pold2</a>
@@ -155,9 +153,9 @@
             <a class="list-group-item" href="../proc/flash.html#variable-stopflash">stopflash</a>
             <a class="list-group-item" href="../proc/flash.html#variable-told">told</a>
             <a class="list-group-item" href="../proc/flash.html#variable-told2">told2</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-v">v</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-x">x</a>
-            <a class="list-group-item" href="../proc/flash.html#variable-y">y</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-v~10">v</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-x~2">x</a>
+            <a class="list-group-item" href="../proc/flash.html#variable-y~2">y</a>
         </div>
       </div>
     </div>
@@ -187,12 +185,20 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  function flash(self, z, t, v_spec, p_spec, k0, iters)  
+    <h2>public  function flash(model, z, t, v_spec, p_spec, k0, iters)  
 </h2>
     
 
-    <p>This algorithm assumes that the specified T and P correspond to
-vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
+    <p>Flash algorithm using sucessive substitutions.</p>
+<p>Available specifications:</p>
+<ul>
+<li>TP (with T and P_spec variables)</li>
+<li>TV (with T and V_spec variables)</li>
+</ul>
+<p>This algorithm assumes that the specified T and P/V correspond to
+vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1) and
+solves the equilibria and mass-balance equations with a fixed-point
+method.</p>
 
 
     <h3>Arguments</h3>
@@ -208,7 +214,7 @@ vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self"></span>
+              <span class="anchor" id="variable-model"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -216,14 +222,14 @@ vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>model</strong></td>
             <td>
                 <p>Thermodynamic model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z"></span>
+              <span class="anchor" id="variable-z~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -238,7 +244,7 @@ vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t"></span>
+              <span class="anchor" id="variable-t~12"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -286,8 +292,8 @@ vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
               <span class="anchor" id="variable-k0"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
@@ -298,7 +304,7 @@ vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters"></span>
+              <span class="anchor" id="variable-iters~4"></span>
               integer,
             </td>
 <td>intent(out),</td>
@@ -321,282 +327,6 @@ vapor-liquid separation predicted by the provided model (0&lt;beta&lt;1)</p>
         </small>
       </h3>
       
-    <br>
-    <div class="card">
-      <div class="card-header">
-  <h3 class="card-title">Calls</h3>
-      </div>
-      <div class="card-body">
-  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~flash~~CallsGraph Pages: 1 -->
-<svg id="procflashCallsGraph" width="641pt" height="159pt"
- viewBox="0.00 0.00 641.00 159.09" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~flash~~CallsGraph" class="graph" transform="scale(1.57 1.57) rotate(0) translate(4 245.43)">
-<title>proc~~flash~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-245.43 1001,-245.43 1001,4 -4,4"/>
-<!-- proc~flash -->
-<g id="proc~~flash~~CallsGraph_node1" class="node">
-<title>proc~flash</title>
-<polygon fill="none" stroke="black" points="163,-200 0,-200 0,-176 163,-176 163,-200"/>
-<text text-anchor="middle" x="81.5" y="-185.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos_equilibria_flash::flash</text>
-</g>
-<!-- proc~betalimits -->
-<g id="proc~~flash~~CallsGraph_node2" class="node">
-<title>proc~betalimits</title>
-<g id="a_proc~~flash~~CallsGraph_node2"><a xlink:href="../proc/betalimits.html" xlink:title="yaeos_equilibria_flash::betalimits">
-<polygon fill="#d9534f" stroke="#d9534f" points="620.5,-241 430.5,-241 430.5,-217 620.5,-217 620.5,-241"/>
-<text text-anchor="middle" x="525.5" y="-226.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_equilibria_flash::betalimits</text>
-</a>
-</g>
-</g>
-<!-- proc~flash&#45;&gt;proc~betalimits -->
-<g id="proc~~flash~~CallsGraph_edge1" class="edge">
-<title>proc~flash&#45;&gt;proc~betalimits</title>
-<path fill="none" stroke="#000000" d="M108.16,-200.18C131.31,-210.44 166.6,-224.34 199,-230 272.18,-242.79 356.04,-242.18 420.32,-238.56"/>
-<polygon fill="#000000" stroke="#000000" points="420.68,-242.04 430.46,-237.95 420.27,-235.06 420.68,-242.04"/>
-</g>
-<!-- proc~betato01 -->
-<g id="proc~~flash~~CallsGraph_node3" class="node">
-<title>proc~betato01</title>
-<g id="a_proc~~flash~~CallsGraph_node3"><a xlink:href="../proc/betato01.html" xlink:title="yaeos_equilibria_flash::betato01">
-<polygon fill="#d9534f" stroke="#d9534f" points="385,-221 199,-221 199,-197 385,-197 385,-221"/>
-<text text-anchor="middle" x="292" y="-206.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_equilibria_flash::betato01</text>
-</a>
-</g>
-</g>
-<!-- proc~flash&#45;&gt;proc~betato01 -->
-<g id="proc~~flash~~CallsGraph_edge2" class="edge">
-<title>proc~flash&#45;&gt;proc~betato01</title>
-<path fill="none" stroke="#000000" d="M163.11,-196.12C171.51,-196.97 180.13,-197.83 188.73,-198.7"/>
-<polygon fill="#000000" stroke="#000000" points="188.5,-202.19 198.8,-199.71 189.2,-195.23 188.5,-202.19"/>
-</g>
-<!-- proc~fugacity_tp -->
-<g id="proc~~flash~~CallsGraph_node4" class="node">
-<title>proc~fugacity_tp</title>
-<g id="a_proc~~flash~~CallsGraph_node4"><a xlink:href="../proc/fugacity_tp.html" xlink:title="yaeos_thermoprops::fugacity_tp">
-<polygon fill="#d9534f" stroke="#d9534f" points="384,-137 200,-137 200,-113 384,-113 384,-137"/>
-<text text-anchor="middle" x="292" y="-122.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_thermoprops::fugacity_tp</text>
-</a>
-</g>
-</g>
-<!-- proc~flash&#45;&gt;proc~fugacity_tp -->
-<g id="proc~~flash~~CallsGraph_edge3" class="edge">
-<title>proc~flash&#45;&gt;proc~fugacity_tp</title>
-<path fill="none" stroke="#000000" d="M112.83,-175.92C136.14,-166.91 169.29,-154.71 199,-146 206.91,-143.68 215.26,-141.46 223.58,-139.39"/>
-<polygon fill="#000000" stroke="#000000" points="224.41,-142.8 233.3,-137.04 222.76,-135.99 224.41,-142.8"/>
-</g>
-<!-- proc~solve_rr -->
-<g id="proc~~flash~~CallsGraph_node5" class="node">
-<title>proc~solve_rr</title>
-<g id="a_proc~~flash~~CallsGraph_node5"><a xlink:href="../proc/solve_rr.html" xlink:title="yaeos_equilibria_flash::solve_rr">
-<polygon fill="#d9534f" stroke="#d9534f" points="382,-179 202,-179 202,-155 382,-155 382,-179"/>
-<text text-anchor="middle" x="292" y="-164.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_equilibria_flash::solve_rr</text>
-</a>
-</g>
-</g>
-<!-- proc~flash&#45;&gt;proc~solve_rr -->
-<g id="proc~~flash~~CallsGraph_edge4" class="edge">
-<title>proc~flash&#45;&gt;proc~solve_rr</title>
-<path fill="none" stroke="#000000" d="M163.11,-179.88C172.55,-178.93 182.27,-177.95 191.92,-176.98"/>
-<polygon fill="#000000" stroke="#000000" points="192.35,-180.45 201.95,-175.97 191.64,-173.49 192.35,-180.45"/>
-</g>
-<!-- proc~fugacity_vt -->
-<g id="proc~~flash~~CallsGraph_node6" class="node">
-<title>proc~fugacity_vt</title>
-<g id="a_proc~~flash~~CallsGraph_node6"><a xlink:href="../proc/fugacity_vt.html" xlink:title="yaeos_thermoprops::fugacity_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="849,-150 666,-150 666,-126 849,-126 849,-150"/>
-<text text-anchor="middle" x="757.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_thermoprops::fugacity_vt</text>
-</a>
-</g>
-</g>
-<!-- proc~fugacity_tp&#45;&gt;proc~fugacity_vt -->
-<g id="proc~~flash~~CallsGraph_edge5" class="edge">
-<title>proc~fugacity_tp&#45;&gt;proc~fugacity_vt</title>
-<path fill="none" stroke="#000000" d="M384.02,-127.55C462.14,-129.74 574.6,-132.9 655.49,-135.17"/>
-<polygon fill="#000000" stroke="#000000" points="655.59,-138.67 665.69,-135.45 655.79,-131.67 655.59,-138.67"/>
-</g>
-<!-- proc~vcalc -->
-<g id="proc~~flash~~CallsGraph_node8" class="node">
-<title>proc~vcalc</title>
-<g id="a_proc~~flash~~CallsGraph_node8"><a xlink:href="../proc/vcalc.html" xlink:title="yaeos_thermoprops::VCALC">
-<polygon fill="#d9534f" stroke="#d9534f" points="606,-87 445,-87 445,-63 606,-63 606,-87"/>
-<text text-anchor="middle" x="525.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_thermoprops::VCALC</text>
-</a>
-</g>
-</g>
-<!-- proc~fugacity_tp&#45;&gt;proc~vcalc -->
-<g id="proc~~flash~~CallsGraph_edge6" class="edge">
-<title>proc~fugacity_tp&#45;&gt;proc~vcalc</title>
-<path fill="none" stroke="#000000" d="M348.74,-112.96C381.87,-105.81 424.05,-96.7 458.78,-89.19"/>
-<polygon fill="#000000" stroke="#000000" points="459.8,-92.55 468.84,-87.02 458.32,-85.71 459.8,-92.55"/>
-</g>
-<!-- proc~solve_rr&#45;&gt;proc~betalimits -->
-<g id="proc~~flash~~CallsGraph_edge7" class="edge">
-<title>proc~solve_rr&#45;&gt;proc~betalimits</title>
-<path fill="none" stroke="#000000" d="M348.59,-179.11C360.63,-181.89 373.27,-184.94 385,-188 415.43,-195.94 449.28,-205.86 476.02,-213.95"/>
-<polygon fill="#000000" stroke="#000000" points="475.31,-217.4 485.89,-216.96 477.34,-210.7 475.31,-217.4"/>
-</g>
-<!-- proc~rachford_rice -->
-<g id="proc~~flash~~CallsGraph_node7" class="node">
-<title>proc~rachford_rice</title>
-<g id="a_proc~~flash~~CallsGraph_node7"><a xlink:href="../proc/rachford_rice.html" xlink:title="yaeos_equilibria_flash::rachford_rice">
-<polygon fill="#d9534f" stroke="#d9534f" points="630,-179 421,-179 421,-155 630,-155 630,-179"/>
-<text text-anchor="middle" x="525.5" y="-164.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos_equilibria_flash::rachford_rice</text>
-</a>
-</g>
-</g>
-<!-- proc~solve_rr&#45;&gt;proc~rachford_rice -->
-<g id="proc~~flash~~CallsGraph_edge8" class="edge">
-<title>proc~solve_rr&#45;&gt;proc~rachford_rice</title>
-<path fill="none" stroke="#000000" d="M382.17,-167C391.43,-167 400.93,-167 410.42,-167"/>
-<polygon fill="#000000" stroke="#000000" points="410.69,-170.5 420.69,-167 410.69,-163.5 410.69,-170.5"/>
-</g>
-<!-- residual_helmholtz -->
-<g id="proc~~flash~~CallsGraph_node12" class="node">
-<title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="997,-87 885,-87 885,-63 997,-63 997,-87"/>
-<text text-anchor="middle" x="941" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
-</g>
-<!-- proc~fugacity_vt&#45;&gt;residual_helmholtz -->
-<g id="proc~~flash~~CallsGraph_edge9" class="edge">
-<title>proc~fugacity_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M818.38,-125.93C828.7,-123.33 839.23,-120.35 849,-117 869.28,-110.05 891.11,-100.06 908.31,-91.57"/>
-<polygon fill="#000000" stroke="#000000" points="909.98,-94.65 917.35,-87.04 906.84,-88.39 909.98,-94.65"/>
-</g>
-<!-- get_v0 -->
-<g id="proc~~flash~~CallsGraph_node9" class="node">
-<title>get_v0</title>
-<polygon fill="#777777" stroke="#777777" points="784.5,-66 730.5,-66 730.5,-42 784.5,-42 784.5,-66"/>
-<text text-anchor="middle" x="757.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
-</g>
-<!-- proc~vcalc&#45;&gt;get_v0 -->
-<g id="proc~~flash~~CallsGraph_edge10" class="edge">
-<title>proc~vcalc&#45;&gt;get_v0</title>
-<path fill="none" stroke="#000000" d="M606.3,-67.71C645.06,-64.17 689.73,-60.1 720.22,-57.31"/>
-<polygon fill="#000000" stroke="#000000" points="720.73,-60.78 730.37,-56.39 720.1,-53.81 720.73,-60.78"/>
-</g>
-<!-- none~solve_point -->
-<g id="proc~~flash~~CallsGraph_node10" class="node">
-<title>none~solve_point</title>
-<g id="a_proc~~flash~~CallsGraph_node10"><a xlink:href="../proc/vcalc.html#proc-solve_point" xlink:title="VCALC::solve_point">
-<polygon fill="#d9534f" stroke="#d9534f" points="815.5,-24 699.5,-24 699.5,0 815.5,0 815.5,-24"/>
-<text text-anchor="middle" x="757.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">VCALC::solve_point</text>
-</a>
-</g>
-</g>
-<!-- proc~vcalc&#45;&gt;none~solve_point -->
-<g id="proc~~flash~~CallsGraph_edge11" class="edge">
-<title>proc~vcalc&#45;&gt;none~solve_point</title>
-<path fill="none" stroke="#000000" d="M564.21,-62.93C592.17,-54.15 631.29,-42.24 666,-33 674.38,-30.77 683.23,-28.55 691.99,-26.43"/>
-<polygon fill="#000000" stroke="#000000" points="692.89,-29.82 701.8,-24.09 691.26,-23.01 692.89,-29.82"/>
-</g>
-<!-- optval -->
-<g id="proc~~flash~~CallsGraph_node11" class="node">
-<title>optval</title>
-<polygon fill="#777777" stroke="#777777" points="784.5,-108 730.5,-108 730.5,-84 784.5,-84 784.5,-108"/>
-<text text-anchor="middle" x="757.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optval</text>
-</g>
-<!-- proc~vcalc&#45;&gt;optval -->
-<g id="proc~~flash~~CallsGraph_edge12" class="edge">
-<title>proc~vcalc&#45;&gt;optval</title>
-<path fill="none" stroke="#000000" d="M606.3,-82.29C645.06,-85.83 689.73,-89.9 720.22,-92.69"/>
-<polygon fill="#000000" stroke="#000000" points="720.1,-96.19 730.37,-93.61 720.73,-89.22 720.1,-96.19"/>
-</g>
-<!-- none~solve_point&#45;&gt;residual_helmholtz -->
-<g id="proc~~flash~~CallsGraph_edge13" class="edge">
-<title>none~solve_point&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M815.97,-23.47C827.04,-26.2 838.47,-29.39 849,-33 869.28,-39.95 891.11,-49.94 908.31,-58.43"/>
-<polygon fill="#000000" stroke="#000000" points="906.84,-61.61 917.35,-62.96 909.98,-55.35 906.84,-61.61"/>
-</g>
-</g>
-</svg>
-</div>                <script>
-                  var panprocflashCallsGraph = svgPanZoom('#procflashCallsGraph',
-                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
-                  );
-                </script>          <div>
-            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
-          </div>
-          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-<p>Nodes of different colours represent the following: </p>
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1.16 1.16) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
-<!-- Subroutine -->
-<g id="node1" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node2" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Interface -->
-<g id="node3" class="node">
-<title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
-</g>
-<!-- Type Bound Procedure -->
-<g id="node4" class="node">
-<title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
-</g>
-<!-- Unknown Procedure Type -->
-<g id="node5" class="node">
-<title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
-</g>
-<!-- Program -->
-<g id="node6" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node7" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
-
-<p>Solid arrows point from a procedure to one which it calls. Dashed 
-arrows point from an interface to procedures which implement that interface.
-This could include the module procedures in a generic interface or the
-implementation in a submodule of an interface in a parent module.
-</p>
- </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <br>
 
 
@@ -648,7 +378,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vx"></span>
+              <span class="anchor" id="variable-vx~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -665,7 +395,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy"></span>
+              <span class="anchor" id="variable-vy~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -682,24 +412,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-aux"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>aux</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-beta"></span>
+              <span class="anchor" id="variable-beta~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -818,7 +531,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidn"></span>
+              <span class="anchor" id="variable-dlnphidn~3"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -988,7 +701,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p"></span>
+              <span class="anchor" id="variable-p~8"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -1226,7 +939,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v"></span>
+              <span class="anchor" id="variable-v~10"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -1243,7 +956,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x"></span>
+              <span class="anchor" id="variable-x~2"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -1260,7 +973,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y"></span>
+              <span class="anchor" id="variable-y~2"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -1298,14 +1011,17 @@ implementation in a submodule of an interface in a parent module.
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>yaeos was developed by Federico Benelli<br>&copy; 2024 MPL
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2024 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-03-19 17:45              </p>
+ on 2024-05-14 14:29              </p>
           </div>
         </div>
         <br>

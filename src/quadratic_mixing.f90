@@ -19,7 +19,7 @@ module yaeos_models_ar_cubic_quadratic_mixing
         !! replacing the `aij` pointer procedure.
         real(pr), allocatable :: k(:, :) !! Attractive Binary Interatction parameter matrix
         real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
-        procedure(get_aij), pointer :: aij => kij_constant
+        procedure(get_aij), pointer :: aij => null()
         !! Procedure to calculate \(a_{ij}\) matrix. Can be overloaded
         !! by any method that respets the interface [[get_aij(interface)]].
     contains
@@ -97,8 +97,7 @@ contains
         if (associated(self%aij)) then
             call self%aij(ai, daidt, daidt2, aij, daijdt, daijdt2)
         else
-            write(*, *) "ERROR: aij matrix calculation not defined"
-            call exit(1)
+            call kij_constant(self, ai, daidt, daidt2, aij, daijdt, daijdt2)
         end if
 
         D = 0
@@ -134,7 +133,7 @@ contains
         !! with respect to composition:
         !!
         !! \[
-        !!    B = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
+        !!    nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
         !! \]
         !!
         class(QMR), intent(in) :: self !! Mixing rule object.

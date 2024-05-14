@@ -273,6 +273,8 @@ contains
 
         real(pr) :: ac(size(pc)), b(size(pc))
 
+        nc = size(tc)
+
         composition%pc = pc
         composition%tc = tc
         composition%w = w

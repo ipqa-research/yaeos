@@ -25,7 +25,6 @@ module yaeos_models_ar_genericcubic
       !!
       !! Generic Cubic Equation of State as defined by Michelsen and Mollerup
       !! with constant \(\delta_1\) and \(\delta_2\) parameters.
-      class(Substances), allocatable :: components
       class(CubicMixRule), allocatable :: mixrule
       class(AlphaFunction), allocatable :: alpha
       real(pr), allocatable :: ac(:) !! Attractive critical parameter
@@ -84,7 +83,10 @@ contains
       !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
       !! defined by Michelsen and Møllerup:
       !!
-      !! \[P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}\]
+      !! \[
+      !!   P = \frac{RT}{V-b} 
+      !        - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}
+      !! \]
       !!
       !! This routine assumes that the \(\delta_1\) is not a constant parameter
       !! (as it uses to be in classical Cubic EoS) to be compatible with the
