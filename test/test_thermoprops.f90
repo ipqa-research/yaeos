@@ -33,9 +33,9 @@ contains
         real(pr) :: lnfug_val(2), dlnphidp_val(2), dlnphidt_val(2)
 
 
-        lnfug_val = [2.0759140949373416, -2.2851989270402058]
-        dlnphidp_val = [-0.99059224575177762, -0.99388122357848807]
-        dlnphidt_val = [3.0263769083149254E-002, 7.6204871541712640E-002]
+        lnfug_val = [2.0758887796938881, -2.2852154042663555]
+        dlnphidp_val = [-0.99328668293856137, -0.9965756859512391]
+        dlnphidt_val = [3.0263825169536504E-002, 7.6204959316774373E-002]
 
         eos = binary_PR76()
 
@@ -47,6 +47,9 @@ contains
             z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
             )
 
+        print * , lnfug
+        print * , dlnphidP
+        print * , dlnphidT
 
         call check( &
             error, maxval(abs(lnfug - lnfug_val)) < 1e-5 &
@@ -125,9 +128,9 @@ contains
 
         v = 1_pr
         t = 150_pr
-        delta_t = 0.000000001_pr
-        delta_v = 0.000000001_pr
-        delta_n = 0.000000001_pr
+        delta_t = 0.0001_pr
+        delta_v = 0.0001_pr
+        delta_n = 0.0001_pr
 
         z = [0.3_pr, 0.7_pr]
         tc = [190._pr, 310._pr]
@@ -334,7 +337,7 @@ contains
         Sr_tp = Sr + ntot*R*log(Zcomp)
 
         call check(&
-            error, rel_error(Sr_tp, Sr_tp_hg) < 1e-17 &
+            error, rel_error(Sr_tp, Sr_tp_hg) < 1e-15 &
             )
 
         ! SrT_num

@@ -18,6 +18,7 @@ module yaeos_models
    !!      seen at [[yaeos_models_ar_cubic_implementations(module)]]
    !!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that 
    !!       defaults to classic vdW mixing rules
+   !!
 
    ! Residual Helmholtz Models
    use yaeos_models_ar, only: ArModel
@@ -33,4 +34,11 @@ module yaeos_models
 
    ! Implemented models
    use yaeos_models_ar_cubic_implementations
+
+   ! Ge Models
+   use yaeos_models_ge, only: GeModel
+
+   ! Implemented models
+   use yaeos_models_ge_implementations
+
 end module
