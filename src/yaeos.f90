@@ -17,5 +17,5 @@ module yaeos
    use yaeos_models
    use yaeos_thermoprops
    use yaeos_equilibria
-   character(len=*), parameter :: version="0.1.0b2" !! This version.
+   character(len=*), parameter :: version="0.2.0b1" !! This version.
 end module

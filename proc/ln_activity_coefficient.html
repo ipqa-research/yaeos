@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.6% of total for procedures.">26 statements</a>
+                 title=" 0.2% of total for procedures.">9 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/unifac.f90"> Source File</a>
+              <a href="../src/ge_models.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/unifac.f90.html'>unifac.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos_models_ge_group_contribution_unifac.html'>yaeos_models_ge_group_contribution_unifac</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/ge_models.f90.html'>ge_models.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos_models_ge.html'>yaeos_models_ge</a></li>
             <li class="breadcrumb-item active" aria-current="page">ln_activity_coefficient</li>
           </ol>
         </nav>
@@ -118,18 +118,8 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_c_dn">dln_gamma_c_dn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_c_dn2">dln_gamma_c_dn2</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_c_dt">dln_gamma_c_dt</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_c_dt2">dln_gamma_c_dt2</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_c_dtn">dln_gamma_c_dtn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_r_dn">dln_gamma_r_dn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_r_dn2">dln_gamma_r_dn2</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_r_dt">dln_gamma_r_dt</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_r_dt2">dln_gamma_r_dt2</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dln_gamma_r_dtn">dln_gamma_r_dtn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-ln_gamma_c~3">ln_gamma_c</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-ln_gamma_r~3">ln_gamma_r</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dgedn">dgedn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-ge~7">ge</a>
         </div>
       </div>
     </div>
@@ -159,11 +149,13 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine ln_activity_coefficient(self, n, T, lngamma, dln_gammadt, dln_gammadt2, dln_gammadn, dln_gammadtn, dln_gammadn2)  
+    <h2>public  subroutine ln_activity_coefficient(self, n, T, lngamma)  
 </h2>
     
 
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/gemodel.html'>GeModel</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -178,8 +170,8 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~9"></span>
-              class(<a href='../type/unifac.html'>UNIFAC</a>),
+              <span class="anchor" id="variable-self~11"></span>
+              class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -193,7 +185,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~19"></span>
+              <span class="anchor" id="variable-n~31"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -208,7 +200,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~5"></span>
+              <span class="anchor" id="variable-t~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -236,81 +228,6 @@
                 
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gammadt"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gammadt</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gammadt2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gammadt2</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gammadn"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gammadn</strong>(:,:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gammadtn"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gammadtn</strong>(:,:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gammadn2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gammadn2</strong>(:,:,:)</td>
-            <td>
-                
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -331,7 +248,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dln_gamma_c_dn"></span>
+              <span class="anchor" id="variable-dgedn"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -339,7 +256,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dln_gamma_c_dn</strong>(size(n),size(n))</td>
+            <td><strong>dgedn</strong>(size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -348,7 +265,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dln_gamma_c_dn2"></span>
+              <span class="anchor" id="variable-ge~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -356,177 +273,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dln_gamma_c_dn2</strong>(size(n),size(n),size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_c_dt"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_c_dt</strong>(size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_c_dt2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_c_dt2</strong>(size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_c_dtn"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_c_dtn</strong>(size(n),size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_r_dn"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_r_dn</strong>(size(n),size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_r_dn2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_r_dn2</strong>(size(n),size(n),size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_r_dt"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_r_dt</strong>(size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_r_dt2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_r_dt2</strong>(size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dln_gamma_r_dtn"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dln_gamma_r_dtn</strong>(size(n),size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ln_gamma_c~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ln_gamma_c</strong>(size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ln_gamma_r~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ln_gamma_r</strong>(size(n))</td>
+            <td><strong>ge</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -566,7 +313,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:29              </p>
+ on 2024-05-14 14:34              </p>
           </div>
         </div>
         <br>
