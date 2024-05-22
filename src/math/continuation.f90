@@ -28,6 +28,17 @@ module yaeos__math_continuation
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
       end subroutine process
+
+      logical function continuation_stopper(X, ns, S, dS, dXdS, iterations)
+         !! Function that returns true if the method should stop
+         import pr
+         real(pr), intent(in out) :: X(:) !! Vector of variables \(X\)
+         integer, intent(in out) :: ns !! Position of specified variable
+         real(pr), intent(in out) :: S !! Specification variable value
+         real(pr), intent(in out) :: dS !! Step of specification in the method
+         real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
+         integer, intent(in) :: iterations !! Iterations needed to converge point
+      end function continuation_stopper
    end interface
 
    abstract interface
@@ -53,7 +64,7 @@ contains
 
    function continuation(&
       f, X0, ns0, S0, dS0, max_points, solver_tol, &
-      update_specification, postprocess, solver &
+      update_specification, postprocess, solver, stop &
       ) result(XS)
       !! Numerical continuation of a function.
       !!
@@ -89,6 +100,8 @@ contains
       !! next step
       procedure(continuation_solver), optional :: solver
       !! Solver procedures, uses Newton-Raphson by default
+      procedure(continuation_stopper), optional :: stop
+      !! Stopping procedure
       real(pr) :: XS(max_points, size(X0))
 
       real(pr) :: X(size(X0)), S, fval(size(X0)), dF(size(X0), size(X0)), dFdS(size(X0))
@@ -112,11 +125,11 @@ contains
          if (present(solver)) then
             call solver(&
                f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol&
-            )
+               )
          else
             call full_newton(&
                f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol &
-            )
+               )
          end if
          if (newton_its >= max_iters) exit
 
@@ -135,6 +148,10 @@ contains
 
          if (present(postprocess)) then
             call postprocess(X, ns, S, dS, dXdS, newton_its)
+         end if
+
+         if (present(stop)) then
+            if (stop(X, ns, S, dS, dXdS, newton_its)) exit
          end if
 
          X = X + dXdS * dS

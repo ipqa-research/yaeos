@@ -10,7 +10,7 @@ program phase_diagram
 
    integer, parameter :: nc=2
    integer :: i
-   real(pr) :: n(nc), tc(nc), pc(nc), w(nc), kij(nc, nc), lij(nc, nc)
+   real(pr) :: n(nc), tc(nc), pc(nc), w(nc), kij(nc, nc), lij(nc, nc), T
 
    ! Methane/ Butane mixture
    n = [0.1_pr, 0.9_pr]       ! Composition
@@ -23,11 +23,13 @@ program phase_diagram
    kij(2, 1) = kij(1, 2)
 
    lij = kij / 2 
+
    model = PengRobinson76(tc, pc, w, kij, lij)
 
    ! Calculate a dew point
-   bubble = saturation_pressure(model, n, 150.0_pr, kind="bubble", p0=40._pr)
-   print *, bubble%T, bubble%p
+   T = 100
+   bubble = saturation_pressure(model, n, T, kind="bubble", p0=40._pr)
+   print *, bubble%T, bubble%p, bubble%iters
 
    ! Calculate the whole phase envelope using the information from the converged
    ! dew point

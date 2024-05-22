@@ -4,7 +4,8 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    use yaeos_models, only: ArModel
    use yaeos_equilibria_equilibria_state, only: EquilibriaState
    use yaeos_thermoprops, only: fugacity_tp
-   use yaeos__math_continuation, only: continuation
+   use yaeos__math_continuation, only: &
+      continuation, continuation_solver, continuation_stopper
    implicit none
 
    type :: CriticalPoint
@@ -26,7 +27,8 @@ contains
 
    function pt_envelope_2ph(&
       model, z, y0, T0, P0, &
-      points, iterations, delta_0, specified_variable_0 &
+      points, iterations, delta_0, specified_variable_0, &
+      solver, stop_conditions &
       ) result(envelopes)
       !! PT two-phase envelope calculation procedure.
       !!
@@ -34,6 +36,7 @@ contains
       !! Defaults to solving the saturation temperature and continues with
       !! an increment in it. The variable to specify can be changed by modifying
       !! `specified_variable_0` with the corresponding variable number.
+      ! ========================================================================
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: model 
          !! Thermodyanmic model
@@ -56,7 +59,12 @@ contains
          !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
          !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
          !! \(lnT\) and \(nc + 2\) for \(lnT\).
+      procedure(continuation_solver), optional :: solver  
+         !! Specify solver for each point, defaults to a full newton procedure
+      procedure(continuation_stopper), optional :: stop_conditions
+         !! Function that returns true if the continuation method should stop
       type(PTEnvel2) :: envelopes
+      ! ------------------------------------------------------------------------
 
       integer :: nc !! Number of components
       integer :: ns !! Number of specified variable
@@ -76,7 +84,9 @@ contains
 
       integer :: i, mc
 
+      ! ========================================================================
       ! Handle input
+      ! ------------------------------------------------------------------------
       nc = size(z)
       max_points = optval(points, 500)
       max_iterations = optval(iterations, 100)
@@ -94,15 +104,19 @@ contains
       end where
       lnT = log(T0)
       lnP = log(P0)
-
       S0 = X(ns)
 
+      ! ========================================================================
+      ! Trace the line
+      ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
-         update_specification=update_specification &
+         update_specification=update_specification, &
+         stop=stop_conditions &
          )
 
+      ! Save results
       allocate(envelopes%points(0), envelopes%cps(0))
       do i=2, size(XS, dim=1)
          if (all(XS(i, :) == 0._pr)) exit
@@ -221,7 +235,7 @@ contains
             ] &
          )
 
-         dS = sign(1._pr, dS) * maxval([abs(dS), 0.05_pr])
+         dS = sign(1._pr, dS) * maxval([abs(dS), 0.1_pr])
       end subroutine update_specification
    end function pt_envelope_2ph
 end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
