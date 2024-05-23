@@ -174,20 +174,11 @@ contains
       flash%p = p
       flash%t = t
 
-      if (Vy < Vx) then
-         ! `y` phase is the heaviest phase
-         flash%y = x
-         flash%x = y
-         flash%vy = Vx
-         flash%vx = vy
-         flash%beta = 1 - beta
-      else
-         flash%x = x
-         flash%y = y
-         flash%vx = Vx
-         flash%vy = vy
-         flash%beta = beta
-      end if
+      flash%x = x
+      flash%y = y
+      flash%vx = Vx
+      flash%vy = vy
+      flash%beta = beta
    end function flash
 
    subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
