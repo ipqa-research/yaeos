@@ -38,31 +38,31 @@ contains
       !! `specified_variable_0` with the corresponding variable number.
       ! ========================================================================
       use stdlib_optval, only: optval
-      class(ArModel), intent(in) :: model 
-         !! Thermodyanmic model
-      real(pr), intent(in) :: z(:) 
-         !! Vector of molar fractions
+      class(ArModel), intent(in) :: model
+      !! Thermodyanmic model
+      real(pr), intent(in) :: z(:)
+      !! Vector of molar fractions
       real(pr), intent(in) :: y0(:)
-         !! Incipient phase initial composition
+      !! Incipient phase initial composition
       real(pr), intent(in) :: T0
-         !! Initial Temperature [K]
+      !! Initial Temperature [K]
       real(pr), intent(in) :: P0
-         !! Initial Pressure [bar]
-      integer, optional, intent(in) :: points 
-         !! Maxmimum number of points, defaults to 500
-      integer, optional, intent(in) :: iterations  
-         !! Point solver maximum iterations, defaults to 100
-      real(pr), optional, intent(in) :: delta_0 
-         !! Initial extrapolation \(\Delta\)
+      !! Initial Pressure [bar]
+      integer, optional, intent(in) :: points
+      !! Maxmimum number of points, defaults to 500
+      integer, optional, intent(in) :: iterations
+      !! Point solver maximum iterations, defaults to 100
+      real(pr), optional, intent(in) :: delta_0
+      !! Initial extrapolation \(\Delta\)
       integer, optional, intent(in) :: specified_variable_0
-         !! Position of specified variable, since the vector of variables is
-         !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
-         !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
-         !! \(lnT\) and \(nc + 2\) for \(lnT\).
-      procedure(continuation_solver), optional :: solver  
-         !! Specify solver for each point, defaults to a full newton procedure
+      !! Position of specified variable, since the vector of variables is
+      !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
+      !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
+      !! \(lnT\) and \(nc + 2\) for \(lnT\).
+      procedure(continuation_solver), optional :: solver
+      !! Specify solver for each point, defaults to a full newton procedure
       procedure(continuation_stopper), optional :: stop_conditions
-         !! Function that returns true if the continuation method should stop
+      !! Function that returns true if the continuation method should stop
       type(PTEnvel2) :: envelopes
       ! ------------------------------------------------------------------------
 
@@ -233,9 +233,16 @@ contains
             max(sqrt(abs(X(ns))/10._pr), 0.1_pr), &
             abs(dS)*3/iterations &
             ] &
-         )
+            )
 
-         dS = sign(1._pr, dS) * maxval([abs(dS), 0.1_pr])
+         dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.1_pr])
+
+         ! Jump over critical point
+         do while (maxval(abs(X(:nc))) < 0.1)
+            S = S + dS
+            X = X + dXdS*dS
+         end do
+
       end subroutine update_specification
    end function pt_envelope_2ph
 end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
