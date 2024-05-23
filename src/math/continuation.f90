@@ -166,12 +166,6 @@ contains
             if (stop(X, ns, S, dS, dXdS, newton_its)) exit
          end if
 
-         block
-            real(pr) :: Xnew(size(X))
-            Xnew = X + dXdS * dS
-            print *, X(13), Xnew(13)
-         end block
-         
          X = X + dXdS * dS
          S = X(ns)
       end do
