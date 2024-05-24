@@ -238,7 +238,7 @@ contains
          dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.1_pr])
 
          ! Jump over critical point
-         do while (maxval(abs(X(:nc))) < 0.1)
+         do while (maxval(abs(X(:nc))) < 0.01)
             S = S + dS
             X = X + dXdS*dS
          end do
