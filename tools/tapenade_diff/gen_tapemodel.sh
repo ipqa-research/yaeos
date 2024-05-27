@@ -58,11 +58,11 @@ rm tapeout/${name}_d_d_d_b.f90
 mv tapeout/${name}_d_d_d_b_b.f90 tapeout/${name}_diff.f90
 
 sed -i "s/$modflag//g" tapeout/${name}_diff.f90
-sed -i "s/TYPE(UNKNOWNTYPE).*//g" tapeout/${name}_diff.f90
-sed -i "s/model%\(.*\) \(=\).*/model%\1 => \1/g" tapeout/${name}_diff.f90
-sed -i 's/REAL\*8/REAL(8)/' tapeout/${name}_diff.f90
+sed -i 's/REAL\*8/REAL(pr)/' tapeout/${name}_diff.f90
+sed -i "s/REAL :: r//g" tapeout/${name}_diff.f90
+sed -i 's/_8/_pr/' tapeout/${name}_diff.f90
+sed -i 's/TYPE(\(.*\)),/class(\1),/' tapeout/${name}_diff.f90
 
-cp tapeout/${name}_diff.f90 ../example/taperobinson.f90
 # findent < tapeout/${name}_diff.f90 > tapeout/${name}_diff.f90
 
 # lfortran fmt -i tapeout/${infile}_diff.f90
