@@ -7,7 +7,7 @@ module yaeos_models_base
         !! Base model type.
         !!
         !! Contains the important parts of most models and other procedures.
-        class(Substances), allocatable :: components 
+        type(Substances) :: components 
             !! Substances contained in the module
     end type
 end module

@@ -21,7 +21,6 @@ type, extends(ArModelTapenade) :: TPR76
       REAL(pr), ALLOCATABLE :: kij(:, :), lij(:, :)
       REAL(pr), ALLOCATABLE :: ac(:), b(:), k(:)
       REAL(pr), ALLOCATABLE :: tc(:), pc(:), w(:)
-      REAL(pr) :: r=0.08314472_pr
       REAL(pr) :: del1=1.+SQRT(2.)
       REAL(pr) :: del2=1.-SQRT(2.)
  contains
@@ -30,7 +29,7 @@ type, extends(ArModelTapenade) :: TPR76
   procedure :: ar_b
   procedure :: ar_d_b
   procedure :: ar_d_d
-  procedure :: v0 => VOLUME_INITALIZER
+  procedure :: v0
   END TYPE TPR76
 
 CONTAINS
@@ -41,10 +40,35 @@ CONTAINS
     REAL(pr), INTENT(IN) :: w(:)
     REAL(pr), INTENT(IN) :: kij(:, :)
     REAL(pr), INTENT(IN) :: lij(:, :)
+    TYPE UNKNOWNDERIVEDTYPE
+        REAL(pr), DIMENSION(:) :: tc
+        REAL(pr), DIMENSION(:) :: pc
+        REAL(pr), DIMENSION(:) :: w
+    END TYPE UNKNOWNDERIVEDTYPE
     
-    setup_model%tc = tc
-    setup_model%pc = pc
-    setup_model%w = w
+    TYPE UNKNOWNDERIVEDTYPE0
+        REAL(pr), DIMENSION(:) :: tc
+        REAL(pr), DIMENSION(:) :: pc
+        REAL(pr), DIMENSION(:) :: w
+    END TYPE UNKNOWNDERIVEDTYPE0
+    TYPE UNKNOWNDERIVEDTYPE1
+        REAL(pr), DIMENSION(:) :: tc
+        REAL(pr), DIMENSION(:) :: pc
+        REAL(pr), DIMENSION(:) :: w
+    END TYPE UNKNOWNDERIVEDTYPE1
+    TYPE UNKNOWNDERIVEDTYPE2
+        REAL(pr), DIMENSION(:) :: tc
+        REAL(pr), DIMENSION(:) :: pc
+        REAL(pr), DIMENSION(:) :: w
+    END TYPE UNKNOWNDERIVEDTYPE2
+    TYPE UNKNOWNDERIVEDTYPE3
+        REAL(pr), DIMENSION(:) :: tc
+        REAL(pr), DIMENSION(:) :: pc
+        REAL(pr), DIMENSION(:) :: w
+    END TYPE UNKNOWNDERIVEDTYPE3
+    setup_model%components%tc = tc
+    setup_model%components%pc = pc
+    setup_model%components%w = w
     setup_model%ac = 0.45723553*r**2*tc**2/pc
     setup_model%b = 0.07779607*r*tc/pc
     setup_model%k = 0.37464 + 1.54226*w - 0.26993*w**2
@@ -103,7 +127,7 @@ CONTAINS
     REAL(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     REAL(pr) :: tc(SIZE(n)), pc(SIZE(n)), w(SIZE(n))
-    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n)), r
+    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n))
     REAL(pr) :: del1, del2
     REAL(pr) :: kij(SIZE(n), SIZE(n)), lij(SIZE(n), SIZE(n))
     INTRINSIC SQRT
@@ -168,6 +192,7 @@ CONTAINS
     REAL(pr) :: temp5d0
     REAL(pr) :: temp5d
     REAL(pr) :: temp5dd
+    
     REAL(pr), DIMENSION(SIZE(n)) :: temp6
     REAL(pr), DIMENSION(SIZE(n)) :: temp6d
     REAL(pr) :: temp7
@@ -202,15 +227,16 @@ CONTAINS
     LOGICAL, DIMENSION(SIZE(n)) :: mask9
     LOGICAL, DIMENSION(SIZE(n)) :: mask10
     LOGICAL, DIMENSION(SIZE(n)) :: mask11
-    tc = model%tc
-    pc = model%pc
-    w = model%w
+    tc = model%components%tc
+    pc = model%components%pc
+    w = model%components%w
     ac = model%ac
     b = model%b
     k = model%k
-    r = model%r
     kij = model%kij
     lij = model%lij
+    del1 = model%del1
+    del2 = model%del2
     arg1d(:) = td/tc
     arg1d0(:) = td0/tc
     arg1d1(:) = td1/tc
@@ -463,20 +489,20 @@ CONTAINS
     temp18 = (b_vdd+temp12*b_vd0)/(-b_v+1.0)
     temp19 = temp1*temp18 - temp11*temp0d - temp17 - temp8*temp15 - (&
 &     temp4d-temp2d*temp8)*temp16
-    arvalddd = model%r*(td0*temp13d+temp19*td1+t*(temp1*(b_vddd+b_vd0*&
-&     temp12d+temp12*b_vd0d+temp18*b_vd1)/(1.0-b_v)-temp11*temp0dd-(&
-&     temp3d*arg11dd0+arg11d*temp3dd+arg11dd*temp3d0+temp3*arg11ddd-&
-&     arg11d0*temp10d-temp10*arg11d0d-temp17*arg11d1)/arg11-temp15*&
-&     temp8d-temp8*(amixddd-r*(del1-del2)*(temp3d*temp7d+temp7*temp3dd+&
-&     bmixd*td0*temp3d0))-temp16*(temp4dd-temp2d*temp8d)-(temp4d-temp2d*&
-&     temp8)*(temp9d-temp16*temp2d0)/temp2)+td*temp5dd)
-    arvaldd = model%r*(td0*temp13+t*temp19+td*temp5d)
-    arvaldd0 = model%r*(temp13*td1+t*temp13d+td*temp5d0)
-    arvald = model%r*(t*temp13+td*temp5)
-    arvald0d = model%r*(temp5d*td1+t*temp5dd+td0*temp5d0)
-    arvald0 = model%r*(t*temp5d+temp5*td0)
-    arvald1 = model%r*(t*temp5d0+temp5*td1)
-    arval = model%r*(temp5*t)
+    arvalddd = r*(td0*temp13d+temp19*td1+t*(temp1*(b_vddd+b_vd0*temp12d+&
+&     temp12*b_vd0d+temp18*b_vd1)/(1.0-b_v)-temp11*temp0dd-(temp3d*&
+&     arg11dd0+arg11d*temp3dd+arg11dd*temp3d0+temp3*arg11ddd-arg11d0*&
+&     temp10d-temp10*arg11d0d-temp17*arg11d1)/arg11-temp15*temp8d-temp8*&
+&     (amixddd-r*(del1-del2)*(temp3d*temp7d+temp7*temp3dd+bmixd*td0*&
+&     temp3d0))-temp16*(temp4dd-temp2d*temp8d)-(temp4d-temp2d*temp8)*(&
+&     temp9d-temp16*temp2d0)/temp2)+td*temp5dd)
+    arvaldd = r*(td0*temp13+t*temp19+td*temp5d)
+    arvaldd0 = r*(temp13*td1+t*temp13d+td*temp5d0)
+    arvald = r*(t*temp13+td*temp5)
+    arvald0d = r*(temp5d*td1+t*temp5dd+td0*temp5d0)
+    arvald0 = r*(t*temp5d+temp5*td0)
+    arvald1 = r*(t*temp5d0+temp5*td1)
+    arval = r*(temp5*t)
   END SUBROUTINE AR_D_D_D
 
 !  Differentiation of ar_d in forward (tangent) mode (with options noISIZE):
@@ -511,7 +537,7 @@ CONTAINS
     REAL(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     REAL(pr) :: tc(SIZE(n)), pc(SIZE(n)), w(SIZE(n))
-    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n)), r
+    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n))
     REAL(pr) :: del1, del2
     REAL(pr) :: kij(SIZE(n), SIZE(n)), lij(SIZE(n), SIZE(n))
     INTRINSIC SQRT
@@ -549,6 +575,7 @@ CONTAINS
     REAL(pr) :: temp4d
     REAL(pr) :: temp5
     REAL(pr) :: temp5d
+    
     REAL(pr), DIMENSION(SIZE(n)) :: temp6
     REAL(pr) :: temp7
     REAL(pr) :: temp8
@@ -563,15 +590,16 @@ CONTAINS
     LOGICAL, DIMENSION(SIZE(n)) :: mask2
     LOGICAL, DIMENSION(SIZE(n)) :: mask3
     LOGICAL, DIMENSION(SIZE(n)) :: mask4
-    tc = model%tc
-    pc = model%pc
-    w = model%w
+    tc = model%components%tc
+    pc = model%components%pc
+    w = model%components%w
     ac = model%ac
     b = model%b
     k = model%k
-    r = model%r
     kij = model%kij
     lij = model%lij
+    del1 = model%del1
+    del2 = model%del2
     arg1d(:) = td/tc
     arg1d0(:) = td0/tc
     arg1(:) = t/tc
@@ -687,13 +715,13 @@ CONTAINS
     temp11 = SUM(nd)
     temp12 = b_vd/(-b_v+1.0)
     temp13 = temp1*temp12 - temp11*temp0 - temp10 - temp9*temp8
-    arvaldd = model%r*(temp13*td0+t*(temp1*(b_vdd+temp12*b_vd0)/(1.0-b_v&
-&     )-temp11*temp0d-(arg11d*temp3d+temp3*arg11dd-temp10*arg11d0)/arg11&
-&     -temp8*(amixdd-r*(del1-del2)*(temp7*temp3d+temp3*bmixd*td0))-temp9&
-&     *(temp4d-temp8*temp2d)/temp2)+td*temp5d)
-    arvald = model%r*(t*temp13+td*temp5)
-    arvald0 = model%r*(t*temp5d+temp5*td0)
-    arval = model%r*(temp5*t)
+    arvaldd = r*(temp13*td0+t*(temp1*(b_vdd+temp12*b_vd0)/(1.0-b_v)-&
+&     temp11*temp0d-(arg11d*temp3d+temp3*arg11dd-temp10*arg11d0)/arg11-&
+&     temp8*(amixdd-r*(del1-del2)*(temp7*temp3d+temp3*bmixd*td0))-temp9*&
+&     (temp4d-temp8*temp2d)/temp2)+td*temp5d)
+    arvald = r*(t*temp13+td*temp5)
+    arvald0 = r*(t*temp5d+temp5*td0)
+    arval = r*(temp5*t)
   END SUBROUTINE AR_D_D
 
 !  Differentiation of ar_d in reverse (adjoint) mode (with options noISIZE):
@@ -732,7 +760,7 @@ CONTAINS
     REAL(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     REAL(pr) :: tc(SIZE(n)), pc(SIZE(n)), w(SIZE(n))
-    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n)), r
+    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n))
     REAL(pr) :: del1, del2
     REAL(pr) :: kij(SIZE(n), SIZE(n)), lij(SIZE(n), SIZE(n))
     INTRINSIC SQRT
@@ -773,6 +801,7 @@ CONTAINS
     REAL(pr) :: temp4b
     REAL(pr) :: temp5
     REAL(pr) :: temp5b
+    
     LOGICAL, DIMENSION(SIZE(n)) :: mask
     LOGICAL, DIMENSION(SIZE(n)) :: mask0
     REAL(pr), DIMENSION(SIZE(n)) :: tempb0
@@ -805,13 +834,14 @@ CONTAINS
     LOGICAL, DIMENSION(SIZE(n)) :: mask2
     LOGICAL, DIMENSION(SIZE(n)) :: mask3
     LOGICAL, DIMENSION(SIZE(n)) :: mask4
-    tc = model%tc
+    tc = model%components%tc
     ac = model%ac
     b = model%b
     k = model%k
-    r = model%r
     kij = model%kij
     lij = model%lij
+    del1 = model%del1
+    del2 = model%del2
     arg1d(:) = td/tc
     arg1(:) = t/tc
     temp = SQRT(arg1(:))
@@ -879,16 +909,16 @@ CONTAINS
     temp3 = amix/temp2
     temp4 = LOG(arg11)
     temp5 = -(temp1*temp0) - temp4*temp3
-    tempb4 = model%r*arvaldb
+    tempb4 = r*arvaldb
     temp12 = temp1*b_vd/(-b_v+1.0)
     temp11 = SUM(nd)
     temp10 = temp3*arg11d/arg11
     temp6 = bmix*td + t*bmixd
     temp9 = amixd - r*(del1-del2)*temp3*temp6
     temp7 = temp4/temp2
-    temp5b = t*model%r*arvalb + td*tempb4
-    tb = tb + temp5*model%r*arvalb + (temp12-temp0*temp11-temp10-temp9*&
-&     temp7)*tempb4
+    temp5b = t*r*arvalb + td*tempb4
+    tb = tb + temp5*r*arvalb + (temp12-temp0*temp11-temp10-temp9*temp7)*&
+&     tempb4
     tempb5 = t*tempb4
     tempb6 = tempb5/(1.0-b_v)
     temp0b = -(temp11*tempb5) - temp1*temp5b
@@ -1046,7 +1076,7 @@ CONTAINS
     REAL(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     REAL(pr) :: tc(SIZE(n)), pc(SIZE(n)), w(SIZE(n))
-    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n)), r
+    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n))
     REAL(pr) :: del1, del2
     REAL(pr) :: kij(SIZE(n), SIZE(n)), lij(SIZE(n), SIZE(n))
     INTRINSIC SQRT
@@ -1070,17 +1100,19 @@ CONTAINS
     REAL(pr) :: temp3
     REAL(pr) :: temp4
     REAL(pr) :: temp5
+    
     LOGICAL, DIMENSION(SIZE(n)) :: mask
     LOGICAL, DIMENSION(SIZE(n)) :: mask0
-    tc = model%tc
-    pc = model%pc
-    w = model%w
+    tc = model%components%tc
+    pc = model%components%pc
+    w = model%components%w
     ac = model%ac
     b = model%b
     k = model%k
-    r = model%r
     kij = model%kij
     lij = model%lij
+    del1 = model%del1
+    del2 = model%del2
     arg1d(:) = td/tc
     arg1(:) = t/tc
     temp = SQRT(arg1(:))
@@ -1139,10 +1171,10 @@ CONTAINS
     temp3 = amix/temp2
     temp4 = LOG(arg11)
     temp5 = -(temp1*temp0) - temp4*temp3
-    arvald = model%r*(t*(temp1*b_vd/(1.0-b_v)-temp0*SUM(nd)-temp3*arg11d&
-&     /arg11-temp4*(amixd-temp3*r*(del1-del2)*(bmix*td+t*bmixd))/temp2)+&
-&     temp5*td)
-    arval = model%r*(temp5*t)
+    arvald = r*(t*(temp1*b_vd/(1.0-b_v)-temp0*SUM(nd)-temp3*arg11d/arg11&
+&     -temp4*(amixd-temp3*r*(del1-del2)*(bmix*td+t*bmixd))/temp2)+temp5*&
+&     td)
+    arval = r*(temp5*t)
   END SUBROUTINE AR_D
 
 !  Differentiation of ar in reverse (adjoint) mode (with options noISIZE):
@@ -1165,7 +1197,7 @@ CONTAINS
     REAL(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     REAL(pr) :: tc(SIZE(n)), pc(SIZE(n)), w(SIZE(n))
-    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n)), r
+    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n))
     REAL(pr) :: del1, del2
     REAL(pr) :: kij(SIZE(n), SIZE(n)), lij(SIZE(n), SIZE(n))
     INTRINSIC SQRT
@@ -1182,6 +1214,7 @@ CONTAINS
     REAL(pr), DIMENSION(SIZE(n, 1)) :: arg10b
     REAL(pr) :: arg11
     REAL(pr) :: arg11b
+    
     REAL(pr) :: temp
     REAL(pr) :: tempb
     REAL(pr) :: temp0
@@ -1194,13 +1227,14 @@ CONTAINS
     INTEGER :: ad_from
     INTEGER :: ad_to
     INTEGER :: ad_to0
-    tc = model%tc
+    tc = model%components%tc
     ac = model%ac
     b = model%b
     k = model%k
-    r = model%r
     kij = model%kij
     lij = model%lij
+    del1 = model%del1
+    del2 = model%del2
     arg1(:) = t/tc
     result1 = SQRT(arg1(:))
     arg2(:) = ac*(1.0+k*(1.0-result1))**2
@@ -1232,14 +1266,14 @@ CONTAINS
     temp2 = r*(del1-del2)*t*bmix
     temp3 = amix/temp2
     temp4 = LOG(arg11)
-    tempb = t*model%r*arvalb
+    tempb = t*r*arvalb
     nb = -(temp0*tempb)
     b_vb = temp1*tempb/(1.0-b_v)
     arg11b = -(temp3*tempb/arg11)
     tempb0 = -(temp4*tempb/temp2)
     amixb = tempb0
     tempb1 = -(r*(del1-del2)*temp3*tempb0)
-    tb = (-(temp1*temp0)-temp4*temp3)*model%r*arvalb + bmix*tempb1
+    tb = (-(temp1*temp0)-temp4*temp3)*r*arvalb + bmix*tempb1
     tempb = arg11b/(del2*b_v+1.0)
     b_vb = b_vb + (del1-del2*(del1*b_v+1.0)/(del2*b_v+1.0))*tempb
     bmixb = t*tempb1 + b_vb/v
@@ -1299,7 +1333,7 @@ CONTAINS
     REAL(pr) :: aij(SIZE(n), SIZE(n)), bij(SIZE(n), SIZE(n))
     INTEGER :: i, j
     REAL(pr) :: tc(SIZE(n)), pc(SIZE(n)), w(SIZE(n))
-    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n)), r
+    REAL(pr) :: ac(SIZE(n)), b(SIZE(n)), k(SIZE(n))
     REAL(pr) :: del1, del2
     REAL(pr) :: kij(SIZE(n), SIZE(n)), lij(SIZE(n), SIZE(n))
     INTRINSIC SQRT
@@ -1311,15 +1345,17 @@ CONTAINS
     REAL(pr), DIMENSION(SIZE(n)) :: arg2
     REAL(pr), DIMENSION(SIZE(n, 1)) :: arg10
     REAL(pr) :: arg11
-    tc = model%tc
-    pc = model%pc
-    w = model%w
+    
+    tc = model%components%tc
+    pc = model%components%pc
+    w = model%components%w
     ac = model%ac
     b = model%b
     k = model%k
-    r = model%r
     kij = model%kij
     lij = model%lij
+    del1 = model%del1
+    del2 = model%del2
     arg1(:) = t/tc
     result1 = SQRT(arg1(:))
     arg2(:) = ac*(1.0+k*(1.0-result1))**2
@@ -1341,7 +1377,7 @@ CONTAINS
     b_v = bmix/v
     arg11 = (1.0+del1*b_v)/(1.0+del2*b_v)
     arval = (-(SUM(n)*LOG(1.0-b_v))-amix/(r*t*bmix)*1.0/(del1-del2)*LOG(&
-&     arg11))*(model%r*t)
+&     arg11))*(r*t)
   END SUBROUTINE AR
 
   PURE FUNCTION VOLUME_INITALIZER(model, n, p, t) RESULT (v0)

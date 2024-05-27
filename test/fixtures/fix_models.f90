@@ -1,6 +1,5 @@
 module fixtures_models
     use yaeos, only: pr, R, CubicEoS, NRTL
-    use autodiff_hyperdual_pr76, only: hdPR76
     use yaeos_tapenade_ar_api, only: ArModelTapenade
 
 contains
@@ -66,7 +65,7 @@ contains
     end function
 
     type(hdPR76) function binary_PR76_hd() result(eos)
-        use autodiff_hyperdual_pr76, only: setup
+        use autodiff_hyperdual_pr76, only: setup, hdPR76
         integer, parameter :: n=2
         real(pr) :: tc(n), pc(n), w(n)
         real(pr) :: kij(n, n), lij(n, n)
@@ -80,8 +79,8 @@ contains
         eos = setup(tc, pc, w, kij, lij)
     end function
     
-    type(ArModelTapenade) function binary_PR76_tape() result(eos)
-        use autodiff_tapenade_pr76, only: setup, model
+    type(TPR76) function binary_PR76_tape() result(eos)
+        use autodiff_tapenade_pr76, only: setup_model, TPR76
         integer, parameter :: n=2
         real(pr) :: tc(n), pc(n), w(n)
         real(pr) :: kij(n, n), lij(n, n)
@@ -92,9 +91,7 @@ contains
         kij = reshape([0., 0.1, 0.1, 0.], [n,n]) 
         lij = kij / 2
 
-        call setup(tc, pc, w, kij, lij)
-
-        eos = model
+        eos = setup_model(tc, pc, w, kij, lij)
     end function
 
     type(NRTL) function binary_NRTL_tape() result (model)
