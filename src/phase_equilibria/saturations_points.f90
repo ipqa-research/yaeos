@@ -101,15 +101,15 @@ contains
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_pressure = EquilibriaState(&
+         saturation_pressure = EquilibriaState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_pressure = EquilibriaState(&
+         saturation_pressure = EquilibriaState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_pressure = EquilibriaState(&
+         saturation_pressure = EquilibriaState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
@@ -205,15 +205,15 @@ contains
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_temperature = EquilibriaState(&
+         saturation_temperature = EquilibriaState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_temperature = EquilibriaState(&
+         saturation_temperature = EquilibriaState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_temperature = EquilibriaState(&
+         saturation_temperature = EquilibriaState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select

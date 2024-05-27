@@ -152,7 +152,7 @@ contains
 
       bubble = saturation_pressure(model, z, 200._pr, kind="bubble", p0=10._pr)
       envelope = pt_envelope_2ph(&
-         model, z, y0=bubble%y, T0=bubble%T, P0=bubble%P &
+         model, z, bubble &
       )
       call check(error, size(envelope%cps) == 1)
    end subroutine

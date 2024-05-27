@@ -29,7 +29,6 @@ contains
         class(ArModel), allocatable :: model
         real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n,n)
 
-        integer :: i
 
         real(pr) :: v, t, p
 
