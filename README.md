@@ -98,6 +98,17 @@ cd yaeos
 fpm run
 ```
 
+## Available examples
+In this repository we provide a series of examples of the different things that
+can be calculated with `yaeos`. The source codes for the examples can be seen
+at the [example/tutorials](example/tutorials) directory.
+
+All the examples can be run with
+
+```bash
+fpm run --example <example_name_here>
+```
+
 # Including new models with Automatic Differentiation.
 We are using the `hyperdual` module developed by [Philipp Rehner](https://github.com/prehner) and [Gernot Bauer](https://github.com/g-bauer)
 
