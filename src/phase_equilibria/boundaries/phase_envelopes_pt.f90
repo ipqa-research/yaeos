@@ -209,12 +209,7 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.01_pr])
 
-         ! Jump over critical point
-         do while (maxval(abs(X(:nc))) < 0.05)
-            S = S + dS
-            X = X + dXdS*dS
-         end do
-
+         ! Save the point
          envelopes%points = [&
             envelopes%points, &
             EquilibriaState(&
@@ -222,6 +217,12 @@ contains
             x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
             T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=0) &
             ]
+         
+         ! Jump over critical point
+         do while (maxval(abs(X(:nc))) < 0.05)
+            S = S + dS
+            X = X + dXdS*dS
+         end do
 
          Xnew = X + dXdS*dS
 
