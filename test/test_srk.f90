@@ -17,7 +17,7 @@ contains
 
    subroutine test_srk_cons_mixture(error)
       use yaeos, only: pr, SoaveRedlichKwong, ArModel
-      use yaeos_consistency, only: numeric_ar_derivatives, ar_consistency
+      use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model, model_kij
@@ -138,7 +138,7 @@ contains
 
    subroutine test_srk_cons_pure(error)
       use yaeos, only: pr, SoaveRedlichKwong, ArModel
-      use yaeos_consistency, only: numeric_ar_derivatives, ar_consistency
+      use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model

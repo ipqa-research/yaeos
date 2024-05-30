@@ -1,6 +1,6 @@
 module yaeos__math_continuation
    !! Implementation of Algower's numerical continuation method.
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    use yaeos__math_linalg, only: solve_system
 
    implicit none

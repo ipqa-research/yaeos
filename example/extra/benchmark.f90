@@ -21,7 +21,7 @@ contains
         lij = kij/2
     end subroutine
 
-    subroutine yaeos_run(n, dn, f_p, model_name)
+    subroutine yaeos__run(n, dn, f_p, model_name)
         integer :: n
         logical :: dn
         logical :: f_p
@@ -77,7 +77,7 @@ contains
         do n=1,nmax
             do i=1,nevals
                 call cpu_time(st)
-                    call yaeos_run(n, all_derivs, f_p, eos)
+                    call yaeos__run(n, all_derivs, f_p, eos)
                 call cpu_time(et)
 
                 time = (et-st)*1e6

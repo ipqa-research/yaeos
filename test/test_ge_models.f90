@@ -1,5 +1,5 @@
 module test_ge_models
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
    implicit none
@@ -18,7 +18,7 @@ contains
    end subroutine collect_suite
 
    subroutine test_nrtl(error)
-      use yaeos_constants, only: pr
+      use yaeos__constants, only: pr
       use fixtures_models, only: binary_NRTL_tape
       use yaeos, only: GeModel
       type(error_type), allocatable, intent(out) :: error

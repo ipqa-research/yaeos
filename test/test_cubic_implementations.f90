@@ -1,5 +1,5 @@
 module test_cubic_implementations
-    use yaeos_constants, only: pr
+    use yaeos__constants, only: pr
     use testdrive, only: new_unittest, unittest_type, error_type, check
     use auxiliar_functions, only: allclose
     implicit none
@@ -21,7 +21,7 @@ contains
     end subroutine collect_suite
 
     subroutine test_srk(error)
-        use yaeos_constants, only: pr
+        use yaeos__constants, only: pr
         use fixtures_models, only: binary_SRK
         use yaeos, only: ArModel
         type(error_type), allocatable, intent(out) :: error
@@ -69,7 +69,7 @@ contains
     end subroutine test_srk
 
     subroutine test_pr76(error)
-        use yaeos_constants, only: pr
+        use yaeos__constants, only: pr
         use fixtures_models, only: binary_PR76
         use yaeos, only: ArModel
         type(error_type), allocatable, intent(out) :: error
@@ -117,7 +117,7 @@ contains
     end subroutine test_pr76
 
     subroutine test_pr78(error)
-        use yaeos_constants, only: pr
+        use yaeos__constants, only: pr
         use fixtures_models, only: binary_PR78
         use yaeos, only: ArModel
         type(error_type), allocatable, intent(out) :: error
@@ -165,7 +165,7 @@ contains
     end subroutine test_pr78
 
     subroutine test_RKPR(error)
-        use yaeos_constants, only: pr
+        use yaeos__constants, only: pr
         use fixtures_models, only: binary_RKPR
         use yaeos, only: ArModel
         type(error_type), allocatable, intent(out) :: error

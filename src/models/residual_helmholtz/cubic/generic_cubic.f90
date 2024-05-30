@@ -1,7 +1,7 @@
-module yaeos_models_ar_genericcubic
-   use yaeos_constants, only: pr
-   use yaeos_models_ar, only: ArModel
-   use yaeos_substance, only: Substances
+module yaeos__models_ar_genericcubic
+   use yaeos__constants, only: pr
+   use yaeos__models_ar, only: ArModel
+   use yaeos__substance, only: Substances
    implicit none
 
    type, abstract :: AlphaFunction
@@ -93,7 +93,7 @@ contains
       !! three parameter EoS RKPR where \(delta_1\) is not a constant and
       !! has its own mixing rule.
       !!
-      use yaeos_constants, only: R
+      use yaeos__constants, only: R
       class(CubicEoS), intent(in) :: self
       real(pr), intent(in) :: n(:) !! Number of moles
       real(pr), intent(in) :: v !! Volume [L]

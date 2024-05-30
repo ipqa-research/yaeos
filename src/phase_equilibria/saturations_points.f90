@@ -1,8 +1,8 @@
-module yaeos_equilibria_saturation_points
-   use yaeos_constants, only: pr
-   use yaeos_models, only: ArModel
-   use yaeos_thermoprops, only: fugacity_vt, fugacity_tp
-   use yaeos_equilibria_equilibria_state, only: EquilibriaState
+module yaeos__equilibria_saturation_points
+   use yaeos__constants, only: pr
+   use yaeos__models, only: ArModel
+   use yaeos__thermoprops, only: fugacity_vt, fugacity_tp
+   use yaeos__equilibria_equilibria_state, only: EquilibriaState
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
@@ -22,7 +22,7 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos_thermoprops, only: pressure
+      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -126,7 +126,7 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos_thermoprops, only: pressure
+      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
@@ -218,4 +218,4 @@ contains
             )
       end select
    end function saturation_temperature
-end module yaeos_equilibria_saturation_points
+end module yaeos__equilibria_saturation_points

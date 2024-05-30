@@ -1,4 +1,4 @@
-module yaeos_consistency_armodel
+module yaeos__consistency_armodel
    !! Consistency checks of Helmholtz free energy models.
    !!
    !! This module contains tools to validate the analityc derivatives of
@@ -17,10 +17,10 @@ module yaeos_consistency_armodel
    !! and Mollerup consistency tests (refer to ar_consistency docs for more
    !! explanations)
    !!
-   use yaeos_constants, only: pr, R
-   use yaeos_models_ar, only: ArModel
-   use yaeos_thermoprops, only: enthalpy_residual_vt, gibbs_residual_vt 
-   use yaeos_thermoprops, only: fugacity_vt, pressure
+   use yaeos__constants, only: pr, R
+   use yaeos__models_ar, only: ArModel
+   use yaeos__thermoprops, only: enthalpy_residual_vt, gibbs_residual_vt 
+   use yaeos__thermoprops, only: fugacity_vt, pressure
 
    implicit none
 contains
@@ -315,4 +315,4 @@ contains
          end do
       end if
    end subroutine numeric_ar_derivatives
-end module yaeos_consistency_armodel
+end module yaeos__consistency_armodel

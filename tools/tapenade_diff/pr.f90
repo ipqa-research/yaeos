@@ -1,6 +1,6 @@
 module tapenade_pr
-    use yaeos_constants, only: pr, R
-    use yaeos_tapenade_ar_api, only: ArModelTapenade
+    use yaeos___constants, only: pr, R
+    use yaeos___tapenade_ar_api, only: ArModelTapenade
     implicit none
 
     !type, extends(ArModelTapenade) :: TPR76

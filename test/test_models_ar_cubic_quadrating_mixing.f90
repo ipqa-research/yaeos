@@ -1,5 +1,5 @@
 module test_cubic_mixrules
-    use yaeos_constants, only: pr
+    use yaeos__constants, only: pr
     use testdrive, only: new_unittest, unittest_type, error_type, check
     use auxiliar_functions, only: allclose
     implicit none
@@ -17,8 +17,8 @@ contains
     end subroutine collect_suite
 
     subroutine test_QMR_RKPR(error)
-        use yaeos_constants, only: pr
-        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR_RKPR
+        use yaeos__constants, only: pr
+        use yaeos__models_ar_cubic_quadratic_mixing, only: QMR_RKPR
         type(error_type), allocatable, intent(out) :: error
 
         type(QMR_RKPR) :: mixrule

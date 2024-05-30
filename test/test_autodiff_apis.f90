@@ -1,5 +1,5 @@
 module test_autodiff_api
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
    implicit none
@@ -19,7 +19,7 @@ contains
    end subroutine collect_suite
 
    subroutine test_pr76_hd(error)
-      use yaeos_constants, only: pr
+      use yaeos__constants, only: pr
       use fixtures_models, only: binary_PR76_hd
       use yaeos, only: ArModel
       type(error_type), allocatable, intent(out) :: error
@@ -67,7 +67,7 @@ contains
    end subroutine test_pr76_hd
 
    subroutine test_pr76_tape(error)
-      use yaeos_constants, only: pr
+      use yaeos__constants, only: pr
       use fixtures_models, only: binary_PR76_tape
       use yaeos, only: ArModel
       type(error_type), allocatable, intent(out) :: error

@@ -12,8 +12,8 @@
 
 ! =============================================================================
 module model
-    use yaeos_constants, only: pr
-    use yaeos_models_ar, only: ArModel
+    use yaeos___constants, only: pr
+    use yaeos___models_ar, only: ArModel
     implicit none
 
     type :: ${modelname}$
