@@ -12,7 +12,7 @@ program saturation
     class(ArModel), allocatable :: model
     type(EquilibriaState) :: sat_point
 
-    real(pr) :: n(2)
+    real(pr) :: n(2), T
 
     model = methane_butane_pr76()
 
@@ -22,7 +22,8 @@ program saturation
     ! Calculate the bubble pressure of this system
     ! --------------------------------------------------------------------------
     write(*, *) "Bubble pressure:"
-    sat_point = saturation_pressure(model, n, T=150._pr, kind="bubble")
+    T = 150
+    sat_point = saturation_pressure(model, n, T=T, kind="bubble")
     write (*, *) "kind, T, P: ", sat_point
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y

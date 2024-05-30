@@ -64,25 +64,18 @@ program new_alpha_example
    alpha%c3 = [0.0, 0.84619]
    
    n = [0.3, 0.7]
-   v = 1
+   v = 2
    t = 150
 
-   do i=1,1000
-      v = real(i, pr)/100
-      call pressure(eos, n, V, T, P=P)
-      print *, V, P
-   end do
+   call pressure(eos, n, V, T, P=P)
+   print *, "Peng-Robinson76:", P
    
    ! Replace the original alpha
    deallocate(eos%alpha) ! Remove the already defined alpha
    eos%alpha = alpha     ! assign the new defined alpha
 
-   print "(/)"
-   do i=1,1000
-      v = real(i, pr)/100
-      call pressure(eos, n, V, T, P=P)
-      print *, V, P
-   end do
+   call pressure(eos, n, V, T, P=P)
+   print *, "Peng-Robinson76-MC:", P
 
 
 end program new_alpha_example
