@@ -207,10 +207,10 @@ contains
             ] &
             )
 
-         dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.1_pr])
+         dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.01_pr])
 
          ! Jump over critical point
-         do while (maxval(abs(X(:nc))) < 0.01)
+         do while (maxval(abs(X(:nc))) < 0.05)
             S = S + dS
             X = X + dXdS*dS
          end do
@@ -264,7 +264,9 @@ contains
       end do
 
       write(unit, "(A, /, /)") "#PTEnvel2"
+
       write(unit, "(A, /)") "#" // pt2%points(1)%kind
+      
       do i=1, size(pt2%points)
          write(unit, *) pt2%points(i)
          write(unit, "(/)")
