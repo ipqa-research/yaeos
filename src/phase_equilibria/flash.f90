@@ -1,8 +1,8 @@
-module yaeos_equilibria_flash
-   use yaeos_constants, only: pr
-   use yaeos_models, only: ArModel
-   use yaeos_equilibria_equilibria_state, only: EquilibriaState
-   use yaeos_thermoprops, only: fugacity_vt, fugacity_tp, pressure
+module yaeos__equilibria_flash
+   use yaeos__constants, only: pr
+   use yaeos__models, only: ArModel
+   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__thermoprops, only: fugacity_vt, fugacity_tp, pressure
    use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
@@ -184,7 +184,7 @@ contains
    subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
       !! Solve pressure equality between two phases at a given temperature,
       !! total volume, vapor molar fractions and compositions.
-      use yaeos_thermoprops, only: fugacity_vt, pressure
+      use yaeos__thermoprops, only: fugacity_vt, pressure
       use iso_fortran_env, only: error_unit
 
       class(ArModel), intent(in) :: model
@@ -260,4 +260,4 @@ contains
       call pressure(model, y, Vy, T, Py)
       P = (Px + Py) * 0.5_pr
    end subroutine tv_loop_solve_pressures
-end module yaeos_equilibria_flash
+end module yaeos__equilibria_flash

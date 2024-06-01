@@ -1,4 +1,4 @@
-module yaeos_ar_models_hyperdual
+module yaeos__ar_models_hyperdual
     !! Module that contains the automatic differentiation logic for an Ar model.
     !! 
     !! All that is needed to define an Ar model that uses automatic
@@ -8,7 +8,7 @@ module yaeos_ar_models_hyperdual
     !!
     !! ```fortran
     !! module newmodel
-    !! use yaeos_ar_models_hyperdual, only: ArModelAdiff
+    !! use yaeos__ar_models_hyperdual, only: ArModelAdiff
     !!
     !! type, extends(ArModelAdiff) :: YourNewModel
     !!       type(Substances) :: composition
@@ -43,9 +43,9 @@ module yaeos_ar_models_hyperdual
     !! A complete implementation of the PR76 Equation of State can me found in
     !! `example/adiff/adiff_pr76.f90`
     !!
-    use yaeos_constants, only: pr
-    use yaeos_models_ar, only: ArModel
-    use yaeos_autodiff
+    use yaeos__constants, only: pr
+    use yaeos__models_ar, only: ArModel
+    use yaeos__autodiff
 
     implicit none
 

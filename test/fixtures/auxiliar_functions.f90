@@ -1,5 +1,5 @@
 module auxiliar_functions
-    use yaeos_constants, only: pr
+    use yaeos__constants, only: pr
 contains
     elemental function rel_error(x, y)
         real(pr), intent(in) :: x, y

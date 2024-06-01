@@ -2,9 +2,9 @@
 ! state. In this case it is the Mathias-Copeman alpha function.
 module alpha_mathias_copeman
    ! The base AlphaFunction structure is defined in the
-   ! yaeos_models_ar_cubic_alphas module
-   use yaeos_models_ar_cubic_alphas, only: AlphaFunction
-   use yaeos_constants, only: pr
+   ! yaeos__models_ar_cubic_alphas module
+   use yaeos__models_ar_cubic_alphas, only: AlphaFunction
+   use yaeos__constants, only: pr
    implicit none
 
    ! We will extend that structure to include the parameters c1, c2 and c3

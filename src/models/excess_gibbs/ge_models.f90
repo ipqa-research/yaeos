@@ -1,7 +1,7 @@
-module yaeos_models_ge
+module yaeos__models_ge
    !! Excess Gibbs Models.
-   use yaeos_constants, only: pr, R
-   use yaeos_models_base, only: BaseModel
+   use yaeos__constants, only: pr, R
+   use yaeos__models_base, only: BaseModel
    implicit none
 
    type, extends(BaseModel), abstract :: GeModel

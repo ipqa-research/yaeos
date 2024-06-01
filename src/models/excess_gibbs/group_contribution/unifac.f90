@@ -1,7 +1,7 @@
-module yaeos_models_ge_group_contribution_unifac
+module yaeos__models_ge_group_contribution_unifac
    !! UNIFAC module
-   use yaeos_constants, only: pr, R
-   use yaeos_models_ge, only: GeModel
+   use yaeos__constants, only: pr, R
+   use yaeos__models_ge, only: GeModel
    implicit none
 
    type :: Groups
@@ -492,4 +492,4 @@ contains
       setup_unifac%group_area = Qk
       setup_unifac%group_volume = Rk
    end function setup_unifac
-end module yaeos_models_ge_group_contribution_unifac
+end module yaeos__models_ge_group_contribution_unifac

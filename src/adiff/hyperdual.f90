@@ -83,7 +83,7 @@ module hyperdual_mod
    !                                  of State Modeling.**
    !      Frontiers in Chemical Engineering_ (2021) \n
    !
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    implicit none
 
    type, bind(c) :: hyperdual

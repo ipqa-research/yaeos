@@ -14,8 +14,8 @@
 !  Tapenade 3.16 (develop) - 13 Sep 2023 12:36
 !
 MODULE TAPENADE_PR
-  USE YAEOS_CONSTANTS, ONLY : pr, r
-  USE YAEOS_TAPENADE_AR_API, ONLY : armodeltapenade
+  USE YAEOS__CONSTANTS, ONLY : pr, r
+  USE YAEOS__TAPENADE_AR_API, ONLY : armodeltapenade
   IMPLICIT NONE
 type, extends(ArModelTapenade) :: TPR76
       REAL(pr), ALLOCATABLE :: kij(:, :), lij(:, :)

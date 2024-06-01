@@ -1,5 +1,5 @@
 program test_continuation
-    use yaeos_constants, only: pr
+    use yaeos__constants, only: pr
     use yaeos__math_continuation, only: continuation
     use fixtures_models, only: binary_PR76
 

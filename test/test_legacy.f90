@@ -15,7 +15,7 @@ contains
     end subroutine collect_suite
 
     subroutine test_legacy_ar(error)
-        use yaeos_constants, only: pr, r
+        use yaeos__constants, only: pr, r
         use legacy_ar_models, only: setup, fact => PR76_factory, ar_srkpr, ArVnder, &
             kij, lij, ac, b, wmod => w, k
 
@@ -56,7 +56,7 @@ contains
     end subroutine test_legacy_ar
 
     subroutine test_legacy_termo(error)
-        use yaeos_constants, only: pr, r
+        use yaeos__constants, only: pr, r
         use legacy_ar_models, only: setup, fact => PR76_factory, &
             kij, lij, ac, b, wmod => w, k
         use legacy_thermo_properties, only: termo

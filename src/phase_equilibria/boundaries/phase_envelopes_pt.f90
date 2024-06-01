@@ -1,9 +1,9 @@
 module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    !! Phase boundaries line on the \(PT\) plane calculation procedures.
-   use yaeos_constants, only: pr
-   use yaeos_models, only: ArModel
-   use yaeos_equilibria_equilibria_state, only: EquilibriaState
-   use yaeos_thermoprops, only: fugacity_tp
+   use yaeos__constants, only: pr
+   use yaeos__models, only: ArModel
+   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__thermoprops, only: fugacity_tp
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -239,7 +239,6 @@ contains
                ]
          end if
       end subroutine update_specification
-
    end function pt_envelope_2ph
 
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)

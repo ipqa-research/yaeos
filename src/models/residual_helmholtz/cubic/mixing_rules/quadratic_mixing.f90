@@ -1,8 +1,8 @@
-module yaeos_models_ar_cubic_quadratic_mixing
+module yaeos__models_ar_cubic_quadratic_mixing
     !! Quadratic Mixing Rules for Cubic EoS.
-    use yaeos_constants, only: pr
-    use yaeos_substance, only: substances
-    use yaeos_models_ar_genericcubic, only: CubicMixRule
+    use yaeos__constants, only: pr
+    use yaeos__substance, only: substances
+    use yaeos__models_ar_genericcubic, only: CubicMixRule
     implicit none
 
     type, extends(CubicMixRule) :: QMR
@@ -276,4 +276,4 @@ contains
             end do
         end do
     end subroutine kij_constant
-end module yaeos_models_ar_cubic_quadratic_mixing
+end module yaeos__models_ar_cubic_quadratic_mixing

@@ -1,8 +1,8 @@
-module yaeos_tapenade_ge_api
+module yaeos__tapenade_ge_api
    !! Module that wraps tapenade generated routines to calculate !
    !! Ge and derivatives.
-   use yaeos_constants, only: pr, R
-   use yaeos_models_ge, only: GeModel
+   use yaeos__constants, only: pr, R
+   use yaeos__models_ge, only: GeModel
    implicit none
 
    private

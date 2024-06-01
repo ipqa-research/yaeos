@@ -1,8 +1,8 @@
-module yaeos_substance
+module yaeos__substance
     !! yaeos Subtance module.
     !!
     !! Module containing pure components properties and parameters.
-    use yaeos_constants, only: pr
+    use yaeos__constants, only: pr
 
     type :: Substances
         !! Set of pure components
