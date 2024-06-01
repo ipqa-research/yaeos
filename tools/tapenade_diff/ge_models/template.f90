@@ -1,6 +1,6 @@
 module tapenade_ge_model_template
-    use yaeos___constants, only: pr, R
-    use yaeos___tapenade_ge_api, only: GeModelTapenade
+    use yaeos__constants, only: pr, R
+    use yaeos__tapenade_ge_api, only: GeModelTapenade
     implicit none
 
    

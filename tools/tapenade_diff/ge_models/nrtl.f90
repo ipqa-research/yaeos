@@ -1,9 +1,9 @@
 module nrtl_mod
-   use yaeos___tapenade_ge_api, only: GeModelTapenade
+   use yaeos__tapenade_ge_api, only: GeModelTapenade
    ! Replace pr and R parameters with the following line on the generated
    ! code. Generated code sometimes misses those variables and defines them
    ! (with no value) inside.
-   ! use yaeos___constants, only: pr, R
+   ! use yaeos__constants, only: pr, R
    implicit none
 
    integer, parameter :: pr = 8
