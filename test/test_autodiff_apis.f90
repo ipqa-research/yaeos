@@ -51,6 +51,20 @@ contains
       T = 150
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
+         ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         )
+      
+      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
+      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
+      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
+      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
+      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
+      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
+      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
+      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+
+      call eos%residual_helmholtz( &
+         z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
@@ -97,12 +111,12 @@ contains
       z = [0.3, 0.7]
       v = 1
       T = 150
+
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
 
-      print *, Ar
       call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
       call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
       call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
