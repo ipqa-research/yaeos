@@ -4,7 +4,7 @@ module legacy_ar_models
    !! compatiblity with legacy codes but with a better structure.
    !! this should be later adapted into a simple oop system where an eos object
    !! stores the relevant parameters (or some functional oriented approach)
-   use yaeos_constants, only: pr, R
+   use yaeos__constants, only: pr, R
    use ar_interface, only: ar_fun, vinit
    implicit none
 
@@ -738,7 +738,7 @@ contains
    end function
 end module
 module legacy_thermo_properties
-   use yaeos_constants, only: R, pr
+   use yaeos__constants, only: R, pr
    use legacy_ar_models, only: ArVnder, vinit
    implicit none
 contains

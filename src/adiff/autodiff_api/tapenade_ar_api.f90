@@ -1,8 +1,8 @@
-module yaeos_tapenade_ar_api
+module yaeos__tapenade_ar_api
    !! Module that wraps tapenade generated routines to calculate !
    !! Ar and derivatives.
-   use yaeos_constants, only: pr
-   use yaeos_models_ar, only: ArModel
+   use yaeos__constants, only: pr
+   use yaeos__models_ar, only: ArModel
    implicit none
 
    private

@@ -1,6 +1,6 @@
 module fixtures_models
     use yaeos, only: pr, R, CubicEoS, NRTL
-    use yaeos_tapenade_ar_api, only: ArModelTapenade
+    use yaeos__tapenade_ar_api, only: ArModelTapenade
 
 contains
 

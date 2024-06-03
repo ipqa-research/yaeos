@@ -3,7 +3,7 @@ MODULE TapeRobinson
 contains
     subroutine main()
         use yaeos, only: ArModel
-        use yaeos_constants, only: pr
+        use yaeos__constants, only: pr
         class(ArModel), allocatable :: model
         integer, parameter :: n=2
         real(pr) :: z(n), tc(n), pc(n), w(n), kij(n,n), lij(n,n)

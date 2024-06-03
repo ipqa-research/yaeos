@@ -1,6 +1,6 @@
 module yaeos__math_linalg
    !! Wrapper module around LAPACK's `dgesv`
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    implicit none
 
 contains

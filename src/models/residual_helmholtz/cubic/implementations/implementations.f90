@@ -1,7 +1,7 @@
-module yaeos_models_ar_cubic_implementations
-   use yaeos_constants, only: pr, R
-   use  yaeos_models_ar_genericcubic, only: CubicEoS
-   use yaeos_substance, only: Substances
+module yaeos__models_ar_cubic_implementations
+   use yaeos__constants, only: pr, R
+   use  yaeos__models_ar_genericcubic, only: CubicEoS
+   use yaeos__substance, only: Substances
    !! Implemented Cubic Equations of State.
    !!
    !! - PengRobinson76
@@ -38,11 +38,11 @@ contains
         !! After setting up the model, it is possible to redefine either the
         !! mixing rule or the alpha function using a different derived type
         !! defined outside the function.
-        use yaeos_constants, only: pr, R
-        use yaeos_substance, only: Substances
-        use yaeos_models_ar_genericcubic, only: CubicEoS
-        use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR
+        use yaeos__constants, only: pr, R
+        use yaeos__substance, only: Substances
+        use yaeos__models_ar_genericcubic, only: CubicEoS
+        use yaeos__models_ar_cubic_alphas, only: AlphaSoave
+        use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
         real(pr), intent(in) :: tc(:) !! Critical Temperatures [K]
         real(pr), intent(in) :: pc(:) !! Critical Pressures [bar]
         real(pr), intent(in) :: w(:) !! Acentric Factors
@@ -108,11 +108,11 @@ contains
         !! After setting up the model, it is possible to redefine either the
         !! mixing rule or the alpha function using a different derived type
         !! defined outside the function.
-        use yaeos_constants, only: pr, R
-        use yaeos_substance, only: Substances
-        use yaeos_models_ar_genericcubic, only: CubicEoS
-        use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR
+        use yaeos__constants, only: pr, R
+        use yaeos__substance, only: Substances
+        use yaeos__models_ar_genericcubic, only: CubicEoS
+        use yaeos__models_ar_cubic_alphas, only: AlphaSoave
+        use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
         real(pr), intent(in) :: tc(:) !! Critical Temperatures [K]
         real(pr), intent(in) :: pc(:) !! Critical Pressures [bar]
         real(pr), intent(in) :: w(:) !! Acentric Factors
@@ -179,9 +179,9 @@ contains
         !! After setting up the model, it is possible to redefine either the
         !! mixing rule or the alpha function using a different derived type
         !! defined outside the function.
-        use yaeos_models_ar_genericcubic, only: CubicEoS
-        use yaeos_models_ar_cubic_alphas, only: AlphaSoave
-        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR
+        use yaeos__models_ar_genericcubic, only: CubicEoS
+        use yaeos__models_ar_cubic_alphas, only: AlphaSoave
+        use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
         real(pr), intent(in) :: tc(:) !! Critical temperature [K]
         real(pr), intent(in) :: pc(:) !! Critical pressure [bar]
         real(pr), intent(in) :: w(:) !! Acentric factor
@@ -246,8 +246,8 @@ contains
         !! \[\delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6\]
         !! \[k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0)\]
 
-        use yaeos_models_ar_cubic_quadratic_mixing, only: QMR_RKPR
-        use yaeos_models_ar_cubic_alphas, only: AlphaRKPR
+        use yaeos__models_ar_cubic_quadratic_mixing, only: QMR_RKPR
+        use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
         real(pr), intent(in) :: tc(:) !! Critical Temperature [K]
         real(pr), intent(in) :: pc(:) !! Critical Pressure [bar]
         real(pr), intent(in) :: w(:) !! Acentric Factor
