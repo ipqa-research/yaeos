@@ -114,7 +114,7 @@ the library with debugging. We provide some predefined defuaults to work with
 `vscode`. You can add them to the cloned repository by running:
 
 ```bash
-git clone https://github.con/ipqa-research/vscode-fortran .vscode
+git clone https://github.com/ipqa-research/vscode-fortran .vscode
 ```
 
 From the project main directory 
