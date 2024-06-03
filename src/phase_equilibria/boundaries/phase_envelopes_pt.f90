@@ -188,7 +188,7 @@ contains
          integer, intent(in) :: iterations
          !! Iterations used in the solver
 
-         real(pr) :: Xnew(nc+2), Xold(nc+2), Xc(nc+2)
+         real(pr) :: Xnew(nc+2), Xold(nc+2)
 
          Xold = X
 
@@ -217,7 +217,7 @@ contains
             x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
             T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=0) &
             ]
-         
+
          ! Jump over critical point
          do while (maxval(abs(X(:nc))) < 0.05)
             S = S + dS
@@ -226,18 +226,25 @@ contains
 
          Xnew = X + dXdS*dS
 
-         if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
-            select case(kind)
-             case("dew")
-               kind = "bubble"
-             case("bubble")
-               kind = "dew"
-            end select
-            Xc = (Xnew - Xold)/(Xnew(ns) - Xold(ns)) * (Xnew(ns)) + (Xold)
-            envelopes%cps = [&
-               envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(X(nc+2))) &
-               ]
-         end if
+         cp: block
+            real(pr) :: Xc(nc+2) !! Value at (near) critical point
+            real(pr) :: a  !! Parameter for interpolation
+            if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
+               select case(kind)
+                case("dew")
+                  kind = "bubble"
+                case("bubble")
+                  kind = "dew"
+               end select
+
+               ! 0 = a*X(ns) + (1-a)*Xnew(ns)
+               a = -Xnew(ns)/(X(ns) - Xnew(ns))
+               Xc = a * X + (1-a)*Xnew
+               envelopes%cps = [&
+                  envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(X(nc+2))) &
+                  ]
+            end if
+         end block cp
       end subroutine update_specification
    end function pt_envelope_2ph
 
@@ -266,16 +273,18 @@ contains
       write(unit, "(A, /, /)") "#PTEnvel2"
 
       write(unit, "(A, /)") "#" // pt2%points(1)%kind
-      
+
       do i=1, size(pt2%points)
-         write(unit, *) pt2%points(i)
-         write(unit, "(/)")
+         ! Change label if passed a critical point
          if (any(cps - i == 0)) then
             write(unit, "(/, /)")
             write(unit, "(A, /)") "#" // pt2%points(i+1)%kind
          end if
+
+         write(unit, *) pt2%points(i)
+         write(unit, "(/)")
       end do
-      
+
       write(unit, "(/, /, A, /)") "#Critical"
       do cp = 1, size(cps)
          write(unit, *) pt2%cps(cp)%T, pt2%cps(cp)%P
