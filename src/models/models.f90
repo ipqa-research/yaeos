@@ -20,11 +20,15 @@ module yaeos__models
    !!       defaults to classic vdW mixing rules
    !!
 
+   ! Base model structure
+   use yaeos__models_base, only: BaseModel
+
    ! Residual Helmholtz Models
    use yaeos__models_ar, only: ArModel
 
    ! Cubic EoS models
-   use yaeos__models_ar_genericcubic, only: CubicEoS, GenericCubic_Ar, AlphaFunction, CubicMixRule
+   use yaeos__models_ar_genericcubic, only: &
+      CubicEoS, GenericCubic_Ar, AlphaFunction, CubicMixRule
 
    ! Alpha functions
    use yaeos__models_ar_cubic_alphas
