@@ -72,6 +72,16 @@ call pressure(model, z, V, T, P, dPdN=dPdN)
 print *, dPdN
 ```
 
+Examples of code with simple applications showing the capabilities of `yaeos`
+can be found at [example/tutorials](example/tutorials). Each example can be run
+with:
+
+```bash
+ fpm run --example <example name here>
+```
+
+Not providing any example will show all the possible examples that can be run.
+
 # How to install/run it
 `yaeos` is intended to use as a [`fpm`](fpm.fortran-lang.org)
 
@@ -98,6 +108,17 @@ cd yaeos
 fpm run
 ```
 
+## Developing with vscode
+If your intention is either to develop for `yaeos` or to explore in more detail
+the library with debugging. We provide some predefined defuaults to work with
+`vscode`. You can add them to the cloned repository by running:
+
+```bash
+git clone https://github.con/ipqa-research/vscode-fortran .vscode
+```
+
+From the project main directory 
+
 ## Available examples
 In this repository we provide a series of examples of the different things that
 can be calculated with `yaeos`. The source codes for the examples can be seen
@@ -110,7 +131,9 @@ fpm run --example <example_name_here>
 ```
 
 # Including new models with Automatic Differentiation.
-We are using the `hyperdual` module developed by [Philipp Rehner](https://github.com/prehner) and [Gernot Bauer](https://github.com/g-bauer)
+We are using the `hyperdual` module developed by 
+[Philipp Rehner](https://github.com/prehner) 
+and [Gernot Bauer](https://github.com/g-bauer)
 
 > The automatic differentiation API isn't fully optimized yet so performance is
 > much slower than it should be.
