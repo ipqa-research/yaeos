@@ -24,6 +24,10 @@ program main
    real(pr) :: lngamma(nc)
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0
 
+
+   real(pr) :: lngamma_val(nc) = [0.84433780935070013, -0.19063836609197171, -2.9392550019369406]
+   real(pr) :: ln_Gamma_val(ng) = [0.43090864639734738, 0.27439937388510327,  0.52442445057961795, -2.8793657040300329]
+
    integer(int64) :: rate, st, et
    call system_clock(count_rate=rate)
 
@@ -31,17 +35,18 @@ program main
    call load_npy("data/unifac_Qk.npy", Qk)
    call load_npy("data/unifac_Rk.npy", Rk)
 
-   ! Ethane [CH3]
+   ! ! Ethane [CH3]
    molecules(1)%groups_ids = [1]
    molecules(1)%number_of_groups = [2]
    
-   ! Ethanol [CH3, CH2, OH]
+   ! ! Ethanol [CH3, CH2, OH]
    molecules(2)%groups_ids = [1, 2, 14]
    molecules(2)%number_of_groups = [1, 1, 1]
    
-   ! Methylamine [H3C-NH2]
+   ! ! Methylamine [H3C-NH2]
    molecules(3)%groups_ids = [28]
    molecules(3)%number_of_groups = [1]
+
 
    model = setup_unifac(&
       molecules, &
@@ -50,27 +55,16 @@ program main
       Rk=Rk &
    )
 
-   call model%ln_activity_coefficient(x, T, lngamma)
-   print *, "lngamma: ", lngamma
-   
-   call ln_activity_coefficient(model, x, T, lngamma)
-   print *, "lngamma: ", lngamma
-   
    call group_big_gamma(model, x, T, ln_Gamma=ln_Gamma)
-   print *, "ln_Gamma: ", ln_Gamma
-
-   call exit
+   print *, "ln_Gamma: ", maxval(abs(ln_Gamma - ln_Gamma_val)) < 1e-7
+   
+   call model%ln_activity_coefficient(x, T, lngamma)
+   print *, "lngamma: ", maxval(abs(lngamma - lngamma_val)) < 1e-7
 
    call group_big_gamma(model, x, T, ln_Gamma, dln_gammadt=dln_Gammadt)
    call group_big_gamma(model, x, T+dx, dln_Gammadt_num)
 
+   print *, "dlnGamma_dT:"
    print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
    print *, "anal: ", dln_gammadt
-
-   do i=1, nc
-      x = 0
-      x(i) = 1
-      call group_big_gamma(model, x, T, ln_Gamma)
-      print *, "ln_gamma_pure:", ln_gamma
-   end do
 end program main

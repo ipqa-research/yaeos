@@ -122,7 +122,7 @@ contains
       real(pr) :: ln_Gamma_i(size(self%groups_stew%groups_ids))
 
       real(pr) :: xpure(size(x))
-      integer :: i, k, nc
+      integer :: i, k, nc, gi
 
       ln_gamma = 0
       ln_gamma_r = 0
@@ -133,9 +133,15 @@ contains
          xpure = 0
          xpure(i) = 1
          call group_big_gamma(self, xpure, T, ln_Gamma_i)
+
          do k=1,size(self%molecules(i)%groups_ids)
-            print *, i, k
-            ln_gamma_r(i) = ln_gamma_r(i) + self%molecules(i)%number_of_groups(k) * (ln_gamma(k) - ln_gamma_i(k))
+            gi = findloc(&
+               self%groups_stew%groups_ids - self%molecules(i)%groups_ids(k), &
+               0, dim=1 &
+            )
+
+            ln_gamma_r(i) = ln_gamma_r(i) &
+               + self%molecules(i)%number_of_groups(k) * (ln_gamma(gi) - ln_gamma_i(gi))
          end do
       end do
    end subroutine residual_activity
