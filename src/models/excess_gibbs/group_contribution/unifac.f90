@@ -112,27 +112,44 @@ contains
       if (present(GeN)) Gen = ln_activity * (R*T)
    end subroutine excess_gibbs
 
-   subroutine residual_activity(self, x, T, ln_gamma_r)
+   subroutine residual_activity(&
+      self, x, T, ln_gamma_r, dln_gamma_dn, dln_gamma_dt, dln_gamma_dtn&
+      )
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:)
       real(pr), intent(in) :: T
       real(pr), intent(out) :: ln_gamma_r(:)
+      real(pr), optional, intent(out) :: dln_gamma_dn(:, :)
+      real(pr), optional, intent(out) :: dln_gamma_dT(:)
+      real(pr), optional, intent(out) :: dln_gamma_dTn(:, :)
 
-      real(pr) :: ln_Gamma(size(self%groups_stew%groups_ids))
-      real(pr) :: ln_Gamma_i(size(self%groups_stew%groups_ids))
+      real(pr) :: ln_G(self%ngroups)
+      real(pr) :: dln_Gdn(self%ngroups, size(x))
+
+      real(pr) :: ln_G_i(size(x), self%ngroups)
+      real(pr) :: dln_G_idn(size(x), self%ngroups, size(x))
 
       real(pr) :: xpure(size(x))
-      integer :: i, k, nc, gi
+      integer :: i, j, k, nc, gi
 
-      ln_gamma = 0
+      ln_G = 0
+      ln_G_i = 0
       ln_gamma_r = 0
+
+      if (present(dln_gamma_dn)) dln_gamma_dn = 0
       nc = size(self%molecules)
 
-      call group_big_gamma(self, x, T, ln_Gamma)
+      call group_big_gamma(self, x, T, ln_G, dln_gammadx=dln_Gdn)
+
       do i=1,nc
          xpure = 0
          xpure(i) = 1
-         call group_big_gamma(self, xpure, T, ln_Gamma_i)
+         call group_big_gamma(&
+            self, xpure, T, ln_G_i(i, :), dln_Gammadx=dln_G_idn(i, :, :) &
+            )
+      end do
+
+      do i=1,nc
 
          do k=1,size(self%molecules(i)%groups_ids)
             gi = findloc(&
@@ -141,7 +158,16 @@ contains
                )
 
             ln_gamma_r(i) = ln_gamma_r(i) &
-               + self%molecules(i)%number_of_groups(k) * (ln_gamma(gi) - ln_gamma_i(gi))
+               + self%molecules(i)%number_of_groups(k) * (ln_G(gi) - ln_G_i(i, gi))
+
+            if (present(dln_gamma_dn)) then
+               do j=1,i
+                  dln_gamma_dn(i, j) = dln_gamma_dn(i, j) &
+                     + self%molecules(i)%number_of_groups(k) &
+                     * (dln_Gdn(gi, j) - dln_G_idn(i, gi, j))
+                  dln_gamma_dn(j, i) = dln_gamma_dn(i, j)
+               end do
+            end if
          end do
       end do
    end subroutine residual_activity
@@ -296,7 +322,9 @@ contains
       end associate
    end subroutine group_area_fraction
 
-   subroutine group_big_gamma(self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2)
+   subroutine group_big_gamma(&
+      self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2&
+   )
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:) !< Molar fractions
       real(pr), intent(in) :: T !! Temperature
@@ -306,25 +334,16 @@ contains
       real(pr), optional, intent(out) :: dln_Gammadx(:, :) !!
       real(pr), optional, intent(out) :: dln_Gammadx2(:, :, :) !!
 
-      real(pr) :: theta(size(self%groups_stew%groups_ids))
+      real(pr) :: theta(self%ngroups)
       !! Group area fractions
-      real(pr) :: dthetadx(size(self%groups_stew%groups_ids), size(x))
+      real(pr) :: dthetadx(self%ngroups, size(x))
       !! First derivative of group area fractions with composition
-      real(pr) :: dthetadx2(size(self%groups_stew%groups_ids), size(x), size(x))
+      real(pr) :: dthetadx2(self%ngroups, size(x), size(x))
       !! Second derivative of group area fractions with composition
-      real(pr) :: psi(&
-         size(self%groups_stew%groups_ids),&
-         size(self%groups_stew%groups_ids) &
-         )
+      real(pr) :: psi(self%ngroups,self%ngroups)
       !! \(\psi(T)\) parameter
-      real(pr) :: dpsidt(&
-         size(self%groups_stew%groups_ids),&
-         size(self%groups_stew%groups_ids) &
-         )
-      real(pr) :: dpsidt2(&
-         size(self%groups_stew%groups_ids),&
-         size(self%groups_stew%groups_ids) &
-         )
+      real(pr) :: dpsidt(self%ngroups, self%ngroups)
+      real(pr) :: dpsidt2(self%ngroups,self%ngroups)
 
       ! Number of groups and components
       integer :: ng, nc
@@ -342,7 +361,7 @@ contains
       real(pr) :: down(size(theta)), downdt(size(theta)), &
          downdt2(size(theta)), downdx(size(theta), size(x))
 
-      ng = size(self%groups_stew%groups_ids)
+      ng = self%ngroups
       nc = size(x)
       dt = present(dln_Gammadt)
       dt2 = present(dln_Gammadt2)
