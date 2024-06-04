@@ -21,8 +21,8 @@ program main
    type(Groups) :: molecules(nc)
    real(pr) :: psi(ng, ng)
    real(pr) :: theta(ng), dthetadx(ng, nc)
-   real(pr) :: lngamma(nc)
-   real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0
+   real(pr) :: lngamma(nc), dlngamma_dn(nc, nc)
+   real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
 
 
    real(pr) :: lngamma_val(nc) = [0.84433780935070013, -0.19063836609197171, -2.9392550019369406]
@@ -67,4 +67,11 @@ program main
    print *, "dlnGamma_dT:"
    print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
    print *, "anal: ", dln_gammadt
+
+   print *, "dlnGamma_dx"
+   call group_big_gamma(model, x, T, ln_gamma, dln_Gammadx=dln_Gammadn)
+   print *, dln_Gammadn
+
+   call residual_activity(model, x, T, lngamma, dln_gamma_dn=dlngamma_dn)
+
 end program main

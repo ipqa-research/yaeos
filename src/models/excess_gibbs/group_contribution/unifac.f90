@@ -247,7 +247,8 @@ contains
          if (present(dpsidt)) &
             dpsidt(i, j) = self%Eij(ig, jg) * psi(i, j) / T**2
          if (present(dpsidt2)) &
-            dpsidt2(i, j) = self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
+            dpsidt2(i, j) = &
+               self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
       end do
 
    end subroutine UNIFAC_temperature_dependence
