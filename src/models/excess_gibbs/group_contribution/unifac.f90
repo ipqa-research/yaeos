@@ -150,17 +150,21 @@ contains
       end do
 
       do i=1,nc
-
          do k=1,size(self%molecules(i)%groups_ids)
+            ! Get the index of the group k of molecule i in the whole stew of
+            ! groups.
+            ! TODO: These kind of `findloc` maybe can be optimized.
             gi = findloc(&
                self%groups_stew%groups_ids - self%molecules(i)%groups_ids(k), &
                0, dim=1 &
                )
 
             ln_gamma_r(i) = ln_gamma_r(i) &
-               + self%molecules(i)%number_of_groups(k) * (ln_G(gi) - ln_G_i(i, gi))
+               + self%molecules(i)%number_of_groups(k) &
+               * (ln_G(gi) - ln_G_i(i, gi))
 
             if (present(dln_gamma_dn)) then
+               ! Compositional derivative
                do j=1,i
                   dln_gamma_dn(i, j) = dln_gamma_dn(i, j) &
                      + self%molecules(i)%number_of_groups(k) &
@@ -172,23 +176,53 @@ contains
       end do
    end subroutine residual_activity
 
-   subroutine combinatorial_activity(self, x, ln_gamma_c)
+   subroutine combinatorial_activity(self, x, ln_gamma_c, dln_gamma_dx)
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:)
       real(pr), intent(out) :: ln_gamma_c(:)
+      real(pr), optional, intent(out) :: dln_gamma_dx(:, :)
 
       real(pr) :: theta(size(x)), phi(size(x)), L(size(x))
+      real(pr) :: V(size(x)), dVdx(size(x), size(x)), Vsum
+      real(pr) :: F(size(x)), dFdx(size(x), size(x)), Fsum
+      real(pr) :: dthetadx(size(x), size(x))
+      real(pr) :: dphidx(size(x), size(x))
+
+      real(pr) :: xq, xr
+      integer :: i, j
+
 
       associate (&
          q => self%molecules%surface_area,&
          r => self%molecules%volume,&
          z => self%z &
          )
+         xq = dot_product(x, q)
+         xr = dot_product(x, r)
 
-         theta = x * q / sum(x * q)
-         phi = x * r / sum(x * r)
+         V = r / xr
+         Vsum = 1/xr
+         F = q / xq
+         Fsum = 1/xq
+
+         theta = x * q / xq
+         phi = x * r / xr
          L = 0.5_pr * z * (r - q) - (r - 1)
          ln_gamma_c = log(phi/x) + z/2*q * log(theta/phi) + L - phi/x * sum(x*L)
+
+         if (present(dln_gamma_dx)) then
+            dln_gamma_dx = 0
+            do concurrent(i=1:size(x), j=1:size(x))
+               dVdx(i, j) = -r(i)*r(j)*Vsum**2
+               dFdx(i, j) = -q(i)*q(j)*Fsum**2
+
+               dln_gamma_dx(i, j) = -0.5_pr * z * q(i) * ( &
+                  (dVdx(i,j)/F(i) - V(i)*dFdx(i,j)/F(i)**2) * F(i)/V(i) &
+                  - dVdx(i, j)/F(i) + V(i) * dFdx(i,j)/F(i)**2 &
+                  ) &
+                  - dVdx(i, j) + dVdx(i, j)/V(i)
+            end do
+         end if
       end associate
    end subroutine combinatorial_activity
 
@@ -248,7 +282,7 @@ contains
             dpsidt(i, j) = self%Eij(ig, jg) * psi(i, j) / T**2
          if (present(dpsidt2)) &
             dpsidt2(i, j) = &
-               self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
+            self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
       end do
 
    end subroutine UNIFAC_temperature_dependence
@@ -325,7 +359,7 @@ contains
 
    subroutine group_big_gamma(&
       self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2&
-   )
+      )
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:) !< Molar fractions
       real(pr), intent(in) :: T !! Temperature
