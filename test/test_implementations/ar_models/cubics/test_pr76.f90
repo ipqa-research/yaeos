@@ -13,8 +13,11 @@ contains
          new_unittest("Test PR76 Ar consistency mix", test_pr76_cons_mixture), &
          new_unittest("Test PR76 Ar consistency pure", test_pr76_cons_pure), &
          new_unittest("Test PR76 Z", test_pr76_compressibility_factor), &
+         new_unittest("Test PR76 CO2 isotherm", test_pr76_co2_volume), &
          new_unittest("Test PR76 Fugacities Elliot", test_pr76_fugacities), &
-         new_unittest("Test PR76 Txy methanol-benzene Elliot", test_p76_txy_methanol_benzene) &
+         new_unittest("Test PR76 Txy methanol-benzene Elliot", test_pr76_txy_methanol_benzene), &
+         new_unittest("Test PR76 Pxy nitrogen-methane Elliot", test_pr76_pxy_nitrogen_methane), &
+         new_unittest("Test PR76 ethane-heptane envelope Elliot", test_pr76_envelope_ethane_heptane) &
          ]
    end subroutine collect_suite
 
@@ -306,6 +309,28 @@ contains
       end do
    end subroutine test_pr76_compressibility_factor
 
+   subroutine test_pr76_co2_volume(error)
+      ! From Elliot's book.
+      use yaeos, only : pr, PengRobinson76, ArModel
+      use yaeos__thermoprops, only: volume
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model
+
+      real(pr) :: mw, V, n(1)
+      integer :: i
+
+      model = PengRobinson76([304.2_pr], [73.82_pr], [0.228_pr])
+      n = [1.0_pr]
+      mw = 44.01 ! g / mol
+
+      call volume(model, n, 8.0_pr, 310.0_pr, V=V, root_type="stable")
+      call check(error, abs(V / mw * 1000 - 70.37) < 0.06)
+
+      call volume(model, n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
+      call check(error, abs(V / mw * 1000 - 3.84) < 0.01)
+   end subroutine test_pr76_co2_volume
+
    subroutine test_pr76_fugacities(error)
       ! K values of N2-CH4 (0.5, 0.5) mixture from Elliot's book.
       use yaeos, only: pr, R, PengRobinson76, ArModel
@@ -343,7 +368,7 @@ contains
       call check(error, abs(exp(lnphip_l(2) - log(P)) - 0.0937) < 1e-4)
    end subroutine test_pr76_fugacities
 
-   subroutine test_p76_txy_methanol_benzene(error)
+   subroutine test_pr76_txy_methanol_benzene(error)
       ! Txy methanol-benzene from Elliot's book using saturation_temperature
       ! function.
       use yaeos, only: pr, PengRobinson76, ArModel, EquilibriaState
@@ -483,5 +508,196 @@ contains
          error_sum = error_sum + (sat_t%T - t_bubble_kij(i))**2
       end do
       call check(error, sqrt(error_sum) / 20 < 0.6)
-   end subroutine test_p76_txy_methanol_benzene
+   end subroutine test_pr76_txy_methanol_benzene
+
+   subroutine test_pr76_pxy_nitrogen_methane(error)
+      ! Pxy nitrogen-methane from Elliot's book using saturation_pressure
+      ! function.
+      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriaState
+      use yaeos, only: saturation_pressure
+
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model
+      type(EquilibriaState) :: psat
+      real(pr) :: T, y_dew(9), p_dew(9), x_bubble(10), p_bubble(10), z(2)
+      real(pr) :: error_sum
+
+      integer :: i
+
+      y_dew = [0.05545, 0.1349, 0.2237, 0.3420, 0.4344, 0.5287, 0.6118, 0.6765, 0.7006]
+      p_dew = [10.97, 12.71, 13.96, 16.45, 19.20, 23.43, 29.67, 35.65, 40.89]
+
+      x_bubble = [0.06839, 0.1257, 0.1848, 0.2791, 0.2292, 0.3475, 0.4122, 0.4621, 0.5379, 0.6100]
+      p_bubble = [14.71, 18.20, 21.44, 26.68, 24.18, 30.17, 33.91, 36.90, 40.89, 44.63]
+
+      T = 150.0_pr
+
+      model = PengRobinson76(&
+         [126.2_pr, 190.564_pr], &
+         [34.0_pr, 45.99_pr], &
+         [0.0377215_pr, 0.0115478_pr] &
+         )
+
+      error_sum = 0.0_pr
+      do i = 1,9
+         z = [y_dew(i), 1.0_pr - y_dew(i)]
+         psat = saturation_pressure(model, z, T, kind="dew", p0=p_dew(i))
+
+         error_sum = error_sum + (psat%P - p_dew(i))**2
+      end do
+      call check(error, sqrt(error_sum) / 9 < 0.15)
+
+      error_sum = 0.0_pr
+      do i = 1,10
+         z = [x_bubble(i), 1.0_pr - x_bubble(i)]
+         psat = saturation_pressure(model, z, T, kind="bubble", p0=p_bubble(i))
+
+         error_sum = error_sum + (psat%P - p_bubble(i))**2
+      end do
+      call check(error, sqrt(error_sum) / 10 < 0.07)
+   end subroutine test_pr76_pxy_nitrogen_methane
+
+   subroutine test_pr76_envelope_ethane_heptane(error)
+      use yaeos, only: pr, ArModel, EquilibriaState, PTEnvel2, PengRobinson76
+      use yaeos, only: saturation_pressure, pt_envelope_2ph
+
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model
+      type(EquilibriaState) :: bubble
+      type(PTEnvel2) :: envelope
+
+      real(pr) :: z(2)
+      real(pr), allocatable :: bubble_points_t(:), dew_points_t(:)
+      real(pr), allocatable :: bubble_points_p(:), dew_points_p(:)
+      real(pr) :: t_bub(21), p_bub(21), t_dew(14), p_dew(14)
+      real(pr) :: p_env, T, y1, y2, y3, x1, x2, x3, term1, term2, term3
+      real(pr) :: error_sum
+      ! real(pr) :: crit_point_t, crit_point_p
+
+      integer :: i, j, index
+
+      model = PengRobinson76( &
+         [305.32_pr, 540.2_pr], &
+         [48.72_pr, 27.4_pr], &
+         [0.099493_pr, 0.349469_pr] &
+         )
+
+      z = [0.1_pr, 0.9_pr]
+
+      bubble = saturation_pressure(model, z, T=230._pr, kind="bubble", p0=5.0_pr)
+
+      envelope = pt_envelope_2ph(model, z, bubble)
+
+      allocate(bubble_points_t(0))
+      allocate(bubble_points_p(0))
+      allocate(dew_points_t(0))
+      allocate(dew_points_p(0))
+
+      do i = 1, size(envelope%points)
+         if (envelope%points(i)%kind .eq. "bubble") then
+            bubble_points_t = [bubble_points_t, envelope%points(i)%T]
+            bubble_points_p = [bubble_points_p, envelope%points(i)%P]
+         elseif (envelope%points(i)%kind .eq. "dew") then
+            dew_points_t = [dew_points_t, envelope%points(i)%T]
+            dew_points_p = [dew_points_p, envelope%points(i)%P]
+         end if
+      end do
+
+      ! =======================================================================
+      ! TODO Critical point check
+      ! -----------------------------------------------------------------------
+      ! call check(error, abs(crit_point_t - 532.9_pr) < 1)
+
+      ! =======================================================================
+      ! Bubble points check
+      ! TODO Sort point just in case
+      ! -----------------------------------------------------------------------
+      t_bub = [&
+         241.0, 252.4, 262.0, 272.3, 283.1, 295.6, 309.8, &
+         326.9, 344.0, 361.1, 374.1, 395.2, 408.3, 419.1, &
+         433.9, 451.0, 469.2, 484.0, 501.1, 513.6, 524.4  &
+         ]
+      p_bub = [&
+         0.8238, 1.236, 1.442, 1.854, 2.471, 3.089, 3.913, &
+         4.943, 6.178, 7.414, 8.650, 10.71, 12.15, 13.59,  &
+         15.45, 17.92, 21.01, 23.89, 27.39, 30.07, 32.33   &
+         ]
+
+      error_sum = 0.0_pr
+      do i = 1, size(t_bub)
+         do j = 1, size(bubble_points_t)
+            if (bubble_points_t(j) > t_bub(i)) then
+               ! lagrange polynomics
+               x1 = bubble_points_t(j-1)
+               x2 = bubble_points_t(j)
+               x3 = bubble_points_t(j+1)
+
+               y1 = bubble_points_p(j-1)
+               y2 = bubble_points_p(j)
+               y3 = bubble_points_p(j+1)
+               exit
+            end if
+         end do
+         T = t_bub(i)
+         term1 = y1 * (T - x2) * (T - x3) / ((x1 - x2) * (x1 - x3))
+         term2 = y2 * (T - x1) * (T - x3) / ((x2 - x1) * (x2 - x3))
+         term3 = y3 * (T - x1) * (T - x2) / ((x3 - x1) * (x3 - x2))
+
+         p_env = term1 + term2 + term3
+
+         error_sum = error_sum + (p_env - p_bub(i))**2
+      end do
+
+      call check(error, sqrt(error_sum) / size(t_bub) < 0.03)
+
+      ! =======================================================================
+      ! Dew points check
+      ! -----------------------------------------------------------------------
+      t_dew = [&
+         368.5, 387.8, 406.6, 420.8, 437.3, 450.4, 464.1, &
+         474.9, 489.1, 497.6, 507.9, 515.9, 524.4, 531.2  &
+         ]
+
+      p_dew= [&
+         0.8238, 1.854, 2.883, 3.913, 5.561, 7.208, 9.474, &
+         11.53, 14.83, 17.09, 20.18, 23.07, 26.57, 30.48   &
+         ]
+
+      error_sum = 0.0_pr
+      do i = 1, size(t_dew)
+         do j = 1, size(dew_points_t)
+            if (dew_points_t(j) < t_dew(i)) then
+               if (j == 1) then
+                  x1 = dew_points_t(j)
+                  x2 = dew_points_t(j+1)
+                  x3 = dew_points_t(j+2)
+
+                  y1 = dew_points_p(j)
+                  y2 = dew_points_p(j+1)
+                  y3 = dew_points_p(j+2)
+               else
+                  x1 = dew_points_t(j-1)
+                  x2 = dew_points_t(j)
+                  x3 = dew_points_t(j+1)
+
+                  y1 = dew_points_p(j-1)
+                  y2 = dew_points_p(j)
+                  y3 = dew_points_p(j+1)
+               end if
+               exit
+            end if
+         end do
+         T = t_dew(i)
+         term1 = y1 * (T - x2) * (T - x3) / ((x1 - x2) * (x1 - x3))
+         term2 = y2 * (T - x1) * (T - x3) / ((x2 - x1) * (x2 - x3))
+         term3 = y3 * (T - x1) * (T - x2) / ((x3 - x1) * (x3 - x2))
+
+         p_env = term1 + term2 + term3
+
+         error_sum = error_sum + (p_env - p_dew(i))**2
+         print *, p_env, p_dew(i)
+      end do
+   end subroutine test_pr76_envelope_ethane_heptane
 end module test_pr76
