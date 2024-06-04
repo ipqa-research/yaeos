@@ -669,23 +669,13 @@ contains
       do i = 1, size(t_dew)
          do j = 1, size(dew_points_t)
             if (dew_points_t(j) < t_dew(i)) then
-               if (j == 1) then
-                  x1 = dew_points_t(j)
-                  x2 = dew_points_t(j+1)
-                  x3 = dew_points_t(j+2)
+               x1 = dew_points_t(j-1)
+               x2 = dew_points_t(j)
+               x3 = dew_points_t(j+1)
 
-                  y1 = dew_points_p(j)
-                  y2 = dew_points_p(j+1)
-                  y3 = dew_points_p(j+2)
-               else
-                  x1 = dew_points_t(j-1)
-                  x2 = dew_points_t(j)
-                  x3 = dew_points_t(j+1)
-
-                  y1 = dew_points_p(j-1)
-                  y2 = dew_points_p(j)
-                  y3 = dew_points_p(j+1)
-               end if
+               y1 = dew_points_p(j-1)
+               y2 = dew_points_p(j)
+               y3 = dew_points_p(j+1)
                exit
             end if
          end do
