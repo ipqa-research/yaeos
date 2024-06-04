@@ -133,13 +133,11 @@ contains
          xpure = 0
          xpure(i) = 1
          call group_big_gamma(self, xpure, T, ln_Gamma_i)
-         print *, ln_gamma_i
          do k=1,size(self%molecules(i)%groups_ids)
+            print *, i, k
             ln_gamma_r(i) = ln_gamma_r(i) + self%molecules(i)%number_of_groups(k) * (ln_gamma(k) - ln_gamma_i(k))
-            print *, i, self%molecules(i)%groups_ids(k), self%molecules(i)%number_of_groups(k)
          end do
       end do
-      print *, ln_gamma_r
    end subroutine residual_activity
 
    subroutine combinatorial_activity(self, x, ln_gamma_c)

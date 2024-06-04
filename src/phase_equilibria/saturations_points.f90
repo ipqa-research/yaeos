@@ -97,6 +97,8 @@ contains
 
          p = p - step
          if (abs(step) < tol .and. abs(f) < tol) exit
+         if (all(k > 0.99) .or. all(k < 0.01)) exit
+
       end do
       ! ========================================================================
       select case(kind)
