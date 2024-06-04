@@ -606,13 +606,13 @@ contains
       end do
 
       ! =======================================================================
-      ! TODO Critical point check
+      ! Critical point check
       ! -----------------------------------------------------------------------
-      ! call check(error, abs(crit_point_t - 532.9_pr) < 1)
+      call check(error, abs(envelope%cps(1)%T - 532.9_pr) < 1)
+      call check(error, abs(envelope%cps(1)%P - 32.95_pr) < 0.2)
 
       ! =======================================================================
       ! Bubble points check
-      ! TODO Sort point just in case
       ! -----------------------------------------------------------------------
       t_bub = [&
          241.0, 252.4, 262.0, 272.3, 283.1, 295.6, 309.8, &
@@ -697,7 +697,8 @@ contains
          p_env = term1 + term2 + term3
 
          error_sum = error_sum + (p_env - p_dew(i))**2
-         print *, p_env, p_dew(i)
       end do
+
+      call check(error, sqrt(error_sum) / size(t_dew) < 0.04)
    end subroutine test_pr76_envelope_ethane_heptane
 end module test_pr76
