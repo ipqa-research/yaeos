@@ -19,7 +19,7 @@ module yaeos__math
    use yaeos__math_linalg, only: solve_system
 
 contains
-   real(pr) function sq_error(exp, pred)
+   elemental real(pr) function sq_error(exp, pred)
       !! Squared error between two values.
       !!
       !! # Description

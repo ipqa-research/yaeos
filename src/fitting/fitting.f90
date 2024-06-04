@@ -13,20 +13,21 @@ module yaeos__fitting
       !! optimization problem. It keeps the base model structure that will be
       !! optimized and a procedure `get_model_from_X` that should reconstruct
       !! the model with the desired parameters to optimize.
-      real(pr) :: solver_tolerance = 1e-5_pr
+      real(pr) :: solver_tolerance = 1e-9_pr
       real(pr) :: parameter_step = 0.1_pr
 
       class(ArModel), allocatable :: initial_model
 
       type(EquilibriaState), allocatable :: experimental_points(:)
       procedure(model_from_X), pointer :: get_model_from_X
+      logical :: verbose = .false.
    end type FittingProblem
 
    abstract interface
       subroutine model_from_X(self, X, model)
          import ArModel, FittingProblem, pr
-         real(pr), intent(in) :: X(:)
          class(FittingProblem), intent(in) :: self
+         real(pr), intent(in) :: X(:)
          class(ArModel), intent(out) :: model
       end subroutine model_from_X
    end interface
@@ -48,8 +49,8 @@ contains
       type(nlopt_func) :: f !! Function to optimize
       integer :: stat
 
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(X))
-      opt = nlopt_opt(nlopt_algorithm_enum%LN_PRAXIS, size(X))
+      opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(X))
+      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_PRAXIS, size(X))
       ! opt = nlopt_opt(nlopt_algorithm_enum%LN_COBYLA, size(X))
 
       f = create_nlopt_func(fobj, f_data=func_data)
@@ -78,10 +79,6 @@ contains
       real(pr), optional, intent(in out) :: gradient(:)
       class(*), optional, intent(in) :: func_data
 
-      !! Thermodynamic model to make calculations inside
-      type(EquilibriaState) :: model_point !! Each solved point
-      type(EquilibriaState), pointer :: exp_point
-
       integer :: i
 
       real(pr) :: p_exp, t_exp
@@ -89,22 +86,50 @@ contains
       fobj = 0
       select type(func_data)
        type is(FittingProblem)
-
          call func_data%get_model_from_X(X, model)
-
-         do i=1, size(func_data%experimental_points)
-            exp_point => func_data%experimental_points(i)
-            
-            select case(exp_point%kind)
-             case("bubble")
-               model_point = saturation_pressure(&
-                  model, exp_point%x, exp_point%t, kind="bubble", &
-                  p0=exp_point%p, y0=exp_point%y &
-               )
-               fobj = fobj + sq_error(exp_point%p, model_point%p)
-            end select
-         end do
+         fobj = error_function(X, func_data)
       end select
-      write(1, *) X, fobj
+      write(2, *) X, fobj
+      write(1, "(/)")
    end function fobj
+
+   real(pr) function error_function(X, func_data) result(fobj)
+      use yaeos__math, only: sq_error
+      real(pr), intent(in) :: X(:)
+      class(FittingProblem), intent(in) :: func_data
+
+      !! Thermodynamic model to make calculations inside
+      type(EquilibriaState) :: model_point !! Each solved point
+      type(EquilibriaState) :: exp_point
+
+      integer :: i
+
+      do i=1, size(func_data%experimental_points)
+         exp_point = func_data%experimental_points(i)
+
+         select case(exp_point%kind)
+          case("bubble")
+            model_point = saturation_pressure(&
+               model, exp_point%x, exp_point%t, kind="bubble", &
+               p0=exp_point%p, y0=exp_point%y &
+               )
+          case("dew")
+            model_point = saturation_pressure(&
+               model, exp_point%y, exp_point%t, kind="dew", &
+               p0=exp_point%p, y0=exp_point%x &
+               )
+          case("liquid-liquid")
+            model_point = saturation_pressure(&
+               model, exp_point%x, exp_point%t, kind="liquid-liquid", &
+               p0=exp_point%p, y0=exp_point%y &
+               )
+
+         end select
+
+         fobj = fobj + sq_error(exp_point%p, model_point%p)
+         fobj = fobj + maxval(sq_error(exp_point%y, model_point%y))
+         write(1, *) exp_point, model_point
+      end do
+
+   end function error_function
 end module yaeos__fitting

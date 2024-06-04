@@ -43,7 +43,7 @@ contains
 
       character(*), parameter :: nl = new_line("G")
 
-      write(unit, *) eq%kind, eq%T, eq%P
+      write(unit, *) eq%kind, eq%T, eq%P, eq%x, eq%y
 
    end subroutine write_EquilibriaState
 end module yaeos__equilibria_equilibria_state

@@ -13,7 +13,7 @@ program main
 
     class(ArModel), allocatable :: model
     
-    real(pr) :: T, P, x1, y1, kij, X(4), told
+    real(pr) :: T, P, x1, y1, kij, X(2), told
     character(len=14) :: kind
 
     ! ==========================================================================
@@ -24,10 +24,13 @@ program main
     do
         read(infile, *, iostat=iostat) kind, t, p, x1, y1
         if (iostat /= 0) exit
-        point = EquilibriaState(&
-            kind=kind, T=T, P=P, x=[x1, 1-x1], y=[y1,1-y1], &
-            Vx=0._pr, Vy=0._pr, iters=0, beta=0._pr &
-        )
+        select case(kind)
+        case("bubble", "dew", "liquid-liquid")
+            point = EquilibriaState(&
+                kind=kind, T=T, P=P, x=[x1, 1-x1], y=[y1,1-y1], &
+                Vx=0._pr, Vy=0._pr, iters=0, beta=0._pr &
+            )
+        end select
         exp_points = [exp_points, point]
     end do
     close(infile)
@@ -41,6 +44,8 @@ program main
     sus(2) = Substance("n-octane")
 
     X = 0.01
+    ! X(3) = 1
+    ! X(4) = 1
     print *, optimize(X, prob)
 
     call model_from_x(prob, X, model)
@@ -60,13 +65,13 @@ program main
 contains
 
     subroutine model_from_X(problem, X, model)
-        use yaeos, only: R, RKPR
+        use yaeos, only: R, RKPR, PengRobinson76
         class(FittingProblem), intent(in) :: problem
         real(pr), intent(in) :: X(:)
         class(ArModel), allocatable, intent(out) :: model
         real(pr) :: kij(nc, nc), lij(nc, nc)
 
-        real(pr) :: tc(nc), pc(nc), w(nc), vc(nc), zc(nc), del1(nc)
+        real(pr) :: tc(nc), pc(nc), w(nc), vc(nc), zc(nc), mult(nc)
 
         tc = sus%critical%critical_temperature%value
         pc = sus%critical%critical_pressure%value/1e5
@@ -80,16 +85,16 @@ contains
         kij(2, 1) = kij(1, 2)
 
         lij = 0
-        ! lij(1, 2) = X(2)
-        ! lij(2, 1) = X(2)
+        lij(1, 2) = X(2)
+        lij(2, 1) = X(2)
 
-        del1 = X(3:)
-
-        model = RKPR(tc, pc, w, zc=zc, kij=kij, lij=lij)
+        ! model = RKPR(tc, pc, w, zc=zc, kij=kij, lij=lij)
+        model = PengRobinson78(tc, pc, w, kij=kij, lij=lij)
 
         ! select type(model)
+        ! mult = X(3:)
         !     type is (CubicEoS)
-        !         model%del1 = del1
+        !         model%del1 = mult * model%del1
         !         model%del2 = (1._pr - model%del1)/(1._pr + model%del1)
         ! end select
     end subroutine
