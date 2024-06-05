@@ -74,4 +74,13 @@ program main
 
    call residual_activity(model, x, T, lngamma, dln_gamma_dn=dlngamma_dn)
 
+   call combinatorial_activity(model, x, lngamma, dlngamma_dn)
+
+   print *, "comb"
+   print *, lngamma
+   do i=1,nc
+      print *, dlngamma_dn(i, :)
+   end do
+
+
 end program main
