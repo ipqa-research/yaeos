@@ -92,13 +92,15 @@ contains
 
       real(pr) :: x(size(n))
       real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n)), ln_activity(size(n))
-
+      real(pr) :: nt, dxidni(size(n), size(n))
 
       integer :: i, j, nc
 
       write(error_unit, *) "WARN: UNIFAC not fully implemented yet"
 
-      x = n/sum(n)
+      nt = sum(n)
+
+      x = n/nt
 
       nc = size(self%molecules)
 
@@ -108,7 +110,8 @@ contains
       call residual_activity(self, x, T, ln_gamma_r)
       ln_activity = ln_gamma_c + ln_gamma_r
 
-      if (present(Ge)) Ge = sum(x * ln_activity)
+      if (present(Ge)) Ge = sum(x * ln_activity) * (R*T)
+
       if (present(GeN)) Gen = ln_activity * (R*T)
    end subroutine excess_gibbs
 
