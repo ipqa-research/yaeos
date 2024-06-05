@@ -50,7 +50,7 @@ contains
       real(pr), intent(in) :: dx(:)
       real(pr) :: dn(size(x))
 
-      integer :: i, nc
+      integer :: i, j, nc
 
       nc = size(x)
       dn = 0
