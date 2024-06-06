@@ -20,7 +20,7 @@ program main
 
    type(Groups) :: molecules(nc)
    real(pr) :: psi(ng, ng)
-   real(pr) :: theta(ng), dthetadx(ng, nc)
+   real(pr) :: theta(ng), theta_ji(ng, nc), dthetadx(ng, nc)
    real(pr) :: lngamma(nc), dlngamma_dn(nc, nc)
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
    real(pr) :: ln_gamma_c(nc), dln_gamma_c_dn(nc, nc)
@@ -90,10 +90,30 @@ program main
    print *,  dln_gamma_c_dn
    print *, "expected:"
    print * , &
-   [0.031692694440355496, -0.01793757017123132, 0.06217760231790814, &
-   -0.017937570171231723, 0.009591847252321026, -0.03126779042378376, &
-   0.0621776023179087, -0.03126779042378558, 0.09451932833068105]
+      [0.031692694440355496, -0.01793757017123132, 0.06217760231790814, &
+      -0.017937570171231723, 0.009591847252321026, -0.03126779042378376, &
+      0.0621776023179087, -0.03126779042378558, 0.09451932833068105]
    print *, " "
+
+   ! Thetas totales
+   call thetas(model, x, theta_j=theta)
+   print *, "Total Thetas: ", theta
+   print *, "Expected: ", [0.40465035571750835, 0.16397709526288395, 0.3643935450286309, 0.06697900399097695]
+   print *, " "
+
+   ! Thetas_i
+   ! call thetas_i(model, theta_ji)
+   ! print *, "Thetas_i: "
+   ! print *, theta_ji(1,1), theta_ji(1,2), theta_ji(1,3)
+   ! print *, theta_ji(2,1), theta_ji(2,2), theta_ji(2,3)
+   ! print *, theta_ji(3,1), theta_ji(3,2), theta_ji(3,3)
+   ! print *, theta_ji(4,1), theta_ji(4,2), theta_ji(4,3)
+   ! print *, "Expected: "
+   ! print *, [1., 0.32766615, 0.]
+   ! print *, [0., 0.20865533, 0.]
+   ! print *, [0., 0.46367852, 0.]
+   ! print *, [0., 0.        , 1.]
+   ! print *, " "
 
    ! ==========================================================================
    ! Cosas que no dan

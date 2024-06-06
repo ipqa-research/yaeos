@@ -36,6 +36,8 @@ module yaeos__models_ge_group_contribution_unifac
       !! Group areas \(Q_k\)
       real(pr), allocatable :: group_volume(:)
       !! Group volumes \(R_k\)
+      real(pr), allocatable :: theta_ji(:, :)
+      !! Area fractions of groups j (row) on molecules i (column)
       class(PsiFunction), allocatable :: psi_function
       !! Temperature dependance function of the model
       type(Groups), allocatable :: molecules(:)
@@ -179,51 +181,41 @@ contains
       end do
    end subroutine residual_activity
 
-   subroutine combinatorial_activity(self, x, ln_gamma_c, dln_gamma_c_dn)
+   subroutine combinatorial_activity(self, n, ln_gamma_c, dln_gamma_c_dn)
       class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:)
+      real(pr), intent(in) :: n(:)
       real(pr), intent(out) :: ln_gamma_c(:)
       real(pr), optional, intent(out) :: dln_gamma_c_dn(:, :)
 
-      real(pr) :: theta(size(x)), phi(size(x)), L(size(x))
-      real(pr) :: V(size(x)), dVdx(size(x), size(x)), Vsum
-      real(pr) :: F(size(x)), dFdx(size(x), size(x)), Fsum
-      real(pr) :: dthetadx(size(x), size(x))
-      real(pr) :: dphidx(size(x), size(x))
-
-      real(pr) :: xq, xr
+      real(pr) :: ln_gamma_c_fh(size(n)), ln_gamma_c_sg(size(n))
+      real(pr) :: dln_gamma_c_fh_dn(size(n), size(n))
+      real(pr) :: dln_gamma_c_sg_dn(size(n), size(n))
+      real(pr) :: nq, nr, n_t
       integer :: i, j
 
-      ! ========================================================================
-      ! SINTEF variables
-      real(pr) :: n_t
-      real(pr) :: ln_gamma_c_fh(size(x)), ln_gamma_c_sg(size(x))
-      real(pr) :: dln_gamma_c_fh_dn(size(x), size(x))
-      real(pr) :: dln_gamma_c_sg_dn(size(x), size(x))
-      ! ------------------------------------------------------------------------
       associate (&
          q => self%molecules%surface_area,&
          r => self%molecules%volume,&
          z => self%z &
          )
-         xq = dot_product(x, q)
-         xr = dot_product(x, r)
+         nq = dot_product(n, q)
+         nr = dot_product(n, r)
 
-         n_t = sum(x)
+         n_t = sum(n)
 
-         ln_gamma_c_fh = log(r) - log(xr) + log(n_t) + 1 - n_t * r / xr
-         ln_gamma_c_sg = z / 2 * q * (-log((r * xq) / (q * xr)) - 1 + (r * xq) / (q * xr))
+         ln_gamma_c_fh = log(r) - log(nr) + log(n_t) + 1 - n_t * r / nr
+         ln_gamma_c_sg = z/2*q*(-log((r*nq)/(q*nr)) - 1 + (r*nq)/(q*nr))
 
          ln_gamma_c = ln_gamma_c_fh + ln_gamma_c_sg
 
          if (present(dln_gamma_c_dn)) then
             dln_gamma_c_dn = 0.0_pr
-            do concurrent(i=1:size(x), j=1:size(x))
+            do concurrent(i=1:size(n), j=1:size(n))
                dln_gamma_c_fh_dn(i,j) = &
-                  - (r(i) + r(j)) / xr + 1 / n_t + n_t * r(i) * r(j) / xr**2
+                  -(r(i) + r(j))/nr + 1/n_t + n_t*r(i)*r(j)/ nr**2
 
                dln_gamma_c_sg_dn(i,j) = &
-                  z / 2 * (- q(i)*q(j)/xq + (q(i)*r(j) + q(j)*r(i)) / xr - r(i) * r(j) * xq / xr**2)
+                  z/2*(-q(i)*q(j)/nq + (q(i)*r(j) + q(j)*r(i))/nr - r(i)*r(j)*nq/nr**2)
 
                dln_gamma_c_dn(i,j) = dln_gamma_c_fh_dn(i,j) + dln_gamma_c_sg_dn(i,j)
             end do
@@ -291,6 +283,107 @@ contains
       end do
 
    end subroutine UNIFAC_temperature_dependence
+
+   subroutine thetas(self, n, theta_j, total_groups_area)
+      type(UNIFAC) :: self
+      real(pr), intent(in) :: n(:)
+
+      real(pr), intent(out) :: theta_j(:)
+      !! Group j total area fraction
+      real(pr), optional, intent(out) :: total_groups_area
+      !! Total groups area
+
+      integer :: j, l, m !! A fines practicos i y l son lo mismo aca.
+      integer :: gi !! group m id
+
+      real(pr) :: ga(size(theta_j)) !! Area of group j in the system
+      real(pr) :: qjl_contribution, total_area
+
+      associate(&
+         group_area => self%group_area, &
+         stew => self%groups_stew, &
+         molecs => self%molecules &
+         )
+
+         ! Calculate Total area fraction of group j
+         theta_j = 0.0_pr
+         ga = 0.0_pr
+
+         do l=1,size(molecs)
+            do m=1,size(molecs(l)%number_of_groups)
+               gi = molecs(l)%groups_ids(m)
+
+               ! Locate group m in the stew ordering (position j of group m).
+               j = findloc(stew%groups_ids, gi, dim=1)
+
+               ! Contribution of the molecule l to the group j area.
+               qjl_contribution = (&
+                  n(l) * group_area(gi) * molecs(l)%number_of_groups(m) &
+                  )
+
+               ! Add the contribution to the contributions storing vector.
+               ga(j) = ga(j) + qjl_contribution
+
+               ! Adding to the total groups area.
+               total_area = total_area + qjl_contribution
+            end do
+         end do
+
+         theta_j = ga / total_area
+
+         ! Return total_groups_area if asked (needed on lambda derivatives)
+         if (present(total_groups_area)) total_groups_area = total_area
+      end associate
+   end subroutine thetas
+
+      function thetas_i(group_area, stew, molecules) result(theta_ji)
+      real(pr), intent(in) :: group_area(:) !! Group k areas
+      type(Groups), intent(in) :: stew !! All the groups present in the system
+      type(Groups), intent(in) :: molecules(:) !! Molecules
+      real(pr), allocatable :: theta_ji(:, :) !! Group j area fraction on molecule i
+
+      allocate(theta_ji(stew%number_of_groups, size(molecules)))
+      
+      real(pr), allocatable :: total_area_i(size(molecules))
+      real(pr) :: qki_contribution
+
+      integer :: gi !! group k id
+      integer :: i, j, k
+
+      theta_ji = 0.0_pr
+      total_area_i = 0.0_pr
+
+      ! Obtain the total area of each molecule
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            ! Locate group k in the stew ordering (position j of group k).
+            j = findloc(stew%groups_ids, gi, dim=1)
+
+            ! Contribution of the group k to the molecule i area.
+            qki_contribution = (&
+               group_area(gi) * molecules(i)%number_of_groups(k) &
+               )
+
+            ! Adding to the total area of each molecule
+            total_area_i(i) = total_area_i(i) + qki_contribution
+         end do
+      end do
+
+      ! Calculate the fraction of each group on each molecule
+      theta_ji = 0.0_pr
+
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            j = findloc(stew%groups_ids, gi, dim=1)
+
+            theta_ji(j, i) = group_area(gi) * molecules(i)%number_of_groups(k) / total_area_i(i)
+         end do
+      end do
+   end function thetas_i
 
    subroutine group_area_fraction(&
       self, x, &
@@ -361,6 +454,32 @@ contains
          end if
       end associate
    end subroutine group_area_fraction
+
+   subroutine groups_lambda_k(&
+      self, n, T, &
+      lambda_k, dlambda_k_dT, dlambda_k_dT2, &
+      lambda_ki, dlambda_ki_dT, dlambda_ki_dT2, &
+      dlambda_k_dn, dlambda_k_dn2)
+      class(UNIFAC) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: T
+      real(pr), optional, intent(out) :: lambda_k(:)
+      real(pr), optional, intent(out) :: dlambda_k_dT(:)
+      real(pr), optional, intent(out) :: dlambda_k_dT2(:)
+      real(pr), optional, intent(out) :: lambda_ki(:)
+      real(pr), optional, intent(out) :: dlambda_ki_dT(:)
+      real(pr), optional, intent(out) :: dlambda_ki_dT2(:)
+      real(pr), optional, intent(out) :: dlambda_k_dn(:, :)
+      real(pr), optional, intent(out) :: dlambda_k_dn2(:, :, :)
+
+      ! Indexes used for groups
+      integer :: j, k
+
+      ! Indexes used for components
+      integer :: i, l
+
+
+   end subroutine groups_lambda_k
 
    subroutine group_big_gamma(&
       self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2&
@@ -555,5 +674,6 @@ contains
       setup_unifac%psi_function = psi_function
       setup_unifac%group_area = Qk
       setup_unifac%group_volume = Rk
+      setup_unifac%theta_ji = thetas_i(Qk, soup, molecules)
    end function setup_unifac
 end module yaeos__models_ge_group_contribution_unifac
