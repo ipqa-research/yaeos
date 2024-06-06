@@ -179,11 +179,11 @@ contains
       end do
    end subroutine residual_activity
 
-   subroutine combinatorial_activity(self, x, ln_gamma_c, dln_gamma_dx)
+   subroutine combinatorial_activity(self, x, ln_gamma_c, dln_gamma_c_dn)
       class(UNIFAC) :: self
       real(pr), intent(in) :: x(:)
       real(pr), intent(out) :: ln_gamma_c(:)
-      real(pr), optional, intent(out) :: dln_gamma_dx(:, :)
+      real(pr), optional, intent(out) :: dln_gamma_c_dn(:, :)
 
       real(pr) :: theta(size(x)), phi(size(x)), L(size(x))
       real(pr) :: V(size(x)), dVdx(size(x), size(x)), Vsum
@@ -194,7 +194,13 @@ contains
       real(pr) :: xq, xr
       integer :: i, j
 
-
+      ! ========================================================================
+      ! SINTEF variables
+      real(pr) :: n_t
+      real(pr) :: ln_gamma_c_fh(size(x)), ln_gamma_c_sg(size(x))
+      real(pr) :: dln_gamma_c_fh_dn(size(x), size(x))
+      real(pr) :: dln_gamma_c_sg_dn(size(x), size(x))
+      ! ------------------------------------------------------------------------
       associate (&
          q => self%molecules%surface_area,&
          r => self%molecules%volume,&
@@ -203,27 +209,23 @@ contains
          xq = dot_product(x, q)
          xr = dot_product(x, r)
 
-         V = r / xr
-         Vsum = 1/xr
-         F = q / xq
-         Fsum = 1/xq
+         n_t = sum(x)
 
-         theta = x * q / xq
-         phi = x * r / xr
-         L = 0.5_pr * z * (r - q) - (r - 1)
-         ln_gamma_c = log(phi/x) + z/2*q * log(theta/phi) + L - phi/x * sum(x*L)
+         ln_gamma_c_fh = log(r) - log(xr) + log(n_t) + 1 - n_t * r / xr
+         ln_gamma_c_sg = z / 2 * q * (-log((r * xq) / (q * xr)) - 1 + (r * xq) / (q * xr))
 
-         if (present(dln_gamma_dx)) then
-            dln_gamma_dx = 0
+         ln_gamma_c = ln_gamma_c_fh + ln_gamma_c_sg
+
+         if (present(dln_gamma_c_dn)) then
+            dln_gamma_c_dn = 0.0_pr
             do concurrent(i=1:size(x), j=1:size(x))
-               dVdx(i, j) = -r(i)*r(j)*Vsum**2
-               dFdx(i, j) = -q(i)*q(j)*Fsum**2
+               dln_gamma_c_fh_dn(i,j) = &
+                  - (r(i) + r(j)) / xr + 1 / n_t + n_t * r(i) * r(j) / xr**2
 
-               dln_gamma_dx(i, j) = -0.5_pr * z * q(i) * ( &
-                  (dVdx(i,j)/F(i) - V(i)*dFdx(i,j)/F(i)**2) * F(i)/V(i) &
-                  - dVdx(i, j)/F(i) + V(i) * dFdx(i,j)/F(i)**2 &
-                  ) &
-                  - dVdx(i, j) + dVdx(i, j)/V(i)
+               dln_gamma_c_sg_dn(i,j) = &
+                  z / 2 * (- q(i)*q(j)/xq + (q(i)*r(j) + q(j)*r(i)) / xr - r(i) * r(j) * xq / xr**2)
+
+               dln_gamma_c_dn(i,j) = dln_gamma_c_fh_dn(i,j) + dln_gamma_c_sg_dn(i,j)
             end do
          end if
       end associate

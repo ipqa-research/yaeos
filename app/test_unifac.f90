@@ -23,7 +23,7 @@ program main
    real(pr) :: theta(ng), dthetadx(ng, nc)
    real(pr) :: lngamma(nc), dlngamma_dn(nc, nc)
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
-   real(pr) :: ln_gamma_c(nc), dln_gamma_c_dx(nc, nc)
+   real(pr) :: ln_gamma_c(nc), dln_gamma_c_dn(nc, nc)
 
    real(pr) :: Ge, Gen(nc)
 
@@ -81,16 +81,18 @@ program main
    print *, " "
 
    ! Derivada composicional del gamma composicional
-   call combinatorial_activity(model, x, ln_gamma_c=ln_gamma_c, dln_gamma_dx=dln_gamma_c_dx)
+   call combinatorial_activity(model, x, ln_gamma_c=ln_gamma_c, dln_gamma_c_dn=dln_gamma_c_dn)
+   x = [20, 70, 10]
+   print *, x
    print *, "ln_gamma_c: ", ln_gamma_c, "|| expected:", [-0.017479483844929714, -0.004513178803947096, -0.059889298605798724]
    print *, " "
-   print *, "dln_gamma_c_dx: "
-   print *,  dln_gamma_c_dx
+   print *, "dln_gamma_c_dn: "
+   print *,  dln_gamma_c_dn
    print *, "expected:"
    print * , &
-   [-0.19246008142408844, 0.09081535722923606, -0.250787337756482, &
-   -0.24209034603567525, 0.11834477465278881, -0.34423273049817626, &
-   -0.1619751735465358, 0.07748513697668402, -0.21844561174370963]
+   [0.031692694440355496, -0.01793757017123132, 0.06217760231790814, &
+   -0.017937570171231723, 0.009591847252321026, -0.03126779042378376, &
+   0.0621776023179087, -0.03126779042378558, 0.09451932833068105]
    print *, " "
 
    ! ==========================================================================
