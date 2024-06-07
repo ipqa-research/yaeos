@@ -27,6 +27,8 @@ program main
 
    real(pr) :: Ge, Gen(nc)
 
+   real(pr) :: lambda_k(ng), lambda_ki(ng, nc)
+
 
    real(pr) :: lngamma_val(nc) = [0.84433780935070013, -0.19063836609197171, -2.9392550019369406]
    real(pr) :: ln_Gamma_val(ng) = [0.43090864639734738, 0.27439937388510327,  0.52442445057961795, -2.8793657040300329]
@@ -117,6 +119,24 @@ program main
    ! ==========================================================================
    ! Cosas que no dan
    ! --------------------------------------------------------------------------
+   call groups_lambda(model, x, T, lambda_k=lambda_k, lambda_ki=lambda_ki)
+
+   print *, "lamba_k"
+   print *, lambda_k
+   print *, " "
+
+   print *, "lamba_ki"
+   print *, lambda_ki(1, :)
+   print *, lambda_ki(2, :)
+   print *, lambda_ki(3, :)
+   print *, lambda_ki(4, :)
+   print *, " "
+
+
+
    call residual_activity(model, x, T, lngamma)
+
+   print *, "ln_gamma_r"
+   print *, lngamma
 
 end program main

@@ -71,7 +71,7 @@ module yaeos__models_ge_group_contribution_unifac
          class(PsiFunction) :: self
          class(Groups) :: systems_groups
          real(pr), intent(in) :: T
-         real(pr), intent(out) :: psi(:, :)
+         real(pr), optional, intent(out) :: psi(:, :)
          real(pr), optional, intent(out) :: dpsidt(:, :)
          real(pr), optional, intent(out) :: dpsidt2(:, :)
       end subroutine temperature_dependence
@@ -117,6 +117,50 @@ contains
       if (present(GeN)) Gen = ln_activity * (R*T)
    end subroutine excess_gibbs
 
+   subroutine Ar_combinatorial(self, n, Ar, dAr_dn, dAr_dn2)
+      class(UNIFAC) :: self
+
+      real(pr), intent(in) :: n(:)
+      real(pr), optional, intent(out) :: Ar
+      real(pr), optional, intent(out) :: dAr_dn(:)
+      real(pr), optional, intent(out) :: dAr_dn2(:,:)
+
+      real(pr) :: ln_gamma_c_fh(size(n)), ln_gamma_c_sg(size(n))
+      real(pr) :: dln_gamma_c_fh_dn(size(n), size(n))
+      real(pr) :: dln_gamma_c_sg_dn(size(n), size(n))
+      real(pr) :: nq, nr, n_t
+      integer :: i, j
+
+      associate (&
+         q => self%molecules%surface_area,&
+         r => self%molecules%volume,&
+         z => self%z &
+         )
+         nq = dot_product(n, q)
+         nr = dot_product(n, r)
+
+         n_t = sum(n)
+
+         ln_gamma_c_fh = log(r) - log(nr) + log(n_t) + 1 - n_t * r / nr
+         ln_gamma_c_sg = z/2*q*(-log((r*nq)/(q*nr)) - 1 + (r*nq)/(q*nr))
+
+         ln_gamma_c = ln_gamma_c_fh + ln_gamma_c_sg
+
+         if (present(dln_gamma_c_dn)) then
+            dln_gamma_c_dn = 0.0_pr
+            do concurrent(i=1:size(n), j=1:size(n))
+               dln_gamma_c_fh_dn(i,j) = &
+                  -(r(i) + r(j))/nr + 1/n_t + n_t*r(i)*r(j)/ nr**2
+
+               dln_gamma_c_sg_dn(i,j) = &
+                  z/2*(-q(i)*q(j)/nq + (q(i)*r(j) + q(j)*r(i))/nr - r(i)*r(j)*nq/nr**2)
+
+               dln_gamma_c_dn(i,j) = dln_gamma_c_fh_dn(i,j) + dln_gamma_c_sg_dn(i,j)
+            end do
+         end if
+      end associate
+   end subroutine Ar_combinatorial
+
    subroutine residual_activity(&
       self, n, T, ln_gamma_r, dln_gamma_r_dn, dln_gamma_r_dt, dln_gamma_r_dtn&
       )
@@ -129,17 +173,10 @@ contains
       real(pr), optional, intent(out) :: dln_gamma_r_dT(:)
       real(pr), optional, intent(out) :: dln_gamma_r_dTn(:, :)
 
-      real(pr) :: ln_G(self%ngroups)
-      real(pr) :: dln_Gdn(self%ngroups, size(n))
-
-      real(pr) :: ln_G_i(size(n), self%ngroups)
-      real(pr) :: dln_G_idn(size(n), self%ngroups, size(n))
-
       real(pr) :: lambda_k(self%ngroups), lambda_ki(self%ngroups, size(n))
       real(pr) :: psi_jk(self%ngroups, self%ngroups)
 
-      real(pr) :: xpure(size(n))
-      real(pr) :: lambda_sum, q_k
+      real(pr) :: lambda_sum, lambda_theta_psi_sum, q_k, thetas_j(self%ngroups)
 
       ! Indexes used for groups
       integer :: j, k
@@ -150,10 +187,11 @@ contains
       integer :: gi, v_k_alpha
 
       call groups_lambda(self, n, T, lambda_k=lambda_k, lambda_ki=lambda_ki, psi_jk=psi_jk)
-
+      call thetas(self, n, thetas_j)
 
       do alpha=1,size(n)
          lambda_sum = 0.0_pr
+         lambda_theta_psi_sum = 0.0_pr
 
          do k=1,size(self%molecules(alpha)%number_of_groups)
             gi = self%molecules(alpha)%groups_ids(k)
@@ -161,10 +199,17 @@ contains
 
             j = findloc(self%groups_stew%groups_ids, gi, dim=1)
             q_k = self%group_area(j)
+
+            lambda_sum = &
+               lambda_sum &
+               + v_k_alpha * q_k * (lambda_k(k) - lambda_ki(k, alpha))
+
+            lambda_theta_psi_sum = lambda_theta_psi_sum + &
+               v_k_alpha * q_k * (&
+               thetas_j(k) * psi_jk(k, j) / dot_product(thetas_j, psi_jk(:, k)) - 1)
          end do
 
-
-         ln_gamma_r(alpha) = 2.0
+         ln_gamma_r(alpha) = - lambda_sum - lambda_theta_psi_sum
       end do
 
       ! ln_G = 0
@@ -474,6 +519,9 @@ contains
       ! Output asked
       logical :: dx, dx2, dt, dt2
 
+      dt = .false.
+      dt2 = .false.
+
       ! ========================================================================
       ! Temperature dependance
       ! ------------------------------------------------------------------------
@@ -508,9 +556,13 @@ contains
       ! Lambda_ki
       ! ------------------------------------------------------------------------
       if (present(lambda_ki)) then
-         do concurrent (k=1:self%ngroups, i=1:size(self%molecules))
-            lambda_ki(k, i) = log(dot_product(self%theta_ji(:, i), psi(:, k)))
+         do k=1,self%ngroups
+            do i=1,size(self%molecules)
+               lambda_ki(k, i) = dot_product(self%theta_ji(:, i), psi(:, k))
+            end do
          end do
+
+         lambda_ki = log(lambda_ki)
       end if
    end subroutine groups_lambda
 
