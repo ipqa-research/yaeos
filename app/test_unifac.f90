@@ -102,33 +102,21 @@ program main
    print *, " "
 
    ! Thetas_i
-   ! call thetas_i(model, theta_ji)
-   ! print *, "Thetas_i: "
-   ! print *, theta_ji(1,1), theta_ji(1,2), theta_ji(1,3)
-   ! print *, theta_ji(2,1), theta_ji(2,2), theta_ji(2,3)
-   ! print *, theta_ji(3,1), theta_ji(3,2), theta_ji(3,3)
-   ! print *, theta_ji(4,1), theta_ji(4,2), theta_ji(4,3)
-   ! print *, "Expected: "
-   ! print *, [1., 0.32766615, 0.]
-   ! print *, [0., 0.20865533, 0.]
-   ! print *, [0., 0.46367852, 0.]
-   ! print *, [0., 0.        , 1.]
-   ! print *, " "
+   print *, "Thetas_i: "
+   print *, model%theta_ji(1,:)
+   print *, model%theta_ji(2,:)
+   print *, model%theta_ji(3,:)
+   print *, model%theta_ji(4,:)
+   print *, "Expected: "
+   print *, [1., 0.32766615, 0.]
+   print *, [0., 0.20865533, 0.]
+   print *, [0., 0.46367852, 0.]
+   print *, [0., 0.        , 1.]
+   print *, " "
 
    ! ==========================================================================
    ! Cosas que no dan
    ! --------------------------------------------------------------------------
-   call group_big_gamma(model, x, T, ln_Gamma, dln_gammadt=dln_Gammadt)
-   call group_big_gamma(model, x, T+dx, dln_Gammadt_num)
-
-   print *, "dlnGamma_dT:"
-   print *, "numm: ", (dln_Gammadt_num - ln_gamma)/dx
-   print *, "anal: ", dln_gammadt
-
-   print *, "dlnGamma_dx"
-   call group_big_gamma(model, x, T, ln_gamma, dln_Gammadx=dln_Gammadn)
-   print *, dln_Gammadn
-
-   call residual_activity(model, x, T, lngamma, dln_gamma_dn=dlngamma_dn)
+   call residual_activity(model, x, T, lngamma)
 
 end program main

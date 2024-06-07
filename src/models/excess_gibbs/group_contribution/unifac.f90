@@ -118,67 +118,97 @@ contains
    end subroutine excess_gibbs
 
    subroutine residual_activity(&
-      self, x, T, ln_gamma_r, dln_gamma_dn, dln_gamma_dt, dln_gamma_dtn&
+      self, n, T, ln_gamma_r, dln_gamma_r_dn, dln_gamma_r_dt, dln_gamma_r_dtn&
       )
       class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:)
+
+      real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: T
       real(pr), intent(out) :: ln_gamma_r(:)
-      real(pr), optional, intent(out) :: dln_gamma_dn(:, :)
-      real(pr), optional, intent(out) :: dln_gamma_dT(:)
-      real(pr), optional, intent(out) :: dln_gamma_dTn(:, :)
+      real(pr), optional, intent(out) :: dln_gamma_r_dn(:, :)
+      real(pr), optional, intent(out) :: dln_gamma_r_dT(:)
+      real(pr), optional, intent(out) :: dln_gamma_r_dTn(:, :)
 
       real(pr) :: ln_G(self%ngroups)
-      real(pr) :: dln_Gdn(self%ngroups, size(x))
+      real(pr) :: dln_Gdn(self%ngroups, size(n))
 
-      real(pr) :: ln_G_i(size(x), self%ngroups)
-      real(pr) :: dln_G_idn(size(x), self%ngroups, size(x))
+      real(pr) :: ln_G_i(size(n), self%ngroups)
+      real(pr) :: dln_G_idn(size(n), self%ngroups, size(n))
 
-      real(pr) :: xpure(size(x))
-      integer :: i, j, k, nc, gi
+      real(pr) :: lambda_k(self%ngroups), lambda_ki(self%ngroups, size(n))
+      real(pr) :: psi_jk(self%ngroups, self%ngroups)
 
-      ln_G = 0
-      ln_G_i = 0
-      ln_gamma_r = 0
+      real(pr) :: xpure(size(n))
+      real(pr) :: lambda_sum, q_k
 
-      if (present(dln_gamma_dn)) dln_gamma_dn = 0
-      nc = size(self%molecules)
+      ! Indexes used for groups
+      integer :: j, k
 
-      call group_big_gamma(self, x, T, ln_G, dln_gammadx=dln_Gdn)
+      ! Indexes used for components
+      integer :: i, l, alpha
 
-      do i=1,nc
-         xpure = 0
-         xpure(i) = 1
-         call group_big_gamma(&
-            self, xpure, T, ln_G_i(i, :), dln_Gammadx=dln_G_idn(i, :, :) &
-            )
-      end do
+      integer :: gi, v_k_alpha
 
-      do i=1,nc
-         do k=1,size(self%molecules(i)%groups_ids)
-            ! Get the index of the group k of molecule i in the whole stew of
-            ! groups.
-            ! TODO: These kind of `findloc` maybe can be optimized.
-            gi = findloc(&
-               self%groups_stew%groups_ids - self%molecules(i)%groups_ids(k), &
-               0, dim=1 &
-               )
+      call groups_lambda(self, n, T, lambda_k=lambda_k, lambda_ki=lambda_ki, psi_jk=psi_jk)
 
-            ln_gamma_r(i) = ln_gamma_r(i) &
-               + self%molecules(i)%number_of_groups(k) &
-               * (ln_G(gi) - ln_G_i(i, gi))
 
-            if (present(dln_gamma_dn)) then
-               ! Compositional derivative
-               do j=1,i
-                  dln_gamma_dn(i, j) = dln_gamma_dn(i, j) &
-                     + self%molecules(i)%number_of_groups(k) &
-                     * (dln_Gdn(gi, j) - dln_G_idn(i, gi, j))
-                  dln_gamma_dn(j, i) = dln_gamma_dn(i, j)
-               end do
-            end if
+      do alpha=1,size(n)
+         lambda_sum = 0.0_pr
+
+         do k=1,size(self%molecules(alpha)%number_of_groups)
+            gi = self%molecules(alpha)%groups_ids(k)
+            v_k_alpha = self%molecules(alpha)%number_of_groups(k)
+
+            j = findloc(self%groups_stew%groups_ids, gi, dim=1)
+            q_k = self%group_area(j)
          end do
+
+
+         ln_gamma_r(alpha) = 2.0
       end do
+
+      ! ln_G = 0
+      ! ln_G_i = 0
+      ! ln_gamma_r = 0
+
+      ! if (present(dln_gamma_dn)) dln_gamma_dn = 0
+      ! nc = size(self%molecules)
+
+      ! call group_big_gamma(self, x, T, ln_G, dln_gammadx=dln_Gdn)
+
+      ! do i=1,nc
+      !    xpure = 0
+      !    xpure(i) = 1
+      !    call group_big_gamma(&
+      !       self, xpure, T, ln_G_i(i, :), dln_Gammadx=dln_G_idn(i, :, :) &
+      !       )
+      ! end do
+
+      ! do i=1,nc
+      !    do k=1,size(self%molecules(i)%groups_ids)
+      !       ! Get the index of the group k of molecule i in the whole stew of
+      !       ! groups.
+      !       ! TODO: These kind of `findloc` maybe can be optimized.
+      !       gi = findloc(&
+      !          self%groups_stew%groups_ids - self%molecules(i)%groups_ids(k), &
+      !          0, dim=1 &
+      !          )
+
+      !       ln_gamma_r(i) = ln_gamma_r(i) &
+      !          + self%molecules(i)%number_of_groups(k) &
+      !          * (ln_G(gi) - ln_G_i(i, gi))
+
+      !       if (present(dln_gamma_dn)) then
+      !          ! Compositional derivative
+      !          do j=1,i
+      !             dln_gamma_dn(i, j) = dln_gamma_dn(i, j) &
+      !                + self%molecules(i)%number_of_groups(k) &
+      !                * (dln_Gdn(gi, j) - dln_G_idn(i, gi, j))
+      !             dln_gamma_dn(j, i) = dln_gamma_dn(i, j)
+      !          end do
+      !       end if
+      !    end do
+      ! end do
    end subroutine residual_activity
 
    subroutine combinatorial_activity(self, n, ln_gamma_c, dln_gamma_c_dn)
@@ -261,7 +291,7 @@ contains
       class(UNIFACPsi) :: self !! \(\psi\) function
       class(Groups) :: systems_groups !! Groups in the system
       real(pr), intent(in) :: T !! Temperature
-      real(pr), intent(out) :: psi(:, :) !! \(\psi\)
+      real(pr), optional, intent(out) :: psi(:, :) !! \(\psi\)
       real(pr), optional, intent(out) :: dpsidt(:, :)
       real(pr), optional, intent(out) :: dpsidt2(:, :)
 
@@ -274,7 +304,8 @@ contains
       do concurrent(i=1:ngroups, j=1:ngroups)
          ig = systems_groups%groups_ids(i)
          jg = systems_groups%groups_ids(j)
-         psi(i, j) = exp(-self%Eij(ig, jg) / T)
+         if (present(psi)) &
+            psi(i, j) = exp(-self%Eij(ig, jg) / T)
          if (present(dpsidt)) &
             dpsidt(i, j) = self%Eij(ig, jg) * psi(i, j) / T**2
          if (present(dpsidt2)) &
@@ -335,55 +366,6 @@ contains
          if (present(total_groups_area)) total_groups_area = total_area
       end associate
    end subroutine thetas
-
-      function thetas_i(group_area, stew, molecules) result(theta_ji)
-      real(pr), intent(in) :: group_area(:) !! Group k areas
-      type(Groups), intent(in) :: stew !! All the groups present in the system
-      type(Groups), intent(in) :: molecules(:) !! Molecules
-      real(pr), allocatable :: theta_ji(:, :) !! Group j area fraction on molecule i
-
-      allocate(theta_ji(stew%number_of_groups, size(molecules)))
-      
-      real(pr), allocatable :: total_area_i(size(molecules))
-      real(pr) :: qki_contribution
-
-      integer :: gi !! group k id
-      integer :: i, j, k
-
-      theta_ji = 0.0_pr
-      total_area_i = 0.0_pr
-
-      ! Obtain the total area of each molecule
-      do i=1,size(molecules)
-         do k=1,size(molecules(i)%number_of_groups)
-            gi = molecules(i)%groups_ids(k)
-
-            ! Locate group k in the stew ordering (position j of group k).
-            j = findloc(stew%groups_ids, gi, dim=1)
-
-            ! Contribution of the group k to the molecule i area.
-            qki_contribution = (&
-               group_area(gi) * molecules(i)%number_of_groups(k) &
-               )
-
-            ! Adding to the total area of each molecule
-            total_area_i(i) = total_area_i(i) + qki_contribution
-         end do
-      end do
-
-      ! Calculate the fraction of each group on each molecule
-      theta_ji = 0.0_pr
-
-      do i=1,size(molecules)
-         do k=1,size(molecules(i)%number_of_groups)
-            gi = molecules(i)%groups_ids(k)
-
-            j = findloc(stew%groups_ids, gi, dim=1)
-
-            theta_ji(j, i) = group_area(gi) * molecules(i)%number_of_groups(k) / total_area_i(i)
-         end do
-      end do
-   end function thetas_i
 
    subroutine group_area_fraction(&
       self, x, &
@@ -455,31 +437,82 @@ contains
       end associate
    end subroutine group_area_fraction
 
-   subroutine groups_lambda_k(&
+   subroutine groups_lambda(&
       self, n, T, &
       lambda_k, dlambda_k_dT, dlambda_k_dT2, &
       lambda_ki, dlambda_ki_dT, dlambda_ki_dT2, &
-      dlambda_k_dn, dlambda_k_dn2)
+      dlambda_k_dn, dlambda_k_dn2, psi_jk)
       class(UNIFAC) :: self
+
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: T
       real(pr), optional, intent(out) :: lambda_k(:)
       real(pr), optional, intent(out) :: dlambda_k_dT(:)
       real(pr), optional, intent(out) :: dlambda_k_dT2(:)
-      real(pr), optional, intent(out) :: lambda_ki(:)
-      real(pr), optional, intent(out) :: dlambda_ki_dT(:)
-      real(pr), optional, intent(out) :: dlambda_ki_dT2(:)
       real(pr), optional, intent(out) :: dlambda_k_dn(:, :)
       real(pr), optional, intent(out) :: dlambda_k_dn2(:, :, :)
+      real(pr), optional, intent(out) :: lambda_ki(:, :)
+      real(pr), optional, intent(out) :: dlambda_ki_dT(:)
+      real(pr), optional, intent(out) :: dlambda_ki_dT2(:)
+      real(pr), optional, intent(out) :: psi_jk(:, :)
+
+      ! psi
+      real(pr) :: psi(self%ngroups,self%ngroups)
+      real(pr) :: dpsidt(self%ngroups, self%ngroups)
+      real(pr) :: dpsidt2(self%ngroups,self%ngroups)
+
+      ! Total thetas
+      real(pr) :: theta_j(self%ngroups), total_groups_area
+      real(pr) :: thtea_dot_psi(self%ngroups)
 
       ! Indexes used for groups
       integer :: j, k
 
       ! Indexes used for components
-      integer :: i, l
+      integer :: i
 
+      ! Output asked
+      logical :: dx, dx2, dt, dt2
 
-   end subroutine groups_lambda_k
+      ! ========================================================================
+      ! Temperature dependance
+      ! ------------------------------------------------------------------------
+      if (dt2) then
+         dlambda_k_dT = 0
+         dlambda_k_dT2 = 0
+         dlambda_ki_dT = 0
+         dlambda_ki_dT2 = 0
+         call self%psi_function%psi(self%groups_stew, T, psi, dpsidt, dpsidt2)
+      else if(dt) then
+         dlambda_k_dT = 0
+         dlambda_ki_dT = 0
+         call self%psi_function%psi(self%groups_stew, T, psi, dpsidt)
+      else
+         call self%psi_function%psi(self%groups_stew, T, psi)
+      end if
+
+      if (present(psi_jk)) psi_jk = psi
+
+      ! ========================================================================
+      ! Lambda_k
+      ! ------------------------------------------------------------------------
+      if (present(lambda_k)) then
+         call thetas(self, n, theta_j, total_groups_area)
+
+         do k=1,self%ngroups
+            lambda_k(k) = log(dot_product(theta_j, psi(:, k)))
+         end do
+      end if
+
+      ! ========================================================================
+      ! Lambda_ki
+      ! ------------------------------------------------------------------------
+      if (present(lambda_ki)) then
+         do concurrent (k=1:self%ngroups, i=1:size(self%molecules))
+            lambda_ki(k, i) = log(dot_product(self%theta_ji(:, i), psi(:, k)))
+         end do
+      end if
+   end subroutine groups_lambda
 
    subroutine group_big_gamma(&
       self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2&
@@ -616,6 +649,55 @@ contains
       end do
    end subroutine group_big_gamma
 
+   function thetas_i(nm, ng, group_area, stew, molecules) result(theta_ji)
+      integer, intent(in) :: nm !! Number of molecules
+      integer, intent(in) :: ng !! Number of groups
+      real(pr), intent(in) :: group_area(:) !! Group k areas
+      type(Groups), intent(in) :: stew !! All the groups present in the system
+      type(Groups), intent(in) :: molecules(:) !! Molecules
+      real(pr) :: theta_ji(ng, nm) !! Group j area fraction on molecule i
+
+      real(pr) :: total_area_i(nm)
+      real(pr) :: qki_contribution
+
+      integer :: gi !! group k id
+      integer :: i, j, k
+
+      theta_ji = 0.0_pr
+      total_area_i = 0.0_pr
+
+      ! Obtain the total area of each molecule
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            ! Locate group k in the stew ordering (position j of group k).
+            j = findloc(stew%groups_ids, gi, dim=1)
+
+            ! Contribution of the group k to the molecule i area.
+            qki_contribution = (&
+               group_area(gi) * molecules(i)%number_of_groups(k) &
+               )
+
+            ! Adding to the total area of each molecule
+            total_area_i(i) = total_area_i(i) + qki_contribution
+         end do
+      end do
+
+      ! Calculate the fraction of each group on each molecule
+      theta_ji = 0.0_pr
+
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            j = findloc(stew%groups_ids, gi, dim=1)
+
+            theta_ji(j, i) = group_area(gi) * molecules(i)%number_of_groups(k) / total_area_i(i)
+         end do
+      end do
+   end function thetas_i
+
    type(UNIFAC) function setup_unifac(molecules, Eij, Qk, Rk)
       !! UNIFAC model initialization.
       type(Groups), intent(in) :: molecules(:) !! Molecules
@@ -674,6 +756,7 @@ contains
       setup_unifac%psi_function = psi_function
       setup_unifac%group_area = Qk
       setup_unifac%group_volume = Rk
-      setup_unifac%theta_ji = thetas_i(Qk, soup, molecules)
+      setup_unifac%theta_ji = thetas_i(&
+         size(molecules), size(soup%number_of_groups), Qk, soup, molecules)
    end function setup_unifac
 end module yaeos__models_ge_group_contribution_unifac
