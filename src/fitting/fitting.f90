@@ -6,7 +6,7 @@ module yaeos__fitting
    use forbear, only: bar_object
    implicit none
 
-   type :: FittingProblem
+   type, abstract :: FittingProblem
       !! # Fitting problem setting
       !!
       !! # Description
@@ -17,27 +17,29 @@ module yaeos__fitting
       real(pr) :: solver_tolerance = 1e-9_pr
       real(pr), allocatable :: parameter_step(:)
 
-      class(ArModel), allocatable :: initial_model
+      class(ArModel), allocatable :: model
 
       type(EquilibriaState), allocatable :: experimental_points(:)
-      procedure(model_from_X), nopass, pointer :: get_model_from_X
       logical :: verbose = .false.
+   contains
+      procedure(model_from_X), deferred :: get_model_from_X
    end type FittingProblem
 
    abstract interface
-      function model_from_X(X, problem)
+      function model_from_X(problem, X)
          !! Function that returns a setted model from the parameters vector
          import ArModel, FittingProblem, pr
-         real(pr), intent(in) :: X(:)
          class(FittingProblem), intent(in) :: problem
+         real(pr), intent(in) :: X(:)
+         
          class(ArModel), allocatable :: model_from_X
       end function model_from_X
    end interface
 
-   class(ArModel), allocatable :: model
-   type(bar_object) :: bar
-   integer :: count
-   integer, parameter :: max_evals = 10000
+   type(bar_object), private :: bar
+   integer, private :: count
+
+   class(ArModel), private, allocatable :: model
 
 contains
 
@@ -46,7 +48,7 @@ contains
       use nlopt_callback, only: nlopt_func, create_nlopt_func
 
       real(pr), intent(in out) :: X(:) !! Vector of parameters to fit
-      type(FittingProblem) :: func_data !! Parametrization details
+      class(FittingProblem) :: func_data !! Parametrization details
 
       real(pr) :: dx(size(X))
 
@@ -96,11 +98,11 @@ contains
       real(pr) :: p_exp, t_exp
 
       count = count + 1
-      call bar%update(current=real(count,pr)/max_evals)
+      call bar%update(current=real(count,pr)/(count + 100))
 
       fobj = 0
       select type(func_data)
-       type is(FittingProblem)
+       class is(FittingProblem)
          fobj = error_function(X, func_data)
       end select
       write(2, *) X, fobj
@@ -116,11 +118,9 @@ contains
       type(EquilibriaState) :: model_point !! Each solved point
       type(EquilibriaState) :: exp_point
 
-      class(ArModel), allocatable :: model
-
       integer :: i
 
-      model = func_data%get_model_from_X(X, func_data)
+      model = func_data%get_model_from_X(X)
 
       do i=1, size(func_data%experimental_points)
          exp_point = func_data%experimental_points(i)
