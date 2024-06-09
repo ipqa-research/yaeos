@@ -70,6 +70,7 @@ contains
          incipient = "liquid"
          main = "vapor"
        case("liquid-liquid")
+         k = y/z
          incipient = "liquid"
          main = "liquid"
       end select
@@ -175,6 +176,7 @@ contains
          incipient = "liquid"
          main = "vapor"
        case("liquid-liquid")
+         k = y/z
          incipient = "liquid"
          main = "liquid"
       end select
