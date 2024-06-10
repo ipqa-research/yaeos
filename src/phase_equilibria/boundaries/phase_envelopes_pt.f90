@@ -93,7 +93,7 @@ contains
        case("bubble", "liquid-liquid")
          X(:nc) = log(first_point%y/z)
        case("dew")
-         X(:nc) = 1 - log(first_point%y/z)
+         X(:nc) = log(first_point%x/z)
       end select
 
       X(nc+1) = log(first_point%T)
@@ -274,7 +274,7 @@ contains
 
       write(unit, "(A, /)") "#" // pt2%points(1)%kind
 
-      do i=1, size(pt2%points)
+      do i=1, size(pt2%points)-1
          ! Change label if passed a critical point
          if (any(cps - i == 0)) then
             write(unit, "(/, /)")
