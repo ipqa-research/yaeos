@@ -23,9 +23,9 @@ program main
    real(pr) :: theta(ng), theta_ji(ng, nc), dthetadx(ng, nc)
    real(pr) :: lngamma(nc), dlngamma_dn(nc, nc)
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
-   real(pr) :: ln_gamma_c(nc), dln_gamma_c_dn(nc, nc)
+   real(pr) :: Ge_c, dGe_c_dn(nc), dGe_c_dn2(nc, nc)
 
-   real(pr) :: Ge, Gen(nc)
+   real(pr) :: Ge, Gen(nc), Ge_r, dGe_r_dn(nc)
 
    real(pr) :: lambda_k(ng), lambda_ki(ng, nc)
 
@@ -64,37 +64,47 @@ program main
    print *,  "Cosas que dan"
    print *, "=================================================================="
    ! Coeficientes de actividad
-   call model%ln_activity_coefficient(x, T, lngamma)
-   print *, "lngamma: ", maxval(abs(lngamma - lngamma_val)) < 1e-7
+   !call model%ln_activity_coefficient(x, T, lngamma)
+   !print *, "lngamma: ", maxval(abs(lngamma - lngamma_val)) < 1e-7
+   !print *, " "
+
+   ! Cosas del objeto
+   print *, "vij"
+   print *, model%vij(1,:)
+   print *, model%vij(2,:)
+   print *, model%vij(3,:)
    print *, " "
 
-   ! Valor de los big gamma del residual
-   call group_big_gamma(model, x, T, ln_Gamma=ln_Gamma)
-   print *, "ln_Gamma: ", maxval(abs(ln_Gamma - ln_Gamma_val)) < 1e-7
+   print * , "qij"
+   print *, model%qij(1,:)
+   print *, model%qij(2,:)
+   print *, model%qij(3,:)
    print *, " "
 
    ! Ge
    call model%excess_gibbs(x, T, Ge=Ge, Gen=Gen)
-   print *, "Ge: ", Ge
+   print *, "Ge: ", Ge, " expected: ", -3.223992676822129
    print *, " "
 
    ! Gen
    print *, "Gen: ", Gen
    print *, " "
 
-   ! Derivada composicional del gamma composicional
-   call combinatorial_activity(model, x, ln_gamma_c=ln_gamma_c, dln_gamma_c_dn=dln_gamma_c_dn)
-   x = [20, 70, 10]
-   print *, x
-   print *, "ln_gamma_c: ", ln_gamma_c, "|| expected:", [-0.017479483844929714, -0.004513178803947096, -0.059889298605798724]
+   ! Derivada composicional del gamma combinatorial
+   call Ge_combinatorial(model, x, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2)
+   print *, "Ge_c:", Ge_c, " Expected: ", -0.012644051792328782
    print *, " "
-   print *, "dln_gamma_c_dn: "
-   print *,  dln_gamma_c_dn
+   print *, "dGe_c_dn: ", dGe_c_dn
+   print *, "expected:", [-0.017479483844929714, -0.004513178803947096, -0.059889298605798724]
+   print *, " "
+   print *, "dGe_c_dn2: "
+   print *,  dGe_c_dn2(1, :)
+   print *,  dGe_c_dn2(2, :)
+   print *,  dGe_c_dn2(3, :)
    print *, "expected:"
-   print * , &
-      [0.031692694440355496, -0.01793757017123132, 0.06217760231790814, &
-      -0.017937570171231723, 0.009591847252321026, -0.03126779042378376, &
-      0.0621776023179087, -0.03126779042378558, 0.09451932833068105]
+   print *, [0.031692694440355496, -0.01793757017123132, 0.06217760231790814]
+   print *, [-0.017937570171231723, 0.009591847252321026, -0.03126779042378376]
+   print *, [0.0621776023179087, -0.03126779042378558, 0.09451932833068105]
    print *, " "
 
    ! Thetas totales
@@ -105,38 +115,21 @@ program main
 
    ! Thetas_i
    print *, "Thetas_i: "
-   print *, model%theta_ji(1,:)
-   print *, model%theta_ji(2,:)
-   print *, model%theta_ji(3,:)
-   print *, model%theta_ji(4,:)
+   print *, model%thetas_ij(1,:)
+   print *, model%thetas_ij(2,:)
+   print *, model%thetas_ij(3,:)
    print *, "Expected: "
-   print *, [1., 0.32766615, 0.]
-   print *, [0., 0.20865533, 0.]
-   print *, [0., 0.46367852, 0.]
-   print *, [0., 0.        , 1.]
+   print *, [1., 0., 0., 0.]
+   print *, [0.32766615, 0.20865533, 0.46367852, 0.]
+   print *, [0., 0., 0., 1.]
    print *, " "
 
-   ! ==========================================================================
-   ! Cosas que no dan
-   ! --------------------------------------------------------------------------
-   call groups_lambda(model, x, T, lambda_k=lambda_k, lambda_ki=lambda_ki)
-
-   print *, "lamba_k"
-   print *, lambda_k
+   ! Ge residual
+   call Ge_residual(model, x, T, Ge=Ge_r, dGe_dn=dGe_r_dn)
+   print *, "Ge_r"
+   print *, Ge_r, "Expected: ", -0.2458607427956044
    print *, " "
 
-   print *, "lamba_ki"
-   print *, lambda_ki(1, :)
-   print *, lambda_ki(2, :)
-   print *, lambda_ki(3, :)
-   print *, lambda_ki(4, :)
-   print *, " "
-
-
-
-   call residual_activity(model, x, T, lngamma)
-
-   print *, "ln_gamma_r"
-   print *, lngamma
-
+   print *, "dGe_r_dn"
+   print *, dGe_r_dn
 end program main
