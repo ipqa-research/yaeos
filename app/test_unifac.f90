@@ -86,10 +86,6 @@ program main
    print *, "Ge: ", Ge, " expected: ", -3.223992676822129
    print *, " "
 
-   ! Gen
-   print *, "Gen: ", Gen
-   print *, " "
-
    ! Derivada composicional del gamma combinatorial
    call Ge_combinatorial(model, x, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2)
    print *, "Ge_c:", Ge_c, " Expected: ", -0.012644051792328782
@@ -132,4 +128,10 @@ program main
 
    print *, "dGe_r_dn"
    print *, dGe_r_dn
+   print *, " "
+
+   ! Gen
+   print *, "Gen: ", Gen
+   print *, "Expected: ", [0.84433781, -0.19063836, -2.93925506]
+   print *, " "
 end program main
