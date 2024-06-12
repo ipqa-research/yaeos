@@ -25,7 +25,7 @@ program main
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
    real(pr) :: Ge_c, dGe_c_dn(nc), dGe_c_dn2(nc, nc)
 
-   real(pr) :: Ge, Gen(nc), Ge_r, dGe_r_dn(nc)
+   real(pr) :: Ge, Gen(nc), Gen_tp(nc), Ge_r, dGe_r_dn(nc)
 
    real(pr) :: lambda_k(ng), lambda_ki(ng, nc)
 
@@ -75,10 +75,8 @@ program main
    print *, model%vij(3,:)
    print *, " "
 
-   print * , "qij"
-   print *, model%qij(1,:)
-   print *, model%qij(2,:)
-   print *, model%qij(3,:)
+   print *, "qk"
+   print *, model%qk
    print *, " "
 
    ! Ge
@@ -120,18 +118,20 @@ program main
    print *, [0., 0., 0., 1.]
    print *, " "
 
+   ! qks
+   print *, "qks: "
+   print *, model%qk
+   print *, " "
+
    ! Ge residual
-   call Ge_residual(model, x, T, Ge=Ge_r, dGe_dn=dGe_r_dn)
+   call Ge_residual(model, x, T, Ge=Ge_r, dGe_dn=Gen)
    print *, "Ge_r"
    print *, Ge_r, "Expected: ", -0.2458607427956044
    print *, " "
 
    print *, "dGe_r_dn"
-   print *, dGe_r_dn
-   print *, " "
-
-   ! Gen
-   print *, "Gen: ", Gen
-   print *, "Expected: ", [0.84433781, -0.19063836, -2.93925506]
+   print *, Gen
+   print *, "Expected: "
+   print *, [0.8618172961999062, -0.18612517953009416, -2.8793657636451973]
    print *, " "
 end program main

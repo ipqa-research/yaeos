@@ -40,8 +40,8 @@ module yaeos__models_ge_group_contribution_unifac
       !! Area fractions of groups j (row) on molecules i (column)
       real(pr), allocatable :: vij(:,:)
       !! Ocurrences of each group j on each molecule i
-      real(pr), allocatable :: qij(:,:)
-      !! Area of each group j on each molecule i
+      real(pr), allocatable :: qk(:)
+      !! Area of each group k
       class(PsiFunction), allocatable :: psi_function
       !! Temperature dependance function of the model
       type(Groups), allocatable :: molecules(:)
@@ -124,9 +124,9 @@ contains
          Ge =  (Ge_c + Ge_r) * (R*T)
       end if
 
-      if (present(GeN)) then 
+      if (present(GeN)) then
          call Ge_combinatorial(self, n, Ge_c, dGe_c_dn)
-         call Ge_residual(self, n, T, Ge_r, dGe_r_dn)
+         call Ge_residual(self, n, T, Ge_r, dGe_dn=dGe_r_dn)
          Gen = (dGe_c_dn + dGe_r_dn)
       end if
    end subroutine excess_gibbs
@@ -201,7 +201,7 @@ contains
       real(pr), optional, intent(out) :: dGe_dTn(:,:)
 
       ! Thetas variables
-      real(pr) :: theta_j(self%ngroups), total_groups_area
+      real(pr) :: theta_j(self%ngroups)
 
       ! Ejk variables
       real(pr) :: Ejk(self%ngroups,self%ngroups)
@@ -234,14 +234,14 @@ contains
       real(pr) :: sum_nlvlj(self%ngroups)
       real(pr) :: sum_nivikQk
 
-      call thetas(self, n, theta_j, total_groups_area)
+      call thetas(self, n, theta_j)
       call self%psi_function%psi(self%groups_stew, T, Ejk, dEjk_dt, dEjk_dt2)
 
       ! ========================================================================
       ! Auxiliars
       ! ------------------------------------------------------------------------
       do i=1,size(self%molecules)
-         sum_vikQk(i) = sum(self%vij(i,:) * self%qij(i,:))
+         sum_vikQk(i) = sum(self%vij(i,:) * self%qk)
       end do
       sum_nivikQk = sum(n * sum_vikQk)
 
@@ -261,7 +261,7 @@ contains
       if (present(dGe_dn) .or. present(dGe_dTn) .or. present(dGe_dn2)) then
          do i=1,size(self%molecules)
             do k=1,self%ngroups
-               sum_vijQjEjk(i,k) = sum(self%vij(i,:) * self%qij(i,:) * Ejk(:,k))
+               sum_vijQjEjk(i,k) = sum(self%vij(i,:) * self%qk * Ejk(:,k))
             end do
          end do
 
@@ -288,9 +288,9 @@ contains
       ! Ge
       ! ------------------------------------------------------------------------
       do i=1,size(self%molecules)
-         sum_vQLambda(i) = sum(self%vij(i,:) * self%qij(i,:) * (lambda_k - lambda_ik(i,:)))
+         sum_vQLambda(i) = sum(self%vij(i,:) * self%qk * (lambda_k - lambda_ik(i,:)))
       end do
-      
+
       if (present(Ge)) then
          Ge = - sum(n * sum_vQLambda)
       end if
@@ -300,7 +300,7 @@ contains
       ! ------------------------------------------------------------------------
       if (present(dGe_dn)) then
          do i=1,size(self%molecules)
-            tempsum(i) = sum(sum_nlvlj * self%qij(i, :) * dlambda_k_dn(i,:))
+            tempsum(i) = sum(sum_nlvlj * self%qk * dlambda_k_dn(i,:))
          end do
          dGe_dn = -sum_vQLambda - tempsum
       end if
@@ -363,14 +363,12 @@ contains
 
    end subroutine UNIFAC_temperature_dependence
 
-   subroutine thetas(self, n, theta_j, total_groups_area)
+   subroutine thetas(self, n, theta_j)
       type(UNIFAC) :: self
       real(pr), intent(in) :: n(:)
 
       real(pr), intent(out) :: theta_j(:)
       !! Group j total area fraction
-      real(pr), optional, intent(out) :: total_groups_area
-      !! Total groups area
 
       integer :: j, l, m !! A fines practicos i y l son lo mismo aca.
       integer :: gi !! group m id
@@ -389,19 +387,11 @@ contains
          ga = 0.0_pr
 
          do l=1,size(molecs)
-            do m=1,size(molecs(l)%number_of_groups)
-               gi = molecs(l)%groups_ids(m)
-
-               ! Locate group m in the stew ordering (position j of group m).
-               j = findloc(stew%groups_ids, gi, dim=1)
-
-               ! Contribution of the molecule l to the group j area.
-               qjl_contribution = (&
-                  n(l) * group_area(gi) * molecs(l)%number_of_groups(m) &
-                  )
+            do m=1,size(self%qk)
+               qjl_contribution = n(l) * self%qk(m) * self%vij(l,m)
 
                ! Add the contribution to the contributions storing vector.
-               ga(j) = ga(j) + qjl_contribution
+               ga(m) = ga(m) + qjl_contribution
 
                ! Adding to the total groups area.
                total_area = total_area + qjl_contribution
@@ -409,9 +399,6 @@ contains
          end do
 
          theta_j = ga / total_area
-
-         ! Return total_groups_area if asked (needed on lambda derivatives)
-         if (present(total_groups_area)) total_groups_area = total_area
       end associate
    end subroutine thetas
 
@@ -476,6 +463,7 @@ contains
 
       integer, allocatable :: vij(:, :)
       real(pr), allocatable :: qij(:,:)
+      real(pr), allocatable :: qks(:)
 
       integer :: gi, i, j, k
 
@@ -519,10 +507,11 @@ contains
          end do
       end associate
       ! ========================================================================
-      ! Build a matrixes vij and Qij
+      ! Build a matrixes vij and vector qk
       ! ------------------------------------------------------------------------
       allocate(vij(size(molecules), size(soup%number_of_groups)))
       allocate(qij(size(molecules), size(soup%number_of_groups)))
+      allocate(qks(size(soup%number_of_groups)))
 
       vij = 0
       qij = 0.0_pr
@@ -535,6 +524,10 @@ contains
 
             vij(i,j) = molecules(i)%number_of_groups(k)
             qij(i,j) = Qk(gi)
+
+            if (Qk(gi) /= 0) then
+               qks(j) = Qk(gi)
+            end if
          end do
       end do
       ! ========================================================================
@@ -548,6 +541,6 @@ contains
       setup_unifac%thetas_ij = thetas_i(&
          size(molecules), size(soup%number_of_groups), Qk, soup, molecules)
       setup_unifac%vij = vij
-      setup_unifac%qij = qij
+      setup_unifac%qk = qks
    end function setup_unifac
 end module yaeos__models_ge_group_contribution_unifac
