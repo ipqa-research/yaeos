@@ -30,6 +30,8 @@ module yaeos__models_ge_group_contribution_unifac
       !! being them included in particular molecules.
       integer :: ngroups
       !! Total number of individual groups
+      integer :: nmolecules
+      !! Total number of molecules
       real(pr) :: z = 10
       !! Model constant
       real(pr), allocatable :: group_area(:)
@@ -85,9 +87,8 @@ contains
 
    subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       !! Excess Gibbs and derivs procedure
-      use iso_fortran_env, only: error_unit
       class(UNIFAC), intent(in) :: self !! Model
-      real(pr), intent(in) ::n(:) !! Moles vector
+      real(pr), intent(in) :: n(:) !! Moles vector
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(out) :: Ge !! Excess Gibbs
       real(pr), optional, intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
@@ -104,13 +105,11 @@ contains
 
       integer :: i, j, nc
 
-      write(error_unit, *) "WARN: UNIFAC not fully implemented yet"
-
       nt = sum(n)
 
       x = n/nt
 
-      nc = size(self%molecules)
+      nc = self%nmolecules
 
       ln_activity = 0
 
@@ -134,20 +133,20 @@ contains
    subroutine Ge_combinatorial(self, n, Ge, dGe_dn, dGe_dn2)
       class(UNIFAC) :: self
 
-      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: n(self%nmolecules)
       real(pr), optional, intent(out) :: Ge
-      real(pr), optional, intent(out) :: dGe_dn(:)
-      real(pr), optional, intent(out) :: dGe_dn2(:,:)
+      real(pr), optional, intent(out) :: dGe_dn(self%nmolecules)
+      real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules,self%nmolecules)
 
       ! Flory-Huggins variables
       real(pr) :: Ge_fh
-      real(pr) :: dGe_fh_dn(size(n))
-      real(pr) :: dGe_fh_dn2(size(n),size(n))
+      real(pr) :: dGe_fh_dn(self%nmolecules)
+      real(pr) :: dGe_fh_dn2(self%nmolecules,self%nmolecules)
 
       ! Staverman-Guggenheim variables
       real(pr) :: Ge_sg
-      real(pr) :: dGe_sg_dn(size(n))
-      real(pr) :: dGe_sg_dn2(size(n),size(n))
+      real(pr) :: dGe_sg_dn(self%nmolecules)
+      real(pr) :: dGe_sg_dn2(self%nmolecules,self%nmolecules)
 
       ! utility
       real(pr) :: nq, nr, n_t
@@ -191,20 +190,20 @@ contains
    subroutine Ge_residual(self, n, T, Ge, dGe_dn, dGe_dn2, dGe_dT, dGe_dT2, dGe_dTn)
       class(UNIFAC) :: self
 
-      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: n(self%nmolecules)
       real(pr), intent(in) :: T
       real(pr), optional, intent(out) :: Ge
-      real(pr), optional, intent(out) :: dGe_dn(:)
-      real(pr), optional, intent(out) :: dGe_dn2(:,:)
+      real(pr), optional, intent(out) :: dGe_dn(self%nmolecules)
+      real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules, self%nmolecules)
       real(pr), optional, intent(out) :: dGe_dT
       real(pr), optional, intent(out) :: dGe_dT2
-      real(pr), optional, intent(out) :: dGe_dTn(:,:)
+      real(pr), optional, intent(out) :: dGe_dTn(self%nmolecules, self%nmolecules)
 
       ! Thetas variables
       real(pr) :: theta_j(self%ngroups)
 
       ! Ejk variables
-      real(pr) :: Ejk(self%ngroups,self%ngroups)
+      real(pr) :: Ejk(self%ngroups, self%ngroups)
       real(pr) :: dEjk_dt(self%ngroups, self%ngroups)
       real(pr) :: dEjk_dt2(self%ngroups, self%ngroups)
 
@@ -212,12 +211,28 @@ contains
       real(pr) :: lambda_k(self%ngroups)
       real(pr) :: dlambda_k_dT(self%ngroups)
       real(pr) :: dlambda_k_dT2(self%ngroups)
-      real(pr) :: dlambda_k_dn(size(self%molecules), self%ngroups)
-      real(pr) :: dlambda_k_dn2(self%ngroups, size(self%molecules), size(self%molecules))
+      real(pr) :: dlambda_k_dn(self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_k_dn2(self%nmolecules, self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_k_dndT(self%nmolecules, self%ngroups)
 
-      real(pr) :: lambda_ik(size(self%molecules), self%ngroups)
-      real(pr) :: dlambda_ik_dT(size(self%molecules), self%ngroups)
-      real(pr) :: dlambda_ik_dT2(size(self%molecules), self%ngroups)
+      real(pr) :: lambda_ik(self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_ik_dT(self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_ik_dT2(self%nmolecules, self%ngroups)
+
+      ! Auxiliars
+      real(pr) :: sum_vij_Qj_Ejk(self%nmolecules, self%ngroups)
+      real(pr) :: sum_ni_vij_Qj_Ejk(self%ngroups)
+      real(pr) :: sum_vik_Qk(self%nmolecules)
+      real(pr) :: sum_vQ_Lambda(self%nmolecules)
+      real(pr) :: sum_nl_vlj(self%ngroups)
+      real(pr) :: sum_ni_vik_Qk
+      real(pr) :: aux_sum(self%nmolecules)
+      real(pr) :: sum_Q_v_dlambda_k_dn(self%nmolecules, self%nmolecules)
+      real(pr) :: aux_sum2
+      real(pr) :: sum_vij_Qj_dEjk_dT(self%nmolecules, self%ngroups)
+      real(pr) :: sum_vij_Qj_dEjk_dT2(self%nmolecules, self%ngroups)
+      real(pr) :: sum_ni_vij_Qj_dEjk_dT(self%ngroups)
+      real(pr) :: sum_vij_Qj_dlambdas_dT(self%nmolecules)
 
       ! Indexes used for groups
       integer :: j, k
@@ -225,85 +240,168 @@ contains
       ! Indexes used for components
       integer :: i, l
 
-      ! Auxiliars
-      real(pr) :: sum_vijQjEjk(size(self%molecules), self%ngroups)
-      real(pr) :: sum_nivijQjEjk(self%ngroups)
-      real(pr) :: sum_vikQk(size(self%molecules))
-      real(pr) :: sum_vQLambda(size(self%molecules))
-      real(pr) :: tempsum(size(self%molecules))
-      real(pr) :: sum_nlvlj(self%ngroups)
-      real(pr) :: sum_nivikQk
+      ! logicals
+      logical :: pge, dn, dn2, dt, dt2, dtn
 
-      call thetas(self, n, theta_j)
-      call self%psi_function%psi(self%groups_stew, T, Ejk, dEjk_dt, dEjk_dt2)
+      pge = present(Ge)
+      dn = present(dGe_dn)
+      dn2 = present(dGe_dn2)
+      dt = present(dGe_dT)
+      dt2 = present(dGe_dT2)
+      dtn = present(dGe_dTn)
+
+      ! ========================================================================
+      ! Ejk
+      ! ------------------------------------------------------------------------
+      if (pge .and. .not. (dt .or. dt2 .or. dtn)) then
+         call self%psi_function%psi(self%groups_stew, T, psi=Ejk)
+      elseif ((dt .or. dtn) .and. .not. (pge .or. dt2)) then
+         call self%psi_function%psi(self%groups_stew, T, dpsidt=dEjk_dt)
+      elseif (dt2 .and. .not. (pge .or. dt .or. dtn)) then
+         call self%psi_function%psi(self%groups_stew, T, dpsidt2=dEjk_dt2)
+      elseif ((pge .and. (dt .or. dtn)) .and. .not. dt2) then
+         call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsidt=dEjk_dt)
+      elseif ((pge .and. dt2) .and. .not. (dt .or. dtn)) then
+         call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsidt2=dEjk_dt2)
+      elseif (((dt .or. dtn) .and. dt2) .and. .not. pge) then
+         call self%psi_function%psi(self%groups_stew, T, dpsidt=dEjk_dt, dpsidt2=dEjk_dt2)
+      else
+         call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsidt=dEjk_dt, dpsidt2=dEjk_dt2)
+      end if
 
       ! ========================================================================
       ! Auxiliars
       ! ------------------------------------------------------------------------
-      do i=1,size(self%molecules)
-         sum_vikQk(i) = sum(self%vij(i,:) * self%qk)
+      do i=1,self%nmolecules
+         sum_vik_Qk(i) = sum(self%vij(i,:) * self%qk)
       end do
-      sum_nivikQk = sum(n * sum_vikQk)
+      sum_ni_vik_Qk = sum(n * sum_vik_Qk)
 
+      if (dtn .or. dt2 .or. dt) then
+         do concurrent(i=1:self%nmolecules, k=1:self%ngroups)
+            sum_vij_Qj_dEjk_dT(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT(:,k))
+            sum_vij_Qj_dEjk_dT2(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT2(:,k))
+         end do
+      end if
+
+      ! ========================================================================
+      ! Thetas
+      ! ------------------------------------------------------------------------
       do j=1,self%ngroups
-         sum_nlvlj(j) = sum(n * self%vij(:,j))
+         sum_nl_vlj(j) = sum(n * self%vij(:,j))
+         theta_j(j) = sum_nl_vlj(j) * self%qk(j) / sum_ni_vik_Qk
       end do
 
       ! ========================================================================
       ! Lambda_k
       ! ------------------------------------------------------------------------
-      if (present(Ge) .or. present(dGe_dn)) then
+      ! Lambda_k
+      if (pge .or. dn) then
          do k=1,self%ngroups
             lambda_k(k) = log(sum(theta_j * Ejk(:,k)))
          end do
       end if
 
-      if (present(dGe_dn) .or. present(dGe_dTn) .or. present(dGe_dn2)) then
-         do i=1,size(self%molecules)
-            do k=1,self%ngroups
-               sum_vijQjEjk(i,k) = sum(self%vij(i,:) * self%qk * Ejk(:,k))
-            end do
+      ! Lambda_k first compositional derivatives
+      if (dn .or. dtn .or. dn2) then
+         do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+            sum_vij_Qj_Ejk(i,k) = sum(self%vij(i,:) * self%qk * Ejk(:,k))
          end do
 
          do k=1,self%ngroups
-            sum_nivijQjEjk(k) = sum(n * sum_vijQjEjk(:,k))
+            sum_ni_vij_Qj_Ejk(k) = sum(n * sum_vij_Qj_Ejk(:,k))
          end do
 
-         do i=1,size(self%molecules)
-            dlambda_k_dn(i,:) = sum_vijQjEjk(i,:) / sum_nivijQjEjk - sum_vikQk(i) / sum_nivikQk
+         do i=1,self%nmolecules
+            dlambda_k_dn(i,:) = sum_vij_Qj_Ejk(i,:) / sum_ni_vij_Qj_Ejk - sum_vik_Qk(i) / sum_ni_vik_Qk
+         end do
+      end if
+
+      ! Lambda_k second compositional derivatives
+      if (dn2) then
+         do concurrent (i=1:self%nmolecules,l=1:self%nmolecules)
+            sum_Q_v_dlambda_k_dn(i,l) = sum(self%qk * self%vij(l,:) * dlambda_k_dn(i,:))
+            dlambda_k_dn2(i,l,:) = (&
+               - sum_vij_Qj_Ejk(i,:) * sum_vij_Qj_Ejk(l,:) / sum_ni_vij_Qj_Ejk**2 &
+               + sum_vik_Qk(i) * sum_vik_Qk(l) / sum_ni_vik_Qk**2 &
+               )
+         end do
+      end if
+
+      ! Temperature derivatives
+      if (dt .or. dtn .or. dt2) then
+         do k=1,self%nmolecules
+            sum_ni_vij_Qj_dEjk_dT(k) = sum(n * sum_vij_Qj_dEjk_dT(:,k))
+            dlambda_k_dT(k) = sum_ni_vij_Qj_dEjk_dT(k) / sum_ni_vij_Qj_Ejk(k)
+            dlambda_k_dT2(k) = sum(n * sum_vij_Qj_dEjk_dT2(:,k)) / sum_ni_vij_Qj_Ejk(k) - dlambda_k_dT(k)**2
          end do
       end if
 
       ! ========================================================================
       ! Lambda_ik
       ! ------------------------------------------------------------------------
-      do k=1,self%ngroups
-         do i=1,size(self%molecules)
-            lambda_ik(i, k) = sum(self%thetas_ij(i, :) * Ejk(:, k))
-         end do
+      do concurrent (k=1:self%ngroups, i=1:self%nmolecules)
+         lambda_ik(i, k) = sum(self%thetas_ij(i, :) * Ejk(:, k))
       end do
       lambda_ik = log(lambda_ik)
+
+      ! Temperature derivatives
+      if (dt .or. dt2) then
+         dlambda_ik_dT = sum_vij_Qj_dEjk_dT / sum_vij_Qj_Ejk
+         if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
+      end if
+
+      if (dtn) then
+         do i=1,self%nmolecules
+            dlambda_k_dndT(i,:) = (&
+               sum_vij_Qj_dEjk_dT(i,:) / sum_ni_vij_Qj_Ejk &
+               - sum_vij_Qj_Ejk(i,:) * sum_ni_vij_Qj_dEjk_dT / sum_ni_vij_Qj_Ejk**2 &
+               )
+         end do
+      end if
 
       ! ========================================================================
       ! Ge
       ! ------------------------------------------------------------------------
-      do i=1,size(self%molecules)
-         sum_vQLambda(i) = sum(self%vij(i,:) * self%qk * (lambda_k - lambda_ik(i,:)))
-      end do
-
-      if (present(Ge)) then
-         Ge = - sum(n * sum_vQLambda)
+      if (pge .or. dn) then
+         do i=1,self%nmolecules
+            sum_vQ_Lambda(i) = sum(self%vij(i,:) * self%qk * (lambda_k - lambda_ik(i,:)))
+         end do
       end if
+
+      if (pge) Ge = - sum(n * sum_vQ_Lambda)
 
       ! ========================================================================
       ! dGe_dn
       ! ------------------------------------------------------------------------
-      if (present(dGe_dn)) then
-         do i=1,size(self%molecules)
-            tempsum(i) = sum(sum_nlvlj * self%qk * dlambda_k_dn(i,:))
+      if (dn) then
+         do i=1,self%nmolecules
+            aux_sum(i) = sum(sum_nl_vlj * self%qk * dlambda_k_dn(i,:))
          end do
-         dGe_dn = -sum_vQLambda - tempsum
+         dGe_dn = -sum_vQ_Lambda - aux_sum
       end if
+
+      ! ========================================================================
+      ! dGe_dn2
+      ! ------------------------------------------------------------------------
+      if (dn2) then
+         do concurrent (i=1:self%nmolecules,l=1:self%nmolecules)
+            aux_sum2 = sum(sum_nl_vlj * dlambda_k_dn2(i,l,:) * self%qk)
+            dGe_dn2(i,l) = -(sum_Q_v_dlambda_k_dn(i,l) + sum_Q_v_dlambda_k_dn(l,i)) - aux_sum2
+         end do
+      end if
+
+      ! ========================================================================
+      ! dGe_dT, dGe_dT2, dGE_dnT
+      ! ------------------------------------------------------------------------
+      do i=1,self%nmolecules
+         sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
+      end do
+
+      if (dt) then
+         dGe_dT = -sum(n * sum_vij_Qj_dlambdas_dT)
+      end if
+
    end subroutine Ge_residual
 
    subroutine ln_activity_coefficient(&
@@ -362,45 +460,6 @@ contains
       end do
 
    end subroutine UNIFAC_temperature_dependence
-
-   subroutine thetas(self, n, theta_j)
-      type(UNIFAC) :: self
-      real(pr), intent(in) :: n(:)
-
-      real(pr), intent(out) :: theta_j(:)
-      !! Group j total area fraction
-
-      integer :: j, l, m !! A fines practicos i y l son lo mismo aca.
-      integer :: gi !! group m id
-
-      real(pr) :: ga(size(theta_j)) !! Area of group j in the system
-      real(pr) :: qjl_contribution, total_area
-
-      associate(&
-         group_area => self%group_area, &
-         stew => self%groups_stew, &
-         molecs => self%molecules &
-         )
-
-         ! Calculate Total area fraction of group j
-         theta_j = 0.0_pr
-         ga = 0.0_pr
-
-         do l=1,size(molecs)
-            do m=1,size(self%qk)
-               qjl_contribution = n(l) * self%qk(m) * self%vij(l,m)
-
-               ! Add the contribution to the contributions storing vector.
-               ga(m) = ga(m) + qjl_contribution
-
-               ! Adding to the total groups area.
-               total_area = total_area + qjl_contribution
-            end do
-         end do
-
-         theta_j = ga / total_area
-      end associate
-   end subroutine thetas
 
    function thetas_i(nm, ng, group_area, stew, molecules) result(thetas_ij)
       integer, intent(in) :: nm !! Number of molecules
@@ -507,7 +566,7 @@ contains
          end do
       end associate
       ! ========================================================================
-      ! Build a matrixes vij and vector qk
+      ! Build a matrix vij and vector qk
       ! ------------------------------------------------------------------------
       allocate(vij(size(molecules), size(soup%number_of_groups)))
       allocate(qij(size(molecules), size(soup%number_of_groups)))
@@ -535,6 +594,7 @@ contains
       psi_function%Eij = Eij
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
+      setup_unifac%nmolecules = size(molecules)
       setup_unifac%psi_function = psi_function
       setup_unifac%group_area = Qk
       setup_unifac%group_volume = Rk

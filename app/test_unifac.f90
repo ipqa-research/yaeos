@@ -25,7 +25,7 @@ program main
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
    real(pr) :: Ge_c, dGe_c_dn(nc), dGe_c_dn2(nc, nc)
 
-   real(pr) :: Ge, Gen(nc), Gen_tp(nc), Ge_r, dGe_r_dn(nc)
+   real(pr) :: Ge, Gen(nc), Gen2(nc, nc), Gen_tp(nc), Ge_r, dGe_r_dn(nc), dGe_dT
 
    real(pr) :: lambda_k(ng), lambda_ki(ng, nc)
 
@@ -102,10 +102,10 @@ program main
    print *, " "
 
    ! Thetas totales
-   call thetas(model, x, theta_j=theta)
-   print *, "Total Thetas: ", theta
-   print *, "Expected: ", [0.40465035571750835, 0.16397709526288395, 0.3643935450286309, 0.06697900399097695]
-   print *, " "
+   !call thetas(model, x, theta_j=theta)
+   !print *, "Total Thetas: ", theta
+   !print *, "Expected: ", [0.40465035571750835, 0.16397709526288395, 0.3643935450286309, 0.06697900399097695]
+   !print *, " "
 
    ! Thetas_i
    print *, "Thetas_i: "
@@ -124,7 +124,7 @@ program main
    print *, " "
 
    ! Ge residual
-   call Ge_residual(model, x, T, Ge=Ge_r, dGe_dn=Gen)
+   call Ge_residual(model, x, T, Ge=Ge_r, dGe_dn=Gen, dGe_dn2=Gen2, dGe_dT=dGe_dT)
    print *, "Ge_r"
    print *, Ge_r, "Expected: ", -0.2458607427956044
    print *, " "
@@ -134,4 +134,16 @@ program main
    print *, "Expected: "
    print *, [0.8618172961999062, -0.18612517953009416, -2.8793657636451973]
    print *, " "
+
+   print *, "dGe_dn2"
+   print *, Gen2(1,:) + dGe_c_dn2(1,:)
+   print *, Gen2(2,:) + dGe_c_dn2(2,:)
+   print *, Gen2(3,:) + dGe_c_dn2(3,:)
+   print *, "Expected: "
+   print *, [-0.75249927,  0.13440904,  0.56413529]
+   print *, [ 0.13440904,  0.34708386, -2.69840507]
+   print *, [ 0.56413529, -2.69840507, 17.76056492]
+   print *, " "
+
+   print *, "dGe_r_dT: ", dGe_dT, "Expected: ", 0.002620692254803836
 end program main
