@@ -16,7 +16,7 @@ program main
 
    real(pr), allocatable :: Aij(:, :)
    real(pr), allocatable :: Qk(:), Rk(:)
-   real(pr) :: dx=1e-5, dpsidt_num(ng, ng), dpsidt(ng, ng)
+   real(pr) :: dx=0.01, dpsidt_num(ng, ng), dpsidt(ng, ng)
 
    type(Groups) :: molecules(nc)
    real(pr) :: psi(ng, ng)
@@ -25,7 +25,7 @@ program main
    real(pr) :: ln_Gamma(ng), dln_Gammadt(ng)=0, dln_Gammadt_num(ng)=0, dln_Gammadn(ng, nc)
    real(pr) :: Ge_c, dGe_c_dn(nc), dGe_c_dn2(nc, nc)
 
-   real(pr) :: Ge, Gen(nc), Gen2(nc, nc), Gen_tp(nc), Ge_r, dGe_r_dn(nc), dGe_dT
+   real(pr) :: Ge, Gen(nc), Gen2(nc, nc), Gen_tp(nc), Ge_r, dGe_r_dn(nc), dGe_dT, Ge_r_deltat
 
    real(pr) :: lambda_k(ng), lambda_ki(ng, nc)
 
@@ -101,12 +101,6 @@ program main
    print *, [0.0621776023179087, -0.03126779042378558, 0.09451932833068105]
    print *, " "
 
-   ! Thetas totales
-   !call thetas(model, x, theta_j=theta)
-   !print *, "Total Thetas: ", theta
-   !print *, "Expected: ", [0.40465035571750835, 0.16397709526288395, 0.3643935450286309, 0.06697900399097695]
-   !print *, " "
-
    ! Thetas_i
    print *, "Thetas_i: "
    print *, model%thetas_ij(1,:)
@@ -125,6 +119,7 @@ program main
 
    ! Ge residual
    call Ge_residual(model, x, T, Ge=Ge_r, dGe_dn=Gen, dGe_dn2=Gen2, dGe_dT=dGe_dT)
+   call Ge_residual(model, x, T + dx, Ge=Ge_r_deltat)
    print *, "Ge_r"
    print *, Ge_r, "Expected: ", -0.2458607427956044
    print *, " "
@@ -145,5 +140,6 @@ program main
    print *, [ 0.56413529, -2.69840507, 17.76056492]
    print *, " "
 
-   print *, "dGe_r_dT: ", dGe_dT, "Expected: ", 0.002620692254803836
+   print *, "dGe_r_dT: ", dGe_dT, "Expected: ", -0.2458782140820675
+   print *, "dGe_r_dT num: ", (Ge_r_deltat - Ge_r) / dx / R / T
 end program main

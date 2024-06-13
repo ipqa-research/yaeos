@@ -97,37 +97,24 @@ contains
       real(pr), optional, intent(out) :: GeTn(size(n))
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
 
-      real(pr) :: x(size(n))
-      real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n)), ln_activity(size(n))
-      real(pr) :: nt, dxidni(size(n), size(n))
-      real(pr) :: Ge_c, Ge_r
-      real(pr) :: dGe_c_dn(size(n)), dGe_r_dn(size(n))
+      ! Combinatorial
+      real(pr) :: Ge_c
+      real(pr) :: dGe_c_dn(self%nmolecules)
+      real(pr) :: dGe_c_dn2(self%nmolecules, self%nmolecules)
 
-      integer :: i, j, nc
+      ! Residual
+      real(pr) :: Ge_r
+      real(pr) :: dGe_r_dn(self%nmolecules)
+      real(pr) :: dGe_r_dn2(self%nmolecules, self%nmolecules)
+      real(pr) :: dGe_r_dT
 
-      nt = sum(n)
+      call Ge_combinatorial(self, n, Ge_c, dGe_c_dn, dGe_c_dn2)
+      call Ge_residual(self, n, T, Ge_r, dGe_r_dn, dGe_r_dn2, dGe_r_dT)
 
-      x = n/nt
-
-      nc = self%nmolecules
-
-      ln_activity = 0
-
-      !call combinatorial_activity(self, x, ln_gamma_c)
-      !call residual_activity(self, x, T, ln_gamma_r)
-      !ln_activity = ln_gamma_c + ln_gamma_r
-
-      if (present(Ge)) then
-         call Ge_combinatorial(self, n, Ge_c)
-         call Ge_residual(self, n, T, Ge_r)
-         Ge =  (Ge_c + Ge_r) * (R*T)
-      end if
-
-      if (present(GeN)) then
-         call Ge_combinatorial(self, n, Ge_c, dGe_c_dn)
-         call Ge_residual(self, n, T, Ge_r, dGe_dn=dGe_r_dn)
-         Gen = (dGe_c_dn + dGe_r_dn)
-      end if
+      if (present(Ge)) Ge = Ge_c * R * T + Ge_r
+      if (present(Gen)) Gen = dGe_c_dn * R * T + dGe_r_dn
+      if (present(Gen2)) Gen2 = dGe_c_dn2 * R * T + dGe_r_dn2
+      if (present(GeT)) GeT = dGe_r_dT
    end subroutine excess_gibbs
 
    subroutine Ge_combinatorial(self, n, Ge, dGe_dn, dGe_dn2)
@@ -303,7 +290,7 @@ contains
       end if
 
       ! Lambda_k first compositional derivatives
-      if (dn .or. dtn .or. dn2) then
+      if (dn .or. dt .or. dtn .or. dn2) then
          do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
             sum_vij_Qj_Ejk(i,k) = sum(self%vij(i,:) * self%qk * Ejk(:,k))
          end do
@@ -328,9 +315,8 @@ contains
          end do
       end if
 
-      ! Temperature derivatives
       if (dt .or. dtn .or. dt2) then
-         do k=1,self%nmolecules
+         do k=1,self%ngroups
             sum_ni_vij_Qj_dEjk_dT(k) = sum(n * sum_vij_Qj_dEjk_dT(:,k))
             dlambda_k_dT(k) = sum_ni_vij_Qj_dEjk_dT(k) / sum_ni_vij_Qj_Ejk(k)
             dlambda_k_dT2(k) = sum(n * sum_vij_Qj_dEjk_dT2(:,k)) / sum_ni_vij_Qj_Ejk(k) - dlambda_k_dT(k)**2
@@ -340,7 +326,7 @@ contains
       ! ========================================================================
       ! Lambda_ik
       ! ------------------------------------------------------------------------
-      do concurrent (k=1:self%ngroups, i=1:self%nmolecules)
+      do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
          lambda_ik(i, k) = sum(self%thetas_ij(i, :) * Ejk(:, k))
       end do
       lambda_ik = log(lambda_ik)
@@ -351,14 +337,10 @@ contains
          if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
       end if
 
-      if (dtn) then
-         do i=1,self%nmolecules
-            dlambda_k_dndT(i,:) = (&
-               sum_vij_Qj_dEjk_dT(i,:) / sum_ni_vij_Qj_Ejk &
-               - sum_vij_Qj_Ejk(i,:) * sum_ni_vij_Qj_dEjk_dT / sum_ni_vij_Qj_Ejk**2 &
-               )
-         end do
-      end if
+      ! ? An alternative, but it works the same. i think that this is not the problem
+      !do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+      !   dlambda_ik_dT(i,k) = sum(self%thetas_ij(i, :) * dEjk_dt(:, k)) / sum(self%thetas_ij(i, :) * Ejk(:, k))
+      !end do
 
       ! ========================================================================
       ! Ge
@@ -402,6 +384,30 @@ contains
          dGe_dT = -sum(n * sum_vij_Qj_dlambdas_dT)
       end if
 
+      ! ========================================================================
+      ! From reduced Ge to Ge.
+      ! ------------------------------------------------------------------------
+      if (present(dGe_dT2)) then
+         dGe_dT2 = R * (2.0 * dGe_dT + T * dGe_dT2)
+      end if
+
+      if (present(dGe_dT)) then
+         dGe_dT = R * (Ge + dGe_dT * T)
+      end if
+
+      !if (present(dGe_dTn)) then
+      !   dGe_dTn = R * (dGe_dn + dGe_dTn * T)
+      !end if
+
+      Ge = Ge * R * T
+
+      if (present(dGe_dn)) then
+         dGe_dn = dGe_dn * R * T
+      end if
+
+      if (present(dGe_dn2)) then
+         dGe_dn2 = dGe_dn2 * R * T
+      end if
    end subroutine Ge_residual
 
    subroutine ln_activity_coefficient(&
