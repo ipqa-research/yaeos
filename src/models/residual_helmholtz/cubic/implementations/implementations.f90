@@ -224,7 +224,7 @@ contains
         model%name = "SRK"
     end function
 
-    type(CubicEoS) function RKPR(tc, pc, w, zc, kij, lij) result(model)
+    type(CubicEoS) function RKPR(tc, pc, w, zc, kij, lij, delta_1, k) result(model)
         !! RKPR Equation of State
         !!
         !! The RKPR EoS extends the classical formulation of Cubic Equations 
@@ -254,6 +254,8 @@ contains
         real(pr), intent(in) :: zc(:) !! Critical compressibility
         real(pr), optional, intent(in) :: kij(:, :) !! k_{ij} matrix
         real(pr), optional, intent(in) :: lij(:, :) !! l_{ij} matrix
+        real(pr), optional, intent(in) :: delta_1(:)
+        real(pr), optional, intent(in) :: k(:)
         
         type(AlphaRKPR) :: alpha
         type(QMR_RKPR) :: mixrule
@@ -261,8 +263,12 @@ contains
 
         integer :: i, nc
 
-        real(pr), parameter :: d1 = 0.428364, d2 = 18.496215, &
-                               d3=0.338426, d4=0.66, d5 = 789.723105, d6=2.512392
+        real(pr), parameter :: d1 = 0.428364, &
+                               d2 = 18.496215, &
+                               d3=0.338426, &
+                               d4=0.66, &
+                               d5 = 789.723105, &
+                               d6=2.512392
         
         real(pr), parameter :: A1 = -2.4407
         real(pr), parameter :: A0 = 0.0017
@@ -271,7 +277,8 @@ contains
         real(pr), parameter :: C1 =12.504
         real(pr), parameter :: C0 =-2.6238
 
-        real(pr) :: ac(size(pc)), b(size(pc))
+        real(pr) :: OMa(size(pc)), OMb(size(pc))
+        real(pr) :: Zc_eos(size(pc))
 
         nc = size(tc)
 
@@ -279,7 +286,13 @@ contains
         composition%tc = tc
         composition%w = w
 
-        alpha%k = (A1 * zc + A0)*w**2 + (B1*zc + B0)*w + (C1*Zc + C0)
+        Zc_eos = 1.168 * Zc
+
+        if (present(k)) then
+            alpha%k = k
+        else
+            alpha%k = (A1 * zc + A0)*w**2 + (B1*zc + B0)*w + (C1*Zc + C0)
+        end if
         
         if (present(kij)) then
             mixrule%k = kij
@@ -294,32 +307,33 @@ contains
         end if
         
         model%components = composition
-        model%del1 = d1 + d2 * (d3 - zc) ** d4 + d5 * (d3 - zc) ** d6
+        if (present(delta_1)) then
+            model%del1 = delta_1
+        else
+            model%del1 = d1 + d2 * (d3 - zc) ** d4 + d5 * (d3 - zc) ** d6
+        end if
+        
         model%del2 = (1._pr - model%del1)/(1._pr + model%del1)
         model%alpha = alpha
         
-        call get_ac_b(model%del1, ac, b)
-        model%ac = ac
-        model%b = b
+        call get_OMa_OMb(model%del1, oma, omb)
+        model%ac = OMa * (R*Tc)**2/Pc
+        model%b = OMb * (R*Tc)/Pc
         
         model%mixrule = mixrule
         model%name = "RKPR 2005"
-    contains
-        subroutine get_ac_b(del1, ac, b)
-            real(pr), intent(in) :: del1(:)
-            real(pr), intent(out) :: ac(size(del1))
-            real(pr), intent(out) :: b(size(del1))
-
-            real(pr) :: d1(size(del1)), y(size(del1)), OMa(size(del1)), Omb(size(del1))
-
-            d1 = (1._pr + model%del1**2._pr)/(1._pr + model%del1)
-            y = 1._pr + (2._pr*(1._pr + del1))**(1.0_pr/3._pr) + (4._pr/(1._pr + del1))**(1.0_pr/3)
-            OMa = (3._pr*y*y + 3._pr*y*d1 + d1**2._pr + d1 - 1.0_pr)/(3._pr*y + d1 - 1.0_pr)**2._pr
-            OMb = 1._pr/(3._pr*y + d1 - 1.0_pr)
-
-            ac = OMa * (R*Tc)**2/Pc
-            b = OMb * (R*Tc)/Pc
-        end subroutine
     end function
+    
+    subroutine get_OMa_OMb(del1, OMa, OMb)
+        real(pr), intent(in) :: del1(:)
+        real(pr), intent(out) :: OMa(size(del1))
+        real(pr), intent(out) :: OMb(size(del1))
 
+        real(pr) :: d1(size(del1)), y(size(del1))
+
+        d1 = (1._pr + del1**2._pr)/(1._pr + del1)
+        y = 1._pr + (2._pr*(1._pr + del1))**(1.0_pr/3._pr) + (4._pr/(1._pr + del1))**(1.0_pr/3)
+        OMa = (3._pr*y*y + 3._pr*y*d1 + d1**2._pr + d1 - 1.0_pr)/(3._pr*y + d1 - 1.0_pr)**2._pr
+        OMb = 1._pr/(3._pr*y + d1 - 1.0_pr)
+    end subroutine
 end module

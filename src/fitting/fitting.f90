@@ -114,7 +114,6 @@ contains
       real(pr), intent(in) :: X(:)
       class(FittingProblem), intent(in) :: func_data
 
-      !! Thermodynamic model to make calculations inside
       type(EquilibriaState) :: model_point !! Each solved point
       type(EquilibriaState) :: exp_point
 
