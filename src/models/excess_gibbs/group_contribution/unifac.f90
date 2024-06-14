@@ -106,15 +106,17 @@ contains
       real(pr) :: Ge_r
       real(pr) :: dGe_r_dn(self%nmolecules)
       real(pr) :: dGe_r_dn2(self%nmolecules, self%nmolecules)
-      real(pr) :: dGe_r_dT
+      real(pr) :: dGe_r_dT, dGe_r_dT2, dGe_r_dTn(self%nmolecules)
 
       call Ge_combinatorial(self, n, Ge_c, dGe_c_dn, dGe_c_dn2)
-      call Ge_residual(self, n, T, Ge_r, dGe_r_dn, dGe_r_dn2, dGe_r_dT)
+      call Ge_residual(self, n, T, Ge_r, dGe_r_dn, dGe_r_dn2, dGe_r_dT, dGe_r_dT2, dGe_r_dTn)
 
       if (present(Ge)) Ge = Ge_c * R * T + Ge_r
       if (present(Gen)) Gen = dGe_c_dn * R * T + dGe_r_dn
       if (present(Gen2)) Gen2 = dGe_c_dn2 * R * T + dGe_r_dn2
-      if (present(GeT)) GeT = dGe_r_dT
+      if (present(GeT)) GeT = dGe_r_dT + Ge_c * R
+      if (present(GeT2)) GeT2 = dGe_r_dT2
+      if (present(GeTn)) GeTn = R * dGe_c_dn + dGe_r_dTn
    end subroutine excess_gibbs
 
    subroutine Ge_combinatorial(self, n, Ge, dGe_dn, dGe_dn2)
@@ -184,7 +186,7 @@ contains
       real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules, self%nmolecules)
       real(pr), optional, intent(out) :: dGe_dT
       real(pr), optional, intent(out) :: dGe_dT2
-      real(pr), optional, intent(out) :: dGe_dTn(self%nmolecules, self%nmolecules)
+      real(pr), optional, intent(out) :: dGe_dTn(self%nmolecules)
 
       ! Thetas variables
       real(pr) :: theta_j(self%ngroups)
@@ -220,7 +222,7 @@ contains
       real(pr) :: sum_vij_Qj_dEjk_dT2(self%nmolecules, self%ngroups)
       real(pr) :: sum_ni_vij_Qj_dEjk_dT(self%ngroups)
       real(pr) :: sum_vij_Qj_dlambdas_dT(self%nmolecules)
-      real(pr) :: numerator(self%nmolecules, self%ngroups), denominator(self%nmolecules, self%ngroups)
+      real(pr) :: sum_vij_Qj_dlambdas_dT2(self%nmolecules)
 
       ! Indexes used for groups
       integer :: j, k
@@ -319,85 +321,42 @@ contains
       if (dt .or. dtn .or. dt2) then
          do k=1,self%ngroups
             sum_ni_vij_Qj_dEjk_dT(k) = sum(n * sum_vij_Qj_dEjk_dT(:,k))
-            dlambda_k_dT(k) = sum_ni_vij_Qj_dEjk_dT(k) / sum_ni_vij_Qj_Ejk(k)
+            dlambda_k_dT(k) = sum(theta_j * dEjk_dt(:, k)) / sum(theta_j * Ejk(:, k))
             dlambda_k_dT2(k) = sum(n * sum_vij_Qj_dEjk_dT2(:,k)) / sum_ni_vij_Qj_Ejk(k) - dlambda_k_dT(k)**2
          end do
       end if
 
-      ! do k=1,self%ngroups
-      !   dlambda_k_dT(k) = sum(theta_j * dEjk_dt(:, k)) / sum(theta_j * Ejk(:, k))
-      ! end do
+      if (dtn) then
+         do i=1,self%nmolecules
+            dlambda_k_dndT(i,:) = (&
+               sum_vij_Qj_dEjk_dT(i,:) / sum_ni_vij_Qj_Ejk &
+               - sum_vij_Qj_Ejk(i,:) * sum_ni_vij_Qj_dEjk_dT / sum_ni_vij_Qj_Ejk**2 &
+               )
+         end do
+      end if
 
       ! ========================================================================
       ! Lambda_ik
       ! ------------------------------------------------------------------------
       lambda_ik = 0.0_pr
-      do i=1,self%nmolecules
-         do k=1,self%ngroups
-            if (self%vij(i,k) > 0) then
-               do j=1,self%ngroups
-                  if (self%vij(i,j) > 0) then
-                     lambda_ik(i,k) = lambda_ik(i,k) + self%thetas_ij(i, j) * Ejk(j, k)
-                  end if
-               end do
-            else
-               lambda_ik(i,k) = 1.0_pr
-            end if
-         end do
+      do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+         if (self%vij(i,k) /= 0) then
+            lambda_ik(i,k) = log(sum(self%thetas_ij(i, :) * Ejk(:, k)))
+         end if
       end do
-
-      lambda_ik = log(lambda_ik)
 
       ! Temperature derivatives
       if (dt .or. dt2) then
-         ! dlambda_ik_dT = sum_vij_Qj_dEjk_dT / sum_vij_Qj_Ejk
+         dlambda_ik_dT = 0.0_pr
+         do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+            if (self%vij(i,k) /= 0) then
+               dlambda_ik_dT(i,k) = sum(self%thetas_ij(i,:) * dEjk_dt(:, k)) / sum(self%thetas_ij(i,:) * Ejk(:, k))
+            end if
+         end do
+
          if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
       end if
 
-      dlambda_ik_dT = 0.0_pr
-      numerator = 0.0_pr
-      denominator = 0.0_pr
-      do i=1,self%nmolecules
-         do k=1,self%ngroups
-            if (self%vij(i,k) /= 0) then
-               do j=1,self%ngroups
-                  if (self%vij(i,j) /= 0) then
-                     numerator(i,k) = numerator(i,k) + self%qk(j) * self%vij(i,j) * dEjk_dt(j, k)
-                     denominator(i,k) = denominator(i,k) + self%qk(j) * self%vij(i,j) * Ejk(j, k)
-                  end if
-               end do
-            end if
-         end do
-      end do
-
-      do i=1,self%nmolecules
-         do k=1,self%ngroups
-            if (denominator(i,k) /= 0.0_pr) then
-               dlambda_ik_dT(i,k) = numerator(i,k) / denominator(i,k)
-            end if
-         end do
-      end do
-
-      ! do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
-      !    if (self%vij(i,k) /= 0.0_pr) then
-      !       dlambda_ik_dT(i,k) = sum(self%thetas_ij(i, :) * dEjk_dt(:, k)) / sum(self%thetas_ij(i, :) * Ejk(:, k))
-      !    end if
-      ! end do
-      print *, "lambda_ik"
-      print *, lambda_ik(1,:)
-      print *, lambda_ik(2,:)
-      print *, lambda_ik(3,:)
-      print *, " "
-
-      print *, "lambda_k"
-      print *, lambda_k
-      print *, " "
-
-      print *, "dlambda_ik_dT"
-      print *, dlambda_ik_dT(1,:)
-      print *, dlambda_ik_dT(2,:)
-      print *, dlambda_ik_dT(3,:)
-      print *, " "
       ! ========================================================================
       ! Ge
       ! ------------------------------------------------------------------------
@@ -432,12 +391,28 @@ contains
       ! ========================================================================
       ! dGe_dT, dGe_dT2, dGE_dnT
       ! ------------------------------------------------------------------------
-      do i=1,self%nmolecules
-         sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
-      end do
+      if (dt .or. dt2) then
+         do i=1,self%nmolecules
+            sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
+         end do
 
-      if (dt) then
          dGe_dT = -sum(n * sum_vij_Qj_dlambdas_dT)
+      end if
+
+      if (dt2) then
+         do i=1,self%nmolecules
+            sum_vij_Qj_dlambdas_dT2(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT2 - dlambda_ik_dT2(i,:)))
+         end do
+
+         dGe_dT2 = -sum(n * sum_vij_Qj_dlambdas_dT2)
+      end if
+
+      if (dtn) then
+         do i=1,self%nmolecules
+            aux_sum(i) = sum(sum_nl_vlj * self%qk * dlambda_k_dndT(i,:))
+         end do
+
+         dGe_dTn = - sum_vij_Qj_dLambdas_dT - aux_sum
       end if
 
       ! ========================================================================
@@ -451,9 +426,9 @@ contains
          dGe_dT = R * (Ge + dGe_dT * T)
       end if
 
-      !if (present(dGe_dTn)) then
-      !   dGe_dTn = R * (dGe_dn + dGe_dTn * T)
-      !end if
+      if (present(dGe_dTn)) then
+        dGe_dTn = R * (dGe_dn + dGe_dTn * T)
+      end if
 
       Ge = Ge * R * T
 
