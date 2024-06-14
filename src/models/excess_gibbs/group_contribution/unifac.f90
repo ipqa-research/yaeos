@@ -220,6 +220,7 @@ contains
       real(pr) :: sum_vij_Qj_dEjk_dT2(self%nmolecules, self%ngroups)
       real(pr) :: sum_ni_vij_Qj_dEjk_dT(self%ngroups)
       real(pr) :: sum_vij_Qj_dlambdas_dT(self%nmolecules)
+      real(pr) :: numerator(self%nmolecules, self%ngroups), denominator(self%nmolecules, self%ngroups)
 
       ! Indexes used for groups
       integer :: j, k
@@ -323,25 +324,80 @@ contains
          end do
       end if
 
+      ! do k=1,self%ngroups
+      !   dlambda_k_dT(k) = sum(theta_j * dEjk_dt(:, k)) / sum(theta_j * Ejk(:, k))
+      ! end do
+
       ! ========================================================================
       ! Lambda_ik
       ! ------------------------------------------------------------------------
-      do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
-         lambda_ik(i, k) = sum(self%thetas_ij(i, :) * Ejk(:, k))
+      lambda_ik = 0.0_pr
+      do i=1,self%nmolecules
+         do k=1,self%ngroups
+            if (self%vij(i,k) > 0) then
+               do j=1,self%ngroups
+                  if (self%vij(i,j) > 0) then
+                     lambda_ik(i,k) = lambda_ik(i,k) + self%thetas_ij(i, j) * Ejk(j, k)
+                  end if
+               end do
+            else
+               lambda_ik(i,k) = 1.0_pr
+            end if
+         end do
       end do
+
       lambda_ik = log(lambda_ik)
 
       ! Temperature derivatives
       if (dt .or. dt2) then
-         dlambda_ik_dT = sum_vij_Qj_dEjk_dT / sum_vij_Qj_Ejk
+         ! dlambda_ik_dT = sum_vij_Qj_dEjk_dT / sum_vij_Qj_Ejk
          if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
       end if
 
-      ! ? An alternative, but it works the same. i think that this is not the problem
-      !do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
-      !   dlambda_ik_dT(i,k) = sum(self%thetas_ij(i, :) * dEjk_dt(:, k)) / sum(self%thetas_ij(i, :) * Ejk(:, k))
-      !end do
+      dlambda_ik_dT = 0.0_pr
+      numerator = 0.0_pr
+      denominator = 0.0_pr
+      do i=1,self%nmolecules
+         do k=1,self%ngroups
+            if (self%vij(i,k) /= 0) then
+               do j=1,self%ngroups
+                  if (self%vij(i,j) /= 0) then
+                     numerator(i,k) = numerator(i,k) + self%qk(j) * self%vij(i,j) * dEjk_dt(j, k)
+                     denominator(i,k) = denominator(i,k) + self%qk(j) * self%vij(i,j) * Ejk(j, k)
+                  end if
+               end do
+            end if
+         end do
+      end do
 
+      do i=1,self%nmolecules
+         do k=1,self%ngroups
+            if (denominator(i,k) /= 0.0_pr) then
+               dlambda_ik_dT(i,k) = numerator(i,k) / denominator(i,k)
+            end if
+         end do
+      end do
+
+      ! do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+      !    if (self%vij(i,k) /= 0.0_pr) then
+      !       dlambda_ik_dT(i,k) = sum(self%thetas_ij(i, :) * dEjk_dt(:, k)) / sum(self%thetas_ij(i, :) * Ejk(:, k))
+      !    end if
+      ! end do
+      print *, "lambda_ik"
+      print *, lambda_ik(1,:)
+      print *, lambda_ik(2,:)
+      print *, lambda_ik(3,:)
+      print *, " "
+
+      print *, "lambda_k"
+      print *, lambda_k
+      print *, " "
+
+      print *, "dlambda_ik_dT"
+      print *, dlambda_ik_dT(1,:)
+      print *, dlambda_ik_dT(2,:)
+      print *, dlambda_ik_dT(3,:)
+      print *, " "
       ! ========================================================================
       ! Ge
       ! ------------------------------------------------------------------------
@@ -385,7 +441,7 @@ contains
       end if
 
       ! ========================================================================
-      ! From reduced Ge to Ge.
+      ! From reduced Ge to Ge
       ! ------------------------------------------------------------------------
       if (present(dGe_dT2)) then
          dGe_dT2 = R * (2.0 * dGe_dT + T * dGe_dT2)
