@@ -2,6 +2,7 @@ module yaeos__models_ge_group_contribution_unifac
    !! UNIFAC module
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
+   use stdlib_io_npy, only: load_npy
    implicit none
 
    type :: Groups
@@ -64,7 +65,7 @@ module yaeos__models_ge_group_contribution_unifac
       !! \[
       !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
       !! \]
-      real(pr), allocatable :: Eij(:, :)
+      real(pr), allocatable :: Aij(:, :)
    contains
       procedure :: psi => UNIFAC_temperature_dependence
    end type UNIFACPsi
@@ -97,6 +98,8 @@ contains
       real(pr), optional, intent(out) :: GeTn(size(n))
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
 
+      real(pr) :: n_t
+
       ! Combinatorial
       real(pr) :: Ge_c
       real(pr) :: dGe_c_dn(self%nmolecules)
@@ -108,13 +111,19 @@ contains
       real(pr) :: dGe_r_dn2(self%nmolecules, self%nmolecules)
       real(pr) :: dGe_r_dT, dGe_r_dT2, dGe_r_dTn(self%nmolecules)
 
+      ! logical
+      logical :: pge, dt, dt2, dtn, dn, dn2
+
+      n_t = sum(n)
+
+      !if (present(Ge) .and. .not.(GeT GeT2 Gen GeTn Gen2))
       call Ge_combinatorial(self, n, Ge_c, dGe_c_dn, dGe_c_dn2)
       call Ge_residual(self, n, T, Ge_r, dGe_r_dn, dGe_r_dn2, dGe_r_dT, dGe_r_dT2, dGe_r_dTn)
 
       if (present(Ge)) Ge = Ge_c * R * T + Ge_r
       if (present(Gen)) Gen = dGe_c_dn * R * T + dGe_r_dn
-      if (present(Gen2)) Gen2 = dGe_c_dn2 * R * T + dGe_r_dn2
-      if (present(GeT)) GeT = dGe_r_dT + Ge_c * R
+      if (present(Gen2)) Gen2 = (dGe_c_dn2 * R * T + dGe_r_dn2) * n_t
+      if (present(GeT)) GeT = (dGe_r_dT + Ge_c * R)
       if (present(GeT2)) GeT2 = dGe_r_dT2
       if (present(GeTn)) GeTn = R * dGe_c_dn + dGe_r_dTn
    end subroutine excess_gibbs
@@ -243,18 +252,10 @@ contains
       ! ========================================================================
       ! Ejk
       ! ------------------------------------------------------------------------
-      if (pge .and. .not. (dt .or. dt2 .or. dtn)) then
-         call self%psi_function%psi(self%groups_stew, T, psi=Ejk)
-      elseif ((dt .or. dtn) .and. .not. (pge .or. dt2)) then
-         call self%psi_function%psi(self%groups_stew, T, dpsidt=dEjk_dt)
-      elseif (dt2 .and. .not. (pge .or. dt .or. dtn)) then
-         call self%psi_function%psi(self%groups_stew, T, dpsidt2=dEjk_dt2)
-      elseif ((pge .and. (dt .or. dtn)) .and. .not. dt2) then
+      if ((dt .or. dtn) .and. .not. dt2) then
          call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsidt=dEjk_dt)
-      elseif ((pge .and. dt2) .and. .not. (dt .or. dtn)) then
+      elseif (dt2 .and. .not. (dt .or. dtn)) then
          call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsidt2=dEjk_dt2)
-      elseif (((dt .or. dtn) .and. dt2) .and. .not. pge) then
-         call self%psi_function%psi(self%groups_stew, T, dpsidt=dEjk_dt, dpsidt2=dEjk_dt2)
       else
          call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsidt=dEjk_dt, dpsidt2=dEjk_dt2)
       end if
@@ -338,12 +339,14 @@ contains
       ! ========================================================================
       ! Lambda_ik
       ! ------------------------------------------------------------------------
-      lambda_ik = 0.0_pr
-      do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
-         if (self%vij(i,k) /= 0) then
-            lambda_ik(i,k) = log(sum(self%thetas_ij(i, :) * Ejk(:, k)))
-         end if
-      end do
+      if (pge .or. dn) then
+         lambda_ik = 0.0_pr
+         do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+            if (self%vij(i,k) /= 0) then
+               lambda_ik(i,k) = log(sum(self%thetas_ij(i, :) * Ejk(:, k)))
+            end if
+         end do
+      end if
 
       ! Temperature derivatives
       if (dt .or. dt2) then
@@ -427,7 +430,7 @@ contains
       end if
 
       if (present(dGe_dTn)) then
-        dGe_dTn = R * (dGe_dn + dGe_dTn * T)
+         dGe_dTn = R * (dGe_dn + dGe_dTn * T)
       end if
 
       Ge = Ge * R * T
@@ -441,35 +444,6 @@ contains
       end if
    end subroutine Ge_residual
 
-   subroutine ln_activity_coefficient(&
-      self, n, T, lngamma, &
-      dln_gammadt, dln_gammadt2, dln_gammadn, dln_gammadtn, dln_gammadn2 &
-      )
-      class(UNIFAC), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: lngamma(:)
-      real(pr), optional, intent(out) :: dln_gammadt(:)
-      real(pr), optional, intent(out) :: dln_gammadt2(:)
-      real(pr), optional, intent(out) :: dln_gammadn(:, :)
-      real(pr), optional, intent(out) :: dln_gammadtn(:, :)
-      real(pr), optional, intent(out) :: dln_gammadn2(:, :, :)
-
-      real(pr) :: ln_gamma_c(size(n))
-      real(pr) :: dln_gamma_c_dt(size(n))
-      real(pr) :: dln_gamma_c_dt2(size(n))
-      real(pr) :: dln_gamma_c_dn (size(n), size(n))
-      real(pr) :: dln_gamma_c_dtn(size(n), size(n))
-      real(pr) :: dln_gamma_c_dn2(size(n), size(n), size(n))
-
-      real(pr) :: ln_gamma_r(size(n))
-      real(pr) :: dln_gamma_r_dt(size(n))
-      real(pr) :: dln_gamma_r_dt2(size(n))
-      real(pr) :: dln_gamma_r_dn (size(n), size(n))
-      real(pr) :: dln_gamma_r_dtn(size(n), size(n))
-      real(pr) :: dln_gamma_r_dn2(size(n), size(n), size(n))
-   end subroutine ln_activity_coefficient
-
    subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)
       class(UNIFACPsi) :: self !! \(\psi\) function
       class(Groups) :: systems_groups !! Groups in the system
@@ -482,18 +456,24 @@ contains
       integer :: ig, jg
       integer :: ngroups
 
+      real(pr) :: Aij
+      real(pr) :: Eij
+
       ngroups = size(systems_groups%groups_ids)
 
       do concurrent(i=1:ngroups, j=1:ngroups)
          ig = systems_groups%groups_ids(i)
          jg = systems_groups%groups_ids(j)
+         
+         Aij = self%Aij(ig, jg)
+         Eij = exp(- Aij / T)
+
          if (present(psi)) &
-            psi(i, j) = exp(-self%Eij(ig, jg) / T)
+            psi(i, j) = Eij
          if (present(dpsidt)) &
-            dpsidt(i, j) = self%Eij(ig, jg) * psi(i, j) / T**2
+            dpsidt(i, j) = Aij * Eij / T**2
          if (present(dpsidt2)) &
-            dpsidt2(i, j) = &
-            self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
+            dpsidt2(i, j) = Aij * (Aij - 2_pr*T) * Eij / T**4
       end do
 
    end subroutine UNIFAC_temperature_dependence
@@ -547,18 +527,46 @@ contains
       end do
    end function thetas_i
 
-   type(UNIFAC) function setup_unifac(molecules, Eij, Qk, Rk)
+   subroutine get_unifac_default_parameters(Aij, Qk, Rk)
+      real(pr), allocatable, optional, intent(out) :: Aij(:,:)
+      real(pr), allocatable, optional, intent(out) :: Qk(:)
+      real(pr), allocatable, optional, intent(out) :: Rk(:)
+
+      if (present(Aij)) then
+         call load_npy("data/unifac_aij.npy", Aij)
+      end if
+
+      if (present(Qk)) then
+         call load_npy("data/unifac_Qk.npy", Qk)
+      end if
+
+      if (present(Rk)) then
+         call load_npy("data/unifac_Rk.npy", Rk)
+      end if
+   end subroutine get_unifac_default_parameters
+
+   type(UNIFAC) function setup_unifac(molecules, Aij, Qk, Rk)
       !! UNIFAC model initialization.
       type(Groups), intent(in) :: molecules(:) !! Molecules
-      real(pr), intent(in) :: Eij(:, :) !! Interaction Matrix
-      real(pr), intent(in) :: Qk(:) !! Group k areas
-      real(pr), intent(in) :: Rk(:) !! Group k volumes
+      real(pr), optional, intent(in) :: Aij(:, :) !! Interaction Matrix
+      real(pr), optional, intent(in) :: Qk(:) !! Group k areas
+      real(pr), optional, intent(in) :: Rk(:) !! Group k volumes
 
       type(Groups) :: soup
       type(UNIFACPsi) :: psi_function
 
+      ! Default UNIFAC parameters
+      real(pr), allocatable:: Aij_default(:, :)
+      real(pr), allocatable:: Qk_default(:)
+      real(pr), allocatable:: Rk_default(:)
+
+      ! Parameters to perform the setup
+      real(pr), allocatable:: Aij_final(:, :)
+      real(pr), allocatable:: Qk_final(:)
+      real(pr), allocatable:: Rk_final(:)
+
+      !
       integer, allocatable :: vij(:, :)
-      real(pr), allocatable :: qij(:,:)
       real(pr), allocatable :: qks(:)
 
       integer :: gi, i, j, k
@@ -567,6 +575,42 @@ contains
 
       allocate(soup%groups_ids(0))
       allocate(soup%number_of_groups(0))
+
+      ! ========================================================================
+      ! Load default UNIFAC parameters if not provided
+      ! ------------------------------------------------------------------------
+      ! Aij
+      if (.not. present(Aij)) then
+         call get_unifac_default_parameters(Aij=Aij_default)
+         
+         allocate(Aij_final(size(Aij_default, 1), size(Aij_default, 2)))
+         Aij_final(:,:) = Aij_default(:,:)
+      else
+         allocate(Aij_final(size(Aij, 1), size(Aij, 2)))
+         Aij_final(:,:) = Aij(:,:) 
+      end if
+
+      ! Qk
+      if (.not. present(Qk)) then
+         call get_unifac_default_parameters(Qk=Qk_default)
+         
+         allocate(Qk_final(size(Qk_default)))
+         Qk_final(:) = Qk_default(:)
+      else
+         allocate(Qk_final(size(Qk)))
+         Qk_final(:) = Qk(:) 
+      end if
+
+      ! Rk
+      if (.not. present(Rk)) then
+         call get_unifac_default_parameters(Rk=Rk_default)
+         
+         allocate(Rk_final(size(Rk_default)))
+         Rk_final(:) = Rk_default(:)
+      else
+         allocate(Rk_final(size(Rk)))
+         Rk_final(:) = Rk(:) 
+      end if
 
       ! ========================================================================
       ! Count all the individual groups and each molecule volume and area
@@ -584,8 +628,8 @@ contains
                gi = molecules(i)%groups_ids(j)
 
                ! Calculate molecule i volume and area
-               r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk(gi)
-               q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk(gi)
+               r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk_final(gi)
+               q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk_final(gi)
 
                if (all(soup%groups_ids - gi  /= 0)) then
                   ! Add group if it wasn't included yet
@@ -606,11 +650,10 @@ contains
       ! Build a matrix vij and vector qk
       ! ------------------------------------------------------------------------
       allocate(vij(size(molecules), size(soup%number_of_groups)))
-      allocate(qij(size(molecules), size(soup%number_of_groups)))
       allocate(qks(size(soup%number_of_groups)))
 
       vij = 0
-      qij = 0.0_pr
+      qks = 0.0_pr
       do i=1,size(molecules)
          do k=1,size(molecules(i)%number_of_groups)
             gi = molecules(i)%groups_ids(k)
@@ -619,24 +662,21 @@ contains
             j = findloc(soup%groups_ids, gi, dim=1)
 
             vij(i,j) = molecules(i)%number_of_groups(k)
-            qij(i,j) = Qk(gi)
 
-            if (Qk(gi) /= 0) then
-               qks(j) = Qk(gi)
-            end if
+            qks(j) = Qk_final(gi)
          end do
       end do
       ! ========================================================================
 
-      psi_function%Eij = Eij
+      psi_function%Aij = Aij_final
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
       setup_unifac%nmolecules = size(molecules)
       setup_unifac%psi_function = psi_function
-      setup_unifac%group_area = Qk
-      setup_unifac%group_volume = Rk
+      setup_unifac%group_area = Qk_final
+      setup_unifac%group_volume = Rk_final
       setup_unifac%thetas_ij = thetas_i(&
-         size(molecules), size(soup%number_of_groups), Qk, soup, molecules)
+         size(molecules), size(soup%number_of_groups), Qk_final, soup, molecules)
       setup_unifac%vij = vij
       setup_unifac%qk = qks
    end function setup_unifac

@@ -43,12 +43,7 @@ program main
    molecules(3)%number_of_groups = [1]
 
 
-   model = setup_unifac(&
-      molecules, &
-      Eij=Aij, &
-      Qk=Qk, &
-      Rk=Rk &
-      )
+   model = setup_unifac(molecules)
 
    call excess_gibbs(model, x, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
    call excess_gibbs(model, x, T + dx, Ge_dt)

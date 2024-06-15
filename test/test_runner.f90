@@ -20,6 +20,11 @@ program tester
     use test_srk, only: suite_srk => collect_suite
     use test_rkpr, only: suite_rkpr => collect_suite
 
+    ! =========================================================================
+    ! Implemented GeModels testings
+    ! -------------------------------------------------------------------------
+    use test_unifac, only: suite_unifac => collect_suite
+
     use stdlib_ansi, only: fg_color_green, fg_color_red, operator(//), style_reset
 
     implicit none
@@ -47,7 +52,11 @@ program tester
         new_testsuite("PengRobinson76", suite_pr76), &
         new_testsuite("PengRobinson78", suite_pr78), &
         new_testsuite("SoaveRedlichKwong", suite_srk), &
-        new_testsuite("RKPR", suite_rkpr) &
+        new_testsuite("RKPR", suite_rkpr), &
+        ! =====================================================================
+        ! Ge particular tests
+        ! ---------------------------------------------------------------------
+        new_testsuite("UNIFAC", suite_unifac) &
         ]
 
     do is = 1, size(testsuites)
