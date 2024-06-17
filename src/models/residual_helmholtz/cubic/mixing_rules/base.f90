@@ -1,4 +1,23 @@
 module yaeos__models_ar_cubic_mixing_base
+    !! # Mixing rules core math
+    !! Procedures of the core calculations of CubicEoS mixing rules.
+    !!
+    !! # Description
+    !! This module holds all the basic math to use mixing rules in other codes.
+    !! Keeping it simple and accesible.
+    !!
+    !! # Examples
+    !!
+    !! ```fortran
+    !! bi = [0.2, 0.3]
+    !! lij = reshape([0.0, 0.2, 0.2, 0], [2,2])
+    !!
+    !! ! Calculate B parameter with Quadratric Mixing Rules.
+    !! call bmix_qmr(n, bi, lij, b, dbi, dbij)
+    !! 
+    !! ```
+    !!
+    !! # References
     use yaeos__constants, only: pr
     implicit none
 contains
@@ -27,8 +46,10 @@ contains
 
         nc = size(n)
         TOTN = sum(n)
-        B = 0.0_pr
-        aux = 0.0_pr
+        B = 0
+        dBi = 0
+        dBij = 0
+        aux = 0
 
         do i = 1, nc
             do j = 1, nc
