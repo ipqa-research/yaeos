@@ -35,9 +35,9 @@ contains
       mixrule%bi = b
       mixrule%Ge = ge
       if (present(lij)) then
-        mixrule%l = lij
+         mixrule%l = lij
       else
-        mixrule%l = reshape([(0, i=1,nc**2)], [nc,nc])
+         mixrule%l = reshape([(0, i=1, nc**2)], [nc, nc])
       end if
    end function
 
@@ -62,13 +62,37 @@ contains
       real(pr) :: Ge, GeT, GeT2, Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
 
       real(pr) :: totn !! Total number of moles
+      real(pr) :: logB_nbi(size(n)) !! \(\ln \frac{B}{n b_i}\)
+      real(pr) :: dlogBi_nbi(size(n), size(n))
 
+      integer :: i, j, l, nc
+      nc = size(n)
       totn = sum(n)
-      call self%Bmix(n, self%bi, B, dBi, dBij)
-      call self%ge%excess_gibbs(n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2)
 
-      D = sum(n*ai/self%bi) + 1/self%q*(Ge + R*T*sum(n*log(B/(totn*self%bi))))
+      bi = self%bi
+      call self%Bmix(n, bi, B, dBi, dBij)
+      call self%ge%excess_gibbs( &
+         n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+         )
+
+      logb_nbi = log(B/(totn*self%bi))
+      D = (sum(n*ai/bi) + 1/self%q*(Ge + R*T*sum(n*logB_nbi)))
+      dDdT = (sum(n*daidt/bi) + 1/self%q*(GeT + R*sum(n*logB_nbi)))
+      dDdT2 = (sum(n*daidt2/bi) + 1/self%q*(GeT2 + R*sum(n*logB_nbi)))
+      dDi = ai/bi + 1._pr/self%q*(GeN + R*T*(logB_nbi + sum(n*dBi/B)))
+
+      do i = 1, nc
+         do j = 1, nc
+            dDij(i, j) = R*T*sum(n*(dBij(:, j)/B - dBi(j)/B**2)) + dBi(j)/B
+            dDij(i, j) = 1._pr/self%q*(dDij(i, j) + GeN2(i, j))
+            dDij(i, j) = dDi(i)*dBi(j) + dDij(i, j)*dBi(i) + dBi(i)*dDi(j) + dBij(i, j)*D
+         end do
+      end do
+
+      dDi = B*dDi + D*dBi
       D = D*B
+      dDdT = dDdT*B
+      dDdT2 = dDdT2*B
    end subroutine
 
    subroutine D1Mix_constantHV(self, n, d1i, D1, dD1i, dD1ij)
@@ -78,5 +102,9 @@ contains
       real(pr), intent(out) :: D1
       real(pr), intent(out) :: dD1i(:)
       real(pr), intent(out) :: dD1ij(:, :)
+
+      D1 = d1i(1)
+      dD1i = 0
+      dD1ij = 0
    end subroutine D1Mix_constantHV
 end module yaeos__models_cubic_mixing_rules_huron_vidal
