@@ -111,14 +111,13 @@ contains
 
          if(present(Gen)) Gen = ndb
          if(present(GeT)) GeT = tdb
-      else
-         if (present(Gen)) then
+      else if (present(Gen)) then
             call reset_vars
             geb = 1
             call self%ge_b(n, nb, t, tb, ge, geb)
             Gen = nb
             if (present(GeT)) GeT = tb
-         end if
+      else
       end if
 
       if (present(GeTn)) GeTn = get_GenT()
