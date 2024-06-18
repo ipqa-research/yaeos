@@ -18,7 +18,6 @@ contains
       ! https://github.com/CalebBell/thermo
       use yaeos, only: pr, R
       use yaeos, only: excess_gibbs, Groups, setup_unifac, UNIFAC
-      use stdlib_io_npy, only: load_npy
 
       type(error_type), allocatable, intent(out) :: error
 
@@ -31,11 +30,12 @@ contains
       real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
       real(pr) :: Ge_i, Gen_i(nc), GeT_i, GeT2_i, GeTn_i(nc), Gen2_i(nc, nc)
       real(pr) :: ln_gammas(nc)
+      real(pr) :: Ge_aux, Ge_aux2
 
       real(pr) :: n(nc), T, n_t
 
       T = 150
-      n = [2.0, 7.0, 1.0]
+      n = [20.0, 70.0, 10.0]
       n_t = sum(n)
 
       ! ! Ethane [CH3]
@@ -55,14 +55,19 @@ contains
 
       ! Call all Ge and derivatives
       call excess_gibbs(model, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      call excess_gibbs(model, n + [0.0_pr, 0.001_pr, 0.0_pr], T, Ge_aux)
+      call excess_gibbs(model, n - [0.0_pr, 0.001_pr, 0.0_pr], T, Ge_aux2)
+
+      print *, Gen2(2,:)
+      print *, (Ge_aux - 2 * Ge + Ge_aux2) / 0.001**2
 
       ! Call Ge and derivatives individually
       call excess_gibbs(model, n, T, Ge_i)
-      ! call excess_gibbs(model, n, T, GeT=GeT_i)
-      ! call excess_gibbs(model, n, T, GeT2=GeT2_i)
-      ! call excess_gibbs(model, n, T, Gen=Gen_i)
-      ! call excess_gibbs(model, n, T, GeTn=GeTn_i)
-      ! call excess_gibbs(model, n, T, Gen=Gen2)
+      call excess_gibbs(model, n, T, GeT=GeT_i)
+      call excess_gibbs(model, n, T, GeT2=GeT2_i)
+      call excess_gibbs(model, n, T, Gen=Gen_i)
+      call excess_gibbs(model, n, T, GeTn=GeTn_i)
+      call excess_gibbs(model, n, T, Gen2=Gen2_i)
 
       ! Call GeModel class method
       call model%ln_activity_coefficient(n, T, ln_gammas)
@@ -103,6 +108,94 @@ contains
       ! Test individual calls
       ! ------------------------------------------------------------------------
       call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
 
+      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+
+      ! ========================================================================
+      ! Test pair calls
+      ! ------------------------------------------------------------------------
+      ! Ge
+      call excess_gibbs(model, n, T, Ge=Ge_i, GeT=GeT_i)
+      call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+
+      call excess_gibbs(model, n, T, Ge=Ge_i, GeT2=GeT2_i)
+      call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+
+      call excess_gibbs(model, n, T, Ge=Ge_i, Gen=Gen_i)
+      call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, Ge=Ge_i, GeTn=GeTn_i)
+      call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, Ge=Ge_i, Gen2=Gen2_i)
+      call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+
+      ! Ge_T
+      call excess_gibbs(model, n, T, GeT=GeT_i, GeT2=GeT2_i)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+
+      call excess_gibbs(model, n, T, GeT=GeT_i, Gen=Gen_i)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, GeT=GeT_i, GeTn=GeTn_i)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, GeT=GeT_i, Gen2=Gen2_i)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+
+      ! Ge_T2
+      call excess_gibbs(model, n, T, GeT2=GeT2_i, Gen=Gen_i)
+      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, GeT2=GeT2_i, GeTn=GeTn_i)
+      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, GeT2=GeT2_i, Gen2=Gen2_i)
+      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+
+      ! Gen_i
+      call excess_gibbs(model, n, T, Gen=Gen_i, GeTn=GeTn_i)
+      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+
+      call excess_gibbs(model, n, T, Gen=Gen_i, Gen2=Gen2_i)
+      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+
+      ! ========================================================================
+      ! Just one triplet call test
+      ! ------------------------------------------------------------------------
+      call excess_gibbs(model, n, T, Ge=Ge_i, GeT=GeT_i, Gen2=Gen2_i)
+      call check(error, abs(Ge - Ge_i) <= 1e-10)
+      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
    end subroutine test_against_caleb_thermo
 end module test_unifac
