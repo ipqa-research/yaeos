@@ -265,7 +265,7 @@ contains
       class(UNIFAC), intent(in) :: self
       !! UNIFAC model
       real(pr), intent(in) :: n(:)
-      !! Moles vector
+      !! Moles vector [mol]
       real(pr), intent(in) :: T
       !! Temperature [K]
       real(pr), optional, intent(out) :: Ge
@@ -281,8 +281,6 @@ contains
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
       !! \(\frac{d^2G^E}{dn^2}\)
 
-      real(pr) :: n_t
-
       ! Combinatorial
       real(pr) :: Ge_c
       real(pr) :: dGe_c_dn(self%nmolecules)
@@ -290,8 +288,6 @@ contains
 
       ! logical
       logical :: pge, dn, dn2
-
-      n_t = sum(n)
 
       ! Residual calling
       call Ge_residual(self, n, T, Ge, Gen, Gen2, GeT, GeT2, GeTn)
@@ -302,55 +298,99 @@ contains
       dn2 = present(Gen2)
 
       if (dn .and. .not. dn2) then
-         call Ge_combinatorial(self, n, Ge=Ge_c, dGe_dn=dGe_c_dn)
+         call Ge_combinatorial(self, n, T, Ge=Ge_c, dGe_dn=dGe_c_dn)
       elseif (dn2 .and. .not. dn) then
-         call Ge_combinatorial(self, n, Ge=Ge_c, dGe_dn2=dGe_c_dn2)
+         call Ge_combinatorial(self, n, T, Ge=Ge_c, dGe_dn2=dGe_c_dn2)
       else
          call Ge_combinatorial(&
-            self, n, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2 &
+            self, n, T, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2 &
             )
       end if
 
-      if (present(Ge)) Ge = Ge_c * R * T + Ge
-      if (present(Gen)) Gen = dGe_c_dn * R * T + Gen
-      if (present(Gen2)) Gen2 = dGe_c_dn2 * R * T + Gen2
-      if (present(GeT)) GeT = (GeT + Ge_c * R)
+      if (present(Ge)) Ge = Ge_c + Ge
+      if (present(Gen)) Gen = dGe_c_dn + Gen
+      if (present(Gen2)) Gen2 = dGe_c_dn2 + Gen2
+      if (present(GeT)) GeT = Ge_c / T + GeT
       if (present(GeT2)) GeT2 = GeT2
-      if (present(GeTn)) GeTn = R * dGe_c_dn + GeTn
+      if (present(GeTn)) GeTn = dGe_c_dn / T + GeTn
    end subroutine excess_gibbs
 
-   subroutine Ge_combinatorial(self, n, Ge, dGe_dn, dGe_dn2)
+   subroutine Ge_combinatorial(self, n, T, Ge, dGe_dn, dGe_dn2)
       !! # UNIFAC combinatorial term
-      !! Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy
+      !! Calculate the UNIFAC combinatorial term of Gibbs excess energy
       !!
       !! # Description
       !! Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
-      !! The subroutine uses the Flory-Huggins and Staverman-Guggenheim 
+      !! The subroutine uses the Flory-Huggins and Staverman-Guggenheim
       !! combinatory terms as follows:
       !!
       !! ### Flory-Huggins
       !!
       !! \[
-      !!    G^{E,FH} = 
-      !!    \sum_i^{NC} n_i \, \text{ln} \, r_i 
+      !!    G^{E,FH} =
+      !!    RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i
       !!    - n \, \text{ln} \, \sum_j^{NC} n_j r_j
-      !!    + n \, \text{ln} \, n
+      !!    + n \, \text{ln} \, n \right)
       !! \]
       !!
-      !! # Examples
+      !! \[
+      !!    \frac{dG^{E,FH}}{dn_i} =
+      !!    RT \left(\text{ln} \, r_i - \text{ln} \, \sum_j^{NC} n_j r_j
+      !!    + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle \sum_j^{NC} n_j r_j} \right)
+      !! \]
       !!
-      !! ```fortran
-      !!  A basic code example
-      !! ```
+      !! \[
+      !!    \frac{d^2G^{E,FH}}{dn_i dn_j} =
+      !!    RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l} + \frac{1}{n}
+      !!    + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC} n_l r_l \right)^2} \right)
+      !! \]
+      !!
+      !! ### Staverman-Guggenheim
+      !!
+      !! \[
+      !!    \frac{G^{E,SG}}{RT} =
+      !!    \frac{z}{2} \sum_i^{NC} n_i q_i
+      !!    \left(\text{ln} \frac{q_i}{r_i}
+      !!    - \text{ln} \, \sum_j^{NC} n_j q_j
+      !!    + \text{ln} \, \sum_j^{NC} n_j r_j \right)
+      !! \]
+      !!
+      !! \[
+      !!    \frac{1}{RT}\frac{dG^{E,SG}}{dn_i} =
+      !!    \frac{z}{2} q_i \left(
+      !!    - \text{ln} \, \left(
+      !!    \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
+      !!    - 1
+      !!    + \frac{\displaystyle r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
+      !! \]
+      !!
+      !! \[
+      !!    \frac{1}{RT}\frac{d^2G^{E,SG}}{dn_i dn_j} =
+      !!    \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_l q_l}
+      !!    + \frac{q_i r_j + q_j r_i}{\displaystyle \sum_l^{NC} n_l r_l}
+      !!    - \frac{\displaystyle r_i r_j \sum_l^{NC} n_l q_l}
+      !!    {\left(\displaystyle \sum_l^{NC} n_l r_l \right)^2} \right)
+      !! \]
+      !!
+      !! ### Fredenslund et al. (UNIFAC)
+      !! \[
+      !!    \frac{G^{E,\text{UNIFAC}}}{RT} = \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
+      !! \]
       !!
       !! # References
-      !!
+      !! SINTEF (https://github.com/thermotools/thermopack)
       class(UNIFAC) :: self
 
       real(pr), intent(in) :: n(self%nmolecules)
+      !! Moles vector [mol]
+      real(pr), intent(in) :: T
+      !! Temperature [K]
       real(pr), optional, intent(out) :: Ge
+      !! Combinatorial Gibbs excess energy
       real(pr), optional, intent(out) :: dGe_dn(self%nmolecules)
+      !! \(\frac{dGe}{dn}\)
       real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules,self%nmolecules)
+      !! \(\frac{d^2Ge}{dn^2}\)
 
       ! Flory-Huggins variables
       real(pr) :: Ge_fh
@@ -396,26 +436,48 @@ contains
          end if
       end associate
 
-      if (present(Ge)) Ge = (Ge_fh + Ge_sg) !* R * T
-      if (present(dGe_dn)) dGe_dn = (dGe_fh_dn + dGe_sg_dn) !* R * T
-      if (present(dGe_dn2)) dGe_dn2 = (dGe_fh_dn2 + dGe_sg_dn2) !* n * R * T
+      if (present(Ge)) Ge = (Ge_fh + Ge_sg) * R * T
+      if (present(dGe_dn)) dGe_dn = (dGe_fh_dn + dGe_sg_dn) * R * T
+      if (present(dGe_dn2)) dGe_dn2 = (dGe_fh_dn2 + dGe_sg_dn2) * R * T
    end subroutine Ge_combinatorial
 
    subroutine Ge_residual(self, n, T, Ge, dGe_dn, dGe_dn2, dGe_dT, dGe_dT2, dGe_dTn)
-      !! # Title
-      !! Simple description
+      !! # UNIFAC residual term
+      !! Evaluate the UNIFAC residual therm
       !!
       !! # Description
-      !! Detailed description
+      !! Evaluate the UNIFAC residual therm. The residual Gibbs excess energy 
+      !! and its derivatives are evaluated as:
       !!
-      !! # Examples
+      !! \[
+      !!  \frac{Ge^r}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k (\Lambda_k - \Lambda_k^i)
+      !! \]
       !!
-      !! ```fortran
-      !!  A basic code example
-      !! ```
+      !! With:
+      !!
+      !! \[
+      !!  \Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}
+      !! \]
+      !!
+      !! \[
+      !!  \Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}
+      !! \]
+      !!
+      !! \[
+      !!  E_{jk} = \text{exp} \left(- \frac{A_{jk}}{RT} \right)
+      !! \]
+      !!
+      !! \[
+      !!  \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
+      !!  {\displaystyle \sum_{k}^{NC} n_l \sum_{m}^{NG} v_m^l Q_m}
+      !! \]
+      !!
+      !! \[
+      !!  \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
+      !! \]
       !!
       !! # References
-      !!
+      !! SINTEF (https://github.com/thermotools/thermopack)
       class(UNIFAC) :: self
 
       real(pr), intent(in) :: n(self%nmolecules)

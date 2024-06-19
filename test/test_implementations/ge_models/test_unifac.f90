@@ -30,7 +30,6 @@ contains
       real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
       real(pr) :: Ge_i, Gen_i(nc), GeT_i, GeT2_i, GeTn_i(nc), Gen2_i(nc, nc)
       real(pr) :: ln_gammas(nc)
-      real(pr) :: Ge_aux, Ge_aux2
 
       real(pr) :: n(nc), T, n_t
 
@@ -55,11 +54,6 @@ contains
 
       ! Call all Ge and derivatives
       call excess_gibbs(model, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
-      call excess_gibbs(model, n + [0.0_pr, 0.001_pr, 0.0_pr], T, Ge_aux)
-      call excess_gibbs(model, n - [0.0_pr, 0.001_pr, 0.0_pr], T, Ge_aux2)
-
-      print *, Gen2(2,:)
-      print *, (Ge_aux - 2 * Ge + Ge_aux2) / 0.001**2
 
       ! Call Ge and derivatives individually
       call excess_gibbs(model, n, T, Ge_i)
@@ -71,7 +65,7 @@ contains
 
       ! Call GeModel class method
       call model%ln_activity_coefficient(n, T, ln_gammas)
-      
+
       ! ========================================================================
       ! Test against Caleb Bell's implementation
       ! ------------------------------------------------------------------------
@@ -86,18 +80,18 @@ contains
       call check(error, allclose(ln_gammas, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-8_pr))
 
       ! Gen2
-      call check(error, allclose(Gen2(1,:), [-0.75249927_pr,  0.13440904_pr,  0.56413529_pr] * R*T, 1e-6_pr))
-      call check(error, allclose(Gen2(2,:), [ 0.13440904_pr,  0.34708386_pr, -2.69840507_pr] * R*T, 1e-6_pr))
-      call check(error, allclose(Gen2(3,:), [ 0.56413529_pr, -2.69840507_pr, 17.76056492_pr] * R*T, 1e-6_pr))
+      call check(error, allclose(Gen2(1,:), [-0.75249927_pr,  0.13440904_pr,  0.56413529_pr] * R*T/n_t, 1e-7_pr))
+      call check(error, allclose(Gen2(2,:), [ 0.13440904_pr,  0.34708386_pr, -2.69840507_pr] * R*T/n_t, 1e-7_pr))
+      call check(error, allclose(Gen2(3,:), [ 0.56413529_pr, -2.69840507_pr, 17.76056492_pr] * R*T/n_t, 1e-7_pr))
 
       ! dln_gammas_dn
-      call check(error, allclose(Gen2(1,:) /R/T, [-0.752499273_pr, 0.134409037_pr, 0.564135287_pr], 1e-6_pr))
-      call check(error, allclose(Gen2(2,:) /R/T, [0.1344090359_pr, 0.3470838559_pr, -2.698405064_pr], 1e-6_pr))
-      call check(error, allclose(Gen2(3,:) /R/T, [0.5641352889_pr, -2.698405071_pr, 17.760564919_pr], 1e-6_pr))
+      call check(error, allclose(Gen2(1,:) /R/T, [-0.752499273_pr, 0.134409037_pr, 0.564135287_pr] / n_t, 1e-7_pr))
+      call check(error, allclose(Gen2(2,:) /R/T, [0.1344090359_pr, 0.3470838559_pr, -2.698405064_pr] / n_t, 1e-7_pr))
+      call check(error, allclose(Gen2(3,:) /R/T, [0.5641352889_pr, -2.698405071_pr, 17.760564919_pr] / n_t, 1e-7_pr))
 
       ! GeT
       call check(error, abs(GeT / n_t - 0.03268447167877294_pr) < 1e-10)
-      
+
       ! GeT2
       call check(error, abs(GeT2 / n_t - (-0.0003594405355829625_pr)) < 1e-10)
 
