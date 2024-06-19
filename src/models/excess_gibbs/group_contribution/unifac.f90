@@ -446,11 +446,11 @@ contains
       !! Evaluate the UNIFAC residual therm
       !!
       !! # Description
-      !! Evaluate the UNIFAC residual therm. The residual Gibbs excess energy 
+      !! Evaluate the UNIFAC residual therm. The residual Gibbs excess energy
       !! and its derivatives are evaluated as:
       !!
       !! \[
-      !!  \frac{Ge^r}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k (\Lambda_k - \Lambda_k^i)
+      !!  \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k (\Lambda_k - \Lambda_k^i)
       !! \]
       !!
       !! With:
@@ -474,6 +474,100 @@ contains
       !!
       !! \[
       !!  \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
+      !! \]
+      !!
+      !! ##### The compositional derivatives:
+      !!
+      !! \[
+      !!  \frac{1}{R T} \frac{\partial G^{E,R}}{\partial n_\alpha} =
+      !!  - \sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\Lambda_k -
+      !!  \Lambda_k^\alpha \right) - \sum_i^{\mathrm{NC}} n_i
+      !!  \sum_k^{\mathrm{NG}} v_k^i Q_k
+      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_\alpha \partial n_\beta} =
+      !!  -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha \frac{\partial \Lambda_k}
+      !!  {\partial n_\beta} + v_k^\beta \frac{\partial \Lambda_k}
+      !!  {\partial n_\alpha}\right) - \sum_k^{\mathrm{NG}}
+      !!  \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
+      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}
+      !!  = \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}}
+      !!  {\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+      !!  E_{j k}} - \frac{\sum_m^{\mathrm{NG}} v_m^\alpha Q_m}
+      !!  {\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+      !!  = - \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}\right)
+      !!  \left(\sum_j^{\mathrm{NG}} v_j^\beta Q_j E_{j k}\right)}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+      !!  E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
+      !!  Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
+      !! \]
+      !!
+      !! ##### The temperature derivatives:
+      !!
+      !! \[
+      !!  \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} = 
+      !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+      !!  \left(\frac{\partial \Lambda_k}{\partial T} 
+      !!  -\frac{\partial \Lambda_k^i}{\partial T}\right)
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
+      !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+      !!  \left(\frac{\partial^2 \Lambda_k}{\partial T^2} - 
+      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \frac{\partial \Lambda_k}{\partial T} = 
+      !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
+      !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial \Lambda_k^i}{\partial T} = 
+      !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
+      !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k}{\partial T^2} = 
+      !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
+      !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
+      !!  - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2} = 
+      !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
+      !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+      !!  - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
+      !! \]
+      !!
+      !! ##### Temperature-compositional cross derivative:
+      !!
+      !! \[
+      !!  \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
+      !!  {\partial T \partial n_\alpha}=
+      !!  -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
+      !!  {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right) 
+      !!  -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right) 
+      !!  Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
       !! \]
       !!
       !! # References
