@@ -92,7 +92,10 @@ contains
       ! ========================================================================
       ! Consistency tests
       ! ------------------------------------------------------------------------
-      call ge_consistency(model, n, t, eq58, eq59, eq60, eq61)
+      call ge_consistency(model, n, t, eq58=eq58)
+      call ge_consistency(model, n, t, eq59=eq59)
+      call ge_consistency(model, n, t, eq60=eq60)
+      call ge_consistency(model, n, t, eq61=eq61)
 
       ! Eq 58
       call check(error, abs(eq58) < 1e-10_pr)

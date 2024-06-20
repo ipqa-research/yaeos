@@ -95,10 +95,12 @@ contains
          model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
          Ar=Ar_num, Arn2=Arn2_num)
 
-
-      call ar_consistency(&
-         model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
-         )
+      ! Calling individually just because coverage
+      call ar_consistency(model, n, v, t, eq31=eq31)
+      call ar_consistency(model, n, v, t, eq33=eq33)
+      call ar_consistency(model, n, v, t, eq34=eq34)
+      call ar_consistency(model, n, v, t, eq36=eq36)
+      call ar_consistency(model, n, v, t, eq37=eq37)
 
       ! Numeric derivatives
       call check(error, rel_error(Ar, Ar_num) < 1e-6)
