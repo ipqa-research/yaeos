@@ -211,7 +211,7 @@ contains
       !!
       !! ```fortran
       !!  ! Gibbs excess of ethane-ethanol-methyl amine mixture.
-      !!  use yaeos, only: R, pr, excess_gibbs, Groups, setup_unifac, UNIFAC
+      !!  use yaeos, only: R, pr, Groups, setup_unifac, UNIFAC
       !!
       !!  type(UNIFAC) :: model
       !!
@@ -242,7 +242,7 @@ contains
       !!  model = setup_unifac(molecules)
       !!
       !!  ! Call all Ge and derivatives
-      !!  call excess_gibbs(model, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !!  call model%excess_gibbs(model, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       !!
       !!  print *, "Ge: ", Ge
       !!  print *, "GeT: ", GeT
@@ -896,7 +896,7 @@ contains
       !!
       !! # References
       !!
-      class(UNIFACPsi) :: self 
+      class(UNIFACPsi) :: self
       !! \(\psi\) function
       class(Groups) :: systems_groups
       !! Groups in the system
@@ -904,7 +904,7 @@ contains
       !! Temperature [K]
       real(pr), optional, intent(out) :: psi(:, :)
       !! \(\psi\)
-      real(pr), optional, intent(out) :: dpsi_dt(:, :) 
+      real(pr), optional, intent(out) :: dpsi_dt(:, :)
       !! \(\frac{d \psi\}{dT} \)
       real(pr), optional, intent(out) :: dpsi_dt2(:, :)
       !! \(\frac{d^2 \psi\}{dT^2} \)
@@ -935,6 +935,17 @@ contains
    end subroutine UNIFAC_temperature_dependence
 
    function thetas_i(nm, ng, group_area, stew, molecules) result(thetas_ij)
+      !! # \(\Theta_i \) calculation
+      !! Calculate the area fraciton of each froup on each molecule.
+      !!
+      !! # Description
+      !! Calculate the area fraciton of each froup on each molecule. The values
+      !! are obtained on the setup_unifac function and stored on the UNIFAC
+      !! type, since the values can be reused (no compositional or temperature
+      !! dependence)
+      !!
+      !! # References
+      !!
       integer, intent(in) :: nm !! Number of molecules
       integer, intent(in) :: ng !! Number of groups
       real(pr), intent(in) :: group_area(:) !! Group k areas
@@ -945,7 +956,7 @@ contains
       real(pr) :: total_area_i(nm)
       real(pr) :: qki_contribution
 
-      integer :: gi !! group k id
+      integer :: gi
       integer :: i, j, k
 
       thetas_ij = 0.0_pr
@@ -1050,7 +1061,7 @@ contains
       type(Groups), intent(in) :: molecules(:)
       !! Molecules (Group type) objects
       real(pr), optional, intent(in) :: Aij(:, :)
-      !! Subgroup-subgroup interaction parameters matrix (if no provided loads 
+      !! Subgroup-subgroup interaction parameters matrix (if no provided loads
       !! default parameters)
       real(pr), optional, intent(in) :: Qk(:)
       !! Subgroups areas (if no provided loads default parameters)
