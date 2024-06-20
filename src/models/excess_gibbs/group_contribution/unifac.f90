@@ -4,7 +4,7 @@ module yaeos__models_ge_group_contribution_unifac
    !!
    !! # Description
    !! Classic liquid-vapor UNIFAC model implementation module. The
-   !! implementation is based on the Thermopack lib (SINTEF) implementation.
+   !! implementation is based on the Thermopack library (SINTEF) implementation.
    !!
    !! # Examples
    !!
@@ -90,7 +90,7 @@ module yaeos__models_ge_group_contribution_unifac
       !! # Examples
       !!
       !! ```fortran
-      !!  ! Instantiate an UNIFAC model with ethanol-formic acid mix and calculate gammas
+      !!  ! UNIFAC model with ethanol-formic acid mix and calculate gammas
       !!  use yaeos, only: pr, Groups, setup_unifac, UNIFAC
       !!
       !!  type(UNIFAC) :: model
@@ -155,14 +155,15 @@ module yaeos__models_ge_group_contribution_unifac
          self, systems_groups, T, psi, dpsi_dt, dpsi_dt2&
          )
          !! # temperature_dependence interface
-         !! Interface subroutine for UNIFAC models temperature dependent functions
+         !! Interface subroutine for UNIFAC models temperature dependent
+         !! functions
          !!
          import pr, PsiFunction, Groups
          class(PsiFunction) :: self
          !! PsiFunction type variable
          class(Groups) :: systems_groups
-         !! Groups type variable containig all the system's groups. See the `groups_stew`
-         !! variable on the `UNIFAC` documentation.
+         !! Groups type variable containig all the system's groups. See the
+         !! `groups_stew` variable on the `UNIFAC` documentation.
          real(pr), intent(in) :: T
          !! Temperature [K]
          real(pr), optional, intent(out) :: psi(:, :)
@@ -181,7 +182,8 @@ module yaeos__models_ge_group_contribution_unifac
       !! \]
       !!
       !! \[
-      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2} \exp(-\frac{A_{ij}}{T})
+      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
+      !!    \exp(-\frac{A_{ij}}{T})
       !! \]
       !!
       !! \[
@@ -336,13 +338,15 @@ contains
       !! \[
       !!    \frac{dG^{E,FH}}{dn_i} =
       !!    RT \left(\text{ln} \, r_i - \text{ln} \, \sum_j^{NC} n_j r_j
-      !!    + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle \sum_j^{NC} n_j r_j} \right)
+      !!    + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle
+      !!    \sum_j^{NC} n_j r_j} \right)
       !! \]
       !!
       !! \[
       !!    \frac{d^2G^{E,FH}}{dn_i dn_j} =
-      !!    RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l} + \frac{1}{n}
-      !!    + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC} n_l r_l \right)^2} \right)
+      !!    RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l}
+      !!    + \frac{1}{n} + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC}
+      !!    n_l r_l \right)^2} \right)
       !! \]
       !!
       !! ### Staverman-Guggenheim
@@ -359,14 +363,14 @@ contains
       !!    \frac{1}{RT}\frac{dG^{E,SG}}{dn_i} =
       !!    \frac{z}{2} q_i \left(
       !!    - \text{ln} \, \left(
-      !!    \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
-      !!    - 1
-      !!    + \frac{\displaystyle r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
+      !!    \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC}
+      !!    n_j r_j} \right) - 1 + \frac{\displaystyle r_i \sum_j^{NC} n_j
+      !!    q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
       !! \]
       !!
       !! \[
       !!    \frac{1}{RT}\frac{d^2G^{E,SG}}{dn_i dn_j} =
-      !!    \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_l q_l}
+      !!    \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_lq_l}
       !!    + \frac{q_i r_j + q_j r_i}{\displaystyle \sum_l^{NC} n_l r_l}
       !!    - \frac{\displaystyle r_i r_j \sum_l^{NC} n_l q_l}
       !!    {\left(\displaystyle \sum_l^{NC} n_l r_l \right)^2} \right)
@@ -374,7 +378,8 @@ contains
       !!
       !! ### Fredenslund et al. (UNIFAC)
       !! \[
-      !!    \frac{G^{E,\text{UNIFAC}}}{RT} = \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
+      !!    \frac{G^{E,\text{UNIFAC}}}{RT} =
+      !!    \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
       !! \]
       !!
       !! # References
@@ -450,7 +455,8 @@ contains
       !! and its derivatives are evaluated as:
       !!
       !! \[
-      !!  \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k (\Lambda_k - \Lambda_k^i)
+      !!  \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
+      !!  (\Lambda_k - \Lambda_k^i)
       !! \]
       !!
       !! With:
@@ -464,17 +470,22 @@ contains
       !! \]
       !!
       !! \[
-      !!  E_{jk} = \text{exp} \left(- \frac{A_{jk}}{RT} \right)
+      !!  E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)
       !! \]
       !!
       !! \[
       !!  \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
-      !!  {\displaystyle \sum_{k}^{NC} n_l \sum_{m}^{NG} v_m^l Q_m}
+      !!  {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}
       !! \]
       !!
       !! \[
       !!  \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
       !! \]
+      !!
+      !! In the UNIFAC model, the \(\Theta_j^i \) values are calculated assuming
+      !! that the molecule "i" is pure, hence only the subgroups of the molecule
+      !! "i" must be considered for the calculation. On the other hand, for the
+      !! \(\Theta_j \) values, all the system's subgroups are considered.
       !!
       !! ##### The compositional derivatives:
       !!
@@ -487,11 +498,11 @@ contains
       !! \]
       !!
       !! \[
-      !!  \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_\alpha \partial n_\beta} =
-      !!  -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha \frac{\partial \Lambda_k}
-      !!  {\partial n_\beta} + v_k^\beta \frac{\partial \Lambda_k}
-      !!  {\partial n_\alpha}\right) - \sum_k^{\mathrm{NG}}
-      !!  \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
+      !!  \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_
+      !!  \alpha \partial n_\beta} = -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha
+      !!  \frac{\partial \Lambda_k}{\partial n_\beta} + v_k^\beta
+      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}\right)
+      !!  - \sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
       !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
       !! \]
       !!
@@ -512,48 +523,49 @@ contains
       !!  {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
       !!  E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
       !!  Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
-      !!  {\left(\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l
+      !!  \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
       !! \]
       !!
       !! ##### The temperature derivatives:
       !!
       !! \[
-      !!  \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} = 
+      !!  \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} =
       !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
-      !!  \left(\frac{\partial \Lambda_k}{\partial T} 
+      !!  \left(\frac{\partial \Lambda_k}{\partial T}
       !!  -\frac{\partial \Lambda_k^i}{\partial T}\right)
       !! \]
       !!
       !! \[
       !!  \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
       !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
-      !!  \left(\frac{\partial^2 \Lambda_k}{\partial T^2} - 
+      !!  \left(\frac{\partial^2 \Lambda_k}{\partial T^2} -
       !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
       !! \]
       !!
       !! With:
       !!
       !! \[
-      !!  \frac{\partial \Lambda_k}{\partial T} = 
+      !!  \frac{\partial \Lambda_k}{\partial T} =
       !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
       !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
       !! \]
       !!
       !! \[
-      !!  \frac{\partial \Lambda_k^i}{\partial T} = 
+      !!  \frac{\partial \Lambda_k^i}{\partial T} =
       !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
       !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
       !! \]
       !!
       !! \[
-      !!  \frac{\partial^2 \Lambda_k}{\partial T^2} = 
+      !!  \frac{\partial^2 \Lambda_k}{\partial T^2} =
       !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
       !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
       !!  - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
       !! \]
       !!
       !! \[
-      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2} = 
+      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2} =
       !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
       !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
       !!  - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
@@ -563,11 +575,25 @@ contains
       !!
       !! \[
       !!  \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
-      !!  {\partial T \partial n_\alpha}=
+      !!  {\partial n_\alpha \partial T}=
       !!  -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
-      !!  {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right) 
-      !!  -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right) 
+      !!  {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right)
+      !!  -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right)
       !!  Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T} =
+      !!  \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \frac{\partial
+      !!  \tilde{E}_{j k}}{\partial T}}{\sum_l^{\mathrm{NC}} n_l
+      !!  \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}} -
+      !!  \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \tilde{E}_{j k}\right)
+      !!  \left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+      !!  \frac{\partial \tilde{E}_{j k}}{\partial T}\right)}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l
+      !!  \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}\right)^2}
       !! \]
       !!
       !! # References
@@ -575,13 +601,21 @@ contains
       class(UNIFAC) :: self
 
       real(pr), intent(in) :: n(self%nmolecules)
+      !! Moles vector
       real(pr), intent(in) :: T
+      !! Temperature [K]
       real(pr), optional, intent(out) :: Ge
+      !! Residual Gibbs excess energy
       real(pr), optional, intent(out) :: dGe_dn(self%nmolecules)
+      !! \(\frac{\partial G^{E,R}}{\partial n} \)
       real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules, self%nmolecules)
+      !! \(\frac{\partial^2 G^{E,R}}{\partial n^2} \)
       real(pr), optional, intent(out) :: dGe_dT
+      !! \(\frac{\partial G^{E,R}}{\partial T} \)
       real(pr), optional, intent(out) :: dGe_dT2
+      !! \(\frac{\partial^2 G^{E,R}}{\partial T^2} \)
       real(pr), optional, intent(out) :: dGe_dTn(self%nmolecules)
+      !! \(\frac{\partial^2 G^{E,R}}{\partial n \partial T} \)
 
       ! Thetas variables
       real(pr) :: theta_j(self%ngroups)
@@ -640,11 +674,17 @@ contains
       ! Ejk
       ! ------------------------------------------------------------------------
       if ((dt .or. dtn) .and. .not. dt2) then
-         call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt)
+         call self%psi_function%psi(&
+            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
+            )
       elseif (dt2 .and. .not. (dt .or. dtn)) then
-         call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2)
+         call self%psi_function%psi(&
+            self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2 &
+            )
       else
-         call self%psi_function%psi(self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2)
+         call self%psi_function%psi(&
+            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
+            )
       end if
 
       ! ========================================================================
@@ -837,12 +877,37 @@ contains
    subroutine UNIFAC_temperature_dependence(&
       self, systems_groups, T, psi, dpsi_dt, dpsi_dt2 &
       )
-      class(UNIFACPsi) :: self !! \(\psi\) function
-      class(Groups) :: systems_groups !! Groups in the system
-      real(pr), intent(in) :: T !! Temperature
-      real(pr), optional, intent(out) :: psi(:, :) !! \(\psi\)
-      real(pr), optional, intent(out) :: dpsi_dt(:, :)
+      !! # UNIFAC temperature dependence
+      !! Implementation of the \(\psi(T) \) function of the UNIFAC model.
+      !!
+      !! \[
+      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
+      !!    \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
+      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! # References
+      !!
+      class(UNIFACPsi) :: self 
+      !! \(\psi\) function
+      class(Groups) :: systems_groups
+      !! Groups in the system
+      real(pr), intent(in) :: T
+      !! Temperature [K]
+      real(pr), optional, intent(out) :: psi(:, :)
+      !! \(\psi\)
+      real(pr), optional, intent(out) :: dpsi_dt(:, :) 
+      !! \(\frac{d \psi\}{dT} \)
       real(pr), optional, intent(out) :: dpsi_dt2(:, :)
+      !! \(\frac{d^2 \psi\}{dT^2} \)
 
       integer :: i, j
       integer :: ig, jg
@@ -867,7 +932,6 @@ contains
          if (present(dpsi_dt2)) &
             dpsi_dt2(i, j) = Aij * (Aij - 2_pr*T) * Eij / T**4
       end do
-
    end subroutine UNIFAC_temperature_dependence
 
    function thetas_i(nm, ng, group_area, stew, molecules) result(thetas_ij)
@@ -920,9 +984,18 @@ contains
    end function thetas_i
 
    subroutine get_unifac_default_parameters(Aij, Qk, Rk)
+      !! # Get UNIFAC default parameters
+      !! If no provided, loads the default UNIFAC parameters on setup_unifac.
+      !!
+      !! # References
+      !! https://www.ddbst.com/published-parameters-unifac.html
+      !!
       real(pr), allocatable, optional, intent(out) :: Aij(:,:)
+      !! Subgroup-subgroup interaction parameters [K]
       real(pr), allocatable, optional, intent(out) :: Qk(:)
+      !! Subgroups areas
       real(pr), allocatable, optional, intent(out) :: Rk(:)
+      !! Subgroups volumes
 
       if (present(Aij)) then
          call load_npy("data/unifac_aij.npy", Aij)
@@ -938,11 +1011,51 @@ contains
    end subroutine get_unifac_default_parameters
 
    type(UNIFAC) function setup_unifac(molecules, Aij, Qk, Rk)
-      !! UNIFAC model initialization.
-      type(Groups), intent(in) :: molecules(:) !! Molecules
-      real(pr), optional, intent(in) :: Aij(:, :) !! Interaction Matrix
-      real(pr), optional, intent(in) :: Qk(:) !! Group k areas
-      real(pr), optional, intent(in) :: Rk(:) !! Group k volumes
+      !! # Setup UNIFAC
+      !! Instantiate a UNIFAC model
+      !!
+      !! # Description
+      !! Subroutine used to instantiate a UNIFAC model.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  ! Instantiate an UNIFAC model with ethanol-water mix and calculate gammas
+      !!  use yaeos, only: pr, Groups, setup_unifac, UNIFAC
+      !!
+      !!  type(UNIFAC) :: model
+      !!  type(Groups) :: molecules(2)
+      !!  real(pr) :: ln_gammas(2)
+      !!
+      !!  ! Ethanol definition [CH3, CH2, OH]
+      !!  molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
+      !!  molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
+      !!
+      !!  ! Water definition [H2O]
+      !!  molecules(2)%groups_ids = [16]
+      !!  molecules(2)%number_of_groups = [1]
+      !!
+      !!  ! Model setup
+      !!  model = setup_unifac(molecules)
+      !!
+      !!  ! Calculate ln_gammas
+      !!  call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+      !!
+      !!  print *, ln_gammas ! result: 0.18534142000449058    0.40331395945417559
+      !! ```
+      !!
+      !! # References
+      !! https://www.ddbst.com/published-parameters-unifac.html
+      !!
+      type(Groups), intent(in) :: molecules(:)
+      !! Molecules (Group type) objects
+      real(pr), optional, intent(in) :: Aij(:, :)
+      !! Subgroup-subgroup interaction parameters matrix (if no provided loads 
+      !! default parameters)
+      real(pr), optional, intent(in) :: Qk(:)
+      !! Subgroups areas (if no provided loads default parameters)
+      real(pr), optional, intent(in) :: Rk(:)
+      !! Subgroups volumes (if no provided loads default parameters)
 
       type(Groups) :: soup
       type(UNIFACPsi) :: psi_function
@@ -1059,7 +1172,6 @@ contains
          end do
       end do
       ! ========================================================================
-
       psi_function%Aij = Aij_final
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
