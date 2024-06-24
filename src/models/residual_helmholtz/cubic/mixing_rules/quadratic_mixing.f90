@@ -3,6 +3,7 @@ module yaeos__models_ar_cubic_quadratic_mixing
     use yaeos__constants, only: pr
     use yaeos__substance, only: substances
     use yaeos__models_ar_genericcubic, only: CubicMixRule
+    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
     implicit none
 
     type, extends(CubicMixRule) :: QMR
@@ -27,7 +28,6 @@ module yaeos__models_ar_cubic_quadratic_mixing
         procedure :: Bmix !! Repulsive parameter mixing rule
         procedure :: D1mix => D1mix_constant
     end type QMR
-
     type, extends(QMR) :: QMR_RKPR
     contains
         procedure :: D1mix => RKPR_D1Mix
@@ -142,35 +142,7 @@ contains
         real(pr), intent(out) :: B !! Mixture repulsive parameter.
         real(pr), intent(out) :: dBi(:) !! \(\frac{dB}{dn_i}\)
         real(pr), intent(out) :: dBij(:, :) !!\(\frac{d^2B}{dn_{ij}}\)
-
-        real(pr) :: bij(size(n), size(n))
-
-        real(pr) :: totn, aux(size(n))
-
-        integer :: i, j, nc
-
-        nc = size(n)
-        TOTN = sum(n)
-        B = 0.0_pr
-        aux = 0.0_pr
-
-        do i = 1, nc
-            do j = 1, nc
-                bij(i, j) = 0.5_pr * (bi(i) + bi(j)) * (1.0_pr - self%l(i,j))
-                aux(i) = aux(i) + n(j) * bij(i, j)
-            end do
-            B = B + n(i)*aux(i)
-        end do
-
-        B = B/totn
-
-        do i = 1, nc
-            dBi(i) = (2*aux(i) - B)/totn
-            do j = 1, i
-                dBij(i, j) = (2*bij(i, j) - dBi(i) - dBi(j))/totn
-                dBij(j, i) = dBij(i, j)
-            end do
-        end do
+        call bmix_qmr(n, bi, self%l, b, dbi, dbij)
     end subroutine Bmix
 
     subroutine D1mix_constant(self, n, d1i, D1, dD1i, dD1ij)
