@@ -5,7 +5,7 @@ program main
    use numerical_differentiation_module
    use forsus, only: Substance, forsus_dir
    use yaeos, only: pr, SoaveRedlichKwong, CubicEoS, NRTL, saturation_pressure, pt_envelope_2ph, AlphaSoave
-   use yaeos__models_cubic_mixing_rules_huron_vidal, only: HV
+   use yaeos__models_cubic_mixing_rules_huron_vidal, only: MHV
 
    implicit none
    integer, parameter :: nc = 2
@@ -20,7 +20,7 @@ program main
    real(pr) :: alpha(nc), Tr(nc)
    type(NRTL) :: ge_model ! Excess Gibbs model that will be used
    type(CubicEoS) :: model ! Main model
-   type(HV) :: mixrule
+   type(MHV) :: mixrule
 
    real(pr), dimension(nc) :: ai, daidt, daidt2
    real(pr) ::  D, dDdT, dDdT2, dDi(nc), dDidT(nc), dDij(nc, nc)
@@ -60,14 +60,15 @@ program main
 
    model = SoaveRedlichKwong(tc, pc, w)
 
-   mixrule = HV(ge_model, model%b)
+   mixrule = MHV(ge_model, model%b)
    mixrule%q = 0.593_pr
    deallocate (model%mixrule)
    model%mixrule = mixrule
 
    call consistency
 
-   ! call phase_envel
+   call phase_envel
+   call exit
 
    call ge_model%excess_gibbs(n, T, Ge=Ge, Gen=Gen, Gen2=Gen2)
    print *, Ge

@@ -5,25 +5,25 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    use yaeos__models_ge, only: GeModel
    implicit none
 
-   type, extends(CubicMixRule) :: HV
+   type, extends(CubicMixRule) :: MHV
       real(pr), allocatable :: l(:, :)
       real(pr), private, allocatable :: bi(:)
       real(pr), private, allocatable :: B, dBi(:), dBij(:, :)
       class(GeModel), allocatable :: ge
       real(pr) :: q
    contains
-      procedure :: Bmix => BmixHV
-      procedure :: D1Mix => D1Mix_constantHV
-      procedure :: Dmix => DmixHV
+      procedure :: Bmix => BmixMHV
+      procedure :: D1Mix => D1Mix_constantMHV
+      procedure :: Dmix => DmixMHV
    end type
 
-   interface HV
+   interface MHV
       module procedure :: init
    end interface
 
 contains
 
-   type(HV) function init(ge, b, lij) result(mixrule)
+   type(MHV) function init(ge, b, lij) result(mixrule)
       class(GeModel), intent(in) :: Ge
       real(pr), intent(in) :: b(:)
       real(pr), optional, intent(in) :: lij(:, :)
@@ -41,9 +41,9 @@ contains
       end if
    end function
 
-   subroutine BmixHV(self, n, bi, B, dBi, dBij)
+   subroutine BmixMHV(self, n, bi, B, dBi, dBij)
       use yaeos__models_ar_cubic_mixing_base, only: bmix_linear
-      class(HV), intent(in) :: self
+      class(MHV), intent(in) :: self
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: bi(:)
       real(pr), intent(out) :: B, dBi(:), dBij(:, :)
@@ -51,7 +51,7 @@ contains
       call bmix_linear(n, bi, b, dbi, dbij)
    end subroutine
 
-   subroutine DmixHV(self, n, T, &
+   subroutine DmixMHV(self, n, T, &
                      ai, daidt, daidt2, &
                      D, dDdT, dDdT2, dDi, dDidT, dDij &
                      )
@@ -77,7 +77,7 @@ contains
       !!
       !! # References
       !!
-      class(HV), intent(in) :: self
+      class(MHV), intent(in) :: self
       real(pr), intent(in) :: T, n(:)
       real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
       real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
@@ -115,16 +115,35 @@ contains
 
       do i=1,nc
       do j=1,nc
-         ! d2logBi_nbi(i, j) = &
-         !    dlogBi_nbi(j) + (dBi(i) + sum(n * dBij(i, j)))/B - sum(n * dBi(i)) * dBi(j)/B**2
-         d2logBi_nbi(i, j) = &
-         - (B * logB_nbi(i) - B + sum(n * dBi))*dBi(j)/B**2 &
-         + ((dBi(j) - B/totn) + logB_nbi(i)*dBi(j) + dBi(i) - dBi(j) + sum(n * dBij(i, j)))/B
+         !TODO: Need to figure out this derivative
+         d2logBi_nbi(i, j) = dlogBi_nbi(j)  &
+                           + (sum(n * dBij(i, j)) + dBi(i))/B &
+                           - totn * dBi(i) * dBi(j)/B**2 
       end do
       end do
-      print *, dlogBi_nbi
-      print *, d2logBi_nbi
-      call exit
+
+      autodiff: block
+         !! Autodiff injection until we can decipher this derivative
+         use hyperdual_mod
+         type(hyperdual) :: hB
+         type(hyperdual) :: hdot_ln_B_nbi
+         type(hyperdual) :: hn(nc)
+         
+         hn = n
+
+         do i=1,nc
+            do j=i, nc
+               hn = n
+               hn(i)%f1 = 1
+               hn(j)%f2 = 1
+               
+               hB = sum(hn * bi)
+               hdot_ln_B_nbi = sum(hn * log(hB/(sum(hn)*bi)))
+               d2logBi_nbi(i, j) = hdot_ln_B_nbi%f12
+               d2logBi_nbi(j, i) = hdot_ln_B_nbi%f12
+            end do
+         end do
+      end block autodiff
 
       f = sum(n*ai/bi) + (Ge + R*T*dot_n_logB_nbi)/q
       fdt  = sum(n*daidt/bi)  + (GeT + R*dot_n_logB_nbi)/q
@@ -164,8 +183,8 @@ contains
       end function
    end subroutine
 
-   subroutine D1Mix_constantHV(self, n, d1i, D1, dD1i, dD1ij)
-      class(HV), intent(in) :: self
+   subroutine D1Mix_constantMHV(self, n, d1i, D1, dD1i, dD1ij)
+      class(MHV), intent(in) :: self
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: d1i(:)
       real(pr), intent(out) :: D1
@@ -175,5 +194,5 @@ contains
       D1 = d1i(1)
       dD1i = 0
       dD1ij = 0
-   end subroutine D1Mix_constantHV
+   end subroutine D1Mix_constantMHV
 end module yaeos__models_cubic_mixing_rules_huron_vidal
