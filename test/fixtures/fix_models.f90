@@ -147,6 +147,5 @@ contains
       mixrule%q = 0.593_pr
       deallocate (model%mixrule)
       model%mixrule = mixrule
-
    end function
 end module
