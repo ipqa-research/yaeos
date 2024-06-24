@@ -81,6 +81,7 @@ contains
       real(pr), intent(in) :: T, n(:)
       real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
       real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+      real(pr) :: f, fdt, fdt2, fdi(size(n)), fdit(size(n)), fdij(size(n),size(n))
 
       real(pr) :: b, bi(size(n)), dbi(size(n)), dbij(size(n), size(n))
       real(pr) :: Ge, GeT, GeT2, Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
@@ -100,46 +101,67 @@ contains
       q = self%q
       bi = self%bi
 
-      call self%Bmix(n, bi, B, dBi, dBij)
       call self%ge%excess_gibbs( &
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
       )
-
+      call self%Bmix(n, bi, B, dBi, dBij)
       logb_nbi = log(B/(totn*bi))
       dot_n_logB_nbi = dot_product(n, logB_nbi)
 
       ! Esta esta bien?
-      dlogBi_nbi = logB_nbi + sum(n * dBi)/B - 1
-
-      do j=1,nc
-         d2logBi_nbi(:, j) = &
-            dlogBi_nbi(j) &
-            + (sum(n * dBij(:, j)) + dBi(j))/B &
-            - dBi(j) * sum(n*dBi)/B**2
+      do i=1,nc
+         dlogBi_nbi(i) = logB_nbi(i) + sum(n * dBi(i))/B - 1
       end do
 
-      D = sum(n*ai/bi) + (Ge + R*T*dot_n_logB_nbi)/q
-      dDdT  = sum(n*daidt/bi)  + (GeT + R*dot_n_logB_nbi)/q
-      dDdT2 = sum(n*daidt2/bi) + (GeT2)/q
+      do i=1,nc
+      do j=1,nc
+         ! d2logBi_nbi(i, j) = &
+         !    dlogBi_nbi(j) + (dBi(i) + sum(n * dBij(i, j)))/B - sum(n * dBi(i)) * dBi(j)/B**2
+         d2logBi_nbi(i, j) = &
+         - (B * logB_nbi(i) - B + sum(n * dBi))*dBi(j)/B**2 &
+         + ((dBi(j) - B/totn) + logB_nbi(i)*dBi(j) + dBi(i) - dBi(j) + sum(n * dBij(i, j)))/B
+      end do
+      end do
+      print *, dlogBi_nbi
+      print *, d2logBi_nbi
+      call exit
 
-      dDi   = ai/bi    + (1._pr/q) * (GeN  + R*T*(dlogBi_nbi))
-      dDidT = daidt/bi + (1._pr/q) * (GeTn + R  *(dlogBi_nbi))
+      f = sum(n*ai/bi) + (Ge + R*T*dot_n_logB_nbi)/q
+      fdt  = sum(n*daidt/bi)  + (GeT + R*dot_n_logB_nbi)/q
+      fdt2 = sum(n*daidt2/bi) + (GeT2)/q
+
+      fdi   = ai/bi    + (1._pr/q) * (GeN  + R*T*(dlogBi_nbi))
+      fdit = daidt/bi + (1._pr/q) * (GeTn + R  *(dlogBi_nbi))
 
       do i = 1, nc
          do j = 1, nc
-            dDij(i, j) = R*T*(d2logBi_nbi(i, j))
-            dDij(i, j) = 1/q*(dDij(i, j) + GeN2(i, j))
-            dDij(i, j) = dBi(j)*dDi(i) + B * dDij(i, j) + dDi(j) *dBi(i) + D*dBij(i,j)
-            ! dDij(j, i) = dDij(i, j)
+            fdij(i, j) = R*T*(d2logBi_nbi(i, j))
+            fdij(i, j) = 1/q*(fdij(i, j) + GeN2(i, j))
+            fdij(i, j) = dBi(j)*fdi(i) + B * fdij(i, j) + fdi(j) *dBi(i) + f*dBij(i,j)
          end do
       end do
 
-      dDi = B*dDi + D*dBi
-      dDidT = B*dDidT + dDdT*dBi
+      dDi = B*fdi + f*dBi
+      dDidT = B*fdiT + fdT*dBi
 
-      D = D*B
-      dDdT = dDdT*B
-      dDdT2 = dDdT2*B
+      D = f*B
+      dDdT = fdT*B
+      dDdT2 = fdT2*B
+      dDij = fdij
+
+   contains
+      real(pr) function dlB(n, bi)
+         real(pr), intent(in) :: n(:), bi(:)
+         real(pr) :: logb_nbi(size(n))
+
+         real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
+         real(pr) :: totn
+         
+         call self%Bmix(n, bi, B, dBi, dBij)
+         totn = sum(n)
+         logb_nbi = log(B/(totn*bi))
+         dlB = dot_product(n, logB_nbi)
+      end function
    end subroutine
 
    subroutine D1Mix_constantHV(self, n, d1i, D1, dD1i, dD1ij)

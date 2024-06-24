@@ -1,71 +1,3 @@
-module caca
-   use yaeos, only: pr, CubicEoS
-   implicit none
-   integer, parameter :: nc = 2
-contains   
-
-   recursive function pija(model, n, df, anal) result(f)
-      type(CubicEoS) :: model
-      real(pr) :: n(nc)
-      real(pr) :: f(nc)
-      real(pr), optional :: df(nc, nc)
-      logical :: anal
-      
-      real(pr) :: logb_nbi(nc), dot_n_logB_nbi, ddot_logBi_nbi(nc), dlogBj_nbi(nc)
-      real(pr) :: bi(nc), B,dBi(nc), dBij(nc,nc)
-      
-      real(pr) :: d2dot_logBi_nbi(nc, nc), d2
-
-      real(pr) :: totn
-
-      integer :: i, j
-
-      totn = sum(n)
-      bi = model%b
-      call model%mixrule%Bmix(n, bi, B, dBi, dBij)
-
-      logb_nbi = log(B/(totn*bi))
-      dlogBj_nbi = (totn * dBi - B)/(totn*B)
-      dot_n_logB_nbi = dot_product(n, logB_nbi)
-
-      ! Esta esta bien
-      ddot_logBi_nbi = (B*logB_nbi - B + sum(n*dBi))/B
-
-      do j=1,nc
-         d2 = dlogBj_nbi(j) + (sum(n * dBij(:, j)) + dBi(j))/B - dBi(j) * sum(n*dBi)/B**2
-         d2dot_logBi_nbi(:, j) = d2
-      end do
-
-      f = ddot_logBi_nbi
-
-      if (present(df)) then
-         if (anal) then
-            df = d2dot_logBi_nbi
-         else
-            df = numpija()
-         endif
-      endif
-
-      contains
-         function numpija()
-            real(pr) :: dx
-            real(pr) :: ndx(nc)
-            real(pr) :: numpija(nc,nc)
-            real(pr) :: f1(nc), f2(nc)
-
-            dx = 0.00001_pr
-
-            f1 = pija(model, n, anal=.false.)
-            do i=1,nc
-               ndx = n
-               ndx(i) = n(i) + dx
-               f2 = pija(model, ndx, anal=.false.)
-               numpija(:, i) = (f2 - f1)/dx
-            end do
-         end function
-   end function
-end module
-
 program main
    !! Example of using CubicEoS with Huron-Vidal mixing rules with an
    !! NRTL model as the Ge model
@@ -74,7 +6,6 @@ program main
    use forsus, only: Substance, forsus_dir
    use yaeos, only: pr, SoaveRedlichKwong, CubicEoS, NRTL, saturation_pressure, pt_envelope_2ph, AlphaSoave
    use yaeos__models_cubic_mixing_rules_huron_vidal, only: HV
-   use caca, only: pija
 
    implicit none
    integer, parameter :: nc = 2
@@ -307,7 +238,7 @@ contains
       write (*, *) sat, sat%iters
 
       env = pt_envelope_2ph(model, n, sat, specified_variable_0=nc + 1, delta_0=0.001_pr)
-      write (*, *) env
+      write (1, *) env
    end subroutine
 
    subroutine consistency
