@@ -42,6 +42,7 @@ program main
 
    a = 0; b = 0; c = 0
 
+   ! NRTL model parameters
    a(1, 2) = 3.458
    a(2, 1) = -0.801
 
@@ -58,6 +59,7 @@ program main
    T = 150
    Tr = T/Tc
 
+   ! Define the model to be SRK
    model = SoaveRedlichKwong(tc, pc, w)
 
    mixrule = MHV(ge_model, model%b)
@@ -65,17 +67,17 @@ program main
    deallocate (model%mixrule)
    model%mixrule = mixrule
 
-   call consistency
+   ! call consistency
 
-   call phase_envel
-   call exit
+   ! call phase_envel
+   ! call exit
 
-   call ge_model%excess_gibbs(n, T, Ge=Ge, Gen=Gen, Gen2=Gen2)
-   print *, Ge
-   print *, 58.867579574381296_pr/100
-   print *, Gen
-   print *, [212.25536374906585_pr, 20.520633530710143_pr]/100
-   print *, model%b
+   ! call ge_model%excess_gibbs(n, T, Ge=Ge, Gen=Gen, Gen2=Gen2)
+   ! print *, Ge
+   ! print *, 58.867579574381296_pr/100
+   ! print *, Gen
+   ! print *, [212.25536374906585_pr, 20.520633530710143_pr]/100
+   ! print *, model%b
 
    call model%alpha%alpha(Tr, ai, daidt, daidt2)
    ai = ai*model%ac
