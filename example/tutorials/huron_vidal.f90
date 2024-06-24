@@ -1,11 +1,80 @@
+module caca
+   use yaeos, only: pr, CubicEoS
+   implicit none
+   integer, parameter :: nc = 2
+contains   
+
+   recursive function pija(model, n, df, anal) result(f)
+      type(CubicEoS) :: model
+      real(pr) :: n(nc)
+      real(pr) :: f(nc)
+      real(pr), optional :: df(nc, nc)
+      logical :: anal
+      
+      real(pr) :: logb_nbi(nc), dot_n_logB_nbi, ddot_logBi_nbi(nc), dlogBj_nbi(nc)
+      real(pr) :: bi(nc), B,dBi(nc), dBij(nc,nc)
+      
+      real(pr) :: d2dot_logBi_nbi(nc, nc), d2
+
+      real(pr) :: totn
+
+      integer :: i, j
+
+      totn = sum(n)
+      bi = model%b
+      call model%mixrule%Bmix(n, bi, B, dBi, dBij)
+
+      logb_nbi = log(B/(totn*bi))
+      dlogBj_nbi = (totn * dBi - B)/(totn*B)
+      dot_n_logB_nbi = dot_product(n, logB_nbi)
+
+      ! Esta esta bien
+      ddot_logBi_nbi = (B*logB_nbi - B + sum(n*dBi))/B
+
+      do j=1,nc
+         d2 = dlogBj_nbi(j) + (sum(n * dBij(:, j)) + dBi(j))/B - dBi(j) * sum(n*dBi)/B**2
+         d2dot_logBi_nbi(:, j) = d2
+      end do
+
+      f = ddot_logBi_nbi
+
+      if (present(df)) then
+         if (anal) then
+            df = d2dot_logBi_nbi
+         else
+            df = numpija()
+         endif
+      endif
+
+      contains
+         function numpija()
+            real(pr) :: dx
+            real(pr) :: ndx(nc)
+            real(pr) :: numpija(nc,nc)
+            real(pr) :: f1(nc), f2(nc)
+
+            dx = 0.00001_pr
+
+            f1 = pija(model, n, anal=.false.)
+            do i=1,nc
+               ndx = n
+               ndx(i) = n(i) + dx
+               f2 = pija(model, ndx, anal=.false.)
+               numpija(:, i) = (f2 - f1)/dx
+            end do
+         end function
+   end function
+end module
+
 program main
    !! Example of using CubicEoS with Huron-Vidal mixing rules with an
    !! NRTL model as the Ge model
 
    use numerical_differentiation_module
    use forsus, only: Substance, forsus_dir
-   use yaeos, only: pr, SoaveRedlichKwong, CubicEoS, NRTL
+   use yaeos, only: pr, SoaveRedlichKwong, CubicEoS, NRTL, saturation_pressure, pt_envelope_2ph, AlphaSoave
    use yaeos__models_cubic_mixing_rules_huron_vidal, only: HV
+   use caca, only: pija
 
    implicit none
    integer, parameter :: nc = 2
@@ -24,8 +93,8 @@ program main
 
    real(pr), dimension(nc) :: ai, daidt, daidt2
    real(pr) ::  D, dDdT, dDdT2, dDi(nc), dDidT(nc), dDij(nc, nc)
-   real(pr) ::dx=0.001, Tdx, vardx, vardx2, dfn(nc), dfn2(nc, nc)
-   real(pr) :: Ge, Gen(nc), Gen2(nc,nc)
+   real(pr) ::dx = 0.001, Tdx, vardx, vardx2, dfn(nc), dfn2(nc, nc)
+   real(pr) :: Ge, Gen(nc), Gen2(nc, nc), GeTn(nc)
    type(Substance)  :: sus(nc)
    real(pr) :: aux, dT, dT2
 
@@ -40,8 +109,7 @@ program main
    w = sus%critical%acentric_factor%value
    pc = sus%critical%critical_pressure%value/1e5
 
-   a=0; b=0; c=0
-
+   a = 0; b = 0; c = 0
 
    a(1, 2) = 3.458
    a(2, 1) = -0.801
@@ -55,59 +123,91 @@ program main
    ge_model = NRTL(a, b, c)
 
    n = [0.2, 0.8]
+
    T = 150
    Tr = T/Tc
-   
+
    model = SoaveRedlichKwong(tc, pc, w)
+
    mixrule = HV(ge_model, model%b)
-   mixrule%q = 0.53
+   mixrule%q = 0.593_pr
+   deallocate (model%mixrule)
+   model%mixrule = mixrule
+
+   call consistency
+
+   ! call phase_envel
+
+   call ge_model%excess_gibbs(n, T, Ge=Ge, Gen=Gen, Gen2=Gen2)
+   print *, Ge
+   print *, 58.867579574381296_pr/100
+   print *, Gen
+   print *, [212.25536374906585_pr, 20.520633530710143_pr]/100
+   print *, model%b
 
    call model%alpha%alpha(Tr, ai, daidt, daidt2)
    ai = ai*model%ac
    daidt = daidt*model%ac/Tc
    daidt2 = daidt2*model%ac/Tc**2
 
-   dx = 0.01_pr
+   call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
 
-   n = [0.2, 0.8]
-
-   do i = 1, nc
-      dfn(i) = df(i, dx=0.00001_pr)
-      do j = 1, nc
-         dfn2(i, j) = df2(i, j, dx=1e-2_pr)
-      end do
-   end do
-
-   call mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-   print *, "D", D
-  
-   print *, "dDdT"
-   aux = df(nc + 1, dx)
-   print *, "anal", dDdT
-   print *, "numd", aux
-   
-   print *, "dDdT2"
-   print *,"anal", dDdT2
-   aux = df2(nc + 1, nc + 1, dx=1._pr)
-   print *,"numd", aux
-   
+   print *, "============"
+   print *, "D"
+   print *,  D
+   print *, 30.79708515858031_pr
+   print *, "dDT"
+   print *, dDdT
+   print *, -0.08406059519754079_pr
+   print *, "dDT2"
+   print *, dDdT2
+   print *, 0.00035988911087153625_pr
    print *, "dDi"
-   print *, "anal", dDi
-   print *, "numd", dfn
-   
+   print *, dDi
+   print *, [45.043634675324185_pr, 65.73180422761972_pr]
+   print *, "DiT"
+   print *, dDidT
+   print *, [-0.08293476375751277_pr, -0.18941779705447376_pr]
    print *, "dDij"
-   print *, "anal", dDij
-   print *, "numd", dfn2
-
-   j = 2
-   do i=1,99
-      n(j) = real(i, pr)/100
-      call ge_model%excess_gibbs(n, t, ge=ge, Gen=Gen, Gen2=Gen2)
-      call mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-      print *, "D", n(j), D, dDi, dDij
-      print *, "Ge", n(j), Ge, Gen, Gen2
-   end do
+   print *, dDij
+   print *, [25.390035081359237_pr, 49.95703457381542_pr, 49.95703457381541_pr, 69.6754966410708_pr]
 contains
+   subroutine num_diff
+
+      dx = 0.01_pr
+
+      do i = 1, nc
+         dfn(i) = df(i, dx=1e-10_pr)
+         do j = 1, nc
+            dfn2(i, j) = df2(i, j, dx=1e-5_pr)
+         end do
+      end do
+
+      call mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+      print *, "D", D
+
+      print *, "dDdT"
+      aux = df(nc + 1, dx)
+      print *, "anal", dDdT
+      print *, "numd", aux
+
+      print *, "dDdT2"
+      print *, "anal", dDdT2
+      aux = df2(nc + 1, nc + 1, dx=1._pr)
+      print *, "numd", aux
+
+      print *, "dDi"
+      print *, "anal", dDi
+      print *, "numd", dfn
+
+      print *, "dDij"
+      print *, "anal", dDij
+      print *, "numd", dfn2
+
+      print *, "dDiT"
+      print *, "anal", dDidT
+   end subroutine
+
    real(pr) function df(i, dx)
       integer :: i
       real(pr) :: ndx(nc), tdx, dx
@@ -148,14 +248,14 @@ contains
          Tdx = T - dx
          f2 = DfromT(Tdx)
          df2 = (f1 - 2*f0 + f2)/(dx**2)
-      
+
       else if (i == j) then
          ndx(i) = n(i) + dx
          call mixrule%Dmix(ndx, T, ai, daidt, daidt2, f1, dDdT, dDdT2, dDi, dDidT, dDij)
          ndx(i) = n(i) - dx
          call mixrule%Dmix(ndx, T, ai, daidt, daidt2, f2, dDdT, dDdT2, dDi, dDidT, dDij)
          df2 = (f1 - 2*f0 + f2)/(dx**2)
-      
+
       else
          ndx(i) = n(i) + dx
          ndx(j) = n(j) + dx
@@ -193,4 +293,37 @@ contains
       if (present(dT)) dT = dDdT
       if (present(dT2)) dT2 = dDdT2
    end function
+
+   subroutine phase_envel
+      use yaeos, only: EquilibriaState, PTEnvel2, pt_envelope_2ph, saturation_temperature
+      real(pr) :: P
+      type(EquilibriaState) :: sat
+      type(PTEnvel2) :: env
+
+      n = [0.9, 0.1]
+      P = 1
+
+      sat = saturation_pressure(model, n, T=250._pr, kind="bubble", y0=[0.1_pr, 0.9_pr])
+      write (*, *) sat, sat%iters
+
+      env = pt_envelope_2ph(model, n, sat, specified_variable_0=nc + 1, delta_0=0.001_pr)
+      write (*, *) env
+   end subroutine
+
+   subroutine consistency
+      use yaeos__consistency_armodel, only: numeric_ar_derivatives, ar_consistency
+      real(pr) :: eq31, eq33(nc, nc), eq34(nc), eq36, eq37
+      real(pr) :: v = 20, T = 150
+
+      print *, "======================="
+      print *, "CONSISTENCY PROCEDURES:"
+      call ar_consistency(model, n, v, T, eq31, eq33, eq34, eq36, eq37)
+      print *, eq31
+      print *, eq33
+      print *, eq34
+      print *, eq36
+      print *, eq37
+      print *, "======================="
+      ! call exit
+   end subroutine
 end program
