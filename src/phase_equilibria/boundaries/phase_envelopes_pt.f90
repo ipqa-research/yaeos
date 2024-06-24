@@ -121,6 +121,8 @@ contains
          real(pr), intent(out) :: dF(:, :)
          real(pr), intent(out) :: dFdS(:)
 
+         character(len=14) :: kind_z, kind_y
+
          real(pr) :: y(nc)
          real(pr) :: Vz, Vy, lnphip_z(nc), lnphip_y(nc)
          real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
@@ -140,13 +142,25 @@ contains
 
          y = K*z
 
+         select case(kind)
+         case ("bubble")
+            kind_z = "liquid"
+            kind_y = "vapor"
+         case ("dew")
+            kind_z = "vapor"
+            kind_y = "liquid"
+         case default
+            kind_z = "stable"
+            kind_y = "stable"
+         end select
+         
          call fugacity_tp(&
-            model, z, T, P, V=Vz, root_type="stable", &
+            model, z, T, P, V=Vz, root_type=kind_z, &
             lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
          call fugacity_tp(&
-            model, y, T, P, V=Vy, root_type="stable", &
+            model, y, T, P, V=Vy, root_type=kind_y, &
             lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
@@ -192,6 +206,13 @@ contains
 
          Xold = X
 
+         ! ==============================================================
+         ! Update specification
+         ! - Dont select T or P near critical poitns
+         ! - Update dS wrt specification units
+         ! - Set step
+         ! --------------------------------------------------------------
+         
          if (maxval(abs(X(:nc))) < 0.1_pr) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
          else
@@ -209,17 +230,23 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.01_pr])
 
+         ! ==============================================================
          ! Save the point
+         ! --------------------------------------------------------------
          envelopes%points = [&
             envelopes%points, &
             EquilibriaState(&
             kind=kind, &
             x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
-            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=0) &
+            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=iterations) &
             ]
-
-         ! Jump over critical point
+         
+         ! ==============================================================
+         ! Handle critical point
+         ! --------------------------------------------------------------
+         
          do while (maxval(abs(X(:nc))) < 0.05)
+            ! Jump over critical point
             S = S + dS
             X = X + dXdS*dS
          end do
@@ -235,9 +262,11 @@ contains
                   kind = "bubble"
                 case("bubble")
                   kind = "dew"
+                case default
+                  kind = "liquid-liquid"
                end select
 
-               ! 0 = a*X(ns) + (1-a)*Xnew(ns)
+               ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
                a = -Xnew(ns)/(X(ns) - Xnew(ns))
                Xc = a * X + (1-a)*Xnew
                envelopes%cps = [&
