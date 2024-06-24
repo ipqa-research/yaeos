@@ -121,7 +121,7 @@ contains
 
       integer :: i, newton_its
 
-      integer :: max_iters = 50
+      integer :: max_iters = 500
 
       X = X0
       ns = ns0
