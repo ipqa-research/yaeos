@@ -1,18 +1,73 @@
 module yaeos__models_ge_group_contribution_unifac
-   !! UNIFAC module
+   !! # UNIFAC module
+   !! Classic liquid-vapor UNIFAC model implementation module.
+   !!
+   !! # Description
+   !! Classic liquid-vapor UNIFAC model implementation module. The
+   !! implementation is based on the Thermopack library (SINTEF) implementation.
+   !!
+   !! # Examples
+   !!
+   !! ```fortran
+   !!  ! Instantiate an UNIFAC model with ethanol-water mix and calculate gammas
+   !!  use yaeos, only: pr, Groups, setup_unifac, UNIFAC
+   !!
+   !!  type(UNIFAC) :: model
+   !!  type(Groups) :: molecules(2)
+   !!  real(pr) :: ln_gammas(2)
+   !!
+   !!  ! Ethanol definition [CH3, CH2, OH]
+   !!  molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
+   !!  molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
+   !!
+   !!  ! Water definition [H2O]
+   !!  molecules(2)%groups_ids = [16]
+   !!  molecules(2)%number_of_groups = [1]
+   !!
+   !!  ! Model setup
+   !!  model = setup_unifac(molecules)
+   !!
+   !!  ! Calculate ln_gammas
+   !!  call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+   !!
+   !!  print *, ln_gammas ! result: 0.18534142000449058    0.40331395945417559
+   !! ```
+   !!
+   !! # References
+   !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
+   use stdlib_io_npy, only: load_npy
    implicit none
 
    type :: Groups
-      !! Group derived type.
+      !! # Groups
+      !! Derived type used to represent a molecule and its UNIFAC groups.
       !!
-      !! This type represent a molecule and it's groups
+      !! # Description
+      !! Derived type used to represent a molecule and its UNIFAC groups. Is
+      !! necessary to specify the subgroups ids and the subgroups on each
+      !! molecule as shown in the example.
       !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  ! Define toluene molecule groups
+      !!  use yaeos, only: Groups
+      !!
+      !!  type(Groups) :: toluene
+      !!
+      !!  ! Toluene [ACH, ACCH3]
+      !!  toluene%groups_ids = [9, 11] ! Subgroups ids
+      !!  toluene%number_of_groups = [5, 1] ! Subgroups occurrences
+      !! ```
+      !!
+      !! # References
+      !! https://www.ddbst.com/published-parameters-unifac.html
       integer, allocatable :: groups_ids(:)
-      !! Indexes (ids) of each group in the main group matrix
+      !! Indexes (ids) of each subgroup in the main group matrix
       integer, allocatable :: number_of_groups(:)
-      !! Count of each group in the molecule
+      !! Occurrences of each subgroup in the molecule
       real(pr) :: surface_area
       !! Molecule surface area \(q\)
       real(pr) :: volume
@@ -20,22 +75,60 @@ module yaeos__models_ge_group_contribution_unifac
    end type Groups
 
    type, extends(GeModel) :: UNIFAC
-      !! UNIFAC model derived type
+      !! # UNIFAC model
+      !! Classic liquid-vapor UNIFAC model derived type
       !!
+      !! # Description
       !! This type holds the needed parameters for using a UNIFAC \(G^E\) model
       !! mainly group areas, volumes and what temperature dependence function
       !! \(\psi(T)\) to use.
+      !!
       !! It also holds the individual molecules of a particular system and
       !! the set of all groups in the system as a "stew" of groups instead of
       !! being them included in particular molecules.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  ! UNIFAC model with ethanol-formic acid mix and calculate gammas
+      !!  use yaeos, only: pr, Groups, setup_unifac, UNIFAC
+      !!
+      !!  type(UNIFAC) :: model
+      !!  type(Groups) :: molecules(2)
+      !!  real(pr) :: ln_gammas(2)
+      !!
+      !!  ! Ethanol definition [CH3, CH2, OH]
+      !!  molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
+      !!  molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
+      !!
+      !!  ! formic acid definition [HCOOH]
+      !!  molecules(2)%groups_ids = [43]
+      !!  molecules(2)%number_of_groups = [1]
+      !!
+      !!  ! Model setup
+      !!  model = setup_unifac(molecules)
+      !!
+      !!  ! Calculate ln_gammas
+      !!  call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+      !!
+      !!  print *, ln_gammas ! result: 0.10505475697637946   0.28073129552766890
+      !! ```
       integer :: ngroups
-      !! Total number of individual groups
+      !! Total number of individual groups in the mixture
+      integer :: nmolecules
+      !! Total number of molecules in the mixture
       real(pr) :: z = 10
       !! Model constant
       real(pr), allocatable :: group_area(:)
       !! Group areas \(Q_k\)
       real(pr), allocatable :: group_volume(:)
       !! Group volumes \(R_k\)
+      real(pr), allocatable :: thetas_ij(:, :)
+      !! Area fractions of the groups j on molecules i
+      real(pr), allocatable :: vij(:,:)
+      !! Ocurrences of each group j on each molecule i
+      real(pr), allocatable :: qk(:)
+      !! Area of each group k
       class(PsiFunction), allocatable :: psi_function
       !! Temperature dependance function of the model
       type(Groups), allocatable :: molecules(:)
@@ -47,466 +140,993 @@ module yaeos__models_ge_group_contribution_unifac
    end type UNIFAC
 
    type, abstract :: PsiFunction
+      !! # \(\psi(T)\) function
+      !! UNIFAC \(\psi(T)\) functions abstract type
+      !!
+      !! # Description
+      !! Abstract derived type for UNIFAC models temperature dependent functions
+      !!
    contains
       procedure(temperature_dependence), deferred :: psi
    end type PsiFunction
 
-   type, extends(PsiFunction) :: UNIFACPsi
-      !! Original UNIFAC \(psi\) function
-      !! \[
-      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
-      !! \]
-      real(pr), allocatable :: Eij(:, :)
-   contains
-      procedure :: psi => UNIFAC_temperature_dependence
-   end type UNIFACPsi
-
    abstract interface
       subroutine temperature_dependence(&
-         self, systems_groups, T, psi, dpsidt, dpsidt2&
+         self, systems_groups, T, psi, dpsi_dt, dpsi_dt2&
          )
+         !! # temperature_dependence interface
+         !! Interface subroutine for UNIFAC models temperature dependent
+         !! functions
+         !!
          import pr, PsiFunction, Groups
          class(PsiFunction) :: self
+         !! PsiFunction type variable
          class(Groups) :: systems_groups
+         !! Groups type variable containig all the system's groups. See the
+         !! `groups_stew` variable on the `UNIFAC` documentation.
          real(pr), intent(in) :: T
-         real(pr), intent(out) :: psi(:, :)
-         real(pr), optional, intent(out) :: dpsidt(:, :)
-         real(pr), optional, intent(out) :: dpsidt2(:, :)
+         !! Temperature [K]
+         real(pr), optional, intent(out) :: psi(:, :)
+         !! \(\psi(T)\)
+         real(pr), optional, intent(out) :: dpsi_dt(:, :)
+         !! \(\frac{d \psi (T)}{dT}\)
+         real(pr), optional, intent(out) :: dpsi_dt2(:, :)
+         !! \(\frac{d^2 \psi (T)}{dT^2}\)
       end subroutine temperature_dependence
    end interface
 
+   type, extends(PsiFunction) :: UNIFACPsi
+      !! # Original UNIFAC \(\psi\) function
+      !! \[
+      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
+      !!    \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
+      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! # References
+      !!
+      real(pr), allocatable :: Aij(:, :)
+   contains
+      procedure :: psi => UNIFAC_temperature_dependence
+   end type UNIFACPsi
 contains
 
-   subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)
-      !! Excess Gibbs and derivs procedure
-      use iso_fortran_env, only: error_unit
-      class(UNIFAC), intent(in) :: self !! Model
-      real(pr), intent(in) ::n(:) !! Moles vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), optional, intent(out) :: Ge !! Excess Gibbs
-      real(pr), optional, intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
-      real(pr), optional, intent(out) :: GeT2 !! \(\frac{d^2G^E}{dT^2}\)
+   subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !! # Excess Gibbs energy
+      !! Calculate the Gibbs excess energy of the UNIFAC model
+      !!
+      !! # Description
+      !! Calculate the Gibbs excess energy of the UNIFAC model and its
+      !! derivatives.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  ! Gibbs excess of ethane-ethanol-methyl amine mixture.
+      !!  use yaeos, only: R, pr, Groups, setup_unifac, UNIFAC
+      !!
+      !!  type(UNIFAC) :: model
+      !!
+      !!  integer, parameter :: nc = 3, ng = 4
+      !!
+      !!  type(Groups) :: molecules(nc)
+      !!
+      !!  real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
+      !!
+      !!  real(pr) :: n(nc), ln_gammas(nc), T
+      !!
+      !!  T = 150.0_pr
+      !!  n = [2.0_pr, 7.0_pr, 1.0_pr]
+      !!
+      !!  ! Ethane [CH3]
+      !!  molecules(1)%groups_ids = [1]
+      !!  molecules(1)%number_of_groups = [2]
+      !!
+      !!  ! Ethanol [CH3, CH2, OH]
+      !!  molecules(2)%groups_ids = [1, 2, 14]
+      !!  molecules(2)%number_of_groups = [1, 1, 1]
+      !!
+      !!  ! Methylamine [H3C-NH2]
+      !!  molecules(3)%groups_ids = [28]
+      !!  molecules(3)%number_of_groups = [1]
+      !!
+      !!  ! setup UNIFAC model
+      !!  model = setup_unifac(molecules)
+      !!
+      !!  ! Call all Ge and derivatives
+      !!  call model%excess_gibbs(model, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !!
+      !!  print *, "Ge: ", Ge
+      !!  print *, "GeT: ", GeT
+      !!  print *, "GeT2: ", GeT2
+      !!  print *, "Gen: ", Gen
+      !!  print *, "GeTn: ", GeTn
+      !!  print *, "Gen2:"
+      !!  print *, Gen2(1,:)
+      !!  print *, Gen2(2,:)
+      !!  print *, Gen2(3,:)
+      !!
+      !!  ! If you want the ln_gammas from "Gen" derivative:
+      !!  print *, "ln_gammas: ", Gen / R / T
+      !!
+      !!  ! Or
+      !!  call model%ln_activity_coefficient(n, T, ln_gammas)
+      !!  print *, "ln_gammas: ", ln_gammas
+      !! ```
+      !!
+      !! # References
+      !!
+      class(UNIFAC), intent(in) :: self
+      !! UNIFAC model
+      real(pr), intent(in) :: n(:)
+      !! Moles vector [mol]
+      real(pr), intent(in) :: T
+      !! Temperature [K]
+      real(pr), optional, intent(out) :: Ge
+      !! Excess Gibbs energy
+      real(pr), optional, intent(out) :: GeT
+      !! \(\frac{dG^E}{dT}\)
+      real(pr), optional, intent(out) :: GeT2
+      !! \(\frac{d^2G^E}{dT^2}\)
       real(pr), optional, intent(out) :: Gen(size(n))
+      !! \(\frac{dG^E}{dn}\)
       real(pr), optional, intent(out) :: GeTn(size(n))
+      !! \(\frac{d^2G^E}{dTdn}\)
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
+      !! \(\frac{d^2G^E}{dn^2}\)
 
-      real(pr) :: x(size(n))
-      real(pr) :: ln_gamma_c(size(n)), ln_gamma_r(size(n)), ln_activity(size(n))
+      ! Combinatorial
+      real(pr) :: Ge_c
+      real(pr) :: dGe_c_dn(self%nmolecules)
+      real(pr) :: dGe_c_dn2(self%nmolecules, self%nmolecules)
 
+      ! logical
+      logical :: pge, dn, dn2
 
-      integer :: i, j, nc
+      ! Residual calling
+      call Ge_residual(self, n, T, Ge, Gen, Gen2, GeT, GeT2, GeTn)
 
-      write(error_unit, *) "WARN: UNIFAC not fully implemented yet"
+      ! Individual combinatorial calling
+      pge = present(Ge)
+      dn = present(Gen)
+      dn2 = present(Gen2)
 
-      x = n/sum(n)
+      if (dn .and. .not. dn2) then
+         call Ge_combinatorial(self, n, T, Ge=Ge_c, dGe_dn=dGe_c_dn)
+      elseif (dn2 .and. .not. dn) then
+         call Ge_combinatorial(self, n, T, Ge=Ge_c, dGe_dn2=dGe_c_dn2)
+      else
+         call Ge_combinatorial(&
+            self, n, T, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2 &
+            )
+      end if
 
-      nc = size(self%molecules)
-
-      ln_activity = 0
-
-      call combinatorial_activity(self, x, ln_gamma_c)
-      call residual_activity(self, x, T, ln_gamma_r)
-      ln_activity = ln_gamma_c + ln_gamma_r
-
-      if (present(Ge)) Ge = sum(x * ln_activity)
-      if (present(GeN)) Gen = ln_activity * (R*T)
+      if (present(Ge)) Ge = Ge_c + Ge
+      if (present(Gen)) Gen = dGe_c_dn + Gen
+      if (present(Gen2)) Gen2 = dGe_c_dn2 + Gen2
+      if (present(GeT)) GeT = Ge_c / T + GeT
+      if (present(GeT2)) GeT2 = GeT2
+      if (present(GeTn)) GeTn = dGe_c_dn / T + GeTn
    end subroutine excess_gibbs
 
-   subroutine residual_activity(&
-      self, x, T, ln_gamma_r, dln_gamma_dn, dln_gamma_dt, dln_gamma_dtn&
-      )
+   subroutine Ge_combinatorial(self, n, T, Ge, dGe_dn, dGe_dn2)
+      !! # UNIFAC combinatorial term
+      !! Calculate the UNIFAC combinatorial term of Gibbs excess energy
+      !!
+      !! # Description
+      !! Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
+      !! The subroutine uses the Flory-Huggins and Staverman-Guggenheim
+      !! combinatory terms as follows:
+      !!
+      !! ### Flory-Huggins
+      !!
+      !! \[
+      !!    G^{E,FH} =
+      !!    RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i
+      !!    - n \, \text{ln} \, \sum_j^{NC} n_j r_j
+      !!    + n \, \text{ln} \, n \right)
+      !! \]
+      !!
+      !! \[
+      !!    \frac{dG^{E,FH}}{dn_i} =
+      !!    RT \left(\text{ln} \, r_i - \text{ln} \, \sum_j^{NC} n_j r_j
+      !!    + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle
+      !!    \sum_j^{NC} n_j r_j} \right)
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d^2G^{E,FH}}{dn_i dn_j} =
+      !!    RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l}
+      !!    + \frac{1}{n} + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC}
+      !!    n_l r_l \right)^2} \right)
+      !! \]
+      !!
+      !! ### Staverman-Guggenheim
+      !!
+      !! \[
+      !!    \frac{G^{E,SG}}{RT} =
+      !!    \frac{z}{2} \sum_i^{NC} n_i q_i
+      !!    \left(\text{ln} \frac{q_i}{r_i}
+      !!    - \text{ln} \, \sum_j^{NC} n_j q_j
+      !!    + \text{ln} \, \sum_j^{NC} n_j r_j \right)
+      !! \]
+      !!
+      !! \[
+      !!    \frac{1}{RT}\frac{dG^{E,SG}}{dn_i} =
+      !!    \frac{z}{2} q_i \left(
+      !!    - \text{ln} \, \left(
+      !!    \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC}
+      !!    n_j r_j} \right) - 1 + \frac{\displaystyle r_i \sum_j^{NC} n_j
+      !!    q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
+      !! \]
+      !!
+      !! \[
+      !!    \frac{1}{RT}\frac{d^2G^{E,SG}}{dn_i dn_j} =
+      !!    \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_lq_l}
+      !!    + \frac{q_i r_j + q_j r_i}{\displaystyle \sum_l^{NC} n_l r_l}
+      !!    - \frac{\displaystyle r_i r_j \sum_l^{NC} n_l q_l}
+      !!    {\left(\displaystyle \sum_l^{NC} n_l r_l \right)^2} \right)
+      !! \]
+      !!
+      !! ### Fredenslund et al. (UNIFAC)
+      !! \[
+      !!    \frac{G^{E,\text{UNIFAC}}}{RT} =
+      !!    \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
+      !! \]
+      !!
+      !! # References
+      !! SINTEF (https://github.com/thermotools/thermopack)
       class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:)
+
+      real(pr), intent(in) :: n(self%nmolecules)
+      !! Moles vector [mol]
       real(pr), intent(in) :: T
-      real(pr), intent(out) :: ln_gamma_r(:)
-      real(pr), optional, intent(out) :: dln_gamma_dn(:, :)
-      real(pr), optional, intent(out) :: dln_gamma_dT(:)
-      real(pr), optional, intent(out) :: dln_gamma_dTn(:, :)
+      !! Temperature [K]
+      real(pr), optional, intent(out) :: Ge
+      !! Combinatorial Gibbs excess energy
+      real(pr), optional, intent(out) :: dGe_dn(self%nmolecules)
+      !! \(\frac{dGe}{dn}\)
+      real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules,self%nmolecules)
+      !! \(\frac{d^2Ge}{dn^2}\)
 
-      real(pr) :: ln_G(self%ngroups)
-      real(pr) :: dln_Gdn(self%ngroups, size(x))
+      ! Flory-Huggins variables
+      real(pr) :: Ge_fh
+      real(pr) :: dGe_fh_dn(self%nmolecules)
+      real(pr) :: dGe_fh_dn2(self%nmolecules,self%nmolecules)
 
-      real(pr) :: ln_G_i(size(x), self%ngroups)
-      real(pr) :: dln_G_idn(size(x), self%ngroups, size(x))
+      ! Staverman-Guggenheim variables
+      real(pr) :: Ge_sg
+      real(pr) :: dGe_sg_dn(self%nmolecules)
+      real(pr) :: dGe_sg_dn2(self%nmolecules,self%nmolecules)
 
-      real(pr) :: xpure(size(x))
-      integer :: i, j, k, nc, gi
-
-      ln_G = 0
-      ln_G_i = 0
-      ln_gamma_r = 0
-
-      if (present(dln_gamma_dn)) dln_gamma_dn = 0
-      nc = size(self%molecules)
-
-      call group_big_gamma(self, x, T, ln_G, dln_gammadx=dln_Gdn)
-
-      do i=1,nc
-         xpure = 0
-         xpure(i) = 1
-         call group_big_gamma(&
-            self, xpure, T, ln_G_i(i, :), dln_Gammadx=dln_G_idn(i, :, :) &
-            )
-      end do
-
-      do i=1,nc
-         do k=1,size(self%molecules(i)%groups_ids)
-            ! Get the index of the group k of molecule i in the whole stew of
-            ! groups.
-            ! TODO: These kind of `findloc` maybe can be optimized.
-            gi = findloc(&
-               self%groups_stew%groups_ids - self%molecules(i)%groups_ids(k), &
-               0, dim=1 &
-               )
-
-            ln_gamma_r(i) = ln_gamma_r(i) &
-               + self%molecules(i)%number_of_groups(k) &
-               * (ln_G(gi) - ln_G_i(i, gi))
-
-            if (present(dln_gamma_dn)) then
-               ! Compositional derivative
-               do j=1,i
-                  dln_gamma_dn(i, j) = dln_gamma_dn(i, j) &
-                     + self%molecules(i)%number_of_groups(k) &
-                     * (dln_Gdn(gi, j) - dln_G_idn(i, gi, j))
-                  dln_gamma_dn(j, i) = dln_gamma_dn(i, j)
-               end do
-            end if
-         end do
-      end do
-   end subroutine residual_activity
-
-   subroutine combinatorial_activity(self, x, ln_gamma_c, dln_gamma_dx)
-      class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:)
-      real(pr), intent(out) :: ln_gamma_c(:)
-      real(pr), optional, intent(out) :: dln_gamma_dx(:, :)
-
-      real(pr) :: theta(size(x)), phi(size(x)), L(size(x))
-      real(pr) :: V(size(x)), dVdx(size(x), size(x)), Vsum
-      real(pr) :: F(size(x)), dFdx(size(x), size(x)), Fsum
-      real(pr) :: dthetadx(size(x), size(x))
-      real(pr) :: dphidx(size(x), size(x))
-
-      real(pr) :: xq, xr
+      ! utility
+      real(pr) :: nq, nr, n_t
       integer :: i, j
 
-
-      associate (&
+      associate(&
          q => self%molecules%surface_area,&
          r => self%molecules%volume,&
          z => self%z &
          )
-         xq = dot_product(x, q)
-         xr = dot_product(x, r)
 
-         V = r / xr
-         Vsum = 1/xr
-         F = q / xq
-         Fsum = 1/xq
+         nr = dot_product(n, r)
+         nq = dot_product(n, q)
+         n_t = sum(n)
 
-         theta = x * q / xq
-         phi = x * r / xr
-         L = 0.5_pr * z * (r - q) - (r - 1)
-         ln_gamma_c = log(phi/x) + z/2*q * log(theta/phi) + L - phi/x * sum(x*L)
+         if (present(Ge)) then
+            Ge_fh = sum(n * log(r)) - n_t * log(nr) + n_t * log(n_t)
+            Ge_sg = z/2 * sum(n * q * (log(q/r) - log(nq) + log(nr)))
+         end if
 
-         if (present(dln_gamma_dx)) then
-            dln_gamma_dx = 0
-            do concurrent(i=1:size(x), j=1:size(x))
-               dVdx(i, j) = -r(i)*r(j)*Vsum**2
-               dFdx(i, j) = -q(i)*q(j)*Fsum**2
+         if (present(dGe_dn)) then
+            dGe_fh_dn = log(r) - log(nr) + log(n_t) + 1.0_pr - n_t * r / nr
+            dGe_sg_dn = z/2*q*(-log((r*nq)/(q*nr)) - 1.0_pr + (r*nq)/(q*nr))
+         end if
 
-               dln_gamma_dx(i, j) = -0.5_pr * z * q(i) * ( &
-                  (dVdx(i,j)/F(i) - V(i)*dFdx(i,j)/F(i)**2) * F(i)/V(i) &
-                  - dVdx(i, j)/F(i) + V(i) * dFdx(i,j)/F(i)**2 &
-                  ) &
-                  - dVdx(i, j) + dVdx(i, j)/V(i)
+         if (present(dGe_dn2)) then
+            dGe_fh_dn2 = 0.0_pr
+            dGe_sg_dn2 = 0.0_pr
+            do concurrent(i=1:size(n), j=1:size(n))
+               dGe_fh_dn2(i,j) = -(r(i) + r(j))/nr + 1.0_pr/n_t + n_t*r(i)*r(j)/ nr**2
+               dGe_sg_dn2(i,j) = z/2.0_pr*(-q(i)*q(j)/nq + (q(i)*r(j) + q(j)*r(i))/nr - r(i)*r(j)*nq/nr**2)
             end do
          end if
       end associate
-   end subroutine combinatorial_activity
 
-   subroutine ln_activity_coefficient(&
-      self, n, T, lngamma, &
-      dln_gammadt, dln_gammadt2, dln_gammadn, dln_gammadtn, dln_gammadn2 &
-      )
-      class(UNIFAC), intent(in) :: self
-      real(pr), intent(in) :: n(:)
+      if (present(Ge)) Ge = (Ge_fh + Ge_sg) * R * T
+      if (present(dGe_dn)) dGe_dn = (dGe_fh_dn + dGe_sg_dn) * R * T
+      if (present(dGe_dn2)) dGe_dn2 = (dGe_fh_dn2 + dGe_sg_dn2) * R * T
+   end subroutine Ge_combinatorial
+
+   subroutine Ge_residual(self, n, T, Ge, dGe_dn, dGe_dn2, dGe_dT, dGe_dT2, dGe_dTn)
+      !! # UNIFAC residual term
+      !! Evaluate the UNIFAC residual therm
+      !!
+      !! # Description
+      !! Evaluate the UNIFAC residual therm. The residual Gibbs excess energy
+      !! and its derivatives are evaluated as:
+      !!
+      !! \[
+      !!  \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
+      !!  (\Lambda_k - \Lambda_k^i)
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}
+      !! \]
+      !!
+      !! \[
+      !!  \Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}
+      !! \]
+      !!
+      !! \[
+      !!  E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)
+      !! \]
+      !!
+      !! \[
+      !!  \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
+      !!  {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}
+      !! \]
+      !!
+      !! \[
+      !!  \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
+      !! \]
+      !!
+      !! In the UNIFAC model, the \(\Theta_j^i \) values are calculated assuming
+      !! that the molecule "i" is pure, hence only the subgroups of the molecule
+      !! "i" must be considered for the calculation. On the other hand, for the
+      !! \(\Theta_j \) values, all the system's subgroups are considered.
+      !!
+      !! ##### The compositional derivatives:
+      !!
+      !! \[
+      !!  \frac{1}{R T} \frac{\partial G^{E,R}}{\partial n_\alpha} =
+      !!  - \sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\Lambda_k -
+      !!  \Lambda_k^\alpha \right) - \sum_i^{\mathrm{NC}} n_i
+      !!  \sum_k^{\mathrm{NG}} v_k^i Q_k
+      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_
+      !!  \alpha \partial n_\beta} = -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha
+      !!  \frac{\partial \Lambda_k}{\partial n_\beta} + v_k^\beta
+      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}\right)
+      !!  - \sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
+      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}
+      !!  = \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}}
+      !!  {\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+      !!  E_{j k}} - \frac{\sum_m^{\mathrm{NG}} v_m^\alpha Q_m}
+      !!  {\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+      !!  = - \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}\right)
+      !!  \left(\sum_j^{\mathrm{NG}} v_j^\beta Q_j E_{j k}\right)}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+      !!  E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
+      !!  Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l
+      !!  \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
+      !! \]
+      !!
+      !! ##### The temperature derivatives:
+      !!
+      !! \[
+      !!  \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} =
+      !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+      !!  \left(\frac{\partial \Lambda_k}{\partial T}
+      !!  -\frac{\partial \Lambda_k^i}{\partial T}\right)
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
+      !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+      !!  \left(\frac{\partial^2 \Lambda_k}{\partial T^2} -
+      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \frac{\partial \Lambda_k}{\partial T} =
+      !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
+      !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial \Lambda_k^i}{\partial T} =
+      !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
+      !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k}{\partial T^2} =
+      !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
+      !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
+      !!  - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
+      !! \]
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2} =
+      !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
+      !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+      !!  - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
+      !! \]
+      !!
+      !! ##### Temperature-compositional cross derivative:
+      !!
+      !! \[
+      !!  \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
+      !!  {\partial n_\alpha \partial T}=
+      !!  -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
+      !!  {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right)
+      !!  -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right)
+      !!  Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[
+      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T} =
+      !!  \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \frac{\partial
+      !!  \tilde{E}_{j k}}{\partial T}}{\sum_l^{\mathrm{NC}} n_l
+      !!  \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}} -
+      !!  \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \tilde{E}_{j k}\right)
+      !!  \left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+      !!  \frac{\partial \tilde{E}_{j k}}{\partial T}\right)}
+      !!  {\left(\sum_l^{\mathrm{NC}} n_l
+      !!  \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}\right)^2}
+      !! \]
+      !!
+      !! # References
+      !! SINTEF (https://github.com/thermotools/thermopack)
+      class(UNIFAC) :: self
+
+      real(pr), intent(in) :: n(self%nmolecules)
+      !! Moles vector
       real(pr), intent(in) :: T
-      real(pr), intent(out) :: lngamma(:)
-      real(pr), optional, intent(out) :: dln_gammadt(:)
-      real(pr), optional, intent(out) :: dln_gammadt2(:)
-      real(pr), optional, intent(out) :: dln_gammadn(:, :)
-      real(pr), optional, intent(out) :: dln_gammadtn(:, :)
-      real(pr), optional, intent(out) :: dln_gammadn2(:, :, :)
+      !! Temperature [K]
+      real(pr), optional, intent(out) :: Ge
+      !! Residual Gibbs excess energy
+      real(pr), optional, intent(out) :: dGe_dn(self%nmolecules)
+      !! \(\frac{\partial G^{E,R}}{\partial n} \)
+      real(pr), optional, intent(out) :: dGe_dn2(self%nmolecules, self%nmolecules)
+      !! \(\frac{\partial^2 G^{E,R}}{\partial n^2} \)
+      real(pr), optional, intent(out) :: dGe_dT
+      !! \(\frac{\partial G^{E,R}}{\partial T} \)
+      real(pr), optional, intent(out) :: dGe_dT2
+      !! \(\frac{\partial^2 G^{E,R}}{\partial T^2} \)
+      real(pr), optional, intent(out) :: dGe_dTn(self%nmolecules)
+      !! \(\frac{\partial^2 G^{E,R}}{\partial n \partial T} \)
 
-      real(pr) :: ln_gamma_c(size(n))
-      real(pr) :: dln_gamma_c_dt(size(n))
-      real(pr) :: dln_gamma_c_dt2(size(n))
-      real(pr) :: dln_gamma_c_dn (size(n), size(n))
-      real(pr) :: dln_gamma_c_dtn(size(n), size(n))
-      real(pr) :: dln_gamma_c_dn2(size(n), size(n), size(n))
+      ! Thetas variables
+      real(pr) :: theta_j(self%ngroups)
 
-      real(pr) :: ln_gamma_r(size(n))
-      real(pr) :: dln_gamma_r_dt(size(n))
-      real(pr) :: dln_gamma_r_dt2(size(n))
-      real(pr) :: dln_gamma_r_dn (size(n), size(n))
-      real(pr) :: dln_gamma_r_dtn(size(n), size(n))
-      real(pr) :: dln_gamma_r_dn2(size(n), size(n), size(n))
+      ! Ejk variables
+      real(pr) :: Ejk(self%ngroups, self%ngroups)
+      real(pr) :: dEjk_dt(self%ngroups, self%ngroups)
+      real(pr) :: dEjk_dt2(self%ngroups, self%ngroups)
 
-      call combinatorial_activity(self, n, ln_gamma_c)
-      call residual_activity(self, n, T, ln_gamma_r)
+      ! Lambdas variables
+      real(pr) :: lambda_k(self%ngroups)
+      real(pr) :: dlambda_k_dT(self%ngroups)
+      real(pr) :: dlambda_k_dT2(self%ngroups)
+      real(pr) :: dlambda_k_dn(self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_k_dn2(self%nmolecules, self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_k_dndT(self%nmolecules, self%ngroups)
 
-      lngamma = ln_gamma_c + ln_gamma_r
-   end subroutine ln_activity_coefficient
+      real(pr) :: lambda_ik(self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_ik_dT(self%nmolecules, self%ngroups)
+      real(pr) :: dlambda_ik_dT2(self%nmolecules, self%ngroups)
 
-   subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)
-      class(UNIFACPsi) :: self !! \(\psi\) function
-      class(Groups) :: systems_groups !! Groups in the system
-      real(pr), intent(in) :: T !! Temperature
-      real(pr), intent(out) :: psi(:, :) !! \(\psi\)
-      real(pr), optional, intent(out) :: dpsidt(:, :)
-      real(pr), optional, intent(out) :: dpsidt2(:, :)
+      ! Auxiliars
+      real(pr) :: Ge_aux, dGe_dT_aux, dGe_dn_aux(self%nmolecules)
+      real(pr) :: sum_vij_Qj_Ejk(self%nmolecules, self%ngroups)
+      real(pr) :: sum_ni_vij_Qj_Ejk(self%ngroups)
+      real(pr) :: sum_vik_Qk(self%nmolecules)
+      real(pr) :: sum_vQ_Lambda(self%nmolecules)
+      real(pr) :: sum_nl_vlj(self%ngroups)
+      real(pr) :: sum_ni_vik_Qk
+      real(pr) :: aux_sum(self%nmolecules)
+      real(pr) :: sum_Q_v_dlambda_k_dn(self%nmolecules, self%nmolecules)
+      real(pr) :: aux_sum2
+      real(pr) :: sum_vij_Qj_dEjk_dT(self%nmolecules, self%ngroups)
+      real(pr) :: sum_vij_Qj_dEjk_dT2(self%nmolecules, self%ngroups)
+      real(pr) :: sum_ni_vij_Qj_dEjk_dT(self%ngroups)
+      real(pr) :: sum_vij_Qj_dlambdas_dT(self%nmolecules)
+      real(pr) :: sum_vij_Qj_dlambdas_dT2(self%nmolecules)
+
+      ! Indexes used for groups
+      integer :: j, k
+
+      ! Indexes used for components
+      integer :: i, l
+
+      ! logicals
+      logical :: pge, dn, dn2, dt, dt2, dtn
+
+      pge = present(Ge)
+      dn = present(dGe_dn)
+      dn2 = present(dGe_dn2)
+      dt = present(dGe_dT)
+      dt2 = present(dGe_dT2)
+      dtn = present(dGe_dTn)
+
+      ! ========================================================================
+      ! Ejk
+      ! ------------------------------------------------------------------------
+      if ((dt .or. dtn) .and. .not. dt2) then
+         call self%psi_function%psi(&
+            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
+            )
+      elseif (dt2 .and. .not. (dt .or. dtn)) then
+         call self%psi_function%psi(&
+            self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2 &
+            )
+      else
+         call self%psi_function%psi(&
+            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
+            )
+      end if
+
+      ! ========================================================================
+      ! Auxiliars
+      ! ------------------------------------------------------------------------
+      do i=1,self%nmolecules
+         sum_vik_Qk(i) = sum(self%vij(i,:) * self%qk)
+      end do
+      sum_ni_vik_Qk = sum(n * sum_vik_Qk)
+
+      if (dtn .or. dt2 .or. dt) then
+         do concurrent(i=1:self%nmolecules, k=1:self%ngroups)
+            sum_vij_Qj_dEjk_dT(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT(:,k))
+            sum_vij_Qj_dEjk_dT2(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT2(:,k))
+         end do
+      end if
+
+      ! ========================================================================
+      ! Thetas
+      ! ------------------------------------------------------------------------
+      do j=1,self%ngroups
+         sum_nl_vlj(j) = sum(n * self%vij(:,j))
+         theta_j(j) = sum_nl_vlj(j) * self%qk(j) / sum_ni_vik_Qk
+      end do
+
+      ! ========================================================================
+      ! Lambda_k
+      ! ------------------------------------------------------------------------
+      ! Lambda_k
+      if (pge .or. dn .or. dt .or. dtn) then
+         do k=1,self%ngroups
+            lambda_k(k) = log(sum(theta_j * Ejk(:,k)))
+         end do
+      end if
+
+      ! Lambda_k first compositional derivatives
+      if (dn .or. dt .or. dt2 .or. dtn .or. dn2) then
+         do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+            sum_vij_Qj_Ejk(i,k) = sum(self%vij(i,:) * self%qk * Ejk(:,k))
+         end do
+
+         do k=1,self%ngroups
+            sum_ni_vij_Qj_Ejk(k) = sum(n * sum_vij_Qj_Ejk(:,k))
+         end do
+
+         do i=1,self%nmolecules
+            dlambda_k_dn(i,:) = sum_vij_Qj_Ejk(i,:) / sum_ni_vij_Qj_Ejk - sum_vik_Qk(i) / sum_ni_vik_Qk
+         end do
+      end if
+
+      ! Lambda_k second compositional derivatives
+      if (dn2) then
+         do concurrent (i=1:self%nmolecules,l=1:self%nmolecules)
+            sum_Q_v_dlambda_k_dn(i,l) = sum(self%qk * self%vij(l,:) * dlambda_k_dn(i,:))
+            dlambda_k_dn2(i,l,:) = (&
+               - sum_vij_Qj_Ejk(i,:) * sum_vij_Qj_Ejk(l,:) / sum_ni_vij_Qj_Ejk**2 &
+               + sum_vik_Qk(i) * sum_vik_Qk(l) / sum_ni_vik_Qk**2 &
+               )
+         end do
+      end if
+
+      ! Temperature derivatives
+      if (dt .or. dtn .or. dt2) then
+         do k=1,self%ngroups
+            sum_ni_vij_Qj_dEjk_dT(k) = sum(n * sum_vij_Qj_dEjk_dT(:,k))
+            dlambda_k_dT(k) = sum(theta_j * dEjk_dt(:, k)) / sum(theta_j * Ejk(:, k))
+            dlambda_k_dT2(k) = sum(n * sum_vij_Qj_dEjk_dT2(:,k)) / sum_ni_vij_Qj_Ejk(k) - dlambda_k_dT(k)**2
+         end do
+      end if
+
+      if (dtn) then
+         do i=1,self%nmolecules
+            dlambda_k_dndT(i,:) = (&
+               sum_vij_Qj_dEjk_dT(i,:) / sum_ni_vij_Qj_Ejk &
+               - sum_vij_Qj_Ejk(i,:) * sum_ni_vij_Qj_dEjk_dT / sum_ni_vij_Qj_Ejk**2 &
+               )
+         end do
+      end if
+
+      ! ========================================================================
+      ! Lambda_ik
+      ! ------------------------------------------------------------------------
+      if (pge .or. dn .or. dt .or. dtn) then
+         lambda_ik = 0.0_pr
+         do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+            if (self%vij(i,k) /= 0) then
+               lambda_ik(i,k) = log(sum(self%thetas_ij(i, :) * Ejk(:, k)))
+            end if
+         end do
+      end if
+
+      ! Temperature derivatives
+      if (dt .or. dt2 .or. dtn) then
+         dlambda_ik_dT = 0.0_pr
+         do concurrent (i=1:self%nmolecules, k=1:self%ngroups)
+            if (self%vij(i,k) /= 0) then
+               dlambda_ik_dT(i,k) = sum(self%thetas_ij(i,:) * dEjk_dt(:, k)) / sum(self%thetas_ij(i,:) * Ejk(:, k))
+            end if
+         end do
+
+         if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
+      end if
+
+      ! ========================================================================
+      ! Ge
+      ! ------------------------------------------------------------------------
+      if (pge .or. dn .or. dt .or. dtn) then
+         do i=1,self%nmolecules
+            sum_vQ_Lambda(i) = sum(self%vij(i,:) * self%qk * (lambda_k - lambda_ik(i,:)))
+         end do
+
+         Ge_aux = - sum(n * sum_vQ_Lambda)
+      end if
+
+      ! ========================================================================
+      ! dGe_dn
+      ! ------------------------------------------------------------------------
+      if (dn .or. dtn) then
+         do i=1,self%nmolecules
+            aux_sum(i) = sum(sum_nl_vlj * self%qk * dlambda_k_dn(i,:))
+         end do
+         dGe_dn_aux = -sum_vQ_Lambda - aux_sum
+      end if
+
+      ! ========================================================================
+      ! dGe_dn2
+      ! ------------------------------------------------------------------------
+      if (dn2) then
+         do concurrent (i=1:self%nmolecules,l=1:self%nmolecules)
+            aux_sum2 = sum(sum_nl_vlj * dlambda_k_dn2(i,l,:) * self%qk)
+            dGe_dn2(i,l) = -(sum_Q_v_dlambda_k_dn(i,l) + sum_Q_v_dlambda_k_dn(l,i)) - aux_sum2
+         end do
+      end if
+
+      ! ========================================================================
+      ! dGe_dT, dGe_dT2, dGE_dnT
+      ! ------------------------------------------------------------------------
+      if (dt .or. dt2 .or. dtn) then
+         do i=1,self%nmolecules
+            sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
+         end do
+
+         dGe_dT_aux = -sum(n * sum_vij_Qj_dlambdas_dT)
+      end if
+
+      if (dt2) then
+         do i=1,self%nmolecules
+            sum_vij_Qj_dlambdas_dT2(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT2 - dlambda_ik_dT2(i,:)))
+         end do
+
+         dGe_dT2 = -sum(n * sum_vij_Qj_dlambdas_dT2)
+      end if
+
+      if (dtn) then
+         do i=1,self%nmolecules
+            aux_sum(i) = sum(sum_nl_vlj * self%qk * dlambda_k_dndT(i,:))
+         end do
+
+         dGe_dTn = - sum_vij_Qj_dLambdas_dT - aux_sum
+      end if
+
+      ! ========================================================================
+      ! From reduced Ge to Ge
+      ! ------------------------------------------------------------------------
+      if (present(Ge)) then
+         Ge = Ge_aux * R * T
+      end if
+
+      if (present(dGe_dT)) then
+         dGe_dT = R * (Ge_aux + dGe_dT_aux * T)
+      end if
+
+      if (present(dGe_dT2)) then
+         dGe_dT2 = R * (2.0 * dGe_dT_aux + T * dGe_dT2)
+      end if
+
+      if (present(dGe_dTn)) then
+         dGe_dTn = R * (dGe_dn_aux + dGe_dTn * T)
+      end if
+
+      if (present(dGe_dn)) then
+         dGe_dn = dGe_dn_aux * R * T
+      end if
+
+      if (present(dGe_dn2)) then
+         dGe_dn2 = dGe_dn2 * R * T
+      end if
+   end subroutine Ge_residual
+
+   subroutine UNIFAC_temperature_dependence(&
+      self, systems_groups, T, psi, dpsi_dt, dpsi_dt2 &
+      )
+      !! # UNIFAC temperature dependence
+      !! Implementation of the \(\psi(T) \) function of the UNIFAC model.
+      !!
+      !! \[
+      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
+      !!    \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! \[
+      !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
+      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+      !! \]
+      !!
+      !! # References
+      !!
+      class(UNIFACPsi) :: self
+      !! \(\psi\) function
+      class(Groups) :: systems_groups
+      !! Groups in the system
+      real(pr), intent(in) :: T
+      !! Temperature [K]
+      real(pr), optional, intent(out) :: psi(:, :)
+      !! \(\psi\)
+      real(pr), optional, intent(out) :: dpsi_dt(:, :)
+      !! \(\frac{d \psi\}{dT} \)
+      real(pr), optional, intent(out) :: dpsi_dt2(:, :)
+      !! \(\frac{d^2 \psi\}{dT^2} \)
 
       integer :: i, j
       integer :: ig, jg
       integer :: ngroups
+
+      real(pr) :: Aij
+      real(pr) :: Eij
 
       ngroups = size(systems_groups%groups_ids)
 
       do concurrent(i=1:ngroups, j=1:ngroups)
          ig = systems_groups%groups_ids(i)
          jg = systems_groups%groups_ids(j)
-         psi(i, j) = exp(-self%Eij(ig, jg) / T)
-         if (present(dpsidt)) &
-            dpsidt(i, j) = self%Eij(ig, jg) * psi(i, j) / T**2
-         if (present(dpsidt2)) &
-            dpsidt2(i, j) = &
-            self%Eij(ig, jg) * (self%Eij(ig, jg) - 2*T) * psi(i, j) / T**4
-      end do
 
+         Aij = self%Aij(ig, jg)
+         Eij = exp(-Aij / T)
+
+         if (present(psi)) &
+            psi(i, j) = Eij
+         if (present(dpsi_dt)) &
+            dpsi_dt(i, j) = Aij * Eij / T**2
+         if (present(dpsi_dt2)) &
+            dpsi_dt2(i, j) = Aij * (Aij - 2_pr*T) * Eij / T**4
+      end do
    end subroutine UNIFAC_temperature_dependence
 
-   subroutine group_area_fraction(&
-      self, x, &
-      theta, dthetadx, dthetadx2 &
-      )
-      type(UNIFAC) :: self
-      real(pr), intent(in) :: x(:)
-
-
-      real(pr), intent(out) :: theta(:) !! Group area fraction
-      real(pr), optional, intent(out) :: dthetadx(:, :)
-      real(pr), optional, intent(out) :: dthetadx2(:, :, :)
-
-      real(pr) :: gf(size(theta)) !! Group fraction
-      real(pr) :: dgfdx(size(theta), size(x))
-      real(pr) :: dgfdx2(size(theta), size(x), size(x))
-
-      real(pr) :: ga(size(theta)) !! Area of group j in the system
-      real(pr) :: dgadx(size(theta), size(x))
-
-      real(pr) :: total_groups_area, dtga_dx(size(x))
-      integer :: i, l, j, m, gi
-
-      associate(&
-         group_area => self%group_area, stew => self%groups_stew, &
-         molecs => self%molecules &
-         )
-
-         theta = 0
-         dgadx = 0
-
-         total_groups_area = 0
-         dtga_dx = 0
-         ga = 0
-
-         do l=1,size(molecs)
-            do m=1,size(molecs(l)%number_of_groups)
-               gi = molecs(l)%groups_ids(m)
-               j = findloc(stew%groups_ids, gi, dim=1)
-
-               ga(j) = ga(j) + x(l) * group_area(gi) * molecs(l)%number_of_groups(m)
-
-               if (present(dthetadx)) then
-                  dgadx(j, l) = group_area(gi) * molecs(l)%number_of_groups(m)
-                  dtga_dx(l) = dtga_dx(l) + molecs(l)%number_of_groups(m) * group_area(gi)
-               end if
-
-               total_groups_area = total_groups_area &
-                  + x(l) * molecs(l)%number_of_groups(m) * group_area(gi)
-            end do
-         end do
-
-         theta = ga/total_groups_area
-         if (present(dthetadx)) then
-            do i=1,size(x)
-               dthetadx(:, i) = &
-                  dgadx(:, i)/total_groups_area &
-                  - ga(:)/total_groups_area**2 * dtga_dx(i)
-
-               if (present(dthetadx2)) then
-                  do j=i,size(x)
-                     dthetadx2(:, i, j) = &
-                        dtga_dx(i) * dtga_dx(j) * ga(:)/total_groups_area**3 &
-                        - ( dgadx(:, i) * dgadx(:, j)**2 )/total_groups_area**2
-                  end do
-               end if
-            end do
-         end if
-      end associate
-   end subroutine group_area_fraction
-
-   subroutine group_big_gamma(&
-      self, x, T, ln_Gamma, dln_Gammadx, dln_Gammadt, dln_Gammadt2, dln_Gammadx2&
-      )
-      class(UNIFAC) :: self
-      real(pr), intent(in) :: x(:) !< Molar fractions
-      real(pr), intent(in) :: T !! Temperature
-      real(pr), intent(out) :: ln_Gamma(:) !! \(\ln \Gamma_i\)
-      real(pr), optional, intent(out) :: dln_Gammadt(:) !! \(\ln \Gamma_i\)
-      real(pr), optional, intent(out) :: dln_Gammadt2(:) !! \(\ln \Gamma_i\)
-      real(pr), optional, intent(out) :: dln_Gammadx(:, :) !!
-      real(pr), optional, intent(out) :: dln_Gammadx2(:, :, :) !!
-
-      real(pr) :: theta(self%ngroups)
-      !! Group area fractions
-      real(pr) :: dthetadx(self%ngroups, size(x))
-      !! First derivative of group area fractions with composition
-      real(pr) :: dthetadx2(self%ngroups, size(x), size(x))
-      !! Second derivative of group area fractions with composition
-      real(pr) :: psi(self%ngroups,self%ngroups)
-      !! \(\psi(T)\) parameter
-      real(pr) :: dpsidt(self%ngroups, self%ngroups)
-      real(pr) :: dpsidt2(self%ngroups,self%ngroups)
-
-      ! Number of groups and components
-      integer :: ng, nc
-
-      ! Indexes used for groups
-      integer :: n, m, k, gi
-
-      ! Indexes for components
-      integer :: i, j
-
-      logical :: dx, dx2, dt, dt2
-
-      ! Auxiliar variables to ease calculations
-      real(pr) :: updown, updowndt, updowndx(size(x))
-      real(pr) :: down(size(theta)), downdt(size(theta)), &
-         downdt2(size(theta)), downdx(size(theta), size(x))
-
-      ng = self%ngroups
-      nc = size(x)
-      dt = present(dln_Gammadt)
-      dt2 = present(dln_Gammadt2)
-      dx = present(dln_Gammadx)
-      dx2 = present(dln_gammadx2)
-
-      ! Initializate as zero
-      ln_gamma = 0
-
-      ! ========================================================================
-      ! Calculate only the needed derivatives of the area fractions
-      ! ------------------------------------------------------------------------
-      if (dx2) then
-         dln_Gammadx = 0
-         dln_Gammadx2 = 0
-         call group_area_fraction(&
-            self, x, theta=theta, dthetadx=dthetadx, dthetadx2=dthetadx2 &
-            )
-      else if (dx) then
-         dln_Gammadx = 0
-         call group_area_fraction(self, x, theta=theta, dthetadx=dthetadx)
-      else
-         call group_area_fraction(self, x, theta=theta)
-      end if
-
-      ! ========================================================================
-      ! Temperature dependance
-      ! ------------------------------------------------------------------------
-      if (dt2) then
-         dln_Gammadt = 0
-         dln_Gammadt2 = 0
-         call self%psi_function%psi(self%groups_stew, T, psi, dpsidt, dpsidt2)
-      else if(dt) then
-         dln_Gammadt = 0
-         call self%psi_function%psi(self%groups_stew, T, psi, dpsidt)
-      else
-         call self%psi_function%psi(self%groups_stew, T, psi)
-      end if
-      ! ========================================================================
-      ! This parameters are used to avoid repeated calculations
-      ! ------------------------------------------------------------------------
-      down = 0
-      downdx = 0
-      do concurrent(m=1:ng, n=1:ng)
-         down(m) = down(m) + theta(n) * psi(n, m)
-         if (dt)  downdt(m) = downdt(m) + theta(n) * dpsidt(n, m)
-         if (dt2) downdt2(m) = downdt(m) + theta(n) * dpsidt2(n, m)
-         if(dx)   downdx(m, :) = downdx(m, :) + dthetadx(n, :) * psi(n, m)
-      end do
-
-      do k=1,ng
-         if (theta(k) == 0) cycle
-
-         ! Get the group index on the main matrix
-         gi = self%groups_stew%groups_ids(k)
-         updown = sum(theta(:) * psi(k, :)/down(:))
-
-         ln_Gamma(k) = self%group_area(gi) * (&
-            1 - log(sum(theta(:) * psi(:, k))) - updown &
-            )
-
-         if (dt) then
-            temp_deriv: block
-               real(pr) :: F(ng), Z(ng)
-               do i=1,ng
-                  F(i) = sum(theta(:) * dpsidt(:, i))
-                  Z(i) = 1/sum(theta(:) * psi(:, i))
-               end do
-
-               dln_Gammadt(k) = self%group_area(gi) * (&
-                  sum(&
-                  Z(:) * (&
-                  theta(:) * dpsidt(:, k) &
-                  + theta(:) * psi(:, k) * F(:)* Z(:) &
-                  ))  - F(k) * Z(k) &
-                  )
-            end block temp_deriv
-         end if
-
-         if (dx) then
-            do concurrent(i=1:nc)
-               dln_Gammadx(k, i) = self%group_area(gi) * ( &
-                  - sum(dthetadx(:, i) * psi(:, k))/sum(theta(:) * psi(:, k)) &
-                  - sum(dthetadx(:, i) * psi(k, :) / down(:))                 &
-                  + sum(downdx(:, i) * theta(:) * psi(k, :) / down(:)**2)     &
-                  )
-            end do
-            if (dx2) then
-               do concurrent(j=1:nc)
-               end do
-            end if
-         end if
-      end do
-   end subroutine group_big_gamma
-
-   type(UNIFAC) function setup_unifac(molecules, Eij, Qk, Rk)
-      !! UNIFAC model initialization.
+   function thetas_i(nm, ng, group_area, stew, molecules) result(thetas_ij)
+      !! # \(\Theta_i \) calculation
+      !! Calculate the area fraciton of each froup on each molecule.
+      !!
+      !! # Description
+      !! Calculate the area fraciton of each froup on each molecule. The values
+      !! are obtained on the setup_unifac function and stored on the UNIFAC
+      !! type, since the values can be reused (no compositional or temperature
+      !! dependence)
+      !!
+      !! # References
+      !!
+      integer, intent(in) :: nm !! Number of molecules
+      integer, intent(in) :: ng !! Number of groups
+      real(pr), intent(in) :: group_area(:) !! Group k areas
+      type(Groups), intent(in) :: stew !! All the groups present in the system
       type(Groups), intent(in) :: molecules(:) !! Molecules
-      real(pr), intent(in) :: Eij(:, :) !! Interaction Matrix
-      real(pr), intent(in) :: Qk(:) !! Group k areas
-      real(pr), intent(in) :: Rk(:) !! Group k volumes
+      real(pr) :: thetas_ij(nm, ng) !! Group j area fraction on molecule i
+
+      real(pr) :: total_area_i(nm)
+      real(pr) :: qki_contribution
+
+      integer :: gi
+      integer :: i, j, k
+
+      thetas_ij = 0.0_pr
+      total_area_i = 0.0_pr
+
+      ! Obtain the total area of each molecule
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            ! Locate group k in the stew ordering (position j of group k).
+            j = findloc(stew%groups_ids, gi, dim=1)
+
+            ! Contribution of the group k to the molecule i area.
+            qki_contribution = (&
+               group_area(gi) * molecules(i)%number_of_groups(k) &
+               )
+
+            ! Adding to the total area of each molecule
+            total_area_i(i) = total_area_i(i) + qki_contribution
+         end do
+      end do
+
+      ! Calculate the fraction of each group on each molecule
+      thetas_ij = 0.0_pr
+
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            j = findloc(stew%groups_ids, gi, dim=1)
+
+            thetas_ij(i, j) = group_area(gi) * molecules(i)%number_of_groups(k) / total_area_i(i)
+         end do
+      end do
+   end function thetas_i
+
+   subroutine get_unifac_default_parameters(Aij, Qk, Rk)
+      !! # Get UNIFAC default parameters
+      !! If no provided, loads the default UNIFAC parameters on setup_unifac.
+      !!
+      !! # References
+      !! https://www.ddbst.com/published-parameters-unifac.html
+      !!
+      real(pr), allocatable, optional, intent(out) :: Aij(:,:)
+      !! Subgroup-subgroup interaction parameters [K]
+      real(pr), allocatable, optional, intent(out) :: Qk(:)
+      !! Subgroups areas
+      real(pr), allocatable, optional, intent(out) :: Rk(:)
+      !! Subgroups volumes
+
+      if (present(Aij)) then
+         call load_npy("data/unifac_aij.npy", Aij)
+      end if
+
+      if (present(Qk)) then
+         call load_npy("data/unifac_Qk.npy", Qk)
+      end if
+
+      if (present(Rk)) then
+         call load_npy("data/unifac_Rk.npy", Rk)
+      end if
+   end subroutine get_unifac_default_parameters
+
+   type(UNIFAC) function setup_unifac(molecules, Aij, Qk, Rk)
+      !! # Setup UNIFAC
+      !! Instantiate a UNIFAC model
+      !!
+      !! # Description
+      !! Subroutine used to instantiate a UNIFAC model.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  ! Instantiate an UNIFAC model with ethanol-water mix and calculate gammas
+      !!  use yaeos, only: pr, Groups, setup_unifac, UNIFAC
+      !!
+      !!  type(UNIFAC) :: model
+      !!  type(Groups) :: molecules(2)
+      !!  real(pr) :: ln_gammas(2)
+      !!
+      !!  ! Ethanol definition [CH3, CH2, OH]
+      !!  molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
+      !!  molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
+      !!
+      !!  ! Water definition [H2O]
+      !!  molecules(2)%groups_ids = [16]
+      !!  molecules(2)%number_of_groups = [1]
+      !!
+      !!  ! Model setup
+      !!  model = setup_unifac(molecules)
+      !!
+      !!  ! Calculate ln_gammas
+      !!  call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+      !!
+      !!  print *, ln_gammas ! result: 0.18534142000449058    0.40331395945417559
+      !! ```
+      !!
+      !! # References
+      !! https://www.ddbst.com/published-parameters-unifac.html
+      !!
+      type(Groups), intent(in) :: molecules(:)
+      !! Molecules (Group type) objects
+      real(pr), optional, intent(in) :: Aij(:, :)
+      !! Subgroup-subgroup interaction parameters matrix (if no provided loads
+      !! default parameters)
+      real(pr), optional, intent(in) :: Qk(:)
+      !! Subgroups areas (if no provided loads default parameters)
+      real(pr), optional, intent(in) :: Rk(:)
+      !! Subgroups volumes (if no provided loads default parameters)
 
       type(Groups) :: soup
       type(UNIFACPsi) :: psi_function
-      integer :: gi, i, j
+
+      ! Default UNIFAC parameters
+      real(pr), allocatable:: Aij_default(:, :)
+      real(pr), allocatable:: Qk_default(:)
+      real(pr), allocatable:: Rk_default(:)
+
+      ! Parameters to perform the setup
+      real(pr), allocatable:: Aij_final(:, :)
+      real(pr), allocatable:: Qk_final(:)
+      real(pr), allocatable:: Rk_final(:)
+
+      !
+      integer, allocatable :: vij(:, :)
+      real(pr), allocatable :: qks(:)
+
+      integer :: gi, i, j, k
 
       setup_unifac%molecules = molecules
 
       allocate(soup%groups_ids(0))
       allocate(soup%number_of_groups(0))
+
+      ! ========================================================================
+      ! Load default UNIFAC parameters if not provided
+      ! ------------------------------------------------------------------------
+      ! Aij
+      if (.not. present(Aij)) then
+         call get_unifac_default_parameters(Aij=Aij_default)
+
+         allocate(Aij_final(size(Aij_default, 1), size(Aij_default, 2)))
+         Aij_final(:,:) = Aij_default(:,:)
+      else
+         allocate(Aij_final(size(Aij, 1), size(Aij, 2)))
+         Aij_final(:,:) = Aij(:,:)
+      end if
+
+      ! Qk
+      if (.not. present(Qk)) then
+         call get_unifac_default_parameters(Qk=Qk_default)
+
+         allocate(Qk_final(size(Qk_default)))
+         Qk_final(:) = Qk_default(:)
+      else
+         allocate(Qk_final(size(Qk)))
+         Qk_final(:) = Qk(:)
+      end if
+
+      ! Rk
+      if (.not. present(Rk)) then
+         call get_unifac_default_parameters(Rk=Rk_default)
+
+         allocate(Rk_final(size(Rk_default)))
+         Rk_final(:) = Rk_default(:)
+      else
+         allocate(Rk_final(size(Rk)))
+         Rk_final(:) = Rk(:)
+      end if
 
       ! ========================================================================
       ! Count all the individual groups and each molecule volume and area
@@ -524,8 +1144,8 @@ contains
                gi = molecules(i)%groups_ids(j)
 
                ! Calculate molecule i volume and area
-               r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk(gi)
-               q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk(gi)
+               r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk_final(gi)
+               q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk_final(gi)
 
                if (all(soup%groups_ids - gi  /= 0)) then
                   ! Add group if it wasn't included yet
@@ -543,12 +1163,36 @@ contains
          end do
       end associate
       ! ========================================================================
+      ! Build a matrix vij and vector qk
+      ! ------------------------------------------------------------------------
+      allocate(vij(size(molecules), size(soup%number_of_groups)))
+      allocate(qks(size(soup%number_of_groups)))
 
-      psi_function%Eij = Eij
+      vij = 0
+      qks = 0.0_pr
+      do i=1,size(molecules)
+         do k=1,size(molecules(i)%number_of_groups)
+            gi = molecules(i)%groups_ids(k)
+
+            ! Index of group for Area
+            j = findloc(soup%groups_ids, gi, dim=1)
+
+            vij(i,j) = molecules(i)%number_of_groups(k)
+
+            qks(j) = Qk_final(gi)
+         end do
+      end do
+      ! ========================================================================
+      psi_function%Aij = Aij_final
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
+      setup_unifac%nmolecules = size(molecules)
       setup_unifac%psi_function = psi_function
-      setup_unifac%group_area = Qk
-      setup_unifac%group_volume = Rk
+      setup_unifac%group_area = Qk_final
+      setup_unifac%group_volume = Rk_final
+      setup_unifac%thetas_ij = thetas_i(&
+         size(molecules), size(soup%number_of_groups), Qk_final, soup, molecules)
+      setup_unifac%vij = vij
+      setup_unifac%qk = qks
    end function setup_unifac
 end module yaeos__models_ge_group_contribution_unifac

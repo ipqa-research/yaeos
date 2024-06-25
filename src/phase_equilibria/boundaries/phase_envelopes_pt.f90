@@ -121,6 +121,8 @@ contains
          real(pr), intent(out) :: dF(:, :)
          real(pr), intent(out) :: dFdS(:)
 
+         character(len=14) :: kind_z, kind_y
+
          real(pr) :: y(nc)
          real(pr) :: Vz, Vy, lnphip_z(nc), lnphip_y(nc)
          real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
@@ -140,13 +142,25 @@ contains
 
          y = K*z
 
+         select case(kind)
+         case ("bubble")
+            kind_z = "liquid"
+            kind_y = "vapor"
+         case ("dew")
+            kind_z = "vapor"
+            kind_y = "liquid"
+         case default
+            kind_z = "stable"
+            kind_y = "stable"
+         end select
+         
          call fugacity_tp(&
-            model, z, T, P, V=Vz, root_type="stable", &
+            model, z, T, P, V=Vz, root_type=kind_z, &
             lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
          call fugacity_tp(&
-            model, y, T, P, V=Vy, root_type="stable", &
+            model, y, T, P, V=Vy, root_type=kind_y, &
             lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
@@ -192,6 +206,13 @@ contains
 
          Xold = X
 
+         ! ==============================================================
+         ! Update specification
+         ! - Dont select T or P near critical poitns
+         ! - Update dS wrt specification units
+         ! - Set step
+         ! --------------------------------------------------------------
+         
          if (maxval(abs(X(:nc))) < 0.1_pr) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS=0.01_pr
@@ -211,42 +232,57 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
+         ! ==============================================================
          ! Save the point
+         ! --------------------------------------------------------------
          envelopes%points = [&
             envelopes%points, &
             EquilibriaState(&
             kind=kind, &
             x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
-            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=0) &
+            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=iterations) &
             ]
-
-         ! Jump over critical point
-         do while (maxval(abs(X(:nc))) < 0.05)
-            S = S + dS
-            X = X + dXdS*dS
-         end do
-
-         Xnew = X + dXdS*dS
-
+         
+         
+         ! ==============================================================
+         ! Handle critical point
+         ! --------------------------------------------------------------
          cp: block
+            !! Critical point detection
+            !! If the values of lnK (X[:nc]) change sign then a critical point
+            !! Has passed
             real(pr) :: Xc(nc+2) !! Value at (near) critical point
             real(pr) :: a  !! Parameter for interpolation
+         
+            do while (maxval(abs(X(:nc))) < 0.1)
+               ! If near a critical point, jump over it
+               S = S + dS
+               X = X + dXdS*dS
+            end do
+
+            Xnew = X + dXdS*dS
+            
             if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
                select case(kind)
                 case("dew")
                   kind = "bubble"
                 case("bubble")
                   kind = "dew"
+                case default
+                  kind = "liquid-liquid"
                end select
 
-               ! 0 = a*X(ns) + (1-a)*Xnew(ns)
+               ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
                a = -Xnew(ns)/(X(ns) - Xnew(ns))
                Xc = a * X + (1-a)*Xnew
                envelopes%cps = [&
                   envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(X(nc+2))) &
                   ]
+               ! X = Xc + dXdS*dS
             end if
+
          end block cp
+
       end subroutine update_specification
    end function pt_envelope_2ph
 
@@ -278,7 +314,7 @@ contains
 
       do i=1, size(pt2%points)-1
          ! Change label if passed a critical point
-         if (any(cps - i == 0)) then
+         if (any(cps - i == 0) .and. i < size(pt2%points)) then
             write(unit, "(/, /)")
             write(unit, "(A, /)") "#" // pt2%points(i+1)%kind
          end if

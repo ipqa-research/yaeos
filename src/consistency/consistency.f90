@@ -4,7 +4,5 @@ module yaeos__consistency
    !! central finite differences.
    ! Consistency test for ArModels
    use yaeos__consistency_armodel
-
-   ! TODO: Consistency test for GeModels
-   ! use yaeos__consistency_gemodel
+   use yaeos__consistency_gemodel
 end module yaeos__consistency

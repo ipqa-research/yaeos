@@ -35,6 +35,7 @@ module yaeos__models
 
    ! Mixing Rules
    use yaeos__models_ar_cubic_quadratic_mixing
+   use yaeos__models_cubic_mixing_rules_huron_vidal
 
    ! Implemented models
    use yaeos__models_ar_cubic_implementations
