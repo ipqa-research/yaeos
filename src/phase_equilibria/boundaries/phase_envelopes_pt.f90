@@ -241,21 +241,25 @@ contains
             T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=iterations) &
             ]
          
+         
          ! ==============================================================
          ! Handle critical point
          ! --------------------------------------------------------------
-         
-         do while (maxval(abs(X(:nc))) < 0.05)
-            ! Jump over critical point
-            S = S + dS
-            X = X + dXdS*dS
-         end do
-
-         Xnew = X + dXdS*dS
-
          cp: block
+            !! Critical point detection
+            !! If the values of lnK (X[:nc]) change sign then a critical point
+            !! Has passed
             real(pr) :: Xc(nc+2) !! Value at (near) critical point
             real(pr) :: a  !! Parameter for interpolation
+         
+            do while (maxval(abs(X(:nc))) < 0.1)
+               ! If near a critical point, jump over it
+               S = S + dS
+               X = X + dXdS*dS
+            end do
+
+            Xnew = X + dXdS*dS
+            
             if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
                select case(kind)
                 case("dew")
@@ -272,8 +276,11 @@ contains
                envelopes%cps = [&
                   envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(X(nc+2))) &
                   ]
+               ! X = Xc + dXdS*dS
             end if
+
          end block cp
+
       end subroutine update_specification
    end function pt_envelope_2ph
 
@@ -305,7 +312,7 @@ contains
 
       do i=1, size(pt2%points)
          ! Change label if passed a critical point
-         if (any(cps - i == 0)) then
+         if (any(cps - i == 0) .and. i < size(pt2%points)) then
             write(unit, "(/, /)")
             write(unit, "(A, /)") "#" // pt2%points(i+1)%kind
          end if
