@@ -21,8 +21,8 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
       !! attractive parameter can be expressed as:
       !!
       !! \[
-      !! \frac{D}{RTB}(n, T) = sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
-      !!  \left(\frac{G^E(n, T)}{RT}\right)
+      !! \frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
+      !!  \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
       !! \]
       !! Where \(q\) is a weak function of temperature. In the case of `MHV`
       !! and simplicity it is considered that depends on the model used.
@@ -70,20 +70,6 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
 contains
 
    type(MHV) function init(ge, b, q, lij) result(mixrule)
-      !! # Michelsen Modified Huron-Vidal mixing rule
-      !! 
-      !!
-      !! # Description
-      !! Detailed description
-      !!
-      !! # Examples
-      !!
-      !! ```fortran
-      !!  A basic code example
-      !! ```
-      !!
-      !! # References
-      !!
       class(GeModel), intent(in) :: Ge
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: q
@@ -149,8 +135,8 @@ contains
       !! model like NRTL with the expression:
       !!
       !! \[
-      !! \frac{D}{RTB}(n, T) = sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
-      !!  \left(\frac{G^E(n, T)}{RT}\right)
+      !! \frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
+      !!  \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
       !! \]
       !!
       !! # Examples
