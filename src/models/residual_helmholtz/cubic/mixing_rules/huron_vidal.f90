@@ -182,19 +182,6 @@ contains
       dDdT2 = fdT2*B
       dDij = fdij
 
-   contains
-      real(pr) function dlB(n, bi)
-         real(pr), intent(in) :: n(:), bi(:)
-         real(pr) :: logb_nbi(size(n))
-
-         real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
-         real(pr) :: totn
-
-         call self%Bmix(n, bi, B, dBi, dBij)
-         totn = sum(n)
-         logb_nbi = log(B/(totn*bi))
-         dlB = dot_product(n, logB_nbi)
-      end function
    end subroutine
 
    subroutine D1Mix_constantMHV(self, n, d1i, D1, dD1i, dD1ij)
