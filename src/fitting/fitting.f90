@@ -3,10 +3,11 @@ module yaeos__fitting
    use yaeos__models, only: ArModel, CubicEoS
    use yaeos__equilibria, only: &
       EquilibriaState, saturation_pressure, saturation_temperature, flash
+   use forbear, only: bar_object
    implicit none
 
-   type :: FittingProblem
-      !! Fitting problem setting
+   type, abstract :: FittingProblem
+      !! # Fitting problem setting
       !!
       !! # Description
       !! This derived type holds all the relevant information for a parameter
@@ -14,44 +15,58 @@ module yaeos__fitting
       !! optimized and a procedure `get_model_from_X` that should reconstruct
       !! the model with the desired parameters to optimize.
       real(pr) :: solver_tolerance = 1e-9_pr
-      real(pr) :: parameter_step = 0.1_pr
+      real(pr), allocatable :: parameter_step(:)
 
-      class(ArModel), allocatable :: initial_model
+      class(ArModel), allocatable :: model
 
       type(EquilibriaState), allocatable :: experimental_points(:)
-      procedure(model_from_X), pointer :: get_model_from_X
       logical :: verbose = .false.
+   contains
+      procedure(model_from_X), deferred :: get_model_from_X
    end type FittingProblem
 
    abstract interface
-      subroutine model_from_X(self, X, model)
+      function model_from_X(problem, X)
+         !! Function that returns a setted model from the parameters vector
          import ArModel, FittingProblem, pr
-         class(FittingProblem), intent(in) :: self
+         class(FittingProblem), intent(in) :: problem
          real(pr), intent(in) :: X(:)
-         class(ArModel), intent(out) :: model
-      end subroutine model_from_X
+         
+         class(ArModel), allocatable :: model_from_X
+      end function model_from_X
    end interface
 
-   type(CubicEoS) :: model
+   type(bar_object), private :: bar
+   integer, private :: count
+
+   class(ArModel), private, allocatable :: model
 
 contains
 
    real(pr) function optimize(X, func_data) result(y)
-      use nlopt_wrap, only: create, nlopt_opt, nlopt_algorithm_enum
+      use nlopt_wrap, only: create, destroy, nlopt_opt, nlopt_algorithm_enum
       use nlopt_callback, only: nlopt_func, create_nlopt_func
 
       real(pr), intent(in out) :: X(:) !! Vector of parameters to fit
-      type(FittingProblem) :: func_data !! Parametrization details
+      class(FittingProblem) :: func_data !! Parametrization details
 
       real(pr) :: dx(size(X))
 
       type(nlopt_opt) :: opt !! Optimizer
       type(nlopt_func) :: f !! Function to optimize
       integer :: stat
+      
+      count = 0
+      call bar%initialize(&
+         prefix_string='Fitting... ',&
+         width=1, spinner_string='⠋', spinner_color_fg='blue' &
+      )
+      call bar%start
 
-      opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(X))
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_PRAXIS, size(X))
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_COBYLA, size(X))
+      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(X))
+      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_BOBYQA, size(X))
+      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NEWUOA, size(X))
+      opt = nlopt_opt(nlopt_algorithm_enum%LN_PRAXIS, size(X))
 
       f = create_nlopt_func(fobj, f_data=func_data)
 
@@ -60,11 +75,14 @@ contains
 
       call opt%set_initial_step(dx)
       call opt%set_min_objective(f)
+      call opt%set_xtol_abs(dx/100)
       call opt%optimize(x, y, stat)
+      call bar%destroy
+      call destroy(opt)
    end function optimize
 
    real(pr) function fobj(x, gradient, func_data)
-      !! Objective function to fit phase-equilibria points.
+      !! # Objective function to fit phase-equilibria points.
       !!
       !! # Description
       !! ...
@@ -83,14 +101,17 @@ contains
 
       real(pr) :: p_exp, t_exp
 
-      fobj = 0
+
       select type(func_data)
-       type is(FittingProblem)
-         call func_data%get_model_from_X(X, model)
+       class is(FittingProblem)
          fobj = error_function(X, func_data)
       end select
       write(2, *) X, fobj
       write(1, "(/)")
+      write(*, "(E15.4, 2x)", advance="no") fobj
+      
+      count = count + 1
+      call bar%update(current=real(count,pr)/(count + 100))
    end function fobj
 
    real(pr) function error_function(X, func_data) result(fobj)
@@ -98,11 +119,13 @@ contains
       real(pr), intent(in) :: X(:)
       class(FittingProblem), intent(in) :: func_data
 
-      !! Thermodynamic model to make calculations inside
       type(EquilibriaState) :: model_point !! Each solved point
       type(EquilibriaState) :: exp_point
 
       integer :: i
+
+      model = func_data%get_model_from_X(X)
+      fobj = 0
 
       do i=1, size(func_data%experimental_points)
          exp_point = func_data%experimental_points(i)
@@ -128,8 +151,13 @@ contains
 
          fobj = fobj + sq_error(exp_point%p, model_point%p)
          fobj = fobj + maxval(sq_error(exp_point%y, model_point%y))
+         fobj = fobj + maxval(sq_error(exp_point%x, model_point%x))
          write(1, *) exp_point, model_point
-      end do
 
+         if(isnan(fobj)) then
+            fobj = 1e6
+            exit
+         end if
+      end do
    end function error_function
 end module yaeos__fitting

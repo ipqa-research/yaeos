@@ -5,6 +5,11 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    use yaeos__models_ge, only: GeModel
    implicit none
 
+   private
+
+   public :: MHV
+   public :: DmixMHV
+
    type, extends(CubicMixRule) :: MHV
       real(pr), allocatable :: l(:, :)
       real(pr), private, allocatable :: bi(:)
@@ -13,7 +18,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
       real(pr) :: q
    contains
       procedure :: Bmix => BmixMHV
-      procedure :: D1Mix => D1Mix_constantMHV
+      procedure :: D1Mix => D1MixMHV
       procedure :: Dmix => DmixMHV
    end type
 
@@ -61,8 +66,8 @@ contains
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: bi(:)
       real(pr), intent(out) :: B, dBi(:), dBij(:, :)
-      ! call bmix_qmr(n, bi, self%l, b, dbi, dbij)
-      call bmix_linear(n, bi, b, dbi, dbij)
+      call bmix_qmr(n, bi, self%l, b, dbi, dbij)
+      ! call bmix_linear(n, bi, b, dbi, dbij)
    end subroutine
 
    subroutine DmixMHV(self, n, T, &
@@ -142,6 +147,7 @@ contains
          type(hyperdual) :: hdot_ln_B_nbi
          type(hyperdual) :: hn(nc)
 
+         integer :: ii, jj
          hn = n
 
          do i = 1, nc
@@ -150,8 +156,18 @@ contains
                hn(i)%f1 = 1
                hn(j)%f2 = 1
 
-               hB = sum(hn*bi)
+               hB = 0._pr
+               do ii=1,nc
+                  do jj=1,nc
+                     hB = hB &
+                        + (hn(ii)*hn(jj)) &
+                        * 0.5_pr * (bi(ii) + bi(jj)) * (1._pr - self%l(ii, jj))
+                  end do
+               end do
+               hB = hB/sum(hn)
+
                hdot_ln_B_nbi = sum(hn*log(hB/(sum(hn)*bi)))
+               
                d2logBi_nbi(i, j) = hdot_ln_B_nbi%f12
                d2logBi_nbi(j, i) = hdot_ln_B_nbi%f12
             end do
@@ -197,16 +213,14 @@ contains
       end function
    end subroutine
 
-   subroutine D1Mix_constantMHV(self, n, d1i, D1, dD1i, dD1ij)
+   subroutine D1MixMHV(self, n, d1i, D1, dD1i, dD1ij)
+      use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
       class(MHV), intent(in) :: self
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: d1i(:)
       real(pr), intent(out) :: D1
       real(pr), intent(out) :: dD1i(:)
       real(pr), intent(out) :: dD1ij(:, :)
-
-      D1 = d1i(1)
-      dD1i = 0
-      dD1ij = 0
-   end subroutine D1Mix_constantMHV
+      call d1mix_rkpr(n, d1i, D1, dD1i, dD1ij)
+   end subroutine D1MixMHV
 end module yaeos__models_cubic_mixing_rules_huron_vidal

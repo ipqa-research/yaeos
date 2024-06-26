@@ -30,7 +30,7 @@ module yaeos__models_ar_cubic_quadratic_mixing
     end type QMR
     type, extends(QMR) :: QMR_RKPR
     contains
-        procedure :: D1mix => RKPR_D1Mix
+        procedure :: D1Mix => RKPR_D1mix
     end type QMR_RKPR
 
     abstract interface
@@ -151,19 +151,18 @@ contains
         !! Most Cubic EoS keep a constant value for their \(\delta_1\) parameter.
         !! This procedure assumes that all the components have the same \(delta_1\)
         !! and takes the first value as the one of the mixture.
+        use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
         class(QMR), intent(in) :: self !! Mixing rule
         real(pr), intent(in) :: n(:) !! Moles vector
         real(pr), intent(in) :: d1i(:) !! \(\delta_1\) parameter
         real(pr), intent(out) :: D1 !! Mixture's \(\Delta_1\)
         real(pr), intent(out) :: dD1i(:) !! \(\frac{dDelta_1}{dn_i} = 0\)
         real(pr), intent(out) :: dD1ij(:, :) !! \(\frac{d^2Delta_1}{dn_{ij}} = 0\)
-
-        D1 = d1i(1)
-        dD1i = 0
-        dD1ij = 0
+        call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
     end subroutine D1mix_constant
 
     subroutine RKPR_D1mix(self, n, d1i, D1, dD1i, dD1ij)
+        use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
         !! RKPR \(\delta_1\) parameter mixing rule.
         !!
         !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each 
@@ -180,26 +179,7 @@ contains
         real(pr), intent(out) :: D1
         real(pr), intent(out) :: dD1i(:)
         real(pr), intent(out) :: dD1ij(:, :)
-
-        integer :: i, j, nc
-        real(pr) :: totn
-
-        nc = size(n)
-        totn = sum(n)
-
-        D1 = 0.0_pr
-        do i = 1, nc
-            D1 = D1 + n(i) * d1i(i)
-        end do
-
-        D1 = D1/totn
-
-        do i = 1, nc
-            dD1i(i) = (d1i(i) - D1)/totn
-            do j = 1, nc
-                dD1ij(i, j) = (2.0_pr*D1 - d1i(i) - d1i(j))/totn**2
-            end do
-        end do
+        call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
     end subroutine RKPR_D1mix
 
     subroutine kij_constant(&
