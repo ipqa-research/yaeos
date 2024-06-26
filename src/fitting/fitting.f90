@@ -59,7 +59,8 @@ contains
       count = 0
       call bar%initialize(&
          prefix_string='Fitting... ',&
-         width=1, spinner_string='⠋', spinner_color_fg='blue' &
+         width=1, spinner_string='⠋', spinner_color_fg='blue', &
+         min_value=0._pr, max_value=100._pr &
       )
       call bar%start
 
@@ -101,17 +102,18 @@ contains
 
       real(pr) :: p_exp, t_exp
 
-
       select type(func_data)
        class is(FittingProblem)
          fobj = error_function(X, func_data)
+         if (func_data%verbose) then
+           call bar%update(current=real(count,pr)/(count + 100))
+           write(*, "(E15.4, 2x)", advance="no") fobj
+         end if
       end select
       write(2, *) X, fobj
       write(1, "(/)")
-      write(*, "(E15.4, 2x)", advance="no") fobj
       
       count = count + 1
-      call bar%update(current=real(count,pr)/(count + 100))
    end function fobj
 
    real(pr) function error_function(X, func_data) result(fobj)
