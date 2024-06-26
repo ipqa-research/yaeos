@@ -80,7 +80,7 @@ contains
       daidt2 = daidt2*model%ac/Tc**2
 
       call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-      
+
       call check(error, allclose([D], [test_D], absolute_tolerance))
       call check(error, allclose([dDdT], [test_dDdT], absolute_tolerance))
       call check(error, allclose([dDdT2], [test_dDdT2], absolute_tolerance))

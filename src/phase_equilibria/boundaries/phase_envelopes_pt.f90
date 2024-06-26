@@ -93,7 +93,7 @@ contains
        case("bubble", "liquid-liquid")
          X(:nc) = log(first_point%y/z)
        case("dew")
-         X(:nc) = 1 - log(first_point%y/z)
+         X(:nc) = log(first_point%x/z)
       end select
 
       X(nc+1) = log(first_point%T)
@@ -108,7 +108,7 @@ contains
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
          update_specification=update_specification, &
-         stop=stop_conditions &
+         solver=solver, stop=stop_conditions &
          )
    contains
       subroutine foo(X, ns, S, F, dF, dFdS)
@@ -202,7 +202,7 @@ contains
          integer, intent(in) :: iterations
          !! Iterations used in the solver
 
-         real(pr) :: Xnew(nc+2), Xold(nc+2)
+         real(pr) :: Xnew(nc+2), Xold(nc+2), maxdS
 
          Xold = X
 
@@ -215,8 +215,10 @@ contains
          
          if (maxval(abs(X(:nc))) < 0.1_pr) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
+            maxdS=0.01_pr
          else
             ns = maxloc(abs(dXdS), dim=1)
+            maxdS = 0.05_pr
          end if
 
          dS = dXdS(ns) * dS
@@ -228,7 +230,7 @@ contains
             ] &
             )
 
-         dS = sign(1.0_pr, dS) * maxval([abs(dS), 0.01_pr])
+         dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
          ! ==============================================================
          ! Save the point
@@ -287,10 +289,10 @@ contains
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
       class(PTEnvel2), intent(in) :: pt2
       integer, intent(in) :: unit
-      character(*), optional, intent(in) :: iotype
-      integer, optional, intent(in)  :: v_list(:)
+      character(*),  intent(in) :: iotype
+      integer, intent(in)  :: v_list(:)
       integer, intent(out) :: iostat
-      character(*), optional, intent(inout) :: iomsg
+      character(*), intent(inout) :: iomsg
 
       integer, allocatable :: cps(:)
       integer :: cp
@@ -310,7 +312,7 @@ contains
 
       write(unit, "(A, /)") "#" // pt2%points(1)%kind
 
-      do i=1, size(pt2%points)
+      do i=1, size(pt2%points)-1
          ! Change label if passed a critical point
          if (any(cps - i == 0) .and. i < size(pt2%points)) then
             write(unit, "(/, /)")
