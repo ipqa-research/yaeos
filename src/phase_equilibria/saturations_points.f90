@@ -41,7 +41,7 @@ contains
       character(len=50) :: main
 
       real(pr) :: f, step
-      integer :: its, iterations
+      integer :: its, iterations, i
 
       ! =======================================================================
       ! Handle arguments
@@ -89,6 +89,10 @@ contains
          call fugacity_tp(model, z, T, P, vz, main, lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
 
          k = exp(lnfug_z - lnfug_y)
+
+         if (all(k < 1e-9_pr)) exit
+
+
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
 
