@@ -1,7 +1,6 @@
 program phase_diagram
    use forsus, only: Substance, forsus_dir, forsus_default_dir
    use yaeos
-   use yaeos__phase_equilibria_stability, only: min_tpd
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
 
@@ -12,7 +11,6 @@ program phase_diagram
    integer, parameter :: nc=2
    integer :: i
    real(pr) :: n(nc), tc(nc), pc(nc), w(nc), kij(nc, nc), lij(nc, nc), T
-   real(pr) :: wi(nc), tpd
    type(Substance) :: sus(nc)
 
    forsus_dir = "build/dependencies/forsus/" // forsus_default_dir
