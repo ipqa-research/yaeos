@@ -80,8 +80,8 @@ contains
         model%components = composition
         model%ac = 0.45723553_pr * R**2 * composition%tc**2 / composition%pc
         model%b = 0.07779607_pr * R * composition%tc/composition%pc
-        model%del1 = [1 + sqrt(2.0_pr)]
-        model%del2 = [1 - sqrt(2.0_pr)]
+        model%del1 = [(1 + sqrt(2.0_pr), i=1,nc)]
+        model%del2 = [(1 - sqrt(2.0_pr), i=1,nc)]
         model%alpha = alpha
         model%mixrule = mixrule
         model%name = "PR76"
@@ -153,8 +153,8 @@ contains
         model%components = composition
         model%ac = 0.45723553_pr * R**2 * composition%tc**2 / composition%pc
         model%b = 0.07779607_pr * R * composition%tc/composition%pc
-        model%del1 = [1 + sqrt(2.0_pr)]
-        model%del2 = [1 - sqrt(2.0_pr)]
+        model%del1 = [(1 + sqrt(2.0_pr), i=1,nc)]
+        model%del2 = [(1 - sqrt(2.0_pr), i=1,nc)]
         model%alpha = alpha
         model%mixrule = mixrule
         model%name = "PR78"
@@ -217,8 +217,8 @@ contains
         model%components = composition
         model%ac = 0.427480_pr * R**2 * composition%tc**2/composition%pc
         model%b = 0.086640_pr * R * composition%tc/composition%pc
-        model%del1 = [1]
-        model%del2 = [0]
+        model%del1 = [(1, i=1,nc)]
+        model%del2 = [(0, i=1,nc)]
         model%alpha = alpha
         model%mixrule = mixrule
         model%name = "SRK"
