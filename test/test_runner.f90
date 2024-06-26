@@ -24,6 +24,7 @@ program tester
     ! Implemented GeModels testings
     ! -------------------------------------------------------------------------
     use test_unifac, only: suite_unifac => collect_suite
+    use test_unifac_parameters, only: suite_unifac_parameters => collect_suite
     use test_tape_nrtl, only: suite_nrtl => collect_suite
 
     use stdlib_ansi, only: fg_color_green, fg_color_red, operator(//), style_reset
@@ -58,6 +59,7 @@ program tester
         ! Ge particular tests
         ! ---------------------------------------------------------------------
         new_testsuite("UNIFAC", suite_unifac), &
+        new_testsuite("UNIFACParameters", suite_unifac_parameters), &
         new_testsuite("NRTL", suite_nrtl) &
         ]
 
