@@ -289,10 +289,10 @@ contains
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
       class(PTEnvel2), intent(in) :: pt2
       integer, intent(in) :: unit
-      character(*), optional, intent(in) :: iotype
-      integer, optional, intent(in)  :: v_list(:)
+      character(*),  intent(in) :: iotype
+      integer, intent(in)  :: v_list(:)
       integer, intent(out) :: iostat
-      character(*), optional, intent(inout) :: iomsg
+      character(*), intent(inout) :: iomsg
 
       integer, allocatable :: cps(:)
       integer :: cp
