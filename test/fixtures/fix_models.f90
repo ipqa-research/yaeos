@@ -143,8 +143,7 @@ contains
 
       ! Define the model to be SRK
       model = SoaveRedlichKwong(tc, pc, w)
-      mixrule = MHV(ge_model, model%b)
-      mixrule%q = 0.593_pr
+      mixrule = MHV(ge=ge_model, q=0.593_pr, b=model%b)
       deallocate (model%mixrule)
       model%mixrule = mixrule
    end function

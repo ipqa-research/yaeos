@@ -11,6 +11,47 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    public :: DmixMHV
 
    type, extends(CubicMixRule) :: MHV
+      !! # Michelsen's modified Huron-Vidal mixing rule
+      !! Mixing rule at zero-pressure which allows for the inclusion of an
+      !! excess-gibbs model.
+      !!
+      !! # Description
+      !! This mixing rule is based on the zero-pressure limit \(P \rightarrow
+      !! b\) of a cubic equation of state. At the zero-pressure limit the
+      !! attractive parameter can be expressed as:
+      !!
+      !! \[
+      !! \frac{D}{RTB}(n, T) = sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
+      !!  \left(\frac{G^E(n, T)}{RT}\right)
+      !! \]
+      !! Where \(q\) is a weak function of temperature. In the case of `MHV`
+      !! and simplicity it is considered that depends on the model used.
+      !!
+      !! # Examples
+      !! To use the modified Huron-Vidal mixing rule it is necessary to define
+      !! a `CubicEoS` and replace its original mixing rule with the one generated
+      !! by the user.
+      !! ```fortran
+      !! type(MHV) :: mixrule
+      !! type(NRTL) :: ge_model
+      !! type(CubicEoS) :: model
+      !! 
+      !! ! Define the Ge model to be used and the CubicEoS
+      !! ge_model = NRTL(a, b, c)
+      !! model = SoaveRedlichKwong(tc, pc, w)
+      !! 
+      !! ! Use the initialization function to setup
+      !! mixrule = MHV(ge=ge_model, q=-0.593_pr, bi=model%b)
+      !!
+      !! ! Replace the original mixrule on the previously defined model
+      !! model%mixrule = mixrule
+      !! 
+      !! ! Ready to do calculations
+      !! call pressure(model, n, v, T)
+      !! ```
+      !!
+      !! # References
+      !!
       real(pr), allocatable :: l(:, :)
       real(pr), private, allocatable :: bi(:)
       real(pr), private, allocatable :: B, dBi(:), dBij(:, :)
@@ -28,7 +69,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
 
 contains
 
-   type(MHV) function init(ge, b, lij) result(mixrule)
+   type(MHV) function init(ge, b, q, lij) result(mixrule)
       !! # Michelsen Modified Huron-Vidal mixing rule
       !! 
       !!
@@ -45,12 +86,14 @@ contains
       !!
       class(GeModel), intent(in) :: Ge
       real(pr), intent(in) :: b(:)
+      real(pr), intent(in) :: q
       real(pr), optional, intent(in) :: lij(:, :)
 
       integer :: i, nc
 
       nc = size(b)
 
+      mixrule%q = q
       mixrule%bi = b
       mixrule%Ge = ge
       if (present(lij)) then
@@ -61,6 +104,28 @@ contains
    end function
 
    subroutine BmixMHV(self, n, bi, B, dBi, dBij)
+      !! # Repulsive parameter \(B\) mixing rule
+      !! Quadratinc mixing rule for the repulsive parameter, using 
+      !! \( b_{ij} = \frac{b_i + b_j}{2} (1 - l_{ij}) \) as a combining rule.
+      !!
+      !! # Description
+      !! Michelsen's modified Huron-Vidal mixing rule assumes a linear mix of
+      !! the repulsive parameter.
+      !!
+      !! \[B = \sum_i n_i b_i\]
+      !!
+      !! In this implementation the most known crossed combining rule is used:
+      !! \[nB = \sum_i \sum_j \frac{b_i + b_j}{2} (1 - l_{ij})\] 
+      !! to provide versatility to the used model.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  A basic code example
+      !! ```
+      !!
+      !! # References
+      !!
       use yaeos__models_ar_cubic_mixing_base, only: bmix_linear
       class(MHV), intent(in) :: self
       real(pr), intent(in) :: n(:)

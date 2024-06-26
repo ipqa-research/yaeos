@@ -41,8 +41,7 @@ contains
          select type(m)
          type is (CubicEoS)
             bi = m%b
-            mixrule = MHV(ge, bi)
-            mixrule%q = -0.593
+            mixrule = MHV(ge=ge, q=-0.593_pr, b=bi)
             deallocate(m%mixrule)
             m%mixrule = mixrule
          end select
