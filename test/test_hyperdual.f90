@@ -1,6 +1,6 @@
 program main
-    use yaeos_autodiff
-    use yaeos_constants, only: pr
+    use yaeos__autodiff
+    use yaeos__constants, only: pr
     implicit none
     type(hyperdual) :: x, y, z
 

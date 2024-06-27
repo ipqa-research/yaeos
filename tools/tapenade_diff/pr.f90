@@ -1,42 +1,45 @@
 module tapenade_pr
-    use yaeos_tapenade_ar_api, only: ArModelTapenade
+    use yaeos__constants, only: pr, R
+    use yaeos__tapenade_ar_api, only: ArModelTapenade
     implicit none
 
-    real(8), allocatable :: kij(:, :), lij(:, :)
-    real(8), allocatable :: ac(:), b(:), k(:)
-    real(8), allocatable :: tc(:), pc(:), w(:)
-    real(8), parameter :: r=0.08314472
-    real(8), parameter :: del1 = 1. + sqrt(2.)
-    real(8), parameter :: del2 = 1. - sqrt(2.)
-
-    type(ArModelTapenade) :: model
+    !type, extends(ArModelTapenade) :: TPR76
+    type :: TPR76
+        real(8), allocatable :: kij(:, :), lij(:, :)
+        real(8), allocatable :: ac(:), b(:), k(:)
+        real(8), allocatable :: tc(:), pc(:), w(:)
+        real(8) :: del1 = 1. + sqrt(2.)
+        real(8) :: del2 = 1. - sqrt(2.)
+    ! contains
+    !  procedure :: ar
+    !  procedure :: ar_d
+    !  procedure :: ar_b
+    !  procedure :: ar_d_b
+    !  procedure :: ar_d_d
+    !  procedure :: v0
+    end type
 contains
-    subroutine setup_model(tc_in, pc_in, w_in, kij_in, lij_in)
-        real(8) :: tc_in(:)
-        real(8) :: pc_in(:)
-        real(8) :: w_in(:)
-        real(8) :: kij_in(:, :)
-        real(8) :: lij_in(:, :)
+    type(TPR76) function setup_model(tc, pc, w, kij, lij)
+        real(8), intent(in) :: tc(:)
+        real(8), intent(in) :: pc(:)
+        real(8), intent(in) :: w(:)
+        real(8), intent(in) :: kij(:, :)
+        real(8), intent(in) :: lij(:, :)
 
-        tc = tc_in
-        pc = pc_in
-        w = w_in
+        setup_model%components%tc = tc
+        setup_model%components%pc = pc
+        setup_model%components%w = w
 
-        ac = 0.45723553 * R**2 * tc**2 / pc
-        b = 0.07779607 * R * tc/pc
-        k = 0.37464 + 1.54226 * w - 0.26993 * w**2
+        setup_model%ac = 0.45723553 * R**2 * tc**2 / pc
+        setup_model%b = 0.07779607 * R * tc/pc
+        setup_model%k = 0.37464 + 1.54226 * w - 0.26993 * w**2
 
-        kij = kij_in
-        lij = lij_in
+        setup_model%kij = kij
+        setup_model%lij = lij
+    end function
 
-        model%ar => ar
-        model%ar_d => ar_d
-        model%ar_b => ar_b
-        model%ar_d_b => ar_d_b
-        model%ar_d_d => ar_d_d
-    end subroutine
-
-    subroutine ar(n, v, t, arval)
+    subroutine ar(model, n, v, t, arval)
+        type(TPR76), intent(in) :: model
         real(8), intent(in) :: n(:), v, t
         real(8), intent(out) :: arval
         real(8) :: amix, a(size(n)), ai(size(n)), z2(size(n)), nij
@@ -44,6 +47,24 @@ contains
         real(8) :: b_v
         real(8) :: aij(size(n), size(n)), bij(size(n), size(n))
         integer :: i, j
+
+        real(8) :: tc(size(n)), pc(size(n)), w(size(n))
+        real(8) :: ac(size(n)), b(size(n)), k(size(n))
+        real(8) :: del1, del2
+        real(8) :: kij(size(n), size(n)), lij(size(n), size(n))
+
+        tc = model%components%tc
+        pc = model%components%pc
+        w = model%components%w
+        ac = model%ac
+        b = model%b
+        k = model%k
+
+        kij = model%kij
+        lij = model%lij
+
+        del1 = model%del1
+        del2 = model%del2
 
         a = sqrt(ac * (1.0 + k * (1.0 - sqrt(t/tc)))**2)
         
@@ -59,7 +80,7 @@ contains
         end do
 
         amix = amix + sum(n**2*a**2)
-        bmix = bmix + sum(n**2 * b)
+        bmix = bmix + sum(n**2 * model%b)
 
         bmix = bmix/sum(n)
 
@@ -71,11 +92,12 @@ contains
         ) * (r * t)
     end subroutine
 
-    pure function volume_initalizer(n, p, t) result(v0)
+    pure function volume_initalizer(model, n, p, t) result(v0)
+         type(TPR76), intent(in) :: model
          real(8), intent(in) :: n(:)
          real(8), intent(in) :: p
          real(8), intent(in) :: t
          real(8) :: v0
-         v0 = sum(n*b)/sum(b)
+         v0 = sum(n*model%b)/sum(model%b)
     end function
 end module

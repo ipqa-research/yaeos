@@ -1,10 +1,11 @@
 module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    !! Phase boundaries line on the \(PT\) plane calculation procedures.
-   use yaeos_constants, only: pr
-   use yaeos_models, only: ArModel
-   use yaeos_equilibria_equilibria_state, only: EquilibriaState
-   use yaeos_thermoprops, only: fugacity_tp
-   use yaeos__math_continuation, only: continuation
+   use yaeos__constants, only: pr
+   use yaeos__models, only: ArModel
+   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__thermoprops, only: fugacity_tp
+   use yaeos__math_continuation, only: &
+      continuation, continuation_solver, continuation_stopper
    implicit none
 
    type :: CriticalPoint
@@ -20,13 +21,17 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
       !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
       !! Critical points found along the line.
+   contains
+      procedure, pass :: write =>  write_PTEnvel2
+      generic, public :: write (FORMATTED) => write
    end type PTEnvel2
 
 contains
 
    function pt_envelope_2ph(&
-      model, z, y0, T0, P0, &
-      points, iterations, delta_0, specified_variable_0 &
+      model, z, first_point, &
+      points, iterations, delta_0, specified_variable_0, &
+      solver, stop_conditions &
       ) result(envelopes)
       !! PT two-phase envelope calculation procedure.
       !!
@@ -34,96 +39,77 @@ contains
       !! Defaults to solving the saturation temperature and continues with
       !! an increment in it. The variable to specify can be changed by modifying
       !! `specified_variable_0` with the corresponding variable number.
+      ! ========================================================================
       use stdlib_optval, only: optval
-      class(ArModel), intent(in) :: model 
-         !! Thermodyanmic model
-      real(pr), intent(in) :: z(:) 
-         !! Vector of molar fractions
-      real(pr), intent(in) :: y0(:)
-         !! Incipient phase initial composition
-      real(pr), intent(in) :: T0
-         !! Initial Temperature [K]
-      real(pr), intent(in) :: P0
-         !! Initial Pressure [bar]
-      integer, optional, intent(in) :: points 
-         !! Maxmimum number of points, defaults to 500
-      integer, optional, intent(in) :: iterations  
-         !! Point solver maximum iterations, defaults to 100
-      real(pr), optional, intent(in) :: delta_0 
-         !! Initial extrapolation \(\Delta\)
+      class(ArModel), intent(in) :: model
+      !! Thermodyanmic model
+      real(pr), intent(in) :: z(:)
+      !! Vector of molar fractions
+      type(EquilibriaState) :: first_point
+      integer, optional, intent(in) :: points
+      !! Maxmimum number of points, defaults to 500
+      integer, optional, intent(in) :: iterations
+      !! Point solver maximum iterations, defaults to 100
+      real(pr), optional, intent(in) :: delta_0
+      !! Initial extrapolation \(\Delta\)
       integer, optional, intent(in) :: specified_variable_0
-         !! Position of specified variable, since the vector of variables is
-         !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
-         !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
-         !! \(lnT\) and \(nc + 2\) for \(lnT\).
+      !! Position of specified variable, since the vector of variables is
+      !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
+      !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
+      !! \(lnT\) and \(nc + 2\) for \(lnT\).
+      procedure(continuation_solver), optional :: solver
+      !! Specify solver for each point, defaults to a full newton procedure
+      procedure(continuation_stopper), optional :: stop_conditions
+      !! Function that returns true if the continuation method should stop
       type(PTEnvel2) :: envelopes
+      ! ------------------------------------------------------------------------
 
       integer :: nc !! Number of components
       integer :: ns !! Number of specified variable
       real(pr) :: dS0 !! Initial specification step
       real(pr) :: S0 !! Initial specification value
 
-      integer :: max_points
-      integer :: its, max_iterations
-      integer :: point
+      integer :: max_points !! Maximum number of points
+      integer :: max_iterations
 
-      real(pr), target :: X(size(z) + 2)
-      real(pr), pointer :: lnK(:)
-      real(pr), pointer :: lnT
-      real(pr), pointer :: lnP
+      real(pr) :: X(size(z) + 2)
       real(pr), allocatable :: XS(:, :)
-      real(pr) :: Xc(size(z) + 2)
 
-      integer :: i, mc
+      character(len=14) :: kind
 
+      ! ========================================================================
       ! Handle input
+      ! ------------------------------------------------------------------------
+      kind = first_point%kind
       nc = size(z)
       max_points = optval(points, 500)
       max_iterations = optval(iterations, 100)
       ns = optval(specified_variable_0, nc+1)
       dS0 = optval(delta_0, 0.1_pr)
 
-      lnK => X(:nc)
-      lnT => X(nc + 1)
-      lnP => X(nc + 2)
 
-      where (z /= 0._pr)
-         lnK = log(y0/z)
-      elsewhere
-         lnK = 0
-      end where
-      lnT = log(T0)
-      lnP = log(P0)
+      ! Correctly define the K-values based on the provided incipient point.
+      select case(first_point%kind)
+       case("bubble", "liquid-liquid")
+         X(:nc) = log(first_point%y/z)
+       case("dew")
+         X(:nc) = log(first_point%x/z)
+      end select
 
+      X(nc+1) = log(first_point%T)
+      X(nc+2) = log(first_point%P)
       S0 = X(ns)
 
+      allocate(envelopes%points(0), envelopes%cps(0))
+      ! ========================================================================
+      ! Trace the line using the continuation method.
+      ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
-         update_specification=update_specification &
+         update_specification=update_specification, &
+         solver=solver, stop=stop_conditions &
          )
-
-      allocate(envelopes%points(0), envelopes%cps(0))
-      do i=2, size(XS, dim=1)
-         if (all(XS(i, :) == 0._pr)) exit
-
-         X = XS(i, :)
-
-         envelopes%points = [&
-            envelopes%points, &
-            EquilibriaState(&
-            x=z, Vx=0._pr, y=exp(lnK)*z, Vy=0, &
-            T=exp(lnT), P=exp(lnP), beta=0._pr, iters=0) &
-            ]
-
-         if (all(XS(i - 1, :nc) * XS(i, :nc) < 0)) then
-            mc = maxloc(abs(XS(i, :nc) - XS(i-1, :nc)), dim=1)
-            Xc = &
-               (XS(i, :) - XS(i-1, :))/(XS(i, mc) - XS(i-1,mc)) &
-               * (XS(i, mc)) + (XS(i-1, :))
-            envelopes%cps = [envelopes%cps, CriticalPoint(T=exp(lnT), P=exp(lnP))]
-         end if
-      end do
    contains
       subroutine foo(X, ns, S, F, dF, dFdS)
          !! Function that needs to be solved at each envelope point
@@ -134,6 +120,8 @@ contains
          real(pr), intent(out) :: F(:)
          real(pr), intent(out) :: dF(:, :)
          real(pr), intent(out) :: dFdS(:)
+
+         character(len=14) :: kind_z, kind_y
 
          real(pr) :: y(nc)
          real(pr) :: Vz, Vy, lnphip_z(nc), lnphip_y(nc)
@@ -154,13 +142,25 @@ contains
 
          y = K*z
 
+         select case(kind)
+         case ("bubble")
+            kind_z = "liquid"
+            kind_y = "vapor"
+         case ("dew")
+            kind_z = "vapor"
+            kind_y = "liquid"
+         case default
+            kind_z = "stable"
+            kind_y = "stable"
+         end select
+         
          call fugacity_tp(&
-            model, z, T, P, V=Vz, root_type="stable", &
+            model, z, T, P, V=Vz, root_type=kind_z, &
             lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
          call fugacity_tp(&
-            model, y, T, P, V=Vy, root_type="stable", &
+            model, y, T, P, V=Vy, root_type=kind_y, &
             lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
@@ -202,14 +202,23 @@ contains
          integer, intent(in) :: iterations
          !! Iterations used in the solver
 
-         real(pr) :: P, dP
-         real(pr) :: T, dT
-         real(pr) :: Xnew(nc+2)
+         real(pr) :: Xnew(nc+2), Xold(nc+2), maxdS
 
+         Xold = X
+
+         ! ==============================================================
+         ! Update specification
+         ! - Dont select T or P near critical poitns
+         ! - Update dS wrt specification units
+         ! - Set step
+         ! --------------------------------------------------------------
+         
          if (maxval(abs(X(:nc))) < 0.1_pr) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
+            maxdS=0.01_pr
          else
             ns = maxloc(abs(dXdS), dim=1)
+            maxdS = 0.05_pr
          end if
 
          dS = dXdS(ns) * dS
@@ -219,9 +228,105 @@ contains
             max(sqrt(abs(X(ns))/10._pr), 0.1_pr), &
             abs(dS)*3/iterations &
             ] &
-         )
+            )
 
-         dS = sign(1._pr, dS) * maxval([abs(dS), 0.05_pr])
+         dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
+
+         ! ==============================================================
+         ! Save the point
+         ! --------------------------------------------------------------
+         envelopes%points = [&
+            envelopes%points, &
+            EquilibriaState(&
+            kind=kind, &
+            x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
+            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=iterations) &
+            ]
+         
+         
+         ! ==============================================================
+         ! Handle critical point
+         ! --------------------------------------------------------------
+         cp: block
+            !! Critical point detection
+            !! If the values of lnK (X[:nc]) change sign then a critical point
+            !! Has passed
+            real(pr) :: Xc(nc+2) !! Value at (near) critical point
+            real(pr) :: a  !! Parameter for interpolation
+         
+            do while (maxval(abs(X(:nc))) < 0.1)
+               ! If near a critical point, jump over it
+               S = S + dS
+               X = X + dXdS*dS
+            end do
+
+            Xnew = X + dXdS*dS
+            
+            if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
+               select case(kind)
+                case("dew")
+                  kind = "bubble"
+                case("bubble")
+                  kind = "dew"
+                case default
+                  kind = "liquid-liquid"
+               end select
+
+               ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
+               a = -Xnew(ns)/(X(ns) - Xnew(ns))
+               Xc = a * X + (1-a)*Xnew
+               envelopes%cps = [&
+                  envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(X(nc+2))) &
+                  ]
+               ! X = Xc + dXdS*dS
+            end if
+
+         end block cp
+
       end subroutine update_specification
    end function pt_envelope_2ph
+
+   subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
+      class(PTEnvel2), intent(in) :: pt2
+      integer, intent(in) :: unit
+      character(*),  intent(in) :: iotype
+      integer, intent(in)  :: v_list(:)
+      integer, intent(out) :: iostat
+      character(*), intent(inout) :: iomsg
+
+      integer, allocatable :: cps(:)
+      integer :: cp
+      integer :: i, nc
+
+
+      allocate(cps(0))
+      do i=1,size(pt2%cps)
+         cp = minloc(&
+            (pt2%points%T - pt2%cps(i)%T)**2 &
+            + (pt2%points%P - pt2%cps(i)%P)**2, dim=1&
+            )
+         cps = [cps, cp]
+      end do
+
+      write(unit, "(A, /, /)") "#PTEnvel2"
+
+      write(unit, "(A, /)") "#" // pt2%points(1)%kind
+
+      do i=1, size(pt2%points)-1
+         ! Change label if passed a critical point
+         if (any(cps - i == 0) .and. i < size(pt2%points)) then
+            write(unit, "(/, /)")
+            write(unit, "(A, /)") "#" // pt2%points(i+1)%kind
+         end if
+
+         write(unit, *) pt2%points(i)
+         write(unit, "(/)")
+      end do
+
+      write(unit, "(/, /, A, /)") "#Critical"
+      do cp = 1, size(cps)
+         write(unit, *) pt2%cps(cp)%T, pt2%cps(cp)%P
+      end do
+   end subroutine write_PTEnvel2
+
 end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt

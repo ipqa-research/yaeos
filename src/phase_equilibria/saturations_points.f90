@@ -1,8 +1,8 @@
-module yaeos_equilibria_saturation_points
-   use yaeos_constants, only: pr
-   use yaeos_models, only: ArModel
-   use yaeos_thermoprops, only: fugacity_vt, fugacity_tp
-   use yaeos_equilibria_equilibria_state, only: EquilibriaState
+module yaeos__equilibria_saturation_points
+   use yaeos__constants, only: pr
+   use yaeos__models, only: ArModel
+   use yaeos__thermoprops, only: fugacity_vt, fugacity_tp
+   use yaeos__equilibria_equilibria_state, only: EquilibriaState
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
@@ -22,7 +22,7 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos_thermoprops, only: pressure
+      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -41,7 +41,7 @@ contains
       character(len=50) :: main
 
       real(pr) :: f, step
-      integer :: its, iterations
+      integer :: its, iterations, i
 
       ! =======================================================================
       ! Handle arguments
@@ -70,6 +70,7 @@ contains
          incipient = "liquid"
          main = "vapor"
        case("liquid-liquid")
+         k = y/z
          incipient = "liquid"
          main = "liquid"
       end select
@@ -88,6 +89,10 @@ contains
          call fugacity_tp(model, z, T, P, vz, main, lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
 
          k = exp(lnfug_z - lnfug_y)
+
+         if (all(k < 1e-9_pr)) exit
+
+
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
 
@@ -97,19 +102,20 @@ contains
 
          p = p - step
          if (abs(step) < tol .and. abs(f) < tol) exit
+
       end do
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_pressure = EquilibriaState(&
+         saturation_pressure = EquilibriaState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_pressure = EquilibriaState(&
+         saturation_pressure = EquilibriaState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_pressure = EquilibriaState(&
+         saturation_pressure = EquilibriaState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
@@ -126,7 +132,7 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos_thermoprops, only: pressure
+      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
@@ -174,6 +180,7 @@ contains
          incipient = "liquid"
          main = "vapor"
        case("liquid-liquid")
+         k = y/z
          incipient = "liquid"
          main = "liquid"
       end select
@@ -205,17 +212,17 @@ contains
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_temperature = EquilibriaState(&
+         saturation_temperature = EquilibriaState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_temperature = EquilibriaState(&
+         saturation_temperature = EquilibriaState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_temperature = EquilibriaState(&
+         saturation_temperature = EquilibriaState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
    end function saturation_temperature
-end module yaeos_equilibria_saturation_points
+end module yaeos__equilibria_saturation_points

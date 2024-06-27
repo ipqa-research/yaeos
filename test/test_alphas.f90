@@ -1,5 +1,5 @@
 module test_cubic_alphas
-    use yaeos_constants, only: pr
+    use yaeos__constants, only: pr
     use testdrive, only: new_unittest, unittest_type, error_type, check
     use auxiliar_functions, only: allclose
     implicit none
@@ -18,8 +18,8 @@ contains
     end subroutine collect_suite
 
     subroutine test_alpha_soave(error)
-        use yaeos_constants, only: pr
-        use yaeos_models_ar_cubic_alphas, only: AlphaSoave
+        use yaeos__constants, only: pr
+        use yaeos__models_ar_cubic_alphas, only: AlphaSoave
         type(error_type), allocatable, intent(out) :: error
 
         type(AlphaSoave) :: alpha
@@ -44,8 +44,8 @@ contains
     end subroutine test_alpha_soave
 
     subroutine test_alpha_RKPR(error)
-        use yaeos_constants, only: pr
-        use yaeos_models_ar_cubic_alphas, only: AlphaRKPR
+        use yaeos__constants, only: pr
+        use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
         type(error_type), allocatable, intent(out) :: error
 
         type(AlphaRKPR) :: alpha

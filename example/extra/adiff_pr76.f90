@@ -1,7 +1,7 @@
 module hyperdual_pr76
-    use yaeos_constants, only: pr, R
-    use yaeos_ar_models_hyperdual
-    use yaeos_substance, only: Substances
+    use yaeos__constants, only: pr, R
+    use yaeos__ar_models_hyperdual
+    use yaeos__substance, only: Substances
     implicit none
 
     type, extends(ArModelAdiff) :: PR76

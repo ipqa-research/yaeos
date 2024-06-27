@@ -37,15 +37,18 @@ Getting a usable $A_r$ equation of state with `tapenade` is fairly easy.
    ```bash
    bash gen_tapemodel.sh <your_model_file.f90>
    ```
-   This will generate a new folder `tapeout`, with your ready to use module
-   inside!
+   This will generate a new folder `tapeout`, with your differentiated model
+   inside.
+4. Some little post-process must be done due to some details in the `tapenade`
+   implementation. These are described in the base template but can also
+   be checked on the [differentiated PR76 result after fixing the last details](./tapeout/pr_diff.f90)
 
 To add your new tapenade model just include the file in your `src` folder and
 use it with
 
 ```fortran
 use yaeos, only: ArModel, pressure
-use your_model, only: tapemodel => model, setup_model
+use your_module_name, only: setup_model
 
 class(ArModel), allocatable :: model
 

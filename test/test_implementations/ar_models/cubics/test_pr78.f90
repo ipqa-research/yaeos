@@ -1,4 +1,4 @@
-module test_pr76
+module test_pr78
    use yaeos, only: pr
    use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose, rel_error
@@ -10,14 +10,14 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
-         new_unittest("Test PR76 Ar consistency mix", test_pr76_cons_mixture), &
-         new_unittest("Test PR76 Ar consistency pure", test_pr76_cons_pure) &
+         new_unittest("Test PR78 Ar consistency mix", test_pr78_cons_mixture), &
+         new_unittest("Test PR78 Ar consistency pure", test_pr78_cons_pure) &
          ]
    end subroutine collect_suite
 
-   subroutine test_pr76_cons_mixture(error)
-      use yaeos, only: pr, PengRobinson76, ArModel
-      use yaeos_consistency, only: numeric_ar_derivatives, ar_consistency
+   subroutine test_pr78_cons_mixture(error)
+      use yaeos, only: pr, PengRobinson78, ArModel
+      use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model, model_kij
@@ -46,14 +46,14 @@ contains
       ! ========================================================================
       ! Model without kij and lij
       ! ------------------------------------------------------------------------
-      model = PengRobinson76(tc, pc, w)
+      model = PengRobinson78(tc, pc, w)
 
       call model%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
          ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
 
       call numeric_ar_derivatives(&
-         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
          Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
          ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
          Arn2=Arn2_num &
@@ -69,14 +69,14 @@ contains
       call check(error, rel_error(ArT, ArT_num) < 1e-6)
       call check(error, allclose(Arn, Arn_num, 1e-6_pr))
       call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-4)
+      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
       call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
       call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
       call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
+      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-6)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-15)
+      call check(error, abs(eq31) <= 1e-14)
       call check(error, maxval(abs(eq33)) < 1e-15)
       call check(error, maxval(abs(eq34)) < 1e-15)
       call check(error, abs(eq36) <= 1e-15)
@@ -98,7 +98,7 @@ contains
          0.001_pr, 0.0025_pr, 0.0018_pr, 0.0_pr], [size(n), size(n)])
 
 
-      model_kij = PengRobinson76(tc, pc, w, kij, lij)
+      model_kij = PengRobinson78(tc, pc, w, kij, lij)
 
       call model_kij%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
@@ -122,11 +122,11 @@ contains
       call check(error, rel_error(ArT, ArT_num) < 1e-6)
       call check(error, allclose(Arn, Arn_num, 1e-6_pr))
       call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
+      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
       call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
       call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
       call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-6)
+      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
 
       ! Consistency tests
       call check(error, abs(eq31) <= 1e-14)
@@ -134,11 +134,11 @@ contains
       call check(error, maxval(abs(eq34)) < 1e-14)
       call check(error, abs(eq36) <= 1e-15)
       call check(error, abs(eq37) <= 1e-15)
-   end subroutine test_pr76_cons_mixture
+   end subroutine test_pr78_cons_mixture
 
-   subroutine test_pr76_cons_pure(error)
-      use yaeos, only: pr, PengRobinson76, ArModel
-      use yaeos_consistency, only: numeric_ar_derivatives, ar_consistency
+   subroutine test_pr78_cons_pure(error)
+      use yaeos, only: pr, PengRobinson78, ArModel
+      use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
@@ -159,7 +159,7 @@ contains
       pc = [45.99]
       w = [0.0115478]
 
-      model = PengRobinson76(tc, pc, w)
+      model = PengRobinson78(tc, pc, w)
 
       t = 600_pr
       v = 0.5_pr
@@ -176,19 +176,20 @@ contains
          )
 
       call ar_consistency(&
-         model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
+         model, n, v, t, eq31=eq31, eq33=eq33, &
+         eq34=eq34, eq36=eq36, eq37=eq37 &
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-5)
-      call check(error, rel_error(ArV, ArV_num) < 1e-5)
-      call check(error, rel_error(ArT, ArT_num) < 1e-5)
-      call check(error, allclose(Arn, Arn_num, 1e-5_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-5)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-5)
-      call check(error, allclose(ArVn, ArVn_num, 1e-5_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-5_pr))
+      call check(error, rel_error(Ar, Ar_num) < 1e-6)
+      call check(error, rel_error(ArV, ArV_num) < 1e-6)
+      call check(error, rel_error(ArT, ArT_num) < 1e-6)
+      call check(error, allclose(Arn, Arn_num, 1e-6_pr))
+      call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
+      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
+      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
+      call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
+      call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
       call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
 
       ! Consistency tests
@@ -197,5 +198,7 @@ contains
       call check(error, maxval(abs(eq34)) < 1e-15)
       call check(error, abs(eq36) <= 1e-15)
       call check(error, abs(eq37) <= 1e-15)
-   end subroutine test_pr76_cons_pure
-end module test_pr76
+   end subroutine test_pr78_cons_pure
+
+end module test_pr78
+

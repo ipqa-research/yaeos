@@ -1,7 +1,7 @@
 module yaeos__phase_equilibria_auxiliar
    !! Auxiliar functions used for phase-equilibria calculation.
-   use yaeos_constants, only: pr
-   use yaeos_models_base, only: BaseModel
+   use yaeos__constants, only: pr
+   use yaeos__models_base, only: BaseModel
    implicit none
 
 contains

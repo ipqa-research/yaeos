@@ -1,52 +1,56 @@
-module yaeos_tapenade_ar_api
+module yaeos__tapenade_ar_api
    !! Module that wraps tapenade generated routines to calculate !
    !! Ar and derivatives.
-   use yaeos_constants, only: pr
-   use yaeos_models_ar, only: ArModel
+   use yaeos__constants, only: pr
+   use yaeos__models_ar, only: ArModel
    implicit none
 
    private
 
    public :: ArModelTapenade
 
-   type, extends(ArModel) :: ArModelTapenade
-      procedure(tapenade_ar), pointer, nopass :: ar
-      procedure(tapenade_ar_d), pointer, nopass :: ar_d
-      procedure(tapenade_ar_b), pointer, nopass :: ar_b
-      procedure(tapenade_ar_d_b), pointer, nopass :: ar_d_b
-      procedure(tapenade_ar_d_d), pointer, nopass :: ar_d_d
-      procedure(tapenade_v0), pointer, nopass :: v0
+   type, abstract, extends(ArModel) :: ArModelTapenade
    contains
+      procedure(tapenade_ar), deferred :: ar
+      procedure(tapenade_ar_d), deferred :: ar_d
+      procedure(tapenade_ar_b), deferred :: ar_b
+      procedure(tapenade_ar_d_b), deferred :: ar_d_b
+      procedure(tapenade_ar_d_d), deferred :: ar_d_d
+      procedure(tapenade_v0), deferred :: v0
       procedure :: residual_helmholtz => residual_helmholtz
       procedure :: get_v0 => get_v0
    end type
 
    abstract interface
-      subroutine tapenade_ar(n, v, t, arval)
-         import pr
+      subroutine tapenade_ar(model, n, v, t, arval)
+         import pr, ArModelTapenade
+         class(ArModelTapenade), intent(in) :: model
          real(pr), intent(in) :: n(:), v, t
          real(pr), intent(out) :: arval
       end subroutine
 
-      subroutine tapenade_ar_d(n, nd, v, vd, t, td, arval, arvald)
-         import pr
+      subroutine tapenade_ar_d(model, n, nd, v, vd, t, td, arval, arvald)
+         import pr, ArModelTapenade
+         class(ArModelTapenade), intent(in) :: model
          real(pr), intent(in) :: n(:), v, t
          real(pr), intent(in) :: nd(:), vd, td
          real(pr), intent(out) :: arval, arvald
       end subroutine
 
-      subroutine tapenade_ar_b(n, nb, v, vb, t, tb, arval, arvalb)
-         import pr
+      subroutine tapenade_ar_b(model, n, nb, v, vb, t, tb, arval, arvalb)
+         import pr, ArModelTapenade
+         class(ArModelTapenade), intent(in) :: model
          real(pr), intent(in) :: n(:), v, t
          real(pr) :: arvalb
          real(pr) :: nb(:), vb, tb
          real(pr) :: arval
       end subroutine
 
-      subroutine tapenade_ar_d_b(&
+      subroutine tapenade_ar_d_b(model, &
          n, nb, nd, ndb, v, vb, vd, vdb, t, tb, td, tdb, &
          arval, arvalb, arvald, arvaldb)
-         import pr
+         import pr, ArModelTapenade
+         class(ArModelTapenade), intent(in) :: model
          real(pr), intent(in) :: n(:), v, t
          real(pr) :: arval
 
@@ -60,17 +64,19 @@ module yaeos_tapenade_ar_api
          real(pr) :: arvaldb
       end subroutine
 
-      subroutine tapenade_ar_d_d(n, nd, v, vd0, vd, t, td0, td, &
+      subroutine tapenade_ar_d_d(model, n, nd, v, vd0, vd, t, td0, td, &
          arval, arvald0, arvald, arvaldd)
-         import pr
+         import pr, ArModelTapenade
+         class(ArModelTapenade), intent(in) :: model
          real(pr), intent(in) :: n(:), v, t
          real(pr), intent(in) :: vd0, td0
          real(pr), intent(in) :: nd(:), vd, td
          real(pr), intent(out) :: arval, arvald0, arvald, arvaldd
       end subroutine
 
-      function tapenade_v0(n, p, t)
-         import pr
+      pure function tapenade_v0(model, n, p, t)
+         import pr, ArModelTapenade
+         class(ArModelTapenade), intent(in) :: model
          real(pr), intent(in) :: n(:), p, t
          real(pr) :: tapenade_v0
       end function

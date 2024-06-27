@@ -1,5 +1,5 @@
 module yaeos__phase_equilibria_rachford_rice
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    implicit none
 contains
    subroutine betato01(z, K)

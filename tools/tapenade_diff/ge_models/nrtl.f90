@@ -1,9 +1,9 @@
 module nrtl_mod
-   use yaeos_tapenade_ge_api, only: GeModelTapenade
+   use yaeos__tapenade_ge_api, only: GeModelTapenade
    ! Replace pr and R parameters with the following line on the generated
    ! code. Generated code sometimes misses those variables and defines them
    ! (with no value) inside.
-   ! use yaeos_constants, only: pr, R
+   ! use yaeos__constants, only: pr, R
    implicit none
 
    integer, parameter :: pr = 8
@@ -43,7 +43,7 @@ contains
       real(8), intent(in) :: T
       real(8), intent(out) :: ge
 
-      real(8) :: x(size(n)), G(size(n), size(n)), tau(size(n), size(n))
+      real(8) :: G(size(n), size(n)), tau(size(n), size(n))
 
       ! Due to a tapenade bug, the model attributes are defined as variables,
       ! though they aren't used. This makes it possible to define sizes for
@@ -52,15 +52,13 @@ contains
       real(8) :: down
       integer :: i, j
 
-      x = n/sum(n)
-
       tau = model%a(:, :) + model%b(:, :)/T
       G = exp(-model%c * tau)
 
       ge = 0
       do i=1,size(n)
-         ge = ge + x(i) * sum(x(:) * tau(:, i) * G(:, i)) / sum(x(:) *  g(:, i))
+         ge = ge + n(i) * sum(n(:) * tau(:, i) * G(:, i)) / sum(n(:) *  g(:, i))
       end do
-      ge = sum(n) * R * T * ge
+      ge = R * T * ge
    end subroutine excess_gibbs
 end module nrtl_mod

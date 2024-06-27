@@ -1,7 +1,7 @@
 module tape_nrtl
-    use yaeos_constants, only: pr
-    use yaeos_models_ge, only: GeModel
-    use yaeos_models_ge_NRTL, only: NRTL
+    use yaeos__constants, only: pr
+    use yaeos__models_ge, only: GeModel
+    use yaeos__models_ge_NRTL, only: NRTL
 contains
     subroutine main
         class(GeModel), allocatable :: model

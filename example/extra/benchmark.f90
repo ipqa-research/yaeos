@@ -2,7 +2,7 @@ module bench
     use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, &
         fugacity_vt, QMR, PengRobinson76, ArModel, fugacity_tp
     use hyperdual_pr76, only: PR76, setup_adiff_pr76 => setup
-    use TapeRobinson, only: setup_taperobinson => setup_model, tape_model => model, ArModelTapenade
+    use TapeRobinson, only: setup_taperobinson => setup_model
     implicit none
 
     real(pr), allocatable :: z(:), tc(:), pc(:), w(:), kij(:,:), lij(:,:)
@@ -21,7 +21,7 @@ contains
         lij = kij/2
     end subroutine
 
-    subroutine yaeos_run(n, dn, f_p, model_name)
+    subroutine yaeos__run(n, dn, f_p, model_name)
         integer :: n
         logical :: dn
         logical :: f_p
@@ -29,7 +29,6 @@ contains
         class(ArModel), allocatable :: model
         real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n,n)
 
-        integer :: i
 
         real(pr) :: v, t, p
 
@@ -41,8 +40,7 @@ contains
         case ("Adiff PR76")
             model = setup_adiff_pr76(tc, pc, w, kij, lij)
         case ("Tape PR76")
-            call setup_taperobinson(tc, pc, w, kij, lij)
-            model = tape_model
+            model = setup_taperobinson(tc, pc, w, kij, lij)
         end select
 
         v = 1.0_pr
@@ -79,7 +77,7 @@ contains
         do n=1,nmax
             do i=1,nevals
                 call cpu_time(st)
-                    call yaeos_run(n, all_derivs, f_p, eos)
+                    call yaeos__run(n, all_derivs, f_p, eos)
                 call cpu_time(et)
 
                 time = (et-st)*1e6
