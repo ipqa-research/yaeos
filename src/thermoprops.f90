@@ -1,6 +1,6 @@
-module yaeos_thermoprops
+module yaeos__thermoprops
    !! Residual thermodyamic properties using residual Helmholtz model.
-   !! 
+   !!
    !! Available properties:
    !!
    !! - pressure(n, V, T)
@@ -10,14 +10,14 @@ module yaeos_thermoprops
    !!
    !! Calculate thermodynamic properties using Helmholtz energy as a basis.
    !! All the routines in this module work with the logic:
-   !! 
+   !!
    !! ```fortran
    !! call foo(x, V, T, [dfoodv, dfoodt, ...])
    !! ```
-   !! Where the user can call the routine of the desired property. And include 
+   !! Where the user can call the routine of the desired property. And include
    !! as optional values the desired derivatives of said properties.
-   use yaeos_constants, only: R, pr
-   use yaeos_models_ar, only: ArModel
+   use yaeos__constants, only: R, pr
+   use yaeos__models_ar, only: ArModel
    implicit none
 contains
    subroutine pressure(eos, n, v, t, p, dpdv, dpdt, dpdn)
@@ -26,7 +26,7 @@ contains
       !! Calculate pressure using residual helmholtz models.
       !!
       class(ArModel), intent(in) :: eos !! Model
-      real(pr), intent(in) :: n(:) !! Moles number vector 
+      real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), intent(in) :: v !! Volume [L]
       real(pr), intent(out) :: p !! Pressure [bar]
@@ -38,24 +38,24 @@ contains
 
       real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(n))
       integer :: nc
-      
+
       TOTN = sum(n)
       nc = size(n)
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, ArVn=ArVn &
-      )
+         )
       P = TOTN*R*T/V - ArV
       if (present(dPdV)) dPdV = -ArV2 - R*t*TOTN/V**2
       if (present(dPdT)) dPdT = -ArTV + TOTN*R/V
       if (present(dPdN)) dPdN(:) = R*T/V - ArVn(:)
-   end subroutine
+   end subroutine pressure
 
    subroutine fugacity_tp(eos, &
-         n, T, P, V, root_type, lnphip, dlnPhidP, dlnphidT, dlnPhidn &
+      n, T, P, V, root_type, lnphip, dlnPhidP, dlnphidT, dlnPhidn &
       )
       !! Calculate logarithm of fugacity, given pressure and temperature.
-      !! 
+      !!
       !! This routine will obtain the desired volume root at the specified
       !! pressure and calculate fugacity at that point.
       !!
@@ -72,7 +72,7 @@ contains
       real(pr), intent(in) :: t    !! Temperature [K]
       real(pr), intent(in) :: p    !! Pressure [bar]
 
-      real(pr), intent(out) :: lnphip(size(n)) !! \(\ln(f_i)\) vector
+      real(pr), optional, intent(out) :: lnphip(size(n)) !! \(\ln(f_i)\) vector
       real(pr), optional, intent(out) :: v !! Volume [L]
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
@@ -80,13 +80,16 @@ contains
 
       real(pr) :: v_in, p_in
 
-      call VCALC(eos, n, P, T, V_in, root_type)
+      call volume(eos, n, P, T, V_in, root_type)
       call fugacity_vt(eos, n, v_in, T, P_in, lnphip, dlnphidp, dlnphidt, dlnphidn)
       if(present(v)) v = v_in
+      if(abs(P_in - p) > 1e-2) then
+         write(error_unit, *) "WARN: possible bad root solving: ", p_in, p
+      end if
    end subroutine fugacity_tp
 
    subroutine fugacity_vt(eos, &
-         n, V, T, P, lnphip, dlnPhidP, dlnphidT, dlnPhidn &
+      n, V, T, P, lnphip, dlnPhidP, dlnphidT, dlnPhidn, dPdV, dPdT, dPdN &
       )
       !! Calculate fugacity coefficent given volume and temperature.
       !!
@@ -106,12 +109,16 @@ contains
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! \(ln(phi_i)\) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! \(ln(phi_i)\) Presssure derivative
       real(pr), optional, intent(out) :: dlnphidn(size(n), size(n)) !! \(ln(phi_i)\) compositional derivative
+      real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
+      real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
+      real(pr), optional, intent(out) :: dPdN(:) !! \(\frac{dP}{dn_i}\)
 
       real(pr) :: Ar, ArTV, ArV, ArV2
       real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
       real(pr) :: Arn2(size(n), size(n))
 
-      real(pr) :: dPdV, dPdT, dPdN(size(n))
+      real(pr) :: dPdV_in, dPdT_in, dPdN_in(size(n))
+      real(pr) :: P_in
 
       real(pr) :: RT, Z
 
@@ -119,18 +126,18 @@ contains
       integer :: nc, i, j
 
 
-      TOTN = sum(n)
+      totn = sum(n)
       nc = size(n)
 
       RT = R*T
       Z = V/(TOTN*RT) ! this is Z/P
 
       if (present(lnphip) .and. .not. (&
-              present(dlnphidn) &
+         present(dlnphidn) &
          .or. present(dlnphidp) &
          .or. present(dlnphidt) &
          .or. present(p) &
-      )) then
+         )) then
          call eos%residual_helmholtz(n, v, t, Arn=Arn)
          lnphip(:) = Arn(:)/RT - log(Z)
          return
@@ -138,62 +145,45 @@ contains
          call eos%residual_helmholtz(&
             n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
             Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-         )
+            )
       else
          call eos%residual_helmholtz(&
             n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArTV=ArTV, &
             Arn=Arn, ArVn=ArVn, ArTn=ArTn &
-         )
+            )
       end if
-      
+
       lnphip(:) = Arn(:)/RT - log(Z)
 
-      if (present(P)) P = TOTN*RT/V - ArV
-      
-      dPdV = -ArV2 - RT*TOTN/V**2
-      dPdT = -ArTV + TOTN*R/V
-      dPdN(:) = RT/V - ArVn(:)
+      P_in = TOTN*RT/V - ArV
+      if (present(P)) P = P_in
 
-      if (present(dlnphidp)) dlnphidp(:) = -dPdN(:)/dPdV/RT - 1._pr/P
+      dPdV_in = -ArV2 - RT*TOTN/V**2
+      dPdT_in = -ArTV + TOTN*R/V
+      dPdN_in = RT/V - ArVn
+
+      if (present(dlnphidp)) then
+         dlnphidp(:) = -dPdN_in(:)/dPdV_in/RT - 1._pr/P_in
+      end if
       if (present(dlnphidt)) then
-         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN(:)*dPdT/dPdV/RT + 1._pr/T
+         dlnphidt(:) = (ArTn(:) - Arn(:)/T)/RT + dPdN_in(:)*dPdT_in/dPdV_in/RT + 1._pr/T
       end if
 
       if (present(dlnphidn)) then
          do i = 1, nc
             do j = i, nc
-               dlnphidn(i, j) = 1._pr/TOTN + (Arn2(i, j) + dPdN(i)*dPdN(j)/dPdV)/RT
+               dlnphidn(i, j) = 1._pr/TOTN + (Arn2(i, j) + dPdN_in(i)*dPdN_in(j)/dPdV_in)/RT
                dlnphidn(j, i) = dlnphidn(i, j)
             end do
          end do
       end if
-   end subroutine
 
-   subroutine PUREFUG_CALC(eos, nc, icomp, T, P, V, fug)
-      !! Fugacity of a pure component.
-      class(ArModel), intent(in) :: eos !! model
-      integer, intent(in)  :: nc !! Number of components
-      integer,  intent(in) :: icomp !! Component index
-      real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: P !! Pressure [bar]
-      real(pr), intent(in) :: V !! Volume [L]
-      real(pr), intent(out) :: fug !! Fugacity of component `icomp`
+      if (present(dPdV)) dPdV = dPdV_in
+      if (present(dPdT)) dPdT = dPdT_in
+      if (present(dPdN)) dPdN = dPdN_in
+   end subroutine fugacity_vt
 
-      real(pr) :: n(nc), Ar, Arn(nc)
-      real(pr) :: RT, Z, lnphi
-
-      n = 0.0
-      n(icomp) = 1.0
-
-      RT = R*T
-      Z = P*V/RT
-
-      call eos%residual_helmholtz(n, V, T, Ar, Arn=Arn)
-      lnphi = -log(Z) + Arn(icomp)/RT
-      fug = exp(lnphi) * P
-   end subroutine purefug_calc
-
-   subroutine VCALC(eos, n, P, T, V, root_type, max_iters)
+   subroutine volume(eos, n, P, T, V, root_type, max_iters)
       !! Volume solver at a given pressure.
       !!
       !! Obtain the volume using the method described by Michelsen and Møllerup.
@@ -207,7 +197,7 @@ contains
       !! \[
       !!    \frac{B}{V}(P, T) \in [0, 1]
       !! \]
-      !! 
+      !!
       !! At chapter 3 page 94 of Michelsen and Møllerup's book a more complete
       !! explanation can be seen
       use iso_fortran_env, only: error_unit
@@ -243,13 +233,13 @@ contains
       ZETMAX = 1._pr
 
       select case(root_type)
-      case("liquid")
+       case("liquid")
          ZETA = 0.5_pr
          call solve_point(P, V, Pcalc, AT, iter)
-      case("vapor","stable")
+       case("vapor","stable")
          ZETA = min(0.5_pr, B*P/(TOTN*R*T))
          call solve_point(P, V, Pcalc, AT, iter)
-         
+
          if (root_type == "stable") then
             ! Run first for vapor and then for liquid
             VVAP = V
@@ -259,9 +249,9 @@ contains
             call solve_point(P, V, Pcalc, AT, iter)
             if (AT .gt. AVAP) V = VVAP
          end if
-      case default
+       case default
          write(error_unit, *) "ERROR [VCALC]: Wrong specification"
-         call exit(1)
+         error stop 1
       end select
    contains
       subroutine solve_point(P, V, Pcalc, AT, iter)
@@ -269,7 +259,7 @@ contains
          real(pr), intent(out) :: V !! Obtained volume [L]
          real(pr), intent(out) :: Pcalc !! Calculated pressure at V [bar]
          real(pr), intent(out) :: AT !!
-         integer, intent(out) :: iter 
+         integer, intent(out) :: iter
 
          real(pr) :: del, der
 
@@ -279,9 +269,8 @@ contains
          do while(abs(DEL) > 1.e-10_pr .and. iter < maximum_iterations)
             V = B/ZETA
             iter = iter + 1
-            call eos%residual_helmholtz(&
-               n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2 &
-            )
+            call eos%residual_helmholtz(n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
+
             Pcalc = TOTN*R*T/V - ArV
 
             if (Pcalc .gt. P) then
@@ -297,15 +286,16 @@ contains
             DEL = -(Pcalc - P)/DER
             ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
 
-            if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) &
-               ZETA = .5_pr*(ZETMAX + ZETMIN)
+            if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) then
+               ZETA = 0.5_pr*(ZETMAX + ZETMIN)
+            end if
          end do
-         
+
          if (iter >= maximum_iterations) write(error_unit, *) &
             "WARN: Volume solver exceeded maximum number of iterations"
-      end subroutine
-   end subroutine vcalc
-   
+      end subroutine solve_point
+   end subroutine volume
+
    ! ==========================================================================
    ! Residual Enthalpy
    ! --------------------------------------------------------------------------
@@ -325,14 +315,14 @@ contains
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
-      )
+         )
 
       Hr = Ar - t*ArT - v*ArV
 
       if (present(HrT)) HrT = - t*ArT2 - v*ArTV
       if (present(HrV)) HrV = - t*ArTV - v*ArV2
       if (present(HrN)) HrN(:) = Arn(:) - t*ArTn(:) - v*ArVn(:)
-   end subroutine
+   end subroutine enthalpy_residual_vt
 
    ! ==========================================================================
    ! Residual Gibbs energy
@@ -362,7 +352,7 @@ contains
       if (present(GrT)) GrT = ArT + v*dpdt - ntot*R
       if (present(GrV)) GrV = ArV + v*dpdv + p
       if (present(GrN)) GrN(:) = Arn(:) + v*dpdn(:) - R*t
-   end subroutine
+   end subroutine gibbs_residual_vt
 
    ! ==========================================================================
    ! Residual entropy
@@ -382,14 +372,14 @@ contains
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArT=ArT, ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
-      )
+         )
 
       Sr = - ArT
 
       if (present(SrT)) SrT = - ArT2
       if (present(SrV)) SrV = - ArTV
       if (present(SrN)) SrN = - ArTn
-   end subroutine
+   end subroutine entropy_residual_vt
 
    ! ==========================================================================
    ! Residual Cv
@@ -407,7 +397,7 @@ contains
       call eos%residual_helmholtz(n, v, t, Ar=Ar, ArT2=ArT2)
 
       Cv = -t*ArT2
-   end subroutine
+   end subroutine Cv_residual_vt
 
    ! ==========================================================================
    ! Residual Cp
@@ -431,5 +421,5 @@ contains
       call pressure(eos, n, v, t, p, dpdv=dpdv, dpdt=dpdt)
 
       Cp = Cv - t*dpdt**2/dpdv - ntot*R
-   end subroutine
-end module
+   end subroutine Cp_residual_vt
+end module yaeos__thermoprops

@@ -1,117 +1,158 @@
 module test_flash
-    use testdrive, only: new_unittest, unittest_type, error_type, check
-    implicit none
+   use testdrive, only: new_unittest, unittest_type, error_type, check
+   implicit none
 
 contains
-    subroutine collect_suite(testsuite)
-        !> Collection of tests
-        type(unittest_type), allocatable, intent(out) :: testsuite(:)
+   subroutine collect_suite(testsuite)
+      !> Collection of tests
+      type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-        testsuite = [ &
-            new_unittest("FlashPT", test_flash_pt), &
-            new_unittest("FlashPT Failed", test_flash_pt_failed), &
-            new_unittest("FlashPT Bad Specification", test_flash_pt_bad_spec) &
-            ]
-    end subroutine collect_suite
+      testsuite = [ &
+         new_unittest("FlashPT", test_flash_pt), &
+         new_unittest("FlashTV", test_flash_tv), &
+         new_unittest("FlashPT Failed", test_flash_pt_failed), &
+         new_unittest("FlashPT Bad Specification", test_flash_pt_bad_spec) &
+         ]
+   end subroutine collect_suite
 
-    subroutine test_flash_pt(error)
-        use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
-        type(error_type), allocatable, intent(out) :: error
+   subroutine test_flash_pt(error)
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      type(error_type), allocatable, intent(out) :: error
 
-        integer, parameter :: nc = 2
+      integer, parameter :: nc = 2
 
-        real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
-        real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
-        real(pr) :: vx = 8.4918883298198036E-002
-        real(pr) :: vy = 0.32922132295944545
+      real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
+      real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
+      real(pr) :: vx = 8.4918883298198036E-002
+      real(pr) :: vy = 0.32922132295944545
 
-        class(ArModel), allocatable :: model
-        type(EquilibriaState) :: flash_result
+      class(ArModel), allocatable :: model
+      type(EquilibriaState) :: flash_result
 
-        real(pr) :: tc(nc), pc(nc), w(nc)
-        real(pr) :: n(nc), p, t, k0(nc)
-        integer :: iters
+      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: n(nc), p, t, k0(nc)
+      integer :: iters
 
-        n = [0.4, 0.6]
-        tc = [190.564, 425.12]
-        pc = [45.99, 37.96]
-        w = [0.0115478, 0.200164]
-        model = PengRobinson76(tc, pc, w)
+      n = [0.4, 0.6]
+      tc = [190.564, 425.12]
+      pc = [45.99, 37.96]
+      w = [0.0115478, 0.200164]
+      model = PengRobinson76(tc, pc, w)
 
-        P = 60
-        t = 294
-        k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
+      P = 60
+      t = 294
+      k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
 
-        flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
+      flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
 
-        call check(error, maxval(abs(flash_result%x - x)) < 1e-5)
-        call check(error, maxval(abs(flash_result%y - y)) < 1e-5)
-        call check(error, (abs(flash_result%Vx - Vx)) < 1e-5)
-        call check(error, (abs(flash_result%Vy - Vy)) < 1e-5)
-    end subroutine test_flash_pt
+      call check(error, maxval(abs(flash_result%x - x)) < 1e-5)
+      call check(error, maxval(abs(flash_result%y - y)) < 1e-5)
+      call check(error, (abs(flash_result%Vx - Vx)) < 1e-5)
+      call check(error, (abs(flash_result%Vy - Vy)) < 1e-5)
+   end subroutine test_flash_pt
 
-    subroutine test_flash_pt_failed(error)
-        use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
-        type(error_type), allocatable, intent(out) :: error
+   subroutine test_flash_tv(error)
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use fixtures_models, only: binary_PR76
+      type(error_type), allocatable, intent(out) :: error
 
-        integer, parameter :: nc = 2
+      integer, parameter :: nc = 2
 
-        real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
-        real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
-        real(pr) :: vx = 8.4918883298198036E-002
-        real(pr) :: vy = 0.32922132295944545
+      real(pr) :: x(nc) = [6.8598497458814592E-002,  0.93140153234346601]
+      real(pr) :: y(nc) = [0.61055654015073813, 0.38944348965161085]
+      real(pr) :: vx = 9.3682339483042124E-002
+      real(pr) :: vy = 2.3935064128338039     
+      real(pr) :: beta = 0.61148923421371815
+      real(pr) :: P = 6.097517429661468
 
-        class(ArModel), allocatable :: model
-        type(EquilibriaState) :: flash_result
+      class(ArModel), allocatable :: model
+      type(EquilibriaState) :: flash_result
 
-        real(pr) :: tc(nc), pc(nc), w(nc)
-        real(pr) :: n(nc), p, t, k0(nc)
-        integer :: iters
+      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: n(nc), t, k0(nc), v
+      integer :: iters, i
 
-        n = [0.4, 0.6]
-        tc = [190.564, 425.12]
-        pc = [45.99, 37.96]
-        w = [0.0115478, 0.200164]
-        model = PengRobinson76(tc, pc, w)
+      n = [0.4, 0.6]
+      model = binary_PR76()
 
-        P = 500
-        t = 294
-        k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
+      V = 1.5_pr
+      t = 210
+      k0 = (model%components%Pc/10._pr) &
+            * exp(5.373_pr*(1 + model%components%w)&
+            * (1 - model%components%Tc/T))
 
-        flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
-        call check(error, flash_result%p < 0)
-    end subroutine test_flash_pt_failed
+      flash_result = flash(model, n, t=t, v_spec=v, k0=k0, iters=iters)
 
-    subroutine test_flash_pt_bad_spec(error)
-        use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
-        type(error_type), allocatable, intent(out) :: error
+      call check(error, maxval(abs(flash_result%x - x)) < 1e-5)
+      call check(error, maxval(abs(flash_result%y - y)) < 1e-5)
+      call check(error, abs(flash_result%vx - vx)  < 1e-5)
+      call check(error, abs(flash_result%vy - vy)  < 1e-5)
+      call check(error, abs(flash_result%p - p)  < 1e-5)
+      call check(error, abs(flash_result%beta - beta)  < 1e-5)
+   end subroutine test_flash_tv
 
-        integer, parameter :: nc = 2
+   subroutine test_flash_pt_failed(error)
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      type(error_type), allocatable, intent(out) :: error
 
-        real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
-        real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
-        real(pr) :: vx = 8.4918883298198036E-002
-        real(pr) :: vy = 0.32922132295944545
+      integer, parameter :: nc = 2
 
-        class(ArModel), allocatable :: model
-        type(EquilibriaState) :: flash_result
+      real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
+      real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
+      real(pr) :: vx = 8.4918883298198036E-002
+      real(pr) :: vy = 0.32922132295944545
 
-        real(pr) :: tc(nc), pc(nc), w(nc)
-        real(pr) :: n(nc), p, t, k0(nc)
-        integer :: iters
+      class(ArModel), allocatable :: model
+      type(EquilibriaState) :: flash_result
 
-        n = [0.4, 0.6]
-        tc = [190.564, 425.12]
-        pc = [45.99, 37.96]
-        w = [0.0115478, 0.200164]
-        model = PengRobinson76(tc, pc, w)
+      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: n(nc), p, t, k0(nc)
+      integer :: iters
 
-        P = 500
-        t = 294
-        k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
+      n = [0.4, 0.6]
+      tc = [190.564, 425.12]
+      pc = [45.99, 37.96]
+      w = [0.0115478, 0.200164]
+      model = PengRobinson76(tc, pc, w)
 
-        flash_result = flash(&
-            model, n, t=t, p_spec=p, v_spec=2._pr, k0=k0, iters=iters&
-        )
-    end subroutine test_flash_pt_bad_spec
+      P = 500
+      t = 294
+      k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
+
+      flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
+      call check(error, flash_result%p < 0)
+   end subroutine test_flash_pt_failed
+
+   subroutine test_flash_pt_bad_spec(error)
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      type(error_type), allocatable, intent(out) :: error
+
+      integer, parameter :: nc = 2
+
+      real(pr) :: x(nc) = [0.32424471950363210, 0.67575531029866709]
+      real(pr) :: y(nc) = [0.91683466155334536, 8.3165368249135715E-002]
+      real(pr) :: vx = 8.4918883298198036E-002
+      real(pr) :: vy = 0.32922132295944545
+
+      class(ArModel), allocatable :: model
+      type(EquilibriaState) :: flash_result
+
+      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: n(nc), p, t, k0(nc)
+      integer :: iters
+
+      n = [0.4, 0.6]
+      tc = [190.564, 425.12]
+      pc = [45.99, 37.96]
+      w = [0.0115478, 0.200164]
+      model = PengRobinson76(tc, pc, w)
+
+      P = 500
+      t = 294
+      k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
+
+      flash_result = flash(&
+         model, n, t=t, p_spec=p, v_spec=2._pr, k0=k0, iters=iters&
+         )
+   end subroutine test_flash_pt_bad_spec
 end module test_flash

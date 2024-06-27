@@ -1,5 +1,5 @@
 name = "yaeos"
-version = "0.1.0"
+version = "0.3.0"
 license = "MPL"
 author = "Federico E. Benelli"
 maintainer = "federico.benelli@mi.unc.edu.ar"
@@ -10,6 +10,7 @@ link = ["lapack"]
 auto-executables = true
 auto-tests = true
 auto-examples = false
+module-naming = false
 
 [install]
 library = true
@@ -21,12 +22,43 @@ source-form = "free"
 
 [dependencies]
 stdlib = "*"
-test-drive = {git = "https://github.com/fortran-lang/test-drive"}
+forbear = {git="https://github.com/szaghi/forbear"}
 json-fortran = {git="https://github.com/jacobwilliams/json-fortran"}
 forsus = {git="https://github.com/ipqa-research/forsus"}
+nlopt-f.git = "https://github.com/grimme-lab/nlopt-f"
+
+[dev-dependencies]
+test-drive = {git = "https://github.com/fortran-lang/test-drive"}
 
 
 [[example]]
-name       = "example"
-source-dir = "example"
+name       = "benchmarks"
+source-dir = "example/extra"
 main       = "demo.f90"
+
+[[example]]
+name       = "basics"
+source-dir = "example/tutorials"
+main       = "basics.f90"
+
+[[example]]
+name       = "saturation_points"
+source-dir = "example/tutorials"
+main       = "saturation_points.f90"
+
+[[example]]
+name       = "phase_envelope"
+source-dir = "example/tutorials"
+main       = "phase_envelope.f90"
+
+[[example]]
+name       = "new_alpha_function"
+source-dir = "example/tutorials"
+main       = "new_alpha_function.f90"
+
+[[example]]
+name       = "huron_vidal"
+source-dir = "example/tutorials"
+main       = "huron_vidal.f90"
+
+

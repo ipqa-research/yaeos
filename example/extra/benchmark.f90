@@ -1,7 +1,8 @@
 module bench
-    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, fugacity_vt, QMR, PengRobinson76, ArModel
+    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, &
+        fugacity_vt, QMR, PengRobinson76, ArModel, fugacity_tp
     use hyperdual_pr76, only: PR76, setup_adiff_pr76 => setup
-    use TapeRobinson, only: setup_taperobinson => setup_model, tape_model => model, ArModelTapenade
+    use TapeRobinson, only: setup_taperobinson => setup_model
     implicit none
 
     real(pr), allocatable :: z(:), tc(:), pc(:), w(:), kij(:,:), lij(:,:)
@@ -20,14 +21,14 @@ contains
         lij = kij/2
     end subroutine
 
-    subroutine yaeos_run(n, dn, model_name)
+    subroutine yaeos__run(n, dn, f_p, model_name)
         integer :: n
         logical :: dn
+        logical :: f_p
         character(len=*), intent(in) :: model_name
         class(ArModel), allocatable :: model
         real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n,n)
 
-        integer :: i
 
         real(pr) :: v, t, p
 
@@ -39,38 +40,44 @@ contains
         case ("Adiff PR76")
             model = setup_adiff_pr76(tc, pc, w, kij, lij)
         case ("Tape PR76")
-            call setup_taperobinson(tc, pc, w, kij, lij)
-            model = tape_model
+            model = setup_taperobinson(tc, pc, w, kij, lij)
         end select
 
         v = 1.0_pr
         t = 150._pr
+        p = 15
 
         if (dn) then
-            call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
+            if (f_p) then
+                call fugacity_tp(&
+                    model, z, T, P, root_type="stable", &
+                    lnphip=lnfug, dlnphidp=dlnphidp, dlnphidn=dlnphidn)
+            else
+                call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
+            end if
         else
             call fugacity_vt(model, z, V, T, lnphip=lnfug)
         end if
     end subroutine
 
-    subroutine run_bench(nmax, all_derivs, eos)
+    subroutine run_bench(nmax, all_derivs, f_p, eos)
         integer, parameter :: nevals=1e3
         integer :: nmax
         logical :: all_derivs
+        logical :: f_p
         character(len=*), intent(in) :: eos
-        real(8) :: time, std, mean
-        real(8) :: et, st
+        real(pr) :: time, std, mean
+        real(pr) :: et, st
         integer :: i, n
         time = 0
         std = 0
         mean = 0
 
         print *, "running: ", eos, "all derivs: ", all_derivs
-
         do n=1,nmax
             do i=1,nevals
                 call cpu_time(st)
-                    call yaeos_run(n, all_derivs, eos)
+                    call yaeos__run(n, all_derivs, f_p, eos)
                 call cpu_time(et)
 
                 time = (et-st)*1e6
@@ -87,16 +94,16 @@ contains
     subroutine main()
         integer :: n=20
         logical :: allderivs=.false.
+        logical :: fug_p = .false.
 
-        call run_bench(n, allderivs, "Analytic PR76")
-        call run_bench(n, allderivs, "Tape PR76")
-        call run_bench(n, allderivs, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Analytic PR76")
+        call run_bench(n, allderivs, fug_p, "Tape PR76")
+        ! call run_bench(n, allderivs, fug_p, "Adiff PR76")
 
         allderivs = .true.
-        
-        call run_bench(n, allderivs, "Analytic PR76")
-        call run_bench(n, allderivs, "Tape PR76")
-        call run_bench(n, allderivs, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Analytic PR76")
+        call run_bench(n, allderivs, fug_p, "Tape PR76")
+        ! call run_bench(n, allderivs, fug_p, "Adiff PR76")
     end subroutine
 
 end module

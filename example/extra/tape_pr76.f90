@@ -1,15 +1,17 @@
 MODULE TapeRobinson
-    use tapenade_pr
+    use tapenade_pr, only: SETUP_MODEL
 contains
     subroutine main()
-        use yaeos_constants, only: pr
+        use yaeos, only: ArModel
+        use yaeos__constants, only: pr
+        class(ArModel), allocatable :: model
         integer, parameter :: n=2
-        real(8) :: z(n), tc(n), pc(n), w(n), kij(n,n), lij(n,n)
+        real(pr) :: z(n), tc(n), pc(n), w(n), kij(n,n), lij(n,n)
 
-        real(8) :: v, t
+        real(pr) :: v, t
 
-        real(8) :: ar, arv, arv2, art, art2, artv
-        real(8) :: arn(n), arvn(n), artn(n), arn2(n,n)
+        real(pr) :: ar, arv, arv2, art, art2, artv
+        real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n)
 
         z = [0.3_pr, 0.7_pr]
         tc = [190._pr, 310._pr]
@@ -22,7 +24,7 @@ contains
         v = 1
         t = 150
 
-        call SETUP_MODEL(tc, pc, w, kij, lij)
+        model = SETUP_MODEL(tc, pc, w, kij, lij)
         call model%residual_helmholtz(&
             z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
             ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &

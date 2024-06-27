@@ -1,4 +1,4 @@
-module yaeos_models_ar
+module yaeos__models_ar
    !! Module that defines the basics of a residual Helmholtz energy.
    !!
    !! All the residual properties that are calculated in this library are
@@ -11,10 +11,11 @@ module yaeos_models_ar
    !!
    !! @note Later on, third derivative with respect to volume will be included
    !! since it's importance on calculation of critical points.
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
+   use yaeos__models_base, only: BaseModel
    implicit none
 
-   type, abstract :: ArModel
+   type, abstract, extends(BaseModel) :: ArModel
       !! Abstract residual Helmholtz model.
       !!
       !! This derived type defines the basics needed for the calculation

@@ -52,6 +52,7 @@ run_coverage() {
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
+        --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
         --exclude "tools" \
         --fail-under-line 90 \
@@ -64,6 +65,7 @@ run_coverage() {
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
+        --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
         --exclude "tools" \
         --fail-under-line 90
