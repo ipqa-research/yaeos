@@ -8,25 +8,12 @@ from yaeos import yaeos_c as yaeos
 
 
 class ArModel(ABC):
-    @abstractmethod
-    def setup_fun(self):
-        raise NotImplementedError
+    # @abstractmethod
+    # def setup_fun(self):
+    #     raise NotImplementedError
 
-    def assure_model(foo):
-        from functools import wraps
-
-        @wraps(foo)
-        def checker(self, *args, **kwargs):
-            if self.id != yaeos.running_model:
-                yaeos.running_model = self.id
-                self.setup_fun()
-            return foo(self, *args, **kwargs)
-
-        return checker
-
-    @assure_model
     def fugacity(self, n, v, t):
-        return yaeos.fug_vt(n, v, t)
+        return yaeos.fug_vt(self.id, n, v, t)
 
 
 class PengRobinson76(ArModel):
@@ -40,11 +27,17 @@ class PengRobinson76(ArModel):
         self.pc = pc
         self.w = w
 
-        self.kij = kij if kij else np.zeros((n, n))
-        self.lij = lij if lij else np.zeros((n, n))
+        if kij is None:
+            self.kij = np.zeros((n, n))
+        else:
+            self.kij = kij
 
-    def setup_fun(self):
-        yaeos.pr76(self.tc, self.pc, self.w, self.kij, self.lij)
+        if lij is None:
+            self.lij = np.zeros((n, n))
+        else:
+            self.lij = lij
+
+        self.id = yaeos.pr76(self.tc, self.pc, self.w, self.kij, self.lij)
 
 
 def run_models():
@@ -68,3 +61,6 @@ def run_models():
     print(m1.fugacity(n, v, t))
     print(m2.fugacity(n, v, t))
     print(m1.fugacity(n, v, t))
+
+
+# run_models()
