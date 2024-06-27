@@ -69,7 +69,7 @@ contains
          if (free_ar_model(i)) then
             free_ar_model(i) = .false.
             id = i
-            call move_alloc(model, ar_models(i)%model)
+            call move_alloc(ar_model, ar_models(i)%model)
             exit
          end if
       end do

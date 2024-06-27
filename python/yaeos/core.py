@@ -12,6 +12,9 @@ class ArModel(ABC):
     def fugacity(self, n, v, t):
         return yaeos.fug_vt(self.id, n, v, t)
 
+    def __del__(self):
+        yaeos.make_available_ar_models_list(self.id)
+
 
 class PengRobinson76(ArModel):
     name = "PengRobinson76"
