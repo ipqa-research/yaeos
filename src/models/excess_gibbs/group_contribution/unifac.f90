@@ -37,7 +37,8 @@ module yaeos__models_ge_group_contribution_unifac
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
-   use stdlib_io_npy, only: load_npy
+   use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
+   use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
    implicit none
 
    type :: Groups
@@ -910,7 +911,6 @@ contains
       !! \(\frac{d^2 \psi\}{dT^2} \)
 
       integer :: i, j
-      integer :: ig, jg
       integer :: ngroups
 
       real(pr) :: Aij
@@ -919,10 +919,7 @@ contains
       ngroups = size(systems_groups%groups_ids)
 
       do concurrent(i=1:ngroups, j=1:ngroups)
-         ig = systems_groups%groups_ids(i)
-         jg = systems_groups%groups_ids(j)
-
-         Aij = self%Aij(ig, jg)
+         Aij = self%Aij(i, j)
          Eij = exp(-Aij / T)
 
          if (present(psi)) &
@@ -934,7 +931,7 @@ contains
       end do
    end subroutine UNIFAC_temperature_dependence
 
-   function thetas_i(nm, ng, group_area, stew, molecules) result(thetas_ij)
+   function thetas_i(nm, ng, parameters, stew, molecules) result(thetas_ij)
       !! # \(\Theta_i \) calculation
       !! Calculate the area fraciton of each froup on each molecule.
       !!
@@ -948,7 +945,7 @@ contains
       !!
       integer, intent(in) :: nm !! Number of molecules
       integer, intent(in) :: ng !! Number of groups
-      real(pr), intent(in) :: group_area(:) !! Group k areas
+      type(GeGCModelParameters), intent(in) :: parameters !! UNIFAC parameters
       type(Groups), intent(in) :: stew !! All the groups present in the system
       type(Groups), intent(in) :: molecules(:) !! Molecules
       real(pr) :: thetas_ij(nm, ng) !! Group j area fraction on molecule i
@@ -967,12 +964,9 @@ contains
          do k=1,size(molecules(i)%number_of_groups)
             gi = molecules(i)%groups_ids(k)
 
-            ! Locate group k in the stew ordering (position j of group k).
-            j = findloc(stew%groups_ids, gi, dim=1)
-
             ! Contribution of the group k to the molecule i area.
             qki_contribution = (&
-               group_area(gi) * molecules(i)%number_of_groups(k) &
+               parameters%get_subgroup_Q(gi) * molecules(i)%number_of_groups(k)&
                )
 
             ! Adding to the total area of each molecule
@@ -989,39 +983,16 @@ contains
 
             j = findloc(stew%groups_ids, gi, dim=1)
 
-            thetas_ij(i, j) = group_area(gi) * molecules(i)%number_of_groups(k) / total_area_i(i)
+            thetas_ij(i, j) = (&
+               parameters%get_subgroup_Q(gi) &
+               * molecules(i)%number_of_groups(k) &
+               / total_area_i(i) &
+               )
          end do
       end do
    end function thetas_i
 
-   subroutine get_unifac_default_parameters(Aij, Qk, Rk)
-      !! # Get UNIFAC default parameters
-      !! If no provided, loads the default UNIFAC parameters on setup_unifac.
-      !!
-      !! # References
-      !! https://www.ddbst.com/published-parameters-unifac.html
-      !!
-      real(pr), allocatable, optional, intent(out) :: Aij(:,:)
-      !! Subgroup-subgroup interaction parameters [K]
-      real(pr), allocatable, optional, intent(out) :: Qk(:)
-      !! Subgroups areas
-      real(pr), allocatable, optional, intent(out) :: Rk(:)
-      !! Subgroups volumes
-
-      if (present(Aij)) then
-         call load_npy("data/unifac_aij.npy", Aij)
-      end if
-
-      if (present(Qk)) then
-         call load_npy("data/unifac_Qk.npy", Qk)
-      end if
-
-      if (present(Rk)) then
-         call load_npy("data/unifac_Rk.npy", Rk)
-      end if
-   end subroutine get_unifac_default_parameters
-
-   type(UNIFAC) function setup_unifac(molecules, Aij, Qk, Rk)
+   type(UNIFAC) function setup_unifac(molecules, parameters)
       !! # Setup UNIFAC
       !! Instantiate a UNIFAC model
       !!
@@ -1060,30 +1031,18 @@ contains
       !!
       type(Groups), intent(in) :: molecules(:)
       !! Molecules (Group type) objects
-      real(pr), optional, intent(in) :: Aij(:, :)
-      !! Subgroup-subgroup interaction parameters matrix (if no provided loads
-      !! default parameters)
-      real(pr), optional, intent(in) :: Qk(:)
-      !! Subgroups areas (if no provided loads default parameters)
-      real(pr), optional, intent(in) :: Rk(:)
-      !! Subgroups volumes (if no provided loads default parameters)
+      type(GeGCModelParameters), optional, intent(in) :: parameters
+      !! UNIFAC parameters
 
       type(Groups) :: soup
       type(UNIFACPsi) :: psi_function
 
-      ! Default UNIFAC parameters
-      real(pr), allocatable:: Aij_default(:, :)
-      real(pr), allocatable:: Qk_default(:)
-      real(pr), allocatable:: Rk_default(:)
+      ! UNIFAC parameters
+      type(GeGCModelParameters) :: params
 
-      ! Parameters to perform the setup
-      real(pr), allocatable:: Aij_final(:, :)
-      real(pr), allocatable:: Qk_final(:)
-      real(pr), allocatable:: Rk_final(:)
-
-      !
+      ! Usefull matrixes to store
       integer, allocatable :: vij(:, :)
-      real(pr), allocatable :: qks(:)
+      real(pr), allocatable :: qks(:), Aij(:, :)
 
       integer :: gi, i, j, k
 
@@ -1095,37 +1054,10 @@ contains
       ! ========================================================================
       ! Load default UNIFAC parameters if not provided
       ! ------------------------------------------------------------------------
-      ! Aij
-      if (.not. present(Aij)) then
-         call get_unifac_default_parameters(Aij=Aij_default)
-
-         allocate(Aij_final(size(Aij_default, 1), size(Aij_default, 2)))
-         Aij_final(:,:) = Aij_default(:,:)
+      if (.not. present(parameters)) then
+         params = UNIFACParameters()
       else
-         allocate(Aij_final(size(Aij, 1), size(Aij, 2)))
-         Aij_final(:,:) = Aij(:,:)
-      end if
-
-      ! Qk
-      if (.not. present(Qk)) then
-         call get_unifac_default_parameters(Qk=Qk_default)
-
-         allocate(Qk_final(size(Qk_default)))
-         Qk_final(:) = Qk_default(:)
-      else
-         allocate(Qk_final(size(Qk)))
-         Qk_final(:) = Qk(:)
-      end if
-
-      ! Rk
-      if (.not. present(Rk)) then
-         call get_unifac_default_parameters(Rk=Rk_default)
-
-         allocate(Rk_final(size(Rk_default)))
-         Rk_final(:) = Rk_default(:)
-      else
-         allocate(Rk_final(size(Rk)))
-         Rk_final(:) = Rk(:)
+         params = parameters
       end if
 
       ! ========================================================================
@@ -1144,8 +1076,8 @@ contains
                gi = molecules(i)%groups_ids(j)
 
                ! Calculate molecule i volume and area
-               r(i) = r(i) + molecules(i)%number_of_groups(j) * Rk_final(gi)
-               q(i) = q(i) + molecules(i)%number_of_groups(j) * Qk_final(gi)
+               r(i) = r(i) + molecules(i)%number_of_groups(j) * params%get_subgroup_R(gi)
+               q(i) = q(i) + molecules(i)%number_of_groups(j) * params%get_subgroup_Q(gi)
 
                if (all(soup%groups_ids - gi  /= 0)) then
                   ! Add group if it wasn't included yet
@@ -1162,14 +1094,13 @@ contains
             end do
          end do
       end associate
+
       ! ========================================================================
-      ! Build a matrix vij and vector qk
+      ! Build vij matrix (occurrence of each group of the soup on each molecule)
       ! ------------------------------------------------------------------------
       allocate(vij(size(molecules), size(soup%number_of_groups)))
-      allocate(qks(size(soup%number_of_groups)))
 
       vij = 0
-      qks = 0.0_pr
       do i=1,size(molecules)
          do k=1,size(molecules(i)%number_of_groups)
             gi = molecules(i)%groups_ids(k)
@@ -1178,20 +1109,43 @@ contains
             j = findloc(soup%groups_ids, gi, dim=1)
 
             vij(i,j) = molecules(i)%number_of_groups(k)
+         end do
+      end do
 
-            qks(j) = Qk_final(gi)
+      ! ========================================================================
+      ! Build qk vector (area of each group in the soup)
+      ! ------------------------------------------------------------------------
+      allocate(qks(size(soup%number_of_groups)))
+
+      qks = 0.0_pr
+      do k=1,size(soup%groups_ids)
+         qks(k) = params%get_subgroup_Q(soup%groups_ids(k))
+      end do
+
+      ! ========================================================================
+      ! Build Aij matrix (interaction of the soup's subgroups)
+      ! ------------------------------------------------------------------------
+      allocate(Aij(size(soup%groups_ids), size(soup%groups_ids)))
+
+      Aij = 0.0_pr
+      do i=1,size(soup%groups_ids)
+         do j=1,size(soup%groups_ids)
+            Aij(i, j) = params%get_subgroups_aij(&
+               soup%groups_ids(i), soup%groups_ids(j) &
+               )
          end do
       end do
       ! ========================================================================
-      psi_function%Aij = Aij_final
+
+      psi_function%Aij = Aij
       setup_unifac%groups_stew = soup
       setup_unifac%ngroups = size(soup%number_of_groups)
       setup_unifac%nmolecules = size(molecules)
       setup_unifac%psi_function = psi_function
-      setup_unifac%group_area = Qk_final
-      setup_unifac%group_volume = Rk_final
+      setup_unifac%group_area = params%subgroups_Qs
+      setup_unifac%group_volume = params%subgroups_Rs
       setup_unifac%thetas_ij = thetas_i(&
-         size(molecules), size(soup%number_of_groups), Qk_final, soup, molecules)
+         size(molecules), size(soup%number_of_groups), params, soup, molecules)
       setup_unifac%vij = vij
       setup_unifac%qk = qks
    end function setup_unifac

@@ -21,6 +21,8 @@ contains
       use yaeos, only: Groups, setup_unifac, UNIFAC
       use yaeos__consistency_gemodel, only: ge_consistency
       use yaeos__consistency_gemodel, only: numeric_ge_derivatives
+      use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
+      use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
 
       type(error_type), allocatable, intent(out) :: error
 
@@ -30,9 +32,10 @@ contains
 
       type(Groups) :: molecules(nc)
 
+      type(GeGCModelParameters) :: parameters
+
       real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
       real(pr) :: Ge_n, Gen_n(nc), GeT_n, GeT2_n, GeTn_n(nc), Gen2_n(nc, nc)
-      real(pr) :: ln_gammas(nc)
 
       real(pr) :: n(nc), T
       real(pr) :: dt, dn
@@ -63,7 +66,9 @@ contains
       molecules(4)%groups_ids = [2]
       molecules(4)%number_of_groups = [6]
 
-      model = setup_unifac(molecules)
+      parameters = UNIFACParameters()
+
+      model = setup_unifac(molecules, parameters)
 
       ! ========================================================================
       ! Call analytic derivatives
@@ -99,7 +104,7 @@ contains
 
       ! Eq 58
       call check(error, abs(eq58) < 1e-10_pr)
-      
+
       ! Eq 59
       do i=1,size(n)
          call check(error, abs(eq59(i)) < 1e-10_pr)
@@ -111,17 +116,17 @@ contains
             call check(error, abs(eq60(i, j)) < 1e-10_pr)
          end do
       end do
-      
+
       ! Eq 61
       do i=1,size(n)
          call check(error, abs(eq61(i)) < 1e-10_pr)
-      end do      
+      end do
    end subroutine test_unifac_cons_mix
 
    subroutine test_unifac_cons_pure(error)
       use yaeos, only: pr
       use yaeos, only: Groups, UNIFAC, setup_unifac
-      
+
       type(error_type), allocatable, intent(out) :: error
 
       type(UNIFAC) :: model
@@ -131,7 +136,7 @@ contains
       real(pr) :: T, n(1)
 
       integer :: i, j
-      
+
       T = 303.15
       n = [400.0]
 
