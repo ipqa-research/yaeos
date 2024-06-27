@@ -16,8 +16,8 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
       !! excess-gibbs model.
       !!
       !! # Description
-      !! This mixing rule is based on the zero-pressure limit \(P \rightarrow
-      !! b\) of a cubic equation of state. At the zero-pressure limit the
+      !! This mixing rule is based on the aproximate zero-pressure limit 
+      !!  of a cubic equation of state. At the aproximate zero-pressure limit the
       !! attractive parameter can be expressed as:
       !!
       !! \[
@@ -103,6 +103,12 @@ contains
       !! In this implementation the most known crossed combining rule is used:
       !! \[nB = \sum_i \sum_j \frac{b_i + b_j}{2} (1 - l_{ij})\] 
       !! to provide versatility to the used model.
+      !!
+      !! @warning
+      !! This mixing rule is intended to use only with a linear combining
+      !! rule, using \(l_{ij}\) could negatively affect the thermodynamic
+      !! consistency of the model.
+      !! @endwarning
       !!
       !! # Examples
       !!

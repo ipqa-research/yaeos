@@ -94,7 +94,6 @@ program main
    use yaeos, only: EquilibriaState, pr, ArModel, PengRobinson78, CubicEoS, saturation_pressure
    use forsus, only: Substance, forsus_dir
    use yaeos__fitting, only: FittingProblem, fobj, optimize
-   ! use yaeos__fitting_fit_kij_lij, only: FitKijLij, init_model
    use yaeos__fitting_fit_nrtl, only: FitMHVNRTL, init_model
    integer, parameter :: nc = 2, np=7 + nc
    integer :: i, infile, iostat
@@ -145,17 +144,9 @@ program main
    X(5:6) = [0.1, 0.2]
    X(8:) = [1, 1]
 
-   ! X = [&
-   !    4.2479256344693399E-002, 0.18093681843489456, -4.4464361429422082E-003,&
-   !    -6.4352731108886688E-002, 7.8582006408860872E-002,  0.24011575038219565, 0.01& 
-   ! ]
-   ! X = [&
-   !    -3.6202219570888912, 0.43157772251067633, -0.44909362863508034, &
-   !    0.46870900745670463, -0.42525110258449428, 2.3435672739404647, &
-   !    0.21553218750038463]
-   
    prob%parameter_step = [(0.5_pr, i=1,size(x))]
    prob%solver_tolerance = 1e-7
+   prob%verbose = .true.
 
    print *, "X0:", X
    error = optimize(X, prob)
@@ -165,9 +156,9 @@ program main
    if (allocated(model)) deallocate (model)
    model = prob%get_model_from_X(X)
 
-   ! ==========================================================================
+   ! ===========================================================================
    ! Write out results and experimental values
-   ! --------------------------------------------------------------------------
+   ! ---------------------------------------------------------------------------
    told = exp_points(1)%T
    do i = 1, size(exp_points)
       point = saturation_pressure( &

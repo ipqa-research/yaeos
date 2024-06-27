@@ -1,33 +1,50 @@
 module yaeos__fitting_fit_kij_lij
-   !! Binary interaction parameters fitting problem
-   use forsus, only: Substance, forsus_dir
+   !! Binary interaction parameters fitting problem.
    use yaeos__fitting, only: pr, FittingProblem, ArModel
    implicit none
 
    integer, parameter :: nc=2
    type, extends(FittingProblem) :: FitKijLij
-      logical :: fit_lij = .false.
-      logical :: fit_kij = .false.
+      !! # Binary Interaction Parameters of Cubic EoS fitting problem
+      !! Fit the binary interaction parameters of a mixtures.
+      !! 
+      !! # Description
+      !! Fitting setup for quadratic combining rules, it is possible to select
+      !! which parameters will be optimized with the `fit_lij` and `fit_kij` 
+      !! attributes.
+      !! 
+      !! # Examples
+      !! 
+      !! ## Fit the kij BIP
+      !!
+      !! ```fortran
+      !!  type(CubicEoS) :: model ! Model to fit
+      !!  type(FitKijLij) :: fitting_problem ! Fitting problem specification
+      !!  type(EquilibriaState) :: exp_data(3)
+      !!  real(pr) :: X(2) ! parameter variables
+      !!  real(pr) :: error
+      !!
+      !!  ! <some procedure to define exp data>
+      !! 
+      !!  model = PengRobinson76(tc, pc, w) ! Model to fit
+      !!
+      !!  fitting_problem%exp_data = exp_data
+      !!  fitting_problem%model = model
+      !!  fitting_problem%fit_kij = .true.
+      !!
+      !!  X = 0 ! initial values == 0
+      !!  err = optimize(X, fitting_problem)
+      !! ```
+      !!
+      !! # References
+      !!
+      logical :: fit_lij = .false. !! Fit the \(l_{ij}\) parameter
+      logical :: fit_kij = .false. !! Fit the \(k_{ij}\) parameter
    contains
       procedure :: get_model_from_X => model_from_X
    end type FitKijLij
 
 contains
-
-   subroutine init_model(problem, sus)
-      use yaeos, only: R, ArModel, CubicEoS, PengRobinson78, RKPR, SoaveRedlichKwong
-      class(FitKijLij), intent(in out) :: problem
-      type(Substance), intent(in) :: sus(2)
-      real(pr) :: tc(nc), pc(nc), w(nc), vc(nc), zc(nc)
-
-      tc = sus%critical%critical_temperature%value
-      pc = sus%critical%critical_pressure%value/1e5
-      w = sus%critical%acentric_factor%value
-      vc = sus%critical%critical_volume%value
-      zc = pc * vc / (R * tc)
-
-      problem%model = PengRobinson78(tc, pc, w)
-   end subroutine init_model
 
    function model_from_X(problem, X) result(model)
       use yaeos, only: R, RKPR, PengRobinson78, ArModel, QMR, CubicEoS
