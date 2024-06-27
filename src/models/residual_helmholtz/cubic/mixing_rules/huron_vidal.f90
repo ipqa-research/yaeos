@@ -1,4 +1,21 @@
 module yaeos__models_cubic_mixing_rules_huron_vidal
+   !! # Huron-Vidal (like) mixing rules module
+   !! This module contains the mixing rules that are based/similar to the 
+   !! mixing rules defined by Huron-Vidal
+   !!
+   !! # Description
+   !! Huron-Vidal presented a way to link a \(G^E\) model with a Cubic EoS
+   !! mixing rule. This makes it possible to make good predictions on 
+   !! polar compounds containing mixtures.
+   !!
+   !! # Examples
+   !!
+   !! ```fortran
+   !!  A basic code example
+   !! ```
+   !!
+   !! # References
+   !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ar_genericcubic, only: CubicMixRule
    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
