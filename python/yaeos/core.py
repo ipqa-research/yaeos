@@ -8,9 +8,6 @@ from yaeos import yaeos_c as yaeos
 
 
 class ArModel(ABC):
-    # @abstractmethod
-    # def setup_fun(self):
-    #     raise NotImplementedError
 
     def fugacity(self, n, v, t):
         return yaeos.fug_vt(self.id, n, v, t)
