@@ -31,18 +31,20 @@ module yaeos_c
 
    private
 
-   public :: pr76, srk, fug_vt
+   public :: pr76, srk, fug_vt, make_available_ar_models_list
 
    type :: ArModelContainer
+      !! Container type for ArModels 
       class(ArModel), allocatable :: model
    end type
    
    type :: GeModelContainer
+      !! Container type for GeModels 
       class(GeModel), allocatable :: model
    end type
 
-   ! Singleton to hold temporal ArModels
-   class(ArModel), allocatable :: model
+   class(ArModel), allocatable :: ar_model !! Singleton to hold temporal ArModels
+   class(GeModel), allocatable :: ge_model !! Singleton to hold temporal GeModels
 
    ! Containers of models
    integer, parameter :: max_models  = 100000
@@ -76,23 +78,22 @@ contains
    
    subroutine make_available_ar_models_list(id)
       !! Make the ArModel id available for allocation
-      integer(c_int), intent(out) :: id
-      integer :: i
-      free_ar_model(i) = .true.
+      integer(c_int), intent(in) :: id
+      free_ar_model(id) = .true.
    end subroutine
 
    subroutine pr76(tc, pc, w, kij, lij, id) bind(C, name="PR76")
       real(c_double), intent(in) :: tc(:), pc(:), w(:), kij(:, :), lij(:, :)
       integer(c_int), intent(out) :: id
       
-      model = PengRobinson76(tc, pc, w, kij, lij)
+      ar_model = PengRobinson76(tc, pc, w, kij, lij)
       call extend_ar_models_list(id)
    end subroutine
    
    subroutine srk(tc, pc, w, kij, lij, id)
       real(c_double), intent(in) :: tc(:), pc(:), w(:), kij(:, :), lij(:, :)
       integer(c_int), intent(out) :: id
-      model = SoaveRedlichKwong(tc, pc, w, kij, lij)
+      ar_model = SoaveRedlichKwong(tc, pc, w, kij, lij)
       call extend_ar_models_list(id)
    end subroutine
 
