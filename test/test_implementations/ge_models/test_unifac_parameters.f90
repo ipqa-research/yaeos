@@ -135,14 +135,14 @@ contains
    subroutine test_main_groups(error)
       use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
       use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
-      
+
       type(error_type), allocatable, intent(out) :: error
 
       type(GeGCModelParameters) :: parameters
 
       integer :: ddbst_ij(635, 2)
       real(pr) :: ddbst_aij(635, 2)
-      real(pr) :: Aij, Aji
+      real(pr) :: Aij, Aji, Bij, Bji, Cij, Cji
 
       integer :: i, j, k, l, isg, jsg
 
@@ -1429,8 +1429,20 @@ contains
          Aij = parameters%get_maingroups_aij(i, j)
          Aji = parameters%get_maingroups_aij(j, i)
 
+         Bij = parameters%get_maingroups_bij(i, j)
+         Bji = parameters%get_maingroups_bij(j, i)
+
+         Cij = parameters%get_maingroups_cij(i, j)
+         Cji = parameters%get_maingroups_cij(j, i)
+
          call check(error, abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr)
          call check(error, abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr)
+
+         call check(error, abs(Bij) < 1e-10_pr)
+         call check(error, abs(Bji) < 1e-10_pr)
+
+         call check(error, abs(Cij) < 1e-10_pr)
+         call check(error, abs(Cji) < 1e-10_pr)
 
          ! Check the first occurrence of a subgroup with main groups i, j
          do l=1,size(parameters%subgroups_ids)
@@ -1450,8 +1462,20 @@ contains
          Aij = parameters%get_subgroups_aij(isg, jsg)
          Aji = parameters%get_subgroups_aij(jsg, isg)
 
+         Bij = parameters%get_subgroups_bij(isg, jsg)
+         Bji = parameters%get_subgroups_bij(jsg, isg)
+
+         Cij = parameters%get_subgroups_cij(isg, jsg)
+         Cji = parameters%get_subgroups_cij(jsg, isg)
+
          call check(error, abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr)
          call check(error, abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr)
+
+         call check(error, abs(Bij) < 1e-10_pr)
+         call check(error, abs(Bji) < 1e-10_pr)
+
+         call check(error, abs(Cij) < 1e-10_pr)
+         call check(error, abs(Cji) < 1e-10_pr)
       end do
    end subroutine test_main_groups
 end module test_unifac_parameters
