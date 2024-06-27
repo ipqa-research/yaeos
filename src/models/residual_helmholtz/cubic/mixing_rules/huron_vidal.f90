@@ -5,7 +5,53 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    use yaeos__models_ge, only: GeModel
    implicit none
 
+   private
+
+   public :: MHV
+   public :: DmixMHV
+
    type, extends(CubicMixRule) :: MHV
+      !! # Michelsen's modified Huron-Vidal mixing rule
+      !! Mixing rule at zero-pressure which allows for the inclusion of an
+      !! excess-gibbs model.
+      !!
+      !! # Description
+      !! This mixing rule is based on the zero-pressure limit \(P \rightarrow
+      !! b\) of a cubic equation of state. At the zero-pressure limit the
+      !! attractive parameter can be expressed as:
+      !!
+      !! \[
+      !! \frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
+      !!  \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
+      !! \]
+      !! Where \(q\) is a weak function of temperature. In the case of `MHV`
+      !! and simplicity it is considered that depends on the model used.
+      !!
+      !! # Examples
+      !! To use the modified Huron-Vidal mixing rule it is necessary to define
+      !! a `CubicEoS` and replace its original mixing rule with the one generated
+      !! by the user.
+      !! ```fortran
+      !! type(MHV) :: mixrule
+      !! type(NRTL) :: ge_model
+      !! type(CubicEoS) :: model
+      !! 
+      !! ! Define the Ge model to be used and the CubicEoS
+      !! ge_model = NRTL(a, b, c)
+      !! model = SoaveRedlichKwong(tc, pc, w)
+      !! 
+      !! ! Use the initialization function to setup
+      !! mixrule = MHV(ge=ge_model, q=-0.593_pr, bi=model%b)
+      !!
+      !! ! Replace the original mixrule on the previously defined model
+      !! model%mixrule = mixrule
+      !! 
+      !! ! Ready to do calculations
+      !! call pressure(model, n, v, T)
+      !! ```
+      !!
+      !! # References
+      !!
       real(pr), allocatable :: l(:, :)
       real(pr), private, allocatable :: bi(:)
       real(pr), private, allocatable :: B, dBi(:), dBij(:, :)
@@ -13,7 +59,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
       real(pr) :: q
    contains
       procedure :: Bmix => BmixMHV
-      procedure :: D1Mix => D1Mix_constantMHV
+      procedure :: D1Mix => D1MixMHV
       procedure :: Dmix => DmixMHV
    end type
 
@@ -23,29 +69,17 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
 
 contains
 
-   type(MHV) function init(ge, b, lij) result(mixrule)
-      !! # Michelsen Modified Huron-Vidal mixing rule
-      !! 
-      !!
-      !! # Description
-      !! Detailed description
-      !!
-      !! # Examples
-      !!
-      !! ```fortran
-      !!  A basic code example
-      !! ```
-      !!
-      !! # References
-      !!
+   type(MHV) function init(ge, b, q, lij) result(mixrule)
       class(GeModel), intent(in) :: Ge
       real(pr), intent(in) :: b(:)
+      real(pr), intent(in) :: q
       real(pr), optional, intent(in) :: lij(:, :)
 
       integer :: i, nc
 
       nc = size(b)
 
+      mixrule%q = q
       mixrule%bi = b
       mixrule%Ge = ge
       if (present(lij)) then
@@ -56,13 +90,35 @@ contains
    end function
 
    subroutine BmixMHV(self, n, bi, B, dBi, dBij)
+      !! # Repulsive parameter \(B\) mixing rule
+      !! Quadratinc mixing rule for the repulsive parameter, using 
+      !! \( b_{ij} = \frac{b_i + b_j}{2} (1 - l_{ij}) \) as a combining rule.
+      !!
+      !! # Description
+      !! Michelsen's modified Huron-Vidal mixing rule assumes a linear mix of
+      !! the repulsive parameter.
+      !!
+      !! \[B = \sum_i n_i b_i\]
+      !!
+      !! In this implementation the most known crossed combining rule is used:
+      !! \[nB = \sum_i \sum_j \frac{b_i + b_j}{2} (1 - l_{ij})\] 
+      !! to provide versatility to the used model.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  A basic code example
+      !! ```
+      !!
+      !! # References
+      !!
       use yaeos__models_ar_cubic_mixing_base, only: bmix_linear
       class(MHV), intent(in) :: self
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: bi(:)
       real(pr), intent(out) :: B, dBi(:), dBij(:, :)
-      ! call bmix_qmr(n, bi, self%l, b, dbi, dbij)
-      call bmix_linear(n, bi, b, dbi, dbij)
+      call bmix_qmr(n, bi, self%l, b, dbi, dbij)
+      ! call bmix_linear(n, bi, b, dbi, dbij)
    end subroutine
 
    subroutine DmixMHV(self, n, T, &
@@ -79,8 +135,8 @@ contains
       !! model like NRTL with the expression:
       !!
       !! \[
-      !! \frac{D}{RTB}(n, T) = sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
-      !!  \left(\frac{G^E(n, T)}{RT}\right)
+      !! \frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
+      !!  \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
       !! \]
       !!
       !! # Examples
@@ -142,6 +198,7 @@ contains
          type(hyperdual) :: hdot_ln_B_nbi
          type(hyperdual) :: hn(nc)
 
+         integer :: ii, jj
          hn = n
 
          do i = 1, nc
@@ -150,8 +207,18 @@ contains
                hn(i)%f1 = 1
                hn(j)%f2 = 1
 
-               hB = sum(hn*bi)
+               hB = 0._pr
+               do ii=1,nc
+                  do jj=1,nc
+                     hB = hB &
+                        + (hn(ii)*hn(jj)) &
+                        * 0.5_pr * (bi(ii) + bi(jj)) * (1._pr - self%l(ii, jj))
+                  end do
+               end do
+               hB = hB/sum(hn)
+
                hdot_ln_B_nbi = sum(hn*log(hB/(sum(hn)*bi)))
+               
                d2logBi_nbi(i, j) = hdot_ln_B_nbi%f12
                d2logBi_nbi(j, i) = hdot_ln_B_nbi%f12
             end do
@@ -182,31 +249,16 @@ contains
       dDdT2 = fdT2*B
       dDij = fdij
 
-   contains
-      real(pr) function dlB(n, bi)
-         real(pr), intent(in) :: n(:), bi(:)
-         real(pr) :: logb_nbi(size(n))
-
-         real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
-         real(pr) :: totn
-
-         call self%Bmix(n, bi, B, dBi, dBij)
-         totn = sum(n)
-         logb_nbi = log(B/(totn*bi))
-         dlB = dot_product(n, logB_nbi)
-      end function
    end subroutine
 
-   subroutine D1Mix_constantMHV(self, n, d1i, D1, dD1i, dD1ij)
+   subroutine D1MixMHV(self, n, d1i, D1, dD1i, dD1ij)
+      use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
       class(MHV), intent(in) :: self
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: d1i(:)
       real(pr), intent(out) :: D1
       real(pr), intent(out) :: dD1i(:)
       real(pr), intent(out) :: dD1ij(:, :)
-
-      D1 = d1i(1)
-      dD1i = 0
-      dD1ij = 0
-   end subroutine D1Mix_constantMHV
+      call d1mix_rkpr(n, d1i, D1, dD1i, dD1ij)
+   end subroutine D1MixMHV
 end module yaeos__models_cubic_mixing_rules_huron_vidal

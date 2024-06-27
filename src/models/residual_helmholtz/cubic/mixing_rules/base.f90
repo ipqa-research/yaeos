@@ -69,4 +69,37 @@ contains
             end do
         end do
     end subroutine
+
+    subroutine d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
+        !! RKPR \(\delta_1\) parameter mixing rule.
+        !!
+        !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each 
+        !! component, so a proper mixing rule should be provided. A linear
+        !! combination is used.
+        !!
+        !! \[
+        !!     \Delta_1 = \sum_i^N n_i \delta_{1i}
+        !! \]
+        !!
+        real(pr), intent(in) :: n(:)
+        real(pr), intent(in) :: d1i(:)
+        real(pr), intent(out) :: D1
+        real(pr), intent(out) :: dD1i(:)
+        real(pr), intent(out) :: dD1ij(:, :)
+
+        integer :: i, j, nc
+        real(pr) :: totn
+
+        nc = size(n)
+        totn = sum(n)
+
+        D1 = sum(n * d1i)/totn
+
+        do i = 1, nc
+            dD1i(i) = (d1i(i) - D1)/totn
+            do j = 1, nc
+                dD1ij(i, j) = (2 * D1 - d1i(i) - d1i(j))/totn**2
+            end do
+        end do
+    end subroutine
 end module

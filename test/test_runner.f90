@@ -27,6 +27,11 @@ program tester
     use test_unifac_parameters, only: suite_unifac_parameters => collect_suite
     use test_tape_nrtl, only: suite_nrtl => collect_suite
 
+    ! =========================================================================
+    ! Fitting procedures tests
+    ! -------------------------------------------------------------------------
+    use test_fitting, only: suite_fitting => collect_suite
+
     use stdlib_ansi, only: fg_color_green, fg_color_red, operator(//), style_reset
 
     implicit none
@@ -60,8 +65,13 @@ program tester
         ! ---------------------------------------------------------------------
         new_testsuite("UNIFAC", suite_unifac), &
         new_testsuite("UNIFACParameters", suite_unifac_parameters), &
-        new_testsuite("NRTL", suite_nrtl) &
+        new_testsuite("NRTL", suite_nrtl), &
+        ! =====================================================================
+        ! Fitting procedures tests
+        ! ---------------------------------------------------------------------
+        new_testsuite("Fitting", suite_fitting) &
         ]
+        
 
     do is = 1, size(testsuites)
         write (error_unit, fmt) "Testing:", testsuites(is)%name
