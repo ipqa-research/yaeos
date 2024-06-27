@@ -1,10 +1,79 @@
 module yaeos__models_ge_group_contribution_unifac_parameters
+   !! # UNIFAC parameters
+   !! UNIFAC parameters module
+   !!
+   !! # Description
+   !! Instances of the yaeos GeGCModelParameters with the classic liquid-vapor
+   !! UNIFAC parameters.
+   !!
+   !! # Examples
+   !!
+   !! ```fortran
+   !!  use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
+   !!  use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
+   !!
+   !!  type(GeGCModelParameters) :: parameters
+   !!
+   !!  parameters = UNIFACParameters()
+   !!
+   !!  ! Get the maingroups i:1, j:7 interaction parameter aij (CH2-H2O)
+   !!  print *, parameters%get_maingroups_aij(1, 7) ! prints: 1318.0000
+   !! ```
+   !!
+   !! # References
+   !! https://www.ddbst.com/published-parameters-unifac.html
    use yaeos__constants, only: pr
    use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
    implicit none
 
 contains
    type(GeGCModelParameters) function UNIFACParameters()
+      !! # UNIFACParameters
+      !! UNIFAC parameters
+      !!
+      !! # Description
+      !! Create a Instance of the yaeos GeGCModelParameters with the classic
+      !! liquid-vapor UNIFAC parameters.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  ! Instantiate an UNIFAC model with ethanol-water mix and calculate gammas
+      !!  use yaeos, only: pr, Groups, setup_unifac, UNIFAC
+      !!  use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
+      !!  use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
+      !!
+      !!  type(UNIFAC) :: model
+      !!  type(Groups) :: molecules(2)
+      !!  real(pr) :: ln_gammas(2)
+      !!
+      !!  type(GeGCModelParameters) :: parameters
+      !!
+      !!  ! Ethanol definition [CH3, CH2, OH]
+      !!  molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
+      !!  molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
+      !!
+      !!  ! Water definition [H2O]
+      !!  molecules(2)%groups_ids = [16]
+      !!  molecules(2)%number_of_groups = [1]
+      !!
+      !!  parameters = UNIFACParameters()
+      !!
+      !!  ! Model setup
+      !!  ! Disclaimer: the default parameters object can be ommited in the
+      !!  ! setup_unifac call, because if the parameters argument is not 
+      !!  ! provided, the return of the constructor UNIFACParameters() will be
+      !!  ! used either way. This is just a demostration.
+      !!  model = setup_unifac(molecules, parameters)
+      !!
+      !!  ! Calculate ln_gammas
+      !!  call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+      !!
+      !!  print *, ln_gammas ! result: 0.18534142000449058    0.40331395945417559
+      !! ```
+      !!
+      !! # References
+      !! https://www.ddbst.com/published-parameters-unifac.html
       ! ========================================================================
       ! UNIFAC subgroups ids definition
       ! ------------------------------------------------------------------------

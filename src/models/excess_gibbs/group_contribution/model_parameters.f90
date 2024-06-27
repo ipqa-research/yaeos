@@ -22,16 +22,28 @@ module yaeos__models_ge_group_contribution_model_parameters
       !! parameters. Specifically, the type requires \(a_{ij}\), \(b_{ij}\), and
       !! \(c_{ij}\) for the maingroups interaction parameters. In the case of
       !! the classic UNIFAC model that only requires \(a_{ij}\) parameters, the
-      !! \(b_{ij}\) and \(c_{ij}\) must be set as null matrixes
+      !! \(b_{ij}\) and \(c_{ij}\) must be set as null matrixes.
+      !! The documentation and source code of `yaeos` `UNIFACParameters`
+      !! function could be consulted to understand how to instantiate a
+      !! `GeGCModelParameters` object with the classic liquid-vapor UNIFAC
+      !! parameters defined in: https://www.ddbst.com/published-parameters-unifac.html
       !!
       integer, allocatable :: subgroups_ids(:)
+      !! ID of each model's subgroup
       integer, allocatable :: maingroups_ids(:)
+      !! ID of each model's maingroup
       integer, allocatable :: subgroups_maingroups(:)
+      !! Maingroup of each subgroup
       real(pr), allocatable :: subgroups_Rs(:)
+      !! \(R \) value of each subgroup
       real(pr), allocatable :: subgroups_Qs(:)
+      !! \(Q \) value of each subgroup
       real(pr), allocatable :: maingroups_aij(:,:)
+      !! Maingroup \(a_{ij} \) interaction parameters matrix
       real(pr), allocatable :: maingroups_bij(:,:)
+      !! Maingroup \(b_{ij} \) interaction parameters matrix
       real(pr), allocatable :: maingroups_cij(:,:)
+      !! Maingroup \(c_{ij} \) interaction parameters matrix
    contains
       procedure :: get_subgroup_index => get_subgroup_index
       procedure :: get_maingroup_index => get_maingroup_index
@@ -408,7 +420,7 @@ contains
       !!  ! with maingroups 1 and 7 respectively.
       !!  print *, parameters%get_subgroups_bij(1, 16) ! prints: 0.0000
       !! ```
-      !! 
+      !!
       !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij} \)
       !! parameters
       !!
@@ -454,7 +466,7 @@ contains
       !!  ! with maingroups 1 and 7 respectively.
       !!  print *, parameters%get_subgroups_cij(1, 16) ! prints: 0.0000
       !! ```
-      !! 
+      !!
       !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij} \)
       !! parameters
       !!
