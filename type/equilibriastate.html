@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 6.5% of total for derived types.</p>Including implementation: 10 statements,  0.8% of total for derived types.">10 statements</a>
+                 title="<p> 6.8% of total for derived types.</p>Including implementation: 25 statements,  1.6% of total for derived types.">15 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -91,7 +91,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/equilibria_state.f90.html'>equilibria_state.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos_equilibria_equilibria_state.html'>yaeos_equilibria_equilibria_state</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_equilibria_state.html'>yaeos__equilibria_equilibria_state</a></li>
             <li class="breadcrumb-item active" aria-current="page">EquilibriaState</li>
           </ol>
         </nav>
@@ -118,14 +118,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-vx">Vx</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-vy">Vy</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-beta">beta</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-iters">iters</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-p~3">p</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-t~9">t</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-x">x</a>
-            <a class="list-group-item" href="../type/equilibriastate.html#variable-y">y</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-p~5">P</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-t~12">T</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-vx~3">Vx</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-vy~3">Vy</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-beta~5">beta</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-iters~4">iters</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-kind">kind</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-x~13">x</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#variable-y~7">y</a>
         </div>
       </div>
     </div>
@@ -145,7 +146,19 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#boundprocs-0"
+         aria-expanded="false" aria-controls="boundprocs-0">
+         <h4 class="card-header bg-primary text-white">Type-Bound Procedures</h4>
+      </a>
+      <div id="boundprocs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/equilibriastate.html#boundprocedure-write%20%28formatted%29">write (FORMATTED)</a>
+            <a class="list-group-item" href="../type/equilibriastate.html#boundprocedure-write">write</a>
+        </div>
+      </div>
+    </div>
+
   
   
 
@@ -157,7 +170,9 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: EquilibriaState</h2>
-    
+    <p>Description of a two-phase equilibria state.</p>
+<p>Contains the relevant information of an equilibrium point obtained
+from some kind of equilibria calculation.</p>
     <br>
 
     <section>
@@ -174,7 +189,41 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-vx"></span>
+              <span class="anchor" id="variable-p~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~12"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vx~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -186,12 +235,12 @@
                 <td></td>
                 <td></td>
             <td>
-                <p>Liquid volume [L/mol]</p>
+                <p>Heavy-phase volume [L/mol]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy"></span>
+              <span class="anchor" id="variable-vy~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -203,12 +252,12 @@
                 <td></td>
                 <td></td>
             <td>
-                <p>Vapor volume [L/mol]</p>
+                <p>Light-phase volume [L/mol]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta"></span>
+              <span class="anchor" id="variable-beta~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -225,7 +274,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters"></span>
+              <span class="anchor" id="variable-iters~4"></span>
               integer,
             </td>
               <td>public</td>
@@ -234,49 +283,32 @@
             </td>
             <td>::</td>
             <td><strong>iters</strong></td>
-                <td></td>
-                <td></td>
+<td> =</td>
+                <td>0</td>
             <td>
                 <p>Iterations needed to reach the state</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~3"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-kind"></span>
+              character(len=14),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>p</strong></td>
+            <td><strong>kind</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                <p>Pressure [bar]</p>
+                <p>Kind of point [&ldquo;bubble&rdquo;, &ldquo;dew&rdquo;, &ldquo;liquid-liquid&rdquo;, &ldquo;split&rdquo;]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~9"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>t</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x"></span>
+              <span class="anchor" id="variable-x~13"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -293,7 +325,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y"></span>
+              <span class="anchor" id="variable-y~7"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -316,6 +348,267 @@
     
 
 
+      <section>
+        <h2>Type-Bound Procedures</h2>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-write%20%28formatted%29"></span>
+      <h3>
+          generic, public ::
+  <strong>write (FORMATTED)</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/type/equilibriastate.html#boundprocedure-write'>write</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/write_equilibriastate.html'>write_EquilibriaState</a>(eq, unit, iotype, v_list, iostat, iomsg)  
+</h3>
+    
+
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='equilibriastate.html'>EquilibriaState</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>unit</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iotype</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v_list</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iostat</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=*),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iomsg</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-write"></span>
+      <h3>
+          procedure, private, pass ::
+  <strong>write</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_equilibriastate.html'>write_EquilibriaState</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/write_equilibriastate.html'>write_EquilibriaState</a>(eq, unit, iotype, v_list, iostat, iomsg)  
+</h3>
+    
+
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='equilibriastate.html'>EquilibriaState</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>unit</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iotype</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v_list</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iostat</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=*),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iomsg</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+      </section>
 
     
     </div>
@@ -336,7 +629,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

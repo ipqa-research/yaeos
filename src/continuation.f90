@@ -1,9 +1,16 @@
 module yaeos__math_continuation
    !! Implementation of Algower's numerical continuation method.
-   use yaeos_constants, only: pr
+   use yaeos__constants, only: pr
    use yaeos__math_linalg, only: solve_system
 
    implicit none
+
+   type :: ContinuationVariable
+      real(pr), allocatable :: X(:)
+      integer :: ns
+      real(pr) :: S
+      real(pr) :: dS
+   end type
 
    abstract interface
       subroutine continuation_function(X, ns, S, F, dF, dFdS)
@@ -28,11 +35,22 @@ module yaeos__math_continuation
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
       end subroutine process
+
+      logical function continuation_stopper(X, ns, S, dS, dXdS, iterations)
+         !! Function that returns true if the method should stop
+         import pr
+         real(pr), intent(in out) :: X(:) !! Vector of variables \(X\)
+         integer, intent(in out) :: ns !! Position of specified variable
+         real(pr), intent(in out) :: S !! Specification variable value
+         real(pr), intent(in out) :: dS !! Step of specification in the method
+         real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
+         integer, intent(in) :: iterations !! Iterations needed to converge point
+      end function continuation_stopper
    end interface
 
    abstract interface
       subroutine continuation_solver(&
-         fun, iters, X, ns, S, max_iters, F, dF, dFdS, tol &
+         fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &
          )
          !! Solver to solve a point during numerical contination.
          import pr, continuation_function
@@ -41,6 +59,9 @@ module yaeos__math_continuation
          real(pr), intent(in out) :: X(:)  !! Variables vector
          integer, intent(in) :: ns !! Specification number
          real(pr), intent(in) :: S !! Specification value
+         real(pr), intent(in) :: dS !! Delta spec
+         real(pr), intent(in) :: dXdS(:) !!
+         integer, intent(in) :: point !! Point number
          integer, intent(in) :: max_iters !! Maximum iterations
          real(pr), intent(out) :: F(:) !! Function values at solved point
          real(pr), intent(out) :: df(:, :) !! Jacobian values
@@ -53,7 +74,7 @@ contains
 
    function continuation(&
       f, X0, ns0, S0, dS0, max_points, solver_tol, &
-      update_specification, postprocess, solver &
+      update_specification, postprocess, solver, stop &
       ) result(XS)
       !! Numerical continuation of a function.
       !!
@@ -89,6 +110,8 @@ contains
       !! next step
       procedure(continuation_solver), optional :: solver
       !! Solver procedures, uses Newton-Raphson by default
+      procedure(continuation_stopper), optional :: stop
+      !! Stopping procedure
       real(pr) :: XS(max_points, size(X0))
 
       real(pr) :: X(size(X0)), S, fval(size(X0)), dF(size(X0), size(X0)), dFdS(size(X0))
@@ -98,7 +121,7 @@ contains
 
       integer :: i, newton_its
 
-      integer :: max_iters = 100
+      integer :: max_iters = 500
 
       X = X0
       ns = ns0
@@ -111,12 +134,14 @@ contains
 
          if (present(solver)) then
             call solver(&
-               f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol&
-            )
+               f, newton_its, X, ns, S, dS, dXdS, i, max_iters, &
+               fval, dF, dFdS, solver_tol&
+               )
          else
             call full_newton(&
-               f, newton_its, X, ns, S, max_iters, fval, dF, dFdS, solver_tol &
-            )
+               f, newton_its, X, ns, S, dS, dXdS, i, max_iters, &
+               fval, dF, dFdS, solver_tol &
+               )
          end if
          if (newton_its >= max_iters) exit
 
@@ -137,13 +162,17 @@ contains
             call postprocess(X, ns, S, dS, dXdS, newton_its)
          end if
 
+         if (present(stop)) then
+            if (stop(X, ns, S, dS, dXdS, newton_its)) exit
+         end if
+
          X = X + dXdS * dS
          S = X(ns)
       end do
    end function continuation
 
    subroutine full_newton(&
-      fun, iters, X, ns, S, max_iters, F, dF, dFdS, tol &
+      fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &
       )
       !! Subroutine to solve a point.
       !!
@@ -155,11 +184,16 @@ contains
       real(pr), intent(in out) :: X(:)  !! Variables vector
       integer, intent(in) :: ns
       real(pr), intent(in) :: S
+      real(pr), intent(in) :: dS
+      real(pr), intent(in) :: dXdS(:)
+      integer, intent(in) :: point
       integer, intent(in) :: max_iters !! Maximum iterations
       real(pr), intent(out) :: F(:) !! Function values at solved point
       real(pr), intent(out) :: df(:, :) !! Jacobian values
       real(pr), intent(out) :: dfds(:) !! dFdS
       real(pr), optional, intent(in) :: tol
+
+      real(pr) :: X0(size(X))
 
       real(pr) :: dX(size(X)), solve_tol
 
@@ -167,16 +201,18 @@ contains
 
       dX = 20
       F = 500
+      X0 = X
       newton: do iters = 1, max_iters
          ! Converged point
-         if (maxval(abs(dx/x)) < solve_tol .or. maxval(abs(F)) < solve_tol) exit newton
+         if (maxval(abs(dx)) < solve_tol .or. maxval(abs(F)) < solve_tol) exit newton
 
          call fun(X, ns, S, F, dF, dFdS)
          if (maxval(abs(F)) < solve_tol) exit
 
          dX = solve_system(dF, -F)
 
-         do while(maxval(abs(dx)) > 1)
+         ! Fix the step
+         do while(maxval(abs(dx)) > 0.08)
             dX = dX/2
          end do
 

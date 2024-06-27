@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.5% of total for modules and submodules.">118 statements</a>
+                 title=" 2.6% of total for modules and submodules.">145 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -127,12 +127,24 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/yaeos__math_continuation.html#interface-continuation_function">continuation_function</a>
             <a class="list-group-item" href="../module/yaeos__math_continuation.html#interface-continuation_solver">continuation_solver</a>
+            <a class="list-group-item" href="../module/yaeos__math_continuation.html#interface-continuation_stopper">continuation_stopper</a>
             <a class="list-group-item" href="../module/yaeos__math_continuation.html#interface-process">process</a>
         </div>
       </div>
     </div>
 
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__math_continuation.html#type-continuationvariable">ContinuationVariable</a>
+        </div>
+      </div>
+    </div>
+
       <div class="card mb-4">
       <a data-bs-toggle="collapse" href="#funcs-0"
          aria-expanded="false" aria-controls="funcs-0">
@@ -178,8 +190,8 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
                   <li class="list-inline-item"><a href='yaeos__math_linalg.html'>yaeos__math_linalg</a></li>
-                  <li class="list-inline-item"><a href='yaeos_constants.html'>yaeos_constants</a></li>
               </ul>
             </li>
         </ul>
@@ -220,7 +232,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x"></span>
+              <span class="anchor" id="variable-x~5"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -235,7 +247,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns"></span>
+              <span class="anchor" id="variable-ns~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -250,7 +262,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s"></span>
+              <span class="anchor" id="variable-s~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -323,7 +335,7 @@
     <ul class="list-group">
       <li class="list-group-item">
             <h3>
-    public  subroutine continuation_solver(fun, iters, X, ns, S, max_iters, F, df, dfds, tol)  
+    public  subroutine continuation_solver(fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, df, dfds, tol)  
 
     </h3>
   <p>Solver to solve a point during numerical contination.</p>
@@ -356,7 +368,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~3"></span>
+              <span class="anchor" id="variable-iters~2"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -371,7 +383,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~3"></span>
+              <span class="anchor" id="variable-x~8"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -386,7 +398,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~3"></span>
+              <span class="anchor" id="variable-ns~5"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -401,7 +413,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~3"></span>
+              <span class="anchor" id="variable-s~5"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -416,7 +428,52 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~2"></span>
+              <span class="anchor" id="variable-ds~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dS</strong></td>
+            <td>
+                <p>Delta spec</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxds~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dXdS</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-point"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>point</strong></td>
+            <td>
+                <p>Point number</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iters"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -446,7 +503,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~2"></span>
+              <span class="anchor" id="variable-df"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -498,6 +555,135 @@
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-continuation_stopper"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    public  function continuation_stopper(X, ns, S, dS, dXdS, iterations)  
+
+    </h3>
+  <p>Function that returns true if the method should stop</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+                <p>Vector of variables <script type="math/tex">X</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns~4"></span>
+              integer,
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ns</strong></td>
+            <td>
+                <p>Position of specified variable</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+                <p>Specification variable value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ds~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dS</strong></td>
+            <td>
+                <p>Step of specification in the method</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxds~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dXdS</strong>(:)</td>
+            <td>
+                <p>
+<script type="math/tex">\frac{dX}{dS}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iterations~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iterations</strong></td>
+            <td>
+                <p>Iterations needed to converge point</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+      </li>
+    </ul>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="interface-process"></span><h3>abstract interface
         
     </h3></div>
@@ -522,7 +708,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~2"></span>
+              <span class="anchor" id="variable-x~6"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -538,7 +724,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~2"></span>
+              <span class="anchor" id="variable-ns~3"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -553,7 +739,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~2"></span>
+              <span class="anchor" id="variable-s~3"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -568,7 +754,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds"></span>
+              <span class="anchor" id="variable-ds~2"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -624,11 +810,115 @@
         </section>
         <br>
 
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-continuationvariable"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/continuationvariable.html'>ContinuationVariable</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~4"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ds"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dS</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ns</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
 
         <section>
           <h2>Functions</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-continuation"></span> <h3>public  function <a href='../proc/continuation.html'>continuation</a>(f, X0, ns0, S0, dS0, max_points, solver_tol, update_specification, postprocess, solver) result(XS)  
+    <div class="card-header codesum"><span class="anchor" id="proc-continuation"></span> <h3>public  function <a href='../proc/continuation.html'>continuation</a>(f, X0, ns0, S0, dS0, max_points, solver_tol, update_specification, postprocess, solver, stop) result(XS)  
 </h3></div>
     <div class="card-body">
           
@@ -647,7 +937,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f"></span>
+              <span class="anchor" id="variable-f~2"></span>
               procedure(<a href='../interface/continuation_function.html'>continuation_function</a>)
             </td>
 <td></td>
@@ -798,6 +1088,21 @@ next step</p>
 <p>Solver procedures, uses Newton-Raphson by default</p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stop"></span>
+              procedure(<a href='../interface/continuation_stopper.html'>continuation_stopper</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stop</strong></td>
+            <td>
+<p>Stopping procedure</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -816,7 +1121,7 @@ next step</p>
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-full_newton"></span> <h3>public  subroutine <a href='../proc/full_newton.html'>full_newton</a>(fun, iters, X, ns, S, max_iters, F, df, dfds, tol)  
+    <div class="card-header codesum"><span class="anchor" id="proc-full_newton"></span> <h3>public  subroutine <a href='../proc/full_newton.html'>full_newton</a>(fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, df, dfds, tol)  
 </h3></div>
     <div class="card-body">
           
@@ -850,7 +1155,7 @@ next step</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~4"></span>
+              <span class="anchor" id="variable-iters~3"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -865,7 +1170,7 @@ next step</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~5"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -880,7 +1185,7 @@ next step</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~5"></span>
+              <span class="anchor" id="variable-ns~7"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -895,7 +1200,7 @@ next step</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~5"></span>
+              <span class="anchor" id="variable-s~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -910,7 +1215,52 @@ next step</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~4"></span>
+              <span class="anchor" id="variable-ds~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dS</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxds~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dXdS</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-point~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>point</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iters~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -940,7 +1290,7 @@ next step</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~3"></span>
+              <span class="anchor" id="variable-df~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1013,7 +1363,7 @@ next step</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

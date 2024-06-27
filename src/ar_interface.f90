@@ -1,7 +1,7 @@
 module ar_interface
    !-| Generic interfaces to an ArModel compatible with legacy codes, using
    !   pointers.
-   use yaeos_constants, only: pr, R
+   use yaeos__constants, only: pr, R
    use iso_fortran_env, only: error_unit
 
    implicit none

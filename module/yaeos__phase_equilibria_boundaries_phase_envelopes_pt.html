@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.7% of total for modules and submodules.">130 statements</a>
+                 title=" 3.3% of total for modules and submodules.">183 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -144,7 +144,18 @@
       </div>
     </div>
 
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__phase_equilibria_boundaries_phase_envelopes_pt.html#proc-write_ptenvel2">write_PTEnvel2</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -166,11 +177,11 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos_thermoprops.html'>yaeos_thermoprops</a></li>
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__thermoprops.html'>yaeos__thermoprops</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibria_state.html'>yaeos__equilibria_equilibria_state</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
                   <li class="list-inline-item"><a href='yaeos__math_continuation.html'>yaeos__math_continuation</a></li>
-                  <li class="list-inline-item"><a href='yaeos_models.html'>yaeos_models</a></li>
-                  <li class="list-inline-item"><a href='yaeos_constants.html'>yaeos_constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos_equilibria_equilibria_state.html'>yaeos_equilibria_equilibria_state</a></li>
               </ul>
             </li>
         </ul>
@@ -212,7 +223,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~7"></span>
+              <span class="anchor" id="variable-p~8"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -229,7 +240,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~18"></span>
+              <span class="anchor" id="variable-t~15"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -317,6 +328,21 @@ Phase boundary line of a fluid at constant composition.</p>
 
 
 
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public, pass ::
+  <strong><a href='../type/ptenvel2.html#boundprocedure-write~2'>write</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_ptenvel2.html'>write_PTEnvel2</a></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='../type/ptenvel2.html#boundprocedure-write%20%28formatted%29~2'>write (FORMATTED)</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/type/ptenvel2.html#boundprocedure-write~2'>write</a></td>
+                <td></td>
+              </tr>
+          </tbody>
+        </table>
     </div>
   </div>
 
@@ -326,7 +352,7 @@ Phase boundary line of a fluid at constant composition.</p>
         <section>
           <h2>Functions</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-pt_envelope_2ph"></span> <h3>public  function <a href='../proc/pt_envelope_2ph.html'>pt_envelope_2ph</a>(model, z, y0, T0, P0, points, iterations, delta_0, specified_variable_0) result(envelopes)  
+    <div class="card-header codesum"><span class="anchor" id="proc-pt_envelope_2ph"></span> <h3>public  function <a href='../proc/pt_envelope_2ph.html'>pt_envelope_2ph</a>(model, z, first_point, points, iterations, delta_0, specified_variable_0, solver, stop_conditions) result(envelopes)  
 </h3></div>
     <div class="card-body">
           
@@ -345,7 +371,7 @@ Phase boundary line of a fluid at constant composition.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~15"></span>
+              <span class="anchor" id="variable-model~26"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -360,7 +386,7 @@ Phase boundary line of a fluid at constant composition.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~16"></span>
+              <span class="anchor" id="variable-z~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -375,47 +401,17 @@ Phase boundary line of a fluid at constant composition.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y0~3"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-first_point"></span>
+              type(<a href='../type/equilibriastate.html'>EquilibriaState</a>)
             </td>
-<td>intent(in)</td>
+<td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>y0</strong>(:)</td>
+            <td><strong>first_point</strong></td>
             <td>
-<p>Incipient phase initial composition</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t0"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T0</strong></td>
-            <td>
-<p>Initial Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p0"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>P0</strong></td>
-            <td>
-<p>Initial Pressure [bar]</p>
+
             </td>
         </tr>
         <tr>
@@ -435,7 +431,7 @@ Phase boundary line of a fluid at constant composition.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iterations~4"></span>
+              <span class="anchor" id="variable-iterations~5"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -482,6 +478,36 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
 <script type="math/tex">lnT</script> and <script type="math/tex">nc + 2</script> for <script type="math/tex">lnT</script>.</p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-solver~2"></span>
+              procedure(<a href='../interface/continuation_solver.html'>continuation_solver</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>solver</strong></td>
+            <td>
+<p>Specify solver for each point, defaults to a full newton procedure</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stop_conditions"></span>
+              procedure(<a href='../interface/continuation_stopper.html'>continuation_stopper</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stop_conditions</strong></td>
+            <td>
+<p>Function that returns true if the continuation method should stop</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -497,6 +523,125 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </section>
         <br>
 
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-write_ptenvel2"></span> <h3>public  subroutine <a href='../proc/write_ptenvel2.html'>write_PTEnvel2</a>(pt2, unit, iotype, v_list, iostat, iomsg)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pt2"></span>
+              class(<a href='../type/ptenvel2.html'>PTEnvel2</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pt2</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-unit~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>unit</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iotype~2"></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iotype</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v_list~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v_list</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iostat~2"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iostat</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iomsg~2"></span>
+              character(len=*),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iomsg</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
 
 
 
@@ -518,7 +663,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

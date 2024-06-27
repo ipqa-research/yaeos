@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.7% of total for procedures.">28 statements</a>
+                 title=" 0.7% of total for procedures.">33 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,6 +118,7 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/full_newton.html#variable-x0~2">X0</a>
             <a class="list-group-item" href="../proc/full_newton.html#variable-dx">dX</a>
             <a class="list-group-item" href="../proc/full_newton.html#variable-solve_tol">solve_tol</a>
         </div>
@@ -149,7 +150,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine full_newton(fun, iters, X, ns, S, max_iters, F, df, dfds, tol)  
+    <h2>public  subroutine full_newton(fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, df, dfds, tol)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -157,8 +158,8 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item">stdlib_optval</li>
                   <li class="list-inline-item"><a href='../module/yaeos__math_linalg.html'>yaeos__math_linalg</a></li>
+                  <li class="list-inline-item">stdlib_optval</li>
               </ul>
             </li>
         </ul>
@@ -198,7 +199,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~4"></span>
+              <span class="anchor" id="variable-iters~3"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -213,7 +214,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~5"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -228,7 +229,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~5"></span>
+              <span class="anchor" id="variable-ns~7"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -243,7 +244,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~5"></span>
+              <span class="anchor" id="variable-s~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -258,7 +259,52 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~4"></span>
+              <span class="anchor" id="variable-ds~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dS</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxds~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dXdS</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-point~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>point</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iters~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -288,7 +334,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~3"></span>
+              <span class="anchor" id="variable-df~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -349,6 +395,23 @@
 <th></th><th scope="col">Initial</th>        <th scope="col"></th>
     </thead>
     <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x0~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X0</strong>(size(X))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-dx"></span>
@@ -416,7 +479,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

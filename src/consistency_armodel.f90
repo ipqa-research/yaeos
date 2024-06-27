@@ -1,4 +1,4 @@
-module yaeos_consistency_armodel
+module yaeos__consistency_armodel
    !! Consistency checks of Helmholtz free energy models.
    !!
    !! This module contains tools to validate the analityc derivatives of
@@ -17,10 +17,10 @@ module yaeos_consistency_armodel
    !! and Mollerup consistency tests (refer to ar_consistency docs for more
    !! explanations)
    !!
-   use yaeos_constants, only: pr, R
-   use yaeos_models_ar, only: ArModel
-   use yaeos_thermoprops, only: enthalpy_residual_vt, gibbs_residual_vt 
-   use yaeos_thermoprops, only: fugacity_vt, pressure
+   use yaeos__constants, only: pr, R
+   use yaeos__models_ar, only: ArModel
+   use yaeos__thermoprops, only: enthalpy_residual_vt, gibbs_residual_vt
+   use yaeos__thermoprops, only: fugacity_vt, pressure
 
    implicit none
 contains
@@ -29,9 +29,9 @@ contains
       )
       !! Evaluates the Michelsen and Mollerup (MM) consistency tests.
       !!
-      !! The evaluated equations are taken from Fundamentals & Computational 
-      !! Aspects 2 ed. by Michelsen and Mollerup Chapter 2 section 3. The 
-      !! "eq" are evaluations of the left hand side of the following 
+      !! The evaluated equations are taken from Fundamentals & Computational
+      !! Aspects 2 ed. by Michelsen and Mollerup Chapter 2 section 3. The
+      !! "eq" are evaluations of the left hand side of the following
       !! expressions:
       !!
       !! Equation 31:
@@ -49,8 +49,8 @@ contains
       !! Equation 34:
       !!
       !! \[
-      !!    \sum_i n_i 
-      !!    \left(\frac{\partial ln \hat{\phi}_i}{\partial n_j} \right)_{T,P} 
+      !!    \sum_i n_i
+      !!    \left(\frac{\partial ln \hat{\phi}_i}{\partial n_j} \right)_{T,P}
       !!    = 0
       !! \]
       !!
@@ -64,9 +64,37 @@ contains
       !! Equation 37:
       !!
       !! \[
-      !!    \sum_i n_i \left(\frac{\partial ln \hat{\phi}_i}{\partial T} 
+      !!    \sum_i n_i \left(\frac{\partial ln \hat{\phi}_i}{\partial T}
       !!    \right)_{P,n} + \frac{H^r(T,P,n)}{RT^2} = 0
       !! \]
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  use yaeos, only: pr, SoaveRedlichKwong, ArModel
+      !!  use yaeos__consistency, only: ar_consistency
+      !!
+      !!  class(ArModel), allocatable :: model
+      !!  real(pr) :: tc(4), pc(4), w(4)
+      !!
+      !!  real(pr) :: n(4), t, v
+      !!
+      !!  real(pr) :: eq31, eq33(size(n), size(n)), eq34(size(n)), eq36, eq37
+      !!
+      !!  n = [1.5, 0.2, 0.7, 2.3]
+      !!  tc = [190.564, 425.12, 300.11, 320.25]
+      !!  pc = [45.99, 37.96, 39.23, 40.21]
+      !!  w = [0.0115478, 0.200164, 0.3624, 0.298]
+      !!
+      !!  t = 600_pr
+      !!  v = 0.5_pr
+      !!
+      !!  model = SoaveRedlichKwong(tc, pc, w)
+      !!
+      !!  call ar_consistency(&
+      !!     model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
+      !!     )
+      !! ```
       !!
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
@@ -159,6 +187,39 @@ contains
       Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2 &
       )
       !! Evaluate the Helmholtz derivatives with central finite difference.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  use yaeos, only: pr, SoaveRedlichKwong, ArModel
+      !!  use yaeos__consistency, only: numeric_ar_derivatives
+      !!
+      !!  class(ArModel), allocatable :: model
+      !!  real(pr) :: tc(4), pc(4), w(4)
+      !!
+      !!  real(pr) :: n(4), t, v
+      !!
+      !!  real(pr) :: Ar_num, ArV_num, ArT_num, Arn_num(size(n)), ArV2_num, ArT2_num
+      !!  real(pr) :: ArTV_num, ArVn_num(size(n)), ArTn_num(size(n))
+      !!  real(pr) :: Arn2_num(size(n), size(n))
+      !!
+      !!  n = [1.5, 0.2, 0.7, 2.3]
+      !!  tc = [190.564, 425.12, 300.11, 320.25]
+      !!  pc = [45.99, 37.96, 39.23, 40.21]
+      !!  w = [0.0115478, 0.200164, 0.3624, 0.298]
+      !!
+      !!  t = 600_pr
+      !!  v = 0.5_pr
+      !!
+      !!  model = SoaveRedlichKwong(tc, pc, w)
+      !!
+      !!  call numeric_ar_derivatives(&
+      !!     model, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
+      !!     Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
+      !!     ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
+      !!     Arn2=Arn2_num &
+      !!     )
+      !! ```
       !!
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
@@ -315,4 +376,4 @@ contains
          end do
       end if
    end subroutine numeric_ar_derivatives
-end module yaeos_consistency_armodel
+end module yaeos__consistency_armodel

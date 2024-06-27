@@ -1,6 +1,6 @@
-module yaeos_models_ge_NRTL
-   use yaeos_tapenade_ge_api, only: gemodeltapenade
-   use yaeos_constants, only: pr, R
+module yaeos__models_ge_NRTL
+   use yaeos__tapenade_ge_api, only: gemodeltapenade
+   use yaeos__constants, only: pr, R
    implicit none
 
    type, extends(GeModelTapenade) ::  NRTL
@@ -635,5 +635,5 @@ contains
       end do
       ge = sum(n)*r*t*ge
    end subroutine EXCESS_GIBBS
-end module yaeos_models_ge_NRTL
+end module yaeos__models_ge_NRTL
 

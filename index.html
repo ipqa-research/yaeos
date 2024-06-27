@@ -87,7 +87,11 @@ anallytical derivatives.</p>
           <div class="toc">
 <ul>
 <li><a href="#a-little-taste-of-yaeos">A little taste of yaeos</a></li>
-<li><a href="#how-to-installrun-it">How to install/run it</a></li>
+<li><a href="#how-to-installrun-it">How to install/run it</a><ul>
+<li><a href="#developing-with-vscode">Developing with vscode</a></li>
+<li><a href="#available-examples">Available examples</a></li>
+</ul>
+</li>
 <li><a href="#including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</a></li>
 <li><a href="#documentation">Documentation</a></li>
 </ul>
@@ -159,6 +163,13 @@ of the codes they&rsquo;ve seen are written in ancient <code>F77</code>.</p>
 <span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span>
 </code></pre></div>
 
+<p>Examples of code with simple applications showing the capabilities of <code>yaeos</code>
+can be found at <a href="example/tutorials">example/tutorials</a>. Each example can be run
+with:</p>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>fpm<span class="w"> </span>run<span class="w"> </span>--example<span class="w"> </span>&lt;example<span class="w"> </span>name<span class="w"> </span>here&gt;
+</code></pre></div>
+
+<p>Not providing any example will show all the possible examples that can be run.</p>
 <h1 id="how-to-installrun-it">How to install/run it</h1>
 <p><code>yaeos</code> is intended to use as a <a href="fpm.fortran-lang.org"><code>fpm</code></a></p>
 <p>You can either:</p>
@@ -181,8 +192,26 @@ of the codes they&rsquo;ve seen are written in ancient <code>F77</code>.</p>
 fpm<span class="w"> </span>run
 </code></pre></div>
 
+<h2 id="developing-with-vscode">Developing with vscode</h2>
+<p>If your intention is either to develop for <code>yaeos</code> or to explore in more detail
+the library with debugging. We provide some predefined defuaults to work with
+<code>vscode</code>. You can add them to the cloned repository by running:</p>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ipqa-research/vscode-fortran<span class="w"> </span>.vscode
+</code></pre></div>
+
+<p>From the project main directory </p>
+<h2 id="available-examples">Available examples</h2>
+<p>In this repository we provide a series of examples of the different things that
+can be calculated with <code>yaeos</code>. The source codes for the examples can be seen
+at the <a href="example/tutorials">example/tutorials</a> directory.</p>
+<p>All the examples can be run with</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>run<span class="w"> </span>--example<span class="w"> </span>&lt;example_name_here&gt;
+</code></pre></div>
+
 <h1 id="including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</h1>
-<p>We are using the <code>hyperdual</code> module developed by <a href="https://github.com/prehner">Philipp Rehner</a> and <a href="https://github.com/g-bauer">Gernot Bauer</a></p>
+<p>We are using the <code>hyperdual</code> module developed by 
+<a href="https://github.com/prehner">Philipp Rehner</a> 
+and <a href="https://github.com/g-bauer">Gernot Bauer</a></p>
 <blockquote>
 <p>The automatic differentiation API isn&rsquo;t fully optimized yet so performance is
 much slower than it should be.</p>
@@ -260,7 +289,7 @@ working in extending it more.</p>
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Source Files</h3>
-              <ul><li><a href='sourcefile/admm_tapenade_interface.f90.html'>admm_tapenade_interface.f90</a></li><li><a href='sourcefile/alphas.f90.html'>alphas.f90</a></li><li><a href='sourcefile/ar_interface.f90.html'>ar_interface.f90</a></li><li><a href='sourcefile/ar_models.f90.html'>ar_models.f90</a></li><li><a href='sourcefile/armodel_adiff_api.f90.html'>armodel_adiff_api.f90</a></li><li><a href='sourcefile/autodiff.f90.html'>autodiff.f90</a></li><li><a href='sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li><li><a href='sourcefile/base.f90.html'>base.f90</a></li><li><a href='sourcefile/consistency.f90.html'>consistency.f90</a></li><li><a href='sourcefile/consistency_armodel.f90.html'>consistency_armodel.f90</a></li></ul>
+              <ul><li><a href='sourcefile/admm_tapenade_interface.f90.html'>admm_tapenade_interface.f90</a></li><li><a href='sourcefile/alphas.f90.html'>alphas.f90</a></li><li><a href='sourcefile/ar_interface.f90.html'>ar_interface.f90</a></li><li><a href='sourcefile/ar_models.f90.html'>ar_models.f90</a></li><li><a href='sourcefile/armodel_adiff_api.f90.html'>armodel_adiff_api.f90</a></li><li><a href='sourcefile/autodiff.f90.html'>autodiff.f90</a></li><li><a href='sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li><li><a href='sourcefile/auxiliar_functions.f90.html'>auxiliar_functions.f90</a></li><li><a href='sourcefile/base.f90.html'>base.f90</a></li><li><a href='sourcefile/base.f90~2.html'>base.f90</a></li></ul>
             </div>
             <div>
               <ul>
@@ -271,7 +300,7 @@ working in extending it more.</p>
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Modules</h3>
-              <ul><li><a href='module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></li><li><a href='module/ar_interface.html'>ar_interface</a></li><li><a href='module/hyperdual_mod.html'>hyperdual_mod</a></li><li><a href='module/legacy_ar_models.html'>legacy_ar_models</a></li><li><a href='module/legacy_thermo_properties.html'>legacy_thermo_properties</a></li><li><a href='module/tapenade_interfaces.html'>tapenade_interfaces</a></li><li><a href='module/yaeos.html'>yaeos</a></li><li><a href='module/yaeos__math_continuation.html'>yaeos__math_continuation</a></li><li><a href='module/yaeos__math_linalg.html'>yaeos__math_linalg</a></li><li><a href='module/yaeos__phase_equilibria_auxiliar.html'>yaeos__phase_equilibria_auxiliar</a></li></ul>
+              <ul><li><a href='module/admm_tapenade_interface.html'>ADMM_TAPENADE_INTERFACE</a></li><li><a href='module/ar_interface.html'>ar_interface</a></li><li><a href='module/auxiliar_functions.html'>auxiliar_functions</a></li><li><a href='module/hyperdual_mod.html'>hyperdual_mod</a></li><li><a href='module/legacy_ar_models.html'>legacy_ar_models</a></li><li><a href='module/legacy_thermo_properties.html'>legacy_thermo_properties</a></li><li><a href='module/tapenade_interfaces.html'>tapenade_interfaces</a></li><li><a href='module/yaeos.html'>yaeos</a></li><li><a href='module/yaeos__ar_models_hyperdual.html'>yaeos__ar_models_hyperdual</a></li><li><a href='module/yaeos__autodiff.html'>yaeos__autodiff</a></li></ul>
             </div>
             <div>
               <ul>
@@ -293,7 +322,7 @@ working in extending it more.</p>
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Derived Types</h3>
-              <ul><li><a href='type/alphafunction.html'>AlphaFunction</a></li><li><a href='type/alpharkpr.html'>AlphaRKPR</a></li><li><a href='type/alphasoave.html'>AlphaSoave</a></li><li><a href='type/armodel.html'>ArModel</a></li><li><a href='type/armodeladiff.html'>ArModelAdiff</a></li><li><a href='type/armodeltapenade.html'>ArModelTapenade</a></li><li><a href='type/basemodel.html'>BaseModel</a></li><li><a href='type/criticalpoint.html'>CriticalPoint</a></li><li><a href='type/cubiceos.html'>CubicEoS</a></li><li><a href='type/cubicmixrule.html'>CubicMixRule</a></li></ul>
+              <ul><li><a href='type/alphafunction.html'>AlphaFunction</a></li><li><a href='type/alpharkpr.html'>AlphaRKPR</a></li><li><a href='type/alphasoave.html'>AlphaSoave</a></li><li><a href='type/armodel.html'>ArModel</a></li><li><a href='type/armodeladiff.html'>ArModelAdiff</a></li><li><a href='type/armodeltapenade.html'>ArModelTapenade</a></li><li><a href='type/basemodel.html'>BaseModel</a></li><li><a href='type/continuationvariable.html'>ContinuationVariable</a></li><li><a href='type/criticalpoint.html'>CriticalPoint</a></li><li><a href='type/cubiceos.html'>CubicEoS</a></li></ul>
             </div>
             <div>
               <ul>
@@ -317,7 +346,7 @@ working in extending it more.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

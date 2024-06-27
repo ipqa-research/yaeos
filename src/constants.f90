@@ -1,4 +1,4 @@
-module yaeos_constants
+module yaeos__constants
    !! Constants used on the whole package
    use iso_fortran_env, only: real32, real64, real128
    

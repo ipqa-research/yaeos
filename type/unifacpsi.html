@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 3.3% of total for derived types.</p>Including implementation: 24 statements,  1.9% of total for derived types.">5 statements</a>
+                 title="<p> 2.3% of total for derived types.</p>Including implementation: 25 statements,  1.6% of total for derived types.">5 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -91,7 +91,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/unifac.f90.html'>unifac.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos_models_ge_group_contribution_unifac.html'>yaeos_models_ge_group_contribution_unifac</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_group_contribution_unifac.html'>yaeos__models_ge_group_contribution_unifac</a></li>
             <li class="breadcrumb-item active" aria-current="page">UNIFACPsi</li>
           </ol>
         </nav>
@@ -118,7 +118,7 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/unifacpsi.html#variable-eij">Eij</a>
+            <a class="list-group-item" href="../type/unifacpsi.html#variable-aij">Aij</a>
         </div>
       </div>
     </div>
@@ -145,7 +145,7 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/unifacpsi.html#boundprocedure-psi~2">psi</a>
+            <a class="list-group-item" href="../type/unifacpsi.html#boundprocedure-psi~3">psi</a>
         </div>
       </div>
     </div>
@@ -161,11 +161,25 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, extends(<a href='psifunction.html'>PsiFunction</a>) :: UNIFACPsi</h2>
-    <p>Original UNIFAC <script type="math/tex">psi</script> function
+    <h1 id="original-unifac-psi-function">Original UNIFAC <script type="math/tex">\psi</script> function</h1>
+<p>
 <script type="math/tex; mode=display">
    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
 </script>
 </p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
+   \exp(-\frac{A_{ij}}{T})
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{d^2 \psi_{ij}(T)}{dT^2} =
+   \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+</script>
+</p>
+<h1 id="references">References</h1>
     <br>
 
     <section>
@@ -182,7 +196,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eij"></span>
+              <span class="anchor" id="variable-aij"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -190,7 +204,7 @@
               allocatable
             </td>
             <td>::</td>
-            <td><strong>Eij</strong>(:,:)</td>
+            <td><strong>Aij</strong>(:,:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -210,7 +224,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-psi~2"></span>
+      <span class="anchor" id="boundprocedure-psi~3"></span>
       <h3>
           procedure, public ::
   <strong>psi</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/unifac_temperature_dependence.html'>UNIFAC_temperature_dependence</a>
@@ -220,11 +234,11 @@
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/unifac_temperature_dependence.html'>UNIFAC_temperature_dependence</a>(self, systems_groups, T, psi, dpsidt, dpsidt2)  
+    public  subroutine <a href='../proc/unifac_temperature_dependence.html'>UNIFAC_temperature_dependence</a>(self, systems_groups, T, psi, dpsi_dt, dpsi_dt2)  
 </h3>
     
 
-  
+  <p>Implementation of the <script type="math/tex">\psi(T) </script> function of the UNIFAC model.</p><a href="../proc/unifac_temperature_dependence.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -280,7 +294,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-<p>Temperature</p>
+<p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -288,8 +302,8 @@
               <span class="anchor" ></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
@@ -310,9 +324,11 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpsidt</strong>(:,:)</td>
+            <td><strong>dpsi_dt</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\frac{d \psi\}{dT} </script>
+</p>
             </td>
         </tr>
         <tr>
@@ -325,9 +341,11 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpsidt2</strong>(:,:)</td>
+            <td><strong>dpsi_dt2</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\frac{d^2 \psi\}{dT^2} </script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -360,7 +378,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

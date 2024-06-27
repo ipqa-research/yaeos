@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.5% of total for procedures.">19 statements</a>
+                 title=" 0.4% of total for procedures.">20 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -91,7 +91,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/unifac.f90.html'>unifac.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos_models_ge_group_contribution_unifac.html'>yaeos_models_ge_group_contribution_unifac</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_group_contribution_unifac.html'>yaeos__models_ge_group_contribution_unifac</a></li>
             <li class="breadcrumb-item active" aria-current="page">UNIFAC_temperature_dependence</li>
           </ol>
         </nav>
@@ -118,10 +118,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-i~32">i</a>
-            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-ig">ig</a>
-            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-j~18">j</a>
-            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-jg">jg</a>
+            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-aij~2">Aij</a>
+            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-eij">Eij</a>
+            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-i~57">i</a>
+            <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-j~36">j</a>
             <a class="list-group-item" href="../proc/unifac_temperature_dependence.html#variable-ngroups~2">ngroups</a>
         </div>
       </div>
@@ -152,10 +152,30 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsidt, dpsidt2)  
+    <h2>public  subroutine UNIFAC_temperature_dependence(self, systems_groups, T, psi, dpsi_dt, dpsi_dt2)  
 </h2>
     
 
+    <h1 id="unifac-temperature-dependence">UNIFAC temperature dependence</h1>
+<p>Implementation of the <script type="math/tex">\psi(T) </script> function of the UNIFAC model.</p>
+<p>
+<script type="math/tex; mode=display">
+   \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
+   \exp(-\frac{A_{ij}}{T})
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{d^2 \psi_{ij}(T)}{dT^2} =
+   \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+</script>
+</p>
+<h1 id="references">References</h1>
 
     <h3>Type Bound</h3>
     <p><a href='../type/unifacpsi.html'>UNIFACPsi</a></p>
@@ -173,7 +193,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~23"></span>
+              <span class="anchor" id="variable-self~42"></span>
               class(<a href='../type/unifacpsi.html'>UNIFACPsi</a>)
             </td>
 <td></td>
@@ -204,7 +224,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~16"></span>
+              <span class="anchor" id="variable-t~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -214,7 +234,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                <p>Temperature</p>
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -222,8 +242,8 @@
               <span class="anchor" id="variable-psi~4"></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
@@ -236,7 +256,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpsidt~2"></span>
+              <span class="anchor" id="variable-dpsi_dt~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -244,14 +264,16 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpsidt</strong>(:,:)</td>
+            <td><strong>dpsi_dt</strong>(:,:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">\frac{d \psi\}{dT} </script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpsidt2~2"></span>
+              <span class="anchor" id="variable-dpsi_dt2~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -259,9 +281,11 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpsidt2</strong>(:,:)</td>
+            <td><strong>dpsi_dt2</strong>(:,:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">\frac{d^2 \psi\}{dT^2} </script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -284,7 +308,41 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~32"></span>
+              <span class="anchor" id="variable-aij~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Aij</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eij"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Eij</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~57"></span>
               integer,
             </td>
               <td>public</td>
@@ -301,24 +359,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ig"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ig</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-j~18"></span>
+              <span class="anchor" id="variable-j~36"></span>
               integer,
             </td>
               <td>public</td>
@@ -327,23 +368,6 @@
             </td>
             <td>::</td>
             <td><strong>j</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-jg"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>jg</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -400,7 +424,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

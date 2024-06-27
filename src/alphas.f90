@@ -1,8 +1,8 @@
-module yaeos_models_ar_cubic_alphas
+module yaeos__models_ar_cubic_alphas
    !! \(\alpha\) functions defined in the library.
-   use yaeos_constants, only: pr
-   use yaeos_substance, only: substances
-   use yaeos_models_ar_genericcubic, only: CubicEoS, AlphaFunction
+   use yaeos__constants, only: pr
+   use yaeos__substance, only: substances
+   use yaeos__models_ar_genericcubic, only: CubicEoS, AlphaFunction
    implicit none
 
    type, extends(AlphaFunction) :: AlphaSoave

@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.8% of total for procedures.">113 statements</a>
+                 title=" 2.8% of total for procedures.">133 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -119,21 +119,14 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-s0~2">S0</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-x~6">X</a>
+            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-x~12">X</a>
             <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-xs~2">XS</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-xc">Xc</a>
             <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-ds0~2">dS0</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-i~36">i</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-its~4">its</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-lnk~2">lnK</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-lnp">lnP</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-lnt">lnT</a>
+            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-kind~4">kind</a>
             <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-max_iterations~2">max_iterations</a>
             <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-max_points~2">max_points</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-mc">mc</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-nc~26">nc</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-ns~6">ns</a>
-            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-point">point</a>
+            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-nc~22">nc</a>
+            <a class="list-group-item" href="../proc/pt_envelope_2ph.html#variable-ns~8">ns</a>
         </div>
       </div>
     </div>
@@ -175,7 +168,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  function pt_envelope_2ph(model, z, y0, T0, P0, points, iterations, delta_0, specified_variable_0) result(envelopes)  
+    <h2>public  function pt_envelope_2ph(model, z, first_point, points, iterations, delta_0, specified_variable_0, solver, stop_conditions) result(envelopes)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -211,7 +204,7 @@ an increment in it. The variable to specify can be changed by modifying
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~15"></span>
+              <span class="anchor" id="variable-model~26"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -226,7 +219,7 @@ an increment in it. The variable to specify can be changed by modifying
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~16"></span>
+              <span class="anchor" id="variable-z~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -241,47 +234,17 @@ an increment in it. The variable to specify can be changed by modifying
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y0~3"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-first_point"></span>
+              type(<a href='../type/equilibriastate.html'>EquilibriaState</a>)
             </td>
-<td>intent(in)</td>
+<td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>y0</strong>(:)</td>
+            <td><strong>first_point</strong></td>
             <td>
-                <p>Incipient phase initial composition</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t0"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T0</strong></td>
-            <td>
-                <p>Initial Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p0"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>P0</strong></td>
-            <td>
-                <p>Initial Pressure [bar]</p>
+                
             </td>
         </tr>
         <tr>
@@ -301,7 +264,7 @@ an increment in it. The variable to specify can be changed by modifying
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iterations~4"></span>
+              <span class="anchor" id="variable-iterations~5"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -348,6 +311,36 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
 <script type="math/tex">lnT</script> and <script type="math/tex">nc + 2</script> for <script type="math/tex">lnT</script>.</p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-solver~2"></span>
+              procedure(<a href='../interface/continuation_solver.html'>continuation_solver</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>solver</strong></td>
+            <td>
+                <p>Specify solver for each point, defaults to a full newton procedure</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stop_conditions"></span>
+              procedure(<a href='../interface/continuation_stopper.html'>continuation_stopper</a>),
+            </td>
+<td></td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stop_conditions</strong></td>
+            <td>
+                <p>Function that returns true if the continuation method should stop</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -392,12 +385,12 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~6"></span>
+              <span class="anchor" id="variable-x~12"></span>
               real(kind=pr),
             </td>
-              <td>public,</td>
+              <td>public</td>
             <td>
-              target
+              
             </td>
             <td>::</td>
             <td><strong>X</strong>(size(z)+2)</td>
@@ -426,23 +419,6 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xc"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Xc</strong>(size(z)+2)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
               <span class="anchor" id="variable-ds0~2"></span>
               real(kind=pr),
             </td>
@@ -460,83 +436,15 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~36"></span>
-              integer,
+              <span class="anchor" id="variable-kind~4"></span>
+              character(len=14),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>i</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-its~4"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>its</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnk~2"></span>
-              real(kind=pr),
-            </td>
-              <td>public,</td>
-            <td>
-              pointer
-            </td>
-            <td>::</td>
-            <td><strong>lnK</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnp"></span>
-              real(kind=pr),
-            </td>
-              <td>public,</td>
-            <td>
-              pointer
-            </td>
-            <td>::</td>
-            <td><strong>lnP</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnt"></span>
-              real(kind=pr),
-            </td>
-              <td>public,</td>
-            <td>
-              pointer
-            </td>
-            <td>::</td>
-            <td><strong>lnT</strong></td>
+            <td><strong>kind</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -574,29 +482,12 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Maximum number of points</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-mc"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>mc</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~26"></span>
+              <span class="anchor" id="variable-nc~22"></span>
               integer,
             </td>
               <td>public</td>
@@ -613,7 +504,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~6"></span>
+              <span class="anchor" id="variable-ns~8"></span>
               integer,
             </td>
               <td>public</td>
@@ -626,23 +517,6 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
                 <td></td>
             <td>
                 <p>Number of specified variable</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-point"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>point</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
             </td>
         </tr>
     </tbody>
@@ -679,7 +553,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~7"></span>
+              <span class="anchor" id="variable-x~13"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -694,7 +568,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~7"></span>
+              <span class="anchor" id="variable-ns~9"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -709,7 +583,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~6"></span>
+              <span class="anchor" id="variable-s~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -779,7 +653,12 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
 </h3></div>
     <div class="card-body">
           
-  <p>Update the specification during continuation.</p>
+  <p>Update the specification during continuation.
+Critical point detection
+If the values of lnK (X[:nc]) change sign then a critical point
+Has passed
+Value at (near) critical point
+Parameter for interpolation</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -794,7 +673,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~8"></span>
+              <span class="anchor" id="variable-x~14"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -810,7 +689,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~8"></span>
+              <span class="anchor" id="variable-ns~10"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -825,7 +704,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~7"></span>
+              <span class="anchor" id="variable-s~9"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -840,7 +719,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~3"></span>
+              <span class="anchor" id="variable-ds~7"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -855,7 +734,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~3"></span>
+              <span class="anchor" id="variable-dxds~6"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -870,7 +749,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iterations~5"></span>
+              <span class="anchor" id="variable-iterations~6"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -912,7 +791,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

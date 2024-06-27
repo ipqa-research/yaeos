@@ -1,4 +1,4 @@
-module yaeos_thermoprops
+module yaeos__thermoprops
    !! Residual thermodyamic properties using residual Helmholtz model.
    !!
    !! Available properties:
@@ -16,8 +16,8 @@ module yaeos_thermoprops
    !! ```
    !! Where the user can call the routine of the desired property. And include
    !! as optional values the desired derivatives of said properties.
-   use yaeos_constants, only: R, pr
-   use yaeos_models_ar, only: ArModel
+   use yaeos__constants, only: R, pr
+   use yaeos__models_ar, only: ArModel
    implicit none
 contains
    subroutine pressure(eos, n, v, t, p, dpdv, dpdt, dpdn)
@@ -422,4 +422,4 @@ contains
 
       Cp = Cv - t*dpdt**2/dpdv - ntot*R
    end subroutine Cp_residual_vt
-end module yaeos_thermoprops
+end module yaeos__thermoprops

@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.9% of total for procedures.">35 statements</a>
+                 title=" 1.4% of total for procedures.">66 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -91,7 +91,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/unifac.f90.html'>unifac.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos_models_ge_group_contribution_unifac.html'>yaeos_models_ge_group_contribution_unifac</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_group_contribution_unifac.html'>yaeos__models_ge_group_contribution_unifac</a></li>
             <li class="breadcrumb-item active" aria-current="page">setup_unifac</li>
           </ol>
         </nav>
@@ -118,11 +118,16 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/setup_unifac.html#variable-gi~3">gi</a>
-            <a class="list-group-item" href="../proc/setup_unifac.html#variable-i~35">i</a>
-            <a class="list-group-item" href="../proc/setup_unifac.html#variable-j~21">j</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-aij~3">Aij</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-gi~2">gi</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-i~59">i</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-j~38">j</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-k~13">k</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-params">params</a>
             <a class="list-group-item" href="../proc/setup_unifac.html#variable-psi_function~2">psi_function</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-qks">qks</a>
             <a class="list-group-item" href="../proc/setup_unifac.html#variable-soup">soup</a>
+            <a class="list-group-item" href="../proc/setup_unifac.html#variable-vij~2">vij</a>
         </div>
       </div>
     </div>
@@ -152,11 +157,41 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  function setup_unifac(molecules, Eij, Qk, Rk)  
+    <h2>public  function setup_unifac(molecules, parameters)  
 </h2>
     
 
-    <p>UNIFAC model initialization.</p>
+    <h1 id="setup-unifac">Setup UNIFAC</h1>
+<p>Instantiate a UNIFAC model</p>
+<h1 id="description">Description</h1>
+<p>Subroutine used to instantiate a UNIFAC model.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="c">! Instantiate an UNIFAC model with ethanol-water mix and calculate gammas</span>
+<span class="w"> </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span>
+
+<span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w"> </span><span class="c">! Ethanol definition [CH3, CH2, OH]</span>
+<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span><span class="w"> </span><span class="c">! Subgroups ids</span>
+<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c">! Subgroups occurrences</span>
+
+<span class="w"> </span><span class="c">! Water definition [H2O]</span>
+<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="w"> </span><span class="c">! Model setup</span>
+<span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
+<span class="w"> </span><span class="c">! Calculate ln_gammas</span>
+<span class="w"> </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">([</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="p">],</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
+
+<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="w"> </span><span class="c">! result: 0.18534142000449058    0.40331395945417559</span>
+</code></pre></div>
+
+<h1 id="references">References</h1>
+<p>https://www.ddbst.com/published-parameters-unifac.html</p>
 
 
     <h3>Arguments</h3>
@@ -172,7 +207,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-molecules~2"></span>
+              <span class="anchor" id="variable-molecules~3"></span>
               type(<a href='../type/groups.html'>Groups</a>),
             </td>
 <td>intent(in)</td>
@@ -182,52 +217,22 @@
             <td>::</td>
             <td><strong>molecules</strong>(:)</td>
             <td>
-                <p>Molecules</p>
+                <p>Molecules (Group type) objects</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-eij~2"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-parameters~2"></span>
+              type(<a href='../type/gegcmodelparameters.html'>GeGCModelParameters</a>),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>Eij</strong>(:,:)</td>
+            <td><strong>parameters</strong></td>
             <td>
-                <p>Interaction Matrix</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-qk"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Qk</strong>(:)</td>
-            <td>
-                <p>Group k areas</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-rk"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Rk</strong>(:)</td>
-            <td>
-                <p>Group k volumes</p>
+                <p>UNIFAC parameters</p>
             </td>
         </tr>
     </tbody>
@@ -257,7 +262,24 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-gi~3"></span>
+              <span class="anchor" id="variable-aij~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Aij</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gi~2"></span>
               integer,
             </td>
               <td>public</td>
@@ -274,7 +296,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~35"></span>
+              <span class="anchor" id="variable-i~59"></span>
               integer,
             </td>
               <td>public</td>
@@ -291,7 +313,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~21"></span>
+              <span class="anchor" id="variable-j~38"></span>
               integer,
             </td>
               <td>public</td>
@@ -300,6 +322,40 @@
             </td>
             <td>::</td>
             <td><strong>j</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~13"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-params"></span>
+              type(<a href='../type/gegcmodelparameters.html'>GeGCModelParameters</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>params</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -325,6 +381,23 @@
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-qks"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>qks</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-soup"></span>
               type(<a href='../type/groups.html'>Groups</a>),
             </td>
@@ -334,6 +407,23 @@
             </td>
             <td>::</td>
             <td><strong>soup</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vij~2"></span>
+              integer,
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vij</strong>(:,:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -373,7 +463,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>

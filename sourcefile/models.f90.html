@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for source files.">9 statements</a>
+                 title=" 0.2% of total for source files.">11 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -119,7 +119,7 @@
       </a>
       <div id="mods-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos_models.html">yaeos_models</a>
+            <a class="list-group-item" href="../module/yaeos__models.html">yaeos__models</a>
         </div>
       </div>
     </div>
@@ -155,7 +155,7 @@
 
       <section>
         <h2><span class="anchor" id="src"></span>Source Code</h2>
-        <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="k">module </span><span class="n">yaeos_models</span>
+        <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="k">module </span><span class="n">yaeos__models</span>
 <a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">   </span><span class="c">!! `yaeos` thermodynamic models</span>
 <a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">   </span><span class="c">!!</span>
 <a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">   </span><span class="c">!! On `yaeos` there are implemented a series of both residual Helmholtz</span>
@@ -172,33 +172,38 @@
 <a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">   </span><span class="c">!!    - `CubicMixRule` type</span>
 <a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">   </span><span class="c">!!    - `CubicEos` type that extends `ArModel` to use a generic</span>
 <a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">   </span><span class="c">!!      two-parameter EoS. Implemented models that use this type can be</span>
-<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">   </span><span class="c">!!      seen at [[yaeos_models_ar_cubic_implementations(module)]]</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">   </span><span class="c">!!      seen at [[yaeos__models_ar_cubic_implementations(module)]]</span>
 <a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">   </span><span class="c">!!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that </span>
 <a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">   </span><span class="c">!!       defaults to classic vdW mixing rules</span>
 <a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">   </span><span class="c">!!</span>
 <a id="ln-22" name="ln-22" href="#ln-22"></a>
-<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">   </span><span class="c">! Residual Helmholtz Models</span>
-<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ar</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span>
+<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">   </span><span class="c">! Base model structure</span>
+<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_base</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">BaseModel</span>
 <a id="ln-25" name="ln-25" href="#ln-25"></a>
-<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">   </span><span class="c">! Cubic EoS models</span>
-<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ar_genericcubic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">GenericCubic_Ar</span><span class="p">,</span><span class="w"> </span><span class="n">AlphaFunction</span><span class="p">,</span><span class="w"> </span><span class="n">CubicMixRule</span>
+<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">   </span><span class="c">! Residual Helmholtz Models</span>
+<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ar</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span>
 <a id="ln-28" name="ln-28" href="#ln-28"></a>
-<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">   </span><span class="c">! Alpha functions</span>
-<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ar_cubic_alphas</span>
-<a id="ln-31" name="ln-31" href="#ln-31"></a>
-<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">   </span><span class="c">! Mixing Rules</span>
-<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ar_cubic_quadratic_mixing</span>
-<a id="ln-34" name="ln-34" href="#ln-34"></a>
-<a id="ln-35" name="ln-35" href="#ln-35"></a><span class="w">   </span><span class="c">! Implemented models</span>
-<a id="ln-36" name="ln-36" href="#ln-36"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ar_cubic_implementations</span>
-<a id="ln-37" name="ln-37" href="#ln-37"></a>
-<a id="ln-38" name="ln-38" href="#ln-38"></a><span class="w">   </span><span class="c">! Ge Models</span>
-<a id="ln-39" name="ln-39" href="#ln-39"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ge</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">GeModel</span>
-<a id="ln-40" name="ln-40" href="#ln-40"></a>
-<a id="ln-41" name="ln-41" href="#ln-41"></a><span class="w">   </span><span class="c">! Implemented models</span>
-<a id="ln-42" name="ln-42" href="#ln-42"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos_models_ge_implementations</span>
-<a id="ln-43" name="ln-43" href="#ln-43"></a>
-<a id="ln-44" name="ln-44" href="#ln-44"></a><span class="k">end module</span>
+<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">   </span><span class="c">! Cubic EoS models</span>
+<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ar_genericcubic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-31" name="ln-31" href="#ln-31"></a><span class="w">      </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">GenericCubic_Ar</span><span class="p">,</span><span class="w"> </span><span class="n">AlphaFunction</span><span class="p">,</span><span class="w"> </span><span class="n">CubicMixRule</span>
+<a id="ln-32" name="ln-32" href="#ln-32"></a>
+<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="w">   </span><span class="c">! Alpha functions</span>
+<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ar_cubic_alphas</span>
+<a id="ln-35" name="ln-35" href="#ln-35"></a>
+<a id="ln-36" name="ln-36" href="#ln-36"></a><span class="w">   </span><span class="c">! Mixing Rules</span>
+<a id="ln-37" name="ln-37" href="#ln-37"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ar_cubic_quadratic_mixing</span>
+<a id="ln-38" name="ln-38" href="#ln-38"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_cubic_mixing_rules_huron_vidal</span>
+<a id="ln-39" name="ln-39" href="#ln-39"></a>
+<a id="ln-40" name="ln-40" href="#ln-40"></a><span class="w">   </span><span class="c">! Implemented models</span>
+<a id="ln-41" name="ln-41" href="#ln-41"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ar_cubic_implementations</span>
+<a id="ln-42" name="ln-42" href="#ln-42"></a>
+<a id="ln-43" name="ln-43" href="#ln-43"></a><span class="w">   </span><span class="c">! Ge Models</span>
+<a id="ln-44" name="ln-44" href="#ln-44"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ge</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">GeModel</span>
+<a id="ln-45" name="ln-45" href="#ln-45"></a>
+<a id="ln-46" name="ln-46" href="#ln-46"></a><span class="w">   </span><span class="c">! Implemented models</span>
+<a id="ln-47" name="ln-47" href="#ln-47"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models_ge_implementations</span>
+<a id="ln-48" name="ln-48" href="#ln-48"></a>
+<a id="ln-49" name="ln-49" href="#ln-49"></a><span class="k">end module</span>
 </pre></div>
 
       </section>
@@ -220,7 +225,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-05-14 14:34              </p>
+ on 2024-06-27 03:48              </p>
           </div>
         </div>
         <br>
