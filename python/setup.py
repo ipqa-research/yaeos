@@ -1,9 +1,8 @@
 from setuptools import setup, Command
 import subprocess
-import os
-import glob
 import shutil
 from setuptools.command.install import install
+from pathlib import Path
 
 class BuildFortran(Command):
     description = "Compile Fortran library with fpm and f2py"
@@ -16,25 +15,24 @@ class BuildFortran(Command):
         pass
 
     def run(self):      
-        # Compile with fpm
-        os.chdir("./../")
+        build_dir = Path("..") / "build" / "python"
+        link_dir = build_dir.absolute() / "lib"
+        incl_dir = build_dir.absolute() / "include"
+        this_dir = Path(".")
 
         subprocess.check_call([
-           "fpm", "install", "--profile", "release", "--prefix", "build/python"
+           "fpm", "install", "--profile", "release", "--prefix", build_dir
         ])
-        
-        # Compile with f2py
-        os.chdir("./python/")
 
         subprocess.check_call([
            "f2py", "-m", "yaeos_compiled",
-           "-L../build/python/lib/",
-           "-I../build/python/include/",
+           f"-L{link_dir}",
+           f"-I{incl_dir}",
            "-c", "yaeos/fortran_wrap/yaeos_c.f90", "-lyaeos"
         ])
 
-        for file in glob.glob("yaeos_compiled.*"):
-            shutil.move(file, "yaeos/fortran_wrap")
+        for file in this_dir.glob("yaeos_compiled.*"):
+            shutil.move(file, this_dir / "yaeos/fortran_wrap")
 
 class CustomInstall(install):
     def run(self):
@@ -43,7 +41,7 @@ class CustomInstall(install):
 
 setup(
     name="yaeos",
-    version="0.1",
+    version="0.3.5",
     packages=["yaeos"],
     cmdclass={
         "build_fortran": BuildFortran,
