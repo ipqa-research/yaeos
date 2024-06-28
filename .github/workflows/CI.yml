@@ -69,3 +69,13 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: ipqa-research/yaeos
+
+    - name: Python-API
+        run: cd python
+          python setup.py build_fortran
+          pip install -e .
+          python -c "import yaeos"
+        - uses: actions/upload-artifact@v2
+          with:
+            name: python-api
+            path: python-api
