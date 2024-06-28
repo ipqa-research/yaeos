@@ -1,5 +1,6 @@
 """CubicEoS interface
 """
+
 from abc import ABC, abstractmethod
 from functools import partial
 
@@ -20,14 +21,8 @@ class ArModel(ABC):
         if dn:
             dn = np.empty((nc, nc), order="F")
 
-        res = yaeos_c.fug_vt(
-            self.id, 
-            n, v, t, 
-            dlnphidt=dt, dlnphidp=dp, dlnphidn=dn
-            )
-        res = {
-            "ln_phi": res, "dt": dt, "dp": dp, "dn": dn
-        }
+        res = yaeos_c.fug_vt(self.id, n, v, t, dlnphidt=dt, dlnphidp=dp, dlnphidn=dn)
+        res = {"ln_phi": res, "dt": dt, "dp": dp, "dn": dn}
         return res
 
     def __del__(self):
@@ -61,7 +56,7 @@ class QMR(ABC):
 
 class PengRobinson76(CubicEoS):
     name = "PengRobinson76"
-    
+
     def __init__(self, tc, pc, w, mixrule: CubicMixRule):
         super(PengRobinson76, self).__init__(tc, pc, w)
         self.id = yaeos_c.pr76(self.tc, self.pc, self.w)
