@@ -1,4 +1,4 @@
-from yaeos.fortran_wrap.yaeos_compiled import yaeos_c
+from yaeos.compiled_module.yaeos_compiled import yaeos_c
 
 from yaeos.core import PengRobinson76, QMR
 

@@ -3,7 +3,7 @@ Para instalar como editable
 ```
 cd python
 pip install -e .
-python setup.py build_fortran
+python setup.py build_fortran_editable
 ```
 
 Para instalar como no editable, directamente
