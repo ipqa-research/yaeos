@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from functools import partial
 
 import numpy as np
-from yaeos import yaeos_c as yaeos
+from yaeos import yaeos_c
 
 
 class ArModel(ABC):
@@ -20,7 +20,7 @@ class ArModel(ABC):
         if dn:
             dn = np.empty((nc, nc), order="F")
 
-        res = yaeos.fug_vt(
+        res = yaeos_c.fug_vt(
             self.id, 
             n, v, t, 
             dlnphidt=dt, dlnphidp=dp, dlnphidn=dn
@@ -31,7 +31,7 @@ class ArModel(ABC):
         return res
 
     def __del__(self):
-        yaeos.make_available_ar_models_list(self.id)
+        yaeos_c.make_available_ar_models_list(self.id)
 
 
 class CubicMixRule(ABC):
@@ -56,7 +56,7 @@ class QMR(ABC):
         self.lij = lij
 
     def set_mixrule(self, ar_model_id):
-        yaeos.set_qmr(ar_model_id, self.kij, self.lij)
+        yaeos_c.set_qmr(ar_model_id, self.kij, self.lij)
 
 
 class PengRobinson76(CubicEoS):
@@ -64,5 +64,5 @@ class PengRobinson76(CubicEoS):
     
     def __init__(self, tc, pc, w, mixrule: CubicMixRule):
         super(PengRobinson76, self).__init__(tc, pc, w)
-        self.id = yaeos.pr76(self.tc, self.pc, self.w)
+        self.id = yaeos_c.pr76(self.tc, self.pc, self.w)
         mixrule.set_mixrule(self.id)
