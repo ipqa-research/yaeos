@@ -25,10 +25,12 @@ class BuildFortran(Command):
         ])
 
         subprocess.check_call([
-           "f2py", "-m", "yaeos_compiled",
+           "f2py",
+           "-m", "yaeos_compiled",
            f"-L{link_dir}",
            f"-I{incl_dir}",
-           "-c", "yaeos/fortran_wrap/yaeos_c.f90", "-lyaeos"
+           "-c", "yaeos/fortran_wrap/yaeos_c.f90", "-lyaeos",
+           "--backend", "meson",
         ])
 
         for file in this_dir.glob("yaeos_compiled.*"):
