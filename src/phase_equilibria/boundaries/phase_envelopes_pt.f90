@@ -235,13 +235,20 @@ contains
          ! ==============================================================
          ! Save the point
          ! --------------------------------------------------------------
-         envelopes%points = [&
-            envelopes%points, &
-            EquilibriaState(&
-            kind=kind, &
-            x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
-            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=iterations) &
-            ]
+         new_point : block
+            type(EquilibriaState) :: point
+
+            real(pr) :: y(nc), T, P
+
+            T = exp(X(nc+1))
+            P = exp(X(nc+2))
+            y = exp(X(:nc))*z
+
+            point = EquilibriaState(kind=kind, x=z, Vx=0._pr, y=y, Vy=0, &
+                    T=T, P=P, beta=0._pr, iters=iterations)
+         
+            envelopes%points = [envelopes%points, point]
+         end block new_point
          
          
          ! ==============================================================
