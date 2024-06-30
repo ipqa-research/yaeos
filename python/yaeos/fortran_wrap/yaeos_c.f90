@@ -35,7 +35,9 @@ module yaeos_c
    public :: srk
    public :: fug_vt
    public :: make_available_ar_models_list
+   public :: make_available_ge_models_list
    public :: set_mhv, set_qmr
+   public :: nrtl
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -58,9 +60,46 @@ module yaeos_c
    class(ArModelContainer), allocatable :: ar_models(:)
    class(GeModelContainer), allocatable :: ge_models(:)
 
-
 contains
 
+   ! ==========================================================================
+   !  Ge Models
+   ! --------------------------------------------------------------------------
+   subroutine nrtl(a, b, c, id)
+      real(c_double), intent(in) :: a(:,:), b(:,:), c(:,:)
+      integer(c_int), intent(out) :: id
+      ge_model = fNRTL(a, b, c)
+      call extend_ge_models_list(id)
+   end subroutine
+
+   subroutine extend_ge_models_list(id)
+      !! Find the first available model container and allocate the model
+      !! there. Then return the found id.
+      integer(c_int), intent(out) :: id
+      integer :: i
+      if (.not. allocated(ge_models)) allocate(ge_models(max_models))
+
+      ! Find the first not allocated model
+      do i=1,max_models
+         if (free_ge_model(i)) then
+            free_ge_model(i) = .false.
+            id = i
+            call move_alloc(ge_model, ge_models(i)%model)
+            exit
+         end if
+      end do
+      if (id == max_models) error stop 1
+   end subroutine extend_ge_models_list
+
+   subroutine make_available_ge_models_list(id)
+      !! Make the geModel id available for allocation
+      integer(c_int), intent(in) :: id
+      free_ge_model(id) = .true.
+   end subroutine make_available_ge_models_list
+
+   ! =============================================================================
+   !  Ar Models
+   ! -----------------------------------------------------------------------------
    subroutine extend_ar_models_list(id)
       !! Find the first available model container and allocate the model
       !! there. Then return the found id.
@@ -86,6 +125,9 @@ contains
       free_ar_model(id) = .true.
    end subroutine make_available_ar_models_list
 
+   ! ==========================================================================
+   !  Cubic Mixing rules
+   ! --------------------------------------------------------------------------
    subroutine set_mhv(ar_id, ge_id, q)
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
@@ -126,6 +168,9 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_qmr
 
+   ! ==========================================================================
+   !  Cubic EoS
+   ! --------------------------------------------------------------------------
    subroutine pr76(tc, pc, w, id) bind(C, name="PR76")
       real(c_double), intent(in) :: tc(:), pc(:), w(:)
       integer(c_int), intent(out) :: id
@@ -141,6 +186,9 @@ contains
       call extend_ar_models_list(id)
    end subroutine srk
 
+   ! ==========================================================================
+   !  Thermodynamic properties
+   ! --------------------------------------------------------------------------
    subroutine fug_vt(id, n, v, t, lnfug, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
