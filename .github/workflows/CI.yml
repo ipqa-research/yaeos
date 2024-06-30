@@ -22,11 +22,11 @@ jobs:
         submodules: false
 
     - name: Setup Fortran Compiler
-        uses: fortran-lang/setup-fortran@v1
-        id: setup-fortran
-        with:
-          compiler: ${{ matrix.toolchain.compiler }}
-          version: ${{ matrix.toolchain.version }}
+      uses: fortran-lang/setup-fortran@v1
+      id: setup-fortran
+      with:
+        compiler: ${{ matrix.toolchain.compiler }}
+        version: ${{ matrix.toolchain.version }}
 
     - name: Install Python
       uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
