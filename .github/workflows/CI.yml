@@ -5,16 +5,16 @@ on: [push]
 jobs:
   Build:
     runs-on: ${{ matrix.os }}
-        strategy:
-          fail-fast: false
-          matrix:
-            os: [ubuntu-latest]
-            python-version: [3.9]
-            toolchain:
-              - {compiler: gcc, version: 13}
-              - {compiler: intel-classic, version: '2021.10'}
-              # - {compiler: intel, version: '2023.2'}
-              # - {compiler: nvidia-hpc, version: '23.11'}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.9]
+        toolchain:
+          - {compiler: gcc, version: 13}
+          - {compiler: intel-classic, version: '2021.10'}
+                # - {compiler: intel, version: '2023.2'}
+                # - {compiler: nvidia-hpc, version: '23.11'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
