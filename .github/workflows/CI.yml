@@ -64,6 +64,7 @@ jobs:
         bash ci/ci.sh
     
     - name: Coverage
+      if: ${{ env.FC }} == "gfortran"
       run: bash ci/ci.sh coverage
 
     - name: Upload coverage reports to Codecov
