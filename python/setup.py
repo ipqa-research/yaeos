@@ -25,7 +25,12 @@ class BuildFortran(Command):
         this_dir = Path(".")
 
         subprocess.check_call(
-            ["fpm", "install", "--profile", "release", "--prefix", build_dir]
+            [
+                "fpm", "install",
+                "--profile", "release",
+                "--flags", "-fPIC",
+                "--c-flags", "-fPIC",
+                "--prefix", build_dir]
         )
 
         subprocess.check_call(
