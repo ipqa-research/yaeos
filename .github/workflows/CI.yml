@@ -2,7 +2,7 @@ name: CI
 on: [push]
 
 jobs:
-  Build:
+  Fortran:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -70,12 +70,34 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: ipqa-research/yaeos
 
-    - name: Python-API
-        run: cd python
-          python setup.py build_fortran
-          pip install -e .
-          python -c "import yaeos"
-        - uses: actions/upload-artifact@v2
-          with:
-            name: python-api
-            path: python-api
+  Python-API:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        gcc_v: [10] # Version of GFortran we want to use.
+        python-version: [3.9]
+    env:
+      FC: gfortran-${{ matrix.gcc_v }}
+      GCC_V: ${{ matrix.gcc_v }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: false
+
+    - name: Install Python
+      uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install NLopt
+      run:
+        sudo apt-get install libnlopt-dev
+
+    - name: Install yaeos
+      run:
+        cd python
+        pip install .
