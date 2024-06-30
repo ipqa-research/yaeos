@@ -315,24 +315,24 @@ contains
          cps = [cps, cp]
       end do
 
-      write(unit, iostat=iostat, "(A, /, /)") "#PTEnvel2"
+      write(unit,  "(A, /, /)", iostat=iostat) "#PTEnvel2"
 
-      write(unit, iostat=iostat, "(A, /)") "#" // pt2%points(1)%kind
+      write(unit, "(A, /)") "#" // pt2%points(1)%kind
 
       do i=1, size(pt2%points)-1
          ! Change label if passed a critical point
          if (any(cps - i == 0) .and. i < size(pt2%points)) then
-            write(unit, iostat=iostat, "(/, /)")
-            write(unit, iostat=iostat, "(A, /)") "#" // pt2%points(i+1)%kind
+            write(unit, "(/, /)")
+            write(unit, "(A, /)") "#" // pt2%points(i+1)%kind
          end if
 
          write(unit, *) pt2%points(i)
          write(unit, "(/)")
       end do
 
-      write(unit, iostat=iostat, "(/, /, A, /)") "#Critical"
+      write(unit, "(/, /, A, /)") "#Critical"
       do cp = 1, size(cps)
-         write(unit, iostat=iostat, *) pt2%cps(cp)%T, pt2%cps(cp)%P
+         write(unit, *) pt2%cps(cp)%T, pt2%cps(cp)%P
       end do
    end subroutine write_PTEnvel2
 
