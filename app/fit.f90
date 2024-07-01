@@ -71,7 +71,14 @@ contains
 
       ge = NRTL(a, b, c)
 
-      model = problem%model
+      associate (pm => problem%model)
+         select type(pm)
+         type is (CubicEoS)
+            model = pm
+         end select
+      end associate
+
+      ! model = problem%model
 
       select type(model)
       class is (CubicEoS)

@@ -170,6 +170,7 @@ contains
          return
       end if
 
+      flash%kind = "split"
       flash%iters = iters
       flash%p = p
       flash%t = t

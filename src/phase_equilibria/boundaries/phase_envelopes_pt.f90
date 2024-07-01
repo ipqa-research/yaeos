@@ -70,7 +70,7 @@ contains
       real(pr) :: S0 !! Initial specification value
 
       integer :: max_points !! Maximum number of points
-      integer :: max_iterations
+      integer :: max_iterations !! Maximum number of iterations
 
       real(pr) :: X(size(z) + 2)
       real(pr), allocatable :: XS(:, :)
@@ -107,7 +107,7 @@ contains
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
-         update_specification=update_specification, &
+         update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
    contains
@@ -187,7 +187,7 @@ contains
          dFdS(nc+2) = -1
       end subroutine foo
 
-      subroutine update_specification(X, ns, S, dS, dXdS, iterations)
+      subroutine update_spec(X, ns, S, dS, dXdS, iterations)
          !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
          !! Vector of variables \([lnK_i \dots , lnT, lnP]\)
@@ -208,7 +208,7 @@ contains
 
          ! ==============================================================
          ! Update specification
-         ! - Dont select T or P near critical poitns
+         ! - Dont select T or P near critical points
          ! - Update dS wrt specification units
          ! - Set step
          ! --------------------------------------------------------------
@@ -235,19 +235,29 @@ contains
          ! ==============================================================
          ! Save the point
          ! --------------------------------------------------------------
-         envelopes%points = [&
-            envelopes%points, &
-            EquilibriaState(&
-            kind=kind, &
-            x=z, Vx=0._pr, y=exp(X(:nc))*z, Vy=0, &
-            T=exp(X(nc+1)), P=exp(X(nc+2)), beta=0._pr, iters=iterations) &
-            ]
+         new_point : block
+            type(EquilibriaState) :: point
+
+            real(pr) :: y(nc), T, P
+
+            T = exp(X(nc+1))
+            P = exp(X(nc+2))
+            y = exp(X(:nc))*z
+
+
+            point = EquilibriaState(&
+               kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
+               T=T, P=P, beta=0._pr, iters=iterations &
+            )
+         
+            envelopes%points = [envelopes%points, point]
+         end block new_point
          
          
          ! ==============================================================
          ! Handle critical point
          ! --------------------------------------------------------------
-         cp: block
+         critical: block
             !! Critical point detection
             !! If the values of lnK (X[:nc]) change sign then a critical point
             !! Has passed
@@ -280,10 +290,8 @@ contains
                   ]
                ! X = Xc + dXdS*dS
             end if
-
-         end block cp
-
-      end subroutine update_specification
+         end block critical
+      end subroutine update_spec
    end function pt_envelope_2ph
 
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
@@ -308,7 +316,7 @@ contains
          cps = [cps, cp]
       end do
 
-      write(unit, "(A, /, /)") "#PTEnvel2"
+      write(unit,  "(A, /, /)", iostat=iostat) "#PTEnvel2"
 
       write(unit, "(A, /)") "#" // pt2%points(1)%kind
 
