@@ -70,7 +70,7 @@ contains
       real(pr) :: S0 !! Initial specification value
 
       integer :: max_points !! Maximum number of points
-      integer :: max_iterations
+      integer :: max_iterations !! Maximum number of iterations
 
       real(pr) :: X(size(z) + 2)
       real(pr), allocatable :: XS(:, :)
