@@ -208,7 +208,7 @@ contains
 
          ! ==============================================================
          ! Update specification
-         ! - Dont select T or P near critical poitns
+         ! - Dont select T or P near critical points
          ! - Update dS wrt specification units
          ! - Set step
          ! --------------------------------------------------------------
