@@ -1,54 +1,67 @@
-program main
-    use yaeos_constants, only: pr
-    use yaeos_substance, only: Substances
-    use yaeos_models, only: PengRobinson76, ArModel
-    use yaeos_thermoprops, only: fugacity_tp
-    use yaeos_phase_equilibria_stability, only: tangent_plane_distance
-    type(Substances) :: compos
-    class(ArModel), allocatable :: model
-    integer, parameter :: n = 2
+program phase_diagram
+   use forsus, only: Substance, forsus_dir
+   use yaeos
+   use yaeos__phase_equilibria_stability, only: tpd, min_tpd
+   use yaeos, only: flash
+   implicit none
 
-    real(pr) :: tc(n), pc(n), af(n), lnfug_z(n), lnfug_w(n)
-    real(pr) :: w(n), z(n), t, p
-    real(pr) :: tpd
+   integer, parameter :: nc=3
 
-    integer :: i
+   class(ArModel), allocatable :: model
+   type(EquilibriaState) :: bub, fr
+   type(PTEnvel2) :: env
+   type(Substance) :: sus(nc)
+   real(pr) :: tc(nc), pc(nc), ac(nc), kij(nc, nc), lij(nc, nc), T, P
+   real(pr) :: z(nc), w(nc), mintpd
+   integer :: i, j, k
 
-    z = [0.4, 0.6]
-    tc = [190.564, 425.12]
-    pc = [45.99, 37.96]
-    af = [0.0115478, 0.200164]
-    model = PengRobinson76(tc, pc, af)
 
-    P = 60
-    t = 294
+   forsus_dir = "build/dependencies/forsus/data/json"
+   sus(1) = Substance("methane")
+   sus(2) = Substance("hydrogen sulfide")
+   sus(3) = Substance("ethane")
 
-    call fugacity_tp(model, z, t, p, root_type="stable", lnfug=lnfug_z)
-    lnfug_z = lnfug_z - log(P)
+   kij = 0
+   lij = 0
 
-    opt: block
-        use powellopt, only: bobyqa
-        real(pr) :: wl(2), wu(2)
-        integer :: npt
+   tc = sus%critical%critical_temperature%value
+   pc = sus%critical%critical_pressure%value/1e5_pr
+   ac = sus%critical%acentric_factor%value
 
-        npt = (n+2 + (n+1)*(n+2)/2) / 2
-        wl = 1.e-5_pr
-        wu = 1
-        call bobyqa(n, npt, w, wl, wu, 0.01_pr, 1.e-5_pr, 0, 100, func)
-        print *, w/sum(w)
-    end block opt
+   model = SoaveRedlichKwong(tc, pc, ac, kij, lij)
 
-contains
+   z = [1., 0.1, 1.]
+   P = 15.6_pr
+   T = 200._pr
+   z = z/sum(z)
 
-    subroutine func(n, x, f)
-        integer, intent(in) :: n
-        real(pr), intent(in) :: x(:)
-        real(pr), intent(out) :: f
+   do i=1,200, 10
+      w(1) = real(i, pr)/100
+      do j=i,200, 10
+         w(2) = real(200-j,pr)/100
+         w(3) = 2 - w(1) - w(2)
+         mintpd = tpd(model, z, w, p, t)
+         write(4, *) w(1), w(2), mintpd
+      end do
+      write(4, *) ""
+   end do
 
-        real(pr), dimension(size(x)) :: w, lnfug_w
+   ! write(3, *) env
 
-        w = x/sum(x)
-        call fugacity_tp(model, w, t, p, lnfug=lnfug_w, root_type="stable")
-        call tangent_plane_distance(z, lnfug_z, w, lnfug_w-log(P), f)
-    end subroutine
-end program
+   call min_tpd(model, z, P, T, mintpd, w)
+   print *, z, P, T
+   print *, mintpd
+   print *, w
+   print *, w/sum(w)
+   
+   fr = flash(model, z, t, p_spec=p, iters=i)
+   print *, "FLASH", i
+   write (*, *) fr%x
+   write (*, *) fr%y
+
+   bub = saturation_pressure(model, z, t-50, kind="bubble")
+   env = pt_envelope_2ph(model, z, first_point=bub)
+
+   write (1, *) env
+
+end program phase_diagram
