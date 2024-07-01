@@ -107,7 +107,7 @@ contains
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
-         update_specification=update_specification, &
+         update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
    contains
@@ -187,7 +187,7 @@ contains
          dFdS(nc+2) = -1
       end subroutine foo
 
-      subroutine update_specification(X, ns, S, dS, dXdS, iterations)
+      subroutine update_spec(X, ns, S, dS, dXdS, iterations)
          !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
          !! Vector of variables \([lnK_i \dots , lnT, lnP]\)
@@ -290,7 +290,7 @@ contains
 
          end block cp
 
-      end subroutine update_specification
+      end subroutine update_spec
    end function pt_envelope_2ph
 
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
