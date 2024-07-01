@@ -1,12 +1,15 @@
-[![GitHub](https://img.shields.io/badge/GitHub-fedebenelli-blue.svg?style=social&logo=github)](https://github.com/fedebenelli)
+
 [![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
 [![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
-[![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://fedebenelli.github.io/yaeos/)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/fedebenelli/yaeos/blob/main/LICENSE)
-[![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml)
+[![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/ipqa-research/yaeos/blob/main/LICENSE)
+[![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/ipqa-research/yaeos/graph/badge.svg?token=IDJYKV8XK6)](https://codecov.io/gh/ipqa-research/yaeos)
 
 
-![logo](media/logo.png){width=50%}
+<p align="center">
+<img src="media/logo.png" width="50%"/>
+</p>
 
 There are multiple open source equations of state libraries, like:
 
@@ -69,6 +72,16 @@ call pressure(model, z, V, T, P, dPdN=dPdN)
 print *, dPdN
 ```
 
+Examples of code with simple applications showing the capabilities of `yaeos`
+can be found at [example/tutorials](example/tutorials). Each example can be run
+with:
+
+```bash
+ fpm run --example <example name here>
+```
+
+Not providing any example will show all the possible examples that can be run.
+
 # How to install/run it
 `yaeos` is intended to use as a [`fpm`](fpm.fortran-lang.org)
 
@@ -95,8 +108,32 @@ cd yaeos
 fpm run
 ```
 
+## Developing with vscode
+If your intention is either to develop for `yaeos` or to explore in more detail
+the library with debugging. We provide some predefined defuaults to work with
+`vscode`. You can add them to the cloned repository by running:
+
+```bash
+git clone https://github.com/ipqa-research/vscode-fortran .vscode
+```
+
+From the project main directory 
+
+## Available examples
+In this repository we provide a series of examples of the different things that
+can be calculated with `yaeos`. The source codes for the examples can be seen
+at the [example/tutorials](example/tutorials) directory.
+
+All the examples can be run with
+
+```bash
+fpm run --example <example_name_here>
+```
+
 # Including new models with Automatic Differentiation.
-We are using the `hyperdual` module developed by [Philipp Rehner](https://github.com/prehner) and [Gernot Bauer](https://github.com/g-bauer)
+We are using the `hyperdual` module developed by 
+[Philipp Rehner](https://github.com/prehner) 
+and [Gernot Bauer](https://github.com/g-bauer)
 
 > The automatic differentiation API isn't fully optimized yet so performance is
 > much slower than it should be.

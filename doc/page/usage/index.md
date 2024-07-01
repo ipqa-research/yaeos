@@ -54,7 +54,7 @@ extening to a broader variety.
 
 In this example we'll show how a model in `yaeos` can be used. We'll take
 the `Peng-Robinson` equation of state as an example, but all the implemented
-models can be seen at [models](../../module/yaeos_models.html). Inside
+models can be seen at [[yaeos_models(module)]]. Inside
 your `app/main.f90` file use
 
 ```fortran
@@ -119,6 +119,6 @@ call pressure(model, n, v, t, p, dpdv=dpdv) ! Calculate pressure and dPdV
 ```
 
 The available thermodynamic properties to calculate can be seen at the
-[Thermoprops](../../module/yaeos_thermoprops.html) module.
+[[yaeos_thermoprops(module)]] module.
 
 # Phase equilibria

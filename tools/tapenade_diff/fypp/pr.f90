@@ -4,8 +4,8 @@
 
 ! =============================================================================
 module model
-    use yaeos_constants, only: pr
-    use yaeos_models_ar, only: ArModel
+    use yaeos__constants, only: pr
+    use yaeos__models_ar, only: ArModel
     implicit none
 
     type :: PR
