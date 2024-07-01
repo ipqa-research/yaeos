@@ -244,8 +244,11 @@ contains
             P = exp(X(nc+2))
             y = exp(X(:nc))*z
 
-            point = EquilibriaState(kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
-                    T=T, P=P, beta=0._pr, iters=iterations)
+
+            point = EquilibriaState(&
+               kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
+               T=T, P=P, beta=0._pr, iters=iterations &
+            )
          
             envelopes%points = [envelopes%points, point]
          end block new_point
@@ -254,7 +257,7 @@ contains
          ! ==============================================================
          ! Handle critical point
          ! --------------------------------------------------------------
-         cp: block
+         critical: block
             !! Critical point detection
             !! If the values of lnK (X[:nc]) change sign then a critical point
             !! Has passed
@@ -287,9 +290,7 @@ contains
                   ]
                ! X = Xc + dXdS*dS
             end if
-
-         end block cp
-
+         end block critical
       end subroutine update_spec
    end function pt_envelope_2ph
 
