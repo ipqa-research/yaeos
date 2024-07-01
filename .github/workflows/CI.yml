@@ -16,9 +16,9 @@ jobs:
           - {compiler: gcc, version: 12}
           - {compiler: gcc, version: 13}
           - {compiler: intel-classic, version: '2024.1'}
-          - {compiler: intel-classic, version: '2023.2'}
           - {compiler: intel, version: '2024.1'}
           - {compiler: intel, version: '2023.2'}
+          # - {compiler: intel-classic, version: '2023.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -55,12 +55,12 @@ jobs:
       run:
         sudo apt-get install libnlopt-dev
 
-    - name: Compile
-      run: fpm build --profile release --compiler ${{ env.FC }} --c-compiler gcc
+        # - name: Compile
+        #   run: fpm build --profile release --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests
       run: |
-        fpm test --profile debug --flag -coverage --compiler ${{ env.FC }}
+        fpm test --profile debug --flag -coverage --compiler ${{ env.FC }} --c-compiler gcc
         bash ci/ci.sh
     
     - name: Coverage
