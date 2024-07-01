@@ -244,7 +244,7 @@ contains
             P = exp(X(nc+2))
             y = exp(X(:nc))*z
 
-            point = EquilibriaState(kind=kind, x=z, Vx=0._pr, y=y, Vy=0, &
+            point = EquilibriaState(kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
                     T=T, P=P, beta=0._pr, iters=iterations)
          
             envelopes%points = [envelopes%points, point]
