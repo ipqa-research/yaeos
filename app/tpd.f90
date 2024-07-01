@@ -12,9 +12,8 @@ program phase_diagram
    type(PTEnvel2) :: env
    type(Substance) :: sus(nc)
    real(pr) :: tc(nc), pc(nc), ac(nc), kij(nc, nc), lij(nc, nc), T, P
-   real(pr) :: z(nc), w(nc), mintpd
+   real(pr) :: z(nc), w(nc), mintpd, lnphiw(nc), d(nc), wold(nc)
    integer :: i, j, k
-
 
    forsus_dir = "build/dependencies/forsus/data/json"
    sus(1) = Substance("methane")
@@ -35,33 +34,22 @@ program phase_diagram
    T = 200._pr
    z = z/sum(z)
 
-   do i=1,200, 10
-      w(1) = real(i, pr)/100
-      do j=i,200, 10
-         w(2) = real(200-j,pr)/100
-         w(3) = 2 - w(1) - w(2)
-         mintpd = tpd(model, z, w, p, t)
-         write(4, *) w(1), w(2), mintpd
-      end do
-      write(4, *) ""
-   end do
-
-   ! write(3, *) env
+   ! do j=1,3
+   !    w = 0.01
+   !    w(j) = 0.98
+   !    do i=1,50 
+   !       wold = w
+   !       mintpd = tpd(model, z, w, p, t, lnphiw=lnphiw, outd=d)
+   !       w = exp(d - lnphiw)
+   !       if (maxval(abs(w - wold)) < 1e-5) exit
+   !    end do
+   !    print *, j, mintpd, w
+   ! end do
 
    call min_tpd(model, z, P, T, mintpd, w)
+
    print *, z, P, T
-   print *, mintpd
-   print *, w
-   print *, w/sum(w)
-   
-   fr = flash(model, z, t, p_spec=p, iters=i)
-   print *, "FLASH", i
-   write (*, *) fr%x
-   write (*, *) fr%y
-
-   bub = saturation_pressure(model, z, t-50, kind="bubble")
-   env = pt_envelope_2ph(model, z, first_point=bub)
-
-   write (1, *) env
-
+   print *, mintpd, w
+   ! print *, w
+   ! print *, w/sum(w)
 end program phase_diagram

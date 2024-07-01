@@ -36,7 +36,7 @@ module yaeos__phase_equilibria_stability
 
 contains
 
-   real(pr) function tpd(model, z, w, P, T, d, dtpd)
+   real(pr) function tpd(model, z, w, P, T, d, dtpd, lnphiw, outd)
       !! # Alternative formulation of tangent-plane-distance
       !! Michelsen's modified \(tpd\) function, \(tm\).
       !!
@@ -80,6 +80,8 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(in) :: d(:) !! \(d_i\) vector
       real(pr), optional, intent(out) :: dtpd(:)
+      real(pr), optional, intent(out) :: lnphiw(:)
+      real(pr), optional, intent(out) :: outd(:)
 
       real(pr) :: di(size(z)), vz, vw
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
@@ -98,8 +100,11 @@ contains
       tpd = 1 + sum(w * (log(w) + lnphi_w - di - 1))
 
       if (present(dtpd)) then
-         dtpd = 1
+         dtpd = log(w) + lnphi_w - di
       end if
+
+      if (present(lnphiw)) lnphiw = lnphi_w
+      if (present(outd)) outd = di
    end function tpd
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
@@ -139,6 +144,8 @@ contains
       ! ==============================================================
       ! Setup optimizer
       ! --------------------------------------------------------------
+      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(w))
+      ! opt = nlopt_opt(nlopt_algorithm_enum%LD_TNEWTON, size(w))
       opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(w))
       call opt%set_ftol_rel(0.001_pr)
       call opt%set_ftol_abs(0.00001_pr)
@@ -169,7 +176,7 @@ contains
          real(pr), intent(in) :: x(:)
          real(pr), optional, intent(in out) :: gradient(:)
          class(*), optional, intent(in) :: func_data
-         foo = tpd(model, z, x, P, T, d=di)
+         foo = tpd(model, z, x, P, T, d=di, dtpd=gradient)
       end function foo
    end subroutine min_tpd
 end module yaeos__phase_equilibria_stability
