@@ -37,12 +37,48 @@ module yaeos__phase_equilibria_stability
 contains
 
    real(pr) function tpd(model, z, w, P, T, d, dtpd)
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: w(:)
-      real(pr), intent(in) :: P
-      real(pr), intent(in) :: T
-      real(pr), optional, intent(in) :: d(:)
+      !! # Alternative formulation of tangent-plane-distance
+      !! Michelsen's modified \(tpd\) function, \(tm\).
+      !!
+      !! # Description
+      !! Alternative formulation of the reduced tangent plane \(tpd\) function, 
+      !! where the test phase is defined in moles, which enables for unconstrained
+      !! minimization.
+      !! \[
+      !!   tm(W) = 1 + \sum_i W_i (\ln W_i + \ln \phi_i(W) - d_i - 1)
+      !! \]
+      !!
+      !! # Examples
+      !!
+      !! ## Calculation of `tm`
+      !! ```fortran
+      !!  tm = tpd(model, z, w, P, T)
+      !!  ---------------------------
+      !! ```
+      !!
+      !! ## Using precalculated trial-phase data
+      !! It is possible to calculate externaly the `d_i` vector and use it for
+      !! later calculations.
+      !! ```fortran
+      !! call fugacity_tp(&
+      !!   model, z, T=T, P=P, V=Vz, root_type="stable", lnphip=lnphi_z&
+      !! )
+      !! lnphi_z = lnphi_z - log(P)
+      !! di = log(z) + lnphi_z
+      !! tm = tpd(model, z, w, P, T, d=di)
+      !!  ---------------------------
+      !! ```
+      !!
+      !! # References
+      !! 1. Thermodynamic Models: Fundamental and Computational Aspects, Michael L.
+      !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
+      !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
+      class(ArModel), intent(in) :: model !! Thermodynamic model
+      real(pr), intent(in) :: z(:) !! Feed composition
+      real(pr), intent(in) :: w(:) !! Test-phase mole numbers vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), optional, intent(in) :: d(:) !! \(d_i\) vector
       real(pr), optional, intent(out) :: dtpd(:)
 
       real(pr) :: di(size(z)), vz, vw
@@ -59,7 +95,6 @@ contains
          di = log(z) + lnphi_z
       end if
 
-      !tpd = sum(w * (log(w) + lnphi_w - di))
       tpd = 1 + sum(w * (log(w) + lnphi_w - di - 1))
 
       if (present(dtpd)) then
@@ -67,15 +102,17 @@ contains
       end if
    end function tpd
 
-   subroutine min_tpd(model, z, P, T, mintpd, w)
+   subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
       use nlopt_wrap, only: create, destroy, nlopt_opt, nlopt_algorithm_enum
       use nlopt_callback, only: nlopt_func, create_nlopt_func
-
       class(ArModel) :: model
-
-      real(pr), intent(in) :: z(:), P, T
-      real(pr), intent(out) :: w(:)
-      real(pr), intent(out) :: mintpd
+      real(pr), intent(in) :: z(:) !! Feed composition
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: w(:) !! Trial composition
+      real(pr), intent(out) :: mintpd !! Minimal value of \(tm\)
+      real(pr), optional, intent(out) :: all_minima(:, :) 
+         !! All the found minima
 
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))
@@ -85,29 +122,33 @@ contains
 
       type(nlopt_opt) :: opt !! Optimizer
       type(nlopt_func) :: f !! Function to optimize
-      type(nlopt_func) :: sum_one !!
 
       integer :: stat
 
       f = create_nlopt_func(foo)
-      sum_one = create_nlopt_func(to_one)
       dx = 0.001_pr
+
       
+      ! Calculate feed di
       call fugacity_tp(&
          model, z, T=T, P=P, root_type="stable", lnphip=lnphi_z&
       )
       di = log(z) + lnphi_z - log(P)
 
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_SBPLX, size(w))
+
+      ! ==============================================================
+      ! Setup optimizer
+      ! --------------------------------------------------------------
       opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(w))
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LD_LBFGS_NOCEDAL, size(w))
-      
       call opt%set_ftol_rel(0.001_pr)
       call opt%set_ftol_abs(0.00001_pr)
       call opt%set_min_objective(f)
-      ! call opt%add_equality_constraint(sum_one, 1.0e-10_pr)
-
       call opt%set_initial_step(dx)
+
+      ! ==============================================================
+      ! Minimize for each component using each quasi-pure component
+      ! as initialization.
+      ! --------------------------------------------------------------
       do i=1,size(w)
          w = 0.001_pr
          w(i) = 0.999_pr
@@ -116,30 +157,19 @@ contains
          ws(i, :) = w
       end do
 
-      do i=1, size(mins)
-         print *, mins(i), ws(i, :)
-      end do
-
       i = minloc(mins, dim=1)
       mintpd = mins(i)
       w = ws(i, :)
 
+      if(present(all_minima)) all_minima = ws
+
       call destroy(opt)
    contains
-
       real(pr) function foo(x, gradient, func_data)
          real(pr), intent(in) :: x(:)
          real(pr), optional, intent(in out) :: gradient(:)
          class(*), optional, intent(in) :: func_data
-         foo = tpd(model, z, x, P, T)
+         foo = tpd(model, z, x, P, T, d=di)
       end function foo
-
-      real(pr) function to_one(x, gradient, func_data) result(f)
-         real(pr), intent(in) :: x(:)
-         real(pr), intent(inout), optional :: gradient(:)
-         class(*), intent(in), optional :: func_data
-         f = sum(x) - 1
-      end function to_one
-
    end subroutine min_tpd
 end module yaeos__phase_equilibria_stability
