@@ -36,7 +36,7 @@ module yaeos__phase_equilibria_stability
 
 contains
 
-   real(pr) function tpd(model, z, w, P, T, d, dtpd, lnphiw, outd)
+   real(pr) function tm(model, z, w, P, T, d, dtpd)
       !! # Alternative formulation of tangent-plane-distance
       !! Michelsen's modified \(tpd\) function, \(tm\).
       !!
@@ -80,13 +80,13 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(in) :: d(:) !! \(d_i\) vector
       real(pr), optional, intent(out) :: dtpd(:)
-      real(pr), optional, intent(out) :: lnphiw(:)
-      real(pr), optional, intent(out) :: outd(:)
 
       real(pr) :: di(size(z)), vz, vw
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
 
-      call fugacity_tp(model, w, T=T, P=P, V=Vw, root_type="stable", lnphip=lnphi_w)
+      call fugacity_tp(&
+         model, w, T=T, P=P, V=Vw, root_type="stable", lnphip=lnphi_w &
+      )
       lnphi_w = lnphi_w - log(P)
 
       if (.not. present(d)) then
@@ -95,17 +95,18 @@ contains
          )
          lnphi_z = lnphi_z - log(P)
          di = log(z) + lnphi_z
+      else
+         di = d
       end if
 
-      tpd = 1 + sum(w * (log(w) + lnphi_w - di - 1))
+
+      ! tpd = sum(w * (log(w) + lnphi_w - di))
+      tm = 1 + sum(w * (log(w) + lnphi_w - di - 1))
 
       if (present(dtpd)) then
          dtpd = log(w) + lnphi_w - di
       end if
-
-      if (present(lnphiw)) lnphiw = lnphi_w
-      if (present(outd)) outd = di
-   end function tpd
+   end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
       use nlopt_wrap, only: create, destroy, nlopt_opt, nlopt_algorithm_enum
@@ -122,7 +123,7 @@ contains
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))
 
-      real(pr) :: mins(size(w)), ws(size(w), size(w))
+      real(pr) :: mins(size(w)), ws(size(w), size(w)), V
       integer :: i
 
       type(nlopt_opt) :: opt !! Optimizer
@@ -133,19 +134,15 @@ contains
       f = create_nlopt_func(foo)
       dx = 0.001_pr
 
-      
       ! Calculate feed di
-      call fugacity_tp(&
-         model, z, T=T, P=P, root_type="stable", lnphip=lnphi_z&
-      )
-      di = log(z) + lnphi_z - log(P)
+      call fugacity_tp(model, z, T=T, P=P, V=V, root_type="stable", lnphip=lnphi_z)
+      lnphi_z = lnphi_z - log(P)
+      di = log(z) + lnphi_z
 
 
       ! ==============================================================
       ! Setup optimizer
       ! --------------------------------------------------------------
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(w))
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LD_TNEWTON, size(w))
       opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(w))
       call opt%set_ftol_rel(0.001_pr)
       call opt%set_ftol_abs(0.00001_pr)
@@ -156,6 +153,7 @@ contains
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
+      !$OMP PARALLEL DO PRIVATE(i, w, mintpd, stat) SHARED(opt, ws, mins)
       do i=1,size(w)
          w = 0.001_pr
          w(i) = 0.999_pr
@@ -163,6 +161,7 @@ contains
          mins(i) = mintpd
          ws(i, :) = w
       end do
+      !$OMP END PARALLEL DO
 
       i = minloc(mins, dim=1)
       mintpd = mins(i)
@@ -176,7 +175,7 @@ contains
          real(pr), intent(in) :: x(:)
          real(pr), optional, intent(in out) :: gradient(:)
          class(*), optional, intent(in) :: func_data
-         foo = tpd(model, z, x, P, T, d=di, dtpd=gradient)
+         foo = tm(model, z, x, P, T, d=di)
       end function foo
    end subroutine min_tpd
 end module yaeos__phase_equilibria_stability
