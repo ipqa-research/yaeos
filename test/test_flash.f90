@@ -11,9 +11,52 @@ contains
          new_unittest("FlashPT", test_flash_pt), &
          new_unittest("FlashTV", test_flash_tv), &
          new_unittest("FlashPT Failed", test_flash_pt_failed), &
-         new_unittest("FlashPT Bad Specification", test_flash_pt_bad_spec) &
+         new_unittest("FlashPT Bad Specification", test_flash_pt_bad_spec), &
+         new_unittest("Stability tm minimization", test_tm) &
          ]
    end subroutine collect_suite
+
+   subroutine test_tm(error)
+      use forsus, only: Substance, forsus_dir
+      use yaeos
+      use yaeos__phase_equilibria_stability, only: tm, min_tpd
+      use yaeos, only: flash
+      implicit none
+      type(error_type), allocatable, intent(out) :: error
+
+      integer, parameter :: nc=2
+
+      class(ArModel), allocatable :: model
+      type(Substance) :: sus(nc)
+      real(pr) :: tc(nc), pc(nc), ac(nc)
+      real(pr) :: z(nc), T, P
+      real(pr) :: w(nc), mintpd
+
+      forsus_dir = "build/dependencies/forsus/data/json"
+      sus(1) = Substance("methane")
+      sus(2) = Substance("hydrogen sulfide")
+
+      z = [0.13, 1-0.13]
+      z = z/sum(z)
+
+      P = 20.0_pr
+      T = 190._pr
+
+      tc = sus%critical%critical_temperature%value
+      pc = sus%critical%critical_pressure%value/1e5_pr
+      ac = sus%critical%acentric_factor%value
+
+      model = SoaveRedlichKwong(tc, pc, ac)
+
+      call min_tpd(model, z, P, T, mintpd, w)
+      print *, mintpd
+      call check(error, abs(mintpd - 5.3e-6_pr) < 1e-5)
+
+      P = 15
+      call min_tpd(model, z, P, T, mintpd, w)
+      print *, mintpd
+      call check(error, abs(mintpd - (-0.1883_pr)) < 1e-4)
+   end subroutine test_tm
 
    subroutine test_flash_pt(error)
       use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
@@ -61,7 +104,7 @@ contains
       real(pr) :: x(nc) = [6.8598497458814592E-002,  0.93140153234346601]
       real(pr) :: y(nc) = [0.61055654015073813, 0.38944348965161085]
       real(pr) :: vx = 9.3682339483042124E-002
-      real(pr) :: vy = 2.3935064128338039     
+      real(pr) :: vy = 2.3935064128338039
       real(pr) :: beta = 0.61148923421371815
       real(pr) :: P = 6.097517429661468
 
@@ -78,8 +121,8 @@ contains
       V = 1.5_pr
       t = 210
       k0 = (model%components%Pc/10._pr) &
-            * exp(5.373_pr*(1 + model%components%w)&
-            * (1 - model%components%Tc/T))
+         * exp(5.373_pr*(1 + model%components%w)&
+         * (1 - model%components%Tc/T))
 
       flash_result = flash(model, n, t=t, v_spec=v, k0=k0, iters=iters)
 
