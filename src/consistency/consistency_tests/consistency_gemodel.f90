@@ -1,21 +1,26 @@
 module yaeos__consistency_gemodel
-   !! Consistency checks of excess Gibbs free energy models.
+   !! # yaeos__consistency_gemodel
+   !! Consistency checks of Helmholtz free energy models ([[GeModel]]).
    !!
+   !! # Description
    !! This module contains tools to validate the analityc derivatives of
-   !! implmented excess Gibbs free energy models (GeModel). Also, allows to
+   !! implmented excess Gibbs free energy models ([[GeModel]]). Also, allows to
    !! evaluate the consistency tests described in Thermodynamic Models:
    !! Fundamentals & Computational Aspects 2 ed. by Michelsen and Mollerup
    !! Chapter 5 section 4.
    !!
    !! Available tools:
    !!
-   !! - numeric_ge_derivatives: From an instantiated GeModel evaluate all the
-   !! excess Gibbs free energy derivatives from the central finite difference
-   !! method.
+   !! - [[numeric_ge_derivatives]]: From an instantiated [[GeModel]] evaluate
+   !! all the excess Gibbs free energy derivatives from the central finite
+   !! difference method.
    !!
-   !! - ge_consistency: From an instantiated GeModel evaluate all the Michelsen
-   !! and Mollerup consistency tests (refer to ge_consistency docs for more
-   !! explanations)
+   !! - [[ge_consistency]]: From an instantiated GeModel evaluate all the
+   !! Michelsen and Mollerup consistency tests
+   !!
+   !! # References
+   !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+   !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
@@ -23,29 +28,39 @@ module yaeos__consistency_gemodel
    implicit none
 contains
    subroutine ge_consistency(model, n, t, eq58, eq59, eq60, eq61)
+      !! # ge_consistency
       !! \(G^E\) models consistency tests
       !!
       !! # Description
       !! Evaluate the \(G^E\) models consistency tests described in
       !! Thermodynamic Models: Fundamentals & Computational Aspects 2 ed. by
-      !! Michelsen and Mollerup (MM) Chapter 5 section 4.
+      !! Michelsen and Mollerup (MM) Chapter 5 section 4. The "eq" are
+      !! evaluations of the left hand side of the following expressions:
+      !!
+      !! Equation 58
       !!
       !!  \[
-      !!   eq58 = \sum_i^{NC} n_i \text{ln} \gamma_i - \frac{G^E}{RT} = 0
+      !!   \sum_i^{NC} n_i \text{ln} \gamma_i - \frac{G^E}{RT} = 0
       !!  \]
       !!
+      !! Equation 59
+      !!
       !!  \[
-      !!   eq59 = \text{ln} \gamma_i - \frac{1}{RT} 
+      !!   \text{ln} \gamma_i - \frac{1}{RT}
       !!   \frac{\partial G^E}{\partial n_i} = 0
       !!  \]
       !!
+      !! Equation 60
+      !!
       !!  \[
-      !!   eq60 = \frac{\partial \text{ln} \gamma_i}{\partial n_j} - 
+      !!   \frac{\partial \text{ln} \gamma_i}{\partial n_j} -
       !!   \frac{\partial \text{ln} \gamma_j}{\partial n_i} = 0
       !!  \]
       !!
+      !! Equation 61
+      !!
       !!  \[
-      !!   eq61 = \sum_i^{NC} n_i 
+      !!   \sum_i^{NC} n_i
       !!   \frac{\partial \text{ln} \gamma_i}{\partial n_j} = 0
       !!  \]
       !!
@@ -95,7 +110,8 @@ contains
       !! ```
       !!
       !! # References
-      !! Thermodynamic Models: Fundamentals & Computational Aspects 2 ed. Michelsen and Mollerup
+      !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+      !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
       !!
       class(GeModel), intent(in) :: model
       !! \(G^E\) model
@@ -160,8 +176,12 @@ contains
    subroutine numeric_ge_derivatives(&
       model, n, t, d_n, d_t, Ge, GeT, Gen, GeT2, GeTn, Gen2 &
       )
-      !! # Numeric \(G^E\) model derivatives
-      !! Evaluate the excess Gibbs derivatives with central finite difference.
+      !! # numeric_ge_derivatives
+      !! Numeric \(G^E\) model derivatives
+      !!
+      !! # Description
+      !! Tool to facilitate the development of new [[GeModel]] by testing
+      !! the implementation of analytic derivatives.
       !!
       !! # Examples
       !!
@@ -222,7 +242,7 @@ contains
       !! ```
       !!
       class(GeModel), intent(in) :: model
-      !!Ge Model
+      !! \(G^E\) model
       real(pr), intent(in) :: n(:)
       !! Moles number vector
       real(pr), intent(in) :: t
