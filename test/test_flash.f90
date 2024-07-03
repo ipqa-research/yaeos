@@ -49,13 +49,13 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      print *, mintpd
       call check(error, abs(mintpd - 5.3e-6_pr) < 1e-5)
 
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
-      print *, mintpd
       call check(error, abs(mintpd - (-0.1883_pr)) < 1e-4)
+
+      call check(error, abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr)
    end subroutine test_tm
 
    subroutine test_flash_pt(error)
