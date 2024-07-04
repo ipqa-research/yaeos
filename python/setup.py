@@ -9,11 +9,13 @@ import sysconfig
 # =============================================================================
 # Building
 # =============================================================================
-def build_library():
-    build_dir = Path("..") / "build" / "python"
-    link_dir = build_dir.absolute() / "lib"
-    incl_dir = build_dir.absolute() / "include"
-    this_dir = Path(".")
+THIS_DIR = Path(".")
+BUILD_DIR = (Path("..") / "build" / "python").absolute()
+LINK_DIR = BUILD_DIR / "lib"
+INCL_DIR = BUILD_DIR / "include"
+
+
+def pre_build():
 
     subprocess.check_call(
         [
@@ -21,12 +23,12 @@ def build_library():
             "install",
             "--profile",
             "release",
-            "--flags",
-            "-fPIC",
-            "--c-flags",
+            "--flag",
+            "-g -fPIC",
+            "--c-flag",
             "-fPIC",
             "--prefix",
-            build_dir,
+            BUILD_DIR,
         ]
     )
 
@@ -35,8 +37,8 @@ def build_library():
             "f2py",
             "-m",
             "yaeos_compiled",
-            f"-L{link_dir}",
-            f"-I{incl_dir}",
+            f"-L{LINK_DIR}",
+            f"-I{INCL_DIR}",
             "-c",
             "yaeos/fortran_wrap/yaeos_c.f90",
             "-lyaeos",
@@ -44,13 +46,6 @@ def build_library():
             "meson",
         ]
     )
-
-    site_packages_dir = Path(sysconfig.get_path("purelib"))
-
-    for file in this_dir.glob("yaeos_compiled.*"):
-        target_dir = site_packages_dir / "yaeos" / "compiled_module"
-        target_dir.mkdir(parents=True, exist_ok=True)
-        shutil.move(file, target_dir)
 
 
 class BuildFortran(Command):
@@ -64,7 +59,13 @@ class BuildFortran(Command):
         pass
 
     def run(self):
-        build_library()
+        pre_build()
+        site_packages_dir = Path(sysconfig.get_path("purelib"))
+
+        for file in THIS_DIR.glob("yaeos_compiled.*"):
+            target_dir = site_packages_dir / "yaeos" / "compiled_module"
+            target_dir.mkdir(parents=True, exist_ok=True)
+            shutil.move(file, target_dir)
 
 
 # =============================================================================
@@ -74,18 +75,15 @@ class BuildFortran(Command):
 #
 # python3 setup.py build_fortran_editable
 # =============================================================================
-class BuildFortranEditable(Command):
-    description = "Compile Fortran library with fpm and f2py"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
+class BuildFortranEditable(BuildFortran):
 
     def run(self):
-        build_library()
+        pre_build()
+        for file in THIS_DIR.glob("yaeos_compiled.*"):
+            target_dir = Path(".") / "yaeos" / "compiled_module"
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            shutil.move(file.absolute(), target_dir.absolute()/file)
 
 
 class CustomInstall(install):

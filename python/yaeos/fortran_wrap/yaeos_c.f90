@@ -38,6 +38,8 @@ module yaeos_c
    public :: make_available_ge_models_list
    public :: set_mhv, set_qmr
    public :: nrtl
+   public :: flash
+   public :: saturation_pressure
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -203,4 +205,82 @@ contains
          n, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
          )
    end subroutine fug_vt
+
+
+   ! ==========================================================================
+   ! Phase equilibria
+   ! --------------------------------------------------------------------------
+   subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
+      use yaeos, only: EquilibriaState
+      type(EquilibriaState) :: eq_state
+      real(c_double), intent(out) :: x(:)
+      real(c_double), intent(out) :: y(:)
+      real(c_double), intent(out) :: P
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: Beta
+
+      x = eq_state%x
+      y = eq_state%y
+      P = eq_state%p
+      T = eq_state%T
+      Vx = eq_state%Vx
+      Vy = eq_state%Vy
+      beta = eq_state%beta
+   end subroutine
+
+   subroutine flash(id, z, P, T, x, y, k0, Pout, Tout, Vx, Vy, beta)
+      use yaeos, only: EquilibriaState, fflash => flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: T
+      real(c_double), optional, intent(in out) :: k0(size(z))
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Pout
+      real(c_double), intent(out) :: Tout
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: beta
+      
+      type(EquilibriaState) :: result
+      integer :: iters
+
+      result = fflash(ar_models(id)%model, z, t, p_spec=p, iters=iters)
+      if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
+         Pout = P
+         Tout = T
+         x = z
+         y = z
+         beta = -1
+         Vx = 1
+         Vy = 1
+         return
+      end if
+
+      call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
+   end subroutine
+
+   subroutine saturation_pressure(id, z, T, kind, P, x, y, Vx, Vy, beta)
+      use yaeos, only: EquilibriaState, fsaturation_pressure => saturation_pressure
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: T
+      character(len=15), intent(in) :: kind
+
+      real(c_double), intent(out) :: P
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Vx, Vy, beta
+
+      real(c_double) :: aux
+      
+      type(EquilibriaState) :: sat
+
+      sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
+   end subroutine
+   
 end module yaeos_c
