@@ -1,7 +1,6 @@
 ---
 title: User documentation
 ordered_subpage: usage
-                 examples
                  theory
                  contributing
 ---
