@@ -1,3 +1,0 @@
----
-title: Tapenade differentiation
----

@@ -264,7 +264,7 @@ contains
             real(pr) :: Xc(nc+2) !! Value at (near) critical point
             real(pr) :: a  !! Parameter for interpolation
          
-            do while (maxval(abs(X(:nc))) < 0.1)
+            do while (maxval(abs(X(:nc))) < 0.05)
                ! If near a critical point, jump over it
                S = S + dS
                X = X + dXdS*dS
@@ -284,9 +284,10 @@ contains
 
                ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
                a = -Xnew(ns)/(X(ns) - Xnew(ns))
+               print *, a
                Xc = a * X + (1-a)*Xnew
                envelopes%cps = [&
-                  envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(X(nc+2))) &
+                  envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
                   ]
                ! X = Xc + dXdS*dS
             end if
