@@ -62,7 +62,13 @@ contains
       lij(1, 2) = X(2)
       lij(2, 1) = X(2)
 
-      model = problem%model
+
+      associate(pm => problem%model)
+         select type(pm)
+         type is (CubicEoS)
+            model = pm
+         end select
+      end associate
 
       select type (model)
        class is (CubicEoS)

@@ -1,21 +1,26 @@
 module yaeos__consistency_armodel
-   !! Consistency checks of Helmholtz free energy models.
+   !! # yaeos__consistency_armodel
+   !! Consistency checks of Helmholtz free energy models ([[ArModel]]).
    !!
+   !! # Description
    !! This module contains tools to validate the analityc derivatives of
-   !! implmented Helmholtz free energy models (ArModel). Also, allows to
+   !! implmented Helmholtz free energy models ([[ArModel]]). Also, allows to
    !! evaluate the consistency tests described in Thermodynamic Models:
    !! Fundamentals & Computational Aspects 2 ed. by Michelsen and Mollerup
    !! Chapter 2 section 3.
    !!
    !! Available tools:
    !!
-   !! - numeric_ar_derivatives: From an instantiated ArModel evaluate all the
-   !! Helmholtz free energy derivatives from the central finite difference
-   !! method.
+   !! - [[numeric_ar_derivatives]]: From an instantiated [[ArModel]] evaluate
+   !! all the Helmholtz free energy derivatives from the central finite
+   !! difference method.
    !!
-   !! - ar_consistency: From an instantiated ArModel evaluate all the Michelsen
-   !! and Mollerup consistency tests (refer to ar_consistency docs for more
-   !! explanations)
+   !! - [[ar_consistency]]: From an instantiated [[ArModel]] evaluate all the
+   !! Michelsen and Mollerup consistency tests.
+   !!
+   !! # References
+   !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+   !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ar, only: ArModel
@@ -27,8 +32,10 @@ contains
    subroutine ar_consistency(&
       eos, n, v, t, eq31, eq33, eq34, eq36, eq37 &
       )
-      !! Evaluates the Michelsen and Mollerup (MM) consistency tests.
+      !! # ar_consistency
+      !! \(A^r\) models consistency tests.
       !!
+      !! # Description
       !! The evaluated equations are taken from Fundamentals & Computational
       !! Aspects 2 ed. by Michelsen and Mollerup Chapter 2 section 3. The
       !! "eq" are evaluations of the left hand side of the following
@@ -68,11 +75,14 @@ contains
       !!    \right)_{P,n} + \frac{H^r(T,P,n)}{RT^2} = 0
       !! \]
       !!
+      !! The consistency test could be applied to any instantiated [[ArModel]]
+      !! as shown in the following example.
+      !!
       !! # Examples
       !!
       !! ```fortran
       !!  use yaeos, only: pr, SoaveRedlichKwong, ArModel
-      !!  use yaeos__consistency, only: ar_consistency
+      !!  use yaeos__consistency_armodel, only: ar_consistency
       !!
       !!  class(ArModel), allocatable :: model
       !!  real(pr) :: tc(4), pc(4), w(4)
@@ -95,8 +105,13 @@ contains
       !!     model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
       !!     )
       !! ```
+      !! All `eqXX` variables should be close to zero.
       !!
-      class(ArModel), intent(in) :: eos !! Model
+      !! # References
+      !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+      !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
+      !!
+      class(ArModel), intent(in) :: eos !! Equation of state
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), intent(in) :: v !! Volume [L]
@@ -186,13 +201,18 @@ contains
       eos, n, v, t, d_n, d_v, d_t, &
       Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2 &
       )
+      !! # numeric_ar_derivatives
       !! Evaluate the Helmholtz derivatives with central finite difference.
+      !!
+      !! # Description
+      !! Tool to facilitate the development of new [[ArModel]] by testing
+      !! the implementation of analytic derivatives.
       !!
       !! # Examples
       !!
       !! ```fortran
       !!  use yaeos, only: pr, SoaveRedlichKwong, ArModel
-      !!  use yaeos__consistency, only: numeric_ar_derivatives
+      !!  use yaeos__consistency_armodel, only: numeric_ar_derivatives
       !!
       !!  class(ArModel), allocatable :: model
       !!  real(pr) :: tc(4), pc(4), w(4)
@@ -221,7 +241,7 @@ contains
       !!     )
       !! ```
       !!
-      class(ArModel), intent(in) :: eos !! Model
+      class(ArModel), intent(in) :: eos !! Equation of state
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), intent(in) :: v !! Volume [L]

@@ -23,10 +23,14 @@ module yaeos__models_ge_group_contribution_model_parameters
       !! \(c_{ij}\) for the maingroups interaction parameters. In the case of
       !! the classic UNIFAC model that only requires \(a_{ij}\) parameters, the
       !! \(b_{ij}\) and \(c_{ij}\) must be set as null matrixes.
-      !! The documentation and source code of `yaeos` `UNIFACParameters`
+      !! The documentation and source code of `yaeos` [[UNIFACParameters]]
       !! function could be consulted to understand how to instantiate a
-      !! `GeGCModelParameters` object with the classic liquid-vapor UNIFAC
-      !! parameters defined in: https://www.ddbst.com/published-parameters-unifac.html
+      !! [[GeGCModelParameters]] object with the classic liquid-vapor UNIFAC
+      !! parameters defined in DDBST.
+      !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
       !!
       integer, allocatable :: subgroups_ids(:)
       !! ID of each model's subgroup
@@ -82,6 +86,10 @@ contains
       !!  print *, parameters%get_subgroup_index(178) ! Will print: 112
       !! ```
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: subgroup_id
@@ -114,6 +122,10 @@ contains
       !!  print *, parameters%get_maingroup_index(55) ! Will print: 52
       !! ```
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: maingroup_id
@@ -145,6 +157,10 @@ contains
       !!  ! Get the maingroup of the subgroup with id 16 (H2O)
       !!  print *, parameters%get_subgroup_maingroup(16) ! Will print: 7
       !! ```
+      !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
       !!
       class(GeGCModelParameters) :: self
 
@@ -182,6 +198,10 @@ contains
       !!  print *, parameters%get_subgroup_R(1) ! Will print: 0.9011
       !! ```
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: subgroup_id
@@ -218,6 +238,10 @@ contains
       !!  print *, parameters%get_subgroup_Q(1) ! Will print: 0.8480
       !! ```
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: subgroup_id
@@ -234,10 +258,10 @@ contains
 
    function get_maingroups_aij(self, maingroup_i_id, maingroup_j_id) result(aij)
       !! # get_maingroups_aij
-      !! Get the interaction parameter \(a_{ij} \)
+      !! Get the interaction parameter \(a_{ij}\)
       !!
       !! # Description
-      !! Get the interaction parameter \(a_{ij} \) of the maingroups `i` and `j`
+      !! Get the interaction parameter \(a_{ij}\) of the maingroups `i` and `j`
       !! ids.
       !!
       !! # Examples
@@ -254,6 +278,10 @@ contains
       !!  print *, parameters%get_maingroups_aij(1, 7) ! prints: 1318.0000
       !! ```
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: maingroup_i_id
@@ -261,7 +289,7 @@ contains
       integer, intent(in) :: maingroup_j_id
       !! ID of the maingroup `j`
       real(pr) :: aij
-      !! Interaction parameter \(a_{ij} \)
+      !! Interaction parameter \(a_{ij}\)
 
       integer :: i, j
 
@@ -273,10 +301,10 @@ contains
 
    function get_maingroups_bij(self, maingroup_i_id, maingroup_j_id) result(bij)
       !! # get_maingroups_bij
-      !! Get the interaction parameter \(b_{ij} \)
+      !! Get the interaction parameter \(b_{ij}\)
       !!
       !! # Description
-      !! Get the interaction parameter \(b_{ij} \) of the maingroups `i` and `j`
+      !! Get the interaction parameter \(b_{ij}\) of the maingroups `i` and `j`
       !! ids.
       !!
       !! # Examples
@@ -293,8 +321,12 @@ contains
       !!  print *, parameters%get_maingroups_bij(1, 7) ! prints: 0.0
       !! ```
       !!
-      !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij} \)
+      !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij}\)
       !! parameters
+      !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
       !!
       class(GeGCModelParameters) :: self
 
@@ -303,7 +335,7 @@ contains
       integer, intent(in) :: maingroup_j_id
       !! ID of the maingroup `j`
       real(pr) :: bij
-      !! Interaction parameter \(b_{ij} \)
+      !! Interaction parameter \(b_{ij}\)
 
       integer :: i, j
 
@@ -315,10 +347,10 @@ contains
 
    function get_maingroups_cij(self, maingroup_i_id, maingroup_j_id) result(cij)
       !! # get_maingroups_cij
-      !! Get the interaction parameter \(c_{ij} \)
+      !! Get the interaction parameter \(c_{ij}\)
       !!
       !! # Description
-      !! Get the interaction parameter \(c_{ij} \) of the maingroups `i` and `j`
+      !! Get the interaction parameter \(c_{ij}\) of the maingroups `i` and `j`
       !! ids.
       !!
       !! # Examples
@@ -338,6 +370,10 @@ contains
       !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij} \)
       !! parameters
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: maingroup_i_id
@@ -345,7 +381,7 @@ contains
       integer, intent(in) :: maingroup_j_id
       !! ID of the maingroup `j`
       real(pr) :: cij
-      !! Interaction parameter \(c_{ij} \)
+      !! Interaction parameter \(c_{ij}\)
 
       integer :: i, j
 
@@ -357,10 +393,10 @@ contains
 
    function get_subgroups_aij(self, subgroup_i_id, subgroup_j_id) result(aij)
       !! # get_subgroups_aij
-      !! Get the interaction parameter \(a_{ij} \)
+      !! Get the interaction parameter \(a_{ij}\)
       !!
       !! # Description
-      !! Get the interaction parameter \(a_{ij} \) of the subgroups `i` and `j`
+      !! Get the interaction parameter \(a_{ij}\) of the subgroups `i` and `j`
       !! ids.
       !!
       !! # Examples
@@ -378,6 +414,10 @@ contains
       !!  print *, parameters%get_subgroups_aij(1, 16) ! prints: 1318.0000
       !! ```
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: subgroup_i_id
@@ -385,7 +425,7 @@ contains
       integer, intent(in) :: subgroup_j_id
       !! ID of the subgroup `j`
       real(pr) :: aij
-      !! Interaction parameter \(a_{ij} \)
+      !! Interaction parameter \(a_{ij}\)
 
       integer :: mi_id, mj_id, i, j
 
@@ -400,10 +440,10 @@ contains
 
    function get_subgroups_bij(self, subgroup_i_id, subgroup_j_id) result(bij)
       !! # get_subgroups_bij
-      !! Get the interaction parameter \(b_{ij} \)
+      !! Get the interaction parameter \(b_{ij}\)
       !!
       !! # Description
-      !! Get the interaction parameter \(b_{ij} \) of the subgroups `i` and `j`
+      !! Get the interaction parameter \(b_{ij}\) of the subgroups `i` and `j`
       !! ids.
       !!
       !! # Examples
@@ -424,6 +464,10 @@ contains
       !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij} \)
       !! parameters
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: subgroup_i_id
@@ -431,7 +475,7 @@ contains
       integer, intent(in) :: subgroup_j_id
       !! ID of the subgroup `j`
       real(pr) :: bij
-      !! Interaction parameter \(b_{ij} \)
+      !! Interaction parameter \(b_{ij}\)
 
       integer :: mi_id, mj_id, i, j
 
@@ -446,10 +490,10 @@ contains
 
    function get_subgroups_cij(self, subgroup_i_id, subgroup_j_id) result(cij)
       !! # get_subgroups_cij
-      !! Get the interaction parameter \(c_{ij} \)
+      !! Get the interaction parameter \(c_{ij}\)
       !!
       !! # Description
-      !! Get the interaction parameter \(c_{ij} \) of the subgroups `i` and `j`
+      !! Get the interaction parameter \(c_{ij}\) of the subgroups `i` and `j`
       !! ids.
       !!
       !! # Examples
@@ -470,6 +514,10 @@ contains
       !! In the example we obtain 0.0 because UNIFAC only have \(a_{ij} \)
       !! parameters
       !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
+      !! bst.com/published-parameters-unifac.html)
+      !!
       class(GeGCModelParameters) :: self
 
       integer, intent(in) :: subgroup_i_id
@@ -477,7 +525,7 @@ contains
       integer, intent(in) :: subgroup_j_id
       !! ID of the subgroup `j`
       real(pr) :: cij
-      !! Interaction parameter \(c_{ij} \)
+      !! Interaction parameter \(c_{ij}\)
 
       integer :: mi_id, mj_id, i, j
 

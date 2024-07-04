@@ -102,4 +102,3 @@ case $1 in
         run_coverage
         resumee;;
 esac
-resumee

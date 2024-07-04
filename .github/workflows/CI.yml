@@ -1,6 +1,7 @@
 name: CI
 on: [push]
 
+
 jobs:
   Fortran:
     runs-on: ${{ matrix.os }}
@@ -8,17 +9,29 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        gcc_v: [10] # Version of GFortran we want to use.
         python-version: [3.9]
-    env:
-      FC: gfortran-${{ matrix.gcc_v }}
-      GCC_V: ${{ matrix.gcc_v }}
-
+        toolchain:
+          - {compiler: gcc, version: 10}
+          - {compiler: gcc, version: 11}
+          - {compiler: gcc, version: 12}
+          - {compiler: gcc, version: 13}
+          # - {compiler: intel-classic, version: '2024.1'}
+          - {compiler: intel, version: '2024.1'}
+          - {compiler: intel, version: '2023.2'}
+          # - {compiler: nvidia-hpc, version: '23.11'}
+          # - {compiler: intel-classic, version: '2023.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
         submodules: false
+
+    - name: Setup Fortran Compiler
+      uses: fortran-lang/setup-fortran@v1
+      id: setup-fortran
+      with:
+        compiler: ${{ matrix.toolchain.compiler }}
+        version: ${{ matrix.toolchain.version }}
 
     - name: Install Python
       uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
@@ -34,37 +47,35 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Python dependencies
-      if: contains( matrix.os, 'ubuntu')
       run: |
         python -m pip install --upgrade pip
         pip install ford numpy matplotlib gcovr numpy scipy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Install GFortran Linux
-      if: contains( matrix.os, 'ubuntu')
-      run: |
-        sudo apt-get install lcov
-        sudo update-alternatives \
-           --install /usr/bin/gcc gcc /usr/bin/gcc-${{ matrix.gcc_v }} 100 \
-           --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${{ matrix.gcc_v }} \
-           --slave /usr/bin/gcov gcov /usr/bin/gcov-${{ matrix.gcc_v }}
-
     - name: Install NLopt
       run:
         sudo apt-get install libnlopt-dev
 
-    - name: Compile
-      run: fpm build --profile release
-
-    - name: Run tests
-      run: |
-        fpm test --profile debug --flag -coverage
-        bash ci/ci.sh
+        # - name: Compile
+        #   run: fpm build --profile release --compiler ${{ env.FC }} --c-compiler gcc
     
+    - name: Run tests without coverage
+      if: ${{ env.FC != 'gfortran' }}
+      run: |
+        fpm test --profile debug --compiler ${{ env.FC }} --c-compiler gcc
+
+    - name: Run tests with coverage
+      if: ${{ env.FC == 'gfortran' }}
+      run: |
+        fpm test --profile debug --flag -coverage --compiler ${{ env.FC }} --c-compiler gcc
+        bash ci/ci.sh
+
     - name: Coverage
       run: bash ci/ci.sh coverage
+      if: ${{ env.FC == 'gfortran' }}
 
     - name: Upload coverage reports to Codecov
+      if: ${{ env.FC == 'gfortran' }}
       uses: codecov/codecov-action@v4.0.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

@@ -1,5 +1,5 @@
 ---
-title: Phase Equilibria
+title: Phase Equilibrium
 ---
 
 Phase Equilibria calculations are fundamental for the majority of EoS based
