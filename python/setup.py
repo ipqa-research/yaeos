@@ -24,7 +24,7 @@ def pre_build():
             "--profile",
             "release",
             "--flag",
-            "-g -fPIC",
+            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays  -faggressive-function-elimination -fopenmp",
             "--c-flag",
             "-fPIC",
             "--prefix",

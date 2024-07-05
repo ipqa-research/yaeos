@@ -40,6 +40,9 @@ program main
     eq = saturation_pressure(eos, n, 273._pr + 100._pr, kind="bubble")
     print *, eq%x(1), eq%y(1), eq%P
    end do
+
+   call ge_model%ln_activity_coefficient([0.3_pr, 0.7_pr], 250._pr, n)
+   print *, n
 end program main
 
 

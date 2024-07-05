@@ -13,20 +13,7 @@ module yaeos_c
    !! is called. This procedure searches for the first `free_x_models` id and
    !! allocates the singleton model there, returning the `id` of the procedure.
    use iso_c_binding, only: c_double, c_int, c_int64_t
-   use yaeos, only: &
-   ! Generic Models
-   & ArModel, GeModel, &
-
-   ! Cubic Models
-   & CubicEoS, &
-   & SoaveRedlichKwong, PengRobinson76, PengRobinson78, &
-   & CubicMixRule, QMR, MHV, &
-
-   ! Ge Models
-   & fNRTL => NRTL, &
-
-   ! Thermodynamic properties
-   & fugacity_vt
+   use yaeos, only: ArModel, GeModel
    implicit none
 
    private
@@ -40,6 +27,7 @@ module yaeos_c
    public :: nrtl
    public :: flash
    public :: saturation_pressure
+   public :: ln_gamma
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -68,6 +56,7 @@ contains
    !  Ge Models
    ! --------------------------------------------------------------------------
    subroutine nrtl(a, b, c, id)
+      use yaeos, only: fNRTL => NRTL
       real(c_double), intent(in) :: a(:,:), b(:,:), c(:,:)
       integer(c_int), intent(out) :: id
       ge_model = fNRTL(a, b, c)
@@ -98,6 +87,14 @@ contains
       integer(c_int), intent(in) :: id
       free_ge_model(id) = .true.
    end subroutine make_available_ge_models_list
+
+   subroutine ln_gamma(id, n, T, lngamma)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: T
+      real(c_double), intent(out) :: lngamma(size(n))
+      call ge_models(id)%model%ln_activity_coefficient(n, T, lngamma)
+   end subroutine
 
    ! =============================================================================
    !  Ar Models
@@ -131,6 +128,7 @@ contains
    !  Cubic Mixing rules
    ! --------------------------------------------------------------------------
    subroutine set_mhv(ar_id, ge_id, q)
+      use yaeos, only: MHV, CubicEoS
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
       real(c_double), intent(in) :: q
@@ -151,7 +149,7 @@ contains
    end subroutine set_mhv
    
    subroutine set_qmr(ar_id, kij, lij)
-      use yaeos, only: QMR
+      use yaeos, only: QMR, CubicEoS
       integer(c_int), intent(in) :: ar_id
       real(c_double) :: kij(:, :)
       real(c_double) :: lij(:, :)
@@ -174,6 +172,7 @@ contains
    !  Cubic EoS
    ! --------------------------------------------------------------------------
    subroutine pr76(tc, pc, w, id) bind(C, name="PR76")
+      use yaeos, only: PengRobinson76
       real(c_double), intent(in) :: tc(:), pc(:), w(:)
       integer(c_int), intent(out) :: id
 
@@ -182,6 +181,7 @@ contains
    end subroutine pr76
 
    subroutine srk(tc, pc, w, kij, lij, id)
+      use yaeos, only: SoaveRedlichKwong
       real(c_double), intent(in) :: tc(:), pc(:), w(:), kij(:, :), lij(:, :)
       integer(c_int), intent(out) :: id
       ar_model = SoaveRedlichKwong(tc, pc, w, kij, lij)
@@ -192,6 +192,7 @@ contains
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
    subroutine fug_vt(id, n, v, t, lnfug, dlnphidp, dlnphidt, dlnphidn)
+      use yaeos, only: fugacity_vt
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
       real(c_double), intent(out) :: lnfug(size(n))
@@ -282,5 +283,4 @@ contains
       sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine
-   
 end module yaeos_c
