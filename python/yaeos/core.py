@@ -8,12 +8,15 @@ import numpy as np
 from yaeos import yaeos_c
 
 class GeModel(ABC):
-    ...
+    """Excess Gibbs model.
+    """
 
     def __del__(self):
         yaeos_c.make_available_ge_models_list(self.id)
 
 class ArModel(ABC):
+    """Residual Helmholtz (Ar) model
+    """
 
     def fugacity(self, n, v, t, dt=None, dp=None, dn=None):
 
@@ -26,7 +29,9 @@ class ArModel(ABC):
         if dn:
             dn = np.empty((nc, nc), order="F")
 
-        res = yaeos_c.fug_vt(self.id, n, v, t, dlnphidt=dt, dlnphidp=dp, dlnphidn=dn)
+        res = yaeos_c.fug_vt(
+            self.id, n, v, t, dlnphidt=dt, dlnphidp=dp, dlnphidn=dn
+        )
         res = {"ln_phi": res, "dt": dt, "dp": dp, "dn": dn}
         return res
 
