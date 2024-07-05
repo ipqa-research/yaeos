@@ -18,16 +18,23 @@ module yaeos_c
 
    private
 
-   public :: pr76
-   public :: srk
-   public :: fug_vt
+   ! CubicEoS
+   public :: srk, pr76, pr78
+   ! Mixing rules
+   public :: set_mhv, set_qmr
+   
+   ! __del__
    public :: make_available_ar_models_list
    public :: make_available_ge_models_list
-   public :: set_mhv, set_qmr
+   ! GeMoels
    public :: nrtl
+   public :: ln_gamma
+   
+   ! Thermoprops
+   public :: fug_vt
+   ! Phase equilibria
    public :: flash
    public :: saturation_pressure
-   public :: ln_gamma
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -128,6 +135,7 @@ contains
    !  Cubic Mixing rules
    ! --------------------------------------------------------------------------
    subroutine set_mhv(ar_id, ge_id, q)
+      !! Michelsen's Modified Huron-Vidal 1 with constant `q_1` parameter
       use yaeos, only: MHV, CubicEoS
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
@@ -169,9 +177,9 @@ contains
    end subroutine set_qmr
 
    ! ==========================================================================
-   !  Cubic EoS
+   !  Cubic EoS implementations
    ! --------------------------------------------------------------------------
-   subroutine pr76(tc, pc, w, id) bind(C, name="PR76")
+   subroutine pr76(tc, pc, w, id)
       use yaeos, only: PengRobinson76
       real(c_double), intent(in) :: tc(:), pc(:), w(:)
       integer(c_int), intent(out) :: id
@@ -179,6 +187,15 @@ contains
       ar_model = PengRobinson76(tc, pc, w)
       call extend_ar_models_list(id)
    end subroutine pr76
+   
+   subroutine pr78(tc, pc, w, id)
+      use yaeos, only: PengRobinson78
+      real(c_double), intent(in) :: tc(:), pc(:), w(:)
+      integer(c_int), intent(out) :: id
+
+      ar_model = PengRobinson78(tc, pc, w)
+      call extend_ar_models_list(id)
+   end subroutine pr78
 
    subroutine srk(tc, pc, w, kij, lij, id)
       use yaeos, only: SoaveRedlichKwong
@@ -206,7 +223,6 @@ contains
          n, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
          )
    end subroutine fug_vt
-
 
    ! ==========================================================================
    ! Phase equilibria
