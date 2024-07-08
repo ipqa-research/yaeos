@@ -1,16 +1,15 @@
-from setuptools import setup, Command, find_packages
+from setuptools import setup, Command
 import subprocess
 import shutil
 from setuptools.command.install import install
 from setuptools.command.sdist import sdist
-from setuptools.command.egg_info import egg_info
 from setuptools.command.editable_wheel import editable_wheel
 from pathlib import Path
 import sysconfig
 
 
 # =============================================================================
-# Building
+# Directories
 # =============================================================================
 THIS_DIR = Path(__file__).parent
 BUILD_DIR = (THIS_DIR.parent / "build" / "python").absolute()
@@ -18,6 +17,9 @@ LINK_DIR = BUILD_DIR / "lib"
 INCL_DIR = BUILD_DIR / "include"
 
 
+# =============================================================================
+# Usefull functions
+# =============================================================================
 def pre_build():
     subprocess.check_call(
         [
@@ -26,7 +28,7 @@ def pre_build():
             "--profile",
             "release",
             "--flag",
-            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays  -faggressive-function-elimination -fopenmp",
+            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp",
             "--c-flag",
             "-fPIC",
             "--prefix",
@@ -49,7 +51,26 @@ def pre_build():
         ]
     )
 
+def clean_editable_compiled():
+    # Erase all compiled files just in case before building again
+    compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
 
+    if compiled_module_dir.exists():
+        for so_file in compiled_module_dir.glob("*.so"):
+            so_file.unlink()
+
+
+def move_compiled_to_editable_loc():
+    for file in THIS_DIR.glob("yaeos_compiled.*"):
+        target_dir = THIS_DIR / "yaeos" / "compiled_module"
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        shutil.move(file.absolute(), (target_dir / file.name).absolute())
+
+
+# =============================================================================
+# Build command
+# =============================================================================
 class BuildFortran(Command):
     description = "Compile Fortran library with fpm and f2py"
     user_options = []
@@ -70,6 +91,8 @@ class BuildFortran(Command):
 # =============================================================================
 class CustomInstall(install):
     def run(self):
+        clean_editable_compiled()
+        
         try:
             self.run_command("build_fortran")
         except:
@@ -91,23 +114,13 @@ class CustomInstall(install):
 # =============================================================================
 class CustomEditable(editable_wheel):
     def run(self):
-        # Erase all compiled files just in case before building again
-        compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
+        clean_editable_compiled()
 
-        if compiled_module_dir.exists():
-            for so_file in compiled_module_dir.glob("*.so"):
-                so_file.unlink()
-
-        # Build fortran and move the compilation to compiled_module
         self.run_command("build_fortran")
 
-        for file in THIS_DIR.glob("yaeos_compiled.*"):
-            target_dir = THIS_DIR / "yaeos" / "compiled_module"
-            target_dir.mkdir(parents=True, exist_ok=True)
+        move_compiled_to_editable_loc()
 
-            shutil.move(file.absolute(), (target_dir / file.name).absolute())
-
-        # Run base editable_wheel method
+        # Run base editable_wheel run method
         super().run()
 
 
@@ -115,36 +128,27 @@ class CustomEditable(editable_wheel):
 # - Python Build for distribution
 # =============================================================================
 class CustomBuild(sdist):
-    def run(self):
-        print("AAAAAAAAAAAAAAAAAAAA")
-        print(THIS_DIR.absolute())
-        print(type(self))
-        
-        pre_build()
+    def run(self):       
+        clean_editable_compiled()
 
-        # Erase all compiled files just in case before building again
-        compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
-
-        if compiled_module_dir.exists():
-            for so_file in compiled_module_dir.glob("*.so"):
-                so_file.unlink()
-
-        # Build fortran and move the compilation to compiled_module
         self.run_command("build_fortran")
 
-        for file in THIS_DIR.glob("yaeos_compiled.*"):
-            target_dir = THIS_DIR / "yaeos" / "compiled_module"
-            target_dir.mkdir(parents=True, exist_ok=True)
+        move_compiled_to_editable_loc()
 
-            shutil.move(file.absolute(), (target_dir / file.name).absolute())
-
+        # Run base sdist run method
         super().run()
 
 
+# =============================================================================
+# Call setup
+# =============================================================================
 setup(
     name="yaeos",
     version="0.3.5",
-    packages=find_packages(),
+    package_data={
+        'yaeos': ['compiled_module/*.so']
+    },
+    include_package_data=True,
     cmdclass={
         "build_fortran": BuildFortran,
         "editable_wheel": CustomEditable,
