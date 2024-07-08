@@ -1,7 +1,8 @@
-from setuptools import setup, Command
+from setuptools import setup, Command, find_packages
 import subprocess
 import shutil
 from setuptools.command.install import install
+from setuptools.command.develop import develop
 from pathlib import Path
 import sysconfig
 
@@ -16,7 +17,6 @@ INCL_DIR = BUILD_DIR / "include"
 
 
 def pre_build():
-
     subprocess.check_call(
         [
             "fpm",
@@ -60,12 +60,6 @@ class BuildFortran(Command):
 
     def run(self):
         pre_build()
-        site_packages_dir = Path(sysconfig.get_path("purelib"))
-
-        for file in THIS_DIR.glob("yaeos_compiled.*"):
-            target_dir = site_packages_dir / "yaeos" / "compiled_module"
-            target_dir.mkdir(parents=True, exist_ok=True)
-            shutil.move(file, target_dir)
 
 
 # =============================================================================
@@ -75,40 +69,43 @@ class BuildFortran(Command):
 #
 # python3 setup.py build_fortran_editable
 # =============================================================================
-class BuildFortranEditable(BuildFortran):
-
+class CustomDevelop(develop):
     def run(self):
-        pre_build()
+        print("this command is editable")
+        
+        self.run_command("build_fortran")
+
         for file in THIS_DIR.glob("yaeos_compiled.*"):
             target_dir = Path(".") / "yaeos" / "compiled_module"
             target_dir.mkdir(parents=True, exist_ok=True)
 
             shutil.move(file.absolute(), target_dir.absolute()/file)
 
+        super().run()
+
 
 class CustomInstall(install):
     def run(self):
+        print("this command is no editable")
         self.run_command("build_fortran")
-        install.run(self)
+
+        site_packages_dir = Path(sysconfig.get_path("purelib"))
+
+        for file in THIS_DIR.glob("yaeos_compiled.*"):
+            target_dir = site_packages_dir / "yaeos" / "compiled_module"
+            target_dir.mkdir(parents=True, exist_ok=True)
+            shutil.move(file, target_dir)
+
+        super().run()
 
 
 setup(
     name="yaeos",
     version="0.3.5",
-    packages=["yaeos"],
+    packages= find_packages(),
     cmdclass={
         "build_fortran": BuildFortran,
-        "build_fortran_editable": BuildFortranEditable,
+        "develop": CustomDevelop,
         "install": CustomInstall,
-    },
-    install_requires=["numpy", "fpm"],
-    package_data={
-        "yaeos": [
-            "compiled_module/",
-        ],
-    },
-    include_package_data=True,
-    exclude_package_data={
-        "yaeos": ["__pycache__", "*.f90", "*.egg-info"],
     },
 )
