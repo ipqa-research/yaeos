@@ -2,7 +2,9 @@ from setuptools import setup, Command, find_packages
 import subprocess
 import shutil
 from setuptools.command.install import install
-from setuptools.command.develop import develop
+from setuptools.command.sdist import sdist
+from setuptools.command.egg_info import egg_info
+from setuptools.command.editable_wheel import editable_wheel
 from pathlib import Path
 import sysconfig
 
@@ -10,8 +12,8 @@ import sysconfig
 # =============================================================================
 # Building
 # =============================================================================
-THIS_DIR = Path(".")
-BUILD_DIR = (Path("..") / "build" / "python").absolute()
+THIS_DIR = Path(__file__).parent
+BUILD_DIR = (THIS_DIR.parent / "build" / "python").absolute()
 LINK_DIR = BUILD_DIR / "lib"
 INCL_DIR = BUILD_DIR / "include"
 
@@ -63,31 +65,15 @@ class BuildFortran(Command):
 
 
 # =============================================================================
-# Building for developers (editable installation)
-# install the package on the enviroment (pip install -e .)
-# Build fortran to the editable command with:
-#
-# python3 setup.py build_fortran_editable
+# - Normal build and installation:
+#      pip install .
 # =============================================================================
-class CustomDevelop(develop):
-    def run(self):
-        print("this command is editable")
-        
-        self.run_command("build_fortran")
-
-        for file in THIS_DIR.glob("yaeos_compiled.*"):
-            target_dir = Path(".") / "yaeos" / "compiled_module"
-            target_dir.mkdir(parents=True, exist_ok=True)
-
-            shutil.move(file.absolute(), target_dir.absolute()/file)
-
-        super().run()
-
-
 class CustomInstall(install):
     def run(self):
-        print("this command is no editable")
-        self.run_command("build_fortran")
+        try:
+            self.run_command("build_fortran")
+        except:
+            ...
 
         site_packages_dir = Path(sysconfig.get_path("purelib"))
 
@@ -99,13 +85,71 @@ class CustomInstall(install):
         super().run()
 
 
+# =============================================================================
+# - Building for developers (editable installation)
+#      pip install -e .
+# =============================================================================
+class CustomEditable(editable_wheel):
+    def run(self):
+        # Erase all compiled files just in case before building again
+        compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
+
+        if compiled_module_dir.exists():
+            for so_file in compiled_module_dir.glob("*.so"):
+                so_file.unlink()
+
+        # Build fortran and move the compilation to compiled_module
+        self.run_command("build_fortran")
+
+        for file in THIS_DIR.glob("yaeos_compiled.*"):
+            target_dir = THIS_DIR / "yaeos" / "compiled_module"
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            shutil.move(file.absolute(), (target_dir / file.name).absolute())
+
+        # Run base editable_wheel method
+        super().run()
+
+
+# =============================================================================
+# - Python Build for distribution
+# =============================================================================
+class CustomBuild(sdist):
+    def run(self):
+        print("AAAAAAAAAAAAAAAAAAAA")
+        print(THIS_DIR.absolute())
+        print(type(self))
+        
+        pre_build()
+
+        # Erase all compiled files just in case before building again
+        compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
+
+        if compiled_module_dir.exists():
+            for so_file in compiled_module_dir.glob("*.so"):
+                so_file.unlink()
+
+        # Build fortran and move the compilation to compiled_module
+        self.run_command("build_fortran")
+
+        for file in THIS_DIR.glob("yaeos_compiled.*"):
+            target_dir = THIS_DIR / "yaeos" / "compiled_module"
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            shutil.move(file.absolute(), (target_dir / file.name).absolute())
+
+        super().run()
+
+
 setup(
     name="yaeos",
     version="0.3.5",
-    packages= find_packages(),
+    packages=find_packages(),
     cmdclass={
         "build_fortran": BuildFortran,
-        "develop": CustomDevelop,
+        "editable_wheel": CustomEditable,
         "install": CustomInstall,
+        "sdist": CustomBuild,
     },
+    install_requires=["numpy"],
 )

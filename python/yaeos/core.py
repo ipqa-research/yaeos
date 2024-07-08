@@ -7,16 +7,16 @@ from functools import partial
 import numpy as np
 from yaeos import yaeos_c
 
+
 class GeModel(ABC):
-    """Excess Gibbs model.
-    """
+    """Excess Gibbs model."""
 
     def __del__(self):
         yaeos_c.make_available_ge_models_list(self.id)
 
+
 class ArModel(ABC):
-    """Residual Helmholtz (Ar) model
-    """
+    """Residual Helmholtz (Ar) model"""
 
     def fugacity(self, n, v, t, dt=None, dp=None, dn=None):
 
@@ -96,4 +96,3 @@ class PengRobinson76(CubicEoS):
     def set_mixrule(self, mixrule: CubicMixRule):
         self.mixrule = mixrule
         self.mixrule.set_mixrule(self.id)
-
