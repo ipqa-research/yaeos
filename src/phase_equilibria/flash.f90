@@ -161,6 +161,7 @@ contains
       if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
 
       if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
+         flash%kind = "failed"
          P = -1.0
          flash%x = x/x
          flash%y = y/y
