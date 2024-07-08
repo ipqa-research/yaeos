@@ -26,20 +26,16 @@ module yaeos__fitting
    end type FittingProblem
 
    abstract interface
-      function model_from_X(problem, X)
+      subroutine model_from_X(problem, X)
          !! Function that returns a setted model from the parameters vector
          import ArModel, FittingProblem, pr
-         class(FittingProblem), intent(in) :: problem
+         class(FittingProblem), intent(in out) :: problem
          real(pr), intent(in) :: X(:)
-         
-         class(ArModel), allocatable :: model_from_X
-      end function model_from_X
+      end subroutine model_from_X
    end interface
 
    type(bar_object), private :: bar
    integer, private :: count
-
-   class(ArModel), private, allocatable :: model
 
 contains
 
@@ -55,13 +51,13 @@ contains
       type(nlopt_opt) :: opt !! Optimizer
       type(nlopt_func) :: f !! Function to optimize
       integer :: stat
-      
+
       count = 0
       call bar%initialize(&
          prefix_string='Fitting... ',&
          width=1, spinner_string='⠋', spinner_color_fg='blue', &
          min_value=0._pr, max_value=100._pr &
-      )
+         )
       call bar%start
 
       ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(X))
@@ -106,60 +102,76 @@ contains
        class is(FittingProblem)
          fobj = error_function(X, func_data)
          if (func_data%verbose) then
-           call bar%update(current=real(count,pr)/(count + 100))
-           write(*, "(E15.4, 2x)", advance="no") fobj
+            call bar%update(current=real(count,pr)/(count + 100))
+            write(*, "(E15.4, 2x)", advance="no") fobj
          end if
       end select
-      write(2, *) X, fobj
+      write(2, "(*(E15.4,2x))") X, fobj
       write(1, "(/)")
-      
+
       count = count + 1
    end function fobj
 
    real(pr) function error_function(X, func_data) result(fobj)
+      !! # `error_function`
+      !! Error function for phase-equilibria optimization. Using two-phase
+      !! points and an error function of:
+      !! 
+      !! \[
+      !!   FO =   \sum_i (\frac{P_i^{exp} - P_i^{calc}}{P_i^{exp}})^2
+      !!        + \sum_i (y_i^{exp} - y_i^{calc})**2
+      !!        + \sum_i (x_i^{exp} - x_i^{calc})**2
+      !! \]
       use yaeos__math, only: sq_error
       real(pr), intent(in) :: X(:)
-      class(FittingProblem), intent(in) :: func_data
+      class(FittingProblem) :: func_data
 
       type(EquilibriaState) :: model_point !! Each solved point
       type(EquilibriaState) :: exp_point
 
       integer :: i
 
-      model = func_data%get_model_from_X(X)
+      ! Update the problem model to the new vector of parameters
+      call func_data%get_model_from_X(X)
+
       fobj = 0
 
-      do i=1, size(func_data%experimental_points)
-         exp_point = func_data%experimental_points(i)
+      associate( model => func_data%model )
+         
+         ! Calculate each point and  calculate its error.
+         ! if at some point there is a NaN value, assign a big number and
+         ! exit
+         do i=1, size(func_data%experimental_points)
+            exp_point = func_data%experimental_points(i)
 
-         select case(exp_point%kind)
-          case("bubble")
-            model_point = saturation_pressure(&
-               model, exp_point%x, exp_point%t, kind="bubble", &
-               p0=exp_point%p, y0=exp_point%y &
-               )
-          case("dew")
-            model_point = saturation_pressure(&
-               model, exp_point%y, exp_point%t, kind="dew", &
-               p0=exp_point%p, y0=exp_point%x &
-               )
-          case("liquid-liquid")
-            model_point = saturation_pressure(&
-               model, exp_point%x, exp_point%t, kind="liquid-liquid", &
-               p0=exp_point%p, y0=exp_point%y &
-               )
+            select case(exp_point%kind)
+             case("bubble")
+               model_point = saturation_pressure(&
+                  model, exp_point%x, exp_point%t, kind="bubble", &
+                  p0=exp_point%p, y0=exp_point%y &
+                  )
+             case("dew")
+               model_point = saturation_pressure(&
+                  model, exp_point%y, exp_point%t, kind="dew", &
+                  p0=exp_point%p, y0=exp_point%x &
+                  )
+             case("liquid-liquid")
+               model_point = saturation_pressure(&
+                  model, exp_point%x, exp_point%t, kind="liquid-liquid", &
+                  p0=exp_point%p, y0=exp_point%y &
+                  )
+            end select
 
-         end select
+            fobj = fobj + sq_error(exp_point%p, model_point%p)
+            fobj = fobj + maxval(sq_error(exp_point%y, model_point%y))
+            fobj = fobj + maxval(sq_error(exp_point%x, model_point%x))
+            write(1, *) exp_point, model_point
 
-         fobj = fobj + sq_error(exp_point%p, model_point%p)
-         fobj = fobj + maxval(sq_error(exp_point%y, model_point%y))
-         fobj = fobj + maxval(sq_error(exp_point%x, model_point%x))
-         write(1, *) exp_point, model_point
-
-         if(isnan(fobj)) then
-            fobj = 1e6
-            exit
-         end if
-      end do
+            if(isnan(fobj)) then
+               ! fobj = 1e6
+               exit
+            end if
+         end do
+      end associate
    end function error_function
 end module yaeos__fitting
