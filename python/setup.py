@@ -1,11 +1,12 @@
-from setuptools import setup, Command
-import subprocess
 import shutil
+import subprocess
+import sysconfig
+from pathlib import Path
+
+from setuptools import Command, setup
+from setuptools.command.editable_wheel import editable_wheel
 from setuptools.command.install import install
 from setuptools.command.sdist import sdist
-from setuptools.command.editable_wheel import editable_wheel
-from pathlib import Path
-import sysconfig
 
 
 # =============================================================================
@@ -21,6 +22,8 @@ INCL_DIR = BUILD_DIR / "include"
 # Usefull functions
 # =============================================================================
 def pre_build():
+    """Execute fpm and f2py compilations commands."""
+
     subprocess.check_call(
         [
             "fpm",
@@ -28,7 +31,8 @@ def pre_build():
             "--profile",
             "release",
             "--flag",
-            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp",
+            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays",
+            "-faggressive-function-elimination -fopenmp",
             "--c-flag",
             "-fPIC",
             "--prefix",
@@ -51,8 +55,10 @@ def pre_build():
         ]
     )
 
+
 def clean_editable_compiled():
-    # Erase all compiled files just in case before building again
+    """Erase all compiled files from development directory"""
+
     compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
 
     if compiled_module_dir.exists():
@@ -61,6 +67,8 @@ def clean_editable_compiled():
 
 
 def move_compiled_to_editable_loc():
+    """Move compiled files to 'compiled_module' directory"""
+
     for file in THIS_DIR.glob("yaeos_compiled.*"):
         target_dir = THIS_DIR / "yaeos" / "compiled_module"
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -92,10 +100,13 @@ class BuildFortran(Command):
 class CustomInstall(install):
     def run(self):
         clean_editable_compiled()
-        
+
         try:
             self.run_command("build_fortran")
-        except:
+        except subprocess.CalledProcessError:
+            # Get this error when building the python project. At this point,
+            # when building the python project, the fortran code has been
+            # alredy compiled.
             ...
 
         site_packages_dir = Path(sysconfig.get_path("purelib"))
@@ -126,9 +137,11 @@ class CustomEditable(editable_wheel):
 
 # =============================================================================
 # - Python Build for distribution
+#      pip install build
+#      python3 -m build
 # =============================================================================
 class CustomBuild(sdist):
-    def run(self):       
+    def run(self):
         clean_editable_compiled()
 
         self.run_command("build_fortran")
@@ -142,18 +155,38 @@ class CustomBuild(sdist):
 # =============================================================================
 # Call setup
 # =============================================================================
+name = "yaeos"
+version = "0.3.0"
+author = "Federico E. Benelli"
+author_email = "federico.benelli@mi.unc.edu.ar"
+maintainer = "Federico E. Benelli"
+maintainer_email = "federico.benelli@mi.unc.edu.ar"
+lic = "MPL"
+
 setup(
-    name="yaeos",
-    version="0.3.5",
-    package_data={
-        'yaeos': ['compiled_module/*.so']
-    },
-    include_package_data=True,
+    name=name,
+    version=version,
+    author=author,
+    author_email=author_email,
+    maintainer=maintainer,
+    maintainer_email=maintainer_email,
+    description="",
+    license=lic,
+    keywords="thermodynamics equation-of-state",
+    url="https://github.com/ipqa-research/yaeos",
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Science/Research/Engineering",
+        "Topic :: Thermodynamics",
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    ],
+    install_requires=["numpy"],
     cmdclass={
         "build_fortran": BuildFortran,
         "editable_wheel": CustomEditable,
         "install": CustomInstall,
         "sdist": CustomBuild,
     },
-    install_requires=["numpy"],
+    package_data={"yaeos": ["compiled_module/*.so"]},
+    include_package_data=True,
 )

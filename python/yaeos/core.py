@@ -2,9 +2,9 @@
 """
 
 from abc import ABC, abstractmethod
-from functools import partial
 
 import numpy as np
+
 from yaeos import yaeos_c
 
 
@@ -50,7 +50,7 @@ class NRTL:
 
 class CubicMixRule(ABC):
     @abstractmethod
-    def set_mixrule(ar_model_id):
+    def set_mixrule(self, ar_model_id):
         raise NotImplementedError
 
 
