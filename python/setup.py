@@ -17,6 +17,9 @@ BUILD_DIR = (THIS_DIR.parent / "build" / "python").absolute()
 LINK_DIR = BUILD_DIR / "lib"
 INCL_DIR = BUILD_DIR / "include"
 
+# Signal to skip compilation when building
+compilation_skip_signal = not (THIS_DIR / "tox.ini").exists()
+
 
 # =============================================================================
 # Usefull functions
@@ -90,7 +93,12 @@ class BuildFortran(Command):
         pass
 
     def run(self):
-        pre_build()
+        if compilation_skip_signal:
+            # Do not compile, we are building, the compilation has been already
+            # done at this point.
+            ...
+        else:
+            pre_build()
 
 
 # =============================================================================
@@ -101,13 +109,7 @@ class CustomInstall(install):
     def run(self):
         clean_editable_compiled()
 
-        try:
-            self.run_command("build_fortran")
-        except subprocess.CalledProcessError:
-            # Get this error when building the python project. At this point,
-            # when building the python project, the fortran code has been
-            # alredy compiled.
-            ...
+        self.run_command("build_fortran")
 
         site_packages_dir = Path(sysconfig.get_path("purelib"))
 
@@ -142,6 +144,7 @@ class CustomEditable(editable_wheel):
 # =============================================================================
 class CustomBuild(sdist):
     def run(self):
+        # Clean compiled files and recompile as an editable installation
         clean_editable_compiled()
 
         self.run_command("build_fortran")
