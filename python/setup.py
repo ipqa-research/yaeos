@@ -20,6 +20,8 @@ INCL_DIR = BUILD_DIR / "include"
 # Signal to skip compilation when building
 compilation_skip_signal = not (THIS_DIR / "tox.ini").exists()
 
+print()
+
 
 # =============================================================================
 # Usefull functions
@@ -34,8 +36,7 @@ def pre_build():
             "--profile",
             "release",
             "--flag",
-            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays",
-            "-faggressive-function-elimination -fopenmp",
+            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp", # noqa
             "--c-flag",
             "-fPIC",
             "--prefix",
@@ -61,7 +62,11 @@ def pre_build():
 
 def clean_editable_compiled():
     """Erase all compiled files from development directory"""
+    # Clear fpm build
+    if BUILD_DIR.exists():
+        shutil.rmtree(BUILD_DIR)
 
+    # Clear compiled files on compiled_files
     compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
 
     if compiled_module_dir.exists():
@@ -116,6 +121,10 @@ class CustomInstall(install):
         for file in THIS_DIR.glob("yaeos_compiled.*"):
             target_dir = site_packages_dir / "yaeos" / "compiled_module"
             target_dir.mkdir(parents=True, exist_ok=True)
+
+            if (target_dir / file.name).exists():
+                (target_dir / file.name).unlink()
+
             shutil.move(file, target_dir)
 
         super().run()
