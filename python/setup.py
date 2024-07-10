@@ -20,8 +20,6 @@ INCL_DIR = BUILD_DIR / "include"
 # Signal to skip compilation when building
 compilation_skip_signal = not (THIS_DIR / "tox.ini").exists()
 
-print()
-
 
 # =============================================================================
 # Usefull functions
@@ -36,7 +34,7 @@ def pre_build():
             "--profile",
             "release",
             "--flag",
-            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp", # noqa
+            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp",  # noqa
             "--c-flag",
             "-fPIC",
             "--prefix",
