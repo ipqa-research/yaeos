@@ -10,15 +10,12 @@ from setuptools.command.sdist import sdist
 
 
 # =============================================================================
-# Directories
+# Directories and constants
 # =============================================================================
 THIS_DIR = Path(__file__).parent
 BUILD_DIR = (THIS_DIR.parent / "build" / "python").absolute()
 LINK_DIR = BUILD_DIR / "lib"
 INCL_DIR = BUILD_DIR / "include"
-
-# Signal to skip compilation when building
-compilation_skip_signal = not (THIS_DIR / "tox.ini").exists()
 
 
 # =============================================================================
@@ -96,7 +93,7 @@ class BuildFortran(Command):
         pass
 
     def run(self):
-        if compilation_skip_signal:
+        if "build" in str(THIS_DIR.absolute()):
             # Do not compile, we are building, the compilation has been already
             # done at this point.
             ...
