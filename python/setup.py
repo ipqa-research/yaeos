@@ -6,6 +6,7 @@ from pathlib import Path
 from setuptools import Command, setup
 from setuptools.command.editable_wheel import editable_wheel
 from setuptools.command.install import install
+from setuptools.command.install_lib import install_lib
 from setuptools.command.sdist import sdist
 
 
@@ -17,7 +18,8 @@ BUILD_DIR = (THIS_DIR.parent / "build" / "python").absolute()
 LINK_DIR = BUILD_DIR / "lib"
 INCL_DIR = BUILD_DIR / "include"
 
-
+FFLAGS = "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp"  # noqa
+CFLAGS = "-fPIC"
 # =============================================================================
 # Usefull functions
 # =============================================================================
@@ -31,9 +33,9 @@ def pre_build():
             "--profile",
             "release",
             "--flag",
-            "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp",  # noqa
+            f"{FFLAGS}",
             "--c-flag",
-            "-fPIC",
+            f"{CFLAGS}",
             "--prefix",
             BUILD_DIR,
         ]
