@@ -6,8 +6,9 @@ from pathlib import Path
 from setuptools import Command, setup
 from setuptools.command.editable_wheel import editable_wheel
 from setuptools.command.install import install
-from setuptools.command.install_lib import install_lib
 from setuptools.command.sdist import sdist
+
+import inspect
 
 
 # =============================================================================
@@ -70,6 +71,10 @@ def clean_editable_compiled():
         for so_file in compiled_module_dir.glob("*.so"):
             so_file.unlink()
 
+    # Additionally, clear any .so files in the root directory if present
+    for so_file in THIS_DIR.glob("yaeos_compiled*.so"):
+        so_file.unlink()
+
 
 def move_compiled_to_editable_loc():
     """Move compiled files to 'compiled_module' directory"""
@@ -111,6 +116,17 @@ class CustomInstall(install):
     def run(self):
         clean_editable_compiled()
 
+        super().run()
+
+        # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        # print(THIS_DIR)
+
+        # frames = inspect.getouterframes(inspect.currentframe())
+        
+        # for f in frames:
+        #     print(f.filename)
+        # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
         self.run_command("build_fortran")
 
         site_packages_dir = Path(sysconfig.get_path("purelib"))
@@ -124,7 +140,7 @@ class CustomInstall(install):
 
             shutil.move(file, target_dir)
 
-        super().run()
+        # super().run()
 
 
 # =============================================================================
@@ -193,7 +209,7 @@ setup(
     cmdclass={
         "build_fortran": BuildFortran,
         "editable_wheel": CustomEditable,
-        "install": CustomInstall,
+        #"install": CustomInstall,
         "sdist": CustomBuild,
     },
     package_data={"yaeos": ["compiled_module/*.so"]},
