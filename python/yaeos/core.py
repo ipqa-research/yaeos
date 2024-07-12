@@ -35,6 +35,55 @@ class ArModel(ABC):
         res = {"ln_phi": res, "dt": dt, "dp": dp, "dn": dn}
         return res
 
+    def flash_tp(self, z, temperature, pressure):
+        """Two-phase split with specification of temperature and pressure.
+
+        Calculates the phase split at a given pressure and temperature
+        """
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
+            self.id, z, temperature, pressure
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "T": temperature,
+            "P": pressure,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def saturation_pressure(self, z, temperature, kind="bubble"):
+        """Saturation pressure at specified temperature
+
+        Arguments
+        ---------
+        z: array
+            Global molar fractions
+        temperature: float
+            Temperature [K]
+        kind: string
+            Kind of saturation point, defaults to "bubble". Options are
+                - "bubble"
+                - "dew"
+                - "liquid-liquid"
+        """
+        P, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
+            self.id, z, temperature, kind
+        )
+
+        return {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "T": temperature,
+            "P": P,
+            "beta": beta,
+        }
+
     def __del__(self):
         yaeos_c.make_available_ar_models_list(self.id)
 
