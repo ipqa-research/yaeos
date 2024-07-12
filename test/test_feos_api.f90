@@ -14,6 +14,4 @@ program test_feos_api
    model%epsilon_k = [150.03_pr, 7._pr]
 
    str = pc_saft_to_str(model)
-
-   print *, str
 end program

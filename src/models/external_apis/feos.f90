@@ -86,7 +86,7 @@ contains
 
          ! Add parameters and identifiers
          call json%add(molecule, parameters)
-         call json%add(molecule, identier)
+         call json%add(molecule, identifier)
 
          call json%add(molecules, molecule)
       end do
