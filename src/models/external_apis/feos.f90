@@ -38,7 +38,7 @@ contains
    real(pr) function pcsaft_v0(self, n, P, T) result(v0)
       class(PCSAFT), intent(in) :: self
       real(pr), intent(in) :: n(:), P, T
-      error stop 1
+      v0 = sum(n * self%sigma**3)
    end function pcsaft_v0
 
    function pc_saft_to_str(self) result(json_str)
@@ -48,67 +48,53 @@ contains
       character(kind=CK, len=:), allocatable :: json_str
 
       type(json_core) :: json
-      type(json_value), pointer :: base, molecule, molecules, params, ident
+      type(json_value), pointer :: &
+         base, molecule, molecules, parameters, identifier
 
       integer :: i
 
       call json%initialize()
-
       call json%create_object(base,'')
+
+      ! Add model name
       call json%add(base, "residual_model", "PC-SAFT")
+      ! No ideal gas model
       call json%add(base, "ideal_gas_model", "")
+
+      ! Make an array where each substance will be two json variables.
       call json%create_array(molecules,'residual_substance_parameters')
       do i=1,size(self%m)
          call json%create_object(molecule, "")
-         call json%create_object(params, 'model_record')
-         call json%create_object(ident, 'identifier')
+         call json%create_object(parameters, 'model_record')
+         call json%create_object(identifier, 'identifier')
 
-         call json%add(params, "m", self%m(i))
-         call json%add(params, "sigma", self%sigma(i))
-         call json%add(params, "epsilon_k", self%epsilon_k(i))
+         ! Model parameters
+         call json%add(parameters, "m", self%m(i))
+         call json%add(parameters, "sigma", self%sigma(i))
+         call json%add(parameters, "epsilon_k", self%epsilon_k(i))
 
-         call json%add(ident, "cas", "")
-         call json%add(ident, "name", "")
-         call json%add(ident, "iupac_name", "")
-         call json%add(ident, "smiles", "")
-         call json%add(ident, "inchi", "")
-         call json%add(ident, "formula", "")
+         ! Identifier values
+         call json%add(identifier, "cas", "")
+         call json%add(identifier, "name", "")
+         call json%add(identifier, "iupac_name", "")
+         call json%add(identifier, "smiles", "")
+         call json%add(identifier, "inchi", "")
+         call json%add(identifier, "formula", "")
 
+         ! Add molecular weight
          call json%add(molecule, "molarweight", 0.0)
-         call json%add(molecule, params)
-         call json%add(molecule, ident)
+
+         ! Add parameters and identifiers
+         call json%add(molecule, parameters)
+         call json%add(molecule, identier)
 
          call json%add(molecules, molecule)
       end do
-      
+
       call json%add(base, molecules)
 
       call json%print_to_string(base, json_str)
    end function pc_saft_to_str
-
-
-!       "{ \
-!     \"residual_model\": \"PC-SAFT\", \
-!     \"ideal_gas_model\": \"\", \
-!     \"residual_substance_parameters\": [ \
-!         { \
-!             \"identifier\": { \
-!                 \"cas\": \"74-82-8\", \
-!                 \"name\": \"methane\", \
-!                 \"iupac_name\": \"methane\", \
-!                 \"smiles\": \"C\", \
-!                 \"inchi\": \"InChI=1/CH4/h1H4\", \
-!                 \"formula\": \"CH4\" \
-!             }, \
-!             \"model_record\": { \
-!                 \"m\": 1.0, \
-!                 \"sigma\": 3.7039, \
-!                 \"epsilon_k\": 150.03 \
-!             }, \
-!             \"molarweight\": 16.043 \
-!         } \
-!     ] \
-! }";
 
    subroutine model_setter(self, setup_string)
       !! Setup the model from a string
