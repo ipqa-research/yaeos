@@ -8,8 +8,6 @@ from setuptools.command.editable_wheel import editable_wheel
 from setuptools.command.install import install
 from setuptools.command.sdist import sdist
 
-import inspect
-
 
 # =============================================================================
 # Directories and constants
@@ -21,6 +19,8 @@ INCL_DIR = BUILD_DIR / "include"
 
 FFLAGS = "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp"  # noqa
 CFLAGS = "-fPIC"
+
+
 # =============================================================================
 # Usefull functions
 # =============================================================================
@@ -58,7 +58,7 @@ def pre_build():
     )
 
 
-def clean_editable_compiled():
+def initial_compiled_clean():
     """Erase all compiled files from development directory"""
     # Clear fpm build
     if BUILD_DIR.exists():
@@ -76,6 +76,21 @@ def clean_editable_compiled():
         so_file.unlink()
 
 
+def final_build_clean():
+    """Clean the build of setuptools."""
+
+    if (THIS_DIR / "build").exists():
+        print((THIS_DIR / "build").absolute())
+        shutil.rmtree(THIS_DIR / "build")
+
+    # Clear compiled files on compiled_files
+    compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
+
+    if compiled_module_dir.exists():
+        for so_file in compiled_module_dir.glob("*.so"):
+            so_file.unlink()
+
+
 def move_compiled_to_editable_loc():
     """Move compiled files to 'compiled_module' directory"""
 
@@ -84,6 +99,37 @@ def move_compiled_to_editable_loc():
         target_dir.mkdir(parents=True, exist_ok=True)
 
         shutil.move(file.absolute(), (target_dir / file.name).absolute())
+
+
+def save_editable_compiled():
+    """Temporaly save the editable compiled from install and sdist commands"""
+    tmp_dir = THIS_DIR / "tmp_editable"
+
+    if not tmp_dir.exists():
+        tmp_dir.mkdir()
+
+    compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
+
+    if compiled_module_dir.exists():
+        for so_file in compiled_module_dir.glob("*.so"):
+            shutil.move(
+                so_file.absolute(), (tmp_dir / so_file.name).absolute()
+            )
+
+
+def restore_save_editable_compiled():
+    tmp_dir = THIS_DIR / "tmp_editable"
+
+    compiled_module_dir = THIS_DIR / "yaeos" / "compiled_module"
+
+    if tmp_dir.exists():
+        for so_file in tmp_dir.glob("*.so"):
+            shutil.move(
+                so_file.absolute(),
+                (compiled_module_dir / so_file.name).absolute(),
+            )
+
+        tmp_dir.rmdir()
 
 
 # =============================================================================
@@ -114,18 +160,7 @@ class BuildFortran(Command):
 # =============================================================================
 class CustomInstall(install):
     def run(self):
-        clean_editable_compiled()
-
-        super().run()
-
-        # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        # print(THIS_DIR)
-
-        # frames = inspect.getouterframes(inspect.currentframe())
-        
-        # for f in frames:
-        #     print(f.filename)
-        # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        initial_compiled_clean()
 
         self.run_command("build_fortran")
 
@@ -140,7 +175,7 @@ class CustomInstall(install):
 
             shutil.move(file, target_dir)
 
-        # super().run()
+        super().run()
 
 
 # =============================================================================
@@ -149,11 +184,19 @@ class CustomInstall(install):
 # =============================================================================
 class CustomEditable(editable_wheel):
     def run(self):
-        clean_editable_compiled()
+        # Clean the saved editable compiled
+        tmp_dir = THIS_DIR / "tmp_editable"
 
+        if tmp_dir.exists():
+            shutil.rmtree(tmp_dir)
+
+        # Clean compiled files and recompile as an editable installation
+        initial_compiled_clean()
+
+        # Build and move
         self.run_command("build_fortran")
-
         move_compiled_to_editable_loc()
+        save_editable_compiled()
 
         # Run base editable_wheel run method
         super().run()
@@ -167,10 +210,10 @@ class CustomEditable(editable_wheel):
 class CustomBuild(sdist):
     def run(self):
         # Clean compiled files and recompile as an editable installation
-        clean_editable_compiled()
+        initial_compiled_clean()
 
+        # Build and move
         self.run_command("build_fortran")
-
         move_compiled_to_editable_loc()
 
         # Run base sdist run method
@@ -187,6 +230,9 @@ author_email = "federico.benelli@mi.unc.edu.ar"
 maintainer = "Federico E. Benelli"
 maintainer_email = "federico.benelli@mi.unc.edu.ar"
 lic = "MPL"
+
+
+save_editable_compiled()
 
 setup(
     name=name,
@@ -209,9 +255,14 @@ setup(
     cmdclass={
         "build_fortran": BuildFortran,
         "editable_wheel": CustomEditable,
-        #"install": CustomInstall,
+        "install": CustomInstall,
         "sdist": CustomBuild,
     },
+    packages=["yaeos"],
     package_data={"yaeos": ["compiled_module/*.so"]},
     include_package_data=True,
 )
+
+final_build_clean()
+
+restore_save_editable_compiled()
