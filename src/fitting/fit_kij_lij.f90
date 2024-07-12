@@ -46,11 +46,10 @@ module yaeos__fitting_fit_kij_lij
 
 contains
 
-   function model_from_X(problem, X) result(model)
+   subroutine model_from_X(problem, X)
       use yaeos, only: R, RKPR, PengRobinson78, ArModel, QMR, CubicEoS
       real(pr), intent(in) :: X(:)
       class(FitKijLij), intent(in out) :: problem
-      class(ArModel), allocatable :: model
 
       real(pr) :: kij(nc, nc), lij(nc, nc)
 
@@ -74,6 +73,6 @@ contains
          end associate
       end select
       end associate
-   end function model_from_X
+   end subroutine
 end module yaeos__fitting_fit_kij_lij
 
