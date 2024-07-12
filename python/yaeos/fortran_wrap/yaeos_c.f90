@@ -22,19 +22,20 @@ module yaeos_c
    public :: srk, pr76, pr78
    ! Mixing rules
    public :: set_mhv, set_qmr
-   
+
    ! __del__
    public :: make_available_ar_models_list
    public :: make_available_ge_models_list
    ! GeMoels
    public :: nrtl
    public :: ln_gamma
-   
+
    ! Thermoprops
    public :: fug_vt
    ! Phase equilibria
    public :: flash
    public :: saturation_pressure
+   public :: pt2_phase_envelope
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -68,7 +69,7 @@ contains
       integer(c_int), intent(out) :: id
       ge_model = fNRTL(a, b, c)
       call extend_ge_models_list(id)
-   end subroutine
+   end subroutine nrtl
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
@@ -101,7 +102,7 @@ contains
       real(c_double), intent(in) :: T
       real(c_double), intent(out) :: lngamma(size(n))
       call ge_models(id)%model%ln_activity_coefficient(n, T, lngamma)
-   end subroutine
+   end subroutine ln_gamma
 
    ! =============================================================================
    !  Ar Models
@@ -155,7 +156,7 @@ contains
 
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_mhv
-   
+
    subroutine set_qmr(ar_id, kij, lij)
       use yaeos, only: QMR, CubicEoS
       integer(c_int), intent(in) :: ar_id
@@ -187,7 +188,7 @@ contains
       ar_model = PengRobinson76(tc, pc, w)
       call extend_ar_models_list(id)
    end subroutine pr76
-   
+
    subroutine pr78(tc, pc, w, id)
       use yaeos, only: PengRobinson78
       real(c_double), intent(in) :: tc(:), pc(:), w(:)
@@ -245,7 +246,7 @@ contains
       Vx = eq_state%Vx
       Vy = eq_state%Vy
       beta = eq_state%beta
-   end subroutine
+   end subroutine equilibria_state_to_arrays
 
    subroutine flash(id, z, T, P, x, y, k0, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriaState, fflash => flash
@@ -261,7 +262,7 @@ contains
       real(c_double), intent(out) :: Vx
       real(c_double), intent(out) :: Vy
       real(c_double), intent(out) :: beta
-      
+
       type(EquilibriaState) :: result
       integer :: iters
 
@@ -278,7 +279,7 @@ contains
       end if
 
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
-   end subroutine
+   end subroutine flash
 
    subroutine saturation_pressure(id, z, T, kind, P, x, y, Vx, Vy, beta)
       use yaeos, only: EquilibriaState, fsaturation_pressure => saturation_pressure
@@ -293,10 +294,68 @@ contains
       real(c_double), intent(out) :: Vx, Vy, beta
 
       real(c_double) :: aux
-      
+
       type(EquilibriaState) :: sat
 
       sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
-   end subroutine
+   end subroutine saturation_pressure
+
+   subroutine pt2_phase_envelope(id, z, kind, Ts, Ps, T0, P0)
+      use yaeos, only: &
+         saturation_pressure, saturation_temperature, pt_envelope_2ph, &
+         EquilibriaState, PTEnvel2
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(out) :: Ts(1000)
+      real(c_double), intent(out) :: Ps(1000)
+      real(c_double), optional, intent(in) :: T0, P0
+
+      real(8) :: makenan
+      type(EquilibriaState) :: sat
+      type(PTEnvel2) :: env
+
+      integer :: i, neval=0
+
+      real(c_double) :: T, P
+
+
+      makenan=0
+
+      neval = neval + 1
+      print *, neval
+
+
+      Ts = makenan/makenan
+      Ps = makenan/makenan
+
+      if (present(T0)) then
+         T = T0
+      else
+         T = 150
+      end if
+
+      if (present(P0)) then
+         P = P0
+      else
+         P = 1
+      end if
+
+      print *, T, P
+      select case(kind)
+       case("bubble")
+         sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind)
+       case("dew")
+         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+       case("liquid-liquid")
+         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+      end select
+
+
+      env = pt_envelope_2ph(ar_models(id)%model, z, sat)
+      i = size(env%points)
+      Ts(:i) = env%points%T
+      Ps(:i) = env%points%P
+   end subroutine pt2_phase_envelope
 end module yaeos_c

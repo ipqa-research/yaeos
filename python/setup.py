@@ -51,7 +51,7 @@ def pre_build():
             f"-I{INCL_DIR}",
             "-c",
             "yaeos/fortran_wrap/yaeos_c.f90",
-            "-lyaeos",
+            "-lyaeos", "-llapack",
             "--backend",
             "meson",
         ]
