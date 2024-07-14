@@ -9,7 +9,9 @@ contains
       !> Collection of tests
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-      testsuite = [new_unittest("FitKijLij", test_fit_kij_lij) &
+      testsuite = [&
+                     new_unittest("FitKijLij", test_fit_kij_lij), &
+                     new_unittest("FitMHVNRTL", test_fit_MHV_NRTL) &
                    ]
    end subroutine collect_suite
 
@@ -55,7 +57,7 @@ contains
       call check(error, err_kij_lij < err_kij)
    end subroutine
 
-   subroutine test_fit_nrtl_hv(error)
+   subroutine test_fit_mhv_nrtl(error)
       use yaeos__fitting, only: optimize, error_function
       use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
       use yaeos__models, only: CubicEoS, GeModel, NRTL, SoaveRedlichKwong, MHV
@@ -69,8 +71,8 @@ contains
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
       real(pr) :: w(2) = [3.7e-2_pr, 0.397_pr]
-      real(pr) :: X(2) = [0, 0]
-      real(pr) :: err0, err_kij, err_kij_lij
+      real(pr) :: X(7)
+      real(pr) :: err0, err_lij, err_ge, err_ge_lij
 
       type(FitMHVNRTL) :: fitting_problem
 
@@ -82,24 +84,41 @@ contains
 
      
       ! Provide initials for the NRTL model
-      allocate(ge_model%a(2,2), ge_model%b(2,2), ge_model%c(2,2))
-      ge_model%a = reshape([0.0_pr, 0.1_pr, 0.0_pr, 0.1_pr], [2, 2])
-      ge_model%b = 0
-      ge_model%c = 0
+      ! reshape (a11 a12 a21 a22)
+      ge_model%a=reshape([0.0, 3.1, 0.1, 0.0], [2, 2])
+      ge_model%b=reshape([0.0, 503.1, 200.1, 0.0], [2, 2])
+      ge_model%c=reshape([0.0, 0.1, 0.1, 0.0], [2, 2])
+
 
       model = SoaveRedlichKwong(tc, pc, w)
       mixrule = MHV(ge=ge_model, q=-0.593_pr, b=model%b)
       deallocate(model%mixrule)
       model%mixrule = mixrule
 
-      fitting_problem%model = model
       fitting_problem%experimental_points = [exp_point]
 
-
+      X = [3.1, 0.1, -500.00, 200.00, 0.1, 0.1, 0.0]
+      fitting_problem%model = model
+      fitting_problem%fit_lij = .true.
       err0 = error_function(x, func_data=fitting_problem)
-      err_kij = optimize(X, fitting_problem)
+      err_lij = optimize(X, fitting_problem)
 
-      call check(error, err_kij < err0)
+      X = [3.1, 0.1, -500.00, 200.00, 0.1, 0.1, 0.0]
+      fitting_problem%model = model
+      fitting_problem%fit_lij = .false.
+      fitting_problem%fit_nrtl = .true.
+      err_ge = optimize(X, fitting_problem)
+      
+      X = [3.1, 0.1, -500.00, 200.00, 0.1, 0.1, 0.0]
+      fitting_problem%model = model
+      fitting_problem%fit_lij = .true.
+      fitting_problem%fit_nrtl = .true.
+      err_ge_lij = optimize(X, fitting_problem)
+
+
+      call check(error, err_lij < err0)
+      call check(error, err_ge < err_lij)
+      call check(error, err_ge_lij < err_lij)
       
    end subroutine
 end module test_fitting
