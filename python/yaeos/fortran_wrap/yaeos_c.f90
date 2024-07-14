@@ -19,7 +19,7 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78
+   public :: srk, pr76, pr78, rkpr
    ! Mixing rules
    public :: set_mhv, set_qmr
 
@@ -198,13 +198,31 @@ contains
       call extend_ar_models_list(id)
    end subroutine pr78
 
-   subroutine srk(tc, pc, w, kij, lij, id)
+   subroutine srk(tc, pc, w, id)
       use yaeos, only: SoaveRedlichKwong
-      real(c_double), intent(in) :: tc(:), pc(:), w(:), kij(:, :), lij(:, :)
+      real(c_double), intent(in) :: tc(:), pc(:), w(:)
       integer(c_int), intent(out) :: id
-      ar_model = SoaveRedlichKwong(tc, pc, w, kij, lij)
+      ar_model = SoaveRedlichKwong(tc, pc, w)
       call extend_ar_models_list(id)
    end subroutine srk
+
+   subroutine rkpr(tc, pc, w, zc, delta_1, k, id)
+      use yaeos, only: fRKPR => RKPR
+      real(c_double), intent(in) :: tc(:), pc(:), w(:), zc(:)
+      real(c_double), optional, intent(in) :: delta_1(:), k(:)
+      integer(c_int), intent(out) :: id
+
+      if (present(delta_1) .and. present(k)) then
+         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1, k=k)
+      elseif (present(delta_1))  then
+         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1)
+      elseif (present(k))  then
+         ar_model = fRKPR(tc, pc, w, zc, k=k)
+      else
+         ar_model = fRKPR(tc, pc, w, zc)
+      end if
+      call extend_ar_models_list(id)
+   end subroutine rkpr
 
    ! ==========================================================================
    !  Thermodynamic properties
@@ -301,7 +319,7 @@ contains
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
 
-   subroutine pt2_phase_envelope(id, z, kind, Ts, Ps, T0, P0)
+   subroutine pt2_phase_envelope(id, z, kind, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
          EquilibriaState, PTEnvel2
@@ -310,9 +328,10 @@ contains
       character(len=15), intent(in) :: kind
       real(c_double), intent(out) :: Ts(1000)
       real(c_double), intent(out) :: Ps(1000)
+      real(c_double), intent(out) :: Tcs(5), Pcs(5)
       real(c_double), optional, intent(in) :: T0, P0
 
-      real(8) :: makenan
+      real(8) :: makenan, nan
       type(EquilibriaState) :: sat
       type(PTEnvel2) :: env
 
@@ -320,15 +339,14 @@ contains
 
       real(c_double) :: T, P
 
-
       makenan=0
 
       neval = neval + 1
-      print *, neval
-
-
-      Ts = makenan/makenan
-      Ps = makenan/makenan
+      nan = makenan/makenan
+      Ts = nan
+      Ps = nan
+      Tcs = nan
+      Pcs = nan
 
       if (present(T0)) then
          T = T0
@@ -342,7 +360,6 @@ contains
          P = 1
       end if
 
-      print *, T, P
       select case(kind)
        case("bubble")
          sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind)
@@ -357,5 +374,9 @@ contains
       i = size(env%points)
       Ts(:i) = env%points%T
       Ps(:i) = env%points%P
+
+      i = size(env%cps)
+      Tcs(:i) = env%cps%T
+      Pcs(:i) = env%cps%P
    end subroutine pt2_phase_envelope
 end module yaeos_c
