@@ -46,11 +46,10 @@ module yaeos__fitting_fit_kij_lij
 
 contains
 
-   function model_from_X(problem, X) result(model)
+   subroutine model_from_X(problem, X)
       use yaeos, only: R, RKPR, PengRobinson78, ArModel, QMR, CubicEoS
       real(pr), intent(in) :: X(:)
-      class(FitKijLij), intent(in) :: problem
-      class(ArModel), allocatable :: model
+      class(FitKijLij), intent(in out) :: problem
 
       real(pr) :: kij(nc, nc), lij(nc, nc)
 
@@ -62,14 +61,7 @@ contains
       lij(1, 2) = X(2)
       lij(2, 1) = X(2)
 
-
-      associate(pm => problem%model)
-         select type(pm)
-         type is (CubicEoS)
-            model = pm
-         end select
-      end associate
-
+      associate(model => problem%model)
       select type (model)
        class is (CubicEoS)
          associate (mr => model%mixrule)
@@ -80,6 +72,7 @@ contains
             end select
          end associate
       end select
-   end function model_from_X
+      end associate
+   end subroutine
 end module yaeos__fitting_fit_kij_lij
 

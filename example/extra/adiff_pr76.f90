@@ -5,10 +5,8 @@ module hyperdual_pr76
     implicit none
 
     type, extends(ArModelAdiff) :: PR76
-        type(Substances) :: composition
         real(pr), allocatable :: kij(:, :), lij(:, :)
         real(pr), allocatable :: ac(:), b(:), k(:)
-        real(pr), allocatable :: tc(:), pc(:), w(:)
     contains
         procedure :: Ar => arfun
         procedure :: get_v0 => v0
@@ -19,24 +17,24 @@ module hyperdual_pr76
 
 contains
 
-    type(PR76) function setup(tc_in, pc_in, w_in, kij_in, lij_in) result(self)
+    type(PR76) function setup(tc, pc, w, kij, lij) result(self)
         !! Seup an Autodiff_PR76 model
-        real(pr) :: tc_in(:)
-        real(pr) :: pc_in(:)
-        real(pr) :: w_in(:)
-        real(pr) :: kij_in(:, :)
-        real(pr) :: lij_in(:, :)
+        real(pr) :: tc(:)
+        real(pr) :: pc(:)
+        real(pr) :: w(:)
+        real(pr) :: kij(:, :)
+        real(pr) :: lij(:, :)
 
-        self%tc = tc_in
-        self%pc = pc_in
-        self%w = w_in
+        self%components%tc = tc
+        self%components%pc = pc
+        self%components%w = w
 
-        self%ac = 0.45723553_pr * R**2 * self%tc**2 / self%pc
-        self%b = 0.07779607_pr * R * self%tc/self%pc
-        self%k = 0.37464_pr + 1.54226_pr * self%w - 0.26993_pr * self%w**2
+        self%ac = 0.45723553_pr * R**2 * tc**2 / pc
+        self%b = 0.07779607_pr * R * tc/pc
+        self%k = 0.37464_pr + 1.54226_pr * w - 0.26993_pr * w**2
 
-        self%kij = kij_in
-        self%lij = lij_in
+        self%kij = kij
+        self%lij = lij
     end function
 
     function arfun(self, n, v, t) result(ar)
@@ -50,8 +48,8 @@ contains
 
         integer :: i, j
 
-        associate(pc => self%pc, ac => self%ac, b => self%b, k => self%k, &
-                  kij => self%kij, lij => self%lij, tc => self%tc &
+        associate(pc => self%components%pc, ac => self%ac, b => self%b, k => self%k, &
+                  kij => self%kij, lij => self%lij, tc => self%components%tc &
         )
             a = 1.0_pr + k * (1.0_pr - sqrt(t/tc))
             a = ac * a ** 2
