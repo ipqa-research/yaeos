@@ -22,7 +22,7 @@ contains
       use yaeos__equilibria, only: EquilibriaState
       type(error_type), allocatable, intent(out) :: error
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: exp_point
+      type(EquilibriaState) :: exp_points
 
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
@@ -32,14 +32,15 @@ contains
 
       type(FitKijLij) :: fitting_problem
 
-      exp_point = EquilibriaState( &
+      exp_points = &
+            EquilibriaState( &
                   kind="bubble", T=344.5_pr, P=23.9_pr, &
                   x=[0.0309_pr, 1 - 0.0309_pr], y=[0.9883_pr, 1 - 0.9883_pr], &
                   Vx=0._pr, Vy=0._pr, beta=0.0_pr &
                   )
 
       fitting_problem%model = SoaveRedlichKwong(tc, pc, w)
-      fitting_problem%experimental_points = [exp_point]
+      fitting_problem%experimental_points = [exp_points]
       fitting_problem%parameter_step = [0.1, 0.1] 
 
       fitting_problem%fit_kij = .true.
@@ -51,6 +52,7 @@ contains
       call check(error, err_kij < err0)
       
       fitting_problem%fit_lij = .true.
+      fitting_problem%verbose = .true.
       X = 0
       err_kij_lij = optimize(X, fitting_problem)
 
