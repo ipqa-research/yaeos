@@ -16,39 +16,6 @@ module yaeos__fitting_fit_nrtl_mhv
 
 contains
 
-   subroutine init_model(problem, sus)
-      use yaeos, only: R, ArModel, CubicEoS, PengRobinson78, RKPR, SoaveRedlichKwong
-      class(FitMHVNRTL), intent(in out) :: problem
-      type(Substance), intent(in) :: sus(2)
-      type(MHV) :: mixrule
-      type(NRTL) :: ge
-      real(pr) :: tc(nc), pc(nc), w(nc), vc(nc), zc(nc)
-      real(pr) :: a(nc, nc), b(nc, nc), c(nc, nc), bi(nc)
-
-      a=0; b=0; c=0
-
-      tc = sus%critical%critical_temperature%value
-      pc = sus%critical%critical_pressure%value/1e5
-      w = sus%critical%acentric_factor%value
-      vc = sus%critical%critical_volume%value
-      zc = pc*vc/(R*tc)
-
-      ge = NRTL(a, b, c)
-
-      allocate(CubicEoS :: problem%model)
-      problem%model = SoaveRedlichKwong(tc, pc, w)
-
-      associate(m => problem%model)
-         select type(m)
-          type is (CubicEoS)
-            bi = m%b
-            mixrule = MHV(ge=ge, q=-0.593_pr, b=bi)
-            deallocate(m%mixrule)
-            m%mixrule = mixrule
-         end select
-      end associate
-   end subroutine init_model
-
    subroutine model_from_X(problem, X)
       use yaeos, only: R, RKPR, PengRobinson78, ArModel, QMR, CubicEoS
       use yaeos__models_ar_cubic_quadratic_mixing, only: RKPR_D1mix
@@ -80,8 +47,6 @@ contains
                   if (problem%fit_lij) mr%l(1, 2) = x(7)
                   if (problem%fit_lij) mr%l(2, 1) = x(7)
                   if (problem%fit_nrtl) mr%ge = ge
-                  ! model%del1 = x(8:)
-                  ! model%del2 = (1._pr - model%del1)/(1._pr + model%del1)
                end select
             end associate
          end select
