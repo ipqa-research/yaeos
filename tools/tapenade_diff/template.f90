@@ -1,5 +1,6 @@
 module tapenade_model_template
     use yaeos__tapenade_ar_api, only: ArModelTapenade
+    use yaeos__tapenade_interfaces
     use yaeos, only: R !! Ideal gas constants used on yaeos
     implicit none
 

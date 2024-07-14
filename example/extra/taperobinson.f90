@@ -16,6 +16,7 @@
 MODULE TAPENADE_PR
   USE YAEOS__CONSTANTS, ONLY : pr, r
   USE YAEOS__TAPENADE_AR_API, ONLY : armodeltapenade
+  use yaeos__tapenade_interfaces
   IMPLICIT NONE
 type, extends(ArModelTapenade) :: TPR76
       REAL(pr), ALLOCATABLE :: kij(:, :), lij(:, :)
@@ -794,12 +795,6 @@ CONTAINS
     INTEGER :: ad_from
     INTEGER :: ad_to
     INTEGER :: ad_to0
-    EXTERNAL PUSHREAL8ARRAY
-    EXTERNAL PUSHINTEGER4
-    EXTERNAL PUSHREAL8
-    EXTERNAL POPREAL8
-    EXTERNAL POPINTEGER4
-    EXTERNAL POPREAL8ARRAY
     INTEGER :: arg12
     LOGICAL, DIMENSION(SIZE(n)) :: mask1
     LOGICAL, DIMENSION(SIZE(n)) :: mask2
