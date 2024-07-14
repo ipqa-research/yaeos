@@ -1,12 +1,10 @@
 import shutil
 import subprocess
-import sysconfig
 from pathlib import Path
 
 from setuptools import Command, setup
 from setuptools.command.editable_wheel import editable_wheel
-from setuptools.command.install import install
-from setuptools.command.sdist import sdist
+from setuptools.command.egg_info import egg_info
 
 
 # =============================================================================
@@ -16,6 +14,7 @@ THIS_DIR = Path(__file__).parent
 BUILD_DIR = (THIS_DIR.parent / "build" / "python").absolute()
 LINK_DIR = BUILD_DIR / "lib"
 INCL_DIR = BUILD_DIR / "include"
+COMPILED_FLAG = THIS_DIR / "compiled_flag"
 
 FFLAGS = "-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp"  # noqa
 CFLAGS = "-fPIC"
@@ -26,6 +25,12 @@ CFLAGS = "-fPIC"
 # =============================================================================
 def pre_build():
     """Execute fpm and f2py compilations commands."""
+    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    print(THIS_DIR)
+    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
+    if COMPILED_FLAG.exists():
+        return
 
     subprocess.check_call(
         [
@@ -56,6 +61,8 @@ def pre_build():
             "meson",
         ]
     )
+
+    COMPILED_FLAG.touch()
 
 
 def initial_compiled_clean():
@@ -90,6 +97,10 @@ def final_build_clean():
         for so_file in compiled_module_dir.glob("*.so"):
             so_file.unlink()
 
+    # Clean COMPILED_FLAG
+    if COMPILED_FLAG.exists():
+        COMPILED_FLAG.unlink()
+
 
 def move_compiled_to_editable_loc():
     """Move compiled files to 'compiled_module' directory"""
@@ -112,6 +123,9 @@ def save_editable_compiled():
 
     if compiled_module_dir.exists():
         for so_file in compiled_module_dir.glob("*.so"):
+            if ((tmp_dir / so_file.name).absolute()).exists():
+                ((tmp_dir / so_file.name).absolute()).unlink()
+
             shutil.move(
                 so_file.absolute(), (tmp_dir / so_file.name).absolute()
             )
@@ -146,7 +160,9 @@ class BuildFortran(Command):
         pass
 
     def run(self):
-        if "build" in str(THIS_DIR.absolute()):
+        dir = str(THIS_DIR.absolute())
+
+        if ("build" in dir) or ("check-manifest" in dir):
             # Do not compile, we are building, the compilation has been already
             # done at this point.
             ...
@@ -155,45 +171,11 @@ class BuildFortran(Command):
 
 
 # =============================================================================
-# - Normal build and installation:
-#      pip install .
-# =============================================================================
-class CustomInstall(install):
-    def run(self):
-        initial_compiled_clean()
-
-        self.run_command("build_fortran")
-
-        site_packages_dir = Path(sysconfig.get_path("purelib"))
-
-        for file in THIS_DIR.glob("yaeos_compiled.*"):
-            target_dir = site_packages_dir / "yaeos" / "compiled_module"
-            target_dir.mkdir(parents=True, exist_ok=True)
-
-            if (target_dir / file.name).exists():
-                (target_dir / file.name).unlink()
-
-            shutil.move(file, target_dir)
-
-        super().run()
-
-
-# =============================================================================
 # - Building for developers (editable installation)
 #      pip install -e .
 # =============================================================================
 class CustomEditable(editable_wheel):
     def run(self):
-        # Clean the saved editable compiled
-        tmp_dir = THIS_DIR / "tmp_editable"
-
-        if tmp_dir.exists():
-            shutil.rmtree(tmp_dir)
-
-        # Clean compiled files and recompile as an editable installation
-        initial_compiled_clean()
-
-        # Build and move
         self.run_command("build_fortran")
         move_compiled_to_editable_loc()
         save_editable_compiled()
@@ -203,20 +185,12 @@ class CustomEditable(editable_wheel):
 
 
 # =============================================================================
-# - Python Build for distribution
-#      pip install build
-#      python3 -m build
+# - Custom egg_info command
 # =============================================================================
-class CustomBuild(sdist):
+class CustomEgg(egg_info):
     def run(self):
-        # Clean compiled files and recompile as an editable installation
-        initial_compiled_clean()
-
-        # Build and move
         self.run_command("build_fortran")
         move_compiled_to_editable_loc()
-
-        # Run base sdist run method
         super().run()
 
 
@@ -233,6 +207,8 @@ lic = "MPL"
 
 
 save_editable_compiled()
+
+initial_compiled_clean()
 
 setup(
     name=name,
@@ -255,8 +231,7 @@ setup(
     cmdclass={
         "build_fortran": BuildFortran,
         "editable_wheel": CustomEditable,
-        "install": CustomInstall,
-        "sdist": CustomBuild,
+        "egg_info": CustomEgg
     },
     packages=["yaeos"],
     package_data={"yaeos": ["compiled_module/*.so"]},

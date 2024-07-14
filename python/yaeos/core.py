@@ -70,7 +70,7 @@ class ArModel(ABC):
                 - "dew"
                 - "liquid-liquid"
         """
-        P, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
+        p, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
             self.id, z, temperature, kind
         )
 
@@ -80,7 +80,7 @@ class ArModel(ABC):
             "Vx": volume_x,
             "Vy": volume_y,
             "T": temperature,
-            "P": P,
+            "P": p,
             "beta": beta,
         }
 
