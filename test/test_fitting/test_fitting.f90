@@ -54,4 +54,52 @@ contains
 
       call check(error, err_kij_lij < err_kij)
    end subroutine
+
+   subroutine test_fit_nrtl_hv(error)
+      use yaeos__fitting, only: optimize, error_function
+      use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
+      use yaeos__models, only: CubicEoS, GeModel, NRTL, SoaveRedlichKwong, MHV
+      use yaeos__equilibria, only: EquilibriaState
+      type(error_type), allocatable, intent(out) :: error
+      type(CubicEoS) :: model
+      type(NRTL) :: ge_model
+      type(MHV) :: mixrule
+      type(EquilibriaState) :: exp_point
+
+      real(pr) :: Tc(2) = [126.2, 568.7]
+      real(pr) :: pc(2) = [33.98, 24.90]
+      real(pr) :: w(2) = [3.7e-2_pr, 0.397_pr]
+      real(pr) :: X(2) = [0, 0]
+      real(pr) :: err0, err_kij, err_kij_lij
+
+      type(FitMHVNRTL) :: fitting_problem
+
+      exp_point = EquilibriaState( &
+                  kind="bubble", T=344.5_pr, P=23.9_pr, &
+                  x=[0.0309_pr, 1 - 0.0309_pr], y=[0.9883_pr, 1 - 0.9883_pr], &
+                  Vx=0._pr, Vy=0._pr, beta=0.0_pr &
+                  )
+
+     
+      ! Provide initials for the NRTL model
+      allocate(ge_model%a(2,2), ge_model%b(2,2), ge_model%c(2,2))
+      ge_model%a = reshape([0.0_pr, 0.1_pr, 0.0_pr, 0.1_pr], [2, 2])
+      ge_model%b = 0
+      ge_model%c = 0
+
+      model = SoaveRedlichKwong(tc, pc, w)
+      mixrule = MHV(ge=ge_model, q=-0.593_pr, b=model%b)
+      deallocate(model%mixrule)
+      model%mixrule = mixrule
+
+      fitting_problem%model = model
+      fitting_problem%experimental_points = [exp_point]
+
+
+      err0 = error_function(x, func_data=fitting_problem)
+      err_kij = optimize(X, fitting_problem)
+
+      call check(error, err_kij < err0)
+      
+   end subroutine
 end module test_fitting
