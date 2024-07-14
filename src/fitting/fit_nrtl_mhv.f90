@@ -8,6 +8,8 @@ module yaeos__fitting_fit_nrtl_mhv
    integer, parameter :: nc = 2
 
    type, extends(FittingProblem) :: FitMHVNRTL
+      logical :: fit_nrtl = .false.
+      logical :: fit_lij = .false.
    contains
       procedure :: get_model_from_X => model_from_X
    end type FitMHVNRTL
@@ -75,11 +77,11 @@ contains
             associate(mr => model%mixrule)
                select type (mr)
                 class is (MHV)
-                  mr%l(1, 2) = x(7)
-                  mr%l(2, 1) = x(7)
-                  mr%ge = ge
-                  model%del1 = x(8:)
-                  model%del2 = (1._pr - model%del1)/(1._pr + model%del1)
+                  if (problem%fit_lij) mr%l(1, 2) = x(7)
+                  if (problem%fit_lij) mr%l(2, 1) = x(7)
+                  if (problem%fit_nrtl) mr%ge = ge
+                  ! model%del1 = x(8:)
+                  ! model%del2 = (1._pr - model%del1)/(1._pr + model%del1)
                end select
             end associate
          end select
