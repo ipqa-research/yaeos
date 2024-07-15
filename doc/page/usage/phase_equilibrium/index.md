@@ -1,5 +1,6 @@
 ---
 title: Phase Equilibrium
+copy_subdir: ../figs
 ---
 
 Phase Equilibria calculations are fundamental for the majority of EoS based
@@ -14,7 +15,8 @@ The implemented methods, and their usage are:
 [TOC]
 
 # Flash calculations
-Flash calcuations are one of the most used phase-equilibria calculations during.
+Flash calcuations are one of the most used phase-equilibria calculations during
+modelling of processes.
 
 In `yaeos` it is possible to make Flash calculations either specifying:
 
@@ -71,3 +73,5 @@ type(PTEnvel2) :: env
 sat = saturation_pressure(model, z, T=150._pr, kind="bubble")
 env = pt_envelope_2ph(model, z, sat)
 ```
+
+![PTEnvel2](../figs/PTEnvel2.png)
