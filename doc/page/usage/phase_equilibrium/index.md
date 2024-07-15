@@ -20,8 +20,8 @@ modelling of processes.
 
 In `yaeos` it is possible to make Flash calculations either specifying:
 
-- \(zPT\)
-- \(zVT\)
+- \( zPT \rightarrow x, y, \beta (V) \)
+- \( zVT \rightarrow x, y, \beta (P) \)
 
 ```fortran
 type(EquilibriaState) :: result
