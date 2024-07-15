@@ -1,6 +1,9 @@
 program main
-    use yaeos, only: pr, ArModel, PengRobinson76, volume, pressure, SoaveRedlichKwong
+    use yaeos, only: pr, ArModel, PengRobinson76, SoaveRedlichKwong
+    use yaeos__models_ar, only: nvolume => volume
+    use yaeos__models_solvers, only: volume_michelsen
     use forsus, only: Substance, forsus_dir
+    use fortime, only: timer
     implicit none
     class(ArModel), allocatable :: eos
 
@@ -10,10 +13,8 @@ program main
 
     type(Substance) :: sus(2)
 
-    real(pr) :: v
-    real(pr) :: p0, pf, dp, p
-    real(pr) :: t0, tf, dt, t
-    integer :: i, j, n_p_points=500, n_t_points=5
+    real(pr) :: v, T, P
+    real(pr) :: lnphip(nc)
 
     forsus_dir = "build/dependencies/forsus/data/json"
     sus(1) = Substance("propane", only=["critical"])
@@ -23,37 +24,19 @@ program main
     tc = sus%critical%critical_temperature%value
     pc = sus%critical%critical_pressure%value/1e5
     w = sus%critical%acentric_factor%value
-    kij = reshape([0., 0.0, 0.0, 0.], [nc,nc])
-    lij = kij / 2
 
-    eos = SoaveRedlichKwong(tc, pc, w, kij, lij)
+    eos = SoaveRedlichKwong(tc, pc, w)
+    T = 350
+    P = 10
 
-    p0 = 100
-    pf = 0.1
-    dp = (pf-p0)/n_p_points
-
-    t0 = 150
-    tf = 350
-    dt = (tf-t0)/n_t_points
-
-    T = 300
-    do i=1,1000
-        V = real(i, pr)/1000._pr
-        call pressure(eos, n, V, T, P=P)
-        print *, V, P
-    end do
+    call eos%volume(n, P=P,T=T, root_type="stable", V=V)
+    print *, V, P
+    call volume_michelsen(eos, n, P=P,T=T, root_type="stable", V=V)
+    print *, V, P
 
 
-
-    ! do j=0, n_t_points - 1
-    !     t = t0 + dt * j
-    !     print *, "# ", t
-    !     do i=0,n_p_points-1
-    !         p = p0 + dp * i
-    !         call volume(eos, n, p, t, v, root_type="stable")
-    !         print *, v, p
-    !     end do
-    !     print *, ""
-    !     print *, ""
-    ! end do
+    call eos%pressure(n, V, T, P)
+    print *, T, V, P
+    call eos%lnphi_tp(n, T, P, V=V, root_type="vapor", lnphip=lnphip)
+    print *, T, P, V, lnphip
 end program main

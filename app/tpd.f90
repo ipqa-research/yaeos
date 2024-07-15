@@ -11,7 +11,7 @@ program phase_diagram
    type(Substance) :: sus(nc)
    real(pr) :: tc(nc), pc(nc), ac(nc)
    real(pr) :: z(nc), T, P
-   real(pr) :: w(nc), mintpd, mins(nc, nc)
+   real(pr) :: w(nc), mintpd
 
    forsus_dir = "build/dependencies/forsus/data/json"
    sus(1) = Substance("methane")
