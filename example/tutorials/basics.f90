@@ -32,10 +32,10 @@ program basics
    n = [0.3, 0.7]
 
    ! Pressure calculation
-   call pressure(model, n, v=2.5_pr, T=150._pr, P=P)
+   call model%pressure(n, v=2.5_pr, T=150._pr, P=P)
    print *, "P: ", P
 
    ! Derivatives can also be calculated when included as optional arguments!
-   call pressure(model, n, v=2.5_pr, T=150._pr, P=P, dPdV=dPdV)
+   call model%pressure(n, v=2.5_pr, T=150._pr, P=P, dPdV=dPdV)
    print *, "dPdV: ", dPdV
 end program basics

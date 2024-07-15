@@ -126,7 +126,7 @@ contains
       T = 200
       model = binary_PR76()
 
-      bubble = saturation_temperature(model, n, P, kind="bubble", t0=300._pr)
+      bubble = saturation_temperature(model, n, P, kind="bubble", t0=100._pr)
       call check(error, maxval(abs(bubble%x - x)) < abs_tolerance)
       call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
       call check(error, abs(bubble%p - p) < abs_tolerance)

@@ -3,7 +3,6 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
    use yaeos__equilibria_equilibria_state, only: EquilibriaState
-   use yaeos__thermoprops, only: fugacity_tp
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -156,13 +155,13 @@ contains
             kind_y = "stable"
          end select
 
-         call fugacity_tp(&
-            model, z, T, P, V=Vz, root_type=kind_z, &
+         call model%lnphi_tp(&
+            z, T, P, V=Vz, root_type=kind_z, &
             lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
-         call fugacity_tp(&
-            model, y, T, P, V=Vy, root_type=kind_y, &
+         call model%lnphi_tp(&
+            y, T, P, V=Vy, root_type=kind_y, &
             lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )

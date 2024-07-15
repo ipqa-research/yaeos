@@ -59,7 +59,7 @@ contains
    end subroutine test_tm
 
    subroutine test_flash_pt(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
@@ -95,7 +95,7 @@ contains
    end subroutine test_flash_pt
 
    subroutine test_flash_tv(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -135,7 +135,7 @@ contains
    end subroutine test_flash_tv
 
    subroutine test_flash_pt_failed(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
@@ -167,7 +167,7 @@ contains
    end subroutine test_flash_pt_failed
 
    subroutine test_flash_pt_bad_spec(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2

@@ -134,7 +134,7 @@ contains
       totnRT = sum(n) * R * T
       select case(root_type)
        case("liquid")
-         Vliq = eos%get_v0(n, P, T)! *1.001_pr
+         Vliq = eos%get_v0(n, P, T) * 1.001_pr
          call newton(foo, Vliq, tol=tol, max_iters=max_iters)
          GrL = Gr
        case("vapor")
@@ -240,8 +240,8 @@ contains
 
       real(pr) :: v_in, p_in
 
-      call volume(eos, n, P, T, V_in, root_type)
-      call fugacity_vt(eos, n, v_in, T, P_in, lnphip, dlnphidp, dlnphidt, dlnphidn)
+      call eos%volume(n, P, T, V_in, root_type)
+      call eos%lnphi_vt(n, v_in, T, P_in, lnphip, dlnphidp, dlnphidt, dlnphidn)
       if(present(v)) v = v_in
       if(abs(P_in - p) > 1e-2) then
          write(error_unit, *) "WARN: possible bad root solving: ", p_in, p

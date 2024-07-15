@@ -24,8 +24,6 @@ module yaeos__consistency_armodel
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ar, only: ArModel
-   use yaeos__thermoprops, only: enthalpy_residual_vt, gibbs_residual_vt
-   use yaeos__thermoprops, only: fugacity_vt, pressure
 
    implicit none
 contains
@@ -131,14 +129,14 @@ contains
       real(pr) :: lnphi(size(n)), lnphip(size(n)), dlnPhidP(size(n))
       real(pr) :: dlnPhidT(size(n)), dlnPhidn(size(n), size(n))
 
-      call pressure(eos, n, v, t, p, dpdn=dpdn)
+      call eos%pressure(n, v, t, p, dpdn=dpdn)
 
-      call gibbs_residual_vt(eos, n, v, t, Grv)
+      call eos%gibbs_residual_vt(n, v, t, Grv)
 
-      call enthalpy_residual_vt(eos, n, v, t, Hr=Hrv)
+      call eos%enthalpy_residual_vt(n, v, t, Hr=Hrv)
 
-      call fugacity_vt(&
-         eos, n, v, t, lnphip=lnphip, &
+      call eos%lnphi_vt(&
+         n, v, t, lnphip=lnphip, &
          dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
          )
 

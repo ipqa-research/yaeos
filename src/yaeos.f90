@@ -9,13 +9,11 @@ module yaeos
    !! - [[yaeos__consistency(module)]]: Tools to evalaute the consistency of Ar and Ge models.
    !! - [[yaeos__substance(module)]]: Derived type that holds the important data (for example, critical constants) from a mixture.
    !! - [[yaeos__models(module)]]: All the implemented models, also their base types for making extensions.
-   !! - [[yaeos__thermoprops(module)]]: Available thermodynamic properties to calculate.
    !! - [[yaeos__equilibria(module)]]: Phase equilibria related procedures.
    use yaeos__constants
    use yaeos__consistency
    use yaeos__substance
    use yaeos__models
-   use yaeos__thermoprops
    use yaeos__equilibria
    character(len=*), parameter :: version="0.3.0" !! This version.
 end module
