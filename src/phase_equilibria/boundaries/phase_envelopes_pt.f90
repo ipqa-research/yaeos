@@ -110,7 +110,9 @@ contains
          update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
+
    contains
+
       subroutine foo(X, ns, S, F, dF, dFdS)
          !! Function that needs to be solved at each envelope point
          real(pr), intent(in) :: X(:)
@@ -143,17 +145,17 @@ contains
          y = K*z
 
          select case(kind)
-         case ("bubble")
+          case ("bubble")
             kind_z = "liquid"
             kind_y = "vapor"
-         case ("dew")
+          case ("dew")
             kind_z = "vapor"
             kind_y = "liquid"
-         case default
+          case default
             kind_z = "stable"
             kind_y = "stable"
          end select
-         
+
          call fugacity_tp(&
             model, z, T, P, V=Vz, root_type=kind_z, &
             lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
@@ -187,7 +189,7 @@ contains
          dFdS(nc+2) = -1
       end subroutine foo
 
-      subroutine update_spec(X, ns, S, dS, dXdS, iterations)
+      subroutine update_spec(X, ns, S, dS, dXdS, step_iters)
          !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
          !! Vector of variables \([lnK_i \dots , lnT, lnP]\)
@@ -199,20 +201,17 @@ contains
          !! Step in specification
          real(pr), intent(in out) :: dXdS(:)
          !! Variation of variables with respect to specification
-         integer, intent(in) :: iterations
+         integer, intent(in) :: step_iters
          !! Iterations used in the solver
 
-         real(pr) :: Xnew(nc+2), Xold(nc+2), maxdS
+         real(pr) :: maxdS
 
-         Xold = X
-
-         ! ==============================================================
+         ! =====================================================================
          ! Update specification
          ! - Dont select T or P near critical points
          ! - Update dS wrt specification units
          ! - Set step
-         ! --------------------------------------------------------------
-         
+         ! ---------------------------------------------------------------------
          if (maxval(abs(X(:nc))) < 0.1_pr) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS=0.01_pr
@@ -226,73 +225,97 @@ contains
 
          dS = sign(1.0_pr, dS) * minval([ &
             max(sqrt(abs(X(ns))/10._pr), 0.1_pr), &
-            abs(dS)*3/iterations &
+            abs(dS)*3/step_iters &
             ] &
             )
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
-         ! ==============================================================
-         ! Save the point
-         ! --------------------------------------------------------------
-         new_point : block
-            type(EquilibriaState) :: point
-
-            real(pr) :: y(nc), T, P
-
-            T = exp(X(nc+1))
-            P = exp(X(nc+2))
-            y = exp(X(:nc))*z
-
-
-            point = EquilibriaState(&
-               kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
-               T=T, P=P, beta=0._pr, iters=iterations &
-            )
-         
-            envelopes%points = [envelopes%points, point]
-         end block new_point
-         
-         
-         ! ==============================================================
-         ! Handle critical point
-         ! --------------------------------------------------------------
-         critical: block
-            !! Critical point detection
-            !! If the values of lnK (X[:nc]) change sign then a critical point
-            !! Has passed
-            real(pr) :: Xc(nc+2) !! Value at (near) critical point
-            real(pr) :: a  !! Parameter for interpolation
-         
-            do while (maxval(abs(X(:nc))) < 0.05)
-               ! If near a critical point, jump over it
-               S = S + dS
-               X = X + dXdS*dS
-            end do
-
-            Xnew = X + dXdS*dS
-            
-            if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
-               select case(kind)
-                case("dew")
-                  kind = "bubble"
-                case("bubble")
-                  kind = "dew"
-                case default
-                  kind = "liquid-liquid"
-               end select
-
-               ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
-               a = -Xnew(ns)/(X(ns) - Xnew(ns))
-               print *, a
-               Xc = a * X + (1-a)*Xnew
-               envelopes%cps = [&
-                  envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
-                  ]
-               ! X = Xc + dXdS*dS
-            end if
-         end block critical
+         call save_point(X, step_iters)
+         call detect_critical(X, dXdS, ns, S, dS)
       end subroutine update_spec
+
+      subroutine save_point(X, iters)
+         !! Save the converged point
+         real(pr), intent(in) :: X(:)
+         integer, intent(in) :: iters
+         type(EquilibriaState) :: point
+
+         real(pr) :: y(nc), T, P
+
+         T = exp(X(nc+1))
+         P = exp(X(nc+2))
+         y = exp(X(:nc))*z
+         point = EquilibriaState(&
+            kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
+            T=T, P=P, beta=0._pr, iters=iters &
+            )
+
+         envelopes%points = [envelopes%points, point]
+      end subroutine save_point
+
+      subroutine detect_critical(X, dXdS, ns, S, dS)
+         !! # `detect_critical`
+         !! Critical point detection
+         !!
+         !! # Description
+         !! If the values of lnK (X[:nc]) change sign then a critical point
+         !! Has passed, since for this to happen all variables should pass
+         !! through zero. Near critical points (lnK < 0.05) points are harder
+         !! to converge, so more steps in the extrapolation vector are made to
+         !! jump over the critical point.
+         !! If the critical point is detected then the kind of the point is
+         !! changed and the point is saved using an interpolation knowing that
+         !!
+         !! \[
+         !!   X_c = a * X + (1-a)*X_{new}
+         !! \]
+         !!
+         !! With \(X_c\) is the variables at the critical point, \(X_{new}\)
+         !! is the new initialization point of the method and \(a\) is the
+         !! parameter to interpolate the values. This subroutine finds the
+         !! value of  \(a\) to obtain \(X_c\).
+         real(pr), intent(in out) :: X(:) !! Vector of variables
+         real(pr), intent(in out) :: dXdS(:) !! Variation of variables wrt S
+         integer, intent(in out) :: ns !! Number of specified variable
+         real(pr), intent(in out) :: S !! Specification value
+         real(pr), intent(in out) :: dS !! Step in specification
+         real(pr) :: Xc(nc+2) !! Value at (near) critical point
+         real(pr) :: a !! Parameter for interpolation
+
+         real(pr) :: Xold(size(X)) !! Old value of X
+         real(pr) :: Xnew(size(X)) !! Value of the next initialization
+
+         Xold = X
+
+         do while (maxval(abs(X(:nc))) < 0.05)
+            ! If near a critical point, jump over it
+            S = S + dS
+            X = X + dXdS*dS
+         end do
+
+         Xnew = X + dXdS*dS
+
+         if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
+            select case(kind)
+             case("dew")
+               kind = "bubble"
+             case("bubble")
+               kind = "dew"
+             case default
+               kind = "liquid-liquid"
+            end select
+
+            ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
+            a = -Xnew(ns)/(X(ns) - Xnew(ns))
+            Xc = a * X + (1-a)*Xnew
+
+            envelopes%cps = [&
+               envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
+               ]
+            X = Xc + dXdS*dS
+         end if
+      end subroutine detect_critical
    end function pt_envelope_2ph
 
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
