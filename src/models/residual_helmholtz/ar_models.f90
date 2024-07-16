@@ -232,7 +232,7 @@ contains
       real(pr), intent(in) :: t    !! Temperature [K]
       real(pr), intent(in) :: p    !! Pressure [bar]
 
-      real(pr), optional, intent(out) :: lnphip(size(n)) !! \(\ln(f_i)\) vector
+      real(pr), optional, intent(out) :: lnphip(size(n)) !! \(\ln(phi*P)\) vector
       real(pr), optional, intent(out) :: v !! Volume [L]
       real(pr), optional, intent(out) :: dlnphidt(size(n)) !! ln(phi) Temp derivative
       real(pr), optional, intent(out) :: dlnphidp(size(n)) !! ln(phi) Presssure derivative
@@ -240,7 +240,7 @@ contains
 
       real(pr) :: v_in, p_in
 
-      call eos%volume(n, P, T, V_in, root_type)
+      call eos%volume(n, P=P, T=T, V=V_in, root_type=root_type)
       call eos%lnphi_vt(n, v_in, T, P_in, lnphip, dlnphidp, dlnphidt, dlnphidn)
       if(present(v)) v = v_in
       if(abs(P_in - p) > 1e-2) then
@@ -313,7 +313,7 @@ contains
             )
       end if
 
-      lnphip(:) = Arn(:)/RT - log(Z)
+      if (present(lnphip)) lnphip = Arn(:)/RT - log(Z)
 
       P_in = TOTN*RT/V - ArV
       if (present(P)) P = P_in
