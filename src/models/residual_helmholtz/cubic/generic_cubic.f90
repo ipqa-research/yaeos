@@ -34,6 +34,7 @@ module yaeos__models_ar_genericcubic
    contains
       procedure :: residual_helmholtz => GenericCubic_Ar
       procedure :: get_v0 => v0
+      procedure :: volume => volume
    end type
 
    abstract interface
@@ -222,4 +223,91 @@ contains
       call self%mixrule%Bmix(n, self%b, v0, dbi, dbij)
    end function
 
+   subroutine volume(eos, n, P, T, V, root_type)
+      use yaeos__constants, only: R
+      use yaeos__math_linalg, only: cubic_roots
+      use yaeos__models_solvers, only: volume_michelsen
+      class(CubicEoS), intent(in) :: eos
+      real(pr), intent(in) :: n(:), P, T
+      real(pr), intent(out) :: V
+      character(len=*), intent(in) :: root_type
+
+      real(pr) :: z(size(n))
+      real(pr) :: cp(4), rr(3)
+      complex(pr) :: cr(3)
+      integer :: flag
+
+      real(pr) :: V_liq, V_vap
+      real(pr) :: Ar, AT_Liq, AT_Vap
+
+      real(pr) :: Bmix, dBi(size(n)), dBij(size(n), size(n))
+      real(pr) :: D, dDi(size(n)), dDij(size(n), size(n)), dDidT(size(n)), dDdT, dDdT2
+      real(pr) :: D1, D2, dD1i(size(n)), dD1ij(size(n), size(n))
+      real(pr) :: Tr(size(n))
+      real(pr) :: a(size(n)), dadt(size(n)), dadt2(size(n))
+      real(pr) :: totn
+
+      ! call volume_michelsen(eos, n, P, T, V, root_type)
+      ! return
+
+      totn = sum(n)
+      z = n/totn
+      Tr = T/eos%components%Tc
+      ! ========================================================================
+      ! Attractive parameter and derivatives
+      ! ------------------------------------------------------------------------
+      call eos%alpha%alpha(Tr, a, dadt, dadt2)
+      a = eos%ac * a
+      dadt = eos%ac * dadt / eos%components%Tc
+      dadt2 = eos%ac * dadt2 / eos%components%Tc**2
+      
+      ! ========================================================================
+      ! Mixing rules
+      ! ------------------------------------------------------------------------
+      call eos%mixrule%D1mix(z, eos%del1, D1, dD1i, dD1ij)
+      call eos%mixrule%Bmix(z, eos%b, Bmix, dBi, dBij)
+      call eos%mixrule%Dmix(&
+         z, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
+         )
+      D2 = (1._pr - D1)/(1._pr + D1)
+
+      cp(1) = -P
+      cp(2) = -P*Bmix*(D1 + D2 - 1) + R*T
+      cp(3) = -P*(D1*D2*Bmix**2 - D1*Bmix**2 - D2*Bmix**2) + R*T*Bmix*(D1+D2) - D
+      cp(4) = P*D1*D2*Bmix**3 + R*T *D1*D2*Bmix**2 + D*Bmix
+
+      call cubic_roots(cp, rr, cr, flag)
+      ! print *, root_type, n, rr
+      select case(flag)
+         case(-1)
+            V_liq = rr(1)
+            V_vap = rr(3)
+            if (V_liq < 0) V_liq = V_vap
+         case(1)
+            V_liq = rr(1)
+            V_vap = rr(1)
+      end select
+
+      select case(root_type)
+         case("liquid")
+            V = V_liq
+         case("vapor")
+            V = V_vap
+         case("stable")
+            ! AT is something close to Gr(P,T)
+            call eos%residual_helmholtz(z, V_liq, T, Ar=Ar)
+            AT_Liq = (Ar + V_liq*P)/(T*R) - sum(z)*log(V_liq)
+
+            call eos%residual_helmholtz(z, V_vap, T, Ar=Ar)
+            AT_Vap = (Ar + V_vap*P)/(T*R) - sum(z)*log(V_vap)
+
+            if (AT_liq <= AT_vap) then
+               V = V_liq
+            else
+               V = V_vap
+            end if
+      end select
+
+      V = totn * V 
+   end subroutine
 end module
