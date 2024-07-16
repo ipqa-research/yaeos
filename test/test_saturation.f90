@@ -107,7 +107,7 @@ contains
    end subroutine
    
    subroutine test_bubble_temperature(error)
-      use yaeos, only: pr, EquilibriaState, saturation_temperature, ArModel
+      use yaeos, only: pr, EquilibriaState, saturation_temperature, ArModel, saturation_pressure, PTEnvel2, pt_envelope_2ph
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -125,8 +125,7 @@ contains
       n = [0.4_pr, 0.6_pr]
       T = 200
       model = binary_PR76()
-
-      bubble = saturation_temperature(model, n, P, kind="bubble", t0=100._pr)
+      bubble = saturation_temperature(model, n, P, kind="bubble",t0=201._pr)
       call check(error, maxval(abs(bubble%x - x)) < abs_tolerance)
       call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
       call check(error, abs(bubble%p - p) < abs_tolerance)
