@@ -43,53 +43,64 @@ contains
       x = b_lapack
    end function solve_system
 
-   subroutine cubic_roots(a, b, c, d, r1, r2, r3, flag)
+   subroutine cubic_roots(parameters, real_roots, complex_roots, flag)
+      use polyroots_module, only: polyroots
+      use stdlib_sorting, only: sort
       real(pr), parameter :: pi=atan(1.0_pr)*4
-      real(pr), intent(in) :: a, b, c, d
-      real(pr), intent(out) :: r1, r2, r3
+      real(pr), intent(in) :: parameters(4)
+      real(pr), intent(out) :: real_roots(3)
+      complex(pr), intent(out) :: complex_roots(3)
       integer, intent(out) :: flag
+      !! flag that identifies which case the solution is
+      !! - `0`: 3 real rotos, one of them repeated (use real_roots(1) and real_roots(2))
+      !! - `1`: 1 real root, 2 complex roots.
+      !!   Use real_roots(1) and complex_roots(1) and complex_roots(2)
+      !! - `-1`: 3 real roots, all different
 
-      real(pr) :: p, q, u, v
-      real(pr) :: disc
+      real(pr) :: p, q, u, v, nan
+      real(pr) :: disc, theta
+      real(pr) :: wi(3)
 
-      real(pr) :: z1, z2, z3, theta
+      integer :: istatus
 
-      p = c/a - b**2/(3*a**2)
-      q = d/a - b*c/(3*a**2) + 2*b**3/(27*a**3)
+      nan = 0
+      nan = nan/nan
 
-      disc = q**2 + 4*p**3 / 27
+      associate(&
+         a => parameters(1), b => parameters(2), &
+         c => parameters(3), d => parameters(4)&
+         )
 
-      z1 = 0
-      z2 = 0
-      z3 = 0
-      r1 = 0
-      r2 = 0
-      r3 = 0
+         p = c/a - b**2/(3*a**2)
+         q = d/a - b*c/(3*a**2) + 2*b**3/(27*a**3)
 
-      if (abs(disc) < 1e-15) then
-         flag = 0
-         z1 = 3*q/p
-         z2 = -3*q/(2*p)
-         z3 = z2
-      elseif (disc < 0) then
-         flag = -1
-         theta = acos(0.5_pr * 3 * q / p * sqrt(-3/p))
-         z1 = 2 * sqrt(-p/3) * cos(theta/3)
-         z2 = 2 * sqrt(-p/3) * cos((theta + 2*pi)/3)
-         z3 = 2 * sqrt(-p/3) * cos((theta + 4*pi)/3)
-      elseif (disc > 0) then
-         flag = 1
-         u = ((-q + sqrt(disc))/2)
-         v = ((-q - sqrt(disc))/2)
+         disc = q**2 + 4 * p**3 / 27
+         real_roots = nan
+         complex_roots = nan
 
-         u = sign(abs(u)**(1.0_pr/3.0_pr), u)
-         v = sign(abs(v)**(1.0_pr/3.0_pr), v)
-         z1 = u + v
-      endif
+         if (abs(disc) < 1e-15) then
+            flag = 0
+            real_roots(1) = 3*q/p
+            real_roots(2) = -3*q/(2*p)
+            real_roots(3) = real_roots(2)
+         elseif (disc < 0) then
+            flag = -1
+            theta = acos(0.5_pr * 3 * q / p * sqrt(-3/p))
+            real_roots(1) = 2 * sqrt(-p/3) * cos(theta/3)
+            real_roots(2) = 2 * sqrt(-p/3) * cos((theta + 2*pi)/3)
+            real_roots(3) = 2 * sqrt(-p/3) * cos((theta + 4*pi)/3)
+            call sort(real_roots)
+         elseif (disc > 0) then
+            flag = 1
+            u = ((-q + sqrt(disc))/2)
+            v = ((-q - sqrt(disc))/2)
 
-      r1 = z1 - b/(3*a)
-      r2 = z2 - b/(3*a)
-      r3 = z3 - b/(3*a)
-   end subroutine
+            u = sign(abs(u)**(1.0_pr/3.0_pr), u)
+            v = sign(abs(v)**(1.0_pr/3.0_pr), v)
+            real_roots(1) = u + v
+         endif
+         real_roots = real_roots - b/(3*a)
+      end associate
+   end subroutine cubic_roots
 
 end module yaeos__math_linalg

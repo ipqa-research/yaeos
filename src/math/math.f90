@@ -27,7 +27,7 @@ module yaeos__math
    !! ```
 
    use yaeos__math_continuation, only: continuation
-   use yaeos__math_linalg, only: solve_system
+   use yaeos__math_linalg, only: solve_system, cubic_roots
    use yaeos__constants, only: pr
 
    implicit none
