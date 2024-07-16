@@ -44,7 +44,6 @@ contains
    end function solve_system
 
    subroutine cubic_roots(parameters, real_roots, complex_roots, flag)
-      use polyroots_module, only: polyroots
       use stdlib_sorting, only: sort
       real(pr), parameter :: pi=atan(1.0_pr)*4
       real(pr), intent(in) :: parameters(4)
@@ -59,9 +58,6 @@ contains
 
       real(pr) :: p, q, u, v, nan
       real(pr) :: disc, theta
-      real(pr) :: wi(3)
-
-      integer :: istatus
 
       nan = 0
       nan = nan/nan
