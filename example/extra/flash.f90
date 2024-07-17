@@ -1,5 +1,5 @@
 module flashing
-    use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+    use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
     implicit none
 
 contains

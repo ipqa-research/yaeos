@@ -1,17 +1,12 @@
 program main
-    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, GenericCubic_Ar, fugacity_vt, fugacity_tp, volume, QMR
+    use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, GenericCubic_Ar
     use yaeos, only: ArModel, PengRobinson76
     implicit none
 
-    type(Substances) :: compos
-    type(CubicEoS), target :: eos, eos2
-    type(AlphaSoave) :: alpha
-    type(QMR) :: mixrule
-
-    class(ArModel), pointer :: this
+    type(CubicEoS), target :: eos
 
     integer, parameter :: n=2
-    real(pr) :: z(n), b, dbi(n), dbij(n,n)
+    real(pr) :: z(n)
     real(pr) :: v=1.0, t=150.0, p
 
     real(pr) :: ar
@@ -19,11 +14,8 @@ program main
     real(pr) :: arn(n), arvn(n), artn(n), arn2(n,n) 
     real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n, n)
 
-    class(ArModel), allocatable :: models(:)
 
     real(pr) :: tc(n), pc(n), w(n), kij(n, n), lij(n, n)
-
-    integer :: i
 
     z = [0.3_pr, 0.7_pr]
     tc = [190._pr, 310._pr]
@@ -38,7 +30,7 @@ program main
     v = 1
     t = 150
 
-    call fugacity_vt(eos, &
+    call eos%lnphi_vt(&
          z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
     )
 

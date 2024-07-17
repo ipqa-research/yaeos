@@ -45,7 +45,6 @@ end module alpha_mathias_copeman
 
 program new_alpha_example
    use yaeos__example_tools, only: methane_butane_pr76
-   use yaeos, only: fugacity_vt, pressure
    use yaeos, only: pr, PengRobinson76, CubicEoS, QMR
    use alpha_mathias_copeman, only: MathiasCopeman
    type(CubicEoS) :: eos
@@ -67,14 +66,14 @@ program new_alpha_example
    v = 2
    t = 150
 
-   call pressure(eos, n, V, T, P=P)
+   call eos%pressure(n, V, T, P=P)
    print *, "Peng-Robinson76:", P
    
    ! Replace the original alpha
    deallocate(eos%alpha) ! Remove the already defined alpha
    eos%alpha = alpha     ! assign the new defined alpha
 
-   call pressure(eos, n, V, T, P=P)
+   call eos%pressure(n, V, T, P=P)
    print *, "Peng-Robinson76-MC:", P
 
 
