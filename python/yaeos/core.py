@@ -35,21 +35,21 @@ class ArModel(ABC):
         res = {"ln_phi": res, "dt": dt, "dp": dp, "dn": dn}
         return res
 
-    def flash_tp(self, z, temperature, pressure):
+    def flash_pt(self, z, pressure, temperature):
         """Two-phase split with specification of temperature and pressure.
 
         Calculates the phase split at a given pressure and temperature
         """
 
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
-            self.id, z, temperature, pressure
+            self.id, z, pressure, temperature
         )
 
         flash_result = {
             "x": x,
             "y": y,
-            "T": temperature,
             "P": pressure,
+            "T": temperature,
             "beta": beta,
         }
 

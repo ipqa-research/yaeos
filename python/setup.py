@@ -25,9 +25,7 @@ CFLAGS = "-fPIC"
 # =============================================================================
 def pre_build():
     """Execute fpm and f2py compilations commands."""
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     print(THIS_DIR)
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
     if COMPILED_FLAG.exists():
         return
