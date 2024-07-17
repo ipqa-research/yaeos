@@ -13,7 +13,8 @@ contains
       testsuite = [ &
          new_unittest("Test dx_to_dn", test_dx_to_dn), &
          new_unittest("Test sq_error", test_sq_error), &
-         new_unittest("Test cardano", test_cardano_method) &
+         new_unittest("Test cardano", test_cardano_method), &
+         new_unittest("Test newton", test_newton_method) &
          ]
    end subroutine collect_suite
 
@@ -66,8 +67,26 @@ contains
       call check(error, flag == -1)
       call check(error, &
          maxval(abs(rr - [-0.454216, 0.8601986, 25.594016])) < 1e-5_pr &
-      )
+         )
    end subroutine test_cardano_method
+
+   subroutine test_newton_method(error)
+      use yaeos__math, only: pr, newton
+      type(error_type), allocatable, intent(out) :: error
+      real(pr) :: x
+      real(pr) :: tol=1e-5
+      integer :: max_iters = 100
+
+      x = 0.5
+      call newton(foo, x, tol, max_iters)
+      call check(error, abs(x - sqrt(2._pr)) < tol)
+   contains
+      subroutine foo(xx, f, df)
+            real(pr), intent(in) :: xx
+            real(pr), intent(out) :: f
+            real(pr), intent(out) :: df
+            f = xx**2 - 2
+            df = 2*xx
+         end subroutine foo
+   end subroutine test_newton_method
 end module test_math
-
-
