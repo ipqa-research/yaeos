@@ -21,12 +21,67 @@ module yaeos__models_ar_genericcubic
    end type
 
    type, extends(ArModel) :: CubicEoS
-      !! Cubic Equation of State.
+      !! # Cubic Equation of State.
       !!
       !! Generic Cubic Equation of State as defined by Michelsen and Mollerup
-      !! with constant \(\delta_1\) and \(\delta_2\) parameters.
+      !! with a \(\delta_1\) parameter that is not constant, 
+      !! and a \(\delta_2\) parameter that depends on it. In the case of a 
+      !! two parameter EoS like PengRobinson the \(\delta_1\) is the same for
+      !! all components so it can be considered as a constant instead of a 
+      !! variable.
       class(CubicMixRule), allocatable :: mixrule
-      class(AlphaFunction), allocatable :: alpha
+         !! # CubicMixRule derived type.
+         !! Uses the abstract derived type `CubicMixRule` to define the
+         !! mixing rule that the CubicEoS will use. It includes internally
+         !! three methods to calculate the corresponding parameters for the
+         !! Cubic EoS: `Dmix`, `Bmix` and `D1mix`.
+         !! 
+         !! # Examples
+         !! ## Calculation of the B parameter.
+         !! ```fortran
+         !! use yaeos, only: CubicEoS, PengRobinson76
+         !! type(CubicEoS) :: eos
+         !! eos = PengRobinson76(tc, pc, w)
+         !! call eos%mixrule%Bmix(n, eos%b, B, dBi, dBij)
+         !! ```
+         !! ## Calculation of the D parameter.
+         !! ```fortran
+         !! use yaeos, only: CubicEoS, PengRobinson76
+         !! type(CubicEoS) :: eos
+         !! eos = PengRobinson76(tc, pc, w)
+         !!
+         !! ! The mixing rule takes the `a` parameters of the components so
+         !! ! they should be calculated externally
+         !! call eos%alpha%alpha(Tr, a, dadt, dadt2)
+         !! a = a * eos%ac
+         !! dadt = dadt * eos%ac / eos%components%Tc
+         !! dadt = dadt * eos%ac / eos%components%Tc**2
+         !! ! Calculate parameter
+         !! call eos%mixrule%Dmix(n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+         !! ```
+         !! ## Calculation of the D1 parameter.
+         !! ```fortran
+         !! use yaeos, only: CubicEoS, PengRobinson76
+         !! type(CubicEoS) :: eos
+         !! eos = PengRobinson76(tc, pc, w)
+         !! call eos%mixrule%D1mix(n, eos%del1, D1, dD1i, dD1ij)
+         !! ```
+      class(AlphaFunction), allocatable :: alpha 
+         !! # AlphaFunction derived type.
+         !! Uses the abstract derived type `AlphaFunction` to define the
+         !! Alpha function that the CubicEoS will use. The Alpha function
+         !! receives the reduced temperature and returns the values of alpha
+         !! and its derivatives, named `a`, `dadt` and `dadt2` respectively.
+         !!
+         !! # Examples
+         !! ## Callign the AlphaFunction of a setted up model.
+         !! ```fortran
+         !! use yaeos, only: CubicEoS, PengRobinson76
+         !! 
+         !! type(CubicEoS) :: eos
+         !! eos = PengRobinson76(tc, pc, w)
+         !! call eos%alpha%alpha(Tr, a, dadt, dadt2)
+         !! ```
       real(pr), allocatable :: ac(:) !! Attractive critical parameter
       real(pr), allocatable :: b(:) !! Repulsive parameter
       real(pr), allocatable :: del1(:) !! \(\delta_1\) paramter
@@ -86,7 +141,7 @@ contains
       !!
       !! \[
       !!   P = \frac{RT}{V-b} 
-      !        - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}
+      !!       - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}
       !! \]
       !!
       !! This routine assumes that the \(\delta_1\) is not a constant parameter
@@ -224,6 +279,44 @@ contains
    end function
 
    subroutine volume(eos, n, P, T, V, root_type)
+      !! # Cubic EoS volume solver
+      !! Volume solver optimized for Cubic Equations of State.
+      !! 
+      !! @warn
+      !! This routine intends to use the analyitical solution of the cubic
+      !! equation, but due to errors in the solutions it is not used. And
+      !! the general volume solver by Michelsen is used instead.
+      !! @endwarn
+      !!
+      !! # Description
+      !! Cubic equations can be analytically solved. Using an anallytical
+      !! solution provides the best possible solution in terms of speed and
+      !! precision. This subroutine uses the modified cardano method proposed
+      !! by Rosendo.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  use yaeos, only: CubicEoS, PengRobinson
+      !!  type(CubicEoS) :: eos
+      !!
+      !!  eos = PengRobinson(tc, pc, w)
+      !!  ! Possible roots to solve
+      !!  call eos%volume(n, P, T, V, "liquid")
+      !!  call eos%volume(n, P, T, V, "vapor")
+      !!  call eos%volume(n, P, T, V, "stable")
+      !! ```
+      !!
+      !! # References
+      !! 
+      !! - [1] "Thermodynamic Models: Fundamental and Computational Aspects",
+      !!  Michael L. Michelsen, Jørgen M. Mollerup. 
+      !!  Tie-Line Publications, Denmark (2004)
+      !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
+      !!
+      !! - [2] "A Note on the Analytical Solution of Cubic Equations of State 
+      !! in Process Simulation", Rosendo Monroy-Loperena 
+      !! [doi](https://dx.doi.org/10.1021/ie2023004)
       use yaeos__constants, only: R
       use yaeos__math_linalg, only: cubic_roots, cubic_roots_rosendo
       use yaeos__models_solvers, only: volume_michelsen
@@ -247,8 +340,8 @@ contains
       real(pr) :: a(size(n)), dadt(size(n)), dadt2(size(n))
       real(pr) :: totn
 
-      ! call volume_michelsen(eos, n, P, T, V, root_type)
-      ! return
+      call volume_michelsen(eos, n, P, T, V, root_type)
+      return
 
       totn = sum(n)
       z = n/totn
@@ -277,7 +370,7 @@ contains
       cp(4) = P*D1*D2*Bmix**3 + R*T *D1*D2*Bmix**2 + D*Bmix
 
       ! call cubic_roots(cp, rr, cr, flag)
-      call cubic_roots_rosendo(cp, rr, cr, flag)
+      ! call cubic_roots_rosendo(cp, rr, cr, flag)
 
       select case(flag)
          case(-1)
