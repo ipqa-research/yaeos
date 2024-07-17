@@ -32,6 +32,7 @@ module yaeos_c
 
    ! Thermoprops
    public :: fug_vt
+   
    ! Phase equilibria
    public :: flash
    public :: saturation_pressure
@@ -228,7 +229,6 @@ contains
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
    subroutine fug_vt(id, n, v, t, lnfug, dlnphidp, dlnphidt, dlnphidn)
-      use yaeos, only: fugacity_vt
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
       real(c_double), intent(out) :: lnfug(size(n))
@@ -237,8 +237,7 @@ contains
       real(c_double), optional, intent(in out) :: &
          dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
 
-      call fugacity_vt(&
-         ar_models(id)%model, &
+      call ar_models(id)%model%lnphi_vt(&
          n, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
          )
    end subroutine fug_vt
