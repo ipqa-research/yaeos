@@ -2,7 +2,6 @@ module yaeos__equilibria_flash
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
    use yaeos__equilibria_equilibria_state, only: EquilibriaState
-   use yaeos__thermoprops, only: fugacity_vt, fugacity_tp, pressure
    use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
@@ -72,7 +71,7 @@ contains
          Vx = 0.0
          if (.not. present(k0)) then
             ! the EoS one-phase pressure will be used to estimate Wilson K factors
-            call pressure(model, z, v_spec, t, p=p)
+            call model%pressure(z, v_spec, t, p=p)
             if (P < 0) P = 1.0
          end if
       end if
@@ -110,11 +109,11 @@ contains
           case("TV")
             ! find Vy,Vx (vV and vL) from V balance and P equality equations
             call tv_loop_solve_pressures(model, T, V, beta, x, y, Vx, Vy, P)
-            call fugacity_tp(model, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
-            call fugacity_tp(model, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
           case("TP")
-            call fugacity_tp(model, y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
-            call fugacity_tp(model, x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
+            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
          end select
 
          dKold = dK
@@ -186,7 +185,6 @@ contains
    subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
       !! Solve pressure equality between two phases at a given temperature,
       !! total volume, vapor molar fractions and compositions.
-      use yaeos__thermoprops, only: fugacity_vt, pressure
       use iso_fortran_env, only: error_unit
 
       class(ArModel), intent(in) :: model
@@ -218,11 +216,11 @@ contains
       ! First evaluation will be with Vx = 1.5*Bx
       if (Vx < Bx) Vx = 1.625_pr*Bx
 
-      call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
+      call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
 
       do while (Px < 0 .or. dPxdV >= 0)
          Vx = Vx - 0.2*(Vx - Bx)
-         call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
+         call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
       end do
 
       Vy = (V - (1 - beta)*Vx)/beta
@@ -233,8 +231,8 @@ contains
          ! Newton for solving P equality, with Vx as independent variable
          its = its + 1
 
-         call pressure(model, x, Vx, T, Px, dpdv=dPxdV)
-         call pressure(model, y, Vy, T, Py, dpdv=dPydV)
+         call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
+         call model%pressure(y, Vy, T, Py, dpdv=dPydV)
 
          h = Py - Px
          dh = -dPydV * dVydVx - dPxdV
@@ -258,8 +256,8 @@ contains
          end if
       end do
 
-      call pressure(model, x, Vx, T, Px)
-      call pressure(model, y, Vy, T, Py)
+      call model%pressure(x, Vx, T, Px)
+      call model%pressure(y, Vy, T, Py)
       P = (Px + Py) * 0.5_pr
    end subroutine tv_loop_solve_pressures
 end module yaeos__equilibria_flash

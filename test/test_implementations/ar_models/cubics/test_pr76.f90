@@ -241,7 +241,6 @@ contains
    subroutine test_pr76_compressibility_factor(error)
       ! From original paper.
       use yaeos, only: pr, R, PengRobinson76, ArModel
-      use yaeos__thermoprops, only: volume
 
       type(error_type), allocatable, intent(out) :: error
       integer :: i
@@ -272,7 +271,7 @@ contains
       Z1 = [0.151_pr, 0.248_pr, 0.482_pr, 0.707_pr, 0.926_pr]
 
       do i=1,5
-         call volume(model, z, P1(i), T, V=v, root_type="stable")
+         call model%volume(z, P1(i), T, V=v, root_type="stable")
          Zcomp = P1(i) * v / (R * T)
 
          call check(error, abs(Zcomp - Z1(i)) < 1e-3)
@@ -284,7 +283,7 @@ contains
       Z2 = [0.289_pr, 0.482_pr, 0.665_pr, 0.840_pr]
 
       do i=1,4
-         call volume(model, z, P2(i), T, V=v, root_type="stable")
+         call model%volume(z, P2(i), T, V=v, root_type="stable")
          Zcomp = P2(i) * v / (R * T)
 
          call check(error, abs(Zcomp - Z2(i)) < 1e-3)
@@ -296,7 +295,7 @@ contains
       Z3 = [0.804_pr, 0.696_pr, 0.643_pr, 0.744_pr, 0.869_pr]
 
       do i=1,5
-         call volume(model, z, P3(i), T, V=v, root_type="stable")
+         call model%volume(z, P3(i), T, V=v, root_type="stable")
          Zcomp = P3(i) * v / (R * T)
 
          call check(error, abs(Zcomp - Z3(i)) < 1e-3)
@@ -311,7 +310,7 @@ contains
       Z4 = [0.215_pr, 0.404_pr, 0.580_pr, 0.750_pr]
 
       do i=1,4
-         call volume(model, z, P4(i), T, V=v, root_type="stable")
+         call model%volume(z, P4(i), T, V=v, root_type="stable")
          Zcomp = P4(i) * v / (R * T)
 
          call check(error, abs(Zcomp - Z4(i)) < 1e-3)
@@ -323,7 +322,7 @@ contains
       Z5 = [0.782_pr, 0.638_pr, 0.545_pr, 0.645_pr, 0.765_pr]
 
       do i=1,5
-         call volume(model, z, P5(i), T, V=v, root_type="stable")
+         call model%volume( z, P5(i), T, V=v, root_type="stable")
          Zcomp = P5(i) * v / (R * T)
 
          call check(error, abs(Zcomp - Z5(i)) < 1e-3)
@@ -335,7 +334,7 @@ contains
       Z6 = [0.920_pr, 0.870_pr, 0.796_pr, 0.806_pr, 0.877_pr]
 
       do i=1,5
-         call volume(model, z, P6(i), T, V=v, root_type="stable")
+         call model%volume(z, P6(i), T, V=v, root_type="stable")
          Zcomp = P6(i) * v / (R * T)
 
          call check(error, abs(Zcomp - Z6(i)) < 2e-2)
@@ -345,7 +344,6 @@ contains
    subroutine test_pr76_co2_volume(error)
       ! From Elliot's book.
       use yaeos, only : pr, PengRobinson76, ArModel
-      use yaeos__thermoprops, only: volume
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
@@ -357,17 +355,16 @@ contains
       n = [1.0_pr]
       mw = 44.01 ! g / mol
 
-      call volume(model, n, 8.0_pr, 310.0_pr, V=V, root_type="stable")
+      call model%volume(n, 8.0_pr, 310.0_pr, V=V, root_type="stable")
       call check(error, abs(V / mw * 1000 - 70.37) < 0.06)
 
-      call volume(model, n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
+      call model%volume(n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
       call check(error, abs(V / mw * 1000 - 3.84) < 0.01)
    end subroutine test_pr76_co2_volume
 
    subroutine test_pr76_fugacities(error)
       ! K values of N2-CH4 (0.5, 0.5) mixture from Elliot's book.
       use yaeos, only: pr, R, PengRobinson76, ArModel
-      use yaeos__thermoprops, only: fugacity_tp, volume
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
@@ -385,9 +382,9 @@ contains
          [0.040_pr, 0.011_pr] &
          )
 
-      call volume(model, z_v, P, T, root_type="vapor", V=v_v)
-      call fugacity_tp(model, z_v, T, P, root_type="vapor", lnphip = lnphip_v)
-      call fugacity_tp(model, z_l, T, P, root_type="liquid", lnphip = lnphip_l)
+      call model%volume(z_v, P, T, root_type="vapor", V=v_v)
+      call model%lnphi_tp(z_v, T, P, root_type="vapor", lnphip = lnphip_v)
+      call model%lnphi_tp(z_l, T, P, root_type="liquid", lnphip = lnphip_l)
 
       ! Elliot Z value of vapor
       call check(error, abs(P * v_v / R / T - 0.9059) <  1e-4)

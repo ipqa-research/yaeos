@@ -1,6 +1,6 @@
 module bench
     use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, &
-        fugacity_vt, QMR, PengRobinson76, ArModel, fugacity_tp
+        QMR, PengRobinson76, ArModel
     use hyperdual_pr76, only: PR76, setup_adiff_pr76 => setup
     use TapeRobinson, only: setup_taperobinson => setup_model
     implicit none
@@ -49,14 +49,14 @@ contains
 
         if (dn) then
             if (f_p) then
-                call fugacity_tp(&
-                    model, z, T, P, root_type="stable", &
+                call model%lnphi_tp(&
+                    z, T, P, root_type="stable", &
                     lnphip=lnfug, dlnphidp=dlnphidp, dlnphidn=dlnphidn)
             else
-                call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
+                call model%lnphi_vt(z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
             end if
         else
-            call fugacity_vt(model, z, V, T, lnphip=lnfug)
+            call model%lnphi_vt(z, V, T, lnphip=lnfug)
         end if
     end subroutine
 

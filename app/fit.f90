@@ -1,10 +1,11 @@
 program main
    !! Binary system parameter optimization
-   use yaeos, only: EquilibriaState, pr, ArModel, PengRobinson78, CubicEoS, saturation_pressure
+   use yaeos, only: EquilibriaState, pr, ArModel, SoaveRedlichKwong, CubicEoS, saturation_pressure
+   use yaeos, only: MHV
    use forsus, only: Substance, forsus_dir
    use yaeos__fitting, only: FittingProblem, fobj, optimize
-   use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL, init_model
-   integer, parameter :: nc = 2, np=7 + nc
+   use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
+   integer, parameter :: nc = 2, np=7
    integer :: i, infile, iostat
 
    type(EquilibriaState), allocatable :: exp_points(:)
@@ -44,15 +45,21 @@ program main
    ! ==========================================================================
    ! Setup optimization problem and call the optimization function
    ! --------------------------------------------------------------------------
-   call init_model(prob, sus)
+   model = SoaveRedlichKwong(&
+      sus%critical%critical_temperature%value, &
+      sus%critical%critical_pressure%value/1e5, &
+      sus%critical%acentric_factor%value &
+   )
 
+   prob%model = model
+   
    prob%experimental_points = exp_points
 
    X = 0
    X(1:2) = [0.1, 0.3]
    X(5:6) = [0.1, 0.2]
-   X(8:) = [1, 1]
 
+   prob%fit_nrtl = .true.
    prob%parameter_step = [(0.5_pr, i=1,size(x))]
    prob%solver_tolerance = 1e-7
    prob%verbose = .true.
@@ -62,7 +69,6 @@ program main
    print *, "FO:", error
    print *, "Xf:", X
 
-   if (allocated(model)) deallocate (model)
    call prob%get_model_from_X(X)
    model = prob%model
 

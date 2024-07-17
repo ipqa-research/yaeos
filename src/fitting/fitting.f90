@@ -51,6 +51,7 @@ contains
       type(nlopt_opt) :: opt !! Optimizer
       type(nlopt_func) :: f !! Function to optimize
       integer :: stat
+      integer :: i
 
       count = 0
       call bar%initialize(&
@@ -67,7 +68,12 @@ contains
 
       f = create_nlopt_func(fobj, f_data=func_data)
 
-      dx = func_data%parameter_step
+      if (.not. allocated(func_data%parameter_step)) then
+         dx = [(0.05_pr, i=1, size(X))]
+      else
+         dx = func_data%parameter_step
+      end if
+
       call opt%set_ftol_rel(func_data%solver_tolerance)
 
       call opt%set_initial_step(dx)
