@@ -100,8 +100,6 @@ contains
       model = binary_PR76()
 
       dew = saturation_temperature(model, n, P, kind="dew", t0=250._pr)
-      print *, dew
-
       call check(error, abs(dew%P-P) < abs_tolerance)
       call check(error, abs(dew%T-T) < abs_tolerance)
       call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
@@ -128,10 +126,6 @@ contains
       T = 200
       model = binary_PR76()
       bubble = saturation_temperature(model, n, P, kind="bubble",t0=201._pr)
-      print *, bubble%P, P
-      print *, bubble%T, T
-      print *, bubble%x, x
-      print *, bubble%y, y
       call check(error, maxval(abs(bubble%x - x)) < abs_tolerance)
       call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
       call check(error, abs(bubble%p - p) < abs_tolerance)
