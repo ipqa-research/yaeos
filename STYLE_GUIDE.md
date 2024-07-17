@@ -8,9 +8,9 @@ This style guide is a living document and proposed changes may be adopted after 
 
 ## Use (modern) standard Fortran
 
-* Do not use obsolescent or deleted language features
+* Do **not** use obsolescent or deleted language features
   E.g., `common`, `pause`, `entry`, arithmetic `if` and computed `goto`
-* Do not use vendor extensions in the form of non-standard syntax and vendor supplied intrinsic procedures
+* Do **not** use vendor extensions in the form of non-standard syntax and vendor supplied intrinsic procedures
   E.g., `real*8` or `etime()`, use `real(pr)`
 
 ## Naming of variables and constructs
@@ -27,6 +27,7 @@ This style guide is a living document and proposed changes may be adopted after 
   for example `has_failed` is preferred over `hasfailed`
 - Where conventional and appropriate shortening of a word is used then the underscore may be omitted,
   for example `linspace` is preferred over `lin_space`
+- For derived types use CamelCase, like `ArModel`
 
 ## File naming conventions
 * Source files should contain at most one `program`, `module`, or `submodule`
