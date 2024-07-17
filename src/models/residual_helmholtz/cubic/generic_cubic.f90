@@ -28,7 +28,12 @@ module yaeos__models_ar_genericcubic
       !! and a \(\delta_2\) parameter that depends on it. In the case of a 
       !! two parameter EoS like PengRobinson the \(\delta_1\) is the same for
       !! all components so it can be considered as a constant instead of a 
-      !! variable.
+      !! variable. The expression of the Equation is:
+      !!
+      !! \[
+      !!   P = \frac{RT}{V-B} 
+      !!       - \frac{D(T_r)}{(V+B\Delta_1)(V+B\Delta_2)}
+      !! \]
       class(CubicMixRule), allocatable :: mixrule
          !! # CubicMixRule derived type.
          !! Uses the abstract derived type `CubicMixRule` to define the
