@@ -225,7 +225,7 @@ contains
 
    subroutine volume(eos, n, P, T, V, root_type)
       use yaeos__constants, only: R
-      use yaeos__math_linalg, only: cubic_roots
+      use yaeos__math_linalg, only: cubic_roots, cubic_roots_rosendo
       use yaeos__models_solvers, only: volume_michelsen
       class(CubicEoS), intent(in) :: eos
       real(pr), intent(in) :: n(:), P, T
@@ -276,8 +276,9 @@ contains
       cp(3) = -P*(D1*D2*Bmix**2 - D1*Bmix**2 - D2*Bmix**2) + R*T*Bmix*(D1+D2) - D
       cp(4) = P*D1*D2*Bmix**3 + R*T *D1*D2*Bmix**2 + D*Bmix
 
-      call cubic_roots(cp, rr, cr, flag)
-      ! print *, root_type, n, rr
+      ! call cubic_roots(cp, rr, cr, flag)
+      call cubic_roots_rosendo(cp, rr, cr, flag)
+
       select case(flag)
          case(-1)
             V_liq = rr(1)
