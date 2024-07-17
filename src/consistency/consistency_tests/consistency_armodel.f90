@@ -142,8 +142,6 @@ contains
 
       ntot = sum(n)
 
-      lnPhi(:) = lnPhi(:) - log(P)
-
       z = P * V / ntot / R / T
 
       Grp = Grv - ntot * R * T * log(Z)

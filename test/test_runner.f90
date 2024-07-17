@@ -32,7 +32,7 @@ program tester
     ! -------------------------------------------------------------------------
     use test_fitting, only: suite_fitting => collect_suite
 
-    use stdlib_ansi, only: fg_color_green, fg_color_red, operator(//), style_reset
+    use stdlib_ansi, only: style_bold, fg_color_green, fg_color_red, operator(//), style_reset
 
     implicit none
 
@@ -74,7 +74,8 @@ program tester
         
 
     do is = 1, size(testsuites)
-        write (error_unit, fmt) "Testing:", testsuites(is)%name
+        write (error_unit, fmt) "Testing:", &
+            style_bold // testsuites(is)%name // style_reset
         call run_testsuite(testsuites(is)%collect, error_unit, stat)
     end do
 

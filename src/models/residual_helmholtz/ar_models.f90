@@ -320,7 +320,6 @@ contains
       nc = size(n)
 
       RT = R*T
-      Z = V/(totn*RT) ! this is Z/P
 
       if (present(lnPhi) .and. .not. (&
          present(dlnPhidn) &
@@ -328,7 +327,9 @@ contains
          .or. present(dlnPhidT) &
          .or. present(P) &
          )) then
-         call eos%residual_helmholtz(n, v, t, Arn=Arn)
+         call eos%residual_helmholtz(n, v, t, Arn=Arn, ArV=ArV)
+         P_in = totn*RT/V - ArV
+         Z = P_in*V/(totn*RT)
          lnPhi(:) = Arn(:)/RT - log(Z)
          return
       else if (present(dlnPhidn)) then
@@ -343,15 +344,16 @@ contains
             )
       end if
 
-      if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
-
       P_in = totn*RT/V - ArV
+      
+      Z = P_in*V/(totn*RT)
       if (present(P)) P = P_in
 
       dPdV_in = -ArV2 - RT*totn/V**2
       dPdT_in = -ArTV + totn*R/V
       dPdn_in = RT/V - ArVn
 
+      if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
       if (present(dlnPhidP)) then
          dlnPhidP(:) = -dPdn_in(:)/dPdV_in/RT - 1._pr/P_in
       end if
