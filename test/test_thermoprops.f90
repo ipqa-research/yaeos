@@ -143,7 +143,7 @@ contains
 
         ! test against fugacity coefficient derivatives
         ! (Michelsen and Mollerup chapter 2 eq 37)
-        call eos%lnphi_vt(z, v, t, lnphip=lnfug, dlnphidt=dlnphidt)
+        call eos%lnphi_vt(z, v, t, lnPhi=lnfug, dlnphidt=dlnphidt)
 
         Hr_fromphi = -1_pr * sum(z * dlnphidT) * R * t**2 ! Hr(T,P) = Hr(T,V)
 
@@ -229,7 +229,7 @@ contains
 
         ! test against fugacity coefficient
         ! (Michelsen and Mollerup chapter 2 eq 31)
-        call eos%lnphi_vt(z, v, t, lnphip=lnfug)
+        call eos%lnphi_vt(z, v, t, lnPhi=lnfug)
 
         lnfugcoeffs = lnfug - log(p) ! lnfug is = ln(phi * p)
 

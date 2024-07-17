@@ -84,13 +84,13 @@ contains
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
 
       call model%lnphi_tp(&
-         w, T=T, P=P, V=Vw, root_type="stable", lnphip=lnphi_w &
+         w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
       )
-      lnphi_w = lnphi_w - log(P)
+      lnPhi_w = lnPhi_w - log(P)
 
       if (.not. present(d)) then
          call model%lnphi_tp(&
-            z, T=T, P=P, V=Vz, root_type="stable", lnphip=lnphi_z&
+            z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
          )
          lnphi_z = lnphi_z - log(P)
          di = log(z) + lnphi_z
@@ -134,7 +134,7 @@ contains
       dx = 0.001_pr
 
       ! Calculate feed di
-      call model%lnphi_tp(z, T=T, P=P, V=V, root_type="stable", lnphip=lnphi_z)
+      call model%lnphi_tp(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnphi_z)
       lnphi_z = lnphi_z - log(P)
       di = log(z) + lnphi_z
 

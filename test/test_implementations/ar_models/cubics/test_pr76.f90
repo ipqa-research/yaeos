@@ -369,7 +369,7 @@ contains
 
       class(ArModel), allocatable :: model
 
-      real(pr) :: T, P, z_v(2), z_l(2), v_v, lnphip_l(2), lnphip_v(2)
+      real(pr) :: T, P, z_v(2), z_l(2), v_v, lnphi_l(2), lnphi_v(2)
 
       T = 100 ! K
       P = 4.119 ! bar
@@ -383,19 +383,19 @@ contains
          )
 
       call model%volume(z_v, P, T, root_type="vapor", V=v_v)
-      call model%lnphi_tp(z_v, T, P, root_type="vapor", lnphip = lnphip_v)
-      call model%lnphi_tp(z_l, T, P, root_type="liquid", lnphip = lnphip_l)
+      call model%lnphi_tp(z_v, T, P, root_type="vapor", lnPhi = lnphi_v)
+      call model%lnphi_tp(z_l, T, P, root_type="liquid", lnPhi = lnphi_l)
 
       ! Elliot Z value of vapor
       call check(error, abs(P * v_v / R / T - 0.9059) <  1e-4)
 
       ! Elliot vapor fugacities
-      call check(error, abs(exp(lnphip_v(1) - log(P)) - 0.9162) < 1e-4)
-      call check(error, abs(exp(lnphip_v(2) - log(P)) - 0.8473) < 1e-4)
+      call check(error, abs(exp(lnPhi_v(1) - log(P)) - 0.9162) < 1e-4)
+      call check(error, abs(exp(lnPhi_v(2) - log(P)) - 0.8473) < 1e-4)
 
       ! Elliot liquid fugacities
-      call check(error, abs(exp(lnphip_l(1) - log(P)) - 1.791) < 1e-3)
-      call check(error, abs(exp(lnphip_l(2) - log(P)) - 0.0937) < 1e-4)
+      call check(error, abs(exp(lnPhi_l(1) - log(P)) - 1.791) < 1e-3)
+      call check(error, abs(exp(lnPhi_l(2) - log(P)) - 0.0937) < 1e-4)
    end subroutine test_pr76_fugacities
 
    subroutine test_pr76_txy_methanol_benzene(error)

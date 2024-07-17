@@ -109,11 +109,11 @@ contains
           case("TV")
             ! find Vy,Vx (vV and vL) from V balance and P equality equations
             call tv_loop_solve_pressures(model, T, V, beta, x, y, Vx, Vy, P)
-            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
-            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnPhi=lnfug_y)
+            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnPhi=lnfug_x)
           case("TP")
-            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnphip=lnfug_y)
-            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnphip=lnfug_x)
+            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnPhi=lnfug_y)
+            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnPhi=lnfug_x)
          end select
 
          dKold = dK

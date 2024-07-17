@@ -13,8 +13,22 @@ This style guide is a living document and proposed changes may be adopted after 
 * Do not use vendor extensions in the form of non-standard syntax and vendor supplied intrinsic procedures
   E.g., `real*8` or `etime()`, use `real(pr)`
 
-## File naming conventions
+## Naming of variables and constructs
+- Variable and procedure names, as well as Fortran keywords, should be written in lowercase
+- All constants (like the `R` gas constant) should be upper case
+- All variables should be in lowercase unless they are represented in uppercase in the bibliography.
+  for example, the molar volume would be `v` and the total volume would be `V`.
+- In the case of derivatives, for general properties they should be written as `dXdy` for first derivatives and `dXdyz` or `dXdy2` for second order derivatives. The only exception is with energetic properties, like `Ar`, where derivatives are written like `ArV`, `ArVn`, etc.
+- All thermodynamic variables that are input of a subroutine/function should
+  have the order:
+  - `n, V, T`
+  - `n, P, T`
+- Variable and procedure names should be made up of one or more full words separated by an underscore,
+  for example `has_failed` is preferred over `hasfailed`
+- Where conventional and appropriate shortening of a word is used then the underscore may be omitted,
+  for example `linspace` is preferred over `lin_space`
 
+## File naming conventions
 * Source files should contain at most one `program`, `module`, or `submodule`
 * The filename should match the program or module name and have the file extension `.f90` or `.F90` if preprocessing is required
 * `module` names should include it's subdirectory, using `yaeos__` for the parent
@@ -34,18 +48,11 @@ than style and formatting.
 
 We recommend ~~enforce~~ the use of `findent` to format your files.
 
-* The body of every Fortran construct should be indented by __four (4) spaces__
+* The body of every Fortran construct should be indented by __three (3) spaces__
 * Line length *should be limited to 80 characters* and __must not exceed 132__
 * **Do not** use <kbd>Tab</kbd> characters for indentation
 * **Remove** trailing white space before committing code
 
-## Variable and procedure naming
-
-* Variable and procedure names, as well as Fortran keywords, should be written in lowercase
-* Variable and procedure names should be made up of one or more full words separated by an underscore,
-  for example `has_failed` is preferred over `hasfailed`
-* Where conventional and appropriate shortening of a word is used then the underscore may be omitted,
-  for example `linspace` is preferred over `lin_space`
 
 ## Attributes
 

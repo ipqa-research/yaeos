@@ -51,12 +51,12 @@ contains
             if (f_p) then
                 call model%lnphi_tp(&
                     z, T, P, root_type="stable", &
-                    lnphip=lnfug, dlnphidp=dlnphidp, dlnphidn=dlnphidn)
+                    lnPhi=lnfug, dlnphidp=dlnphidp, dlnphidn=dlnphidn)
             else
                 call model%lnphi_vt(z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
             end if
         else
-            call model%lnphi_vt(z, V, T, lnphip=lnfug)
+            call model%lnphi_vt(z, V, T, lnPhi=lnfug)
         end if
     end subroutine
 

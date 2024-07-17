@@ -125,7 +125,7 @@ contains
          character(len=14) :: kind_z, kind_y
 
          real(pr) :: y(nc)
-         real(pr) :: Vz, Vy, lnphip_z(nc), lnphip_y(nc)
+         real(pr) :: Vz, Vy, lnPhi_z(nc), lnPhi_y(nc)
          real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
          real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
          real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
@@ -157,16 +157,16 @@ contains
 
          call model%lnphi_tp(&
             z, T, P, V=Vz, root_type=kind_z, &
-            lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
+            lnPhi=lnphi_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
          call model%lnphi_tp(&
             y, T, P, V=Vy, root_type=kind_y, &
-            lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
+            lnPhi=lnphi_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
 
-         F(:nc) = X(:nc) + lnphip_y - lnphip_z
+         F(:nc) = X(:nc) + lnPhi_y - lnPhi_z
          F(nc + 1) = sum(y - z)
          F(nc + 2) = X(ns) - S
 
