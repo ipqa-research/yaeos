@@ -1,12 +1,12 @@
 module flashing
-    use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
+    use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
     implicit none
 
 contains
 
     subroutine main()
         class(ArModel), allocatable :: model
-        type(EquilibriaState) :: flash_result
+        type(EquilibriumState) :: flash_result
 
         real(pr) :: tc(2), pc(2), w(2)
 

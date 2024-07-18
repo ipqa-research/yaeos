@@ -4,13 +4,13 @@
 ! - saturation_pressure
 ! - saturation_temperature
 ! 
-! All the outputs of this functions use the `EquilibriaState` type
+! All the outputs of this functions use the `EquilibriumState` type
 program saturation
     use yaeos
     use yaeos__example_tools, only: methane_butane_pr76
 
     class(ArModel), allocatable :: model
-    type(EquilibriaState) :: sat_point
+    type(EquilibriumState) :: sat_point
 
     real(pr) :: n(2), T
 

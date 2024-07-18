@@ -1,5 +1,5 @@
 module yaeos__equilibria
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__equilibria_flash, only: flash
    use yaeos__equilibria_saturation_points, only:&
        saturation_pressure, saturation_temperature

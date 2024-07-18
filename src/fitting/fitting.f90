@@ -2,7 +2,7 @@ module yaeos__fitting
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel, CubicEoS
    use yaeos__equilibria, only: &
-      EquilibriaState, saturation_pressure, saturation_temperature, flash
+      EquilibriumState, saturation_pressure, saturation_temperature, flash
    use forbear, only: bar_object
    implicit none
 
@@ -19,7 +19,7 @@ module yaeos__fitting
 
       class(ArModel), allocatable :: model
 
-      type(EquilibriaState), allocatable :: experimental_points(:)
+      type(EquilibriumState), allocatable :: experimental_points(:)
       logical :: verbose = .false.
    contains
       procedure(model_from_X), deferred :: get_model_from_X
@@ -132,8 +132,8 @@ contains
       real(pr), intent(in) :: X(:)
       class(FittingProblem) :: func_data
 
-      type(EquilibriaState) :: model_point !! Each solved point
-      type(EquilibriaState) :: exp_point
+      type(EquilibriumState) :: model_point !! Each solved point
+      type(EquilibriumState) :: exp_point
 
       integer :: i
 

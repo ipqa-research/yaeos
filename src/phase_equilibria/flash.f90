@@ -1,14 +1,14 @@
 module yaeos__equilibria_flash
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
 
 contains
 
-   type(EquilibriaState) function flash(model, z, t, v_spec, p_spec, k0, iters)
+   type(EquilibriumState) function flash(model, z, t, v_spec, p_spec, k0, iters)
       !! Flash algorithm using sucessive substitutions.
       !!
       !! Available specifications:

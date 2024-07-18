@@ -2,7 +2,7 @@ module yaeos__equilibria_equilibria_state
    use yaeos__constants, only: pr
    implicit none
 
-   type :: EquilibriaState
+   type :: EquilibriumState
       !! Description of a two-phase equilibria state.
       !!
       !! Contains the relevant information of an equilibrium point obtained
@@ -27,14 +27,14 @@ module yaeos__equilibria_equilibria_state
       !! Mole fraction of light-phase
    contains
       private
-      procedure, pass :: write => write_EquilibriaState
+      procedure, pass :: write => write_EquilibriumState
       generic, public :: write (FORMATTED) => write
-   end type EquilibriaState
+   end type EquilibriumState
 
 contains
 
-   subroutine write_EquilibriaState(eq, unit, iotype, v_list, iostat, iomsg)
-      class(EquilibriaState), intent(in) :: eq
+   subroutine write_EquilibriumState(eq, unit, iotype, v_list, iostat, iomsg)
+      class(EquilibriumState), intent(in) :: eq
       integer, intent(in) :: unit
       character(*), intent(in) :: iotype
       integer, intent(in)  :: v_list(:)
@@ -45,5 +45,5 @@ contains
 
       write(unit, *) eq%kind, eq%T, eq%P, eq%beta, eq%x, eq%y
 
-   end subroutine write_EquilibriaState
+   end subroutine write_EquilibriumState
 end module yaeos__equilibria_equilibria_state

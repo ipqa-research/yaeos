@@ -90,7 +90,7 @@ call model%pressure(z, V, T, P)
 print *, P
 
 ! Obtain derivatives adding them as optional arguments! 
-call pressure(model, z, V, T, P, dPdN=dPdN)
+call model%pressure(model, z, V, T, P, dPdN=dPdN)
 print *, dPdN
 ```
 
