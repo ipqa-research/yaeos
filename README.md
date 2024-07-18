@@ -1,13 +1,9 @@
-<div align="center">
- 
 [![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
 [![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
 [![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/ipqa-research/yaeos/blob/main/LICENSE)
 [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/ipqa-research/yaeos/graph/badge.svg?token=IDJYKV8XK6)](https://codecov.io/gh/ipqa-research/yaeos)
-
-</div>
 
 <p align="center">
 <img src="media/logo.png" width="50%"/>
@@ -38,15 +34,39 @@ derivatives so both options are easily available.
 We focus mainly on that the addition of a new thermodynamic model as easily as
 possible. Also providing our models too!
 
-For now, we only include residual Helmholtz model (like Cubic or Saft Equations
-of State). But we'll be adding other models like $G^E$ (UNIFAC for example).
+For now, we only include residual Helmholtz model (like Cubic or SAFT Equations
+of State).
+
+## Available models
+- CubicEoS
+   - SoaveRedlichKwong
+   - PengRobinson76
+   - PengRobinson78
+- ExcessGibbs models
+   - NRTL
+   - UNIFAC VLE
+
+## Available properties
+- Bulk Properties
+   - Volume(n, P, T)
+   - Pressure(n, V, T)
+- Residual Properties
+   - H^R(n, V, T)
+   - S^R(n, V, T)
+   - G^R(n, V, T)
+   - Cv^R(n, V, T)
+   - Cp^R(n, V, T)
+- Phase-Equilibria
+   - FlashPT, FlashVT
+   - Saturation points (bubble, dew and liquid-liquid)
+   - Phase Envelope PT (isopleths)
 
 # A little taste of `yaeos`
 A lot of users get the bad picture of Fortran being old and archaic since most
 of the codes they've seen are written in ancient `F77`.
 
 ```fortran
-use yaeos, only: PengRobinson76, pressure, ArModel
+use yaeos, only: PengRobinson76, ArModel
 
 integer, parameter :: n=2   ! Number of components
 real(8) :: V, T, P, dPdN(n) ! variables to calculate
@@ -66,7 +86,7 @@ model =  PengRobinson76(tc, pc, w, kij, lij)
 V = 1
 T = 150
 
-call pressure(model, z, V, T, P)
+call model%pressure(z, V, T, P)
 print *, P
 
 ! Obtain derivatives adding them as optional arguments! 
@@ -85,30 +105,42 @@ with:
 Not providing any example will show all the possible examples that can be run.
 
 # How to install/run it
-`yaeos` is intended to use as a [`fpm`](fpm.fortran-lang.org)
+
+##  Dependencies
+`yaeos` needs to have both `lapack` and `nlopt` libraries on your system.
+
+### Debian/Ubuntu-like
+```bash
+sudo apt install libnlopt-dev libblas-dev liblapack-dev
+```
+
+## Installing `yaeos`
+`yaeos` is intended to use as a [`fpm`](fpm.fortran-lang.org) package. `fpm`
+is the Fortran Package Manager, which automates the compilation and running
+process of Fortran libraries/programs.
 
 You can either:
 
-- Generate a new project that uses `yaeos` as a dependency
+- Generate a new project that uses `yaeos` as a dependency with:
 
-```bash
-fpm new my_project
-```
-
-In the `fpm.toml` file add:
-
-```toml
-[dependencies]
-yaeos = {git="https://github.com/ipqa-research/yaeos"}
-```
+> ```bash
+> fpm new my_project
+> ```
+> 
+> In the `fpm.toml` file add:
+> 
+> ```toml
+> [dependencies]
+> yaeos = {git="https://github.com/ipqa-research/yaeos"}
+> ```
 
 - Clone this repository and just modify the executables in the `app` directory
 
-```bash
-git clone https://github.com/ipqa-research/yaeos
-cd yaeos
-fpm run
-```
+> ```bash
+> git clone https://github.com/ipqa-research/yaeos
+> cd yaeos
+> fpm run
+> ```
 
 ## Developing with vscode
 If your intention is either to develop for `yaeos` or to explore in more detail
@@ -133,6 +165,8 @@ fpm run --example <example_name_here>
 ```
 
 # Including new models with Automatic Differentiation.
+
+## Hyperdual Numbers autodiff
 We are using the `hyperdual` module developed by 
 [Philipp Rehner](https://github.com/prehner) 
 and [Gernot Bauer](https://github.com/g-bauer)
@@ -140,53 +174,12 @@ and [Gernot Bauer](https://github.com/g-bauer)
 > The automatic differentiation API isn't fully optimized yet so performance is
 > much slower than it should be.
 
-```fortran
-type, extends(ArModelAdiff) :: YourNewModel
-   type(Substances) :: composition
-   real(8), allocatable :: parameters(:) ! A vector of parameters
-contains
-   procedure :: Ar => arfun
-   procedure :: get_v0 => v0
-end type
-```
-
-```fortran
-subroutine arfun(self, n, v, t, Ar)
-   class(YourNewModel), intent(in) :: self
-   type(hyperdual), intent(in) :: n(:) ! Number of moles
-   type(hyperdual), intent(in) :: v ! Volume [L]
-   type(hyperdual), intent(in) :: t ! Temperature [K]
-   type(hyperdual), intent(out) :: ar_value ! Residual Helmholtz Energy
-
-   ! A very complicated residual helmholtz function of a mixture
-   Ar = sum(n) * v * t / self%parameters(1)
-end subroutine
-
-function v0(self, n, p, t)
-   class(YourNewModel), intent(in) :: self
-   real(pr), intent(in) :: n(:) ! Number of moles
-   real(pr), intent(in) :: p ! Pressure [bar]
-   real(pr), intent(in) :: t ! Temperature [K]
-   real(pr) :: v0
-
-   v0 = self%parameters(3)
-end function
-```
-
 A complete implementation of the PR76 Equation of State can me found in
-`example/adiff/adiff_pr76.f90`.
+`example/adiff/adiff_pr76.f90`. Or in the documentation pages.
 
-All the thermodynamic properties can be found in `yaeos_thermoprops` and called
-like:
-
-```fortran
-use yaeos_thermoprops, only: fugacity_vt
-use my_new_model, only: YourNewModel
-...
-type(YourNewModel) :: eos
-eos%parameters = [1, 2, 3]
-call fugacity_vt(eos, n, v, t, lnfug=lnfug, dlnphidn=dlnphidn)
-```
+## Tapenade-based autodiff
+It is also possible to differentiate with `tapenade`. Examples can be seen
+in the documentation pages or in [The tools directory](tools/tapenade_diff/)
 
 # Documentation
 The latest API documentation for the `main` branch can be found
