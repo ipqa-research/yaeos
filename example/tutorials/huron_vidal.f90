@@ -34,6 +34,7 @@ program main
 
    forsus_dir = "./build/dependencies/forsus/data/json"
 
+
    sus(1) = Substance("water")
    sus(2) = Substance("ethanol")
 
@@ -77,7 +78,7 @@ program main
       n(2) = real(i,pr)/100
       n(1) = 1 - n(2)
       sat = saturation_pressure(model, n, T=473._pr, kind="bubble")
-      write (*, *) sat
+      ! write (*, *) sat
    end do
 
 contains
@@ -88,7 +89,7 @@ contains
       type(EquilibriaState) :: sat
       type(PTEnvel2) :: env
 
-      sat = saturation_pressure(model, n, T=250._pr, kind="bubble", y0=[0.1_pr, 0.9_pr])
+      sat = saturation_pressure(model, n, T=300._pr, kind="bubble")
       write (*, *) sat, sat%iters
 
       env = pt_envelope_2ph(model, n, sat, specified_variable_0=nc + 1, delta_0=0.001_pr)
