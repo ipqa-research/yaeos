@@ -1,4 +1,9 @@
-Para instalar como editable
+# yaeos Python bindings
+THIS IS A WIP SO THE API WILL DRASTRICALLY CHANGE WITH TIME
+
+Set of Python bindings to call `yaeos` functions and models.
+
+Editable instalation
 
 ```
 cd python
@@ -6,13 +11,13 @@ pip install -e .
 python setup.py build_fortran_editable
 ```
 
-Para instalar como no editable, directamente
+If you want to install on your environment instead
 
 ```
 pip install .
 ```
 
-Desde el interprete para checkear que todo este bien:
+To check if the instalation worked correctly:
 
 ```python
 from yaeos import PengRobinson76, QMR
