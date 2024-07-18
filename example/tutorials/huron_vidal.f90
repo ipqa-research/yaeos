@@ -10,7 +10,6 @@ program main
    implicit none
    integer, parameter :: nc = 2
 
-
    real(pr) :: n(nc)
 
    real(pr) :: a(nc, nc), b(nc, nc), c(nc, nc) ! NRTL parameters
@@ -32,7 +31,6 @@ program main
    molecules(1)%number_of_groups = [1]
    molecules(2)%groups_ids = [1, 2, 14]
    molecules(2)%number_of_groups = [1, 1, 1]
-
 
    forsus_dir = "./build/dependencies/forsus/data/json"
 
@@ -57,32 +55,23 @@ program main
 
    ge_model = NRTL(a, b, c)
 
-   n = [0.2, 0.8]
    n = [0.9, 0.1]
    ! n = [0.8, 0.2]
    ! Define the model to be SRK
    model = SoaveRedlichKwong(tc, pc, w)
    call phase_envel(1)
    
-   ! mixrule = MHV(ge_model, model%b)
-   ! mixrule%q = -0.593_pr
-   ! deallocate (model%mixrule)
-   ! model%mixrule = mixrule
-   ! call phase_envel(2)
+   mixrule = MHV(ge=ge_model, q=-0.593_pr, b=model%b)
+   deallocate (model%mixrule)
+   model%mixrule = mixrule
+   call phase_envel(2)
 
-   ! mixrule = MHV(ge_model, model%b)
-   ! mixrule%q = -0.593_pr
-   ! deallocate (model%mixrule)
-   ! model%mixrule = mixrule
-   ! call phase_envel(2)
-
-   !  ge_model_unifac = setup_unifac(molecules)
+   ge_model_unifac = setup_unifac(molecules)
   
-   ! mixrule = MHV(ge_model_unifac, model%b)
-   ! mixrule%q = -0.593_pr
-   ! deallocate (model%mixrule)
-   ! model%mixrule = mixrule
-   ! call phase_envel(3)
+   mixrule = MHV(ge=ge_model_unifac, q=-0.593_pr, b=model%b)
+   deallocate (model%mixrule)
+   model%mixrule = mixrule
+   call phase_envel(3)
 
    do i=1,99
       n(2) = real(i,pr)/100

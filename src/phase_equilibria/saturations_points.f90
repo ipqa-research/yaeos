@@ -83,8 +83,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call model%lnphi_tp(y, T, P, vy, incipient, lnphip=lnfug_y, dlnphidp=dlnphi_dp_y)
-         call model%lnphi_tp(z, T, P, vz, main, lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
 
          k = exp(lnfug_z - lnfug_y)
 
@@ -192,8 +192,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call model%lnphi_tp(y, T, P, vy, incipient, lnphip=lnfug_y, dlnphidt=dlnphi_dt_y)
-         call model%lnphi_tp(z, T, P, vz, main, lnphip=lnfug_z, dlnphidt=dlnphi_dt_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
 
          k = exp(lnfug_z - lnfug_y)
          f = sum(z*k) - 1

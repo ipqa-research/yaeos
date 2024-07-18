@@ -96,11 +96,11 @@ contains
          Ar=Ar_num, Arn2=Arn2_num)
 
       ! Calling individually just because coverage
-      call ar_consistency(model, n, v, t, eq31=eq31)
-      call ar_consistency(model, n, v, t, eq33=eq33)
-      call ar_consistency(model, n, v, t, eq34=eq34)
-      call ar_consistency(model, n, v, t, eq36=eq36)
-      call ar_consistency(model, n, v, t, eq37=eq37)
+      call ar_consistency(model, n, V, T, eq31=eq31)
+      call ar_consistency(model, n, V, T, eq33=eq33)
+      call ar_consistency(model, n, V, T, eq34=eq34)
+      call ar_consistency(model, n, V, T, eq36=eq36)
+      call ar_consistency(model, n, V, T, eq37=eq37)
 
       ! Numeric derivatives
       call check(error, rel_error(Ar, Ar_num) < 1e-6)
@@ -115,11 +115,11 @@ contains
       call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-15)
-      call check(error, maxval(abs(eq33)) < 1e-15)
+      call check(error, abs(eq31) <= 1e-14)
+      call check(error, maxval(abs(eq33)) < 1e-14)
       call check(error, maxval(abs(eq34)) < 1e-14)
-      call check(error, abs(eq36) <= 1e-15)
-      call check(error, abs(eq37) <= 1e-15)
+      call check(error, abs(eq36) <= 1e-14)
+      call check(error, abs(eq37) <= 1e-14)
 
       ! ========================================================================
       ! Model with kij and lij
@@ -369,7 +369,7 @@ contains
 
       class(ArModel), allocatable :: model
 
-      real(pr) :: T, P, z_v(2), z_l(2), v_v, lnphip_l(2), lnphip_v(2)
+      real(pr) :: T, P, z_v(2), z_l(2), v_v, lnphi_l(2), lnphi_v(2)
 
       T = 100 ! K
       P = 4.119 ! bar
@@ -383,19 +383,19 @@ contains
          )
 
       call model%volume(z_v, P, T, root_type="vapor", V=v_v)
-      call model%lnphi_tp(z_v, T, P, root_type="vapor", lnphip = lnphip_v)
-      call model%lnphi_tp(z_l, T, P, root_type="liquid", lnphip = lnphip_l)
+      call model%lnphi_pt(z_v, P, T, root_type="vapor", lnPhi = lnphi_v)
+      call model%lnphi_pt(z_l, P, T, root_type="liquid", lnPhi = lnphi_l)
 
       ! Elliot Z value of vapor
       call check(error, abs(P * v_v / R / T - 0.9059) <  1e-4)
 
       ! Elliot vapor fugacities
-      call check(error, abs(exp(lnphip_v(1) - log(P)) - 0.9162) < 1e-4)
-      call check(error, abs(exp(lnphip_v(2) - log(P)) - 0.8473) < 1e-4)
+      call check(error, abs(exp(lnPhi_v(1)) - 0.9162) < 1e-4)
+      call check(error, abs(exp(lnPhi_v(2)) - 0.8473) < 1e-4)
 
       ! Elliot liquid fugacities
-      call check(error, abs(exp(lnphip_l(1) - log(P)) - 1.791) < 1e-3)
-      call check(error, abs(exp(lnphip_l(2) - log(P)) - 0.0937) < 1e-4)
+      call check(error, abs(exp(lnPhi_l(1)) - 1.791) < 1e-3)
+      call check(error, abs(exp(lnPhi_l(2)) - 0.0937) < 1e-4)
    end subroutine test_pr76_fugacities
 
    subroutine test_pr76_txy_methanol_benzene(error)

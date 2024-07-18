@@ -83,16 +83,14 @@ contains
       real(pr) :: di(size(z)), vz, vw
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
 
-      call model%lnphi_tp(&
-         w, T=T, P=P, V=Vw, root_type="stable", lnphip=lnphi_w &
+      call model%lnphi_pt(&
+         w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
       )
-      lnphi_w = lnphi_w - log(P)
 
       if (.not. present(d)) then
-         call model%lnphi_tp(&
-            z, T=T, P=P, V=Vz, root_type="stable", lnphip=lnphi_z&
+         call model%lnphi_pt(&
+            z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
          )
-         lnphi_z = lnphi_z - log(P)
          di = log(z) + lnphi_z
       else
          di = d
@@ -100,10 +98,10 @@ contains
 
 
       ! tpd = sum(w * (log(w) + lnphi_w - di))
-      tm = 1 + sum(w * (log(w) + lnphi_w - di - 1))
+      tm = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
 
       if (present(dtpd)) then
-         dtpd = log(w) + lnphi_w - di
+         dtpd = log(w) + lnPhi_w - di
       end if
    end function tm
 
@@ -134,8 +132,7 @@ contains
       dx = 0.001_pr
 
       ! Calculate feed di
-      call model%lnphi_tp(z, T=T, P=P, V=V, root_type="stable", lnphip=lnphi_z)
-      lnphi_z = lnphi_z - log(P)
+      call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
       di = log(z) + lnphi_z
 
 

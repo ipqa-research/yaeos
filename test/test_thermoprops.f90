@@ -33,7 +33,7 @@ contains
         real(pr) :: lnfug_val(2), dlnphidp_val(2), dlnphidt_val(2)
 
 
-        lnfug_val = [2.0758887796938881, -2.2852154042663555]
+        lnfug_val = [2.0785927055052529, -2.2825114783106386]
         dlnphidp_val = [-0.99328668293856137, -0.9965756859512391]
         dlnphidt_val = [3.0263825169536504E-002, 7.6204959316774373E-002]
 
@@ -46,7 +46,6 @@ contains
         call eos%lnphi_vt(&
             z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
             )
-
         call check( &
             error, maxval(abs(lnfug - lnfug_val)) < 1e-5 &
             )
@@ -86,10 +85,8 @@ contains
         t = 150
 
         root_type = "liquid"
-        print *, "FASF"
-
-        call eos%lnphi_tp(&
-            z, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
+        call eos%lnphi_pt(&
+            z, P, T, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
             )
 
         call check(&
@@ -143,7 +140,7 @@ contains
 
         ! test against fugacity coefficient derivatives
         ! (Michelsen and Mollerup chapter 2 eq 37)
-        call eos%lnphi_vt(z, v, t, lnphip=lnfug, dlnphidt=dlnphidt)
+        call eos%lnphi_vt(z, v, t, lnPhi=lnfug, dlnphidt=dlnphidt)
 
         Hr_fromphi = -1_pr * sum(z * dlnphidT) * R * t**2 ! Hr(T,P) = Hr(T,V)
 
@@ -225,17 +222,17 @@ contains
         Zcomp = p*v/(ntot*R*t)
 
         ! yaeos residual gibbs
-        call eos%gibbs_residual_vt(z, v, t, Gr, GrT=GrT, GrV=GrV, Grn=Grn)
+        call eos%gibbs_residual_vt(z, V, T, Gr, GrT=GrT, GrV=GrV, Grn=Grn)
 
         ! test against fugacity coefficient
         ! (Michelsen and Mollerup chapter 2 eq 31)
-        call eos%lnphi_vt(z, v, t, lnphip=lnfug)
+        call eos%lnphi_vt(z, V, T, lnPhi=lnfug)
 
-        lnfugcoeffs = lnfug - log(p) ! lnfug is = ln(phi * p)
+        lnfugcoeffs = lnfug
 
-        Gr_tp = Gr - ntot*R*t*log(Zcomp) ! M and M chapter 1 Table 6
+        Gr_tp = Gr - ntot*R*T*log(Zcomp) ! M and M chapter 1 Table 6
 
-        Gr_fromphi = sum(z * lnfugcoeffs) * R * t
+        Gr_fromphi = sum(z * lnfugcoeffs) * R * T
 
         call check(&
             error, rel_error(Gr_tp, Gr_fromphi) < 1e-14 &
