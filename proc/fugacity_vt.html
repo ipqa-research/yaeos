@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.2% of total for procedures.">58 statements</a>
+                 title=" 1.2% of total for procedures.">60 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/thermoprops.f90"> Source File</a>
+              <a href="../src/ar_models.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/thermoprops.f90.html'>thermoprops.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__thermoprops.html'>yaeos__thermoprops</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
             <li class="breadcrumb-item active" aria-current="page">fugacity_vt</li>
           </ol>
         </nav>
@@ -118,24 +118,24 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-ar~10">Ar</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artv~9">ArTV</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artn~15">ArTn</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv~8">ArV</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv2~9">ArV2</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arvn~16">ArVn</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn~15">Arn</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn2~15">Arn2</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-p_in">P_in</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-ar~11">Ar</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artv~8">ArTV</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-artn~14">ArTn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv~9">ArV</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arv2~10">ArV2</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arvn~15">ArVn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn~14">Arn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-arn2~14">Arn2</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-p_in~2">P_in</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-rt~4">RT</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-z~4">Z</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdn_in">dPdN_in</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdt_in">dPdT_in</a>
             <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdv_in">dPdV_in</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-i~43">i</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-j~28">j</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-nc~21">nc</a>
-            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-totn~13">totn</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-dpdn_in">dPdn_in</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-i~52">i</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-j~32">j</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-nc~24">nc</a>
+            <a class="list-group-item" href="../proc/fugacity_vt.html#variable-totn~14">totn</a>
         </div>
       </div>
     </div>
@@ -165,7 +165,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine fugacity_vt(eos, n, v, t, p, lnphip, dlnphidp, dlnphidt, dlnphidn, dPdV, dPdT, dPdN)  
+    <h2>public  subroutine fugacity_vt(eos, n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
 </h2>
     
 
@@ -178,6 +178,8 @@ derivatives will be the derivatives of the fugacity coefficient
 </p>
 </div>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/armodel.html'>ArModel</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -192,7 +194,7 @@ derivatives will be the derivatives of the fugacity coefficient
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~5"></span>
+              <span class="anchor" id="variable-eos~7"></span>
               class(<a href='../type/armodel.html'>ArModel</a>)
             </td>
 <td></td>
@@ -207,7 +209,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~43"></span>
+              <span class="anchor" id="variable-n~52"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -222,7 +224,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~21"></span>
+              <span class="anchor" id="variable-v~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -230,14 +232,14 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>v</strong></td>
+            <td><strong>V</strong></td>
             <td>
                 <p>Volume [L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~39"></span>
+              <span class="anchor" id="variable-t~24"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -245,7 +247,7 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>t</strong></td>
+            <td><strong>T</strong></td>
             <td>
                 <p>Temperature [K]</p>
             </td>
@@ -260,14 +262,14 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>p</strong></td>
+            <td><strong>P</strong></td>
             <td>
                 <p>Pressure [bar]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnphip~3"></span>
+              <span class="anchor" id="variable-lnphi~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -275,7 +277,7 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>lnphip</strong>(size(n))</td>
+            <td><strong>lnPhi</strong>(size(n))</td>
             <td>
                 <p>
 <script type="math/tex">\ln(\phi_i*P)</script> vector</p>
@@ -291,7 +293,7 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>dlnphidp</strong>(size(n))</td>
+            <td><strong>dlnPhidP</strong>(size(n))</td>
             <td>
                 <p>
 <script type="math/tex">ln(phi_i)</script> Presssure derivative</p>
@@ -307,7 +309,7 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>dlnphidt</strong>(size(n))</td>
+            <td><strong>dlnPhidT</strong>(size(n))</td>
             <td>
                 <p>
 <script type="math/tex">ln(phi_i)</script> Temp derivative</p>
@@ -315,7 +317,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidn~3"></span>
+              <span class="anchor" id="variable-dlnphidn~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -323,7 +325,7 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>dlnphidn</strong>(size(n),size(n))</td>
+            <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
                 <p>
 <script type="math/tex">ln(phi_i)</script> compositional derivative</p>
@@ -331,7 +333,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdv"></span>
+              <span class="anchor" id="variable-dpdv~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -348,7 +350,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdt"></span>
+              <span class="anchor" id="variable-dpdt~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -365,7 +367,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdn"></span>
+              <span class="anchor" id="variable-dpdn~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -373,7 +375,7 @@ derivatives will be the derivatives of the fugacity coefficient
               
             </td>
             <td>::</td>
-            <td><strong>dPdN</strong>(:)</td>
+            <td><strong>dPdn</strong>(:)</td>
             <td>
                 <p>
 <script type="math/tex">\frac{dP}{dn_i}</script>
@@ -400,7 +402,7 @@ derivatives will be the derivatives of the fugacity coefficient
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~10"></span>
+              <span class="anchor" id="variable-ar~11"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -417,7 +419,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~9"></span>
+              <span class="anchor" id="variable-artv~8"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -434,7 +436,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~15"></span>
+              <span class="anchor" id="variable-artn~14"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -451,7 +453,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~8"></span>
+              <span class="anchor" id="variable-arv~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -468,7 +470,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~9"></span>
+              <span class="anchor" id="variable-arv2~10"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -485,7 +487,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~16"></span>
+              <span class="anchor" id="variable-arvn~15"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -502,7 +504,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~15"></span>
+              <span class="anchor" id="variable-arn~14"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -519,7 +521,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~15"></span>
+              <span class="anchor" id="variable-arn2~14"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -536,7 +538,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p_in"></span>
+              <span class="anchor" id="variable-p_in~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -587,23 +589,6 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdn_in"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dPdN_in</strong>(size(n))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
               <span class="anchor" id="variable-dpdt_in"></span>
               real(kind=pr),
             </td>
@@ -638,7 +623,24 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~43"></span>
+              <span class="anchor" id="variable-dpdn_in"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn_in</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~52"></span>
               integer,
             </td>
               <td>public</td>
@@ -655,7 +657,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~28"></span>
+              <span class="anchor" id="variable-j~32"></span>
               integer,
             </td>
               <td>public</td>
@@ -672,7 +674,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~21"></span>
+              <span class="anchor" id="variable-nc~24"></span>
               integer,
             </td>
               <td>public</td>
@@ -689,7 +691,7 @@ derivatives will be the derivatives of the fugacity coefficient
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-totn~13"></span>
+              <span class="anchor" id="variable-totn~14"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -737,7 +739,7 @@ derivatives will be the derivatives of the fugacity coefficient
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

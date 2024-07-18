@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>pushcontrol1b &ndash; yaeos</title>
+    <title>newton_1d &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,8 +66,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>pushcontrol1b
-      <small>Interface</small>
+    <h1>newton_1d
+      <small>Subroutine</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -78,21 +78,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 0.1% of total for procedures.</p>Including implementation: 5 statements,  0.1% of total for procedures.">5 statements</a>
+                 title=" 0.4% of total for procedures.">19 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/interfaces.f90"> Source File</a>
+              <a href="../src/math.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/interfaces.f90.html'>interfaces.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/tapenade_interfaces.html'>tapenade_interfaces</a></li>
-            <li class="breadcrumb-item active" aria-current="page">pushcontrol1b</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/math.f90.html'>math.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
+            <li class="breadcrumb-item active" aria-current="page">newton_1d</li>
           </ol>
         </nav>
       </div>
@@ -105,31 +105,23 @@
   </script>
 
   </div>
-
+  
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-        <div id="sidebar">
+      <div id="sidebar">
       <h3>Contents</h3>
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
       <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#subs-0"
-         aria-expanded="false" aria-controls="subs-0">
-         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
       </a>
-      <div id="subs-0" class="collapse">
+      <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../interface/pushcontrol1b.html#proc-pushcontrol1b">pushcontrol1b</a>
+            <a class="list-group-item" href="../proc/newton_1d.html#variable-df~6">df</a>
+            <a class="list-group-item" href="../proc/newton_1d.html#variable-fval~2">fval</a>
+            <a class="list-group-item" href="../proc/newton_1d.html#variable-i~55">i</a>
+            <a class="list-group-item" href="../proc/newton_1d.html#variable-step~4">step</a>
         </div>
       </div>
     </div>
@@ -141,26 +133,32 @@
   
   
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
 
   </div>
 
     </div>
-
+    
     <div class="col-md-9" id='text'>
-      <h2>public interface pushcontrol1b</h2>
-      
+    <h2>public  subroutine newton_1d(f, x, tol, max_iters)  
+</h2>
+    
 
 
-        <h2>Subroutines</h2>
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-pushcontrol1b"></span> <h3>public  subroutine pushcontrol1b(intnum)  
-</h3></div>
-    <div class="card-body">
-        
 
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
     <thead>
       <tr>
         <th scope="col">Type</th>
@@ -172,15 +170,60 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-intnum~3"></span>
-              integer
+              <span class="anchor" id="variable-f~14"></span>
+              procedure(<a href='../interface/f_1d.html'>f_1d</a>)
             </td>
 <td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>intnum</strong></td>
+            <td><strong>f</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iters~8"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iters</strong></td>
             <td>
                 
             </td>
@@ -188,13 +231,107 @@
     </tbody>
   </table>
 
+    <br>
 
+
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df~6"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>df</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~55"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-step~4"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>step</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+
+    
+    
     </div>
   </div>
 
-
-</div>
-  </div>
       <hr>
     </div> <!-- /container -->
     <footer>
@@ -210,7 +347,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

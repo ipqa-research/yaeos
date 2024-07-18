@@ -1,0 +1,378 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../../../favicon.png">
+
+    <title>Automatic differentiation &ndash; yaeos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../../../css/local.css" rel="stylesheet">
+      <link  href="../../../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Automatic differentiation</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Adding your own models</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Automatic differentiation</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../index.html">Using yaeos</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/alpha.html">alpha functions</a>
+              <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/unifaclv.html">UNIFAC-LV</a>
+
+                </nav>
+              <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="analtical.html">Analytical derivatives</a>
+              <a class="nav-link active disabled" href="autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <h1 id="autodiff">Autodiff</h1>
+<p>The implementation of new models and all their required derivatives can be
+an endeavours and error-prone task. A tool that helps with this, at a small
+performance cost, can be automatic differentiation. </p>
+<p>Automatic differentiation can be implemented in two ways:</p>
+<ul>
+<li>Forward Differentiation</li>
+<li>Backward Differentiation</li>
+</ul>
+<p>With can be combined to obtain higher order derivatives.</p>
+<p>In <code>yaeos</code> it is possible to add new models via two different kind of
+implementations. Operator overloading with <code>hyperdual</code> numbers and
+source-to-source automatic differentiation with <code>tapenade</code>.</p>
+<p>@warn
+Remember to use the <code>R</code>constant from <code>yaeos__constants</code>, and all models
+should have a <code>type(Substances)</code> attribute!
+@endwarn</p>
+<h2 id="hyperdual-autodiff">Hyperdual autodiff</h2>
+<h3 id="armodel">ArModel</h3>
+<p>Automatic differentiation with <code>hyperdual</code> numbers can be done with the
+<a href="../../../type/armodeladiff.html">ArModelAdiff</a> derived type. This implementation requires just to extend
+that derived type with your own implementation and a volume initializer.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">module </span><span class="n">hyperdual_pr76</span>
+<span class="w">    </span><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>
+<span class="w">    </span><span class="k">use </span><span class="n">yaeos__ar_models_hyperdual</span>
+<span class="w">    </span><span class="k">use </span><span class="n">yaeos__substance</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Substances</span>
+<span class="w">    </span><span class="k">implicit none</span>
+
+<span class="k">    type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">PR76</span>
+<span class="w">        </span><span class="c">!! PengRobinson 76 EoS</span>
+<span class="w">        </span><span class="c">! Composition</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">Substances</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">composition</span>
+
+<span class="w">        </span><span class="c">! Mixing rule Parameters</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:),</span><span class="w"> </span><span class="n">lij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+
+<span class="w">        </span><span class="c">! EoS parameters</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ac</span><span class="p">(:),</span><span class="w"> </span><span class="n">b</span><span class="p">(:),</span><span class="w"> </span><span class="n">k</span><span class="p">(:)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:),</span><span class="w"> </span><span class="n">pc</span><span class="p">(:),</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
+<span class="w">    </span><span class="k">contains</span>
+<span class="k">        procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">arfun</span>
+<span class="w">        </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v0</span>
+<span class="w">    </span><span class="k">end type</span>
+
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">del1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1._pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">2._pr</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">del2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1._pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">2._pr</span><span class="p">)</span>
+
+<span class="k">contains</span>
+
+<span class="k">    type</span><span class="p">(</span><span class="n">PR76</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">setup</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
+<span class="w">        </span><span class="c">!! Function to obtain a defined PR76 model with setted up parameters</span>
+<span class="w">        </span><span class="c">!! as function of Tc, Pc, and w</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(:)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tc</span>
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pc</span>
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">ac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.45723553_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">pc</span>
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.07779607_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc_in</span><span class="o">/</span><span class="n">pc_in</span>
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.37464_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1.54226_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.26993_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span>
+<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lij</span>
+<span class="w">    </span><span class="k">end function</span>
+
+<span class="k">    function </span><span class="n">arfun</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+<span class="w">        </span><span class="c">!! Residual Helmholtz calculation for a generic cubic with</span>
+<span class="w">        </span><span class="c">!! quadratic mixing rules.</span>
+<span class="w">        </span><span class="k">class</span><span class="p">(</span><span class="n">PR76</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar</span>
+
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">amix</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">n2</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bmix</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b_v</span><span class="p">,</span><span class="w"> </span><span class="n">nij</span>
+
+<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span>
+
+<span class="w">        </span><span class="k">associate</span><span class="p">(&amp;</span>
+<span class="w">            </span><span class="n">pc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">ac</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">ac</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">k</span><span class="p">,&amp;</span>
+<span class="w">            </span><span class="n">kij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="p">,</span><span class="w"> </span><span class="n">tc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">compostion</span><span class="p">%</span><span class="n">tc</span><span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>
+<span class="w">            </span><span class="p">)</span>
+
+<span class="w">            </span><span class="c">! Soave alpha function</span>
+<span class="w">            </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">tc</span><span class="p">))</span>
+<span class="w">            </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ac</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="n">ai</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+<span class="w">            </span><span class="c">! Quadratic Mixing Rule</span>
+<span class="w">            </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">            </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+
+<span class="w">            </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">                </span><span class="k">do </span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">                    </span><span class="n">nij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="w">                    </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">nij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">ai</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
+<span class="w">                    </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
+<span class="w">                </span><span class="k">end do</span>
+<span class="k">            end do</span>
+
+<span class="k">            </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="w">            </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="w">            </span><span class="n">b_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="o">/</span><span class="n">v</span>
+
+<span class="w">            </span><span class="c">! Generic Cubic Ar function</span>
+<span class="w">            </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(&amp;</span>
+<span class="w">                </span><span class="o">-</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b_v</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                </span><span class="o">-</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">bmix</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">del1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">del2</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">((</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">del1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b_v</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">del2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b_v</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
+
+<span class="w">            </span><span class="k">end associate</span>
+<span class="k">    end function</span>
+
+<span class="k">    function </span><span class="n">v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+<span class="w">        </span><span class="c">!! Initialization of liquid volume solving with covolume</span>
+<span class="w">        </span><span class="k">class</span><span class="p">(</span><span class="n">PR76</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span>
+
+<span class="w">        </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">    </span><span class="k">end function</span>
+<span class="k">end module</span>
+</code></pre></div>
+
+<h2 id="tapenade-adiff">Tapenade Adiff</h2>
+<p>And alternative to <code>hyperdual</code> that takes a bit more work, but can end in a more
+performant model, is doing <code>tapenade</code> source-to-source differentiation. For
+this <code>tapenade</code> must be installed and accessible from a terminal 
+<a href="https://tapenade.gitlabpages.inria.fr/userdoc/build/html/download.html">donwload link</a>.</p>
+<h1 id="tapenade-diff">tapenade diff</h1>
+<p>Tapenade is an automatic differentiation tool developed by researchers at
+<a href="https://team.inria.fr/ecuador/en/tapenade/">INRIA</a> (the French National
+Institute for Research in Computer Science and Automation).</p>
+<p>Tapenade is designed to automatically generate derivative code for numerical
+simulation programs written in Fortran or C. It enables the computation of
+gradients, Hessians, and other derivatives efficiently, which is particularly
+useful in fields such as optimization, sensitivity analysis, and scientific
+computing.</p>
+<p>By analyzing the source code of the original program, Tapenade generates code
+that computes the derivatives of the program&rsquo;s outputs with respect to its
+inputs. This capability is crucial in many scientific and engineering
+applications where the ability to efficiently compute derivatives is essential.</p>
+<p>Overall, Tapenade simplifies the process of incorporating automatic
+differentiation into existing numerical simulation codes, making it a valuable
+tool for researchers and developers working in computational science and
+engineering.</p>
+<h2 id="how-we-use-it">How we use it</h2>
+<p>In <code>yaeos</code> we developed a wrapper object that receives a set of routines from
+a differentiated module and uses and internal logic to get the desired $A_r$ 
+derivatives.</p>
+<h2 id="obtain-a-tapenade-differentiated-eos">Obtain a tapenade differentiated EoS</h2>
+<p>Getting a usable $A_r$ equation of state with <code>tapenade</code> is fairly easy.</p>
+<ol>
+<li>Install <code>tapenade</code> and assure that you have the <code>tapenade</code> executable in
+   your <code>PATH</code>.</li>
+<li>Setup your new model following the <a href="./template.f90">template file</a>.
+   a full implementation of the PengRobinson EoS can be seen at
+   <a href="./pr.f90">pr.f90</a> as an example.</li>
+<li>Run the script <code>gen_tapemodel.sh</code>, providing your file as an argument:
+   <code>bash
+   bash gen_tapemodel.sh &lt;your_model_file.f90&gt;</code>
+   This will generate a new folder <code>tapeout</code>, with your differentiated model
+   inside.</li>
+<li>Some little post-process must be done due to some details in the <code>tapenade</code>
+   implementation. These are described in the base template but can also
+   be checked on the <a href="./tapeout/pr_diff.f90">differentiated PR76 result after fixing the last details</a></li>
+</ol>
+<p>To add your new tapenade model just include the file in your <code>src</code> folder and
+use it with</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+<span class="k">use </span><span class="n">your_module_name</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">setup_model</span>
+
+<span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_model</span><span class="p">(</span><span class="o">&lt;</span><span class="n">your</span><span class="w"> </span><span class="n">parameters</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+</code></pre></div>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2024 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-07-18 17:55              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../../../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../../../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../../../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>

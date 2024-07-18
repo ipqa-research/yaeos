@@ -119,10 +119,10 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/ge_consistency.html#variable-ge~5">Ge</a>
-            <a class="list-group-item" href="../proc/ge_consistency.html#variable-gen~4">Gen</a>
-            <a class="list-group-item" href="../proc/ge_consistency.html#variable-gen2~4">Gen2</a>
-            <a class="list-group-item" href="../proc/ge_consistency.html#variable-i~49">i</a>
-            <a class="list-group-item" href="../proc/ge_consistency.html#variable-j~32">j</a>
+            <a class="list-group-item" href="../proc/ge_consistency.html#variable-gen~3">Gen</a>
+            <a class="list-group-item" href="../proc/ge_consistency.html#variable-gen2~3">Gen2</a>
+            <a class="list-group-item" href="../proc/ge_consistency.html#variable-i~35">i</a>
+            <a class="list-group-item" href="../proc/ge_consistency.html#variable-j~22">j</a>
             <a class="list-group-item" href="../proc/ge_consistency.html#variable-ln_gammas">ln_gammas</a>
         </div>
       </div>
@@ -157,32 +157,38 @@
 </h2>
     
 
-    <p>
+    <h1 id="ge_consistency">ge_consistency</h1>
+<p>
 <script type="math/tex">G^E</script> models consistency tests</p>
 <h1 id="description">Description</h1>
 <p>Evaluate the <script type="math/tex">G^E</script> models consistency tests described in
 Thermodynamic Models: Fundamentals &amp; Computational Aspects 2 ed. by
-Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
+Michelsen and Mollerup (MM) Chapter 5 section 4. The &ldquo;eq&rdquo; are
+evaluations of the left hand side of the following expressions:</p>
+<p>Equation 58</p>
 <p>
 <script type="math/tex; mode=display">
-  eq58 = \sum_i^{NC} n_i \text{ln} \gamma_i - \frac{G^E}{RT} = 0
+  \sum_i^{NC} n_i \text{ln} \gamma_i - \frac{G^E}{RT} = 0
  </script>
 </p>
+<p>Equation 59</p>
 <p>
 <script type="math/tex; mode=display">
-  eq59 = \text{ln} \gamma_i - \frac{1}{RT} 
+  \text{ln} \gamma_i - \frac{1}{RT}
   \frac{\partial G^E}{\partial n_i} = 0
  </script>
 </p>
+<p>Equation 60</p>
 <p>
 <script type="math/tex; mode=display">
-  eq60 = \frac{\partial \text{ln} \gamma_i}{\partial n_j} - 
+  \frac{\partial \text{ln} \gamma_i}{\partial n_j} -
   \frac{\partial \text{ln} \gamma_j}{\partial n_i} = 0
  </script>
 </p>
+<p>Equation 61</p>
 <p>
 <script type="math/tex; mode=display">
-  eq61 = \sum_i^{NC} n_i 
+  \sum_i^{NC} n_i
   \frac{\partial \text{ln} \gamma_i}{\partial n_j} = 0
  </script>
 </p>
@@ -230,7 +236,10 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
 </code></pre></div>
 
 <h1 id="references">References</h1>
-<p>Thermodynamic Models: Fundamentals &amp; Computational Aspects 2 ed. Michelsen and Mollerup</p>
+<ol>
+<li>Michelsen, M. L., &amp; Mollerup, J. M. (2007). Thermodynamic models:
+Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
+</ol>
 
 
     <h3>Arguments</h3>
@@ -246,7 +255,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~27"></span>
+              <span class="anchor" id="variable-model~20"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -262,7 +271,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~56"></span>
+              <span class="anchor" id="variable-n~31"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -277,7 +286,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~47"></span>
+              <span class="anchor" id="variable-t~25"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -387,7 +396,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~4"></span>
+              <span class="anchor" id="variable-gen~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -404,7 +413,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~4"></span>
+              <span class="anchor" id="variable-gen2~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -421,7 +430,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~49"></span>
+              <span class="anchor" id="variable-i~35"></span>
               integer,
             </td>
               <td>public</td>
@@ -438,7 +447,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~32"></span>
+              <span class="anchor" id="variable-j~22"></span>
               integer,
             </td>
               <td>public</td>
@@ -503,7 +512,7 @@ Michelsen and Mollerup (MM) Chapter 5 section 4.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

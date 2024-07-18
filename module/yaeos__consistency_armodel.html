@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.7% of total for modules and submodules.">151 statements</a>
+                 title=" 2.5% of total for modules and submodules.">148 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -148,34 +148,39 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Consistency checks of Helmholtz free energy models.</p>
+      <h1 id="yaeos__consistency_armodel">yaeos__consistency_armodel</h1>
+<p>Consistency checks of Helmholtz free energy models (<a href="../type/armodel.html">ArModel</a>).</p>
+<h1 id="description">Description</h1>
 <p>This module contains tools to validate the analityc derivatives of
-implmented Helmholtz free energy models (ArModel). Also, allows to
+implmented Helmholtz free energy models (<a href="../type/armodel.html">ArModel</a>). Also, allows to
 evaluate the consistency tests described in Thermodynamic Models:
 Fundamentals &amp; Computational Aspects 2 ed. by Michelsen and Mollerup
 Chapter 2 section 3.</p>
 <p>Available tools:</p>
 <ul>
 <li>
-<p>numeric_ar_derivatives: From an instantiated ArModel evaluate all the
-Helmholtz free energy derivatives from the central finite difference
-method.</p>
+<p><a href="../proc/numeric_ar_derivatives.html">numeric_ar_derivatives</a>: From an instantiated <a href="../type/armodel.html">ArModel</a> evaluate
+all the Helmholtz free energy derivatives from the central finite
+difference method.</p>
 </li>
 <li>
-<p>ar_consistency: From an instantiated ArModel evaluate all the Michelsen
-and Mollerup consistency tests (refer to ar_consistency docs for more
-explanations)</p>
+<p><a href="../proc/ar_consistency.html">ar_consistency</a>: From an instantiated <a href="../type/armodel.html">ArModel</a> evaluate all the
+Michelsen and Mollerup consistency tests.</p>
 </li>
 </ul>
+<h1 id="references">References</h1>
+<ol>
+<li>Michelsen, M. L., &amp; Mollerup, J. M. (2007). Thermodynamic models:
+Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
+</ol>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos__thermoprops.html'>yaeos__thermoprops</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
               </ul>
             </li>
         </ul>
@@ -195,11 +200,12 @@ explanations)</p>
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-ar_consistency"></span> <h3>public  subroutine <a href='../proc/ar_consistency.html'>ar_consistency</a>(eos, n, v, t, eq31, eq33, eq34, eq36, eq37)  
+    <div class="card-header codesum"><span class="anchor" id="proc-ar_consistency"></span> <h3>public  subroutine <a href='../proc/ar_consistency.html'>ar_consistency</a>(eos, n, V, T, eq31, eq33, eq34, eq36, eq37)  
 </h3></div>
     <div class="card-body">
           
-  <p>Evaluates the Michelsen and Mollerup (MM) consistency tests.</p><a href="../proc/ar_consistency.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>
+<script type="math/tex">A^r</script> models consistency tests.</p><a href="../proc/ar_consistency.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -214,7 +220,7 @@ explanations)</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos"></span>
+              <span class="anchor" id="variable-eos~13"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -224,12 +230,12 @@ explanations)</p>
             <td>::</td>
             <td><strong>eos</strong></td>
             <td>
-<p>Model</p>
+<p>Equation of state</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~2"></span>
+              <span class="anchor" id="variable-n~65"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -244,7 +250,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~8"></span>
+              <span class="anchor" id="variable-v~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -252,14 +258,14 @@ explanations)</p>
               
             </td>
             <td>::</td>
-            <td><strong>v</strong></td>
+            <td><strong>V</strong></td>
             <td>
 <p>Volume [L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~10"></span>
+              <span class="anchor" id="variable-t~34"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -267,7 +273,7 @@ explanations)</p>
               
             </td>
             <td>::</td>
-            <td><strong>t</strong></td>
+            <td><strong>T</strong></td>
             <td>
 <p>Temperature [K]</p>
             </td>
@@ -355,7 +361,7 @@ explanations)</p>
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-numeric_ar_derivatives"></span> <h3>public  subroutine <a href='../proc/numeric_ar_derivatives.html'>numeric_ar_derivatives</a>(eos, n, v, t, d_n, d_v, d_t, Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)  
+    <div class="card-header codesum"><span class="anchor" id="proc-numeric_ar_derivatives"></span> <h3>public  subroutine <a href='../proc/numeric_ar_derivatives.html'>numeric_ar_derivatives</a>(eos, n, V, T, d_n, d_v, d_t, Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)  
 </h3></div>
     <div class="card-body">
           
@@ -374,7 +380,7 @@ explanations)</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~2"></span>
+              <span class="anchor" id="variable-eos~14"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -384,12 +390,12 @@ explanations)</p>
             <td>::</td>
             <td><strong>eos</strong></td>
             <td>
-<p>Model</p>
+<p>Equation of state</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~3"></span>
+              <span class="anchor" id="variable-n~66"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -404,7 +410,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~9"></span>
+              <span class="anchor" id="variable-v~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -412,14 +418,14 @@ explanations)</p>
               
             </td>
             <td>::</td>
-            <td><strong>v</strong></td>
+            <td><strong>V</strong></td>
             <td>
 <p>Volume [L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~11"></span>
+              <span class="anchor" id="variable-t~35"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -427,14 +433,14 @@ explanations)</p>
               
             </td>
             <td>::</td>
-            <td><strong>t</strong></td>
+            <td><strong>T</strong></td>
             <td>
 <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_n"></span>
+              <span class="anchor" id="variable-d_n~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -449,7 +455,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_v"></span>
+              <span class="anchor" id="variable-d_v~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -464,7 +470,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_t"></span>
+              <span class="anchor" id="variable-d_t~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -479,7 +485,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~5"></span>
+              <span class="anchor" id="variable-ar~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -494,7 +500,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~4"></span>
+              <span class="anchor" id="variable-arv~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -511,7 +517,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art~3"></span>
+              <span class="anchor" id="variable-art~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -528,7 +534,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~11"></span>
+              <span class="anchor" id="variable-arn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -545,7 +551,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~5"></span>
+              <span class="anchor" id="variable-arv2~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -562,7 +568,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art2"></span>
+              <span class="anchor" id="variable-art2~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -579,7 +585,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~5"></span>
+              <span class="anchor" id="variable-artv~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -596,7 +602,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~11"></span>
+              <span class="anchor" id="variable-arvn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -613,7 +619,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~11"></span>
+              <span class="anchor" id="variable-artn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -630,7 +636,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~11"></span>
+              <span class="anchor" id="variable-arn2~16"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -675,7 +681,7 @@ explanations)</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

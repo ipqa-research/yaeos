@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">20 statements</a>
+                 title=" 0.5% of total for procedures.">25 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/thermoprops.f90"> Source File</a>
+              <a href="../src/ar_models.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/thermoprops.f90.html'>thermoprops.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__thermoprops.html'>yaeos__thermoprops</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
             <li class="breadcrumb-item active" aria-current="page">pressure</li>
           </ol>
         </nav>
@@ -118,13 +118,14 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/pressure.html#variable-ar~9">Ar</a>
-            <a class="list-group-item" href="../proc/pressure.html#variable-artv~8">ArTV</a>
-            <a class="list-group-item" href="../proc/pressure.html#variable-arv~7">ArV</a>
-            <a class="list-group-item" href="../proc/pressure.html#variable-arv2~8">ArV2</a>
-            <a class="list-group-item" href="../proc/pressure.html#variable-arvn~15">ArVn</a>
-            <a class="list-group-item" href="../proc/pressure.html#variable-nc~20">nc</a>
-            <a class="list-group-item" href="../proc/pressure.html#variable-totn~12">totn</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-ar~10">Ar</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-artv~7">ArTV</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-arv~8">ArV</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-arv2~9">ArV2</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-arvn~14">ArVn</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-dn~3">dn</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-nc~23">nc</a>
+            <a class="list-group-item" href="../proc/pressure.html#variable-totn~13">totn</a>
         </div>
       </div>
     </div>
@@ -154,13 +155,24 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine pressure(eos, n, v, t, p, dpdv, dpdt, dpdn)  
+    <h2>public  subroutine pressure(eos, n, v, t, p, dPdV, dPdT, dPdn)  
 </h2>
     
 
     <p>Pressure calculation.</p>
 <p>Calculate pressure using residual helmholtz models.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">eos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span><span class="w"> </span><span class="n">Pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">]</span>
+<span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+<span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="o">=</span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="o">=</span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="o">=</span><span class="n">dPdn</span><span class="p">)</span>
+</code></pre></div>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/armodel.html'>ArModel</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -175,7 +187,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~3"></span>
+              <span class="anchor" id="variable-eos~5"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -190,7 +202,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~41"></span>
+              <span class="anchor" id="variable-n~50"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -205,7 +217,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~19"></span>
+              <span class="anchor" id="variable-v~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -220,7 +232,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~37"></span>
+              <span class="anchor" id="variable-t~38"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -235,7 +247,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~10"></span>
+              <span class="anchor" id="variable-p~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -258,7 +270,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpdv</strong></td>
+            <td><strong>dPdV</strong></td>
             <td>
                 <p>
 <script type="math/tex">\frac{dP}}{dV}</script>
@@ -267,7 +279,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdt~3"></span>
+              <span class="anchor" id="variable-dpdt"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -275,7 +287,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpdt</strong></td>
+            <td><strong>dPdT</strong></td>
             <td>
                 <p>
 <script type="math/tex">\frac{dP}}{dT}</script>
@@ -284,7 +296,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdn~2"></span>
+              <span class="anchor" id="variable-dpdn"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -292,7 +304,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpdn</strong>(:)</td>
+            <td><strong>dPdn</strong>(:)</td>
             <td>
                 <p>
 <script type="math/tex">\frac{dP}}{dn_i}</script>
@@ -319,7 +331,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~9"></span>
+              <span class="anchor" id="variable-ar~10"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -336,7 +348,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~8"></span>
+              <span class="anchor" id="variable-artv~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -353,7 +365,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~7"></span>
+              <span class="anchor" id="variable-arv~8"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -370,7 +382,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~8"></span>
+              <span class="anchor" id="variable-arv2~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -387,7 +399,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~15"></span>
+              <span class="anchor" id="variable-arvn~14"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -395,7 +407,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>ArVn</strong>(size(n))</td>
+            <td><strong>ArVn</strong>(size(eos))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -404,7 +416,24 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~20"></span>
+              <span class="anchor" id="variable-dn~3"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dn</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~23"></span>
               integer,
             </td>
               <td>public</td>
@@ -421,7 +450,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-totn~12"></span>
+              <span class="anchor" id="variable-totn~13"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -469,7 +498,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

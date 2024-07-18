@@ -98,12 +98,37 @@
           <nav class="nav nav-pills flex-column">
               <a class="nav-link" href="../usage/index.html">Using yaeos</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../usage/cubics.html">Cubic Models</a>
-              <a class="nav-link" href="../usage/newmodel.html">Adding your own models</a>
-              <a class="nav-link" href="../usage/phase_equilibria.html">Phase Equilibria</a>
+                                <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
-              <a class="nav-link" href="../theory/index.html">Theorical background</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/unifaclv.html">UNIFAC-LV</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
               <a class="nav-link" href="index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link active disabled" href="styleguide.html">Style guide</a>
@@ -122,10 +147,27 @@ Consistent whitespace usage, and not polluting line endings with trailing white 
 This style guide is a living document and proposed changes may be adopted after discussing them and coming to a consensus.</p>
 <h2 id="use-modern-standard-fortran">Use (modern) standard Fortran</h2>
 <ul>
-<li>Do not use obsolescent or deleted language features
+<li>Do <strong>not</strong> use obsolescent or deleted language features
   E.g., <code>common</code>, <code>pause</code>, <code>entry</code>, arithmetic <code>if</code> and computed <code>goto</code></li>
-<li>Do not use vendor extensions in the form of non-standard syntax and vendor supplied intrinsic procedures
+<li>Do <strong>not</strong> use vendor extensions in the form of non-standard syntax and vendor supplied intrinsic procedures
   E.g., <code>real*8</code> or <code>etime()</code>, use <code>real(pr)</code></li>
+</ul>
+<h2 id="naming-of-variables-and-constructs">Naming of variables and constructs</h2>
+<ul>
+<li>Variable and procedure names, as well as Fortran keywords, should be written in lowercase</li>
+<li>All constants (like the <code>R</code> gas constant) should be upper case</li>
+<li>All variables should be in lowercase unless they are represented in uppercase in the bibliography.
+  for example, the molar volume would be <code>v</code> and the total volume would be <code>V</code>.</li>
+<li>In the case of derivatives, for general properties they should be written as <code>dXdy</code> for first derivatives and <code>dXdyz</code> or <code>dXdy2</code> for second order derivatives. The only exception is with energetic properties, like <code>Ar</code>, where derivatives are written like <code>ArV</code>, <code>ArVn</code>, etc.</li>
+<li>All thermodynamic variables that are input of a subroutine/function should
+  have the order:</li>
+<li><code>n, V, T</code></li>
+<li><code>n, P, T</code></li>
+<li>Variable and procedure names should be made up of one or more full words separated by an underscore,
+  for example <code>has_failed</code> is preferred over <code>hasfailed</code></li>
+<li>Where conventional and appropriate shortening of a word is used then the underscore may be omitted,
+  for example <code>linspace</code> is preferred over <code>lin_space</code></li>
+<li>For derived types use CamelCase, like <code>ArModel</code></li>
 </ul>
 <h2 id="file-naming-conventions">File naming conventions</h2>
 <ul>
@@ -146,18 +188,10 @@ reviews and git-diffs can focus on the semantics of the proposed changes rather
 than style and formatting.</p>
 <p>We recommend ~~enforce~~ the use of <code>findent</code> to format your files.</p>
 <ul>
-<li>The body of every Fortran construct should be indented by <strong>four (4) spaces</strong></li>
+<li>The body of every Fortran construct should be indented by <strong>three (3) spaces</strong></li>
 <li>Line length <em>should be limited to 80 characters</em> and <strong>must not exceed 132</strong></li>
 <li><strong>Do not</strong> use <kbd>Tab</kbd> characters for indentation</li>
 <li><strong>Remove</strong> trailing white space before committing code</li>
-</ul>
-<h2 id="variable-and-procedure-naming">Variable and procedure naming</h2>
-<ul>
-<li>Variable and procedure names, as well as Fortran keywords, should be written in lowercase</li>
-<li>Variable and procedure names should be made up of one or more full words separated by an underscore,
-  for example <code>has_failed</code> is preferred over <code>hasfailed</code></li>
-<li>Where conventional and appropriate shortening of a word is used then the underscore may be omitted,
-  for example <code>linspace</code> is preferred over <code>lin_space</code></li>
 </ul>
 <h2 id="attributes">Attributes</h2>
 <!-- ATTENTION! This section includes intentional trailing whitespace to get decent formatting with GFM and Python Markdown. -->
@@ -210,7 +244,7 @@ on the <a href="https://github.com/Fortran-FOSS-Programmers/ford/wiki">FORD wiki
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

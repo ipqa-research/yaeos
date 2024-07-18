@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.0% of total for modules and submodules.">109 statements</a>
+                 title=" 1.8% of total for modules and submodules.">109 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -148,25 +148,31 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Consistency checks of excess Gibbs free energy models.</p>
+      <h1 id="yaeos__consistency_gemodel">yaeos__consistency_gemodel</h1>
+<p>Consistency checks of Helmholtz free energy models (<a href="../type/gemodel.html">GeModel</a>).</p>
+<h1 id="description">Description</h1>
 <p>This module contains tools to validate the analityc derivatives of
-implmented excess Gibbs free energy models (GeModel). Also, allows to
+implmented excess Gibbs free energy models (<a href="../type/gemodel.html">GeModel</a>). Also, allows to
 evaluate the consistency tests described in Thermodynamic Models:
 Fundamentals &amp; Computational Aspects 2 ed. by Michelsen and Mollerup
 Chapter 5 section 4.</p>
 <p>Available tools:</p>
 <ul>
 <li>
-<p>numeric_ge_derivatives: From an instantiated GeModel evaluate all the
-excess Gibbs free energy derivatives from the central finite difference
-method.</p>
+<p><a href="../proc/numeric_ge_derivatives.html">numeric_ge_derivatives</a>: From an instantiated <a href="../type/gemodel.html">GeModel</a> evaluate
+all the excess Gibbs free energy derivatives from the central finite
+difference method.</p>
 </li>
 <li>
-<p>ge_consistency: From an instantiated GeModel evaluate all the Michelsen
-and Mollerup consistency tests (refer to ge_consistency docs for more
-explanations)</p>
+<p><a href="../proc/ge_consistency.html">ge_consistency</a>: From an instantiated GeModel evaluate all the
+Michelsen and Mollerup consistency tests</p>
 </li>
 </ul>
+<h1 id="references">References</h1>
+<ol>
+<li>Michelsen, M. L., &amp; Mollerup, J. M. (2007). Thermodynamic models:
+Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
+</ol>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
@@ -214,7 +220,7 @@ explanations)</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~27"></span>
+              <span class="anchor" id="variable-model~20"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -230,7 +236,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~56"></span>
+              <span class="anchor" id="variable-n~31"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -245,7 +251,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~47"></span>
+              <span class="anchor" id="variable-t~25"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -330,7 +336,7 @@ explanations)</p>
 </h3></div>
     <div class="card-body">
           
-  <p>Evaluate the excess Gibbs derivatives with central finite difference.</p><a href="../proc/numeric_ge_derivatives.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Numeric <script type="math/tex">G^E</script> model derivatives</p><a href="../proc/numeric_ge_derivatives.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -345,7 +351,7 @@ explanations)</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~28"></span>
+              <span class="anchor" id="variable-model~21"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -355,12 +361,13 @@ explanations)</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-<p>Ge Model</p>
+<p>
+<script type="math/tex">G^E</script> model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~57"></span>
+              <span class="anchor" id="variable-n~32"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -375,7 +382,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~48"></span>
+              <span class="anchor" id="variable-t~26"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -390,7 +397,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_n~3"></span>
+              <span class="anchor" id="variable-d_n"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -405,7 +412,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_t~3"></span>
+              <span class="anchor" id="variable-d_t"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -435,7 +442,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~4"></span>
+              <span class="anchor" id="variable-get~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -452,7 +459,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~5"></span>
+              <span class="anchor" id="variable-gen~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -469,7 +476,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~4"></span>
+              <span class="anchor" id="variable-get2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -486,7 +493,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~4"></span>
+              <span class="anchor" id="variable-getn~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -503,7 +510,7 @@ explanations)</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~5"></span>
+              <span class="anchor" id="variable-gen2~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -548,7 +555,7 @@ explanations)</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

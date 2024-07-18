@@ -8,19 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
     <meta name="author" content="Federico Benelli" >
-    <link rel="icon" href="../../favicon.png">
+    <link rel="icon" href="../../../favicon.png">
 
     <title>Adding your own models &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../../css/pygments.css" rel="stylesheet">
-    <link href="../../css/font-awesome.min.css" rel="stylesheet">
-    <link href="../../css/local.css" rel="stylesheet">
-      <link  href="../../tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../../../css/local.css" rel="stylesheet">
+      <link  href="../../../tipuesearch/tipuesearch.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="../../js/svg-pan-zoom.min.js"></script>
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
@@ -29,7 +29,7 @@
     <div class="container-fluid mb-sm-4 mb-xl-2">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                   aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon">
@@ -37,25 +37,25 @@
 
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
                   <li class="nav-item">
-                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
                   </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
                 </li>
             </ul>
               <div class="d-flex align-items-end flex-grow-1">
-                <form action="../../search.html" role="search" class="ms-auto">
+                <form action="../../../search.html" role="search" class="ms-auto">
                   <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
                 </form>
               </div>
@@ -76,8 +76,8 @@
         <div class="col">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
               <li class="breadcrumb-item active" aria-current="page">Adding your own models</li>
             </ol>
           </nav>
@@ -91,22 +91,47 @@
         <div class="card card-body bg-light" id="sidebar-toc">
           <ul class="nav flex-column align-items">
             <li class="nav-item">
-              <a class="nav-link" href="../index.html">User documentation</a>
+              <a class="nav-link" href="../../index.html">User documentation</a>
             </li>
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Using yaeos</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="cubics.html">Cubic Models</a>
-              <a class="nav-link active disabled" href="newmodel.html">Adding your own models</a>
-              <a class="nav-link" href="phase_equilibria.html">Phase Equilibria</a>
+                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/alpha.html">alpha functions</a>
+              <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
-              <a class="nav-link" href="../theory/index.html">Theorical background</a>
-              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+
+                </nav>
+              <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/unifaclv.html">UNIFAC-LV</a>
+
+                </nav>
+              <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link active disabled" href="index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
           </nav>
@@ -115,26 +140,22 @@
 
     <div class="col-9" id='text'>
       <p>Most of thermodynamic properties calculated in <code>yaeos</code> heavily depend on
-different kind of models and their respective derivatives.
-Since obtaining the derivatives of complex models can be a tedious and
-error-prone task. We provide two different ways of getting them automatically
-(in some cases with some performance-cost), but there is also the possibility
-of using anallyitical obtained expressions instead.</p>
+different kind of models and their respective derivatives. Since obtaining the
+derivatives of complex models can be a tedious and error-prone task. We provide
+two different ways of getting them automatically (in some cases with some
+performance-cost), but there is also the possibility of using analytical
+obtained expressions instead.</p>
 <p>The calculation of thermodynamic properties heavily depends on </p>
 <p>On <code>yaeos</code> there are three different ways of adding your own model:W</p>
 <div class="toc">
 <ul>
-<li><a href="#residual-helmholtz-models">Residual Helmholtz models</a><ul>
-<li><a href="#using-operator-overloading-automatic-differentiation-with-hyperdual-numbers">Using operator overloading automatic differentiation with hyperdual numbers</a></li>
-<li><a href="#using-source-to-source-automatic-differentiation-with-tapenade">Using source-to-source automatic differentiation with tapenade</a></li>
-<li><a href="#using-analytical-obtained-expressions">Using analytical obtained expressions</a></li>
-</ul>
-</li>
+<li><a href="#residual-helmholtz-models">Residual Helmholtz models</a></li>
 </ul>
 </div>
 <h1 id="residual-helmholtz-models">Residual Helmholtz models</h1>
 <p>Residual Helmholtz models are the basis to obtain the residual properties.</p>
-<p>The main basis in <code>yaeos</code> to define a new object that extends the <code>abstract type</code> called <code>ArModel</code>. Which enforces the expected functionality of these
+<p>The main basis in <code>yaeos</code> to define a new object that extends the <code>abstract
+type</code>called` <a href="../../../type/armodel.html">ArModel</a>. Which enforces the expected functionality of this
 kind of models.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span>
 
@@ -144,8 +165,10 @@ kind of models.</p>
 
 <p>The definition of an <code>ArModel</code> expects that two procedures are defined:</p>
 <ul>
-<li><a href="../../interface/abs_residual_helmholtz.html">abs_residual_helmholtz</a>: Procedure to calculate residual Helmholtz energy and it&rsquo;s derivatives</li>
-<li><a href="../../interface/abs_volume_initializer.html">abs_volume_initializer</a>: Volume initializer to find a liquid root, given a pressure and temperature.</li>
+<li><a href="../../../interface/abs_residual_helmholtz.html">abs_residual_helmholtz</a>: Procedure to calculate residual
+      Helmholtz energy and it&rsquo;s derivatives</li>
+<li><a href="../../../interface/abs_volume_initializer.html">abs_volume_initializer</a>: Volume initializer to find a liquid
+      root, given a pressure and temperature.</li>
 </ul>
 <div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span>
 
@@ -165,10 +188,6 @@ kind of models.</p>
 <span class="c">! Assuming model parameters are set-up</span>
 <span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
 </code></pre></div>
-
-<h2 id="using-operator-overloading-automatic-differentiation-with-hyperdual-numbers">Using operator overloading automatic differentiation with hyperdual numbers</h2>
-<h2 id="using-source-to-source-automatic-differentiation-with-tapenade">Using source-to-source automatic differentiation with tapenade</h2>
-<h2 id="using-analytical-obtained-expressions">Using analytical obtained expressions</h2>
     </div>
   </div>
       <hr>
@@ -186,7 +205,7 @@ kind of models.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>
@@ -210,9 +229,9 @@ kind of models.</p>
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-          <script src="../../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../../tipuesearch/tipuesearch.js"></script>
+          <script src="../../../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../../../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../../../tipuesearch/tipuesearch.js"></script>
 
   </body>
 </html>

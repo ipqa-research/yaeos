@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 5.0% of total for derived types.</p>Including implementation: 92 statements,  6.0% of total for derived types.">11 statements</a>
+                 title="<p> 5.0% of total for derived types.</p>Including implementation: 340 statements, 13.5% of total for derived types.">12 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,11 +118,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/cubiceos.html#variable-ac~3">ac</a>
+            <a class="list-group-item" href="../type/cubiceos.html#variable-ac">ac</a>
             <a class="list-group-item" href="../type/cubiceos.html#variable-alpha~2">alpha</a>
-            <a class="list-group-item" href="../type/cubiceos.html#variable-b~6">b</a>
+            <a class="list-group-item" href="../type/cubiceos.html#variable-b~3">b</a>
             <a class="list-group-item" href="../type/cubiceos.html#variable-components">components</a>
-            <a class="list-group-item" href="../type/cubiceos.html#variable-del1~3">del1</a>
+            <a class="list-group-item" href="../type/cubiceos.html#variable-del1">del1</a>
             <a class="list-group-item" href="../type/cubiceos.html#variable-del2">del2</a>
             <a class="list-group-item" href="../type/cubiceos.html#variable-mixrule">mixrule</a>
             <a class="list-group-item" href="../type/cubiceos.html#variable-name">name</a>
@@ -152,8 +152,17 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-get_v0~3">get_v0</a>
-            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-residual_helmholtz~2">residual_helmholtz</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-cp_residual_vt">Cp_residual_vt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-cv_residual_vt">Cv_residual_vt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-enthalpy_residual_vt">enthalpy_residual_vt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-entropy_residual_vt">entropy_residual_vt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-get_v0">get_v0</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-gibbs_residual_vt">gibbs_residual_vt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-lnphi_pt">lnphi_pt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-lnphi_vt">lnphi_vt</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-pressure">pressure</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-residual_helmholtz">residual_helmholtz</a>
+            <a class="list-group-item" href="../type/cubiceos.html#boundprocedure-volume">volume</a>
         </div>
       </div>
     </div>
@@ -169,9 +178,19 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, extends(<a href='armodel.html'>ArModel</a>) :: CubicEoS</h2>
-    <p>Cubic Equation of State.</p>
+    <h1 id="cubic-equation-of-state">Cubic Equation of State.</h1>
 <p>Generic Cubic Equation of State as defined by Michelsen and Mollerup
-with constant <script type="math/tex">\delta_1</script> and <script type="math/tex">\delta_2</script> parameters.</p>
+with a <script type="math/tex">\delta_1</script> parameter that is not constant, 
+and a <script type="math/tex">\delta_2</script> parameter that depends on it. In the case of a 
+two parameter EoS like PengRobinson the <script type="math/tex">\delta_1</script> is the same for
+all components so it can be considered as a constant instead of a 
+variable. The expression of the Equation is:</p>
+<p>
+<script type="math/tex; mode=display">
+  P = \frac{RT}{V-B} 
+      - \frac{D(T_r)}{(V+B\Delta_1)(V+B\Delta_2)}
+</script>
+</p>
     <br>
 
     <section>
@@ -188,7 +207,7 @@ with constant <script type="math/tex">\delta_1</script> and <script type="math/t
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ac~3"></span>
+              <span class="anchor" id="variable-ac"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -217,12 +236,24 @@ with constant <script type="math/tex">\delta_1</script> and <script type="math/t
                 <td></td>
                 <td></td>
             <td>
-                
+                <h1 id="alphafunction-derived-type">AlphaFunction derived type.</h1>
+<p>Uses the abstract derived type <code>AlphaFunction</code> to define the
+Alpha function that the CubicEoS will use. The Alpha function
+receives the reduced temperature and returns the values of alpha
+and its derivatives, named <code>a</code>, <code>dadt</code> and <code>dadt2</code> respectively.</p>
+<h1 id="examples">Examples</h1>
+<h2 id="callign-the-alphafunction-of-a-setted-up-model">Callign the AlphaFunction of a setted up model.</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
+<span class="n">eos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">alpha</span><span class="p">%</span><span class="n">alpha</span><span class="p">(</span><span class="n">Tr</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">dadt</span><span class="p">,</span><span class="w"> </span><span class="n">dadt2</span><span class="p">)</span>
+</code></pre></div>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~6"></span>
+              <span class="anchor" id="variable-b~3"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -256,7 +287,7 @@ with constant <script type="math/tex">\delta_1</script> and <script type="math/t
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del1~3"></span>
+              <span class="anchor" id="variable-del1"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -304,7 +335,40 @@ with constant <script type="math/tex">\delta_1</script> and <script type="math/t
                 <td></td>
                 <td></td>
             <td>
-                
+                <h1 id="cubicmixrule-derived-type">CubicMixRule derived type.</h1>
+<p>Uses the abstract derived type <code>CubicMixRule</code> to define the
+mixing rule that the CubicEoS will use. It includes internally
+three methods to calculate the corresponding parameters for the
+Cubic EoS: <code>Dmix</code>, <code>Bmix</code> and <code>D1mix</code>.</p>
+<h1 id="examples">Examples</h1>
+<h2 id="calculation-of-the-b-parameter">Calculation of the B parameter.</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="k">type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
+<span class="n">eos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">mixrule</span><span class="p">%</span><span class="n">Bmix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">dBi</span><span class="p">,</span><span class="w"> </span><span class="n">dBij</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="calculation-of-the-d-parameter">Calculation of the D parameter.</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="k">type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
+<span class="n">eos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="c">! The mixing rule takes the `a` parameters of the components so</span>
+<span class="c">! they should be calculated externally</span>
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">alpha</span><span class="p">%</span><span class="n">alpha</span><span class="p">(</span><span class="n">Tr</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">dadt</span><span class="p">,</span><span class="w"> </span><span class="n">dadt2</span><span class="p">)</span>
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">ac</span>
+<span class="n">dadt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dadt</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">ac</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">Tc</span>
+<span class="n">dadt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dadt</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">ac</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">Tc</span><span class="o">**</span><span class="mi">2</span>
+<span class="c">! Calculate parameter</span>
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">mixrule</span><span class="p">%</span><span class="n">Dmix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">dadt</span><span class="p">,</span><span class="w"> </span><span class="n">dadt2</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">dDdT</span><span class="p">,</span><span class="w"> </span><span class="n">dDdT2</span><span class="p">,</span><span class="w"> </span><span class="n">dDi</span><span class="p">,</span><span class="w"> </span><span class="n">dDidT</span><span class="p">,</span><span class="w"> </span><span class="n">dDij</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="calculation-of-the-d1-parameter">Calculation of the D1 parameter.</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="k">type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
+<span class="n">eos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">mixrule</span><span class="p">%</span><span class="n">D1mix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">eos</span><span class="p">%</span><span class="n">del1</span><span class="p">,</span><span class="w"> </span><span class="n">D1</span><span class="p">,</span><span class="w"> </span><span class="n">dD1i</span><span class="p">,</span><span class="w"> </span><span class="n">dD1ij</span><span class="p">)</span>
+</code></pre></div>
             </td>
         </tr>
         <tr>
@@ -337,7 +401,565 @@ with constant <script type="math/tex">\delta_1</script> and <script type="math/t
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_v0~3"></span>
+      <span class="anchor" id="boundprocedure-cp_residual_vt"></span>
+      <h3>
+          procedure, public ::
+  <strong>Cp_residual_vt</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/cp_residual_vt.html'>Cp_residual_vt</a>(eos, n, V, T, Cp)  
+</h3>
+    
+
+  <p>Calculate residual heat capacity pressure constant given v and t.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Cp</strong></td>
+            <td>
+<p>heat capacity p constant [bar L / K / mol]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-cv_residual_vt"></span>
+      <h3>
+          procedure, public ::
+  <strong>Cv_residual_vt</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/cv_residual_vt.html'>Cv_residual_vt</a>(eos, n, V, T, Cv)  
+</h3>
+    
+
+  <p>Calculate residual heat capacity volume constant given v and t.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Cv</strong></td>
+            <td>
+<p>heat capacity v constant [bar L / K / mol]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-enthalpy_residual_vt"></span>
+      <h3>
+          procedure, public ::
+  <strong>enthalpy_residual_vt</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/enthalpy_residual_vt.html'>enthalpy_residual_vt</a>(eos, n, v, t, Hr, HrT, HrV, Hrn)  
+</h3>
+    
+
+  <p>Calculate residual enthalpy given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hr</strong></td>
+            <td>
+<p>Residual enthalpy [bar L / mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>HrT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^r}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>HrV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^r}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hrn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^r}}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-entropy_residual_vt"></span>
+      <h3>
+          procedure, public ::
+  <strong>entropy_residual_vt</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/entropy_residual_vt.html'>entropy_residual_vt</a>(eos, n, V, T, Sr, SrT, SrV, Srn)  
+</h3>
+    
+
+  <p>Calculate residual entropy given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Sr</strong></td>
+            <td>
+<p>Entropy [bar L / K / mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>SrT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^r}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>SrV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^r}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Srn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^r}}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-get_v0"></span>
       <h3>
           procedure, public ::
   <strong>get_v0</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/v0.html'>v0</a>
@@ -444,7 +1066,756 @@ region.</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-residual_helmholtz~2"></span>
+      <span class="anchor" id="boundprocedure-gibbs_residual_vt"></span>
+      <h3>
+          procedure, public ::
+  <strong>gibbs_residual_vt</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/gibbs_residual_vt.html'>gibbs_residual_VT</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/gibbs_residual_vt.html'>gibbs_residual_VT</a>(eos, n, V, T, Gr, GrT, GrV, Grn)  
+</h3>
+    
+
+  <p>Calculate residual Gibbs energy given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gr</strong></td>
+            <td>
+<p>Gibbs energy [bar L / mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GrT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dG^r}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GrV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dG^r}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Grn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dG^r}}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-lnphi_pt"></span>
+      <h3>
+          procedure, public ::
+  <strong>lnphi_pt</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/fugacity_pt.html'>fugacity_pt</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/fugacity_pt.html'>fugacity_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn)  
+</h3>
+    
+
+  <p>Calculate logarithm of fugacity, given pressure and temperature.</p><a href="../proc/fugacity_pt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Mixture mole numbers</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+<p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root_type</strong></td>
+            <td>
+<p>Type of root desired [&ldquo;liquid&rdquo;, &ldquo;vapor&rdquo;, &ldquo;stable&rdquo;]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhi</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\ln(phi)</script> vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidP</strong>(size(n))</td>
+            <td>
+<p>ln(phi) Presssure derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidT</strong>(size(n))</td>
+            <td>
+<p>ln(phi) Temp derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
+            <td>
+<p>ln(phi) compositional derivative</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-lnphi_vt"></span>
+      <h3>
+          procedure, public ::
+  <strong>lnphi_vt</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/fugacity_vt.html'>fugacity_vt</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/fugacity_vt.html'>fugacity_vt</a>(eos, n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+</h3>
+    
+
+  <p>Calculate fugacity coefficent given volume and temperature.</p><a href="../proc/fugacity_vt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Mixture mole numbers</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+<p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhi</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\ln(\phi_i*P)</script> vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidP</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(phi_i)</script> Presssure derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidT</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(phi_i)</script> Temp derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(phi_i)</script> compositional derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dn_i}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-pressure"></span>
+      <h3>
+          procedure, public ::
+  <strong>pressure</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/pressure.html'>pressure</a>(eos, n, v, t, p, dPdV, dPdT, dPdn)  
+</h3>
+    
+
+  <p>Pressure calculation.</p><a href="../proc/pressure.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+<p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}}{dn_i}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-residual_helmholtz"></span>
       <h3>
           procedure, public ::
   <strong>residual_helmholtz</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/genericcubic_ar.html'>GenericCubic_Ar</a>
@@ -708,6 +2079,135 @@ region.</p>
   </div>
 
           </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-volume"></span>
+      <h3>
+          procedure, public ::
+  <strong>volume</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/volume.html'>volume</a>(eos, n, P, T, V, root_type)  
+</h3>
+    
+
+  <p>Volume solver optimized for Cubic Equations of State.</p><a href="../proc/volume.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cubiceos.html'>CubicEoS</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root_type</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
       </section>
 
     
@@ -729,7 +2229,7 @@ region.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

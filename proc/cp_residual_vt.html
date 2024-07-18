@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">13 statements</a>
+                 title=" 0.3% of total for procedures.">14 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/thermoprops.f90"> Source File</a>
+              <a href="../src/ar_models.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/thermoprops.f90.html'>thermoprops.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__thermoprops.html'>yaeos__thermoprops</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
             <li class="breadcrumb-item active" aria-current="page">Cp_residual_vt</li>
           </ol>
         </nav>
@@ -119,12 +119,12 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-ar~16">Ar</a>
-            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-art2~8">ArT2</a>
+            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-art2~7">ArT2</a>
             <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-cv~2">Cv</a>
-            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-dpdt~5">dpdt</a>
-            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-dpdv~3">dpdv</a>
-            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-ntot~3">ntot</a>
+            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-dpdt~4">dPdT</a>
+            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-dpdv~4">dPdV</a>
             <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-p~14">p</a>
+            <a class="list-group-item" href="../proc/cp_residual_vt.html#variable-totn~16">totn</a>
         </div>
       </div>
     </div>
@@ -154,12 +154,26 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine Cp_residual_vt(eos, n, v, t, Cp)  
+    <h2>public  subroutine Cp_residual_vt(eos, n, V, T, Cp)  
 </h2>
-    
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/yaeos__constants.html'>yaeos__constants</a></li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
+
 
     <p>Calculate residual heat capacity pressure constant given v and t.</p>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/armodel.html'>ArModel</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -174,7 +188,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~11"></span>
+              <span class="anchor" id="variable-eos~12"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -189,7 +203,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~49"></span>
+              <span class="anchor" id="variable-n~57"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -204,7 +218,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~26"></span>
+              <span class="anchor" id="variable-v~15"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -212,14 +226,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>v</strong></td>
+            <td><strong>V</strong></td>
             <td>
                 <p>Volume [L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~44"></span>
+              <span class="anchor" id="variable-t~28"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -227,7 +241,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>t</strong></td>
+            <td><strong>T</strong></td>
             <td>
                 <p>Temperature [K]</p>
             </td>
@@ -284,7 +298,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art2~8"></span>
+              <span class="anchor" id="variable-art2~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -318,7 +332,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdt~5"></span>
+              <span class="anchor" id="variable-dpdt~4"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -326,7 +340,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpdt</strong></td>
+            <td><strong>dPdT</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -335,7 +349,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdv~3"></span>
+              <span class="anchor" id="variable-dpdv~4"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -343,24 +357,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dpdv</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ntot~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ntot</strong></td>
+            <td><strong>dPdV</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -378,6 +375,23 @@
             </td>
             <td>::</td>
             <td><strong>p</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-totn~16"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>totn</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -417,7 +431,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>

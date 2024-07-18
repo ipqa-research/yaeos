@@ -1,0 +1,251 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../../../../favicon.png">
+
+    <title>Mixing Rules &ndash; yaeos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../../../../css/pygments.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../../../../css/local.css" rel="stylesheet">
+      <link  href="../../../../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Mixing Rules</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Equations of State</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Cubics</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Mixing Rules</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../../index.html">Using yaeos</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="alpha.html">alpha functions</a>
+              <a class="nav-link active disabled" href="mixing.html">Mixing Rules</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../../excessmodels/unifaclv.html">UNIFAC-LV</a>
+
+                </nav>
+              <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <h1 id="cubic-mixing-rules">Cubic Mixing Rules</h1>
+<p>All <a href="../../../../type/cubiceos.html">CubicEoS</a> in <code>yaeos</code> include a <a href="../../../../type/cubicmixrule.html">CubicMixRule</a> derived type, which 
+handles how the <script type="math/tex">D</script> and <script type="math/tex">B</script> parameters in the CubicEoS are calculated.</p>
+<h2 id="quadratic-mixing-rules-qmr">Quadratic Mixing Rules (QMR)</h2>
+<p>Quadratic mixing rules are the ussually most used mixing rules for cubic 
+equations of state.</p>
+<p>
+<script type="math/tex; mode=display">
+    nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+    D = \sum_i \sum_j n_i n_j a_{ij}
+</script>
+</p>
+<p>QMR are handled by the <a href="../../../../type/qmr.html">QMR</a> derived type. Which can be used like:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">QMR</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mixrule</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">kij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">]</span>
+<span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
+
+<span class="n">lij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.01</span><span class="p">]</span>
+<span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
+
+<span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
+</code></pre></div>
+
+<p>By default the <script type="math/tex">a_{ij}</script> matrix will be calculated with a constant <script type="math/tex">k_{ij}</script>
+value (as shown below). But this functionality can be modified by replacing
+the <code>get_aij</code> procedure</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">QMR</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mixrule</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">kij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">]</span>
+<span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
+
+<span class="n">lij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.01</span><span class="p">]</span>
+<span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
+
+<span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
+<span class="n">mixrule</span><span class="p">%</span><span class="n">get_aij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">my_aij_implementation</span>
+
+<span class="k">subroutine </span><span class="n">my_aij_implementation</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">ai</span><span class="p">,</span><span class="w"> </span><span class="n">daidt</span><span class="p">,</span><span class="w"> </span><span class="n">daidt2</span><span class="p">,</span><span class="w"> </span><span class="n">aij</span><span class="p">,</span><span class="w"> </span><span class="n">daijdt</span><span class="p">,</span><span class="w"> </span><span class="n">daijdt2</span><span class="p">)</span>
+<span class="w">    </span><span class="k">class</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ai</span><span class="p">(:),</span><span class="w"> </span><span class="n">daidt</span><span class="p">(:),</span><span class="w"> </span><span class="n">daidt2</span><span class="p">(:)</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">aij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:),</span><span class="w"> </span><span class="n">daijdt</span><span class="p">(:,</span><span class="w"> </span><span class="p">.),</span><span class="w"> </span><span class="n">daijdt2</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+<span class="w">    </span><span class="c">! Implementation here</span>
+<span class="k">end subroutine</span>
+</code></pre></div>
+
+<h3 id="constant-k_ij">Constant <script type="math/tex">k_{ij}</script>
+</h3>
+<h2 id="ge-models-mixing-rules">
+<script type="math/tex">G^E</script> Models Mixing Rules</h2>
+<h3 id="michelsens-modified-huron-vidal-mixing-rules">Michelsen&rsquo;s Modified Huron-Vidal Mixing Rules</h3>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2024 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-07-18 17:55              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../../../../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../../../../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../../../../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>

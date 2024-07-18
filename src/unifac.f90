@@ -34,6 +34,41 @@ module yaeos__models_ge_group_contribution_unifac
    !! ```
    !!
    !! # References
+   !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
+   !! .com/published-parameters-unifac.html)
+   !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
+   !! Group‐contribution estimation of activity coefficients in nonideal liquid
+   !! mixtures. AIChE Journal, 21(6), 1086–1099.
+   !! [https://doi.org/10.1002/aic.690210607](https://doi.org/10.1002/aic.690210607)
+   !! 3. Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., & Rasmussen, P. (1979).
+   !! Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and
+   !! Extension. Industrial & Engineering Chemistry Process Design and
+   !! Development, 18(4), 714–722.
+   !! [https://doi.org/10.1021/i260072a024](https://doi.org/10.1021/i260072a024)
+   !! 4. Gmehling, J., Rasmussen, P., & Fredenslund, A. (1982). Vapor-liquid
+   !! equilibriums by UNIFAC group contribution. Revision and extension. 2.
+   !! Industrial & Engineering Chemistry Process Design and Development, 21(1),
+   !! 118–127.
+   !! [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
+   !! 5. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
+   !! Vapor-liquid equilibriums by UNIFAC group contribution. Revision and
+   !! extension. 3. Industrial & Engineering Chemistry Process Design and
+   !! Development, 22(4), 676–678.
+   !! [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
+   !! 6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
+   !! Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
+   !! extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
+   !! [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
+   !! 7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &
+   !! Gmehling, J. (1991). Vapor-liquid equilibria by UNIFAC group
+   !! contribution. 5. Revision and extension. Industrial & Engineering
+   !! Chemistry Research, 30 (10), 2352–2355.
+   !! [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
+   !! 8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria
+   !! by UNIFAC Group Contribution. 6. Revision and Extension. Industrial &
+   !! Engineering Chemistry Research, 42(1), 183–188.
+   !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
+   !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
@@ -64,7 +99,8 @@ module yaeos__models_ge_group_contribution_unifac
       !! ```
       !!
       !! # References
-      !! https://www.ddbst.com/published-parameters-unifac.html
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
+      !! .com/published-parameters-unifac.html)
       integer, allocatable :: groups_ids(:)
       !! Indexes (ids) of each subgroup in the main group matrix
       integer, allocatable :: number_of_groups(:)
@@ -114,6 +150,44 @@ module yaeos__models_ge_group_contribution_unifac
       !!
       !!  print *, ln_gammas ! result: 0.10505475697637946   0.28073129552766890
       !! ```
+      !!
+      !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
+      !! .com/published-parameters-unifac.html)
+      !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
+      !! Group‐contribution estimation of activity coefficients in nonideal liquid
+      !! mixtures. AIChE Journal, 21(6), 1086–1099.
+      !! [https://doi.org/10.1002/aic.690210607](https://doi.org/10.1002/aic.690210607)
+      !! 3. Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., & Rasmussen, P. (1979).
+      !! Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and
+      !! Extension. Industrial & Engineering Chemistry Process Design and
+      !! Development, 18(4), 714–722.
+      !! [https://doi.org/10.1021/i260072a024](https://doi.org/10.1021/i260072a024)
+      !! 4. Gmehling, J., Rasmussen, P., & Fredenslund, A. (1982). Vapor-liquid
+      !! equilibriums by UNIFAC group contribution. Revision and extension. 2.
+      !! Industrial & Engineering Chemistry Process Design and Development, 21(1),
+      !! 118–127.
+      !! [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
+      !! 5. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
+      !! Vapor-liquid equilibriums by UNIFAC group contribution. Revision and
+      !! extension. 3. Industrial & Engineering Chemistry Process Design and
+      !! Development, 22(4), 676–678.
+      !! [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
+      !! 6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
+      !! Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
+      !! extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
+      !! [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
+      !! 7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &
+      !! Gmehling, J. (1991). Vapor-liquid equilibria by UNIFAC group
+      !! contribution. 5. Revision and extension. Industrial & Engineering
+      !! Chemistry Research, 30 (10), 2352–2355.
+      !! [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
+      !! 8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria
+      !! by UNIFAC Group Contribution. 6. Revision and Extension. Industrial &
+      !! Engineering Chemistry Research, 42(1), 183–188.
+      !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
+      !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
+      !!
       integer :: ngroups
       !! Total number of individual groups in the mixture
       integer :: nmolecules
@@ -193,6 +267,41 @@ module yaeos__models_ge_group_contribution_unifac
       !! \]
       !!
       !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
+      !! .com/published-parameters-unifac.html)
+      !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
+      !! Group‐contribution estimation of activity coefficients in nonideal liquid
+      !! mixtures. AIChE Journal, 21(6), 1086–1099.
+      !! [https://doi.org/10.1002/aic.690210607](https://doi.org/10.1002/aic.690210607)
+      !! 3. Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., & Rasmussen, P. (1979).
+      !! Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and
+      !! Extension. Industrial & Engineering Chemistry Process Design and
+      !! Development, 18(4), 714–722.
+      !! [https://doi.org/10.1021/i260072a024](https://doi.org/10.1021/i260072a024)
+      !! 4. Gmehling, J., Rasmussen, P., & Fredenslund, A. (1982). Vapor-liquid
+      !! equilibriums by UNIFAC group contribution. Revision and extension. 2.
+      !! Industrial & Engineering Chemistry Process Design and Development, 21(1),
+      !! 118–127.
+      !! [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
+      !! 5. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
+      !! Vapor-liquid equilibriums by UNIFAC group contribution. Revision and
+      !! extension. 3. Industrial & Engineering Chemistry Process Design and
+      !! Development, 22(4), 676–678.
+      !! [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
+      !! 6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
+      !! Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
+      !! extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
+      !! [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
+      !! 7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &
+      !! Gmehling, J. (1991). Vapor-liquid equilibria by UNIFAC group
+      !! contribution. 5. Revision and extension. Industrial & Engineering
+      !! Chemistry Research, 30 (10), 2352–2355.
+      !! [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
+      !! 8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria
+      !! by UNIFAC Group Contribution. 6. Revision and Extension. Industrial &
+      !! Engineering Chemistry Research, 42(1), 183–188.
+      !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
+      !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
       !!
       real(pr), allocatable :: Aij(:, :)
    contains
@@ -262,8 +371,6 @@ contains
       !!  call model%ln_activity_coefficient(n, T, ln_gammas)
       !!  print *, "ln_gammas: ", ln_gammas
       !! ```
-      !!
-      !! # References
       !!
       class(UNIFAC), intent(in) :: self
       !! UNIFAC model
@@ -384,7 +491,7 @@ contains
       !! \]
       !!
       !! # References
-      !! SINTEF (https://github.com/thermotools/thermopack)
+      !! 1. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
       class(UNIFAC) :: self
 
       real(pr), intent(in) :: n(self%nmolecules)
@@ -598,7 +705,7 @@ contains
       !! \]
       !!
       !! # References
-      !! SINTEF (https://github.com/thermotools/thermopack)
+      !! 1. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
       class(UNIFAC) :: self
 
       real(pr), intent(in) :: n(self%nmolecules)
@@ -896,6 +1003,41 @@ contains
       !! \]
       !!
       !! # References
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
+      !! .com/published-parameters-unifac.html)
+      !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
+      !! Group‐contribution estimation of activity coefficients in nonideal liquid
+      !! mixtures. AIChE Journal, 21(6), 1086–1099.
+      !! [https://doi.org/10.1002/aic.690210607](https://doi.org/10.1002/aic.690210607)
+      !! 3. Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., & Rasmussen, P. (1979).
+      !! Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and
+      !! Extension. Industrial & Engineering Chemistry Process Design and
+      !! Development, 18(4), 714–722.
+      !! [https://doi.org/10.1021/i260072a024](https://doi.org/10.1021/i260072a024)
+      !! 4. Gmehling, J., Rasmussen, P., & Fredenslund, A. (1982). Vapor-liquid
+      !! equilibriums by UNIFAC group contribution. Revision and extension. 2.
+      !! Industrial & Engineering Chemistry Process Design and Development, 21(1),
+      !! 118–127.
+      !! [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
+      !! 5. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
+      !! Vapor-liquid equilibriums by UNIFAC group contribution. Revision and
+      !! extension. 3. Industrial & Engineering Chemistry Process Design and
+      !! Development, 22(4), 676–678.
+      !! [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
+      !! 6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
+      !! Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
+      !! extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
+      !! [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
+      !! 7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &
+      !! Gmehling, J. (1991). Vapor-liquid equilibria by UNIFAC group
+      !! contribution. 5. Revision and extension. Industrial & Engineering
+      !! Chemistry Research, 30 (10), 2352–2355.
+      !! [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
+      !! 8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria
+      !! by UNIFAC Group Contribution. 6. Revision and Extension. Industrial &
+      !! Engineering Chemistry Research, 42(1), 183–188.
+      !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
+      !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
       !!
       class(UNIFACPsi) :: self
       !! \(\psi\) function
@@ -906,9 +1048,9 @@ contains
       real(pr), optional, intent(out) :: psi(:, :)
       !! \(\psi\)
       real(pr), optional, intent(out) :: dpsi_dt(:, :)
-      !! \(\frac{d \psi\}{dT} \)
+      !! \(\frac{d \psi}{dT}\)
       real(pr), optional, intent(out) :: dpsi_dt2(:, :)
-      !! \(\frac{d^2 \psi\}{dT^2} \)
+      !! \(\frac{d^2 \psi}{dT^2}\)
 
       integer :: i, j
       integer :: ngroups
@@ -942,7 +1084,7 @@ contains
       !! dependence)
       !!
       !! # References
-      !!
+      !! 1. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
       integer, intent(in) :: nm !! Number of molecules
       integer, intent(in) :: ng !! Number of groups
       type(GeGCModelParameters), intent(in) :: parameters !! UNIFAC parameters
@@ -1027,7 +1169,8 @@ contains
       !! ```
       !!
       !! # References
-      !! https://www.ddbst.com/published-parameters-unifac.html
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
+      !! .com/published-parameters-unifac.html)
       !!
       type(Groups), intent(in) :: molecules(:)
       !! Molecules (Group type) objects

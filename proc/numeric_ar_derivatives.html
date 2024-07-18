@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.1% of total for procedures.">100 statements</a>
+                 title=" 1.9% of total for procedures.">100 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -122,10 +122,10 @@
             <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-ar_aux2">Ar_aux2</a>
             <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-ar_aux3">Ar_aux3</a>
             <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-ar_aux4">Ar_aux4</a>
-            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-dn_aux1">dn_aux1</a>
-            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-dn_aux2">dn_aux2</a>
-            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-i~16">i</a>
-            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-j~9">j</a>
+            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-dn_aux1~2">dn_aux1</a>
+            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-dn_aux2~2">dn_aux2</a>
+            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-i~65">i</a>
+            <a class="list-group-item" href="../proc/numeric_ar_derivatives.html#variable-j~38">j</a>
         </div>
       </div>
     </div>
@@ -155,19 +155,23 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine numeric_ar_derivatives(eos, n, v, t, d_n, d_v, d_t, Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)  
+    <h2>public  subroutine numeric_ar_derivatives(eos, n, V, T, d_n, d_v, d_t, Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)  
 </h2>
     
 
-    <p>Evaluate the Helmholtz derivatives with central finite difference.</p>
+    <h1 id="numeric_ar_derivatives">numeric_ar_derivatives</h1>
+<p>Evaluate the Helmholtz derivatives with central finite difference.</p>
+<h1 id="description">Description</h1>
+<p>Tool to facilitate the development of new <a href="../type/armodel.html">ArModel</a> by testing
+the implementation of analytic derivatives.</p>
 <h1 id="examples">Examples</h1>
 <div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">SoaveRedlichKwong</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span>
-<span class="w"> </span><span class="k">use </span><span class="n">yaeos__consistency</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">numeric_ar_derivatives</span>
+<span class="w"> </span><span class="k">use </span><span class="n">yaeos__consistency_armodel</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">numeric_ar_derivatives</span>
 
 <span class="w"> </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
 <span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 
-<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">v</span>
+<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span>
 
 <span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArV_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArT_num</span><span class="p">,</span><span class="w"> </span><span class="n">Arn_num</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">ArV2_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArT2_num</span>
 <span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArTV_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArVn_num</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">ArTn_num</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
@@ -178,13 +182,13 @@
 <span class="w"> </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">9.23</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="mf">0.21</span><span class="p">]</span>
 <span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3624</span><span class="p">,</span><span class="w"> </span><span class="mf">0.298</span><span class="p">]</span>
 
-<span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600_pr</span>
-<span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span>
+<span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600_pr</span>
+<span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span>
 
 <span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
 
 <span class="w"> </span><span class="k">call </span><span class="n">numeric_ar_derivatives</span><span class="p">(&amp;</span>
-<span class="w">    </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">d_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0001_pr</span><span class="p">,</span><span class="w"> </span><span class="n">d_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0001_pr</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">    </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">d_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0001_pr</span><span class="p">,</span><span class="w"> </span><span class="n">d_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0001_pr</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="w">    </span><span class="n">Ar</span><span class="o">=</span><span class="n">Ar_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArV</span><span class="o">=</span><span class="n">ArV_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArT</span><span class="o">=</span><span class="n">ArT_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArTV</span><span class="o">=</span><span class="n">ArTV_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArV2</span><span class="o">=</span><span class="n">ArV2_num</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="w">    </span><span class="n">ArT2</span><span class="o">=</span><span class="n">ArT2_num</span><span class="p">,</span><span class="w"> </span><span class="n">Arn</span><span class="o">=</span><span class="n">Arn_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArVn</span><span class="o">=</span><span class="n">ArVn_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArTn</span><span class="o">=</span><span class="n">ArTn_num</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="w">    </span><span class="n">Arn2</span><span class="o">=</span><span class="n">Arn2_num</span><span class="w"> </span><span class="p">&amp;</span>
@@ -205,7 +209,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~2"></span>
+              <span class="anchor" id="variable-eos~14"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -215,12 +219,12 @@
             <td>::</td>
             <td><strong>eos</strong></td>
             <td>
-                <p>Model</p>
+                <p>Equation of state</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~3"></span>
+              <span class="anchor" id="variable-n~66"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -235,7 +239,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~9"></span>
+              <span class="anchor" id="variable-v~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -243,14 +247,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>v</strong></td>
+            <td><strong>V</strong></td>
             <td>
                 <p>Volume [L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~11"></span>
+              <span class="anchor" id="variable-t~35"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -258,14 +262,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>t</strong></td>
+            <td><strong>T</strong></td>
             <td>
                 <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_n"></span>
+              <span class="anchor" id="variable-d_n~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -280,7 +284,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_v"></span>
+              <span class="anchor" id="variable-d_v~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -295,7 +299,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_t"></span>
+              <span class="anchor" id="variable-d_t~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -310,7 +314,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~5"></span>
+              <span class="anchor" id="variable-ar~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -325,7 +329,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~4"></span>
+              <span class="anchor" id="variable-arv~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -342,7 +346,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art~3"></span>
+              <span class="anchor" id="variable-art~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -359,7 +363,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~11"></span>
+              <span class="anchor" id="variable-arn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -376,7 +380,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~5"></span>
+              <span class="anchor" id="variable-arv2~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -393,7 +397,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art2"></span>
+              <span class="anchor" id="variable-art2~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -410,7 +414,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~5"></span>
+              <span class="anchor" id="variable-artv~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -427,7 +431,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~11"></span>
+              <span class="anchor" id="variable-arvn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -444,7 +448,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~11"></span>
+              <span class="anchor" id="variable-artn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -461,7 +465,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~11"></span>
+              <span class="anchor" id="variable-arn2~16"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -564,7 +568,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dn_aux1"></span>
+              <span class="anchor" id="variable-dn_aux1~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -581,7 +585,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dn_aux2"></span>
+              <span class="anchor" id="variable-dn_aux2~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -598,7 +602,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~16"></span>
+              <span class="anchor" id="variable-i~65"></span>
               integer,
             </td>
               <td>public</td>
@@ -615,7 +619,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~9"></span>
+              <span class="anchor" id="variable-j~38"></span>
               integer,
             </td>
               <td>public</td>
@@ -663,7 +667,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-06-27 03:48              </p>
+ on 2024-07-18 17:55              </p>
           </div>
         </div>
         <br>
