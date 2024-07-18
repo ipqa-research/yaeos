@@ -159,7 +159,7 @@
 <a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
 <a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__models</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span>
 <a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="p">&amp;</span>
-<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">      </span><span class="n">EquilibriaState</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">,</span><span class="w"> </span><span class="n">flash</span>
+<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">      </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">,</span><span class="w"> </span><span class="n">flash</span>
 <a id="ln-6" name="ln-6" href="#ln-6"></a><span class="w">   </span><span class="k">use </span><span class="n">forbear</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">bar_object</span>
 <a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">   </span><span class="k">implicit none</span>
 <a id="ln-8" name="ln-8" href="#ln-8"></a>
@@ -176,7 +176,7 @@
 <a id="ln-19" name="ln-19" href="#ln-19"></a>
 <a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
 <a id="ln-21" name="ln-21" href="#ln-21"></a>
-<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriaState</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">experimental_points</span><span class="p">(:)</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">experimental_points</span><span class="p">(:)</span>
 <a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">      </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
 <a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">   </span><span class="k">contains</span>
 <a id="ln-25" name="ln-25" href="#ln-25"></a><span class="k">      procedure</span><span class="p">(</span><span class="n">model_from_X</span><span class="p">),</span><span class="w"> </span><span class="k">deferred</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_model_from_X</span>
@@ -289,8 +289,8 @@
 <a id="ln-132" name="ln-132" href="#ln-132"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span><span class="p">(:)</span>
 <a id="ln-133" name="ln-133" href="#ln-133"></a><span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">FittingProblem</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">func_data</span>
 <a id="ln-134" name="ln-134" href="#ln-134"></a>
-<a id="ln-135" name="ln-135" href="#ln-135"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriaState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model_point</span><span class="w"> </span><span class="c">!! Each solved point</span>
-<a id="ln-136" name="ln-136" href="#ln-136"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriaState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">exp_point</span>
+<a id="ln-135" name="ln-135" href="#ln-135"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model_point</span><span class="w"> </span><span class="c">!! Each solved point</span>
+<a id="ln-136" name="ln-136" href="#ln-136"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">exp_point</span>
 <a id="ln-137" name="ln-137" href="#ln-137"></a>
 <a id="ln-138" name="ln-138" href="#ln-138"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
 <a id="ln-139" name="ln-139" href="#ln-139"></a>
@@ -359,7 +359,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-07-18 17:55              </p>
+ on 2024-07-18 18:20              </p>
           </div>
         </div>
         <br>

@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">8 statements</a>
+                 title=" 0.3% of total for procedures.">16 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/nrtl.f90"> Source File</a>
+              <a href="../src/huron_vidal.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/nrtl.f90.html'>nrtl.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_nrtl.html'>yaeos__models_ge_NRTL</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/huron_vidal.f90.html'>huron_vidal.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_cubic_mixing_rules_huron_vidal.html'>yaeos__models_cubic_mixing_rules_huron_vidal</a></li>
             <li class="breadcrumb-item active" aria-current="page">init</li>
           </ol>
         </nav>
@@ -111,7 +111,19 @@
       <div id="sidebar">
       <h3>Contents</h3>
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/init.html#variable-i~14">i</a>
+            <a class="list-group-item" href="../proc/init.html#variable-nc~5">nc</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -137,7 +149,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  function init(a, b, c)  
+    <h2>private  function init(Ge, b, q, lij) result(mixrule)  
 </h2>
     
 
@@ -156,15 +168,15 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~9"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-ge~2"></span>
+              class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>a</strong>(:,:)</td>
+            <td><strong>Ge</strong></td>
             <td>
                 
             </td>
@@ -179,14 +191,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>b</strong>(:,:)</td>
+            <td><strong>b</strong>(:)</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~2"></span>
+              <span class="anchor" id="variable-q~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -194,7 +206,22 @@
               
             </td>
             <td>::</td>
-            <td><strong>c</strong>(:,:)</td>
+            <td><strong>q</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lij"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lij</strong>(:,:)</td>
             <td>
                 
             </td>
@@ -204,14 +231,65 @@
 
       <h3>Return Value
         <small>
-          <span class="anchor" id="variable-init"></span>
-          type(<a href='../type/nrtl.html'>NRTL</a>)
+          <span class="anchor" id="variable-mixrule"></span>
+          type(<a href='../type/mhv.html'>MHV</a>)
         </small>
       </h3>
       
     <br>
 
 
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~14"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~5"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
     
     
 
@@ -240,7 +318,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-07-18 17:55              </p>
+ on 2024-07-18 18:20              </p>
           </div>
         </div>
         <br>

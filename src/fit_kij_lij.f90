@@ -20,7 +20,7 @@ module yaeos__fitting_fit_kij_lij
       !! ```fortran
       !!  type(CubicEoS) :: model ! Model to fit
       !!  type(FitKijLij) :: fitting_problem ! Fitting problem specification
-      !!  type(EquilibriaState) :: exp_data(3)
+      !!  type(EquilibriumState) :: exp_data(3)
       !!  real(pr) :: X(2) ! parameter variables
       !!  real(pr) :: error
       !!
