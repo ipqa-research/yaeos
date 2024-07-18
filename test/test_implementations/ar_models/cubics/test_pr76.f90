@@ -344,12 +344,12 @@ contains
    subroutine test_pr76_co2_volume(error)
       ! From Elliot's book.
       use yaeos, only : pr, PengRobinson76, ArModel
+      use yaeos__models_ar, only: volume
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
 
       real(pr) :: mw, V, n(1)
-      integer :: i
 
       model = PengRobinson76([304.2_pr], [73.82_pr], [0.228_pr])
       n = [1.0_pr]
@@ -359,6 +359,9 @@ contains
       call check(error, abs(V / mw * 1000 - 70.37) < 0.06)
 
       call model%volume(n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
+      call check(error, abs(V / mw * 1000 - 3.84) < 0.01)
+      
+      call volume(model, n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
       call check(error, abs(V / mw * 1000 - 3.84) < 0.01)
    end subroutine test_pr76_co2_volume
 
