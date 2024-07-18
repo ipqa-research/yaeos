@@ -85,10 +85,8 @@ contains
         t = 150
 
         root_type = "liquid"
-
-
-        call eos%lnphi_tp(&
-            z, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
+        call eos%lnphi_pt(&
+            z, P, T, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
             )
 
         call check(&

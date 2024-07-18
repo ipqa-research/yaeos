@@ -383,8 +383,8 @@ contains
          )
 
       call model%volume(z_v, P, T, root_type="vapor", V=v_v)
-      call model%lnphi_tp(z_v, T, P, root_type="vapor", lnPhi = lnphi_v)
-      call model%lnphi_tp(z_l, T, P, root_type="liquid", lnPhi = lnphi_l)
+      call model%lnphi_pt(z_v, P, T, root_type="vapor", lnPhi = lnphi_v)
+      call model%lnphi_pt(z_l, P, T, root_type="liquid", lnPhi = lnphi_l)
 
       ! Elliot Z value of vapor
       call check(error, abs(P * v_v / R / T - 0.9059) <  1e-4)

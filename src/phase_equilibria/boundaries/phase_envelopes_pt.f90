@@ -155,13 +155,13 @@ contains
             kind_y = "stable"
          end select
 
-         call model%lnphi_tp(&
-            z, T, P, V=Vz, root_type=kind_z, &
+         call model%lnphi_pt(&
+            z, P, T, V=Vz, root_type=kind_z, &
             lnPhi=lnphi_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
-         call model%lnphi_tp(&
-            y, T, P, V=Vy, root_type=kind_y, &
+         call model%lnphi_pt(&
+            y, P, T, V=Vy, root_type=kind_y, &
             lnPhi=lnphi_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
@@ -330,6 +330,7 @@ contains
       integer :: i, nc
 
 
+      if (size(pt2%points) == 0) return
       allocate(cps(0))
       do i=1,size(pt2%cps)
          cp = minloc(&
