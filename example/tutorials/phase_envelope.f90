@@ -4,7 +4,7 @@ program phase_envelope
    implicit none
 
    class(ArModel), allocatable :: model ! model
-   type(EquilibriaState) :: bubble ! 
+   type(EquilibriumState) :: bubble ! 
    type(PTEnvel2) :: envelope
 
    integer, parameter :: nc=2

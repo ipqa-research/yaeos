@@ -404,12 +404,12 @@ contains
    subroutine test_pr76_txy_methanol_benzene(error)
       ! Txy methanol-benzene from Elliot's book using saturation_temperature
       ! function.
-      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriaState
+      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriumState
       use yaeos, only: saturation_temperature
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: sat_t
+      type(EquilibriumState) :: sat_t
 
       real(pr) :: z(2), error_sum
       real(pr) :: x_bubble_nokij(18), t_bubble_nokij(18)
@@ -546,13 +546,13 @@ contains
    subroutine test_pr76_pxy_nitrogen_methane(error)
       ! Pxy nitrogen-methane from Elliot's book using saturation_pressure
       ! function.
-      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriaState
+      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriumState
       use yaeos, only: saturation_pressure
 
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: psat
+      type(EquilibriumState) :: psat
       real(pr) :: T, y_dew(9), p_dew(9), x_bubble(10), p_bubble(10), z(2)
       real(pr) :: error_sum
 
@@ -592,13 +592,13 @@ contains
    end subroutine test_pr76_pxy_nitrogen_methane
 
    subroutine test_pr76_envelope_ethane_heptane(error)
-      use yaeos, only: pr, ArModel, EquilibriaState, PTEnvel2, PengRobinson76
+      use yaeos, only: pr, ArModel, EquilibriumState, PTEnvel2, PengRobinson76
       use yaeos, only: saturation_pressure, pt_envelope_2ph
 
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: bubble
+      type(EquilibriumState) :: bubble
       type(PTEnvel2) :: envelope
 
       real(pr) :: z(2)

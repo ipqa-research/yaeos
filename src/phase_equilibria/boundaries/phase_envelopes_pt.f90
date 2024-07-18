@@ -2,7 +2,7 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    !! Phase boundaries line on the \(PT\) plane calculation procedures.
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -16,7 +16,7 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    type :: PTEnvel2
       !! Two-phase isopleth.
       !! Phase boundary line of a fluid at constant composition.
-      type(EquilibriaState), allocatable :: points(:)
+      type(EquilibriumState), allocatable :: points(:)
       !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
       !! Critical points found along the line.
@@ -44,7 +44,7 @@ contains
       !! Thermodyanmic model
       real(pr), intent(in) :: z(:)
       !! Vector of molar fractions
-      type(EquilibriaState) :: first_point
+      type(EquilibriumState) :: first_point
       integer, optional, intent(in) :: points
       !! Maxmimum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
@@ -238,14 +238,14 @@ contains
          !! Save the converged point
          real(pr), intent(in) :: X(:)
          integer, intent(in) :: iters
-         type(EquilibriaState) :: point
+         type(EquilibriumState) :: point
 
          real(pr) :: y(nc), T, P
 
          T = exp(X(nc+1))
          P = exp(X(nc+2))
          y = exp(X(:nc))*z
-         point = EquilibriaState(&
+         point = EquilibriumState(&
             kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
             T=T, P=P, beta=0._pr, iters=iters &
             )

@@ -246,8 +246,8 @@ contains
    ! Phase equilibria
    ! --------------------------------------------------------------------------
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
-      use yaeos, only: EquilibriaState
-      type(EquilibriaState) :: eq_state
+      use yaeos, only: EquilibriumState
+      type(EquilibriumState) :: eq_state
       real(c_double), intent(out) :: x(:)
       real(c_double), intent(out) :: y(:)
       real(c_double), intent(out) :: P
@@ -266,7 +266,7 @@ contains
    end subroutine equilibria_state_to_arrays
 
    subroutine flash(id, z, T, P, x, y, k0, Pout, Tout, Vx, Vy, beta)
-      use yaeos, only: EquilibriaState, fflash => flash
+      use yaeos, only: EquilibriumState, fflash => flash
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
@@ -280,7 +280,7 @@ contains
       real(c_double), intent(out) :: Vy
       real(c_double), intent(out) :: beta
 
-      type(EquilibriaState) :: result
+      type(EquilibriumState) :: result
       integer :: iters
 
       result = fflash(ar_models(id)%model, z, t, p_spec=p, iters=iters)
@@ -299,7 +299,7 @@ contains
    end subroutine flash
 
    subroutine saturation_pressure(id, z, T, kind, P, x, y, Vx, Vy, beta)
-      use yaeos, only: EquilibriaState, fsaturation_pressure => saturation_pressure
+      use yaeos, only: EquilibriumState, fsaturation_pressure => saturation_pressure
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
@@ -312,7 +312,7 @@ contains
 
       real(c_double) :: aux
 
-      type(EquilibriaState) :: sat
+      type(EquilibriumState) :: sat
 
       sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
@@ -321,7 +321,7 @@ contains
    subroutine pt2_phase_envelope(id, z, kind, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
-         EquilibriaState, PTEnvel2
+         EquilibriumState, PTEnvel2
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       character(len=15), intent(in) :: kind
@@ -331,7 +331,7 @@ contains
       real(c_double), optional, intent(in) :: T0, P0
 
       real(8) :: makenan, nan
-      type(EquilibriaState) :: sat
+      type(EquilibriumState) :: sat
       type(PTEnvel2) :: env
 
       integer :: i, neval=0

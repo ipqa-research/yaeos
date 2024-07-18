@@ -4,7 +4,7 @@ program main
    use forsus, only: Substance, forsus_dir
    use yaeos, only: &
       pr, SoaveRedlichKwong, CubicEoS, NRTL, saturation_pressure, &
-         pt_envelope_2ph, EquilibriaState, PTEnvel2, UNIFAC, setup_unifac, Groups
+         pt_envelope_2ph, EquilibriumState, PTEnvel2, UNIFAC, setup_unifac, Groups
    use yaeos__models_cubic_mixing_rules_huron_vidal, only: MHV
 
    implicit none
@@ -21,7 +21,7 @@ program main
    type(MHV) :: mixrule
    type(Groups) :: molecules(nc)
 
-   type(EquilibriaState) :: sat
+   type(EquilibriumState) :: sat
 
    type(Substance)  :: sus(nc)
 
@@ -75,9 +75,9 @@ program main
 contains
    
    subroutine phase_envel(fu)
-      use yaeos, only: EquilibriaState, PTEnvel2, pt_envelope_2ph, saturation_temperature
+      use yaeos, only: EquilibriumState, PTEnvel2, pt_envelope_2ph, saturation_temperature
       integer :: fu
-      type(EquilibriaState) :: sat
+      type(EquilibriumState) :: sat
       type(PTEnvel2) :: env
 
       sat = saturation_pressure(model, n, T=300._pr, kind="bubble")
