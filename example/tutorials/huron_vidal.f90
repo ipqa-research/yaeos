@@ -25,8 +25,6 @@ program main
 
    type(Substance)  :: sus(nc)
 
-   integer :: i, j
-
    molecules(1)%groups_ids = [16]
    molecules(1)%number_of_groups = [1]
    molecules(2)%groups_ids = [1, 2, 14]
@@ -45,25 +43,25 @@ program main
    a = 0; b = 0; c = 0
 
    ! NRTL model parameters
-   a(1, 2) = 3.458
-   a(2, 1) = -0.801
-
-   b(1, 2) = -586.1
-   b(2, 1) = 246.2
-
-   c(1, 2) = 0.3
-   c(2, 1) = 0.3
-
+   a(1, 2) = 3.458;  a(2, 1) = -0.801
+   b(1, 2) = -586.1; b(2, 1) = 246.2
+   c(1, 2) = 0.3;    c(2, 1) = 0.3
+   
    ge_model = NRTL(a, b, c)
 
+  
+   ! Moles vector
    n = [0.9, 0.1]
-   ! n = [0.8, 0.2]
+   
    ! Define the model to be SRK
    model = SoaveRedlichKwong(tc, pc, w)
    call phase_envel(1)
    
    mixrule = MHV(ge=ge_model, q=-0.593_pr, b=model%b)
-   deallocate (model%mixrule)
+   
+   ! SoaveRedlichKwong uses by default QMR mixing rules. 
+   ! We will change it to Huron-Vidal
+   deallocate(model%mixrule)
    model%mixrule = mixrule
    call phase_envel(2)
 
@@ -73,13 +71,6 @@ program main
    deallocate (model%mixrule)
    model%mixrule = mixrule
    call phase_envel(3)
-
-   do i=1,99
-      n(2) = real(i,pr)/100
-      n(1) = 1 - n(2)
-      sat = saturation_pressure(model, n, T=473._pr, kind="bubble")
-      ! write (*, *) sat
-   end do
 
 contains
    
