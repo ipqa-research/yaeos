@@ -22,7 +22,7 @@ module yaeos__models_ar_cubic_mixing_base
     implicit none
 contains
 
-    subroutine bmix_linear(n, bi, b, dbi, dbij)
+    pure subroutine bmix_linear(n, bi, b, dbi, dbij)
         real(pr), intent(in) :: n(:)
         real(pr), intent(in) :: bi(:)
         real(pr), intent(out) :: b, dbi(:), dbij(:, :)
@@ -32,7 +32,7 @@ contains
         dbij = 0
     end subroutine
 
-    subroutine bmix_qmr(n, bi, lij, b, dbi, dbij)
+    pure subroutine bmix_qmr(n, bi, lij, b, dbi, dbij)
         real(pr), intent(in) :: n(:)
         real(pr), intent(in) :: bi(:)
         real(pr), intent(in) :: lij(:, :)
@@ -70,7 +70,7 @@ contains
         end do
     end subroutine
 
-    subroutine d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
+    pure subroutine d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
         !! RKPR \(\delta_1\) parameter mixing rule.
         !!
         !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each 

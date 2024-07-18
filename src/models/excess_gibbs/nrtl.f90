@@ -1,5 +1,6 @@
 module yaeos__models_ge_NRTL
    use yaeos__tapenade_ge_api, only: gemodeltapenade
+   use yaeos__tapenade_interfaces
    use yaeos__constants, only: pr, R
    implicit none
 
@@ -29,6 +30,8 @@ module yaeos__models_ge_NRTL
    interface NRTL
       module procedure :: init
    end interface
+
+   
 contains
 
    type(NRTL) function init(a, b, c)
@@ -376,12 +379,6 @@ contains
       real(pr) :: tempb4
       real(pr) :: tempb5
       integer :: ad_to
-      external PUSHREAL8ARRAY
-      external PUSHREAL8
-      external PUSHINTEGER4
-      external POPINTEGER4
-      external POPREAL8
-      external POPREAL8ARRAY
       integer :: arg10
       real(pr) :: result1
       temp = sum(n)

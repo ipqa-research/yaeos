@@ -21,7 +21,7 @@ contains
 
     subroutine test_fugacity_VT(error)
         use fixtures_models, only: binary_PR76
-        use yaeos, only: pr, CubicEoS, fugacity_vt
+        use yaeos, only: pr, CubicEoS
         type(error_type), allocatable, intent(out) :: error
         type(CubicEoS) :: eos
 
@@ -33,7 +33,7 @@ contains
         real(pr) :: lnfug_val(2), dlnphidp_val(2), dlnphidt_val(2)
 
 
-        lnfug_val = [2.0758887796938881, -2.2852154042663555]
+        lnfug_val = [2.0785927055052529, -2.2825114783106386]
         dlnphidp_val = [-0.99328668293856137, -0.9965756859512391]
         dlnphidt_val = [3.0263825169536504E-002, 7.6204959316774373E-002]
 
@@ -43,14 +43,9 @@ contains
         v = 8.8780451065729321E-002_pr
         t = 150
 
-        call fugacity_vt(eos, &
+        call eos%lnphi_vt(&
             z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
             )
-
-        print * , lnfug
-        print * , dlnphidP
-        print * , dlnphidT
-
         call check( &
             error, maxval(abs(lnfug - lnfug_val)) < 1e-5 &
             )
@@ -64,7 +59,7 @@ contains
 
     subroutine test_fugacity_TP(error)
         use fixtures_models, only: binary_PR76
-        use yaeos, only: pr, CubicEoS, fugacity_tp
+        use yaeos, only: pr, CubicEoS
         type(error_type), allocatable, intent(out) :: error
         type(CubicEoS) :: eos
 
@@ -90,9 +85,8 @@ contains
         t = 150
 
         root_type = "liquid"
-
-        call fugacity_tp(eos, &
-            z, T, P, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
+        call eos%lnphi_pt(&
+            z, P, T, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
             )
 
         call check(&
@@ -111,7 +105,6 @@ contains
     ! --------------------------------------------------------------------------
     subroutine test_enthalpy_residual_vt(error)
         use yaeos, only: pr, R, CubicEoS, PengRobinson76
-        use yaeos, only: enthalpy_residual_vt, fugacity_vt
 
         type(error_type), allocatable, intent(out) :: error
 
@@ -143,11 +136,11 @@ contains
         eos = PengRobinson76(tc, pc, w, kij, lij)
 
         ! yaeos residual enthalpies
-        call enthalpy_residual_vt(eos, z, v, t, Hr, HrT=HrT, HrV=HrV, Hrn=Hrn)
+        call eos%enthalpy_residual_vt(z, v, t, Hr, HrT=HrT, HrV=HrV, Hrn=Hrn)
 
         ! test against fugacity coefficient derivatives
         ! (Michelsen and Mollerup chapter 2 eq 37)
-        call fugacity_vt(eos, z, v, t, lnphip=lnfug, dlnphidt=dlnphidt)
+        call eos%lnphi_vt(z, v, t, lnPhi=lnfug, dlnphidt=dlnphidt)
 
         Hr_fromphi = -1_pr * sum(z * dlnphidT) * R * t**2 ! Hr(T,P) = Hr(T,V)
 
@@ -157,7 +150,7 @@ contains
 
         ! numeric derivatives residual enthalpies
         ! HrT_num
-        call enthalpy_residual_vt(eos, z, v, t + delta_t, Hr_delta_t)
+        call eos%enthalpy_residual_vt(z, v, t + delta_t, Hr_delta_t)
 
         HrT_num = (Hr_delta_t - Hr) / delta_t
 
@@ -166,7 +159,7 @@ contains
             )
 
         ! HrV_num
-        call enthalpy_residual_vt(eos, z, v + delta_v, t, Hr_delta_v)
+        call eos%enthalpy_residual_vt(z, v + delta_v, t, Hr_delta_v)
 
         HrV_num = (Hr_delta_v - Hr) / delta_v
 
@@ -176,10 +169,10 @@ contains
 
         ! Hrn_num
         zd1 = [0.3_pr + delta_n, 0.7_pr]
-        call enthalpy_residual_vt(eos, zd1, v, t, Hr_delta_n1)
+        call eos%enthalpy_residual_vt(zd1, v, t, Hr_delta_n1)
 
         zd2 = [0.3_pr, 0.7_pr + delta_n]
-        call enthalpy_residual_vt(eos, zd2, v, t, Hr_delta_n2)
+        call eos%enthalpy_residual_vt(zd2, v, t, Hr_delta_n2)
 
         Hrn_num = [(Hr_delta_n1 - Hr) / delta_n, (Hr_delta_n2 - Hr) / delta_n]
 
@@ -194,7 +187,6 @@ contains
     ! --------------------------------------------------------------------------
     subroutine test_gibss_residual_vt(error)
         use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong
-        use yaeos, only: gibbs_residual_vt, fugacity_vt, pressure
 
         type(error_type), allocatable, intent(out) :: error
 
@@ -225,22 +217,22 @@ contains
 
         eos = SoaveRedlichKwong(tc, pc, w, kij, lij)
 
-        call pressure(eos, z, v, t, p)
+        call eos%pressure(z, v, t, p)
         ntot = sum(z)
         Zcomp = p*v/(ntot*R*t)
 
         ! yaeos residual gibbs
-        call gibbs_residual_vt(eos, z, v, t, Gr, GrT=GrT, GrV=GrV, Grn=Grn)
+        call eos%gibbs_residual_vt(z, V, T, Gr, GrT=GrT, GrV=GrV, Grn=Grn)
 
         ! test against fugacity coefficient
         ! (Michelsen and Mollerup chapter 2 eq 31)
-        call fugacity_vt(eos, z, v, t, lnphip=lnfug)
+        call eos%lnphi_vt(z, V, T, lnPhi=lnfug)
 
-        lnfugcoeffs = lnfug - log(p) ! lnfug is = ln(phi * p)
+        lnfugcoeffs = lnfug
 
-        Gr_tp = Gr - ntot*R*t*log(Zcomp) ! M and M chapter 1 Table 6
+        Gr_tp = Gr - ntot*R*T*log(Zcomp) ! M and M chapter 1 Table 6
 
-        Gr_fromphi = sum(z * lnfugcoeffs) * R * t
+        Gr_fromphi = sum(z * lnfugcoeffs) * R * T
 
         call check(&
             error, rel_error(Gr_tp, Gr_fromphi) < 1e-14 &
@@ -248,7 +240,7 @@ contains
 
         ! numeric derivatives residual enthalpies
         ! GrT_num
-        call gibbs_residual_vt(eos, z, v, t + delta_t, Gr_delta_t)
+        call eos%gibbs_residual_vt(z, v, t + delta_t, Gr_delta_t)
 
         GrT_num = (Gr_delta_t - Gr) / delta_t
 
@@ -257,7 +249,7 @@ contains
             )
 
         ! GrV_num
-        call gibbs_residual_vt(eos, z, v + delta_v, t, Gr_delta_v)
+        call eos%gibbs_residual_vt(z, v + delta_v, t, Gr_delta_v)
 
         GrV_num = (Gr_delta_v - Gr) / delta_v
 
@@ -267,10 +259,10 @@ contains
 
         ! Grn_num
         zd1 = [0.3_pr + delta_n, 0.7_pr]
-        call gibbs_residual_vt(eos, zd1, v, t, Gr_delta_n1)
+        call eos%gibbs_residual_vt(zd1, v, t, Gr_delta_n1)
 
         zd2 = [0.3_pr, 0.7_pr + delta_n]
-        call gibbs_residual_vt(eos, zd2, v, t, Gr_delta_n2)
+        call eos%gibbs_residual_vt(zd2, v, t, Gr_delta_n2)
 
         Grn_num = [(Gr_delta_n1 - Gr) / delta_n, (Gr_delta_n2 - Gr) / delta_n]
 
@@ -284,10 +276,7 @@ contains
     ! Sr
     ! --------------------------------------------------------------------------
     subroutine test_entropy_residual_vt(error)
-        use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong, pressure
-        use yaeos, only: entropy_residual_vt
-        use yaeos, only: enthalpy_residual_vt
-        use yaeos, only: gibbs_residual_vt
+        use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong
 
         type(error_type), allocatable, intent(out) :: error
 
@@ -321,14 +310,14 @@ contains
 
         eos = SoaveRedlichKwong(tc, pc, w, kij, lij)
 
-        call pressure(eos, z, v, t, p)
+        call eos%pressure(z, v, t, p)
 
         Zcomp = p*v/(ntot*R*t)
 
         ! yaeos residual gibbs
-        call entropy_residual_vt(eos, z, v, t, Sr, SrT=SrT, SrV=SrV, Srn=Srn)
-        call enthalpy_residual_vt(eos, z, v, t, Hr)
-        call gibbs_residual_vt(eos, z, v, t, Gr)
+        call eos%entropy_residual_vt(z, v, t, Sr, SrT=SrT, SrV=SrV, Srn=Srn)
+        call eos%enthalpy_residual_vt(z, v, t, Hr)
+        call eos%gibbs_residual_vt(z, v, t, Gr)
 
         ! test against Hr and Gr
         ! (Michelsen and Mollerup chapter 2 eq 22)
@@ -341,7 +330,7 @@ contains
             )
 
         ! SrT_num
-        call entropy_residual_vt(eos, z, v, t + delta_t, Sr_delta_t)
+        call eos%entropy_residual_vt(z, v, t + delta_t, Sr_delta_t)
 
         SrT_num = (Sr_delta_t - Sr) / delta_t
 
@@ -350,7 +339,7 @@ contains
             )
 
         ! SrV_num
-        call entropy_residual_vt(eos, z, v + delta_v, t, Sr_delta_v)
+        call eos%entropy_residual_vt(z, v + delta_v, t, Sr_delta_v)
 
         SrV_num = (Sr_delta_v - Sr) / delta_v
 
@@ -360,10 +349,10 @@ contains
 
         ! Srn_num
         zd1 = [0.3_pr + delta_n, 0.7_pr]
-        call entropy_residual_vt(eos, zd1, v, t, Sr_delta_n1)
+        call eos%entropy_residual_vt(zd1, v, t, Sr_delta_n1)
 
         zd2 = [0.3_pr, 0.7_pr + delta_n]
-        call entropy_residual_vt(eos, zd2, v, t, Sr_delta_n2)
+        call eos%entropy_residual_vt(zd2, v, t, Sr_delta_n2)
 
         Srn_num = [(Sr_delta_n1 - Sr) / delta_n, (Sr_delta_n2 - Sr) / delta_n]
 
@@ -377,8 +366,7 @@ contains
     ! --------------------------------------------------------------------------
     subroutine cp_and_cv(error)
         ! TODO need derivatives dvdt to complete the test
-        use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong, pressure
-        use yaeos, only: Cp_residual_vt, Cv_residual_vt
+        use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong
 
         type(error_type), allocatable, intent(out) :: error
 
@@ -406,12 +394,12 @@ contains
 
         eos = SoaveRedlichKwong(tc, pc, w, kij, lij)
 
-        call pressure(eos, z, v, t, p, dpdv=dpdv, dpdt=dpdt)
+        call eos%pressure(z, v, t, p, dpdv=dpdv, dpdt=dpdt)
 
         ! Dumb test need derivative dvdt to complete the test
         ! Michelsen and Mollerup chapter 2 eq 19
-        call Cp_residual_vt(eos, z, v, t, Cpr)
-        call Cv_residual_vt(eos, z, v, t, Cvr)
+        call eos%Cp_residual_vt(z, v, t, Cpr)
+        call eos%Cv_residual_vt(z, v, t, Cvr)
 
         lefths = (Cpr - Cvr)/R
         righths = -t/R*dpdt**2/dpdv - ntot

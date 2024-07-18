@@ -1,7 +1,6 @@
 module yaeos__equilibria_saturation_points
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__thermoprops, only: fugacity_vt, fugacity_tp
    use yaeos__equilibria_equilibria_state, only: EquilibriaState
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
@@ -22,7 +21,6 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -50,7 +48,7 @@ contains
       if (present (p0)) then
          p = p0
       else
-         call pressure(model, z, T, 10._pr, P=P)
+         call model%pressure(z, T, 10._pr, P=P)
       end if
 
       if (present(y0)) then
@@ -85,8 +83,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call fugacity_tp(model, y, T, P, vy, incipient, lnphip=lnfug_y, dlnphidp=dlnphi_dp_y)
-         call fugacity_tp(model, z, T, P, vz, main, lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
 
          k = exp(lnfug_z - lnfug_y)
 
@@ -132,7 +130,6 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
@@ -195,8 +192,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call fugacity_tp(model, y, T, P, vy, incipient, lnphip=lnfug_y, dlnphidt=dlnphi_dt_y)
-         call fugacity_tp(model, z, T, P, vz, main, lnphip=lnfug_z, dlnphidt=dlnphi_dt_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
 
          k = exp(lnfug_z - lnfug_y)
          f = sum(z*k) - 1

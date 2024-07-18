@@ -1,5 +1,5 @@
 name = "yaeos"
-version = "0.3.0"
+version = "1.0.0"
 license = "MPL"
 author = "Federico E. Benelli"
 maintainer = "federico.benelli@mi.unc.edu.ar"
@@ -17,22 +17,22 @@ library = true
 
 [fortran]
 implicit-typing = false
-implicit-external = true
+implicit-external = false
 source-form = "free"
 
 [dependencies]
 stdlib = "*"
 forbear = {git="https://github.com/szaghi/forbear"}
 json-fortran = {git="https://github.com/jacobwilliams/json-fortran"}
+nlopt-f = {git="https://github.com/grimme-lab/nlopt-f"}
 forsus = {git="https://github.com/ipqa-research/forsus"}
-nlopt-f.git = "https://github.com/grimme-lab/nlopt-f"
+fortime = { git = "https://github.com/gha3mi/fortime.git" }
 
 [dev-dependencies]
 test-drive = {git = "https://github.com/fortran-lang/test-drive"}
 
-
 [[example]]
-name       = "benchmarks"
+name       = "demo"
 source-dir = "example/extra"
 main       = "demo.f90"
 
@@ -61,4 +61,13 @@ name       = "huron_vidal"
 source-dir = "example/tutorials"
 main       = "huron_vidal.f90"
 
+[[example]]
+name       = "pure_psat"
+source-dir = "example/extra"
+main       = "pure_psat.f90"
+
+[[example]]
+name       = "cubic_eos"
+source-dir = "example/tutorials"
+main       = "cubic_eos.f90"
 

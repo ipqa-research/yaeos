@@ -3,7 +3,7 @@ program flasher
     !! EoS model.
 
     ! Import the relevant 
-    use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+    use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel
     implicit none
 
     ! Variables definition:

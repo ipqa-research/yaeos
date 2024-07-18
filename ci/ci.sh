@@ -71,6 +71,16 @@ run_coverage() {
         --fail-under-line 90
 }
 
+python_wrappers(){
+    BUILD_DIR="build/python"
+    fpm install --profile release --prefix "$BUILD_DIR"
+    cd python/yaeos
+    f2py \
+        -I ../../$BUILD_DIR/include \
+        -L ../../$BUILD_DIR/lib/libyaeos.a \
+        -m yaeos -c ../yaeos_c.f90 ../../$BUILD_DIR/lib/libyaeos.a
+}
+
 resumee() {
     [ $DID_TEST = 1 ] &&
         echo There has been $NAMING_ERRORS test naming errors
@@ -86,9 +96,9 @@ case $1 in
     "install")  install_fpm;;
     "test") run_test;;
     "coverage") run_coverage;;
+    "python") python_wrappers;;
     *)
         run_test
         run_coverage
         resumee;;
 esac
-
