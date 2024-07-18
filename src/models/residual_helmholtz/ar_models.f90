@@ -60,6 +60,10 @@ module yaeos__models_ar
       procedure :: Cp_residual_vt
    end type ArModel
 
+   interface size
+      module procedure :: size_ar_model
+   end interface size
+
    abstract interface
       subroutine abs_residual_helmholtz(&
          self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
@@ -112,6 +116,12 @@ module yaeos__models_ar
    end interface
 
 contains
+
+   integer pure function size_ar_model(eos)
+      !! Get the size of the model.
+      class(ArModel), intent(in) :: eos
+      size_ar_model = size(eos%components%pc)
+   end function size_ar_model
 
    subroutine volume(eos, n, P, T, V, root_type)
       !! # Volume solver routine for residual Helmholtz models.
@@ -216,7 +226,7 @@ contains
 
       real(pr) :: totn
 
-      real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(n))
+      real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(eos))
       integer :: nc
       logical :: dn
 
