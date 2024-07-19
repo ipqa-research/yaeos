@@ -24,7 +24,7 @@ program saturation
     write(*, *) "Bubble pressure:"
     T = 150
     sat_point = saturation_pressure(model, n, T=T, kind="bubble")
-    write (*, *) "kind, T, P: ", sat_point
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
     
@@ -34,7 +34,7 @@ program saturation
     write(*, *) ""
     write (*, *) "Bubble temperature:"
     sat_point = saturation_temperature(model, n, P=15._pr, kind="bubble")
-    write (*, *) "kind, T, P: ", sat_point
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
 
@@ -44,7 +44,7 @@ program saturation
     write(*, *) ""
     write(*, *) "Dew pressure:"
     sat_point = saturation_pressure(model, n, T=150._pr, kind="dew")
-    write (*, *) "kind, T, P: ", sat_point
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
     
@@ -53,8 +53,8 @@ program saturation
     ! --------------------------------------------------------------------------
     write(*, *) ""
     write (*, *) "Dew temperature:"
-    sat_point = saturation_temperature(model, n, P=15._pr, kind="dew")
-    write (*, *) "kind, T, P: ", sat_point
+    sat_point = saturation_temperature(model, n, P=15._pr, kind="dew", t0=330._pr)
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
 end program

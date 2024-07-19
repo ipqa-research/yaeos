@@ -3,8 +3,8 @@ program phase_envelope
    use yaeos__example_tools, only: methane_butane_pr76
    implicit none
 
-   class(ArModel), allocatable :: model ! model
-   type(EquilibriumState) :: bubble ! 
+   class(ArModel), allocatable :: model ! Model
+   type(EquilibriumState) :: bubble ! Saturation point
    type(PTEnvel2) :: envelope
 
    integer, parameter :: nc=2
@@ -18,7 +18,7 @@ program phase_envelope
 
    ! Calculate a bubble point at 100K to initialize the rest of the phase
    ! envelope calculation
-   bubble = saturation_pressure(model, z, T=100._pr, kind="bubble", p0=40._pr)
+   bubble = saturation_pressure(model, z, T=150._pr, kind="bubble")
 
    ! Calculate the whole phase envelope using the information from the converged
    ! dew point
@@ -26,4 +26,26 @@ program phase_envelope
 
    ! Write the resulting phase envelope to the screen
    write(*, *) envelope
+
+   ! Write the resulting phase envelope to a file
+   open(1, file="phase_envelope.dat")
+      write(1, *) envelope
+   close(1)
+
+   ! It is also possible to initialize the phase_envelope with a manually
+   ! defined point
+   manual: block
+      real(pr) :: k(nc), T, P
+      T = 150
+      P = 1
+      k = k_wilson(model, T=T, P=P)
+
+      ! Define manually an initial point
+      bubble%kind = "bubble"
+      bubble%x = z
+      bubble%y = k*z
+      bubble%beta = 0
+
+      envelope = pt_envelope_2ph(model, z, bubble)
+   end block manual
 end program phase_envelope

@@ -75,6 +75,4 @@ program new_alpha_example
 
    call eos%pressure(n, V, T, P=P)
    print *, "Peng-Robinson76-MC:", P
-
-
 end program new_alpha_example
