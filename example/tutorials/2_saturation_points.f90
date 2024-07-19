@@ -14,6 +14,8 @@ program saturation
 
     real(pr) :: n(2), T
 
+    ! This function returns a predefined model to simplify the step. How it 
+    ! works can be seen in the `example_tools.f90` file.
     model = methane_butane_pr76()
 
     n = [2.5, 6.7]

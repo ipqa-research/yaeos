@@ -66,6 +66,6 @@ program basics
          n, V=V, T=T, &
          lnPhi=lnPhi, dlnPhidT=dlnphidT, dlnPhidP=dlnPhidP, dlnPhidn=dlnPhidn &
       )
-      call model%volume(n, P, T, root_type="vapor", V=V)
+      call model%volume(n, P=P, T=T, root_type="vapor", V=V)
    end block thermoproperties
 end program basics
