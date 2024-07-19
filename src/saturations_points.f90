@@ -150,9 +150,12 @@ contains
       real(pr) :: f, step
       integer :: its, iterations
 
+      logical :: is_incipient(size(n))
+
       ! =======================================================================
       ! Handle arguments
       ! -----------------------------------------------------------------------
+      is_incipient = .true.
       z = n/sum(n)
       if (present (t0)) then
          t = t0
@@ -185,6 +188,11 @@ contains
       where (z == 0)
          k = 0
       end where
+
+      where (y == 0)
+         is_incipient = .false.
+      end where
+
       ! ========================================================================
 
       ! ========================================================================
@@ -192,6 +200,10 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
+         where (.not. is_incipient)
+            y = 0
+         endwhere
+
          call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
          call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
 
@@ -204,6 +216,7 @@ contains
          end do
 
          t = t - step
+
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
