@@ -31,7 +31,7 @@ module yaeos_c
    public :: ln_gamma
 
    ! Thermoprops
-   public :: fug_vt
+   public :: lnphi_vt, lnphi_pt, pressure, volume
    
    ! Phase equilibria
    public :: flash
@@ -228,19 +228,54 @@ contains
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
-   subroutine fug_vt(id, n, v, t, lnfug, dlnphidp, dlnphidt, dlnphidn)
+   subroutine lnphi_vt(id, n, v, t, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
-      real(c_double), intent(out) :: lnfug(size(n))
+      real(c_double), intent(out) :: lnphi(size(n))
       real(c_double) :: p
 
       real(c_double), optional, intent(in out) :: &
          dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
 
       call ar_models(id)%model%lnphi_vt(&
-         n, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnPhidn &
+         n, V, T, P, lnphi, dlnPhidP, dlnphidT, dlnPhidn &
          )
-   end subroutine fug_vt
+   end subroutine lnphi_vt
+   
+   subroutine lnphi_pt(id, n, p, t, root_type, lnphi, dlnphidp, dlnphidt, dlnphidn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: lnphi(size(n))
+
+      real(c_double), optional, intent(in out) :: &
+         dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
+
+      call ar_models(id)%model%lnphi_pt(&
+         n, P=P, T=T, root_type=root_type, &
+         lnphi=lnphi, dlnphidp=dlnPhidP, dlnphidt=dlnphidT, dlnphidn=dlnPhidn &
+      )
+   end subroutine lnphi_pt
+
+   subroutine pressure(id, n, V, T, P, dPdV, dPdT, dPdn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: P
+      real(c_double), optional, intent(in out) :: dPdV, dPdT, dPdn(size(n))
+
+      call ar_models(id)%model%pressure(&
+         n, V, T, P, dPdV, dPdT, dPdn &
+      )
+   end subroutine pressure
+
+   subroutine volume(id, n, P, T, root_type, V)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), P, T
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: V
+
+      call ar_models(id)%model%volume(n=n, P=P, T=T, root_type=root_type, V=V)
+   end subroutine volume
 
    ! ==========================================================================
    ! Phase equilibria
@@ -318,15 +353,16 @@ contains
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
 
-   subroutine pt2_phase_envelope(id, z, kind, Ts, Ps, tcs, pcs, T0, P0)
+   subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
          EquilibriumState, PTEnvel2
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
+      integer, intent(in) :: max_points
       character(len=15), intent(in) :: kind
-      real(c_double), intent(out) :: Ts(1000)
-      real(c_double), intent(out) :: Ps(1000)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: Ps(max_points)
       real(c_double), intent(out) :: Tcs(5), Pcs(5)
       real(c_double), optional, intent(in) :: T0, P0
 
@@ -369,7 +405,7 @@ contains
       end select
 
 
-      env = pt_envelope_2ph(ar_models(id)%model, z, sat)
+      env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
       i = size(env%points)
       Ts(:i) = env%points%T
       Ps(:i) = env%points%P
