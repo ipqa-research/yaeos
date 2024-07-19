@@ -7,14 +7,20 @@
 ! All the outputs of this functions use the `EquilibriumState` type
 program saturation
     use yaeos
-    use yaeos__example_tools, only: methane_butane_pr76
 
     class(ArModel), allocatable :: model
     type(EquilibriumState) :: sat_point
 
     real(pr) :: n(2), T
+    real(pr) :: Tc(2), Pc(2), w(2)
 
-    model = methane_butane_pr76()
+    ! Methane/ Butane mixture
+    tc = [190.564, 425.12]     ! Critical temperatures
+    pc = [45.99, 37.96]        ! Critical pressures
+    w = [0.0115478, 0.200164]  ! Acentric factors
+
+    ! Get the example PR76 binary model
+    model = PengRobinson76(tc, pc, w)
 
     n = [2.5, 6.7]
 
@@ -24,7 +30,7 @@ program saturation
     write(*, *) "Bubble pressure:"
     T = 150
     sat_point = saturation_pressure(model, n, T=T, kind="bubble")
-    write (*, *) "kind, T, P: ", sat_point
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
     
@@ -34,7 +40,7 @@ program saturation
     write(*, *) ""
     write (*, *) "Bubble temperature:"
     sat_point = saturation_temperature(model, n, P=15._pr, kind="bubble")
-    write (*, *) "kind, T, P: ", sat_point
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
 
@@ -44,7 +50,7 @@ program saturation
     write(*, *) ""
     write(*, *) "Dew pressure:"
     sat_point = saturation_pressure(model, n, T=150._pr, kind="dew")
-    write (*, *) "kind, T, P: ", sat_point
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
     
@@ -53,8 +59,8 @@ program saturation
     ! --------------------------------------------------------------------------
     write(*, *) ""
     write (*, *) "Dew temperature:"
-    sat_point = saturation_temperature(model, n, P=15._pr, kind="dew")
-    write (*, *) "kind, T, P: ", sat_point
+    sat_point = saturation_temperature(model, n, P=15._pr, kind="dew", t0=330._pr)
+    write (*, *) "kind, T, P: ", sat_point%kind, sat_point%T, sat_point%P
     write (*, *) "x: ", sat_point%x
     write (*, *) "y: ", sat_point%y
 end program
