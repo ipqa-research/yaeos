@@ -43,6 +43,7 @@ program basics
    print *, "dPdV: ", dPdV
 
    thermoproperties: block
+      !! Al the bulk thermodynamic properties currently available
       real(pr) :: Cpr, Cvr
       real(pr) :: Gr, GrT, GrV, Grn(nc)
       real(pr) :: Hr, HrT, HrV, Hrn(nc)
