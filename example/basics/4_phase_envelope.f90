@@ -1,6 +1,5 @@
 program phase_envelope
    use yaeos
-   use yaeos__example_tools, only: methane_butane_pr76
    implicit none
 
    class(ArModel), allocatable :: model ! Model
