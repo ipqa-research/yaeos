@@ -210,7 +210,7 @@ contains
    subroutine rkpr(tc, pc, w, zc, delta_1, k, id)
       use yaeos, only: fRKPR => RKPR
       real(c_double), intent(in) :: tc(:), pc(:), w(:), zc(:)
-      real(c_double), optional, intent(in) :: delta_1(:), k(:)
+      real(c_double), optional, intent(in) :: delta_1(size(tc)), k(size(tc))
       integer(c_int), intent(out) :: id
 
       if (present(delta_1) .and. present(k)) then
