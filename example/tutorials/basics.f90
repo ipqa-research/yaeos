@@ -41,4 +41,30 @@ program basics
    ! Derivatives can also be calculated when included as optional arguments!
    call model%pressure(n, V=2.5_pr, T=150._pr, P=P, dPdV=dPdV)
    print *, "dPdV: ", dPdV
+
+   thermoproperties: block
+      real(pr) :: Cpr, Cvr
+      real(pr) :: Gr, GrT, GrV, Grn(nc)
+      real(pr) :: Hr, HrT, HrV, Hrn(nc)
+      real(pr) :: lnPhi(nc), dlnPhidT(nc), dlnPhidP(nc), dlnPhidn(nc, nc)
+
+      real(pr) :: n(nc), P, V, T
+
+      n = [0.3_pr, 0.7_pr]
+      V = 3.5_pr
+      P = 5.0_pr
+      call model%Cp_residual_vt(n, V=2.5_pr, T=150._pr, Cp=Cpr)
+      call model%Cv_residual_vt(n, V=2.5_pr, T=150._pr, Cv=Cvr)
+      call model%gibbs_residual_vt(n, V=2.5_pr, T=150._pr, Gr=Gr, GrT=GrT, GrV=GrV, Grn=Grn)
+      call model%enthalpy_residual_vt(n, V=2.5_pr, T=150._pr, Hr=Hr, HrT=HrT, HrV=HrV, Hrn=Hrn)
+      call model%lnphi_pt(&
+         n, P=P, T=T, root_type="stable", &
+         lnPhi=lnPhi, dlnPhidT=dlnphidT, dlnPhidP=dlnPhidP, dlnPhidn=dlnPhidn &
+      )
+      call model%lnphi_vt(&
+         n, V=V, T=T, &
+         lnPhi=lnPhi, dlnPhidT=dlnphidT, dlnPhidP=dlnPhidP, dlnPhidn=dlnPhidn &
+      )
+      call model%volume(n, P, T, root_type="vapor", V=V)
+   end block thermoproperties
 end program basics
