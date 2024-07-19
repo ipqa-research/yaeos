@@ -2,7 +2,7 @@ module bench
     use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, &
         QMR, PengRobinson76, ArModel
     use hyperdual_pr76, only: PR76, setup_adiff_pr76 => setup
-    use TapeRobinson, only: setup_taperobinson => setup_model
+    ! use TapeRobinson, only: setup_taperobinson => setup_model
     implicit none
 
     real(pr), allocatable :: z(:), tc(:), pc(:), w(:), kij(:,:), lij(:,:)
@@ -40,7 +40,7 @@ contains
         case ("Adiff PR76")
             model = setup_adiff_pr76(tc, pc, w, kij, lij)
         case ("Tape PR76")
-            model = setup_taperobinson(tc, pc, w, kij, lij)
+            ! model = setup_taperobinson(tc, pc, w, kij, lij)
         end select
 
         v = 1.0_pr
