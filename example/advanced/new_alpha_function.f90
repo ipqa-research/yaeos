@@ -44,7 +44,6 @@ contains
 end module alpha_mathias_copeman
 
 program new_alpha_example
-   use yaeos__example_tools, only: methane_butane_pr76
    use yaeos, only: pr, PengRobinson76, CubicEoS, QMR
    use alpha_mathias_copeman, only: MathiasCopeman
    type(CubicEoS) :: eos
