@@ -5,5 +5,6 @@ module yaeos__equilibria
        saturation_pressure, saturation_temperature
    use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only:&
       CriticalPoint, PTEnvel2, pt_envelope_2ph
+   use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
 end module
