@@ -8,10 +8,14 @@ program phase_envelope
    type(PTEnvel2) :: envelope
 
    integer, parameter :: nc=2
-   real(pr) :: z(nc)
+   real(pr) :: z(nc), tc(nc), pc(nc), w(nc)
 
-   ! Methane/ Butane mixture
-   model = methane_butane_pr76()
+   tc = [190.564, 425.12]     ! Critical temperatures
+   pc = [45.99, 37.96]        ! Critical pressures
+   w = [0.0115478, 0.200164]  ! Acentric factors
+
+   ! Get the example PR76 binary model
+   model = PengRobinson76(tc, pc, w)
 
    ! Composition
    z = [0.1_pr, 0.9_pr]

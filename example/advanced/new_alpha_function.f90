@@ -51,11 +51,15 @@ program new_alpha_example
    type(QMR) :: mr
    type(MathiasCopeman) :: alpha
 
-   real(pr) :: n(2), v, t, P
-   integer :: i
+   real(pr) :: n(2), v, t, P, tc(2), pc(2), w(2)
+
+   ! Methane/ Butane mixture
+   tc = [190.564, 425.12]     ! Critical temperatures
+   pc = [45.99, 37.96]        ! Critical pressures
+   w = [0.0115478, 0.200164]  ! Acentric factors
 
    ! Get the example PR76 binary model
-   eos = methane_butane_pr76()
+   eos = PengRobinson76(tc, pc, w)
 
    ! Define the new alpha function parameters
    alpha%c1 = [0.49258, 0.84209]

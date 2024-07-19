@@ -7,16 +7,20 @@
 ! All the outputs of this functions use the `EquilibriumState` type
 program saturation
     use yaeos
-    use yaeos__example_tools, only: methane_butane_pr76
 
     class(ArModel), allocatable :: model
     type(EquilibriumState) :: sat_point
 
     real(pr) :: n(2), T
+    real(pr) :: Tc(2), Pc(2), w(2)
 
-    ! This function returns a predefined model to simplify the step. How it 
-    ! works can be seen in the `example_tools.f90` file.
-    model = methane_butane_pr76()
+    ! Methane/ Butane mixture
+    tc = [190.564, 425.12]     ! Critical temperatures
+    pc = [45.99, 37.96]        ! Critical pressures
+    w = [0.0115478, 0.200164]  ! Acentric factors
+
+    ! Get the example PR76 binary model
+    model = PengRobinson76(tc, pc, w)
 
     n = [2.5, 6.7]
 
