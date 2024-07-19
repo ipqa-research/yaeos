@@ -20,14 +20,14 @@ contains
    end subroutine collect_suite
 
    subroutine test_bubble_pressure(error)
-      use yaeos, only: pr, EquilibriaState, saturation_pressure, ArModel
+      use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: bubble
+      type(EquilibriumState) :: bubble
 
       real(pr) :: x(nc)  = [0.4, 0.6]
       real(pr) :: y(nc) = [0.84203837140677695, 0.15796162859550475]
@@ -46,7 +46,7 @@ contains
    end subroutine
    
    subroutine test_dew_pressure(error)
-      use yaeos, only: pr, EquilibriaState, saturation_pressure, ArModel
+      use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use yaeos__phase_equilibria_auxiliar, only: k_wilson
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
@@ -54,7 +54,7 @@ contains
       integer, parameter :: nc = 2
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: dew
+      type(EquilibriumState) :: dew
 
       real(pr) :: x(nc) = [6.7245630132141868E-002, 0.93275436999337613]
       real(pr) :: y(nc)  = [0.4, 0.6]
@@ -77,7 +77,7 @@ contains
    end subroutine
 
    subroutine test_dew_temperature(error)
-      use yaeos, only: pr, EquilibriaState, saturation_temperature, ArModel
+      use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel
       use yaeos__phase_equilibria_auxiliar, only: k_wilson
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
@@ -85,7 +85,7 @@ contains
       integer, parameter :: nc = 2
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: dew
+      type(EquilibriumState) :: dew
 
       real(pr) :: x(nc) = [6.7245630132141868E-002, 0.93275436999337613]
       real(pr) :: y(nc)  = [0.4, 0.6]
@@ -107,14 +107,14 @@ contains
    end subroutine
    
    subroutine test_bubble_temperature(error)
-      use yaeos, only: pr, EquilibriaState, saturation_temperature, ArModel, saturation_pressure, PTEnvel2, pt_envelope_2ph
+      use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel, saturation_pressure, PTEnvel2, pt_envelope_2ph
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: bubble
+      type(EquilibriumState) :: bubble
 
       real(pr) :: x(nc)  = [0.4, 0.6]
       real(pr) :: y(nc) = [0.84203837140677695, 0.15796162859550475]
@@ -133,13 +133,13 @@ contains
    end subroutine
 
    subroutine test_envelope(error)
-      use yaeos, only: pr, EquilibriaState, saturation_pressure, ArModel
+      use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: &
          pt_envelope_2ph, PTEnvel2
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
-      type(EquilibriaState) :: bubble
+      type(EquilibriumState) :: bubble
       class(ArModel), allocatable :: model
       type(PTEnvel2) :: envelope
       real(pr) :: z(2) = [0.4_pr, 0.6_pr]

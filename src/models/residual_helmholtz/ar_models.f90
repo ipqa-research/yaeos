@@ -1,5 +1,5 @@
 module yaeos__models_ar
-  
+
    !! # Module that defines the basics of a residual Helmholtz energy.
    !!
    !! All the residual properties that are calculated in this library are
@@ -10,7 +10,7 @@ module yaeos__models_ar
    !! are used. Because they're the fundamentals for phase equilibria
    !! calculation.
    !!
-   !! @note 
+   !! @note
    !! Later on, third derivative with respect to volume will be included
    !! since it's importance on calculation of critical points.
    !! @endnote
@@ -50,7 +50,7 @@ module yaeos__models_ar
       procedure(abs_residual_helmholtz), deferred :: residual_helmholtz
       procedure(abs_volume_initializer), deferred :: get_v0
       procedure :: lnphi_vt => fugacity_vt
-      procedure :: lnphi_tp => fugacity_tp
+      procedure :: lnphi_pt => fugacity_pt
       procedure :: pressure
       procedure :: volume
       procedure :: enthalpy_residual_vt
@@ -59,6 +59,10 @@ module yaeos__models_ar
       procedure :: Cv_residual_vt
       procedure :: Cp_residual_vt
    end type ArModel
+
+   interface size
+      module procedure :: size_ar_model
+   end interface size
 
    abstract interface
       subroutine abs_residual_helmholtz(&
@@ -113,13 +117,19 @@ module yaeos__models_ar
 
 contains
 
+   integer pure function size_ar_model(eos)
+      !! Get the size of the model.
+      class(ArModel), intent(in) :: eos
+      size_ar_model = size(eos%components%pc)
+   end function size_ar_model
+
    subroutine volume(eos, n, P, T, V, root_type)
       !! # Volume solver routine for residual Helmholtz models.
       !! Solves volume roots using newton method. Given pressure and temperature.
       !!
       !! # Description
       !! This subroutine solves the volume using a newton method. The variable
-      !! `root_type` 
+      !! `root_type`
       !!
       !! # Examples
       !!
@@ -136,9 +146,9 @@ contains
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(out) :: V !! Volume [L]
-      character(len=*), intent(in) :: root_type 
-         !! Desired root-type to solve. Options are:
-         !! `["liquid", "vapor", "stable"]`
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
 
       integer :: max_iters=30
       real(pr) :: tol=1e-7
@@ -216,7 +226,7 @@ contains
 
       real(pr) :: totn
 
-      real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(n))
+      real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(eos))
       integer :: nc
       logical :: dn
 
@@ -239,26 +249,19 @@ contains
       if (present(dPdn)) dPdn(:) = R*T/V - ArVn(:)
    end subroutine pressure
 
-   subroutine fugacity_tp(eos, &
-      n, T, P, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn &
+   subroutine fugacity_pt(eos, &
+      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn &
       )
       !! Calculate logarithm of fugacity, given pressure and temperature.
       !!
       !! This routine will obtain the desired volume root at the specified
       !! pressure and calculate fugacity at that point.
-      !!
-      !! @note
-      !! While the natural output variable is \(ln f_i\). The calculated
-      !! derivatives will be the derivatives of the fugacity coefficient
-      !! \(ln \phi_i\)
-      !! @endnote
-      !!
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       character(len=*), intent(in) :: root_type !! Type of root desired ["liquid", "vapor", "stable"]
-      real(pr), intent(in) :: T    !! Temperature [K]
       real(pr), intent(in) :: P    !! Pressure [bar]
+      real(pr), intent(in) :: T    !! Temperature [K]
 
       real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(phi)\) vector
       real(pr), optional, intent(out) :: V !! Volume [L]
@@ -270,14 +273,14 @@ contains
 
       call eos%volume(n, P=P, T=T, V=V_in, root_type=root_type)
       call eos%lnphi_vt(n, V_in, T, P_in, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn)
-    
+
       if(present(V)) V = V_in
-     
+
       ! Check if the calculated pressure is the same as the input pressure.
       if(abs(P_in - P) > 1e-2) then
          write(error_unit, *) "WARN: possible bad root solving: ", P_in, P
       end if
-   end subroutine fugacity_tp
+   end subroutine fugacity_pt
 
    subroutine fugacity_vt(eos, &
       n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn &
@@ -345,7 +348,7 @@ contains
       end if
 
       P_in = totn*RT/V - ArV
-      
+
       Z = P_in*V/(totn*RT)
       if (present(P)) P = P_in
 
@@ -426,7 +429,7 @@ contains
       if (present(GrT)) GrT = ArT + V*dPdT - totn*R
       if (present(GrV)) GrV = ArV + V*dPdV + P
       if (present(GrN)) GrN(:) = Arn(:) + V*dPdn(:) - R*T
-   end subroutine gibbs_residual_vt
+   end subroutine gibbs_residual_VT
 
    subroutine entropy_residual_vt(eos, n, V, T, Sr, SrT, SrV, Srn)
       !! Calculate residual entropy given volume and temperature.

@@ -14,6 +14,7 @@ contains
          new_unittest("Test dx_to_dn", test_dx_to_dn), &
          new_unittest("Test sq_error", test_sq_error), &
          new_unittest("Test cardano", test_cardano_method), &
+         new_unittest("Test rosendo", test_rosendo_method), &
          new_unittest("Test newton", test_newton_method) &
          ]
    end subroutine collect_suite
@@ -68,7 +69,99 @@ contains
       call check(error, &
          maxval(abs(rr - [-0.454216, 0.8601986, 25.594016])) < 1e-5_pr &
          )
+
+      ! =======================================================================
+      ! 3 Real roots
+      ! x1 = 1, x2 = 3, x3 = 4
+      ! -----------------------------------------------------------------------
+      p = [1._pr, -8._pr, 19._pr, -12._pr]
+
+      call cubic_roots(p, rr, cr, flag)
+
+      call check(error, maxval(rr - [1.0_pr, 3.0_pr, 4.0_pr]) < 1e-7)
+      call check(error, flag == -1)
+
+      ! =======================================================================
+      ! 1 real root different, 2 equal real roots
+      ! x1 = 1, x2 = x3 = 4
+      ! -----------------------------------------------------------------------
+      p = [1._pr, -9._pr, 24._pr, -16._pr]
+
+      call cubic_roots(p, rr, cr, flag)
+
+      call check(error, maxval(rr - [1.0_pr, 4.0_pr, 4.0_pr]) < 1e-7)
+      call check(error, flag == 0)
+
+      ! =======================================================================
+      ! 1 real root, 2 complex
+      ! x1 = 1, x2 = i, x3 = -i
+      ! -----------------------------------------------------------------------
+      p = [1._pr, -1._pr, 1._pr, -1._pr]
+
+      call cubic_roots(p, rr, cr, flag)
+
+      call check(error, (rr(1) - 1.0_pr) < 1e-7)
+      call check(error, flag == 1)
    end subroutine test_cardano_method
+
+   subroutine test_rosendo_method(error)
+      use yaeos__math_linalg, only: pr, cubic_roots_rosendo
+
+      type(error_type), allocatable, intent(out) :: error
+
+      real(pr) :: p(4)
+      real(pr) :: a, b
+      real(pr) :: roots(3)
+      complex(pr) :: c_roots(3)
+      integer :: flag
+
+      ! =======================================================================
+      ! 3 Real roots
+      ! x1 = 1, x2 = 3, x3 = 4
+      ! -----------------------------------------------------------------------
+      p = [1._pr, -8._pr, 19._pr, -12._pr]
+
+      call cubic_roots_rosendo(p, roots, c_roots, flag)
+
+      call check(error, maxval(roots - [1.0_pr, 3.0_pr, 4.0_pr]) < 1e-7)
+      call check(error, flag == -1)
+
+      ! =======================================================================
+      ! 1 real root different, 2 equal real roots
+      ! x1 = 1, x2 = x3 = 4
+      ! -----------------------------------------------------------------------
+      p = [1._pr, -9._pr, 24._pr, -16._pr]
+
+      call cubic_roots_rosendo(p, roots, c_roots, flag)
+
+      call check(error, maxval(roots - [1.0_pr, 4.0_pr, 4.0_pr]) < 1e-7)
+      call check(error, flag == -1)
+
+      ! =======================================================================
+      ! 1 real root, 2 complex
+      ! x1 = 1, x2 = i, x3 = -i
+      ! -----------------------------------------------------------------------
+      p = [1._pr, -1._pr, 1._pr, -1._pr]
+
+      call cubic_roots_rosendo(p, roots, c_roots, flag)
+
+      call check(error, maxval(roots - [1.0_pr, 1.0_pr, 1.0_pr]) < 1e-7)
+      call check(error, flag == 1)
+
+      ! =======================================================================
+      ! 1 real root and two small complex roots
+      ! x1 = 1, x2 = a+bi, x3 = a-bi
+      ! -----------------------------------------------------------------------
+      a = 1._pr
+      b = 1e-6_pr
+
+      p = [1._pr, -(2*a + 1), (a**2 + b**2 + 2 * a), -(a**2 + b**2)]
+
+      call cubic_roots_rosendo(p, roots, c_roots, flag)
+
+      call check(error, maxval(roots - [1.0_pr, 1.0_pr, 1.0_pr]) < 1e-7)
+      call check(error, flag == 1)
+   end subroutine test_rosendo_method
 
    subroutine test_newton_method(error)
       use yaeos__math, only: pr, newton
@@ -82,11 +175,11 @@ contains
       call check(error, abs(x - sqrt(2._pr)) < tol)
    contains
       subroutine foo(xx, f, df)
-            real(pr), intent(in) :: xx
-            real(pr), intent(out) :: f
-            real(pr), intent(out) :: df
-            f = xx**2 - 2
-            df = 2*xx
-         end subroutine foo
+         real(pr), intent(in) :: xx
+         real(pr), intent(out) :: f
+         real(pr), intent(out) :: df
+         f = xx**2 - 2
+         df = 2*xx
+      end subroutine foo
    end subroutine test_newton_method
 end module test_math

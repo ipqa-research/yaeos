@@ -1,14 +1,14 @@
 module yaeos__equilibria_flash
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
 
 contains
 
-   type(EquilibriaState) function flash(model, z, t, v_spec, p_spec, k0, iters)
+   type(EquilibriumState) function flash(model, z, t, v_spec, p_spec, k0, iters)
       !! Flash algorithm using sucessive substitutions.
       !!
       !! Available specifications:
@@ -109,11 +109,11 @@ contains
           case("TV")
             ! find Vy,Vx (vV and vL) from V balance and P equality equations
             call tv_loop_solve_pressures(model, T, V, beta, x, y, Vx, Vy, P)
-            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnPhi=lnfug_y)
-            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnPhi=lnfug_x)
+            call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
+            call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
           case("TP")
-            call model%lnphi_tp(y, T, P, V=Vy, root_type="stable", lnPhi=lnfug_y)
-            call model%lnphi_tp(x, T, P, V=Vx, root_type="liquid", lnPhi=lnfug_x)
+            call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
+            call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
          end select
 
          dKold = dK

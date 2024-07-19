@@ -7,7 +7,7 @@ program main
    real(pr), dimension(nc) :: tc, pc, w
    type(MHV) :: mixrule
    type(CubicEOS) :: eos
-   type(EquilibriaState) :: eq
+   type(EquilibriumState) :: eq
    real(pr) :: n(nc)
 
    integer :: i

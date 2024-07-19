@@ -75,13 +75,11 @@ contains
          complex_roots = nan
 
          if (abs(disc) < 1e-15) then
-            !print *, "disc: ", disc
             flag = 0
             real_roots(1) = 3*q/p
             real_roots(2) = -3*q/(2*p)
             real_roots(3) = real_roots(2)
          elseif (disc < 0) then
-            !print *, "disc: ", disc
             flag = -1
             theta = acos(0.5_pr * 3 * q / p * sqrt(-3/p))
             real_roots(1) = 2 * sqrt(-p/3) * cos(theta/3)
@@ -89,7 +87,6 @@ contains
             real_roots(3) = 2 * sqrt(-p/3) * cos((theta + 4*pi)/3)
             call sort(real_roots)
          elseif (disc > 0) then
-            !print *, "disc: ", disc
             flag = 1
             u = ((-q + sqrt(disc))/2)
             v = ((-q - sqrt(disc))/2)
@@ -124,8 +121,8 @@ contains
          theta = acos(R / sqrt(Q**3))
 
          real_roots(1) = -2 * sqrt(Q) * cos(theta / 3.0_pr) - d1 / 3.0_pr
-         real_roots(2) = -2 * sqrt(Q) * cos((theta + 2 * acos(-1.0_pr)) / 3.0_pr) - d1 / 3.0_pr
-         real_roots(3) = -2 * sqrt(Q) * cos((theta - 2 * acos(-1.0_pr)) / 3.0_pr) - d1 / 3.0_pr
+         real_roots(2) = -2 * sqrt(Q) * cos((theta + 2 * pi) / 3.0_pr) - d1 / 3.0_pr
+         real_roots(3) = -2 * sqrt(Q) * cos((theta - 2 * pi) / 3.0_pr) - d1 / 3.0_pr
 
          ! Correction??
          ! do i=1,100
@@ -139,7 +136,7 @@ contains
       else
          A = - sign((abs(R) + sqrt(R**2 - Q**3))**(1.0_pr/3.0_pr), R)
 
-         if (-log10(A) > 15.0_pr) then
+         if (abs(A) < 1e-6) then
             A = 0.0_pr
             B = 0.0_pr
          else

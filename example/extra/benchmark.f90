@@ -49,8 +49,8 @@ contains
 
         if (dn) then
             if (f_p) then
-                call model%lnphi_tp(&
-                    z, T, P, root_type="stable", &
+                call model%lnphi_pt(&
+                    z, P, T, root_type="stable", &
                     lnPhi=lnfug, dlnphidp=dlnphidp, dlnphidn=dlnphidn)
             else
                 call model%lnphi_vt(z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)

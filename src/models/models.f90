@@ -24,7 +24,7 @@ module yaeos__models
    use yaeos__models_base, only: BaseModel
 
    ! Residual Helmholtz Models
-   use yaeos__models_ar, only: ArModel
+   use yaeos__models_ar, only: ArModel, size
 
    ! Cubic EoS models
    use yaeos__models_ar_genericcubic, only: &

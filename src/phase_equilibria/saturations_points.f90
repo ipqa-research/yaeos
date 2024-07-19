@@ -1,7 +1,7 @@
 module yaeos__equilibria_saturation_points
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
@@ -10,7 +10,7 @@ module yaeos__equilibria_saturation_points
 
 contains
 
-   type(EquilibriaState) function saturation_pressure(model, n, t, kind, p0, y0, max_iters)
+   type(EquilibriumState) function saturation_pressure(model, n, t, kind, p0, y0, max_iters)
       !! Saturation pressure calculation function.
       !!
       !! Calculates the saturation pressure of a multicomponent mixture with
@@ -83,8 +83,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call model%lnphi_tp(y, T, P, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
-         call model%lnphi_tp(z, T, P, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
 
          k = exp(lnfug_z - lnfug_y)
 
@@ -105,21 +105,21 @@ contains
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_pressure = EquilibriaState(kind="bubble", &
+         saturation_pressure = EquilibriumState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_pressure = EquilibriaState(kind="dew", &
+         saturation_pressure = EquilibriumState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_pressure = EquilibriaState(kind="liquid-liquid", &
+         saturation_pressure = EquilibriumState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
    end function saturation_pressure
 
-   type(EquilibriaState) function saturation_temperature(model, n, p, kind, t0, y0, max_iters)
+   type(EquilibriumState) function saturation_temperature(model, n, p, kind, t0, y0, max_iters)
       !! Saturation temperature calculation function.
       !!
       !! Calculates the saturation pressure of a multicomponent mixture with
@@ -192,8 +192,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call model%lnphi_tp(y, T, P, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
-         call model%lnphi_tp(z, T, P, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
 
          k = exp(lnfug_z - lnfug_y)
          f = sum(z*k) - 1
@@ -209,15 +209,15 @@ contains
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_temperature = EquilibriaState(kind="bubble", &
+         saturation_temperature = EquilibriumState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_temperature = EquilibriaState(kind="dew", &
+         saturation_temperature = EquilibriumState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_temperature = EquilibriaState(kind="liquid-liquid", &
+         saturation_temperature = EquilibriumState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select

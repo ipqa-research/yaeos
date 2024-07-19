@@ -3,7 +3,7 @@ program phase_diagram
    use forsus, only: Substance, forsus_dir, forsus_default_dir
    use yaeos, only: pr, &
       SoaveRedlichKwong, PengRobinson76, PengRobinson78, RKPR, &
-      EquilibriaState, ArModel, PTEnvel2, &
+      EquilibriumState, ArModel, PTEnvel2, &
       pt_envelope_2ph, saturation_pressure, saturation_temperature
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
    implicit none
@@ -13,7 +13,7 @@ program phase_diagram
    ! ---------------------------------------------------------------------------
    integer, parameter :: nc=2            
    class(ArModel), allocatable :: model ! Thermodynamic model to be used
-   type(EquilibriaState) :: sat_point   ! Init
+   type(EquilibriumState) :: sat_point   ! Init
    type(PTEnvel2) :: envelope           ! PT Phase envelope
    real(pr) :: tc(nc), pc(nc), w(nc)    ! Component's critical constants
    real(pr) :: n(nc)                    ! Termodynamic variables
