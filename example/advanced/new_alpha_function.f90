@@ -44,19 +44,21 @@ contains
 end module alpha_mathias_copeman
 
 program new_alpha_example
-   use yaeos__example_tools, only: methane_butane_pr76
-   use yaeos, only: fugacity_vt, pressure
    use yaeos, only: pr, PengRobinson76, CubicEoS, QMR
    use alpha_mathias_copeman, only: MathiasCopeman
    type(CubicEoS) :: eos
    type(QMR) :: mr
    type(MathiasCopeman) :: alpha
 
-   real(pr) :: n(2), v, t, P
-   integer :: i
+   real(pr) :: n(2), v, t, P, tc(2), pc(2), w(2)
+
+   ! Methane/ Butane mixture
+   tc = [190.564, 425.12]     ! Critical temperatures
+   pc = [45.99, 37.96]        ! Critical pressures
+   w = [0.0115478, 0.200164]  ! Acentric factors
 
    ! Get the example PR76 binary model
-   eos = methane_butane_pr76()
+   eos = PengRobinson76(tc, pc, w)
 
    ! Define the new alpha function parameters
    alpha%c1 = [0.49258, 0.84209]
@@ -67,15 +69,13 @@ program new_alpha_example
    v = 2
    t = 150
 
-   call pressure(eos, n, V, T, P=P)
+   call eos%pressure(n, V, T, P=P)
    print *, "Peng-Robinson76:", P
    
    ! Replace the original alpha
    deallocate(eos%alpha) ! Remove the already defined alpha
    eos%alpha = alpha     ! assign the new defined alpha
 
-   call pressure(eos, n, V, T, P=P)
+   call eos%pressure(n, V, T, P=P)
    print *, "Peng-Robinson76-MC:", P
-
-
 end program new_alpha_example

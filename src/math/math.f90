@@ -27,7 +27,23 @@ module yaeos__math
    !! ```
 
    use yaeos__math_continuation, only: continuation
-   use yaeos__math_linalg, only: solve_system
+   use yaeos__math_linalg, only: solve_system, cubic_roots
+   use yaeos__constants, only: pr
+
+   implicit none
+
+   abstract interface
+      subroutine f_1d(x, f, df)
+         import pr
+         real(pr), intent(in) :: x
+         real(pr), intent(out) :: f
+         real(pr), intent(out) :: df
+      end subroutine f_1d
+   end interface
+
+   interface newton
+      module procedure :: newton_1d
+   end interface newton
 
 contains
    elemental real(pr) function sq_error(exp, pred)
@@ -62,11 +78,38 @@ contains
       real(pr) :: dn(size(x))
 
       real(pr) :: sum_xdx
-      
+
       dn = 0
 
       sum_xdx = sum(x * dx)
 
       dn = dx - sum_xdx
    end function dx_to_dn
+
+   subroutine newton_1d(f, x, tol, max_iters)
+      procedure(f_1d) :: f
+      real(pr), intent(in out) :: x
+      real(pr), intent(in) :: tol
+      integer, intent(in) :: max_iters
+
+      integer :: i
+      real(pr) :: fval, df, step
+
+
+      fval = 10
+      step = 10
+
+      do i=1, max_iters
+         if (abs(fval) < tol .or. abs(step) < tol)  exit
+         call f(x, fval, df)
+
+         step = fval/df
+
+         do while (abs(step) > 0.5 * abs(x))
+            step = step/2
+         end do
+
+         x = x - step
+      end do
+   end subroutine newton_1d
 end module yaeos__math

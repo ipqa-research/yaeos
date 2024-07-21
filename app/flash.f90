@@ -3,12 +3,12 @@ program flasher
     !! EoS model.
 
     ! Import the relevant 
-    use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+    use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
     implicit none
 
     ! Variables definition:
     class(ArModel), allocatable :: model !! Model to use
-    type(EquilibriaState) :: flash_result !! Result of Flash calculation
+    type(EquilibriumState) :: flash_result !! Result of Flash calculation
 
     real(pr) :: tc(2), pc(2), w(2)
     real(pr) :: n(2), t, p, k0(2)

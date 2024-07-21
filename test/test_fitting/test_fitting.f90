@@ -19,10 +19,10 @@ contains
       use yaeos__fitting, only: optimize, error_function
       use yaeos__fitting_fit_kij_lij, only: FitKijLij
       use yaeos__models, only: ArModel, SoaveRedlichKwong
-      use yaeos__equilibria, only: EquilibriaState
+      use yaeos__equilibria, only: EquilibriumState
       type(error_type), allocatable, intent(out) :: error
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: exp_points
+      type(EquilibriumState) :: exp_points
 
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
@@ -33,7 +33,7 @@ contains
       type(FitKijLij) :: fitting_problem
 
       exp_points = &
-            EquilibriaState( &
+            EquilibriumState( &
                   kind="bubble", T=344.5_pr, P=23.9_pr, &
                   x=[0.0309_pr, 1 - 0.0309_pr], y=[0.9883_pr, 1 - 0.9883_pr], &
                   Vx=0._pr, Vy=0._pr, beta=0.0_pr &
@@ -63,12 +63,12 @@ contains
       use yaeos__fitting, only: optimize, error_function
       use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
       use yaeos__models, only: CubicEoS, GeModel, NRTL, SoaveRedlichKwong, MHV
-      use yaeos__equilibria, only: EquilibriaState
+      use yaeos__equilibria, only: EquilibriumState
       type(error_type), allocatable, intent(out) :: error
       type(CubicEoS) :: model
       type(NRTL) :: ge_model
       type(MHV) :: mixrule
-      type(EquilibriaState) :: exp_point
+      type(EquilibriumState) :: exp_point
 
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
@@ -78,7 +78,7 @@ contains
 
       type(FitMHVNRTL) :: fitting_problem
 
-      exp_point = EquilibriaState( &
+      exp_point = EquilibriumState( &
                   kind="bubble", T=344.5_pr, P=23.9_pr, &
                   x=[0.0309_pr, 1 - 0.0309_pr], y=[0.9883_pr, 1 - 0.9883_pr], &
                   Vx=0._pr, Vy=0._pr, beta=0.0_pr &

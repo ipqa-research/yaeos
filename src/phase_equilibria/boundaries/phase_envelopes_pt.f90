@@ -2,8 +2,7 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    !! Phase boundaries line on the \(PT\) plane calculation procedures.
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
-   use yaeos__thermoprops, only: fugacity_tp
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -17,7 +16,7 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
    type :: PTEnvel2
       !! Two-phase isopleth.
       !! Phase boundary line of a fluid at constant composition.
-      type(EquilibriaState), allocatable :: points(:)
+      type(EquilibriumState), allocatable :: points(:)
       !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
       !! Critical points found along the line.
@@ -45,7 +44,7 @@ contains
       !! Thermodyanmic model
       real(pr), intent(in) :: z(:)
       !! Vector of molar fractions
-      type(EquilibriaState) :: first_point
+      type(EquilibriumState) :: first_point
       integer, optional, intent(in) :: points
       !! Maxmimum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
@@ -126,7 +125,7 @@ contains
          character(len=14) :: kind_z, kind_y
 
          real(pr) :: y(nc)
-         real(pr) :: Vz, Vy, lnphip_z(nc), lnphip_y(nc)
+         real(pr) :: Vz, Vy, lnPhi_z(nc), lnPhi_y(nc)
          real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
          real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
          real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
@@ -156,18 +155,18 @@ contains
             kind_y = "stable"
          end select
 
-         call fugacity_tp(&
-            model, z, T, P, V=Vz, root_type=kind_z, &
-            lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
+         call model%lnphi_pt(&
+            z, P, T, V=Vz, root_type=kind_z, &
+            lnPhi=lnphi_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
-         call fugacity_tp(&
-            model, y, T, P, V=Vy, root_type=kind_y, &
-            lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
+         call model%lnphi_pt(&
+            y, P, T, V=Vy, root_type=kind_y, &
+            lnPhi=lnphi_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
 
-         F(:nc) = X(:nc) + lnphip_y - lnphip_z
+         F(:nc) = X(:nc) + lnPhi_y - lnPhi_z
          F(nc + 1) = sum(y - z)
          F(nc + 2) = X(ns) - S
 
@@ -239,14 +238,14 @@ contains
          !! Save the converged point
          real(pr), intent(in) :: X(:)
          integer, intent(in) :: iters
-         type(EquilibriaState) :: point
+         type(EquilibriumState) :: point
 
          real(pr) :: y(nc), T, P
 
          T = exp(X(nc+1))
          P = exp(X(nc+2))
          y = exp(X(:nc))*z
-         point = EquilibriaState(&
+         point = EquilibriumState(&
             kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
             T=T, P=P, beta=0._pr, iters=iters &
             )
@@ -331,6 +330,7 @@ contains
       integer :: i, nc
 
 
+      if (size(pt2%points) == 0) return
       allocate(cps(0))
       do i=1,size(pt2%cps)
          cp = minloc(&

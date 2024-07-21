@@ -1,8 +1,7 @@
 module yaeos__equilibria_saturation_points
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__thermoprops, only: fugacity_vt, fugacity_tp
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__phase_equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
@@ -11,7 +10,7 @@ module yaeos__equilibria_saturation_points
 
 contains
 
-   type(EquilibriaState) function saturation_pressure(model, n, t, kind, p0, y0, max_iters)
+   type(EquilibriumState) function saturation_pressure(model, n, t, kind, p0, y0, max_iters)
       !! Saturation pressure calculation function.
       !!
       !! Calculates the saturation pressure of a multicomponent mixture with
@@ -22,7 +21,6 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -50,7 +48,7 @@ contains
       if (present (p0)) then
          p = p0
       else
-         call pressure(model, z, T, 10._pr, P=P)
+         call model%pressure(z, T, 10._pr, P=P)
       end if
 
       if (present(y0)) then
@@ -85,8 +83,8 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call fugacity_tp(model, y, T, P, vy, incipient, lnphip=lnfug_y, dlnphidp=dlnphi_dp_y)
-         call fugacity_tp(model, z, T, P, vz, main, lnphip=lnfug_z, dlnphidp=dlnphi_dp_z)
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
 
          k = exp(lnfug_z - lnfug_y)
 
@@ -107,21 +105,21 @@ contains
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_pressure = EquilibriaState(kind="bubble", &
+         saturation_pressure = EquilibriumState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_pressure = EquilibriaState(kind="dew", &
+         saturation_pressure = EquilibriumState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_pressure = EquilibriaState(kind="liquid-liquid", &
+         saturation_pressure = EquilibriumState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
    end function saturation_pressure
 
-   type(EquilibriaState) function saturation_temperature(model, n, p, kind, t0, y0, max_iters)
+   type(EquilibriumState) function saturation_temperature(model, n, p, kind, t0, y0, max_iters)
       !! Saturation temperature calculation function.
       !!
       !! Calculates the saturation pressure of a multicomponent mixture with
@@ -132,7 +130,6 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      use yaeos__thermoprops, only: pressure
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
@@ -153,9 +150,12 @@ contains
       real(pr) :: f, step
       integer :: its, iterations
 
+      logical :: is_incipient(size(n))
+
       ! =======================================================================
       ! Handle arguments
       ! -----------------------------------------------------------------------
+      is_incipient = .true.
       z = n/sum(n)
       if (present (t0)) then
          t = t0
@@ -188,6 +188,11 @@ contains
       where (z == 0)
          k = 0
       end where
+
+      where (y == 0)
+         is_incipient = .false.
+      end where
+
       ! ========================================================================
 
       ! ========================================================================
@@ -195,8 +200,12 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
-         call fugacity_tp(model, y, T, P, vy, incipient, lnphip=lnfug_y, dlnphidt=dlnphi_dt_y)
-         call fugacity_tp(model, z, T, P, vz, main, lnphip=lnfug_z, dlnphidt=dlnphi_dt_z)
+         where (.not. is_incipient)
+            y = 0
+         endwhere
+
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
 
          k = exp(lnfug_z - lnfug_y)
          f = sum(z*k) - 1
@@ -207,20 +216,21 @@ contains
          end do
 
          t = t - step
+
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
       select case(kind)
        case("bubble")
-         saturation_temperature = EquilibriaState(kind="bubble", &
+         saturation_temperature = EquilibriumState(kind="bubble", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
        case("dew")
-         saturation_temperature = EquilibriaState(kind="dew", &
+         saturation_temperature = EquilibriumState(kind="dew", &
             iters=its, x=y, y=z, vy=vz, vx=vy, t=t, p=p, beta=1._pr&
             )
        case("liquid-liquid")
-         saturation_temperature = EquilibriaState(kind="liquid-liquid", &
+         saturation_temperature = EquilibriumState(kind="liquid-liquid", &
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select

@@ -1,6 +1,6 @@
 program main
    !! Binary system parameter optimization
-   use yaeos, only: EquilibriaState, pr, ArModel, SoaveRedlichKwong, CubicEoS, saturation_pressure
+   use yaeos, only: EquilibriumState, pr, ArModel, SoaveRedlichKwong, CubicEoS, saturation_pressure
    use yaeos, only: MHV
    use forsus, only: Substance, forsus_dir
    use yaeos__fitting, only: FittingProblem, fobj, optimize
@@ -8,8 +8,8 @@ program main
    integer, parameter :: nc = 2, np=7
    integer :: i, infile, iostat
 
-   type(EquilibriaState), allocatable :: exp_points(:)
-   type(EquilibriaState) :: point
+   type(EquilibriumState), allocatable :: exp_points(:)
+   type(EquilibriumState) :: point
 
    type(FitMHVNRTL) :: prob
    type(Substance) :: sus(2)
@@ -33,7 +33,7 @@ program main
       if (iostat /= 0) exit
       select case (kind)
       case ("bubble", "dew", "liquid-liquid")
-         point = EquilibriaState( &
+         point = EquilibriumState( &
                  kind=kind, T=T, P=P, x=[x1, 1 - x1], y=[y1, 1 - y1], &
                  Vx=0._pr, Vy=0._pr, iters=0, beta=0._pr &
                  )

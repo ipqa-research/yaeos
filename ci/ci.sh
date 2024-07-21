@@ -72,11 +72,13 @@ run_coverage() {
 }
 
 python_wrappers(){
-    fpm install --profile release --prefix build/python
+    BUILD_DIR="build/python"
+    fpm install --profile release --prefix "$BUILD_DIR"
+    cd python/yaeos
     f2py \
-        -I ../build/tmp/include \
-        -L ../build/tmp/lib/libyaeos.a \
-        -m yaeos -c yaeos_python.f90 ../build/tmp/lib/libyaeos.a
+        -I ../../$BUILD_DIR/include \
+        -L ../../$BUILD_DIR/lib/libyaeos.a \
+        -m yaeos -c ../yaeos_c.f90 ../../$BUILD_DIR/lib/libyaeos.a
 }
 
 resumee() {
@@ -94,6 +96,7 @@ case $1 in
     "install")  install_fpm;;
     "test") run_test;;
     "coverage") run_coverage;;
+    "python") python_wrappers;;
     *)
         run_test
         run_coverage
