@@ -54,7 +54,8 @@ def pre_build():
             f"-I{INCL_DIR}",
             "-c",
             "yaeos/fortran_wrap/yaeos_c.f90",
-            "-lyaeos", "-llapack",
+            "-lyaeos",
+            "-llapack",
             "--backend",
             "meson",
         ]
@@ -229,7 +230,7 @@ setup(
     cmdclass={
         "build_fortran": BuildFortran,
         "editable_wheel": CustomEditable,
-        "egg_info": CustomEgg
+        "egg_info": CustomEgg,
     },
     packages=["yaeos"],
     package_data={"yaeos": ["compiled_module/*.so"]},

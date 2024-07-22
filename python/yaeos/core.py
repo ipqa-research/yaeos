@@ -62,17 +62,13 @@ class ArModel(ABC):
         if dn:
             dn = np.empty(nc, order="F")
 
-        res = yaeos_c.pressure(
-            self.id, n, v, t, dpdv=dv, dpdt=dt, dpdn=dn
-        )
+        res = yaeos_c.pressure(self.id, n, v, t, dpdv=dv, dpdt=dt, dpdn=dn)
         res = {"P": res, "dv": dv, "dt": dt, "dn": dn}
         return res
 
     def volume(self, n, p, t, root="stable"):
 
-        res = yaeos_c.volume(
-            self.id, n, p, t, root
-        )
+        res = yaeos_c.volume(self.id, n, p, t, root)
         res = {"V": res}
         return res
 
@@ -125,6 +121,14 @@ class ArModel(ABC):
             "beta": beta,
         }
 
+    def phase_envelope_pt(
+        self, z, kind="bubble", max_points=300, T0=150, P0=1
+    ):
+        Ts, Ps, Tcs, Pcs = yaeos_c.pt2_phase_envelope(
+            self.id, z, kind=kind, t0=T0, p0=P0, max_points=max_points
+        )
+        return Ts, Ps, Tcs, Pcs
+
     def __del__(self):
         yaeos_c.make_available_ar_models_list(self.id)
 
@@ -136,4 +140,3 @@ class NRTL:
         self.b = b
         self.c = c
         self.id = yaeos_c.nrtl(a, b, c)
-
