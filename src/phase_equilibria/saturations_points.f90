@@ -94,7 +94,7 @@ contains
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
 
-         do while (P - step < 0)!(abs(step) > 0.1*P)
+         do while (P - step < 0 .or. abs(step) > 0.1*P)
             step = step/2
          end do
 
