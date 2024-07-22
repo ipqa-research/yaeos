@@ -2,8 +2,7 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_px
    !! Phase boundaries line on the \(P\alpha\) plane calculation procedures.
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriaState
-   use yaeos__thermoprops, only: fugacity_tp
+   use yaeos__equilibria_equilibria_state, only: EquilibriumState
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -18,19 +17,19 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_px
       !! Two-phase PX envelope.
       !! Phase boundary line of a fluid at constant temperature
       !! with variation in composition.
-      type(EquilibriaState), allocatable :: points(:)
+      real(pr), allocatable :: alpha(:) !! Second fluid amount of injection
+      real(pr), allocatable :: z0(:)
+      real(pr), allocatable :: z_inj(:)
+      type(EquilibriumState), allocatable :: points(:)
       !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
       !! Critical points found along the line.
-   contains
-      procedure, pass :: write =>  write_PXEnvel2
-      generic, public :: write (FORMATTED) => write
    end type PXEnvel2
 
 contains
 
    function px_envelope_2ph(&
-      model, z, alpha, first_point, &
+      model, z0, alpha0, z_injection, first_point, &
       points, iterations, delta_0, specified_variable_0, &
       solver, stop_conditions &
       ) result(envelopes)
@@ -44,11 +43,13 @@ contains
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: model
       !! Thermodyanmic model
-      real(pr), intent(in) :: z(:)
+      real(pr), intent(in) :: z0(:)
       !! Vector of molar fractions of the global composition (main phase)
-      real(pr), intent(in) :: alpha
+      real(pr), intent(in) :: alpha0
       !! First point of \(alpha\)
-      type(EquilibriaState) :: first_point
+      real(pr), intent(in) :: z_injection(:)
+      !! Vector of molar fractions of the injection fluid
+      type(EquilibriumState) :: first_point
       integer, optional, intent(in) :: points
       !! Maxmimum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
@@ -71,6 +72,7 @@ contains
       integer :: ns !! Number of specified variable
       real(pr) :: dS0 !! Initial specification step
       real(pr) :: S0 !! Initial specification value
+      real(pr) :: z(size(z0)) !! Composition at some point
 
       integer :: max_points !! Maximum number of points
       integer :: max_iterations !! Maximum number of iterations
@@ -83,13 +85,13 @@ contains
       ! ========================================================================
       ! Handle input
       ! ------------------------------------------------------------------------
+      call get_z(alpha0, z0, z_injection, z)
       kind = first_point%kind
       nc = size(z)
       max_points = optval(points, 500)
       max_iterations = optval(iterations, 100)
-      ns = optval(specified_variable_0, nc+1)
-      dS0 = optval(delta_0, 0.1_pr)
-
+      ns = optval(specified_variable_0, nc+2)
+      dS0 = optval(delta_0, 0.01_pr)
 
       ! Correctly define the K-values based on the provided incipient point.
       select case(first_point%kind)
@@ -102,13 +104,41 @@ contains
       T = first_point%T
 
       X(nc+1) = log(first_point%P)
-      X(nc+2) = alpha
+      X(nc+2) = alpha0
       S0 = X(ns)
 
-      allocate(envelopes%points(0), envelopes%cps(0))
+      allocate(envelopes%points(0), envelopes%cps(0), envelopes%alpha(0))
       ! ========================================================================
       ! Trace the line using the continuation method.
       ! ------------------------------------------------------------------------
+
+      test_numdiff: block
+         real(pr) :: F(size(X)), df(size(X), size(X)), numdiff(size(X), size(X))
+         real(pr) :: FdX(size(X)), dx(size(X)), dFdS(size(X)), dS, dXdS(size(X))
+         real(pr) :: FdX2(size(X))
+         integer :: i
+         integer :: loc(2)
+         real(pr) :: maxerr
+
+         do i=1,size(X)
+            dx = 0
+            dx(i) = 1.e-5_pr
+            call foo(X - dx, ns, S0, FdX, df, dFdS)
+            call foo(X + dx, ns, S0, FdX2, df, dFdS)
+            call foo(X, ns, S0, F, df, dFdS)
+            numdiff(:, i) = (FdX2 - FdX)/(2*dx(i))
+         end do
+
+         loc = maxloc(abs(numdiff - df))
+         maxerr = abs((numdiff(loc(1), loc(2)) - df(loc(1), loc(2)))/numdiff(loc(1), loc(2)))
+         if (maxerr > 0.01_pr) then
+            loc = maxloc(abs(numdiff - df))
+            print *, df(loc(1), loc(2)), numdiff(loc(1), loc(2))
+            error stop 1
+         end if
+      end block test_numdiff
+
+
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
@@ -136,7 +166,7 @@ contains
          real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
          real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
 
-         real(pr) :: P, K(nc), alpha, z_
+         real(pr) :: P, K(nc), alpha, dzda(nc)
 
          integer :: i, j
 
@@ -145,9 +175,9 @@ contains
 
          K = exp(X(:nc))
          P = exp(X(nc+1))
-         alpha = exp(X(nc+2))
+         alpha = X(nc+2)
 
-         z_ = alpha * z_inj + (1-alpha) * z
+         call get_z(alpha, z0, z_injection, z, dzda)
 
          y = K*z
 
@@ -163,14 +193,14 @@ contains
             kind_y = "stable"
          end select
 
-         call fugacity_tp(&
-            model, z, T, P, V=Vz, root_type=kind_z, &
-            lnphip=lnphip_z, dlnPhidt=dlnphi_dt_z, &
+         call model%lnphi_pt(&
+            z, P=P, T=T, V=Vz, root_type=kind_z, &
+            lnphi=lnphip_z, dlnPhidt=dlnphi_dt_z, &
             dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
             )
-         call fugacity_tp(&
-            model, y, T, P, V=Vy, root_type=kind_y, &
-            lnphip=lnphip_y, dlnPhidt=dlnphi_dt_y, &
+         call model%lnphi_pt(&
+            y, P=P, T=T, V=Vy, root_type=kind_y, &
+            lnphi=lnphip_y, dlnPhidt=dlnphi_dt_y, &
             dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
             )
 
@@ -179,21 +209,20 @@ contains
          F(nc + 2) = X(ns) - S
 
          ! Jacobian Matrix
-         do j=1,nc
-            df(:nc, j) = dlnphi_dn_y(:, j) * y(j)
-            df(j, j) = dF(j, j) + 1
+         do i = 1, nc
+            do j = 1, nc
+               df(i, j) = y(j)*dlnphi_dn_y(i, j)
+            end do
+            df(i, i) = df(i, i) + 1
+            df(i, nc + 2) = sum(K*dlnphi_dn_y(i, :)*dzda - dlnphi_dn_z(i, :)*dzda)
          end do
 
-         df(:nc, nc + 1) = T * (dlnphi_dt_y - dlnphi_dt_z)
-         df(:nc, nc + 2) = P * (dlnphi_dp_y - dlnphi_dp_z)
-
+         df(:nc, nc + 1) = P*(dlnphi_dp_y - dlnphi_dp_z)
          df(nc + 1, :nc) = y
+         df(nc + 1, nc + 2) = sum(dzda*(K - 1))
 
          df(nc + 2, :) = 0
          df(nc + 2, ns) = 1
-
-         dFdS = 0
-         dFdS(nc+2) = -1
       end subroutine foo
 
       subroutine update_spec(X, ns, S, dS, dXdS, step_iters)
@@ -238,6 +267,13 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
+         do while(abs(dXdS(nc+2)*dS) > 0.15_pr &
+               .or. abs(exp(X(nc+1) - exp(X(nc+1)) + dXdS(nc+1)*dS)&
+               ) > 10.0_pr &
+               )
+            dS = dS/2
+         end do
+
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
       end subroutine update_spec
@@ -246,18 +282,20 @@ contains
          !! Save the converged point
          real(pr), intent(in) :: X(:)
          integer, intent(in) :: iters
-         type(EquilibriaState) :: point
+         type(EquilibriumState) :: point
 
-         real(pr) :: y(nc), T, P
+         real(pr) :: y(nc), P, alpha
 
-         T = exp(X(nc+1))
-         P = exp(X(nc+2))
+         P = exp(X(nc+1))
+         alpha = X(nc+2)
          y = exp(X(:nc))*z
-         point = EquilibriaState(&
+         
+         point = EquilibriumState(&
             kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
             T=T, P=P, beta=0._pr, iters=iters &
             )
 
+         envelopes%alpha = [envelopes%alpha, alpha]
          envelopes%points = [envelopes%points, point]
       end subroutine save_point
 
@@ -295,15 +333,17 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.05)
-            ! If near a critical point, jump over it
-            S = S + dS
-            X = X + dXdS*dS
-         end do
+         ! do while (maxval(abs(X(:nc))) < 0.03)
+         !    ! If near a critical point, jump over it
+         !    print *, "NEAR CRIT"
+         !    S = S + dS
+         !    X = X + dXdS*dS
+         ! end do
 
          Xnew = X + dXdS*dS
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
+            print *, "CP!"
             select case(kind)
              case("dew")
                kind = "bubble"
@@ -313,59 +353,33 @@ contains
                kind = "liquid-liquid"
             end select
 
-            ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
+            ! 0 = a*X(ns) + (1-a)*Xnew(ns) Interpolation equation to get X(ns) = 0
             a = -Xnew(ns)/(X(ns) - Xnew(ns))
             Xc = a * X + (1-a)*Xnew
 
             envelopes%cps = [&
-               envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
+               envelopes%cps, CriticalPoint(P=exp(Xc(nc+1)), alpha=exp(Xc(nc+2))) &
                ]
             X = Xc + dXdS*dS
          end if
       end subroutine detect_critical
-   end function pt_envelope_2ph
+   end function px_envelope_2ph
 
-   subroutine write_PXEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
-      class(PXEnvel2), intent(in) :: pt2
-      integer, intent(in) :: unit
-      character(*),  intent(in) :: iotype
-      integer, intent(in)  :: v_list(:)
-      integer, intent(out) :: iostat
-      character(*), intent(inout) :: iomsg
+   subroutine get_z(alpha, z_0, z_inj, z, dzda)
+      !! Calculate the fluid composition based on an amount of addition
+      !! of second fluid.
+      !!
+      !! The injection can be considered as two kinds of injection:
+      !! - Displacement: \( z = \alpha z_i + (1-\alpha) z_0 \)
+      !! - Addition:  \( z = \frac{\alpha z_i + (1-\alpha) z_0}{\sum_{i=1}^N \alpha z_i + (1-\alpha) z_0} \)
+      real(pr), intent(in)  :: alpha !! Addition percentaje \( \alpha \)
+      real(pr), intent(in) :: z_inj(:)
+      real(pr), intent(in) :: z_0(:)
+      real(pr), intent(out) :: z(size(z_0)) !! New composition
+      real(pr), optional, intent(out) :: dzda(size(z_0)) !! Derivative wrt \(\alpha\)
 
-      integer, allocatable :: cps(:)
-      integer :: cp
-      integer :: i, nc
+      z = z_inj*alpha + (1.0_pr - alpha)*z_0
+      if (present(dzda)) dzda = z_inj - z_0
+   end subroutine get_z
 
-
-      allocate(cps(0))
-      do i=1,size(pt2%cps)
-         cp = minloc(&
-            (pt2%points%T - pt2%cps(i)%T)**2 &
-            + (pt2%points%P - pt2%cps(i)%P)**2, dim=1&
-            )
-         cps = [cps, cp]
-      end do
-
-      write(unit,  "(A, /, /)", iostat=iostat) "#PXEnvel2"
-
-      write(unit, "(A, /)") "#" // pt2%points(1)%kind
-
-      do i=1, size(pt2%points)-1
-         ! Change label if passed a critical point
-         if (any(cps - i == 0) .and. i < size(pt2%points)) then
-            write(unit, "(/, /)")
-            write(unit, "(A, /)") "#" // pt2%points(i+1)%kind
-         end if
-
-         write(unit, *) pt2%points(i)
-         write(unit, "(/)")
-      end do
-
-      write(unit, "(/, /, A, /)") "#Critical"
-      do cp = 1, size(cps)
-         write(unit, *) pt2%cps(cp)%T, pt2%cps(cp)%P
-      end do
-   end subroutine write_PXEnvel2
-
-end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
+end module yaeos__phase_equilibria_boundaries_phase_envelopes_px
