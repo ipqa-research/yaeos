@@ -91,7 +91,7 @@ contains
       max_points = optval(points, 500)
       max_iterations = optval(iterations, 100)
       ns = optval(specified_variable_0, nc+2)
-      dS0 = optval(delta_0, 0.01_pr)
+      dS0 = optval(delta_0, 0.1_pr)
 
       ! Correctly define the K-values based on the provided incipient point.
       select case(first_point%kind)
@@ -106,11 +106,7 @@ contains
       X(nc+1) = log(first_point%P)
       X(nc+2) = alpha0
       S0 = X(ns)
-
       allocate(envelopes%points(0), envelopes%cps(0), envelopes%alpha(0))
-      ! ========================================================================
-      ! Trace the line using the continuation method.
-      ! ------------------------------------------------------------------------
 
       test_numdiff: block
          real(pr) :: F(size(X)), df(size(X), size(X)), numdiff(size(X), size(X))
@@ -130,7 +126,9 @@ contains
          end do
 
          loc = maxloc(abs(numdiff - df))
-         maxerr = abs((numdiff(loc(1), loc(2)) - df(loc(1), loc(2)))/numdiff(loc(1), loc(2)))
+         maxerr = abs(&
+            (numdiff(loc(1), loc(2)) - df(loc(1), loc(2))&
+            )/numdiff(loc(1), loc(2)))
          if (maxerr > 0.01_pr) then
             loc = maxloc(abs(numdiff - df))
             print *, df(loc(1), loc(2)), numdiff(loc(1), loc(2))
@@ -139,6 +137,9 @@ contains
       end block test_numdiff
 
 
+      ! ========================================================================
+      ! Trace the line using the continuation method.
+      ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
          dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
@@ -223,6 +224,9 @@ contains
 
          df(nc + 2, :) = 0
          df(nc + 2, ns) = 1
+
+         dFdS = 0
+         dFdS(nc+2) = -1
       end subroutine foo
 
       subroutine update_spec(X, ns, S, dS, dXdS, step_iters)
@@ -248,9 +252,10 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < 0.1_pr) then
+         write(1, *) X
+         if (maxval(abs(X(:nc))) < 0.5_pr) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
-            maxdS=0.01_pr
+            maxdS = 0.01_pr
          else
             ns = maxloc(abs(dXdS), dim=1)
             maxdS = 0.05_pr
@@ -267,10 +272,7 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
-         do while(abs(dXdS(nc+2)*dS) > 0.15_pr &
-               .or. abs(exp(X(nc+1) - exp(X(nc+1)) + dXdS(nc+1)*dS)&
-               ) > 10.0_pr &
-               )
+         do while(abs(dXdS(nc+2)*dS) > 0.05_pr)
             dS = dS/2
          end do
 
@@ -289,7 +291,7 @@ contains
          P = exp(X(nc+1))
          alpha = X(nc+2)
          y = exp(X(:nc))*z
-         
+
          point = EquilibriumState(&
             kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
             T=T, P=P, beta=0._pr, iters=iters &
@@ -333,12 +335,12 @@ contains
 
          Xold = X
 
-         ! do while (maxval(abs(X(:nc))) < 0.03)
-         !    ! If near a critical point, jump over it
-         !    print *, "NEAR CRIT"
-         !    S = S + dS
-         !    X = X + dXdS*dS
-         ! end do
+         do while (maxval(abs(X(:nc))) < 0.1_pr)
+            ! If near a critical point, jump over it
+            print *, ns, "NEAR CRIT"
+            S = S + dS
+            X = X + dXdS*dS
+         end do
 
          Xnew = X + dXdS*dS
 
