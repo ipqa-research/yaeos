@@ -110,7 +110,7 @@ contains
 
       test_numdiff: block
          real(pr) :: F(size(X)), df(size(X), size(X)), numdiff(size(X), size(X))
-         real(pr) :: FdX(size(X)), dx(size(X)), dFdS(size(X)), dS, dXdS(size(X))
+         real(pr) :: FdX(size(X)), dx(size(X)), dFdS(size(X))
          real(pr) :: FdX2(size(X))
          integer :: i
          integer :: loc(2)
