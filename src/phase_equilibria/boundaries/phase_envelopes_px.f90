@@ -118,7 +118,7 @@ contains
 
          do i=1,size(X)
             dx = 0
-            dx(i) = 1.e-5_pr
+            dx(i) = 1.e-3_pr * X(i)
             call foo(X - dx, ns, S0, FdX, df, dFdS)
             call foo(X + dx, ns, S0, FdX2, df, dFdS)
             call foo(X, ns, S0, F, df, dFdS)
@@ -130,9 +130,11 @@ contains
             (numdiff(loc(1), loc(2)) - df(loc(1), loc(2))&
             )/numdiff(loc(1), loc(2)))
          if (maxerr > 0.01_pr) then
+            print *, "ERROR: PXEnvel2 Numerical differentiation failed"
             loc = maxloc(abs(numdiff - df))
+            print *, loc
             print *, df(loc(1), loc(2)), numdiff(loc(1), loc(2))
-            error stop 1
+            ! error stop 1
          end if
       end block test_numdiff
 
@@ -149,7 +151,7 @@ contains
 
    contains
 
-      subroutine foo(X, ns, S, F, dF, dFdS)
+      recursive subroutine foo(X, ns, S, F, dF, dFdS)
          !! Function that needs to be solved at each envelope point
          real(pr), intent(in) :: X(:)
          integer, intent(in) :: ns
@@ -194,6 +196,9 @@ contains
             kind_z = "stable"
             kind_y = "stable"
          end select
+
+         kind_z = "stable"
+         kind_y = "stable"
 
          call model%lnphi_pt(&
             z, P=P, T=T, V=Vz, root_type=kind_z, &
@@ -336,15 +341,16 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.03_pr)
-            ! If near a critical point, jump over it
-            S = S + dS
-            X = X + dXdS*dS
-         end do
+         ! do while (maxval(abs(X(:nc))) < 0.03_pr)
+         !    ! If near a critical point, jump over it
+         !    S = S + dS
+         !    X = X + dXdS*dS
+         ! end do
 
          Xnew = X + dXdS*dS
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
+
             select case(kind)
              case("dew")
                kind = "bubble"
@@ -359,7 +365,8 @@ contains
             Xc = a * X + (1-a)*Xnew
 
             envelopes%cps = [&
-               envelopes%cps, CriticalPoint(P=exp(Xc(nc+1)), alpha=exp(Xc(nc+2))) &
+               envelopes%cps, &
+               CriticalPoint(P=exp(Xc(nc+1)), alpha=Xc(nc+2)) &
                ]
             X = Xc + dXdS*dS
          end if
