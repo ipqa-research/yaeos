@@ -17,9 +17,9 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_px
       !! Two-phase PX envelope.
       !! Phase boundary line of a fluid at constant temperature
       !! with variation in composition.
-      real(pr), allocatable :: alpha(:) !! Second fluid amount of injection
-      real(pr), allocatable :: z0(:)
-      real(pr), allocatable :: z_inj(:)
+      real(pr), allocatable :: alpha(:) !! Second fluid molar fraction
+      real(pr), allocatable :: z0(:) !! Original fluid composition
+      real(pr), allocatable :: z_inj(:) !! Second fluid composition
       type(EquilibriumState), allocatable :: points(:)
       !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
@@ -181,6 +181,7 @@ contains
          call get_z(alpha, z0, z_injection, z, dzda)
 
          y = K*z
+         if (any(z < 0)) z = 0
 
          select case(kind)
           case ("bubble")
@@ -335,9 +336,8 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.1_pr)
+         do while (maxval(abs(X(:nc))) < 0.03_pr)
             ! If near a critical point, jump over it
-            print *, ns, "NEAR CRIT"
             S = S + dS
             X = X + dXdS*dS
          end do
@@ -345,7 +345,6 @@ contains
          Xnew = X + dXdS*dS
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
-            print *, "CP!"
             select case(kind)
              case("dew")
                kind = "bubble"
