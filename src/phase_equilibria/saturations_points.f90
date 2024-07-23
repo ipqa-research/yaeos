@@ -211,7 +211,7 @@ contains
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dt_z - dlnphi_dt_y))
 
-         do while (abs(step) > 0.25*T)
+         do while (abs(step) > 0.25*T .or. T - step < 0)
             step = step/2
          end do
 
