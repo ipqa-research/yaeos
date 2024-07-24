@@ -38,31 +38,25 @@ program main
    eos%mixrule = mixrule
 
    ! print *, "Pxy a mano"
-   ! call t%timer_start()
-   ! do i=1,99
-   !    n(1) = real(i, pr)/100
-   !    n(2) = 1 - n(1)
-   !    eq = saturation_pressure(eos, n, 273._pr + 100._pr, kind="bubble")
-   !    write(1, *) eq%x(1), eq%y(1), eq%P
-   ! end do
-   ! call t%timer_stop()
 
 
    print *, "Pxy envlop"
-   call t%timer_start()
    n = [0.001_pr, 0.999_pr]
    eq = saturation_pressure(eos, n, 273._pr + 100._pr, kind="bubble")
    if (eq%iters > 1000) error stop 1
 
+
+   n = [0, 1]
+   call t%timer_start()
    px = px_envelope_2ph(&
-      eos, z0=n, alpha0=0.0_pr, &
-      z_injection=[1.0_pr, 0.0_pr], first_point=eq, iterations=30 &
+      eos, z0=n, alpha0=0.001_pr, &
+      z_injection=[1.0_pr, 0.0_pr], first_point=eq, iterations=30, delta_0=0.2_pr &
    )
+   call t%timer_stop()
 
    do i=1,size(px%points)
       write(2, *) px%points(i)%x(1), px%points(i)%y(1), px%points(i)%P
    end do
 
    print *, px%cps
-   call t%timer_stop()
 end program main
