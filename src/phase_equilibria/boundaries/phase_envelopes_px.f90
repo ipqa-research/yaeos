@@ -26,6 +26,11 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_px
       !! Critical points found along the line.
    end type PXEnvel2
 
+
+   ! Private volumes of each phase to share between functions
+   real(pr), private :: Vz
+   real(pr), private :: Vy
+
 contains
 
    function px_envelope_2ph(&
@@ -164,7 +169,7 @@ contains
          character(len=14) :: kind_z, kind_y
 
          real(pr) :: y(nc)
-         real(pr) :: Vz, Vy, lnphip_z(nc), lnphip_y(nc)
+         real(pr) :: lnphip_z(nc), lnphip_y(nc)
          real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
          real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
          real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
@@ -298,10 +303,23 @@ contains
          alpha = X(nc+2)
          y = exp(X(:nc))*z
 
-         point = EquilibriumState(&
-            kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
-            T=T, P=P, beta=0._pr, iters=iters &
-            )
+         select case(kind)
+            case("bubble")
+               point = EquilibriumState(&
+                  kind=kind, x=z, Vx=Vz, y=y, Vy=Vy, &
+                  T=T, P=P, beta=0._pr, iters=iters &
+               )
+            case("dew")
+               point = EquilibriumState(&
+                  kind=kind, x=y, Vx=Vy, y=z, Vy=Vz, &
+                  T=T, P=P, beta=0._pr, iters=iters &
+               )
+            case default
+               point = EquilibriumState(&
+                  kind="saturation", x=z, Vx=Vz, y=y, Vy=Vy, &
+                  T=T, P=P, beta=0._pr, iters=iters &
+               )
+         end select
 
          envelopes%alpha = [envelopes%alpha, alpha]
          envelopes%points = [envelopes%points, point]
@@ -341,11 +359,11 @@ contains
 
          Xold = X
 
-         ! do while (maxval(abs(X(:nc))) < 0.03_pr)
-         !    ! If near a critical point, jump over it
-         !    S = S + dS
-         !    X = X + dXdS*dS
-         ! end do
+         do while (maxval(abs(X(:nc))) < 0.03_pr)
+            ! If near a critical point, jump over it
+            S = S + dS
+            X = X + dXdS*dS
+         end do
 
          Xnew = X + dXdS*dS
 
@@ -386,7 +404,7 @@ contains
       real(pr), intent(out) :: z(size(z_0)) !! New composition
       real(pr), optional, intent(out) :: dzda(size(z_0)) !! Derivative wrt \(\alpha\)
 
-      z = z_inj*alpha + (1.0_pr - alpha)*z_0
+      z = z_inj * alpha + (1.0_pr - alpha)*z_0
       if (present(dzda)) dzda = z_inj - z_0
    end subroutine get_z
 
