@@ -21,6 +21,7 @@ contains
       !! vapor-liquid separation predicted by the provided model (0<beta<1) and
       !! solves the equilibria and mass-balance equations with a fixed-point
       !! method.
+      use stdlib_optval, only: optval
       class(ArModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
@@ -29,27 +30,18 @@ contains
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
       integer, optional, intent(out) :: iters !! Number of iterations
 
-      logical :: stopflash
-
       ! Results from flash calculation
       real(pr), dimension(size(z)) :: x  ! composition of liquid (molar fractions)
       real(pr), dimension(size(z)) :: y  ! composition of vapour (molar fractions)
-      real(pr) :: rho_x            ! density of liquid (moles/L)
-      real(pr) :: rho_y            ! density of vapour (moles/L)
       real(pr) :: beta             ! total fraction of vapour (molar base)
 
       ! Intermediate variables during calculation process
-      real(pr) :: p, v
+      real(pr) :: P, V
       real(pr), dimension(size(z)) :: lnfug_y, lnfug_x
       real(pr), dimension(size(z)) :: K, dK, lnK, dKold, lnKold
-      real(pr), dimension(size(z), size(z)) :: dlnphidn
 
       real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
       real(pr) :: bmin, bmax, Vy, Vx
-
-      real(pr) :: bx, savek(size(z)), log_k2(size(z))
-      real(pr) :: DPVl, dpvv, dVydVl, h, pl, pold, pold2, pv, step, stepv
-      real(pr) :: told, told2
 
       character(len=2) :: spec !! Flash specification [PT | VT]
 
@@ -57,7 +49,7 @@ contains
       ! ========================================================================
       ! Starting steps
       ! ------------------------------------------------------------------------
-      if (present(v_spec) .and. present(p_spec)) then
+      if (present(V_spec) .and. present(P_spec)) then
          write (*, *) "ERROR: Can't specify pressure and volume in Flash"
          return
       else if (present(p_spec)) then
@@ -97,7 +89,7 @@ contains
       ! ------------------------------------------------------------------------
       dK = 1.0
       iters = 0
-      do while (maxval(abs(dK)) > 1.d-6)
+      do while (maxval(abs(dK)) > 1.e-6_pr)
          iters = iters + 1
 
          call solve_rr(z, K, beta, bmin, bmax)
@@ -125,7 +117,7 @@ contains
 
          K = exp(lnK)
 
-         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05) then
+         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05_pr) then
             ! oscilation behavior detected (27/06/15)
             lnK = (lnK + lnKold)/2
          end if
@@ -151,35 +143,35 @@ contains
 
          if (iters > 500) then
             p = -1
-            return
+            exit
          end if
       end do
 
       ! ========================================================================
       ! Format results
       ! ------------------------------------------------------------------------
-      if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
+      if (spec == 'TP') V = beta*Vy + (1 - beta)*Vx
 
-      if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
+      if (maxval(K) < 1.001_pr .and. minval(K) > 0.999_pr .or. P < 0) then ! trivial solution
          flash%kind = "failed"
          P = -1.0
          flash%x = x/x
          flash%y = y/y
          flash%iters = iters
-         flash%p = p
-         flash%t = t
+         flash%P = P
+         flash%T = T
          return
       end if
 
       flash%kind = "split"
       flash%iters = iters
-      flash%p = p
-      flash%t = t
+      flash%P = P
+      flash%T = T
 
       flash%x = x
       flash%y = y
-      flash%vx = Vx
-      flash%vy = vy
+      flash%Vx = Vx
+      flash%Vy = Vy
       flash%beta = beta
    end function flash
 end module yaeos__equilibria_flash
