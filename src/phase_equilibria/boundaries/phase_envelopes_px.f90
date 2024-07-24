@@ -28,8 +28,8 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_px
 
 
    ! Private volumes of each phase to share between functions
-   real(pr), private :: Vz
-   real(pr), private :: Vy
+   real(pr), private :: Vz !! Main phase volume [L/mol]
+   real(pr), private :: Vy !! Incipient phase volume [L/mol]
 
 contains
 
@@ -188,7 +188,6 @@ contains
          call get_z(alpha, z0, z_injection, z, dzda)
 
          y = K*z
-         if (any(z < 0)) z = 0
 
          select case(kind)
           case ("bubble")
@@ -201,9 +200,6 @@ contains
             kind_z = "stable"
             kind_y = "stable"
          end select
-
-         kind_z = "stable"
-         kind_y = "stable"
 
          call model%lnphi_pt(&
             z, P=P, T=T, V=Vz, root_type=kind_z, &
@@ -269,7 +265,7 @@ contains
             maxdS = 0.01_pr
          else
             ns = maxloc(abs(dXdS), dim=1)
-            maxdS = 0.05_pr
+            maxdS = 0.5_pr
          end if
 
          dS = dXdS(ns) * dS
@@ -283,7 +279,7 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
-         do while(abs(dXdS(nc+2)*dS) > 0.05_pr)
+         do while(abs(dXdS(nc+2)*dS) > 0.1_pr)
             dS = dS/2
          end do
 
@@ -359,7 +355,7 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.03_pr)
+         do while (maxval(abs(X(:nc))) < 0.03_pr .and. abs(Vz - Vy) < 0.01_pr)
             ! If near a critical point, jump over it
             S = S + dS
             X = X + dXdS*dS
