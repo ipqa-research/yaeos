@@ -48,7 +48,7 @@ contains
 
    subroutine test_dew_pressure(error)
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
-      use yaeos__phase_equilibria_auxiliar, only: k_wilson
+      use yaeos, only: k_wilson
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -79,7 +79,7 @@ contains
 
    subroutine test_dew_temperature(error)
       use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel
-      use yaeos__phase_equilibria_auxiliar, only: k_wilson
+      use yaeos, only: k_wilson
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -135,7 +135,7 @@ contains
 
    subroutine test_pt2_envelope(error)
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
-      use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: &
+      use yaeos, only: &
          pt_envelope_2ph, PTEnvel2
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
@@ -159,7 +159,7 @@ contains
 
    subroutine test_px2_envelope(error)
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
-      use yaeos__phase_equilibria_boundaries_phase_envelopes_px, only: &
+      use yaeos, only: &
          px_envelope_2ph, PXEnvel2
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error

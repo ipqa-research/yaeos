@@ -27,7 +27,7 @@ module yaeos__models_solvers
 
 contains
 
-   subroutine volume_michelsen(eos, n, P, T, V, root_type, max_iters)
+   subroutine volume_michelsen(eos, n, P, T, V, root_type, max_iters, V0)
       !! Volume solver at a given pressure.
       !!
       !! Obtain the volume using the method described by Michelsen and Møllerup.
@@ -54,6 +54,8 @@ contains
       character(len=*), optional, intent(in) :: root_type !! Type of root ["vapor" | "liquid" | "stable"]
       integer, optional, intent(in) :: max_iters !! Maxiumum number of iterations, defaults to 100
 
+      real(pr), optional, intent(in) :: V0 !! Specified initial volume
+
       character(len=10) :: root
 
       real(pr) ::  Ar, ArV, ArV2
@@ -76,6 +78,9 @@ contains
       ZETMIN = 0._pr
       ZETMAX = 1._pr
 
+      if (present(V0)) then
+         zeta = B/V0
+      else
       select case(root_type)
        case("liquid")
          ZETA = 0.5_pr
@@ -97,6 +102,7 @@ contains
          write(error_unit, *) "ERROR [VCALC]: Wrong specification"
          error stop 1
       end select
+      end if
    contains
       subroutine solve_point(P, V, Pcalc, AT, iter)
          real(pr), intent(in) :: P !! Objective pressure [bar]

@@ -1,4 +1,4 @@
-module yaeos__phase_equilibria_rachford_rice
+module yaeos__equilibria_rachford_rice
    use yaeos__constants, only: pr
    implicit none
 contains
@@ -94,4 +94,4 @@ contains
          end do
       end do
    end subroutine solve_rr
-end module yaeos__phase_equilibria_rachford_rice
+end module yaeos__equilibria_rachford_rice

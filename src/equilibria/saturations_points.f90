@@ -1,8 +1,8 @@
 module yaeos__equilibria_saturation_points
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriumState
-   use yaeos__phase_equilibria_auxiliar, only: k_wilson
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
    integer :: max_iterations = 1000

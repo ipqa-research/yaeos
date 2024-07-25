@@ -1,9 +1,9 @@
 module yaeos__equilibria_flash
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriumState
-   use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
-   use yaeos__phase_equilibria_auxiliar, only: k_wilson
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
+   use yaeos__equilibria_auxiliar, only: k_wilson
    use yaeos__solvers_pressure_equality, only: pressure_equality_V_beta_xy
    implicit none
 
