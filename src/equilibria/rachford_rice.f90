@@ -12,6 +12,7 @@ contains
 
       g1 = 1.0
       do while (g0 < 0 .or. g1 > 0)
+         if (any(isnan([g0, g1])) .or. all(K==0)) exit
          g0 = sum(z*K) - 1._pr
          g1 = 1._pr - sum(z/K)
          if (g0 < 0) then

@@ -16,4 +16,15 @@ contains
          * exp(5.373_pr*(1 + model%components%w)&
          * (1 - model%components%Tc/T))
    end function k_wilson
+
+   real(pr) function P_wilson(model, z, T) result(P)
+      class(BaseModel), intent(in) :: model
+      real(pr), intent(in) :: z(:)
+      real(pr), intent(in) :: T
+
+      P = 1.0_pr/sum(&
+         z*model%components%Pc &
+         * exp(5.373_pr &
+         * (1 + model%components%w)*(1 - model%components%Tc/T)))
+   end function P_wilson
 end module yaeos__equilibria_auxiliar

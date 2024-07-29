@@ -18,6 +18,6 @@ module yaeos__equilibria
       PXEnvel2, px_envelope_2ph
 
    ! Extra
-   use yaeos__equilibria_auxiliar, only: k_wilson
+   use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
    implicit none
 end module yaeos__equilibria
