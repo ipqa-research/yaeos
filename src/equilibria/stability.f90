@@ -33,6 +33,10 @@ module yaeos__phase_equilibria_stability
    use yaeos__models_ar, only: ArModel
    implicit none
 
+   type mintpd_data
+      real(pr), allocatable :: di(:)
+   end type
+
 contains
 
    real(pr) function tm(model, z, w, P, T, d, dtpd)
@@ -117,6 +121,8 @@ contains
       real(pr), optional, intent(out) :: all_minima(:, :) 
          !! All the found minima
 
+      type(mintpd_data) :: func_data
+
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))
 
@@ -128,12 +134,12 @@ contains
 
       integer :: stat
 
-      f = create_nlopt_func(foo)
+      f = create_nlopt_func(foo, f_data=func_data)
       dx = 0.001_pr
 
       ! Calculate feed di
       call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
-      di = log(z) + lnphi_z
+      func_data%di = log(z) + lnphi_z
 
 
       ! ==============================================================
@@ -149,7 +155,7 @@ contains
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
-      !$OMP PARALLEL DO PRIVATE(i, w, mintpd, stat) SHARED(opt, ws, mins)
+!      !$OMP PARALLEL DO PRIVATE(i, w, mintpd, stat) SHARED(opt, ws, mins)
       do i=1,size(w)
          w = 0.001_pr
          w(i) = 0.999_pr
@@ -157,7 +163,7 @@ contains
          mins(i) = mintpd
          ws(i, :) = w
       end do
-      !$OMP END PARALLEL DO
+!      !$OMP END PARALLEL DO
 
       i = minloc(mins, dim=1)
       mintpd = mins(i)
@@ -171,7 +177,12 @@ contains
          real(pr), intent(in) :: x(:)
          real(pr), optional, intent(in out) :: gradient(:)
          class(*), optional, intent(in) :: func_data
-         foo = tm(model, z, x, P, T, d=di)
+
+         select type(func_data)
+         type is (mintpd_data)
+            foo = tm(model, z, x, P, T, d=func_data%di)
+         end select
+
       end function foo
    end subroutine min_tpd
 end module yaeos__phase_equilibria_stability
