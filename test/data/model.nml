@@ -1,0 +1,21 @@
+&yaeos_setup
+    nc = 3
+    model = "PengRobinson76"
+/
+
+&yaeos_cubic
+    mixrule = "QMR"
+/
+
+&yaeos_critical
+    Tc = 190 200 300
+    Pc = 10 30 40
+    w = 0.1 0.2 0.3
+    Zc = 0.15 0.2 0.25
+/
+
+&yaeos_qmr
+    kij(1, :) = 0 2 3
+    kij(2, :) = 2 0 4
+    kij(3, :) = 3 4 0
+/
