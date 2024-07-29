@@ -1,3 +1,3 @@
 module yaeos__io
-   use yaeos__io_namelist, only: read_cubic_eos
+   use yaeos__io_namelist, only: model_from_namelist
 end module
