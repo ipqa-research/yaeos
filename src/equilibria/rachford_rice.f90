@@ -8,9 +8,11 @@ contains
       real(pr), intent(in) :: z(:) !! Molar fractions of the system
       real(pr) :: K(:) !! K factors \(\frac{y_i}{x_i}\)
 
-      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on K factors
+      real(pr) :: g0 !! function g valuated at beta=0
+      real(pr) :: g1 !! function g valuated and 1
 
-      g1 = 1.0
+      g0 = sum(z*K) - 1._pr
+      g1 = 1._pr - sum(z/K)
       do while (g0 < 0 .or. g1 > 0)
          if (any(isnan([g0, g1])) .or. all(K==0)) exit
          g0 = sum(z*K) - 1._pr
