@@ -92,6 +92,7 @@ contains
       do while (maxval(abs(dK)) > 1.e-6_pr)
          iters = iters + 1
 
+         call betato01(z, K)
          call solve_rr(z, K, beta, bmin, bmax)
 
          y = z * K / (1 + beta*(K - 1._pr))
