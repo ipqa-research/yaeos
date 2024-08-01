@@ -89,7 +89,7 @@ contains
          call rachford_rice(z, k, beta, g, dgdb)
          step = -g/dgdb
          beta = beta + step
-         do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10)
+         do while ((beta < beta_min .or. beta_max < beta) .and. abs(step) > 1e-10)
             step = step/2
             beta = beta - step
          end do
