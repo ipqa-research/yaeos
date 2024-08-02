@@ -85,6 +85,8 @@ class ArModel(ABC):
         flash_result = {
             "x": x,
             "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
             "P": pressure,
             "T": temperature,
             "beta": beta,
