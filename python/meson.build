@@ -9,6 +9,9 @@ add_languages('fortran', native: false)
 
 meson_path = meson.current_build_dir()
 
+omp = dependency('openmp')
+lapack = dependency('lapack')
+
 py_mod = import('python')
 py = py_mod.find_installation(pure: false)
 py_dep = py.dependency()
@@ -66,16 +69,15 @@ f2py_gen_source = custom_target(module_name + '.c',
 
 # Install Python sources
 python_lib = 'yaeos'
-f_sources = [
-    python_lib / 'lib' / '__init__.py'
-]
-py.install_sources(f_sources, subdir: python_lib / 'lib')
-
-main_sources = [
+python_sources = [
     python_lib / '__init__.py',
-    python_lib / 'core.py'
+    python_lib / 'core.py',
+    python_lib / 'cubic_eos.py',
 ]
-py.install_sources(main_sources, subdir:'')
+fapi_sources = [python_lib / 'lib' / '__init__.py']
+
+py.install_sources(python_sources, subdir:python_lib)
+py.install_sources(fapi_sources, subdir:python_lib / 'lib')
 
 # Extension fortran module
 inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
@@ -85,7 +87,7 @@ py.extension_module(module_name,
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
   dependencies : py_dep,
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos'],
+  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack'],
   subdir: python_lib / 'lib',
   install : true,
 )

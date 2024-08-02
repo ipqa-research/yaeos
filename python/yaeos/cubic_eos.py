@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from yaeos.core import ArModel
-from yaeos.compiled_module import yaeos_c
+from yaeos.lib import yaeos_c
 
 
 class CubicMixRule(ABC):

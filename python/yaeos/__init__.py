@@ -1,4 +1,4 @@
-from yaeos.compiled_module.yaeos_compiled import yaeos_c
+from yaeos.lib import yaeos_c
 
 from yaeos.cubic_eos import (
     SoaveRedlichKwong,
