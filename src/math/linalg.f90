@@ -44,7 +44,7 @@ contains
    end function solve_system
 
    subroutine cubic_roots(parameters, real_roots, complex_roots, flag)
-      use stdlib_sorting, only: sort
+      use yaeos__auxiliar, only: sort
       real(pr), parameter :: pi=atan(1.0_pr) * 4.0_pr
       real(pr), intent(in) :: parameters(4)
       real(pr), intent(out) :: real_roots(3)
@@ -100,29 +100,29 @@ contains
    end subroutine cubic_roots
 
    subroutine cubic_roots_rosendo(parameters, real_roots, complex_roots, flag)
-      use stdlib_sorting, only: sort
+      use yaeos__auxiliar, only: sort
       real(pr), parameter :: pi=atan(1.0_pr) * 4.0_pr
       real(pr), intent(in) :: parameters(4)
       real(pr), intent(out) :: real_roots(3)
       complex(pr), intent(out) :: complex_roots(3)
       integer, intent(out) :: flag
 
-      real(pr) :: d1, d2, d3, Q, R, A, B, theta, alp, bet, gam
+      real(16) :: d1, d2, d3, Q, R, A, B, theta, alp, bet, gam
       integer :: i
 
       d1 = parameters(2) / parameters(1)
       d2 = parameters(3) / parameters(1)
       d3 = parameters(4) / parameters(1)
 
-      Q = (d1**2 - 3*d2) / 9.0_pr
-      R = (2*d1**3 - 9*d1*d2 + 27*d3) / 54.0_pr
+      Q = (d1**2 - 3*d2) / 9.0_16
+      R = (2*d1**3 - 9*d1*d2 + 27*d3) / 54.0_16
 
       if (R**2 <= Q**3) then
          theta = acos(R / sqrt(Q**3))
 
-         real_roots(1) = -2 * sqrt(Q) * cos(theta / 3.0_pr) - d1 / 3.0_pr
-         real_roots(2) = -2 * sqrt(Q) * cos((theta + 2 * pi) / 3.0_pr) - d1 / 3.0_pr
-         real_roots(3) = -2 * sqrt(Q) * cos((theta - 2 * pi) / 3.0_pr) - d1 / 3.0_pr
+         real_roots(1) = -2 * sqrt(Q) * cos(theta / 3.0_16) - d1 / 3.0_16
+         real_roots(2) = -2 * sqrt(Q) * cos((theta + 2 * pi) / 3.0_16) - d1 / 3.0_16
+         real_roots(3) = -2 * sqrt(Q) * cos((theta - 2 * pi) / 3.0_16) - d1 / 3.0_16
 
          ! Correction??
          ! do i=1,100
@@ -134,16 +134,16 @@ contains
          call sort(real_roots)
          flag = -1
       else
-         A = - sign((abs(R) + sqrt(R**2 - Q**3))**(1.0_pr/3.0_pr), R)
+         A = - sign((abs(R) + sqrt(R**2 - Q**3))**(1.0_16/3.0_16), R)
 
          if (abs(A) < 1e-6) then
-            A = 0.0_pr
-            B = 0.0_pr
+            A = 0.0_16
+            B = 0.0_16
          else
             B = Q / A
          end if
 
-         real_roots = (A + B) - d1 / 3.0_pr
+         real_roots = (A + B) - d1 / 3.0_16
          flag = 1
       end if
    end subroutine

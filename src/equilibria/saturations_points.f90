@@ -1,8 +1,8 @@
 module yaeos__equilibria_saturation_points
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriumState
-   use yaeos__phase_equilibria_auxiliar, only: k_wilson
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
    integer :: max_iterations = 1000
@@ -94,7 +94,7 @@ contains
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
 
-         do while (abs(step) > 0.1*P)
+         do while (P - step < 0 .or. abs(step) > 0.1*P)
             step = step/2
          end do
 
@@ -150,9 +150,12 @@ contains
       real(pr) :: f, step
       integer :: its, iterations
 
+      logical :: is_incipient(size(n))
+
       ! =======================================================================
       ! Handle arguments
       ! -----------------------------------------------------------------------
+      is_incipient = .true.
       z = n/sum(n)
       if (present (t0)) then
          t = t0
@@ -185,6 +188,11 @@ contains
       where (z == 0)
          k = 0
       end where
+
+      where (y == 0)
+         is_incipient = .false.
+      end where
+
       ! ========================================================================
 
       ! ========================================================================
@@ -192,6 +200,10 @@ contains
       ! ------------------------------------------------------------------------
       do its=1, iterations
          y = k*z
+         where (.not. is_incipient)
+            y = 0
+         endwhere
+
          call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
          call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
 
@@ -199,11 +211,12 @@ contains
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dt_z - dlnphi_dt_y))
 
-         do while (abs(step) > 0.25*T)
+         do while (abs(step) > 0.25*T .or. T - step < 0)
             step = step/2
          end do
 
          t = t - step
+
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================

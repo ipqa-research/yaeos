@@ -1,4 +1,4 @@
-module yaeos__phase_equilibria_rachford_rice
+module yaeos__equilibria_rachford_rice
    use yaeos__constants, only: pr
    implicit none
 contains
@@ -12,6 +12,7 @@ contains
 
       g1 = 1.0
       do while (g0 < 0 .or. g1 > 0)
+         if (any(isnan([g0, g1])) .or. all(K==0)) exit
          g0 = sum(z*K) - 1._pr
          g1 = 1._pr - sum(z/K)
          if (g0 < 0) then
@@ -88,10 +89,10 @@ contains
          call rachford_rice(z, k, beta, g, dgdb)
          step = -g/dgdb
          beta = beta + step
-         do while ((beta < beta_min .or. beta_max < beta) .and. step > 1e-10)
+         do while ((beta < beta_min .or. beta_max < beta) .and. abs(step) > 1e-10)
             step = step/2
             beta = beta - step
          end do
       end do
    end subroutine solve_rr
-end module yaeos__phase_equilibria_rachford_rice
+end module yaeos__equilibria_rachford_rice

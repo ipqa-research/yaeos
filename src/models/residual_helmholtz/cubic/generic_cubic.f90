@@ -345,7 +345,7 @@ contains
       real(pr) :: a(size(n)), dadt(size(n)), dadt2(size(n))
       real(pr) :: totn
 
-      call volume_michelsen(eos, n, P, T, V, root_type)
+      call volume_michelsen(eos, n=n, P=P, T=T, V=V, root_type=root_type)
       return
 
       totn = sum(n)
