@@ -1,4 +1,4 @@
-module yaeos__ar_models_hyperdual
+module yaeos__adiff_hyperdual_ar_api
     !! Module that contains the automatic differentiation logic for an Ar model.
     !! 
     !! All that is needed to define an Ar model that uses automatic
@@ -8,7 +8,7 @@ module yaeos__ar_models_hyperdual
     !!
     !! ```fortran
     !! module newmodel
-    !! use yaeos__ar_models_hyperdual, only: ArModelAdiff
+    !! use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
     !!
     !! type, extends(ArModelAdiff) :: YourNewModel
     !!       type(Substances) :: composition
@@ -45,7 +45,7 @@ module yaeos__ar_models_hyperdual
     !!
     use yaeos__constants, only: pr
     use yaeos__models_ar, only: ArModel
-    use yaeos__autodiff
+    use hyperdual_mod
 
     implicit none
 
