@@ -96,15 +96,13 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
-      working-directory: ./python
       run: |
         sudo apt-get install libnlopt-dev meson
         pip install meson tox
 
     - name: Install yaeos
-      working-directory: ./python
       run:
-        pip install .
+        pip install ./python
 
   build_wheels:
     needs: Python-API
