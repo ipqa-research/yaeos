@@ -80,10 +80,14 @@ jobs:
         os: [ubuntu-latest]
         gcc_v: [13] # Version of GFortran we want to use.
         python-version: [3.11]
-    env:
-      FC: gfortran-${{ matrix.gcc_v }}
-      GCC_V: ${{ matrix.gcc_v }}
-
+        toolchain:
+          # - {compiler: gcc, version: 10}
+          # - {compiler: gcc, version: 11}
+          # - {compiler: gcc, version: 12}
+          - {compiler: gcc, version: 13}
+          # - {compiler: intel, version: '2024.1'}
+          # - {compiler: intel, version: '2023.2'}
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -99,6 +103,13 @@ jobs:
       run: |
         sudo apt-get install libnlopt-dev meson
         pip install meson tox
+    
+    - name: Setup Fortran Compiler
+      uses: fortran-lang/setup-fortran@v1
+      id: setup-fortran
+      with:
+        compiler: ${{ matrix.toolchain.compiler }}
+        version: ${{ matrix.toolchain.version }}
 
     - name: Install yaeos
       run:
