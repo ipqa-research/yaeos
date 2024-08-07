@@ -22,3 +22,6 @@ target-version = ["py310"]
 markers = [
     "marker_name: marker_description",
 ]
+[tool.cibuildwheel]
+[tool.cibuildwheel.linux]
+before-all = "yum -y update && yum -y install blas-devel lapack-devel freetype-devel"
