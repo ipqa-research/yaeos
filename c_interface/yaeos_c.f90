@@ -300,13 +300,12 @@ contains
       beta = eq_state%beta
    end subroutine equilibria_state_to_arrays
 
-   subroutine flash(id, z, T, P, x, y, k0, Pout, Tout, Vx, Vy, beta)
+   subroutine flash(id, z, T, P, x, y, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fflash => flash
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
       real(c_double), intent(in) :: P
-      real(c_double), optional, intent(in out) :: k0(size(z))
       real(c_double), intent(out) :: x(size(z))
       real(c_double), intent(out) :: y(size(z))
       real(c_double), intent(out) :: Pout

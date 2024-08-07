@@ -63,7 +63,7 @@ f2py_gen_source = custom_target(module_name + '.c',
     '@INPUT@',
     '-m',
     module_name,
-    '--lower'
+    '--lower', '--debug', '--debug-capi'
   ]
 )
 
@@ -87,7 +87,9 @@ py.extension_module(module_name,
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
   dependencies : py_dep,
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack'],
+  link_args: [
+    '-L' + 'fpm_build' / 'lib', '-lyaeos', '-llapack', '-lnlopt'
+  ],
   subdir: python_lib / 'lib',
   install : true,
 )
