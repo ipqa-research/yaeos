@@ -1,6 +1,6 @@
 module yaeos__HardSpheresCubicEoS
    use yaeos, only: pr, R, Substances
-   use yaeos__ar_models_hyperdual, only: ArModelAdiff
+   use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
    use yaeos__autodiff
    implicit none
 

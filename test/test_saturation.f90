@@ -15,7 +15,8 @@ contains
          new_unittest("Dew pressure", test_dew_pressure), &
          new_unittest("Bubble temperature", test_bubble_temperature), &
          new_unittest("Dew temperature", test_dew_temperature), &
-         new_unittest("PT envelope", test_envelope) &
+         new_unittest("PT2 envelope", test_pt2_envelope), &
+         new_unittest("PX2 envelope", test_px2_envelope) &
          ]
    end subroutine collect_suite
 
@@ -31,7 +32,7 @@ contains
 
       real(pr) :: x(nc)  = [0.4, 0.6]
       real(pr) :: y(nc) = [0.84203837140677695, 0.15796162859550475]
-      real(pr) :: P = 12.124711835829961     
+      real(pr) :: P = 12.124711835829961
 
       real(pr) :: n(nc), t
 
@@ -43,11 +44,11 @@ contains
       call check(error, maxval(abs(bubble%x - x)) < abs_tolerance)
       call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
       call check(error, abs(bubble%p - p) < abs_tolerance)
-   end subroutine
-   
+   end subroutine test_bubble_pressure
+
    subroutine test_dew_pressure(error)
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
-      use yaeos__phase_equilibria_auxiliar, only: k_wilson
+      use yaeos, only: k_wilson
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -74,11 +75,11 @@ contains
       call check(error, abs(dew%T-T) < abs_tolerance)
       call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
       call check(error, maxval(abs(dew%y-y)) < abs_tolerance)
-   end subroutine
+   end subroutine test_dew_pressure
 
    subroutine test_dew_temperature(error)
       use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel
-      use yaeos__phase_equilibria_auxiliar, only: k_wilson
+      use yaeos, only: k_wilson
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -104,8 +105,8 @@ contains
       call check(error, abs(dew%T-T) < abs_tolerance)
       call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
       call check(error, maxval(abs(dew%y-y)) < abs_tolerance)
-   end subroutine
-   
+   end subroutine test_dew_temperature
+
    subroutine test_bubble_temperature(error)
       use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel, saturation_pressure, PTEnvel2, pt_envelope_2ph
       use fixtures_models, only: binary_PR76
@@ -118,7 +119,7 @@ contains
 
       real(pr) :: x(nc)  = [0.4, 0.6]
       real(pr) :: y(nc) = [0.84203837140677695, 0.15796162859550475]
-      real(pr) :: P = 12.124711835829961     
+      real(pr) :: P = 12.124711835829961
 
       real(pr) :: n(nc), t
 
@@ -130,11 +131,11 @@ contains
       call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
       call check(error, abs(bubble%p - p) < abs_tolerance)
       call check(error, abs(bubble%T - T) < abs_tolerance)
-   end subroutine
+   end subroutine test_bubble_temperature
 
-   subroutine test_envelope(error)
+   subroutine test_pt2_envelope(error)
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
-      use yaeos__phase_equilibria_boundaries_phase_envelopes_pt, only: &
+      use yaeos, only: &
          pt_envelope_2ph, PTEnvel2
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
@@ -143,7 +144,6 @@ contains
       class(ArModel), allocatable :: model
       type(PTEnvel2) :: envelope
       real(pr) :: z(2) = [0.4_pr, 0.6_pr]
-      integer :: i
 
       z = z/sum(z)
 
@@ -152,7 +152,33 @@ contains
       bubble = saturation_pressure(model, z, 200._pr, kind="bubble", p0=10._pr)
       envelope = pt_envelope_2ph(&
          model, z, bubble &
+         )
+      print *, envelope%cps(1)
+      call check(error, size(envelope%cps) == 1)
+   end subroutine test_pt2_envelope
+
+   subroutine test_px2_envelope(error)
+      use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
+      use yaeos, only: &
+         px_envelope_2ph, PXEnvel2
+      use fixtures_models, only: binary_PR76
+      type(error_type), allocatable, intent(out) :: error
+
+      type(EquilibriumState) :: bubble
+      class(ArModel), allocatable :: model
+      type(PXEnvel2) :: envelope
+      real(pr) :: z(2) = [0.01_pr, 0.99_pr]
+      real(pr) :: z_inj(2) = [1,  0]
+      integer :: i
+
+      z = z/sum(z)
+
+      model = binary_PR76()
+
+      bubble = saturation_pressure(model, z, T=270._pr, kind="bubble", p0=10._pr)
+      envelope = px_envelope_2ph(&
+         model, z0=z, first_point=bubble, alpha0=0.0_pr, z_injection=z_inj&
       )
       call check(error, size(envelope%cps) == 1)
-   end subroutine
+   end subroutine test_px2_envelope
 end module test_saturation

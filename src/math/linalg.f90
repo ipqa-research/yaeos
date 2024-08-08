@@ -44,7 +44,7 @@ contains
    end function solve_system
 
    subroutine cubic_roots(parameters, real_roots, complex_roots, flag)
-      use stdlib_sorting, only: sort
+      use yaeos__auxiliar, only: sort
       real(pr), parameter :: pi=atan(1.0_pr) * 4.0_pr
       real(pr), intent(in) :: parameters(4)
       real(pr), intent(out) :: real_roots(3)
@@ -100,7 +100,7 @@ contains
    end subroutine cubic_roots
 
    subroutine cubic_roots_rosendo(parameters, real_roots, complex_roots, flag)
-      use stdlib_sorting, only: sort
+      use yaeos__auxiliar, only: sort
       real(pr), parameter :: pi=atan(1.0_pr) * 4.0_pr
       real(pr), intent(in) :: parameters(4)
       real(pr), intent(out) :: real_roots(3)

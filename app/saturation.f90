@@ -1,5 +1,6 @@
 program main
    use yaeos
+   use fortime, only: timer
    integer, parameter :: nc=2
    type(NRTL) :: ge_model
 
@@ -8,6 +9,8 @@ program main
    type(MHV) :: mixrule
    type(CubicEOS) :: eos
    type(EquilibriumState) :: eq
+   type(PXEnvel2) :: px
+   type(timer) :: t
    real(pr) :: n(nc)
 
    integer :: i
@@ -34,31 +37,26 @@ program main
    deallocate(eos%mixrule)
    eos%mixrule = mixrule
 
-   do i=1,99
-    n(1) = real(i, pr)/100
-    n(2) = 1 - n(1)
-    eq = saturation_pressure(eos, n, 273._pr + 100._pr, kind="bubble")
-    print *, eq%x(1), eq%y(1), eq%P
+   ! print *, "Pxy a mano"
+
+
+   print *, "Pxy envlop"
+   n = [0.001_pr, 0.999_pr]
+   eq = saturation_pressure(eos, n, 273._pr + 100._pr, kind="bubble")
+   if (eq%iters > 1000) error stop 1
+
+
+   n = [0, 1]
+   call t%timer_start()
+   px = px_envelope_2ph(&
+      eos, z0=n, alpha0=0.001_pr, &
+      z_injection=[1.0_pr, 0.0_pr], first_point=eq, iterations=30, delta_0=0.2_pr &
+   )
+   call t%timer_stop()
+
+   do i=1,size(px%points)
+      write(2, *) px%points(i)%x(1), px%points(i)%y(1), px%points(i)%P
    end do
 
-   call ge_model%ln_activity_coefficient([0.3_pr, 0.7_pr], 250._pr, n)
-   print *, n
+   print *, px%cps
 end program main
-
-
-! for i, T in enumerate(np.linspace(50+273, 200+273, 5)):
-!     i=4
-!     xs = np.linspace(0.001, 0.999, 100)
-!     ys = []
-!     ps = []
-!
-!     for x1 in xs:
-!         x = [x1, 1-x1]
-!         p, x, y, vx, vy, beta = yaeos.yaeos_c.saturation_pressure(model.id, x, T, "bubble")
-!         ps.append(p)
-!         ys.append(y[0])
-!
-!     plt.plot(xs, ps, color=colors[i])
-!     plt.plot(ys, ps, color=colors[i])
-! end program
-!

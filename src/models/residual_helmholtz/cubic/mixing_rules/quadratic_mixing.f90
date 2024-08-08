@@ -34,13 +34,14 @@ module yaeos__models_ar_cubic_quadratic_mixing
     end type QMR_RKPR
 
     abstract interface
-        subroutine get_aij(self, ai, daidt, daidt2, aij, daijdt, daijdt2)
+        subroutine get_aij(self, T, ai, daidt, daidt2, aij, daijdt, daijdt2)
             !! Combining rule for the attractive parameter.
             !!
             !! From previously calculated attractive parameters calculate the
             !! \(a_{ij}\) matrix and it's corresponding derivatives.
             import pr, QMR
             class(QMR), intent(in) :: self
+            real(pr), intent(in) :: T
             real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
             real(pr), intent(out):: aij(:, :), daijdt(:, :), daijdt2(:, :)
         end subroutine get_aij
@@ -95,9 +96,9 @@ contains
         nc = size(ai)
 
         if (associated(self%aij)) then
-            call self%aij(ai, daidt, daidt2, aij, daijdt, daijdt2)
+            call self%aij(T, ai, daidt, daidt2, aij, daijdt, daijdt2)
         else
-            call kij_constant(self, ai, daidt, daidt2, aij, daijdt, daijdt2)
+            call kij_constant(self, T, ai, daidt, daidt2, aij, daijdt, daijdt2)
         end if
 
         D = 0
@@ -158,7 +159,9 @@ contains
         real(pr), intent(out) :: D1 !! Mixture's \(\Delta_1\)
         real(pr), intent(out) :: dD1i(:) !! \(\frac{dDelta_1}{dn_i} = 0\)
         real(pr), intent(out) :: dD1ij(:, :) !! \(\frac{d^2Delta_1}{dn_{ij}} = 0\)
-        call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
+        D1 = d1i(1)
+        dD1i = 0
+        dD1ij = 0
     end subroutine D1mix_constant
 
     subroutine RKPR_D1mix(self, n, d1i, D1, dD1i, dD1ij)
@@ -183,7 +186,7 @@ contains
     end subroutine RKPR_D1mix
 
     subroutine kij_constant(&
-        self, a, dadt, dadt2, &
+        self, T, a, dadt, dadt2, &
         aij, daijdt, daijdt2 &
         )
         !! Combining rule that uses constant \(k_{ij}\) values.
@@ -192,6 +195,7 @@ contains
         !!  a_{ij} = \sqrt{a_i a_j} (1 - k_{ij})
         !! ]
         class(QMR), intent(in) :: self
+        real(pr), intent(in) :: T !! Temperature [K]
         real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a_i\)
         real(pr), intent(in) :: dadt(:) !! \(\frac{da_i}{dT}\)
         real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a_i}{dT^2}\)

@@ -17,8 +17,9 @@ module yaeos__models
    !!      two-parameter EoS. Implemented models that use this type can be
    !!      seen at [[yaeos__models_ar_cubic_implementations(module)]]
    !!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that 
-   !!       defaults to classic vdW mixing rules
-   !!
+   !!       defaults to classic vdW mixing rules.
+   !!    - `MHV` (Modified Huron-Vidal) type: Michelsens first order modified
+   !!       Huron-Vidal mixing rule.
 
    ! Base model structure
    use yaeos__models_base, only: BaseModel

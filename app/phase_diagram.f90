@@ -4,8 +4,7 @@ program phase_diagram
    use yaeos, only: pr, &
       SoaveRedlichKwong, PengRobinson76, PengRobinson78, RKPR, &
       EquilibriumState, ArModel, PTEnvel2, &
-      pt_envelope_2ph, saturation_pressure, saturation_temperature
-   use yaeos__phase_equilibria_auxiliar, only: k_wilson
+      pt_envelope_2ph, saturation_pressure, saturation_temperature, k_wilson
    implicit none
 
    ! ===========================================================================

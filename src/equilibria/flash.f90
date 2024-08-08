@@ -1,9 +1,10 @@
 module yaeos__equilibria_flash
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriumState
-   use yaeos__phase_equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
-   use yaeos__phase_equilibria_auxiliar, only: k_wilson
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
+   use yaeos__equilibria_auxiliar, only: k_wilson
+   use yaeos__solvers_pressure_equality, only: pressure_equality_V_beta_xy
    implicit none
 
 contains
@@ -20,6 +21,7 @@ contains
       !! vapor-liquid separation predicted by the provided model (0<beta<1) and
       !! solves the equilibria and mass-balance equations with a fixed-point
       !! method.
+      use stdlib_optval, only: optval
       class(ArModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
@@ -28,27 +30,18 @@ contains
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
       integer, optional, intent(out) :: iters !! Number of iterations
 
-      logical :: stopflash
-
       ! Results from flash calculation
       real(pr), dimension(size(z)) :: x  ! composition of liquid (molar fractions)
       real(pr), dimension(size(z)) :: y  ! composition of vapour (molar fractions)
-      real(pr) :: rho_x            ! density of liquid (moles/L)
-      real(pr) :: rho_y            ! density of vapour (moles/L)
       real(pr) :: beta             ! total fraction of vapour (molar base)
 
       ! Intermediate variables during calculation process
-      real(pr) :: p, v
+      real(pr) :: P, V
       real(pr), dimension(size(z)) :: lnfug_y, lnfug_x
       real(pr), dimension(size(z)) :: K, dK, lnK, dKold, lnKold
-      real(pr), dimension(size(z), size(z)) :: dlnphidn
 
       real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
       real(pr) :: bmin, bmax, Vy, Vx
-
-      real(pr) :: bx, savek(size(z)), log_k2(size(z))
-      real(pr) :: DPVl, dpvv, dVydVl, h, pl, pold, pold2, pv, step, stepv
-      real(pr) :: told, told2
 
       character(len=2) :: spec !! Flash specification [PT | VT]
 
@@ -56,7 +49,7 @@ contains
       ! ========================================================================
       ! Starting steps
       ! ------------------------------------------------------------------------
-      if (present(v_spec) .and. present(p_spec)) then
+      if (present(V_spec) .and. present(P_spec)) then
          write (*, *) "ERROR: Can't specify pressure and volume in Flash"
          return
       else if (present(p_spec)) then
@@ -96,9 +89,10 @@ contains
       ! ------------------------------------------------------------------------
       dK = 1.0
       iters = 0
-      do while (maxval(abs(dK)) > 1.d-6)
+      do while (maxval(abs(dK)) > 1.e-6_pr)
          iters = iters + 1
 
+         call betato01(z, K)
          call solve_rr(z, K, beta, bmin, bmax)
 
          y = z * K / (1 + beta*(K - 1._pr))
@@ -108,7 +102,7 @@ contains
          select case (spec)
           case("TV")
             ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            call tv_loop_solve_pressures(model, T, V, beta, x, y, Vx, Vy, P)
+            call pressure_equality_V_beta_xy(model, T, V, beta, x, y, Vx, Vy, P)
             call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
             call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
           case("TP")
@@ -124,7 +118,7 @@ contains
 
          K = exp(lnK)
 
-         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05) then
+         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05_pr) then
             ! oscilation behavior detected (27/06/15)
             lnK = (lnK + lnKold)/2
          end if
@@ -150,114 +144,35 @@ contains
 
          if (iters > 500) then
             p = -1
-            return
+            exit
          end if
       end do
 
       ! ========================================================================
       ! Format results
       ! ------------------------------------------------------------------------
-      if (spec == 'TP') v = beta*Vy + (1 - beta)*Vx
+      if (spec == 'TP') V = beta*Vy + (1 - beta)*Vx
 
-      if (maxval(K) < 1.001 .and. minval(K) > 0.999) then ! trivial solution
+      if (maxval(K) < 1.001_pr .and. minval(K) > 0.999_pr .or. P < 0) then ! trivial solution
          flash%kind = "failed"
          P = -1.0
          flash%x = x/x
          flash%y = y/y
          flash%iters = iters
-         flash%p = p
-         flash%t = t
+         flash%P = P
+         flash%T = T
          return
       end if
 
       flash%kind = "split"
       flash%iters = iters
-      flash%p = p
-      flash%t = t
+      flash%P = P
+      flash%T = T
 
       flash%x = x
       flash%y = y
-      flash%vx = Vx
-      flash%vy = vy
+      flash%Vx = Vx
+      flash%Vy = Vy
       flash%beta = beta
    end function flash
-
-   subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, vx, vy, P)
-      !! Solve pressure equality between two phases at a given temperature,
-      !! total volume, vapor molar fractions and compositions.
-      use iso_fortran_env, only: error_unit
-
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: V !! Total volume [L/mol]
-      real(pr), intent(in) :: beta !! Molar fraction of light-phase
-      real(pr), intent(in) :: x(:) !! Molar fractions of heavy-phase
-      real(pr), intent(in) :: y(:) !! Molar fractions of light-phase
-      real(pr), intent(in out) :: Vx !! Heavy-phase molar volume [L/mol]
-      real(pr), intent(in out) :: Vy !! Light-Phase molar volume [L/mol]
-      real(pr), intent(out) :: P !! Pressure [bar]
-
-      real(pr) :: Bx !! Liquid phase covolume
-      real(pr) :: dVydVx !! Derivative of Vy wrt Vx
-
-      ! Pressure equality newton functions
-      real(pr) :: h !! Pressure equality
-      real(pr) :: dh  !! dh/
-      real(pr) :: stepv
-
-      real(pr) :: dPxdV, dPydV
-      real(pr) :: Px, Py
-
-      integer :: its
-
-      dVydVx = -(1 - beta)/beta
-      Bx = model%get_v0(x, 0.1_pr, T)
-
-      ! First evaluation will be with Vx = 1.5*Bx
-      if (Vx < Bx) Vx = 1.625_pr*Bx
-
-      call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
-
-      do while (Px < 0 .or. dPxdV >= 0)
-         Vx = Vx - 0.2*(Vx - Bx)
-         call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
-      end do
-
-      Vy = (V - (1 - beta)*Vx)/beta
-
-      h = 1.0
-      its = 0
-      do while (abs(h) > 1.d-4)
-         ! Newton for solving P equality, with Vx as independent variable
-         its = its + 1
-
-         call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
-         call model%pressure(y, Vy, T, Py, dpdv=dPydV)
-
-         h = Py - Px
-         dh = -dPydV * dVydVx - dPxdV
-         stepv = -h/dh
-
-         if (its >= 10) stepv = stepv/2
-
-         Vx = Vx + stepv
-
-         do while (Vx < 1.001*Bx)
-            stepv = stepv/2
-            Vx = Vx - stepv
-         end do
-
-         Vy = (v - (1 - beta)*Vx)/beta
-
-         if (its >= 100) then
-            write (error_unit, *) "WARN(FLASH_VT): volume convergence problems", Px, Py
-            P = -1.0
-            return
-         end if
-      end do
-
-      call model%pressure(x, Vx, T, Px)
-      call model%pressure(y, Vy, T, Py)
-      P = (Px + Py) * 0.5_pr
-   end subroutine tv_loop_solve_pressures
 end module yaeos__equilibria_flash
