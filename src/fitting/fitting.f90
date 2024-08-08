@@ -4,6 +4,7 @@ module yaeos__fitting
    use yaeos__equilibria, only: &
       EquilibriumState, saturation_pressure, saturation_temperature, flash
    use forbear, only: bar_object
+   use yaeos__optimizers, only: Optimizer, obj_func
    implicit none
 
    type, abstract :: FittingProblem
@@ -34,54 +35,54 @@ module yaeos__fitting
       end subroutine model_from_X
    end interface
 
+   type, extends(Optimizer) :: NLOPTWrapper
+      class(*), allocatable :: func_data
+   contains
+      procedure :: optimize => nlopt_optimize
+   end type
+
    type(bar_object), private :: bar
    integer, private :: count
 
 contains
 
-   real(pr) function optimize(X, func_data) result(y)
+   subroutine nlopt_optimize(self, foo, X, F)
       use nlopt_wrap, only: create, destroy, nlopt_opt, nlopt_algorithm_enum
       use nlopt_callback, only: nlopt_func, create_nlopt_func
+      class(NLOPTWrapper), intent(in out) :: self
+      procedure(obj_func) :: foo
+      real(pr), intent(in) :: X(:)
+      real(pr), intent(out) :: F
 
-      real(pr), intent(in out) :: X(:) !! Vector of parameters to fit
-      class(FittingProblem) :: func_data !! Parametrization details
+      real(pr) :: dx(size(x))
+      integer :: i, stat
 
-      real(pr) :: dx(size(X))
+      type(nlopt_opt) :: opt
+      type(nlopt_func) :: fun
 
-      type(nlopt_opt) :: opt !! Optimizer
-      type(nlopt_func) :: f !! Function to optimize
-      integer :: stat
-      integer :: i
-
-      count = 0
-      call bar%initialize(&
-         prefix_string='Fitting... ',&
-         width=1, spinner_string='⠋', spinner_color_fg='blue', &
-         min_value=0._pr, max_value=100._pr &
-         )
-      call bar%start
-
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(X))
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_BOBYQA, size(X))
-      ! opt = nlopt_opt(nlopt_algorithm_enum%LN_NEWUOA, size(X))
+      fun = create_nlopt_func(nlopt_func_wrapper, f_data=self%func_data)
       opt = nlopt_opt(nlopt_algorithm_enum%LN_PRAXIS, size(X))
-
-      f = create_nlopt_func(fobj, f_data=func_data)
-
-      if (.not. allocated(func_data%parameter_step)) then
-         dx = [(0.05_pr, i=1, size(X))]
-      else
-         dx = func_data%parameter_step
-      end if
-
-      call opt%set_ftol_rel(func_data%solver_tolerance)
-
-      call opt%set_initial_step(dx)
-      call opt%set_min_objective(f)
+      dx = [(0.05_pr, i=1, size(X))]
+      call opt%set_ftol_rel(1e-5_pr)
+      
+      call opt%set_min_objective(fun)
       call opt%set_xtol_abs(dx/100)
-      call opt%optimize(x, y, stat)
-      call bar%destroy
+      call opt%optimize(x, F, stat)
       call destroy(opt)
+   contains
+      real(pr) function nlopt_func_wrapper(x, gradient, func_data)
+         real(pr), intent(in) :: X(:)
+         real(pr), optional, intent(in out) :: gradient(:)
+         class(*), optional, intent(in) :: func_data
+      end function nlopt_func_wrapper
+   end subroutine
+
+   real(pr) function optimize(X, opt) result(y)
+      real(pr), intent(in out) :: X(:) !! Vector of parameters to fit
+      class(Optimizer), intent(in out) :: opt
+
+      call opt%optimize(fobj, X, y)
+
    end function optimize
 
    real(pr) function fobj(x, gradient, func_data)
