@@ -1,18 +1,23 @@
 program main
    !! Binary system parameter optimization
-   use yaeos, only: EquilibriumState, pr, ArModel, SoaveRedlichKwong, CubicEoS, saturation_pressure
+   use yaeos, only: EquilibriumState, pr, ArModel, SoaveRedlichKwong, CubicEoS, saturation_pressure, PengRobinson78
    use yaeos, only: MHV
    use forsus, only: Substance, forsus_dir
-   use yaeos__fitting, only: FittingProblem, fobj, optimize
-   use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
-   integer, parameter :: nc = 2, np=7
+   use yaeos__fitting, only: FittingProblem, error_function, optimize
+   use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
+   ! use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
+   use yaeos__fitting_fit_kij_lij, only: FitKijLij
+   integer, parameter :: nc = 2, np=2
    integer :: i, infile, iostat
 
    type(EquilibriumState), allocatable :: exp_points(:)
    type(EquilibriumState) :: point
 
-   type(FitMHVNRTL) :: prob
+   ! type(FitMHVNRTL) :: prob
+   type(FitKijLij) :: prob
    type(Substance) :: sus(2)
+
+   type(NLOPTWrapper) :: opt
 
    class(ArModel), allocatable :: model
 
@@ -45,27 +50,22 @@ program main
    ! ==========================================================================
    ! Setup optimization problem and call the optimization function
    ! --------------------------------------------------------------------------
-   model = SoaveRedlichKwong(&
+   model = PengRobinson78(&
       sus%critical%critical_temperature%value, &
       sus%critical%critical_pressure%value/1e5, &
       sus%critical%acentric_factor%value &
    )
 
    prob%model = model
-   
    prob%experimental_points = exp_points
-
    X = 0
-   X(1:2) = [0.1, 0.3]
-   X(5:6) = [0.1, 0.2]
-
-   prob%fit_nrtl = .true.
-   prob%parameter_step = [(0.5_pr, i=1,size(x))]
-   prob%solver_tolerance = 1e-7
+   
+   prob%fit_kij = .true.
+   prob%fit_lij = .true.
    prob%verbose = .true.
 
    print *, "X0:", X
-   error = optimize(X, prob)
+   error = optimize(X, opt, prob)
    print *, "FO:", error
    print *, "Xf:", X
 
