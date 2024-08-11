@@ -14,10 +14,12 @@ module yaeos__fitting
       !! optimization problem. It keeps the base model structure that will be
       !! optimized and a procedure `get_model_from_X` that should reconstruct
       !! the model with the desired parameters to optimize.
-      class(ArModel), allocatable :: model
-
-      type(EquilibriumState), allocatable :: experimental_points(:)
+      class(ArModel), allocatable :: model 
+         !! Residual Helmholtz Model to fit 
+      type(EquilibriumState), allocatable :: experimental_points(:) 
+         !! Experimental points to fit
       logical :: verbose = .false.
+         !! If true log the fitting process
    contains
       procedure(model_from_X), deferred :: get_model_from_X
    end type FittingProblem
@@ -34,9 +36,13 @@ module yaeos__fitting
 contains
 
    real(pr) function optimize(X, opt, data) result(y)
-      real(pr), intent(in out) :: X(:) !! Vector of parameters to fit
-      class(Optimizer), intent(in out) :: opt
-      class(FittingProblem), optional, intent(in out) :: data
+      real(pr), intent(in out) :: X(:) 
+         !! Vector of parameters to fit
+      class(Optimizer), intent(in out) :: opt 
+         !! Optimizer object, bsaed on the `Optimizer` class from 
+         !! `yaeos__optimizers`
+      class(FittingProblem), optional, intent(in out) :: data 
+         !! Fitting problem to optimize
       call opt%optimize(error_function, X, y, data)
    end function optimize
 
@@ -51,9 +57,11 @@ contains
       !!        + \sum_i (x_i^{exp} - x_i^{calc})**2
       !! \]
       use yaeos__math, only: sq_error
-      real(pr), intent(in) :: X(:)
-      real(pr), intent(out) :: Fobj
-      real(pr), optional, intent(out) :: dF(:)
+      real(pr), intent(in) :: X(:) !! Vector of parameters
+      real(pr), intent(out) :: Fobj !! Objective function
+      real(pr), optional, intent(out) :: dF(:) 
+         !! Gradient of the objective function, only exists to be consistent
+         !! with the `Optimizer` class API
       class(*), optional, intent(in out):: func_data
 
       type(EquilibriumState) :: model_point !! Each solved point
@@ -98,7 +106,6 @@ contains
                fobj = fobj + maxval(sq_error(exp_point%y, model_point%y))
                fobj = fobj + maxval(sq_error(exp_point%x, model_point%x))
                write(1, *) exp_point, model_point
-
 
                if(isnan(fobj)) then
                   fobj = 1e6
