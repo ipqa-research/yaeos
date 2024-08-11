@@ -82,6 +82,7 @@ contains
       integer, parameter :: np=2
       real(pr) :: X(np)
       ! Set up the optimization problem settings
+      allocate(CubicEoS :: prob%model)
       prob%model = model
 
       ! Set up the experimental points
