@@ -5,7 +5,6 @@ program main
    use forsus, only: Substance, forsus_dir
    use yaeos__fitting, only: FittingProblem, error_function, optimize
    use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
-   ! use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
    use yaeos__fitting_fit_kij_lij, only: FitKijLij
    integer, parameter :: nc = 2, np=2
    integer :: i, infile, iostat

@@ -106,8 +106,7 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
-      use nlopt_wrap, only: create, destroy, nlopt_opt, nlopt_algorithm_enum
-      use nlopt_callback, only: nlopt_func, create_nlopt_func
+      use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
       class(ArModel) :: model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -116,6 +115,7 @@ contains
       real(pr), intent(out) :: mintpd !! Minimal value of \(tm\)
       real(pr), optional, intent(out) :: all_minima(:, :) 
          !! All the found minima
+      type(NLOPTWrapper) :: opt
 
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))
@@ -123,37 +123,24 @@ contains
       real(pr) :: mins(size(w)), ws(size(w), size(w)), V
       integer :: i
 
-      type(nlopt_opt) :: opt !! Optimizer
-      type(nlopt_func) :: f !! Function to optimize
-
       integer :: stat
 
-      f = create_nlopt_func(foo)
       dx = 0.001_pr
 
       ! Calculate feed di
       call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
       di = log(z) + lnphi_z
 
-
-      ! ==============================================================
-      ! Setup optimizer
-      ! --------------------------------------------------------------
-      opt = nlopt_opt(nlopt_algorithm_enum%LN_NELDERMEAD, size(w))
-      call opt%set_ftol_rel(0.001_pr)
-      call opt%set_ftol_abs(0.00001_pr)
-      call opt%set_min_objective(f)
-      call opt%set_initial_step(dx)
-
       ! ==============================================================
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
+      opt%parameter_step = dx
       !$OMP PARALLEL DO PRIVATE(i, w, mintpd, stat) SHARED(opt, ws, mins)
       do i=1,size(w)
          w = 0.001_pr
          w(i) = 0.999_pr
-         call opt%optimize(w, mintpd, stat)
+         call opt%optimize(obj_func, w, mintpd)
          mins(i) = mintpd
          ws(i, :) = w
       end do
@@ -164,14 +151,13 @@ contains
       w = ws(i, :)
 
       if(present(all_minima)) all_minima = ws
-
-      call destroy(opt)
    contains
-      real(pr) function foo(x, gradient, func_data)
-         real(pr), intent(in) :: x(:)
-         real(pr), optional, intent(in out) :: gradient(:)
-         class(*), optional, intent(in) :: func_data
-         foo = tm(model, z, x, P, T, d=di)
-      end function foo
+      subroutine obj_func(X, F, dF, data)
+         real(pr), intent(in) :: X(:)
+         real(pr), intent(out) :: F
+         real(pr), optional, intent(out) :: dF(:)
+         class(*), optional, intent(in out) :: data
+         F = tm(model, z, x, P, T, d=di)
+      end subroutine
    end subroutine min_tpd
 end module yaeos__phase_equilibria_stability

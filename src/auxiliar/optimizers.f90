@@ -13,7 +13,7 @@ module yaeos__optimizers
          real(pr), intent(in) :: X(:)
          real(pr), intent(out) :: F
          real(pr), optional, intent(out) :: dF(:)
-         class(*), intent(in out) :: data
+         class(*), optional, intent(in out) :: data
       end subroutine
    end interface
 
@@ -77,9 +77,7 @@ contains
          real(pr), intent(in) :: xX(:)
          real(pr), optional, intent(in out) :: gradient(:)
          class(*), optional, intent(in) :: func_data
-         print *, xx
          call foo(xx, fobj, gradient, data)
-         print *, fobj
       end function nlopt_func_wrapper
    end subroutine nlopt_optimize
 end module

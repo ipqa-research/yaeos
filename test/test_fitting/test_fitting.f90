@@ -20,9 +20,11 @@ contains
       use yaeos__fitting_fit_kij_lij, only: FitKijLij
       use yaeos__models, only: ArModel, SoaveRedlichKwong
       use yaeos__equilibria, only: EquilibriumState
+      use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
       type(error_type), allocatable, intent(out) :: error
       class(ArModel), allocatable :: model
       type(EquilibriumState) :: exp_points
+      type(NLOPTWrapper) :: opt
 
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
@@ -41,25 +43,25 @@ contains
 
       fitting_problem%model = SoaveRedlichKwong(tc, pc, w)
       fitting_problem%experimental_points = [exp_points]
-      fitting_problem%parameter_step = [0.1, 0.1] 
+      opt%parameter_step = [0.1, 0.1] 
 
       fitting_problem%fit_kij = .true.
       fitting_problem%verbose = .false.
 
-      err0 = error_function(x, func_data=fitting_problem)
-      err_kij = optimize(X, fitting_problem)
+      call error_function(x, err0, func_data=fitting_problem)
+      err_kij = optimize(X, opt, fitting_problem)
 
       call check(error, err_kij < err0)
       
       fitting_problem%fit_lij = .true.
       fitting_problem%verbose = .true.
       X = 0
-      err_kij_lij = optimize(X, fitting_problem)
-
+      err_kij_lij = optimize(X, opt, fitting_problem)
       call check(error, err_kij_lij < err_kij)
    end subroutine
 
    subroutine test_fit_mhv_nrtl(error)
+      use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
       use yaeos__fitting, only: optimize, error_function
       use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
       use yaeos__models, only: CubicEoS, GeModel, NRTL, SoaveRedlichKwong, MHV
@@ -77,6 +79,7 @@ contains
       real(pr) :: err0, err_lij, err_ge, err_ge_lij
 
       type(FitMHVNRTL) :: fitting_problem
+      type(NLOPTWrapper) :: opt
 
       exp_point = EquilibriumState( &
                   kind="bubble", T=344.5_pr, P=23.9_pr, &
@@ -102,21 +105,20 @@ contains
       X = [3.1, 0.1, -500.00, 200.00, 0.1, 0.1, 0.0]
       fitting_problem%model = model
       fitting_problem%fit_lij = .true.
-      err0 = error_function(x, func_data=fitting_problem)
-      err_lij = optimize(X, fitting_problem)
+      call  error_function(x, err0, func_data=fitting_problem)
+      err_lij = optimize(X, opt, fitting_problem)
 
       X = [3.1, 0.1, -500.00, 200.00, 0.1, 0.1, 0.0]
       fitting_problem%model = model
       fitting_problem%fit_lij = .false.
       fitting_problem%fit_nrtl = .true.
-      err_ge = optimize(X, fitting_problem)
+      err_ge = optimize(X, opt, fitting_problem)
       
       X = [3.1, 0.1, -500.00, 200.00, 0.1, 0.1, 0.0]
       fitting_problem%model = model
       fitting_problem%fit_lij = .true.
       fitting_problem%fit_nrtl = .true.
-      err_ge_lij = optimize(X, fitting_problem)
-
+      err_ge_lij = optimize(X, opt, fitting_problem)
 
       call check(error, err_lij < err0)
       call check(error, err_ge < err_lij)

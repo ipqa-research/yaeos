@@ -36,8 +36,7 @@ contains
    real(pr) function optimize(X, opt, data) result(y)
       real(pr), intent(in out) :: X(:) !! Vector of parameters to fit
       class(Optimizer), intent(in out) :: opt
-      class(FittingProblem), intent(in out) :: data
-
+      class(FittingProblem), optional, intent(in out) :: data
       call opt%optimize(error_function, X, y, data)
    end function optimize
 
@@ -55,7 +54,7 @@ contains
       real(pr), intent(in) :: X(:)
       real(pr), intent(out) :: Fobj
       real(pr), optional, intent(out) :: dF(:)
-      class(*), intent(in out):: func_data
+      class(*), optional, intent(in out):: func_data
 
       type(EquilibriumState) :: model_point !! Each solved point
       type(EquilibriumState) :: exp_point
