@@ -106,7 +106,7 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
-      use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
+      use yaeos__optimizers_powell_wrap, only: PowellWrapper
       class(ArModel) :: model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -115,7 +115,7 @@ contains
       real(pr), intent(out) :: mintpd !! Minimal value of \(tm\)
       real(pr), optional, intent(out) :: all_minima(:, :) 
          !! All the found minima
-      type(NLOPTWrapper) :: opt
+      type(PowellWrapper) :: opt
 
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))

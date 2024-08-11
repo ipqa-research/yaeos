@@ -3,7 +3,6 @@ program main
    use yaeos, only: EquilibriumState, pr, ArModel, SoaveRedlichKwong, CubicEoS, saturation_pressure, PengRobinson78
    use forsus, only: Substance, forsus_dir
    use yaeos__fitting, only: FittingProblem, error_function, optimize
-   use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
    use yaeos__optimizers_powell_wrap, only: PowellWrapper
    integer, parameter :: nc = 2
    integer :: i, infile, iostat
@@ -13,7 +12,6 @@ program main
 
    type(Substance) :: sus(nc)
 
-   type(NLOPTWrapper) :: opt_nlopt
    type(PowellWrapper) :: opt
 
    class(ArModel), allocatable :: model
@@ -100,17 +98,6 @@ contains
       X = [1.1, 0.]
       print *, "X0:", X
       error = optimize(X, opt, prob)
-      print *, "FO:", error
-      print *, "Xf:", X
-      call tim%timer_stop()
-
-      call exit
-      
-      ! Initial X value
-      call tim%timer_start()
-      X = [1.1, 0.]
-      print *, "X0:", X
-      error = optimize(X, opt_nlopt, prob)
       print *, "FO:", error
       print *, "Xf:", X
       call tim%timer_stop()

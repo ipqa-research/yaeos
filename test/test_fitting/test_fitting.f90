@@ -20,11 +20,11 @@ contains
       use yaeos__fitting_fit_kij_lij, only: FitKijLij
       use yaeos__models, only: ArModel, SoaveRedlichKwong
       use yaeos__equilibria, only: EquilibriumState
-      use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
+      use yaeos__optimizers_powell_wrap, only: PowellWrapper
       type(error_type), allocatable, intent(out) :: error
       class(ArModel), allocatable :: model
       type(EquilibriumState) :: exp_points
-      type(NLOPTWrapper) :: opt
+      type(PowellWrapper) :: opt
 
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
@@ -61,7 +61,7 @@ contains
    end subroutine
 
    subroutine test_fit_mhv_nrtl(error)
-      use yaoes__optimizers_nlopt_wrap, only: NLOPTWrapper
+      use yaeos__optimizers_powell_wrap, only: PowellWrapper
       use yaeos__fitting, only: optimize, error_function
       use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
       use yaeos__models, only: CubicEoS, GeModel, NRTL, SoaveRedlichKwong, MHV
@@ -79,7 +79,7 @@ contains
       real(pr) :: err0, err_lij, err_ge, err_ge_lij
 
       type(FitMHVNRTL) :: fitting_problem
-      type(NLOPTWrapper) :: opt
+      type(PowellWrapper) :: opt
 
       exp_point = EquilibriumState( &
                   kind="bubble", T=344.5_pr, P=23.9_pr, &
