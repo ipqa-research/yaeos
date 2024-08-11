@@ -53,7 +53,7 @@ program main
       sus%critical%acentric_factor%value &
       )
 
-   call fit_kij_lij
+   call fit_kij_lij(model, exp_points)
 
    call exit
 
@@ -74,17 +74,19 @@ program main
 
 contains
 
-   subroutine fit_kij_lij
+   subroutine fit_kij_lij(model, exp_points)
       use yaeos__fitting_fit_kij_lij, only: FitKijLij
-      use fortime, only: Timer
-      type (Timer) :: tim
+      class(ArModel), intent(in) :: model
+      type(EquilibriumState), intent(in) :: exp_points(:)
       type(FitKijLij) :: prob
       integer, parameter :: np=2
       real(pr) :: X(np)
       ! Set up the optimization problem settings
-      allocate(CubicEoS :: prob%model)
-      prob%model = model
-
+      prob = FitKijLij(&
+         model=model, experimental_points=exp_points, &
+         verbose=.true., fit_kij=.true., fit_lij=.true. &
+      )
+      
       ! Set up the experimental points
       prob%experimental_points = exp_points
 
@@ -94,16 +96,12 @@ contains
       prob%verbose = .true.
 
       ! Initial X value
-      call tim%timer_start()
       X = 0.01
-      X = [1.1, 0.]
       print *, "X0:", X
       error = optimize(X, opt, prob)
       print *, "FO:", error
       print *, "Xf:", X
-      call tim%timer_stop()
 
       call prob%get_model_from_X(X)
-      model = prob%model
    end subroutine fit_kij_lij
 end program main
