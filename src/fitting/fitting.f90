@@ -1,6 +1,6 @@
 module yaeos__fitting
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel, CubicEoS
+   use yaeos__models, only: ArModel
    use yaeos__equilibria, only: &
       EquilibriumState, saturation_pressure, saturation_temperature, flash
    use yaeos__optimizers, only: Optimizer, obj_func
@@ -28,8 +28,10 @@ module yaeos__fitting
       subroutine model_from_X(problem, X)
          !! Function that returns a setted model from the parameters vector
          import ArModel, FittingProblem, pr
-         class(FittingProblem), intent(in out) :: problem
+         class(FittingProblem), intent(in out) :: problem 
+            !! Fitting problem to optimize
          real(pr), intent(in) :: X(:)
+            !! Vector of parameters to fit
       end subroutine model_from_X
    end interface
 
@@ -104,7 +106,7 @@ contains
                fobj = fobj + sq_error(exp_point%p, model_point%p)
                fobj = fobj + maxval(sq_error(exp_point%y, model_point%y))
                fobj = fobj + maxval(sq_error(exp_point%x, model_point%x))
-               write(1, *) exp_point, model_point
+               write(1, *) fobj, exp_point, model_point
 
                if(isnan(fobj)) then
                   fobj = 1e6

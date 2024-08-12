@@ -80,6 +80,7 @@ contains
          n, npt, x, &
          maxval(abs(dx/10)), self%solver_tolerance, 0, int(1e9), foo_wrap &
       )
+      call foo_wrap(n, x, F)
    end subroutine powell_optimize
    
    subroutine foo_wrap(n, x, f)
