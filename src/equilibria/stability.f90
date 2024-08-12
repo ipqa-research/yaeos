@@ -33,6 +33,14 @@ module yaeos__phase_equilibria_stability
    use yaeos__models_ar, only: ArModel
    implicit none
 
+   type, private :: TMOptimizeData
+      !! Data structure to hold the data for the `min_tpd` optimization
+      class(ArModel), pointer :: model
+      real(pr), allocatable :: z(:)
+      real(pr), allocatable :: di(:)
+      real(pr) :: P, T
+   end type
+
 contains
 
    real(pr) function tm(model, z, w, P, T, d, dtpd)
@@ -107,7 +115,7 @@ contains
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
       use yaeos__optimizers_powell_wrap, only: PowellWrapper
-      class(ArModel) :: model
+      class(ArModel), target :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
@@ -116,6 +124,7 @@ contains
       real(pr), optional, intent(out) :: all_minima(:, :) 
          !! All the found minima
       type(PowellWrapper) :: opt
+      type(TMOptimizeData) :: data
 
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))
@@ -135,12 +144,19 @@ contains
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
+
+      data%model => model
+      data%di = di
+      data%P = P
+      data%T = T
+      data%z = z
+
       opt%parameter_step = dx
       !$OMP PARALLEL DO PRIVATE(i, w, mintpd, stat) SHARED(opt, ws, mins)
       do i=1,size(w)
          w = 0.001_pr
          w(i) = 0.999_pr
-         call opt%optimize(obj_func, w, mintpd)
+         call opt%optimize(min_tpd_to_optimize, w, mintpd, data=data)
          mins(i) = mintpd
          ws(i, :) = w
       end do
@@ -151,13 +167,16 @@ contains
       w = ws(i, :)
 
       if(present(all_minima)) all_minima = ws
-   contains
-      subroutine obj_func(X, F, dF, data)
-         real(pr), intent(in) :: X(:)
-         real(pr), intent(out) :: F
-         real(pr), optional, intent(out) :: dF(:)
-         class(*), optional, intent(in out) :: data
-         F = tm(model, z, x, P, T, d=di)
-      end subroutine
    end subroutine min_tpd
+
+   subroutine min_tpd_to_optimize(X, F, dF, data)
+      real(pr), intent(in) :: X(:)
+      real(pr), intent(out) :: F
+      real(pr), optional, intent(out) :: dF(:)
+      class(*), optional, intent(in out) :: data
+      select type(data)
+      type is (TMOptimizeData)
+         F = tm(data%model, data%z, X, data%P, data%T, d=data%di)
+      end select
+   end subroutine
 end module yaeos__phase_equilibria_stability
