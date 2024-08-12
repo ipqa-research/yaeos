@@ -82,7 +82,6 @@ contains
             ! if at some point there is a NaN value, assign a big number and
             ! exit
             do i=1, size(func_data%experimental_points)
-
                exp_point = func_data%experimental_points(i)
                select case(exp_point%kind)
                 case("bubble")

@@ -97,6 +97,7 @@ contains
 
       ! Initial X value
       X = 0.01
+      opt%parameter_step = [0.01, 0.01]
       print *, "X0:", X
       error = optimize(X, opt, prob)
       print *, "FO:", error
