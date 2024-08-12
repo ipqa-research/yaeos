@@ -16,7 +16,7 @@ contains
       use nlopt_wrap, only: create, destroy, nlopt_opt, nlopt_algorithm_enum
       use nlopt_callback, only: nlopt_func, create_nlopt_func
       class(NLOPTWrapper), intent(in out) :: self
-      class(*), optional, intent(in out) :: data
+      class(*), optional, target, intent(in out) :: data
       procedure(obj_func) :: foo
       real(pr), intent(in out) :: X(:)
       real(pr), intent(out) :: F
