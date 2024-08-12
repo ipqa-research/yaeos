@@ -88,7 +88,7 @@ contains
 
          k = exp(lnfug_z - lnfug_y)
 
-         if (all(k < 1e-9_pr)) exit
+         if (all(k < 1e-9_pr) .or. all(abs(k-1) < tol)) exit
 
 
          f = sum(z*k) - 1

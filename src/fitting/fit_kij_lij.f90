@@ -53,6 +53,8 @@ contains
 
       real(pr) :: kij(nc, nc), lij(nc, nc)
 
+      if (size(X) /= 2) error stop 1
+
       kij = 0
       kij(1, 2) = X(1)
       kij(2, 1) = kij(1, 2)
