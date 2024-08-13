@@ -10,7 +10,7 @@ add_languages('fortran', native: false)
 meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
-lapack = dependency('lapack')
+# lapack = dependency('lapack')
 
 py_mod = import('python')
 py = py_mod.find_installation(pure: false)
