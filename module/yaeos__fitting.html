@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.7% of total for modules and submodules.">103 statements</a>
+                 title=" 1.0% of total for modules and submodules.">65 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -110,19 +110,7 @@
         <div id="sidebar">
       <h3>Contents</h3>
   
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#vars-0"
-         aria-expanded="false" aria-controls="vars-0">
-         <h4 class="card-header bg-primary text-white">Variables</h4>
-      </a>
-      <div id="vars-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__fitting.html#variable-bar">bar</a>
-            <a class="list-group-item" href="../module/yaeos__fitting.html#variable-count">count</a>
-        </div>
-      </div>
-    </div>
-
+  
   
   
   
@@ -161,14 +149,23 @@
       </a>
       <div id="funcs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__fitting.html#proc-error_function">error_function</a>
-            <a class="list-group-item" href="../module/yaeos__fitting.html#proc-fobj">fobj</a>
             <a class="list-group-item" href="../module/yaeos__fitting.html#proc-optimize">optimize</a>
         </div>
       </div>
     </div>
 
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__fitting.html#proc-error_function">error_function</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -191,9 +188,9 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__optimizers.html'>yaeos__optimizers</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria.html'>yaeos__equilibria</a></li>
                   <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
-                  <li class="list-inline-item">forbear</li>
               </ul>
             </li>
         </ul>
@@ -204,57 +201,6 @@
       <br>
 
 
-        <section>
-          <h2>Variables</h2>
-            <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-<th></th><th scope="col">Initial</th>        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-bar"></span>
-              type(bar_object),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>bar</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-count"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>count</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-        </section>
-        <br>
 
 
 
@@ -295,12 +241,12 @@
             <td>::</td>
             <td><strong>problem</strong></td>
             <td>
-                
+                <p>Fitting problem to optimize</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~7"></span>
+              <span class="anchor" id="variable-x~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -310,7 +256,7 @@
             <td>::</td>
             <td><strong>X</strong>(:)</td>
             <td>
-                
+                <p>Vector of parameters to fit</p>
             </td>
         </tr>
     </tbody>
@@ -366,12 +312,12 @@ the model with the desired parameters to optimize.</p><a href="../type/fittingpr
                 <td></td>
                 <td></td>
             <td>
-
+<p>Experimental points to fit</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~7"></span>
+              <span class="anchor" id="variable-model~14"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
               <td>public,</td>
@@ -383,41 +329,7 @@ the model with the desired parameters to optimize.</p><a href="../type/fittingpr
                 <td></td>
                 <td></td>
             <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-parameter_step"></span>
-              real(kind=pr),
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>parameter_step</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-solver_tolerance"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>solver_tolerance</strong></td>
-<td> =</td>
-                <td>1e-9_pr</td>
-            <td>
-
+<p>Residual Helmholtz Model to fit </p>
             </td>
         </tr>
         <tr>
@@ -434,7 +346,7 @@ the model with the desired parameters to optimize.</p><a href="../type/fittingpr
 <td> =</td>
                 <td>.false.</td>
             <td>
-
+<p>If true log the fitting process</p>
             </td>
         </tr>
     </tbody>
@@ -462,7 +374,88 @@ the model with the desired parameters to optimize.</p><a href="../type/fittingpr
         <section>
           <h2>Functions</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-error_function"></span> <h3>public  function <a href='../proc/error_function.html'>error_function</a>(X, func_data) result(fobj)  
+    <div class="card-header codesum"><span class="anchor" id="proc-optimize"></span> <h3>public  function <a href='../proc/optimize.html'>optimize</a>(X, opt, data) result(y)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+<p>Vector of parameters to fit</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-opt"></span>
+              class(<a href='../type/optimizer.html'>Optimizer</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>opt</strong></td>
+            <td>
+<p>Optimizer object, bsaed on the <code>Optimizer</code> class from 
+<code>yaeos__optimizers</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-data"></span>
+              class(<a href='../type/fittingproblem.html'>FittingProblem</a>),
+            </td>
+<td>intent(inout),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>data</strong></td>
+            <td>
+<p>Fitting problem to optimize</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=pr)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-error_function"></span> <h3>public  subroutine <a href='../proc/error_function.html'>error_function</a>(X, Fobj, dF, func_data)  
 </h3></div>
     <div class="card-body">
           
@@ -482,7 +475,7 @@ points and an error function of:</p><a href="../proc/error_function.html" class=
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~9"></span>
+              <span class="anchor" id="variable-x~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -492,94 +485,50 @@ points and an error function of:</p><a href="../proc/error_function.html" class=
             <td>::</td>
             <td><strong>X</strong>(:)</td>
             <td>
-
+<p>Vector of parameters</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-func_data~3"></span>
-              class(<a href='../type/fittingproblem.html'>FittingProblem</a>)
+              <span class="anchor" id="variable-fobj"></span>
+              real(kind=pr),
             </td>
-<td></td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>func_data</strong></td>
+            <td><strong>Fobj</strong></td>
             <td>
-
+<p>Objective function</p>
             </td>
         </tr>
-    </tbody>
-  </table>
-
-    <h4>
-    Return Value
-    <small>real(kind=pr)</small>
-    </h4>
-    
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-fobj"></span> <h3>public  function <a href='../proc/fobj.html'>fobj</a>(x, gradient, func_data)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>&hellip;</p><a href="../proc/fobj.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~7"></span>
+              <span class="anchor" id="variable-df"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>x</strong>(:)</td>
+            <td><strong>dF</strong>(:)</td>
             <td>
-
+<p>Gradient of the objective function, only exists to be consistent
+with the <code>Optimizer</code> class API</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gradient"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-func_data"></span>
+              class(*),
             </td>
 <td>intent(inout),</td>
               <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>gradient</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-func_data~2"></span>
-              class(*),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
             <td><strong>func_data</strong></td>
             <td>
 
@@ -588,78 +537,12 @@ points and an error function of:</p><a href="../proc/error_function.html" class=
     </tbody>
   </table>
 
-    <h4>
-    Return Value
-    <small>real(kind=pr)</small>
-    </h4>
-    
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-optimize"></span> <h3>public  function <a href='../proc/optimize.html'>optimize</a>(X, func_data) result(y)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~8"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>X</strong>(:)</td>
-            <td>
-<p>Vector of parameters to fit</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-func_data"></span>
-              class(<a href='../type/fittingproblem.html'>FittingProblem</a>)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>func_data</strong></td>
-            <td>
-<p>Parametrization details</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-    <h4>
-    Return Value
-    <small>real(kind=pr)</small>
-    </h4>
-    
 
     </div>
   </div>
 
         </section>
         <br>
-
 
 
 
@@ -681,7 +564,7 @@ points and an error function of:</p><a href="../proc/error_function.html" class=
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>

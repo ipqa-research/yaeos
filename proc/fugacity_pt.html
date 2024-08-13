@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">20 statements</a>
+                 title=" 0.4% of total for procedures.">23 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -149,7 +149,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine fugacity_pt(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn)  
+    <h2>public  subroutine fugacity_pt(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -185,7 +185,7 @@ pressure and calculate fugacity at that point.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~4"></span>
+              <span class="anchor" id="variable-eos~7"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -200,7 +200,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~23"></span>
+              <span class="anchor" id="variable-n~47"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -215,7 +215,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~8"></span>
+              <span class="anchor" id="variable-p~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -230,7 +230,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~15"></span>
+              <span class="anchor" id="variable-t~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -245,7 +245,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~3"></span>
+              <span class="anchor" id="variable-v~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -260,7 +260,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~2"></span>
+              <span class="anchor" id="variable-root_type~3"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -291,7 +291,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidp"></span>
+              <span class="anchor" id="variable-dlnphidp~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -306,7 +306,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidt"></span>
+              <span class="anchor" id="variable-dlnphidt~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -321,7 +321,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidn"></span>
+              <span class="anchor" id="variable-dlnphidn~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -332,6 +332,57 @@ pressure and calculate fugacity at that point.</p>
             <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
                 <p>ln(phi) compositional derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdv~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdV</strong></td>
+            <td>
+                <p>
+<script type="math/tex">\frac{dP}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdt~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdT</strong></td>
+            <td>
+                <p>
+<script type="math/tex">\frac{dP}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdn~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn</strong>(size(n))</td>
+            <td>
+                <p>
+<script type="math/tex">\frac{dP}{dn_i}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -419,7 +470,7 @@ pressure and calculate fugacity at that point.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>

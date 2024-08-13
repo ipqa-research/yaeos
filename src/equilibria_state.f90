@@ -1,4 +1,4 @@
-module yaeos__equilibria_equilibria_state
+module yaeos__equilibria_equilibrium_state
    use yaeos__constants, only: pr
    implicit none
 
@@ -46,4 +46,4 @@ contains
       write(unit, *) eq%kind, eq%T, eq%P, eq%beta, eq%x, eq%y
 
    end subroutine write_EquilibriumState
-end module yaeos__equilibria_equilibria_state
+end module yaeos__equilibria_equilibrium_state

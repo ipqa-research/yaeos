@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>tv_loop_solve_pressures &ndash; yaeos</title>
+    <title>powell_optimize &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,7 +66,7 @@
 
     <div class="container">
   <div class="row">
-    <h1>tv_loop_solve_pressures
+    <h1>powell_optimize
       <small>Subroutine</small>
       
     </h1>
@@ -78,21 +78,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.0% of total for procedures.">54 statements</a>
+                 title=" 0.4% of total for procedures.">21 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/flash.f90"> Source File</a>
+              <a href="../src/optimizers.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/flash.f90.html'>flash.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_flash.html'>yaeos__equilibria_flash</a></li>
-            <li class="breadcrumb-item active" aria-current="page">tv_loop_solve_pressures</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/optimizers.f90.html'>optimizers.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__optimizers_powell_wrap.html'>yaeos__optimizers_powell_wrap</a></li>
+            <li class="breadcrumb-item active" aria-current="page">powell_optimize</li>
           </ol>
         </nav>
       </div>
@@ -118,16 +118,9 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-bx">Bx</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-px">Px</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-py">Py</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-dpxdv">dPxdV</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-dpydv">dPydV</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-dvydvx">dVydVx</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-dh">dh</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-h~2">h</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-its">its</a>
-            <a class="list-group-item" href="../proc/tv_loop_solve_pressures.html#variable-stepv~2">stepv</a>
+            <a class="list-group-item" href="../proc/powell_optimize.html#variable-dx~7">dx</a>
+            <a class="list-group-item" href="../proc/powell_optimize.html#variable-n~54">n</a>
+            <a class="list-group-item" href="../proc/powell_optimize.html#variable-npt">npt</a>
         </div>
       </div>
     </div>
@@ -157,7 +150,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine tv_loop_solve_pressures(model, T, V, beta, x, y, Vx, Vy, P)  
+    <h2>private  subroutine powell_optimize(self, foo, X, F, data)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -165,7 +158,7 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item">newuoa_module</li>
               </ul>
             </li>
         </ul>
@@ -173,9 +166,9 @@
     </div>
 
 
-    <p>Solve pressure equality between two phases at a given temperature,
-total volume, vapor molar fractions and compositions.</p>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/powellwrapper.html'>PowellWrapper</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -190,97 +183,37 @@ total volume, vapor molar fractions and compositions.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~2"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>),
+              <span class="anchor" id="variable-self~26"></span>
+              class(<a href='../type/powellwrapper.html'>PowellWrapper</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>model</strong></td>
+            <td><strong>self</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-foo~3"></span>
+              procedure(<a href='../interface/obj_func.html'>obj_func</a>)
             </td>
-<td>intent(in)</td>
+<td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>foo</strong></td>
             <td>
-                <p>Temperature [K]</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>V</strong></td>
-            <td>
-                <p>Total volume [L/mol]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-beta~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>beta</strong></td>
-            <td>
-                <p>Molar fraction of light-phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>x</strong>(:)</td>
-            <td>
-                <p>Molar fractions of heavy-phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-y~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>y</strong>(:)</td>
-            <td>
-                <p>Molar fractions of light-phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-vx~2"></span>
+              <span class="anchor" id="variable-x~16"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -288,29 +221,14 @@ total volume, vapor molar fractions and compositions.</p>
               
             </td>
             <td>::</td>
-            <td><strong>Vx</strong></td>
+            <td><strong>X</strong>(:)</td>
             <td>
-                <p>Heavy-phase molar volume [L/mol]</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vy</strong></td>
-            <td>
-                <p>Light-Phase molar volume [L/mol]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p"></span>
+              <span class="anchor" id="variable-f~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -318,9 +236,24 @@ total volume, vapor molar fractions and compositions.</p>
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>F</strong></td>
             <td>
-                <p>Pressure [bar]</p>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-data~6"></span>
+              class(*),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>data</strong></td>
+            <td>
+                
             </td>
         </tr>
     </tbody>
@@ -343,32 +276,15 @@ total volume, vapor molar fractions and compositions.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-bx"></span>
+              <span class="anchor" id="variable-dx~7"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Bx</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Liquid phase covolume</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-px"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Px</strong></td>
+            <td><strong>dx</strong>(size(x))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -377,117 +293,15 @@ total volume, vapor molar fractions and compositions.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-py"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Py</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpxdv"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dPxdV</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpydv"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dPydV</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dvydvx"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dVydVx</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Derivative of Vy wrt Vx</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dh"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dh</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>dh/</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-h~2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>h</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Pressure equality</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-its"></span>
+              <span class="anchor" id="variable-n~54"></span>
               integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>its</strong></td>
+            <td><strong>n</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -496,15 +310,15 @@ total volume, vapor molar fractions and compositions.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-stepv~2"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-npt"></span>
+              integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>stepv</strong></td>
+            <td><strong>npt</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -544,7 +358,7 @@ total volume, vapor molar fractions and compositions.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>

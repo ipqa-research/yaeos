@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>yaeos__phase_equilibria_auxiliar &ndash; yaeos</title>
+    <title>yaeos__optimizers &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,7 +66,7 @@
 
     <div class="container">
   <div class="row">
-    <h1>yaeos__phase_equilibria_auxiliar
+    <h1>yaeos__optimizers
       <small>Module</small>
       
     </h1>
@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for modules and submodules.">13 statements</a>
+                 title=" 0.5% of total for modules and submodules.">30 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/auxiliar.f90"> Source File</a>
+              <a href="../src/optimizers.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li>
-            <li class="breadcrumb-item active" aria-current="page">yaeos__phase_equilibria_auxiliar</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/optimizers.f90.html'>optimizers.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">yaeos__optimizers</li>
           </ol>
         </nav>
       </div>
@@ -118,20 +118,32 @@
   
   
   
-  
-  
       <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#funcs-0"
-         aria-expanded="false" aria-controls="funcs-0">
-         <h4 class="card-header bg-primary text-white">Functions</h4>
+      <a data-bs-toggle="collapse" href="#absints-0"
+         aria-expanded="false" aria-controls="absints-0">
+         <h4 class="card-header bg-primary text-white">Abstract Interfaces</h4>
       </a>
-      <div id="funcs-0" class="collapse">
+      <div id="absints-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__phase_equilibria_auxiliar.html#proc-k_wilson">k_wilson</a>
+            <a class="list-group-item" href="../module/yaeos__optimizers.html#interface-abs_optimize">abs_optimize</a>
+            <a class="list-group-item" href="../module/yaeos__optimizers.html#interface-obj_func">obj_func</a>
         </div>
       </div>
     </div>
 
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__optimizers.html#type-optimizer">Optimizer</a>
+        </div>
+      </div>
+    </div>
+
+  
   
   
   
@@ -147,7 +159,7 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Auxiliar functions used for phase-equilibria calculation.</p>
+      
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
@@ -155,7 +167,6 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_base.html'>yaeos__models_base</a></li>
               </ul>
             </li>
         </ul>
@@ -169,16 +180,19 @@
 
 
 
-
-
         <section>
-          <h2>Functions</h2>
+          <h2>Abstract Interfaces</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-k_wilson"></span> <h3>public  function <a href='../proc/k_wilson.html'>k_wilson</a>(model, T, P) result(K)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>K-factors regressión done by Wilson, used for initialization.</p>
+    <div class="card-header codesum"><span class="anchor" id="interface-abs_optimize"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    public  subroutine abs_optimize(self, foo, X, F, data)  
+
+    </h3>
+  
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -193,22 +207,113 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~5"></span>
-              class(<a href='../type/basemodel.html'>BaseModel</a>),
+              <span class="anchor" id="variable-self~25"></span>
+              class(<a href='../type/optimizer.html'>Optimizer</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>model</strong></td>
+            <td><strong>self</strong></td>
             <td>
-
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~10"></span>
+              <span class="anchor" id="variable-foo~2"></span>
+              procedure(<a href='../interface/obj_func.html'>obj_func</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>foo</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~15"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>F</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-data~5"></span>
+              class(*),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>data</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-obj_func"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    public  subroutine obj_func(X, F, dF, data)  
+
+    </h3>
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~14"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -216,22 +321,139 @@
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>F</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dF</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-data~4"></span>
+              class(*),
+            </td>
+<td>intent(inout),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>data</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-optimizer"></span>
+      <h3>
+        type, public, abstract&nbsp;::&nbsp;
+        <a href='../type/optimizer.html'>Optimizer</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-parameter_step"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>parameter_step</strong>(:)</td>
+                <td></td>
+                <td></td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~3"></span>
+              <span class="anchor" id="variable-solver_tolerance"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+              <td>public</td>
+            <td>
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>solver_tolerance</strong></td>
+<td> =</td>
+                <td>1e-9_pr</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-verbose~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>verbose</strong></td>
+                <td></td>
+                <td></td>
             <td>
 
             </td>
@@ -239,17 +461,25 @@
     </tbody>
   </table>
 
-    <h4>
-    Return Value
-    <small>real(kind=pr), (size(model%components%pc))</small>
-    </h4>
-    
 
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure(<a href='../interface/abs_optimize.html'>abs_optimize</a>), public, deferred ::
+  <strong><a href='../type/optimizer.html#boundprocedure-optimize'>optimize</a></strong></td>
+                <td></td>
+              </tr>
+          </tbody>
+        </table>
     </div>
   </div>
 
         </section>
         <br>
+
 
 
 
@@ -272,7 +502,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>

@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>yaeos__phase_equilibria_boundaries_phase_envelopes_pt &ndash; yaeos</title>
+    <title>yaeos__equilibria_rachford_rice &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,7 +66,7 @@
 
     <div class="container">
   <div class="row">
-    <h1>yaeos__phase_equilibria_boundaries_phase_envelopes_pt
+    <h1>yaeos__equilibria_rachford_rice
       <small>Module</small>
       
     </h1>
@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 3.4% of total for modules and submodules.">203 statements</a>
+                 title=" 1.1% of total for modules and submodules.">70 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_pt.f90"> Source File</a>
+              <a href="../src/rachford_rice.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt.f90.html'>phase_envelopes_pt.f90</a></li>
-            <li class="breadcrumb-item active" aria-current="page">yaeos__phase_equilibria_boundaries_phase_envelopes_pt</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/rachford_rice.f90.html'>rachford_rice.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">yaeos__equilibria_rachford_rice</li>
           </ol>
         </nav>
       </div>
@@ -119,31 +119,8 @@
   
   
   
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#types-0"
-         aria-expanded="false" aria-controls="types-0">
-         <h4 class="card-header bg-primary text-white">Derived Types</h4>
-      </a>
-      <div id="types-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__phase_equilibria_boundaries_phase_envelopes_pt.html#type-criticalpoint">CriticalPoint</a>
-            <a class="list-group-item" href="../module/yaeos__phase_equilibria_boundaries_phase_envelopes_pt.html#type-ptenvel2">PTEnvel2</a>
-        </div>
-      </div>
-    </div>
-
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#funcs-0"
-         aria-expanded="false" aria-controls="funcs-0">
-         <h4 class="card-header bg-primary text-white">Functions</h4>
-      </a>
-      <div id="funcs-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__phase_equilibria_boundaries_phase_envelopes_pt.html#proc-pt_envelope_2ph">pt_envelope_2ph</a>
-        </div>
-      </div>
-    </div>
-
+  
+  
       <div class="card mb-4">
       <a data-bs-toggle="collapse" href="#subs-0"
          aria-expanded="false" aria-controls="subs-0">
@@ -151,7 +128,10 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__phase_equilibria_boundaries_phase_envelopes_pt.html#proc-write_ptenvel2">write_PTEnvel2</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_rachford_rice.html#proc-betalimits">betalimits</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_rachford_rice.html#proc-betato01">betato01</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_rachford_rice.html#proc-rachford_rice">rachford_rice</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_rachford_rice.html#proc-solve_rr">solve_rr</a>
         </div>
       </div>
     </div>
@@ -170,7 +150,7 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Phase boundaries line on the <script type="math/tex">PT</script> plane calculation procedures.</p>
+      
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
@@ -178,9 +158,6 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibria_state.html'>yaeos__equilibria_equilibria_state</a></li>
-                  <li class="list-inline-item"><a href='yaeos__math_continuation.html'>yaeos__math_continuation</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
               </ul>
             </li>
         </ul>
@@ -195,167 +172,17 @@
 
 
 
-        <section>
-          <h2>Derived Types</h2>
-              <div class="card">
-    <div class="card-header codesum">
-      <span class="anchor" id="type-criticalpoint"></span>
-      <h3>
-        type, public&nbsp;::&nbsp;
-        <a href='../type/criticalpoint.html'>CriticalPoint</a>
-        
-      </h3>
-    </div>
-    <div class="card-body">
-      <p>Critical point</p>
 
-        <h4>Components</h4>
-          <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-<th></th><th scope="col">Initial</th>        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p~4"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>P</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Pressure [bar]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~11"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Temperature [K]</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum">
-      <span class="anchor" id="type-ptenvel2"></span>
-      <h3>
-        type, public&nbsp;::&nbsp;
-        <a href='../type/ptenvel2.html'>PTEnvel2</a>
-        
-      </h3>
-    </div>
-    <div class="card-body">
-      <p>Two-phase isopleth.
-Phase boundary line of a fluid at constant composition.</p>
-
-        <h4>Components</h4>
-          <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-<th></th><th scope="col">Initial</th>        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-cps"></span>
-              type(<a href='../type/criticalpoint.html'>CriticalPoint</a>),
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>cps</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Critical points found along the line.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-points"></span>
-              type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>),
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>points</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Each point through the line.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-
-        <h4>Type-Bound Procedures</h4>
-        <table class="table table-striped varlist">
-          <tbody>
-              <tr>
-                <td>  procedure, public, pass ::
-  <strong><a href='../type/ptenvel2.html#boundprocedure-write~2'>write</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_ptenvel2.html'>write_PTEnvel2</a></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>  generic, public ::
-  <strong><a href='../type/ptenvel2.html#boundprocedure-write%20%28formatted%29~2'>write (FORMATTED)</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/type/ptenvel2.html#boundprocedure-write~2'>write</a></td>
-                <td></td>
-              </tr>
-          </tbody>
-        </table>
-    </div>
-  </div>
-
-        </section>
-        <br>
 
         <section>
-          <h2>Functions</h2>
+          <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-pt_envelope_2ph"></span> <h3>public  function <a href='../proc/pt_envelope_2ph.html'>pt_envelope_2ph</a>(model, z, first_point, points, iterations, delta_0, specified_variable_0, solver, stop_conditions) result(envelopes)  
+    <div class="card-header codesum"><span class="anchor" id="proc-betalimits"></span> <h3>public  subroutine <a href='../proc/betalimits.html'>betalimits</a>(z, K, bmin, bmax)  
 </h3></div>
     <div class="card-body">
           
-  <p>PT two-phase envelope calculation procedure.</p><a href="../proc/pt_envelope_2ph.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Define beta limits to avoid overshooting when solving the Rachford-Rice
+equation.</p><a href="../proc/betalimits.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -370,19 +197,89 @@ Phase boundary line of a fluid at constant composition.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~6"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>),
+              <span class="anchor" id="variable-z~8"></span>
+              real(kind=pr),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>model</strong></td>
+            <td><strong>z</strong>(:)</td>
             <td>
-<p>Thermodyanmic model</p>
+<p>Molar fractions vector</p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>K</strong>(:)</td>
+            <td>
+<p>K-factors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bmin"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bmin</strong></td>
+            <td>
+<p>Minimum beta value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bmax"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bmax</strong></td>
+            <td>
+<p>Maximum beta value</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-betato01"></span> <h3>public  subroutine <a href='../proc/betato01.html'>betato01</a>(z, K)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Modify K-factor values to assure that <script type="math/tex">\beta</script> lies between (0,1)</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
         <tr>
             <td>
               <span class="anchor" id="variable-z~7"></span>
@@ -395,141 +292,38 @@ Phase boundary line of a fluid at constant composition.</p>
             <td>::</td>
             <td><strong>z</strong>(:)</td>
             <td>
-<p>Vector of molar fractions</p>
+<p>Molar fractions of the system</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-first_point"></span>
-              type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>)
+              <span class="anchor" id="variable-k"></span>
+              real(kind=pr)
             </td>
 <td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>first_point</strong></td>
+            <td><strong>K</strong>(:)</td>
             <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-points~2"></span>
-              integer,
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>points</strong></td>
-            <td>
-<p>Maxmimum number of points, defaults to 500</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-iterations"></span>
-              integer,
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>iterations</strong></td>
-            <td>
-<p>Point solver maximum iterations, defaults to 100</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-delta_0"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>delta_0</strong></td>
-            <td>
-<p>Initial extrapolation <script type="math/tex">\Delta</script>
+<p>K factors <script type="math/tex">\frac{y_i}{x_i}</script>
 </p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-specified_variable_0"></span>
-              integer,
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>specified_variable_0</strong></td>
-            <td>
-<p>Position of specified variable, since the vector of variables is
-<script type="math/tex">X = [lnK_i, \dots, lnT, lnP]</script> the values for specification
-will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constants, <script type="math/tex">nc+1</script> for
-<script type="math/tex">lnT</script> and <script type="math/tex">nc + 2</script> for <script type="math/tex">lnT</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-solver"></span>
-              procedure(<a href='../interface/continuation_solver.html'>continuation_solver</a>),
-            </td>
-<td></td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>solver</strong></td>
-            <td>
-<p>Specify solver for each point, defaults to a full newton procedure</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-stop_conditions"></span>
-              procedure(<a href='../interface/continuation_stopper.html'>continuation_stopper</a>),
-            </td>
-<td></td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>stop_conditions</strong></td>
-            <td>
-<p>Function that returns true if the continuation method should stop</p>
             </td>
         </tr>
     </tbody>
   </table>
 
-    <h4>
-    Return Value
-    <small>type(<a href='../type/ptenvel2.html'>PTEnvel2</a>)</small>
-    </h4>
-    
 
     </div>
   </div>
 
-        </section>
-        <br>
-
-        <section>
-          <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-write_ptenvel2"></span> <h3>public  subroutine <a href='../proc/write_ptenvel2.html'>write_PTEnvel2</a>(pt2, unit, iotype, v_list, iostat, iomsg)  
+    <div class="card-header codesum"><span class="anchor" id="proc-rachford_rice"></span> <h3>public  subroutine <a href='../proc/rachford_rice.html'>rachford_rice</a>(z, K, beta, rr, drrdb)  
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Rachford-Rice equation for a two phase system</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -544,92 +338,180 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-pt2"></span>
-              class(<a href='../type/ptenvel2.html'>PTEnvel2</a>),
+              <span class="anchor" id="variable-z~9"></span>
+              real(kind=pr),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>pt2</strong></td>
+            <td><strong>z</strong>(:)</td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-unit~2"></span>
-              integer,
+              <span class="anchor" id="variable-k~3"></span>
+              real(kind=pr),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>unit</strong></td>
+            <td><strong>K</strong>(:)</td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iotype~2"></span>
-              character(len=*),
+              <span class="anchor" id="variable-beta~2"></span>
+              real(kind=pr),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>iotype</strong></td>
+            <td><strong>beta</strong></td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v_list~2"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>v_list</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-iostat~2"></span>
-              integer,
+              <span class="anchor" id="variable-rr"></span>
+              real(kind=pr),
             </td>
 <td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>iostat</strong></td>
+            <td><strong>rr</strong></td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iomsg~2"></span>
-              character(len=*),
+              <span class="anchor" id="variable-drrdb"></span>
+              real(kind=pr),
             </td>
-<td>intent(inout)</td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>iomsg</strong></td>
+            <td><strong>drrdb</strong></td>
             <td>
 
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_rr"></span> <h3>public  subroutine <a href='../proc/solve_rr.html'>solve_rr</a>(z, K, beta, beta_min, beta_max)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Solve the Rachford-Rice Equation.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+<p>Mole fractions vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>K</strong>(:)</td>
+            <td>
+<p>K-factors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta</strong></td>
+            <td>
+<p>
+<script type="math/tex">\beta</script> value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta_min"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta_min</strong></td>
+            <td>
+<p>Lower limit for <script type="math/tex">\beta</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta_max"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta_max</strong></td>
+            <td>
+<p>Upper limit for <script type="math/tex">\beta</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -662,7 +544,7 @@ will be <script type="math/tex">[1 \dots nc]</script> for the equilibria constan
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>

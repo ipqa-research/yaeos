@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 3.0% of total for modules and submodules.">176 statements</a>
+                 title=" 1.9% of total for modules and submodules.">118 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -132,18 +132,7 @@
       </div>
     </div>
 
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#subs-0"
-         aria-expanded="false" aria-controls="subs-0">
-         <h4 class="card-header bg-primary text-white">Subroutines</h4>
-      </a>
-      <div id="subs-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__equilibria_flash.html#proc-tv_loop_solve_pressures">tv_loop_solve_pressures</a>
-        </div>
-      </div>
-    </div>
-
+  
   
   
   
@@ -165,11 +154,12 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibria_state.html'>yaeos__equilibria_equilibria_state</a></li>
-                  <li class="list-inline-item"><a href='yaeos__phase_equilibria_auxiliar.html'>yaeos__phase_equilibria_auxiliar</a></li>
-                  <li class="list-inline-item"><a href='yaeos__phase_equilibria_rachford_rice.html'>yaeos__phase_equilibria_rachford_rice</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_rachford_rice.html'>yaeos__equilibria_rachford_rice</a></li>
                   <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
+                  <li class="list-inline-item"><a href='yaeos__solvers_pressure_equality.html'>yaeos__solvers_pressure_equality</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
               </ul>
             </li>
         </ul>
@@ -207,7 +197,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model"></span>
+              <span class="anchor" id="variable-model~27"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -222,7 +212,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z"></span>
+              <span class="anchor" id="variable-z~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -237,7 +227,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t"></span>
+              <span class="anchor" id="variable-t~34"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -297,7 +287,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters"></span>
+              <span class="anchor" id="variable-iters~5"></span>
               integer,
             </td>
 <td>intent(out),</td>
@@ -325,171 +315,6 @@
         </section>
         <br>
 
-        <section>
-          <h2>Subroutines</h2>
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-tv_loop_solve_pressures"></span> <h3>public  subroutine <a href='../proc/tv_loop_solve_pressures.html'>tv_loop_solve_pressures</a>(model, T, V, beta, x, y, Vx, Vy, P)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Solve pressure equality between two phases at a given temperature,
-total volume, vapor molar fractions and compositions.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-model~2"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>model</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-<p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-v"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>V</strong></td>
-            <td>
-<p>Total volume [L/mol]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-beta~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>beta</strong></td>
-            <td>
-<p>Molar fraction of light-phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>x</strong>(:)</td>
-            <td>
-<p>Molar fractions of heavy-phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-y~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>y</strong>(:)</td>
-            <td>
-<p>Molar fractions of light-phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-vx~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vx</strong></td>
-            <td>
-<p>Heavy-phase molar volume [L/mol]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-vy~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vy</strong></td>
-            <td>
-<p>Light-Phase molar volume [L/mol]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>P</strong></td>
-            <td>
-<p>Pressure [bar]</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-        </section>
-        <br>
 
 
 
@@ -511,7 +336,7 @@ total volume, vapor molar fractions and compositions.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>

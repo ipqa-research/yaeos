@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 2.1% of total for derived types.</p>Including implementation: 358 statements, 14.2% of total for derived types.">5 statements</a>
+                 title="<p> 1.9% of total for derived types.</p>Including implementation: 361 statements, 13.9% of total for derived types.">5 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -91,7 +91,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/armodel_adiff_api.f90.html'>armodel_adiff_api.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__ar_models_hyperdual.html'>yaeos__ar_models_hyperdual</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__adiff_hyperdual_ar_api.html'>yaeos__adiff_hyperdual_ar_api</a></li>
             <li class="breadcrumb-item active" aria-current="page">ArModelAdiff</li>
           </ol>
         </nav>
@@ -146,12 +146,12 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-ar">Ar</a>
+            <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-ar~3">Ar</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-cp_residual_vt">Cp_residual_vt</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-cv_residual_vt">Cv_residual_vt</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-enthalpy_residual_vt">enthalpy_residual_vt</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-entropy_residual_vt">entropy_residual_vt</a>
-            <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-get_v0">get_v0</a>
+            <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-get_v0~3">get_v0</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-gibbs_residual_vt">gibbs_residual_vt</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-lnphi_pt">lnphi_pt</a>
             <a class="list-group-item" href="../type/armodeladiff.html#boundprocedure-lnphi_vt">lnphi_vt</a>
@@ -235,7 +235,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ar"></span>
+      <span class="anchor" id="boundprocedure-ar~3"></span>
       <h3>
           procedure(<a href='../interface/hyperdual_ar.html'>hyperdual_Ar</a>), public, deferred ::
   <strong>Ar</strong>
@@ -896,7 +896,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_v0"></span>
+      <span class="anchor" id="boundprocedure-get_v0~3"></span>
       <h3>
           procedure(<a href='../interface/abs_volume_initializer.html'>abs_volume_initializer</a>), public, deferred ::
   <strong>get_v0</strong>
@@ -1177,7 +1177,7 @@ of the model.</p>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/fugacity_pt.html'>fugacity_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn)  
+    public  subroutine <a href='../proc/fugacity_pt.html'>fugacity_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
 </h3>
     
 
@@ -1343,6 +1343,57 @@ of the model.</p>
             <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
 <p>ln(phi) compositional derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dn_i}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -2148,7 +2199,7 @@ of the model.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 12:36              </p>
+ on 2024-08-13 13:52              </p>
           </div>
         </div>
         <br>
