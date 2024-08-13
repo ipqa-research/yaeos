@@ -1,13 +1,16 @@
-from yaeos.compiled_module.yaeos_compiled import yaeos_c
+from yaeos.lib import yaeos_c
 
-from yaeos.core import (
+from yaeos.cubic_eos import (
     SoaveRedlichKwong,
     PengRobinson76,
     PengRobinson78,
     RKPR,
-    NRTL,
     MHV,
     QMR,
+)
+
+from yaeos.core import (
+    NRTL,
 )
 
 

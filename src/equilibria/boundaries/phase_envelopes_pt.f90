@@ -1,8 +1,8 @@
-module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
+module yaeos__equilibria_boundaries_phase_envelopes_pt
    !! Phase boundaries line on the \(PT\) plane calculation procedures.
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibria_state, only: EquilibriumState
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -24,6 +24,10 @@ module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
       procedure, pass :: write =>  write_PTEnvel2
       generic, public :: write (FORMATTED) => write
    end type PTEnvel2
+
+   ! Saved volume values
+   real(pr), private :: Vz
+   real(pr), private :: Vy
 
 contains
 
@@ -72,7 +76,10 @@ contains
       integer :: max_iterations !! Maximum number of iterations
 
       real(pr) :: X(size(z) + 2)
+      !! Vector of variables used in the continuation method
       real(pr), allocatable :: XS(:, :)
+      !! All the calculated variables that are returned on the continuation
+      !! method procedure (unused since each point is saved on the fly)
 
       character(len=14) :: kind
 
@@ -125,7 +132,7 @@ contains
          character(len=14) :: kind_z, kind_y
 
          real(pr) :: y(nc)
-         real(pr) :: Vz, Vy, lnPhi_z(nc), lnPhi_y(nc)
+         real(pr) :: lnPhi_z(nc), lnPhi_y(nc)
          real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
          real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
          real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
@@ -245,10 +252,23 @@ contains
          T = exp(X(nc+1))
          P = exp(X(nc+2))
          y = exp(X(:nc))*z
-         point = EquilibriumState(&
-            kind=kind, x=z, Vx=0._pr, y=y, Vy=0._pr, &
-            T=T, P=P, beta=0._pr, iters=iters &
-            )
+         select case(kind)
+          case("bubble")
+            point = EquilibriumState(&
+               kind="bubble", x=z, Vx=Vz, y=y, Vy=Vy, &
+               T=T, P=P, beta=0._pr, iters=iters &
+               )
+          case("dew")
+            point = EquilibriumState(&
+               kind="dew", x=y, Vx=Vy, y=x, Vy=Vz, &
+               T=T, P=P, beta=1._pr, iters=iters &
+               )
+          case default
+            point = EquilibriumState(&
+               kind=kind, x=z, Vx=Vz, y=y, Vy=Vy, &
+               T=T, P=P, beta=0._pr, iters=iters &
+               )
+         end select
 
          envelopes%points = [envelopes%points, point]
       end subroutine save_point
@@ -361,4 +381,4 @@ contains
       end do
    end subroutine write_PTEnvel2
 
-end module yaeos__phase_equilibria_boundaries_phase_envelopes_pt
+end module yaeos__equilibria_boundaries_phase_envelopes_pt

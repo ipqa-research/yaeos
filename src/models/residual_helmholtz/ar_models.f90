@@ -244,13 +244,13 @@ contains
       end if
 
       P = totn * R * T/V - ArV
-      if (present(dPdV)) dPdV = -ArV2 - R*t*totn/V**2
+      if (present(dPdV)) dPdV = -ArV2 - R*T*totn/V**2
       if (present(dPdT)) dPdT = -ArTV + totn*R/V
       if (present(dPdn)) dPdn(:) = R*T/V - ArVn(:)
    end subroutine pressure
 
    subroutine fugacity_pt(eos, &
-      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn &
+      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn &
       )
       !! Calculate logarithm of fugacity, given pressure and temperature.
       !!
@@ -268,11 +268,19 @@ contains
       real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! ln(phi) Temp derivative
       real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! ln(phi) Presssure derivative
       real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! ln(phi) compositional derivative
+      real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
+      real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
+      real(pr), optional, intent(out) :: dPdn(size(n)) !! \(\frac{dP}{dn_i}\)
 
       real(pr) :: V_in, P_in
 
       call eos%volume(n, P=P, T=T, V=V_in, root_type=root_type)
-      call eos%lnphi_vt(n, V_in, T, P_in, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn)
+      call eos%lnphi_vt(&
+         n, V=V_in, T=T, &
+         P=P_in, lnPhi=lnPhi, &
+         dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn, &
+         dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+         )
 
       if(present(V)) V = V_in
 
