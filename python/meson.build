@@ -89,7 +89,7 @@ py.extension_module(module_name,
   include_directories: [inc_np],
   dependencies : py_dep,
   link_args: [
-    '-L' + 'fpm_build' / 'lib', '-lyaeos', '-llapack'
+    '-L' + 'fpm_build' / 'lib', '-lyaeos', '-llapack', '-static-libgfortran', '-static-libquadmath'
   ],
   subdir: python_lib / 'lib',
   install : true,
