@@ -34,8 +34,8 @@ fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggres
 cflags = '-fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
-run_command('fpm', '--version')
-run_command(
+run_command('fpm', '--version', check: true)
+fpm_install = run_command(
     'fpm',
     'install',
     '--profile',
