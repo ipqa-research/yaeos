@@ -89,7 +89,7 @@ py.extension_module(module_name,
   dependencies : py_dep,
   link_args: [
     '-L' + 'fpm_build' / 'lib', '-lyaeos', 
-    '-llapack', '-static-libgfortran', '-lm'
+    '-llapack', '-static-libgfortran', '-lm', '-static-glibc'
   ],
   subdir: python_lib / 'lib',
   install : true,
