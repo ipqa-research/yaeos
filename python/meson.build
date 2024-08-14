@@ -81,7 +81,7 @@ py.install_sources(python_sources, subdir:python_lib)
 py.install_sources(fapi_sources, subdir:python_lib / 'lib')
 
 # Extension fortran module
-inc_np = include_directories(incdir_numpy, incdir_f2py, fpm_build_dir / 'include')
+inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
 
 py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
