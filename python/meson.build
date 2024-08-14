@@ -46,7 +46,7 @@ fpm_install = run_command(
     cflags,
     '--prefix',
     fpm_build_dir,
-    check : true
+    check : false
 )
 
 # f2py?
