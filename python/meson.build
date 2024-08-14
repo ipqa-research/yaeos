@@ -34,7 +34,7 @@ fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggres
 cflags = '-fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
-run_command('fpm --version')
+run_command('fpm', '--version')
 run_command(
     'fpm',
     'install',
@@ -87,10 +87,11 @@ py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
-  dependencies : py_dep,
+  dependencies : [py_dep, omp],
+  c_args : '-fopenmp',
   link_args: [
     '-L' + 'fpm_build' / 'lib', '-lyaeos', 
-    '-llapack', '-static-libgfortran', '-lm', '-static-glibc'
+    '-llapack', '-static-libgfortran', '-lm', '-static-libgcc', '-lgomp'
   ],
   subdir: python_lib / 'lib',
   install : true,
