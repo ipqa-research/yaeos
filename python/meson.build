@@ -49,7 +49,7 @@ run_command(
 )
 
 # f2py?
-source_path = meson.source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
+source_path = meson.project_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
 c_wrapper = files(source_path)
 module_name = 'yaeos_python'
 
@@ -89,7 +89,7 @@ py.extension_module(module_name,
   dependencies : py_dep,
   link_args: [
     '-L' + 'fpm_build' / 'lib', '-lyaeos', 
-    '-llapack', '-static-libgfortran', '-static-libquadmath'
+    '-llapack', '-static-libgfortran', '-lm'
   ],
   subdir: python_lib / 'lib',
   install : true,
