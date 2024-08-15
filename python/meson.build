@@ -49,8 +49,8 @@ fpm_install = run_command(
     check : false
 )
 
-# f2py?
-source_path = 'c_interface' / 'yaeos_c.f90'
+# f2py
+source_path =  meson.project_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
 c_wrapper = files(source_path)
 module_name = 'yaeos_python'
 
