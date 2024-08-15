@@ -7,7 +7,7 @@ project('yaeos', 'c',
 
 add_languages('fortran', native: false)
 
-meson_path = meson.current_build_dir()
+meson_path = meson.project_source_root()
 
 omp = dependency('openmp')
 lapack = dependency('lapack')
