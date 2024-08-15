@@ -146,8 +146,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # CiBuildWheel
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.19.2 auditwheel
+      - name: Install dependencies
+        run: |
+          python -m pip install cibuildwheel==2.19.2 auditwheel meson
 
       - name: Build wheels
         run: |
