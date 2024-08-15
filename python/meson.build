@@ -69,7 +69,7 @@ f2py_gen_source = custom_target(module_name + '.c',
 )
 
 # Install Python sources
-python_lib = 'python' / 'yaeos'
+python_lib = 'yaeos'
 python_sources = [
     python_lib / '__init__.py',
     python_lib / 'core.py',
