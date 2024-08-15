@@ -151,8 +151,9 @@ jobs:
           python -m pip install cibuildwheel==2.19.2 auditwheel meson ninja
 
       - name: Build wheels
+        working-directory: ./python
         run: |
-         pip wheel python/ -v -w wheelhouse
+         pip wheel . -v -w wheelhouse
          auditwheel repair wheelhouse/*.whl
 
         # run: python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
