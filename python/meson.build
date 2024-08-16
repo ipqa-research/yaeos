@@ -34,7 +34,7 @@ fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggres
 cflags = '-fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
-run_command(
+fpm = run_command(
     'fpm',
     'install',
     '--profile',
@@ -45,8 +45,15 @@ run_command(
     cflags,
     '--prefix',
     fpm_build_dir,
-    check : true
+    check : false
 )
+
+message('fpm build output:')
+output = fpm.stdout().strip()
+message(output)
+message('fpm build error:')
+err = fpm.stderr().strip()
+message(err)
 
 # f2py?
 source_path = meson.source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
