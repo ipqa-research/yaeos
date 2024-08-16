@@ -10,7 +10,7 @@ add_languages('fortran', native: false)
 meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
-lapack = dependency('lapack')
+# lapack = dependency('lapack')
 
 py_mod = import('python')
 py = py_mod.find_installation(pure: false)
@@ -56,7 +56,7 @@ err = fpm.stderr().strip()
 message(err)
 
 # f2py?
-source_path = meson.source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
+source_path = meson.global_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
 c_wrapper = files(source_path)
 module_name = 'yaeos_python'
 
