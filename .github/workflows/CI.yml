@@ -122,7 +122,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest] #, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest] #, windows-latest, macos-13, macos-14]
     
     steps:
       - uses: actions/checkout@v4
@@ -156,10 +156,9 @@ jobs:
         env:
           CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
-          CIBW_ENVIRONMENT: CMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
-          # CIBW_BEFORE_TEST: pip install pytest
-          # CIBW_TEST_COMMAND: pytest {project}/python/tests
+          CIBW_BEFORE_TEST: pip install pytest
+          CIBW_TEST_COMMAND: pytest {project}/python/tests
 
       - uses: actions/upload-artifact@v4
         with:
