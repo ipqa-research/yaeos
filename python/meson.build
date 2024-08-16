@@ -29,7 +29,7 @@ incdir_f2py = run_command(py,
 ).stdout().strip()
 
 
-# fpm?
+# fpm
 fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
 cflags = '-fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
@@ -48,6 +48,7 @@ fpm = run_command(
     check : false
 )
 
+# Error printing
 message('fpm build output:')
 output = fpm.stdout().strip()
 message(output)
@@ -55,7 +56,7 @@ message('fpm build error:')
 err = fpm.stderr().strip()
 message(err)
 
-# f2py?
+# f2py
 source_path = meson.global_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
 c_wrapper = files(source_path)
 module_name = 'yaeos_python'

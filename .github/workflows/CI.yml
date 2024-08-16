@@ -123,8 +123,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest] #, windows-latest, macos-13, macos-14]
-        python-version: [310, 311, 312]
-
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -148,22 +147,18 @@ jobs:
       # CiBuildWheel
       - name: Install dependencies
         run: |
-          python -m pip install cibuildwheel==2.19.2 auditwheel meson ninja
+          python -m pip install cibuildwheel==2.19.2
 
       - name: Build wheels
-        # run: |
-        #  pip wheel python/ -v -w wheelhouse
-        #  auditwheel show wheelhouse/yaeos*.whl
-        #  auditwheel repair wheelhouse/yaeos*.whl
-
         run: python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
+
         # to supply options, put them in 'env', like:
         env:
+          CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
           MACOSX_DEPLOYMENT_TARGET: "13.0"
           # CIBW_BEFORE_TEST: pip install pytest
           # CIBW_TEST_COMMAND: pytest {project}/python/tests
-          CIBW_BUILD_VERBOSITY: 3
 
       - uses: actions/upload-artifact@v4
         with:
