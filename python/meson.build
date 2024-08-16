@@ -7,7 +7,7 @@ project('yaeos', 'c',
 
 add_languages('fortran', native: false)
 
-meson_path = meson.project_source_root()
+meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
 lapack = dependency('lapack')
@@ -34,8 +34,7 @@ fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggres
 cflags = '-fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
-run_command('fpm', '--version', check: true)
-fpm_install = run_command(
+run_command(
     'fpm',
     'install',
     '--profile',
@@ -46,11 +45,11 @@ fpm_install = run_command(
     cflags,
     '--prefix',
     fpm_build_dir,
-    check : false
+    check : true
 )
 
-# f2py
-source_path =  meson.project_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
+# f2py?
+source_path = meson.source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
 c_wrapper = files(source_path)
 module_name = 'yaeos_python'
 
@@ -87,12 +86,8 @@ py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
-  dependencies : [py_dep, omp],
-  c_args : '-fopenmp',
-  link_args: [
-    '-L' + 'fpm_build' / 'lib', '-lyaeos', 
-    '-llapack', '-static-libgfortran', '-lm', '-static-libgcc', '-lgomp'
-  ],
+  dependencies : py_dep,
+  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack'],
   subdir: python_lib / 'lib',
   install : true,
 )
