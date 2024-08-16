@@ -151,12 +151,12 @@ jobs:
           python -m pip install cibuildwheel==2.19.2 auditwheel meson ninja
 
       - name: Build wheels
-        run: |
-         pip wheel python/ -v -w wheelhouse
-         auditwheel show wheelhouse/yaeos*.whl
-         auditwheel repair wheelhouse/yaeos*.whl
+        # run: |
+        #  pip wheel python/ -v -w wheelhouse
+        #  auditwheel show wheelhouse/yaeos*.whl
+        #  auditwheel repair wheelhouse/yaeos*.whl
 
-        # run: python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
+        run: python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
         # to supply options, put them in 'env', like:
         env:
           CIBW_BUILD_FRONTEND: build
