@@ -11,7 +11,7 @@ def test_dummy():
         np.array([300, 350]), np.array([30, 40]), np.array([0.152, 0.325]), mr
     )
 
-    fug = model.fugacity(np.array([5, 6]), 2.0, 303.15)["ln_phi"]
+    fug = model.lnphi_vt(np.array([5, 6]), 2.0, 303.15)["ln_phi"]
 
     assert np.allclose(fug, np.array([0.65960035, 0.30581106]))
 
@@ -28,7 +28,7 @@ def test_flash():
     model = PengRobinson76(Tc, Pc, w, mixrule)
 
     P, T = 60.0, 294.0
-    flash = model.flash_pt(n, pressure=T, temperature=P)
+    flash = model.flash_pt(n, pressure=P, temperature=T)
 
     npt.assert_allclose(flash["x"], [0.32424472, 0.67575528], rtol=1e-5)
 
