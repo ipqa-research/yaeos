@@ -41,4 +41,6 @@ before-all = """
     cd vcpkg
     .\\bootstrap-vcpkg.bat
     .\\vcpkg install lapack blas
+    [Environment]::SetEnvironmentVariable('VCPKG_ROOT', (Get-Location), [EnvironmentVariableTarget]::User)
+    [Environment]::SetEnvironmentVariable('CMAKE_TOOLCHAIN_FILE', (Join-Path (Get-Location) 'scripts\\buildsystems\\vcpkg.cmake'), [EnvironmentVariableTarget]::User)
 """
