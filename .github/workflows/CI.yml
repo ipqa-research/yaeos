@@ -154,7 +154,8 @@ jobs:
         working-directory: ./python
         run: |
          pip wheel . -v -w wheelhouse
-         auditwheel repair wheelhouse/*.whl
+         auditwheel show wheelhouse/yaeos*.whl
+         auditwheel repair wheelhouse/yaeos*.whl
 
         # run: python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
         # to supply options, put them in 'env', like:
