@@ -75,19 +75,52 @@ f2py_gen_source = custom_target(module_name + '.c',
   ]
 )
 
+# =============================================================================
 # Install Python sources
+# -----------------------------------------------------------------------------
+# yaeos root
 python_lib = 'yaeos'
 python_sources = [
     python_lib / '__init__.py',
     python_lib / 'core.py',
-    python_lib / 'cubic_eos.py',
 ]
-fapi_sources = [python_lib / 'lib' / '__init__.py']
-
 py.install_sources(python_sources, subdir:python_lib)
+
+
+## lib
+fapi_sources = [python_lib / 'lib' / '__init__.py']
 py.install_sources(fapi_sources, subdir:python_lib / 'lib')
 
+
+## models
+models_sources = [python_lib / 'models' / '__init__.py']
+py.install_sources(models_sources, subdir:python_lib / 'models')
+
+### models.excess_gibbs
+excess_gibbs_sources = [
+  python_lib / 'models' / 'excess_gibbs' / '__init__.py',
+]
+py.install_sources(excess_gibbs_sources, subdir:python_lib / 'models' / 'excess_gibbs')
+
+
+### models.residual_helmholtz
+residual_helmholtz_sources = [
+  python_lib / 'models' / 'residual_helmholtz' / '__init__.py',
+]
+py.install_sources(residual_helmholtz_sources, subdir:python_lib / 'models' / 'residual_helmholtz')
+
+#### models.residual_helmholtz.cubic_eos
+cubic_eos_sources = [
+  python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / '__init__.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'cubic_eos.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'mixing_rules.py'
+]
+py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos')
+
+
+# =============================================================================
 # Extension fortran module
+# -----------------------------------------------------------------------------
 inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
 
 py.extension_module(module_name,

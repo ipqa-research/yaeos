@@ -1,69 +1,291 @@
-"""CubicEoS interface
+"""yaeos Python API core module.
+
+ArModel and GeModel abstract classes definition. Also, the implementation of 
+the models' thermoprops methods.
 """
 
-from abc import ABC, abstractmethod
+from abc import ABC
+from typing import Union
 
 import numpy as np
 
-from yaeos import yaeos_c
+from yaeos.lib import yaeos_c
 
 
 class GeModel(ABC):
-    """Excess Gibbs model."""
+    """Excess Gibbs (Ge) model abstract class."""
 
     def __del__(self):
         yaeos_c.make_available_ge_models_list(self.id)
 
 
 class ArModel(ABC):
-    """Residual Helmholtz (Ar) model"""
+    """Residual Helmholtz (Ar) model abstract class."""
 
-    def lnphi_vt(self, n, v, t, dt=None, dp=None, dn=None):
+    def lnphi_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate fugacity coefficent given volume and temperature.
 
-        nc = len(n)
+        Calculate :math:`ln \phi_i(n,V,T)` and its derivatives with respect to
+        temperature, pressure and moles number.
 
-        if dt:
-            dt = np.empty(nc, order="F")
-        if dp:
-            dp = np.empty(nc, order="F")
-        if dn:
-            dn = np.empty((nc, nc), order="F")
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            :math:`ln \phi_i(n,V,T)` vector or tuple with
+            :math:`ln \phi_i(n,V,T)` vector and derivatives dictionary if any
+            derivative is asked
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating ln_phi only
+            # will print: [-1.45216274 -2.01044828]
+
+            print(model.lnphi_vt([5.0, 5.6], 1.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # array([-1.45216274, -2.01044828]),
+            # {'dt': array([0.01400063, 0.01923493]), 'dp': None, 'dn': None}
+            # )
+
+            print(model.lnphi_vt([5.0, 5.6], 1.0, 300.0, dt=True)
+        """
+        nc = len(moles)
+
+        dt = np.empty(nc, order="F") if dt else None
+        dp = np.empty(nc, order="F") if dp else None
+        dn = np.empty((nc, nc), order="F") if dn else None
 
         res = yaeos_c.lnphi_vt(
-            self.id, n, v, t, dlnphidt=dt, dlnphidp=dp, dlnphidn=dn
+            self.id,
+            moles,
+            volume,
+            temperature,
+            dlnphidt=dt,
+            dlnphidp=dp,
+            dlnphidn=dn,
         )
-        res = {"ln_phi": res, "dt": dt, "dp": dp, "dn": dn}
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (res, {"dt": dt, "dp": dp, "dn": dn})
         return res
 
-    def lnphi_pt(self, n, p, t, root="stable", dt=None, dp=None, dn=None):
+    def lnphi_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate fugacity coefficent given pressure and temperature.
 
-        nc = len(n)
+        Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
+        temperature, pressure and moles number.
 
-        if dt:
-            dt = np.empty(nc, order="F")
-        if dp:
-            dp = np.empty(nc, order="F")
-        if dn:
-            dn = np.empty((nc, nc), order="F")
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            :math:`ln \phi_i(n,P,T)` vector or tuple with
+            :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any
+            derivative is asked
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating ln_phi only
+            # will print: [-0.10288733 -0.11909807]
+
+            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # array([-0.10288733, -0.11909807]),
+            # {'dt': array([0.00094892, 0.00108809]), 'dp': None, 'dn': None}
+            # )
+
+            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)
+        """
+        nc = len(moles)
+
+        dt = np.empty(nc, order="F") if dt else None
+        dp = np.empty(nc, order="F") if dp else None
+        dn = np.empty((nc, nc), order="F") if dn else None
 
         res = yaeos_c.lnphi_pt(
-            self.id, n, p, t, root, dlnphidt=dt, dlnphidp=dp, dlnphidn=dn
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            dlnphidt=dt,
+            dlnphidp=dp,
+            dlnphidn=dn,
         )
-        res = {"ln_phi": res, "dt": dt, "dp": dp, "dn": dn}
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (res, {"dt": dt, "dp": dp, "dn": dn})
         return res
 
-    def pressure(self, n, v, t, dv=None, dt=None, dn=None):
-        nc = len(n)
+    def pressure(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dv: bool = False,
+        dt: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate pressure given volume and temperature [bar].
 
-        if dv:
-            dv = np.empty(1, order="F")
-        if dt:
-            dt = np.empty(1, order="F")
-        if dn:
-            dn = np.empty(nc, order="F")
+        Calculate :math:`P(n,V,T)` and its derivatives with respect to
+        volume, temperature and moles number.
 
-        res = yaeos_c.pressure(self.id, n, v, t, dpdv=dv, dpdt=dt, dpdn=dn)
-        res = {"P": res, "dv": dv, "dt": dt, "dn": dn}
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            :math:`P(n,V,T)` or tuple with :math:`P(n,V,T)` and derivatives
+            dictionary if any derivative is asked [bar]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating pressure only
+            # will print: 16.011985733846956
+
+            print(model.pressure(np.array([5.0, 5.6]), 2.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # 16.011985733846956,
+            # {'dv': None, 'dt': np.float64(0.7664672352866752), 'dn': None}
+            # )
+
+            print(model.pressure(np.array([5.0, 5.6]), 2.0, 300.0, dt=True))
+        """
+        nc = len(moles)
+
+        dv = np.empty(1, order="F") if dv else None
+        dt = np.empty(1, order="F") if dt else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.pressure(
+            self.id, moles, volume, temperature, dpdv=dv, dpdt=dt, dpdn=dn
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dv": dv if dv is None else dv[0],
+                    "dt": dt if dt is None else dt[0],
+                    "dn": dn,
+                },
+            )
         return res
 
     def volume(self, n, p, t, root="stable"):
@@ -124,12 +346,12 @@ class ArModel(ABC):
         }
 
     def phase_envelope_pt(
-        self, z, kind="bubble", max_points=300, T0=150, P0=1
+        self, z, kind="bubble", max_points=300, t0=150, p0=1
     ):
-        Ts, Ps, Tcs, Pcs = yaeos_c.pt2_phase_envelope(
-            self.id, z, kind=kind, t0=T0, p0=P0, max_points=max_points
+        ts, ps, tcs, pcs = yaeos_c.pt2_phase_envelope(
+            self.id, z, kind=kind, t0=t0, p0=p0, max_points=max_points
         )
-        return Ts, Ps, Tcs, Pcs
+        return ts, ps, tcs, pcs
 
     def __del__(self):
         yaeos_c.make_available_ar_models_list(self.id)

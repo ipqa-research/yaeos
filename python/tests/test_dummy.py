@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.testing as npt
 
-from yaeos import SoaveRedlichKwong, PengRobinson76, QMR
+from yaeos import PengRobinson76, QMR, SoaveRedlichKwong
 
 
 def test_dummy():
@@ -19,16 +19,16 @@ def test_dummy():
 def test_flash():
     nc = 2
     n = [0.4, 0.6]
-    Tc = [190.564, 425.12]
-    Pc = [45.99, 37.96]
+    tc = [190.564, 425.12]
+    pc = [45.99, 37.96]
     w = [0.0115478, 0.200164]
 
     lij = kij = np.zeros((nc, nc))
     mixrule = QMR(kij, lij)
-    model = PengRobinson76(Tc, Pc, w, mixrule)
+    model = PengRobinson76(tc, pc, w, mixrule)
 
-    P, T = 60.0, 294.0
-    flash = model.flash_pt(n, pressure=P, temperature=T)
+    p, t = 60.0, 294.0
+    flash = model.flash_pt(n, pressure=p, temperature=t)
 
     npt.assert_allclose(flash["x"], [0.32424472, 0.67575528], rtol=1e-5)
 
