@@ -157,6 +157,9 @@ contains
           case ("dew")
             kind_z = "vapor"
             kind_y = "liquid"
+          case ("liquid-liquid")
+            kind_z = "liquid"
+            kind_y = "liquid"
           case default
             kind_z = "stable"
             kind_y = "stable"
@@ -307,7 +310,7 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.05)
+         do while (maxval(abs(X(:nc))) < 0.01)
             ! If near a critical point, jump over it
             S = S + dS
             X = X + dXdS*dS
