@@ -1,14 +1,6 @@
-from abc import ABC, abstractmethod
-
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
-
-
-class CubicMixRule(ABC):
-
-    @abstractmethod
-    def set_mixrule(self, ar_model_id):
-        raise NotImplementedError
+from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import CubicMixRule
 
 
 class CubicEoS(ArModel):
@@ -23,27 +15,6 @@ class CubicEoS(ArModel):
     def set_mixrule(self, mixrule: CubicMixRule):
         self.mixrule = mixrule
         self.mixrule.set_mixrule(self.id)
-
-
-class QMR(ABC):
-
-    def __init__(self, kij, lij):
-        self.kij = kij
-        self.lij = lij
-
-    def set_mixrule(self, ar_model_id):
-        yaeos_c.set_qmr(ar_model_id, self.kij, self.lij)
-
-
-class MHV(ABC):
-
-    def __init__(self, ge, q, lij=None):
-        self.ge = ge
-        self.q = q
-        self.lij = lij
-
-    def set_mixrule(self, ar_model_id):
-        yaeos_c.set_mhv(ar_model_id, self.ge.id, self.q)
 
 
 class PengRobinson76(CubicEoS):
