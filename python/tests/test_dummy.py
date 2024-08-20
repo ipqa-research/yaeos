@@ -11,7 +11,7 @@ def test_dummy():
         np.array([300, 350]), np.array([30, 40]), np.array([0.152, 0.325]), mr
     )
 
-    fug = model.lnphi_vt(np.array([5, 6]), 2.0, 303.15)["ln_phi"]
+    fug = model.lnphi_vt(np.array([5, 6]), 2.0, 303.15)
 
     assert np.allclose(fug, np.array([0.65960035, 0.30581106]))
 

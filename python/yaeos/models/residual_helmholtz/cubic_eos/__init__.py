@@ -2,10 +2,10 @@ from .cubic_eos import (
     CubicEoS,
     PengRobinson76,
     PengRobinson78,
-    SoaveRedlichKwong,
     RKPR,
+    SoaveRedlichKwong,
 )
-from .mixing_rules import CubicMixRule, QMR, MHV
+from .mixing_rules import CubicMixRule, MHV, QMR
 
 
 __all__ = [
