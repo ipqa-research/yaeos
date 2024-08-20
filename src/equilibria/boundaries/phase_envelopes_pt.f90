@@ -263,7 +263,7 @@ contains
                )
           case("dew")
             point = EquilibriumState(&
-               kind="dew", x=y, Vx=Vy, y=x, Vy=Vz, &
+               kind="dew", x=y, Vx=Vy, y=z, Vy=Vz, &
                T=T, P=P, beta=1._pr, iters=iters &
                )
           case default
