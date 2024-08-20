@@ -7,7 +7,12 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Tutorial:
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API documentation:
 
    yaeos
 

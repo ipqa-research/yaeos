@@ -1,3 +1,5 @@
+"""Cubic EoS implementations module."""
+
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
 from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import CubicMixRule

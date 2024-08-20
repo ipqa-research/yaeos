@@ -1,4 +1,12 @@
+Core module
+===========
 .. automodule:: yaeos.core
-   :members:
    :undoc-members:
    :show-inheritance:
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Models:
+   
+   yaeos.models.residual_helmholtz
