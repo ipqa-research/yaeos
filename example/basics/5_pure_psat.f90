@@ -2,7 +2,7 @@
 module pure_psat
    !! Module used to calculate the saturation pressure of pure components at
    !! a given temperature.
-   use yaeos
+   use yaeos, only: ArModel, pr, R, size
 contains
    real(pr) function Psat(eos, ncomp, T)
       !! Calculation of saturation pressure of a pure component using the
@@ -44,7 +44,7 @@ contains
 end module
 
 program main
-   use yaeos
+   use yaeos, only: CubicEoS, SoaveRedlichKwong, pr
    use forsus, only: Substance, forsus_default_dir, forsus_dir
    use pure_psat, only: Psat
    
