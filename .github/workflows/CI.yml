@@ -53,12 +53,12 @@ jobs:
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
       run: |
-        fpm test --profile debug --compiler ${{ env.FC }} --c-compiler gcc
+        fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests with coverage
       if: ${{ env.FC == 'gfortran' }}
       run: |
-        fpm test --profile debug --flag -coverage --compiler ${{ env.FC }} --c-compiler gcc
+        fpm test --profile release --flag "-g -coverage" --compiler ${{ env.FC }} --c-compiler gcc
         bash ci/ci.sh
 
     - name: Coverage
