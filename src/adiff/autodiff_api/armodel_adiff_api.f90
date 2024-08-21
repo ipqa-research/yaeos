@@ -108,12 +108,24 @@ contains
         subroutine get_dardn()
             integer :: i, j
 
-            do i=1,size(n)
+            do i=2, size(n), 2
                 call reset_vars
-                d_n(i)%f1 = 1
+                d_n(i-1)%f1 = 1
+                d_n(i )%f2 = 1
+
                 d_Ar = self%Ar(d_n, d_v, d_t)
-                Arn(i) = d_Ar%f1
+                
+                Arn(i-1) = d_Ar%f1
+                Arn(i) = d_Ar%f2
             end do
+            
+            if (mod(size(n), 2) /= 0) then
+                call reset_vars
+                d_n(size(n))%f1 = 1
+                d_Ar = self%Ar(d_n, d_v, d_t)
+                Arn(size(n)) = d_Ar%f1
+            end if
+
         end subroutine
         
         subroutine get_dardn2()

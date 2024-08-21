@@ -336,7 +336,6 @@ contains
          present(dlnPhidn) &
          .or. present(dlnPhidP) &
          .or. present(dlnPhidT) &
-         .or. present(P) &
          )) then
          call eos%residual_helmholtz(n, v, t, Arn=Arn, ArV=ArV)
          P_in = totn*RT/V - ArV
