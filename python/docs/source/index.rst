@@ -1,20 +1,25 @@
-.. ugropy documentation master file, created by
-   sphinx-quickstart on Mon Nov 27 19:27:24 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. include:: ../../README.md
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Tutorial:
+   :parser: myst_parser.sphinx_
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: API documentation:
+   :maxdepth: 1
+   :caption: Tutorial
 
-   yaeos
+   tutorial/tutorial_tree
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API documentation
+   
+   core
+
+.. toctree::
+   :maxdepth: 5
+
+   models/init
+
 
 Indices and tables
 ==================

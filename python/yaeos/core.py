@@ -411,7 +411,7 @@ class ArModel(ABC):
     def saturation_pressure(
         self, z, temperature: float, kind: str = "bubble"
     ) -> dict:
-        """Saturation pressure at specified temperature
+        """Saturation pressure at specified temperature.
 
         Arguments
         ---------
@@ -497,8 +497,8 @@ class ArModel(ABC):
         kind : str, optional
             Kind of saturation point to start the envelope calculation,
             defaults to "bubble". Options are
-                - "bubble"
-                - "dew"
+            - "bubble"
+            - "dew"
         max_points : int, optional
             Envelope's maximum points to calculate (T, P), by default 300
         t0 : float, optional

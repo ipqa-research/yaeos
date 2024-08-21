@@ -79,49 +79,50 @@ class QMR(CubicMixRule):
 
 
 class MHV(CubicMixRule):
+    """Modified Huron-Vidal mixing rule.
+
+    Parameters
+    ----------
+    ge : GeModel
+        Excess Gibbs energy model
+    q : float
+        q parameter. Use:
+            q = -0.594 for Soave-Redlich-Kwong
+            q = -0.53 for Peng-Robinson
+            q = -0.85 for Van der Waals
+    lij : array_like, optional
+        lij binary interaction parameters matrix, by default None
+
+    Attributes
+    ----------
+    ge : GeModel
+        Excess Gibbs energy model
+    q : float
+        q parameter
+    lij : array_like
+        lij binary interaction parameters matrix
+
+    Example
+    -------
+    .. code-block:: python
+
+        from yaeos import MHV, SoaveRedlichKwong, NRTL
+
+        tc = [647.14, 513.92]               # critical temperature [K]
+        pc = [220.64, 61.48]                # critical pressure [bar]
+        w =  [0.344, 0.649]                 # acentric factor
+
+        a = [[0, 3.458], [-0.801, 0]]       # NRTL aij parameters
+        b = [[0, -586.1], [246.2, 0]]       # NRTL bij parameters
+        c = [[0, 0.3], [0.3, 0]]            # NRTL cij parameters
+
+        ge_model = NRTL(a, b, c)
+        mixrule = MHV(ge_model, q=-0.53)
+
+        model_mhv = PengRobinson76(tc, pc, w, mixrule)
+    """
+
     def __init__(self, ge: GeModel, q: float, lij=None) -> None:
-        """Modified Huron-Vidal mixing rule.
-
-        Parameters
-        ----------
-        ge : GeModel
-            Excess Gibbs energy model
-        q : float
-            q parameter. Use:
-                q = -0.594 for Soave-Redlich-Kwong
-                q = -0.53 for Peng-Robinson
-                q = -0.85 for Van der Waals
-        lij : array_like, optional
-            lij binary interaction parameters matrix, by default None
-
-        Attributes
-        ----------
-        ge : GeModel
-            Excess Gibbs energy model
-        q : float
-            q parameter
-        lij : array_like
-            lij binary interaction parameters matrix
-
-        Example
-        -------
-        .. code-block:: python
-
-            from yaeos import MHV, SoaveRedlichKwong, NRTL
-
-            tc = [647.14, 513.92]               # critical temperature [K]
-            pc = [220.64, 61.48]                # critical pressure [bar]
-            w =  [0.344, 0.649]                 # acentric factor
-
-            a = [[0, 3.458], [-0.801, 0]]       # NRTL aij parameters
-            b = [[0, -586.1], [246.2, 0]]       # NRTL bij parameters
-            c = [[0, 0.3], [0.3, 0]]            # NRTL cij parameters
-
-            ge_model = NRTL(a, b, c)
-            mixrule = MHV(ge_model, q=-0.53)
-
-            model_mhv = PengRobinson76(tc, pc, w, mixrule)
-        """
         self.ge = ge
         self.q = q
         self.lij = lij

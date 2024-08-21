@@ -13,7 +13,7 @@ pip install -e . --no-build-isolation
 
 If you want to install on your environment instead
 
-```
+```shell
 pip install .
 ```
 
