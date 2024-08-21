@@ -31,7 +31,7 @@ class ArModel(ABC):
         dp: bool = False,
         dn: bool = False,
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
-        """Calculate fugacity coefficent given volume and temperature.
+        r"""Calculate fugacity coefficent given volume and temperature.
 
         Calculate :math:`ln \phi_i(n,V,T)` and its derivatives with respect to
         temperature, pressure and moles number.
@@ -119,7 +119,7 @@ class ArModel(ABC):
         dp: bool = False,
         dn: bool = False,
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
-        """Calculate fugacity coefficent given pressure and temperature.
+        r"""Calculate fugacity coefficent given pressure and temperature.
 
         Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
         temperature, pressure and moles number.
@@ -195,9 +195,7 @@ class ArModel(ABC):
             dlnphidn=dn,
         )
 
-        if dt is None and dp is None and dn is None:
-            ...
-        else:
+        if not (dt is None and dp is None and dn is None):
             res = (res, {"dt": dt, "dp": dp, "dn": dn})
         return res
 
@@ -210,7 +208,7 @@ class ArModel(ABC):
         dt: bool = False,
         dn: bool = False,
     ) -> Union[float, tuple[float, dict]]:
-        """Calculate pressure given volume and temperature [bar].
+        r"""Calculate pressure given volume and temperature [bar].
 
         Calculate :math:`P(n,V,T)` and its derivatives with respect to
         volume, temperature and moles number.
@@ -275,9 +273,7 @@ class ArModel(ABC):
             self.id, moles, volume, temperature, dpdv=dv, dpdt=dt, dpdn=dn
         )
 
-        if dt is None and dv is None and dn is None:
-            ...
-        else:
+        if not (dt is None and dv is None and dn is None):
             res = (
                 res,
                 {
@@ -294,14 +290,16 @@ class ArModel(ABC):
         res = {"V": res}
         return res
 
-    def flash_pt(self, z, pressure, temperature):
+    def flash_pt(self, z, pressure, temperature, k0=None):
         """Two-phase split with specification of temperature and pressure.
 
         Calculates the phase split at a given pressure and temperature
         """
 
+        k0 = np.zeros(len(z)) if k0 is None else k0
+
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
-            self.id, z, p=pressure, t=temperature
+            self.id, z, p=pressure, t=temperature, k0=k0
         )
 
         flash_result = {
