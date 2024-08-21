@@ -157,6 +157,9 @@ contains
           case ("dew")
             kind_z = "vapor"
             kind_y = "liquid"
+          case ("liquid-liquid")
+            kind_z = "liquid"
+            kind_y = "liquid"
           case default
             kind_z = "stable"
             kind_y = "stable"
@@ -260,7 +263,7 @@ contains
                )
           case("dew")
             point = EquilibriumState(&
-               kind="dew", x=y, Vx=Vy, y=x, Vy=Vz, &
+               kind="dew", x=y, Vx=Vy, y=z, Vy=Vz, &
                T=T, P=P, beta=1._pr, iters=iters &
                )
           case default
@@ -307,7 +310,7 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.05)
+         do while (maxval(abs(X(:nc))) < 0.01)
             ! If near a critical point, jump over it
             S = S + dS
             X = X + dXdS*dS
