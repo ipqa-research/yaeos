@@ -54,6 +54,12 @@ autodoc_member_order = "bysource"
 
 bibtex_bibfiles = ["refs.bib"]
 
+# Mocking imports
+# Have to mock the import of yaeos.lib.yaeos_python because it is a C extension
+# Sphinx believes that it is a module (*.py) and tries to import it or generate
+# documentation of it.
+autodoc_mock_imports = ["yaeos.lib.yaeos_python"]
+
 # Important setting.
 # If you set it as True, for example, PengRobinson76 will appear in the
 # documentation as:

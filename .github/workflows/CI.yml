@@ -79,14 +79,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         gcc_v: [13] # Version of GFortran we want to use.
-        python-version: [3.11]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         toolchain:
-          # - {compiler: gcc, version: 10}
-          # - {compiler: gcc, version: 11}
-          # - {compiler: gcc, version: 12}
           - {compiler: gcc, version: 13}
-          # - {compiler: intel, version: '2024.1'}
-          # - {compiler: intel, version: '2023.2'}
     
     steps:
     - name: Checkout code
@@ -101,8 +96,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install libnlopt-dev meson
-        pip install meson tox
+        sudo apt-get install libnlopt-dev pandoc
+    
+    - name: install tox
+      run: |
+        pip install tox tox-gh-actions
     
     - name: Setup Fortran Compiler
       uses: fortran-lang/setup-fortran@v1
@@ -111,9 +109,9 @@ jobs:
         compiler: ${{ matrix.toolchain.compiler }}
         version: ${{ matrix.toolchain.version }}
 
-    - name: Install yaeos
+    - name: Run tox
       run:
-        pip install ./python
+        tox -r ./python
 
   build_wheels:
     # needs: Python-API
