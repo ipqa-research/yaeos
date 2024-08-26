@@ -11,6 +11,7 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Pure Psat", test_pure_psat), &
          new_unittest("Bubble pressure", test_bubble_pressure), &
          new_unittest("Dew pressure", test_dew_pressure), &
          new_unittest("Bubble temperature", test_bubble_temperature), &
