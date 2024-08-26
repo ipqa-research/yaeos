@@ -1,16 +1,20 @@
-from yaeos.lib import yaeos_c
+"""Yet Another Equation-Of-State (library).
 
-from yaeos.cubic_eos import (
-    SoaveRedlichKwong,
+Library to use EoS-based calculations. This main module imports all the
+relevant constants, procedures and objects to have better access to them.
+"""
+
+from yaeos.lib import yaeos_c
+from yaeos.models.excess_gibbs.nrtl import (
+    NRTL,
+)
+from yaeos.models.residual_helmholtz.cubic_eos import (
+    MHV,
     PengRobinson76,
     PengRobinson78,
-    RKPR,
-    MHV,
     QMR,
-)
-
-from yaeos.core import (
-    NRTL,
+    RKPR,
+    SoaveRedlichKwong,
 )
 
 

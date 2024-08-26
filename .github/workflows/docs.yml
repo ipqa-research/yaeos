@@ -17,12 +17,18 @@ jobs:
     - name: Install Dependencies Ubuntu
       run: |
         sudo apt-get update
-        sudo apt install -y gfortran-${GCC_V} python3-dev graphviz
+        sudo apt install -y gfortran-${GCC_V} python3-dev graphviz pandoc
         sudo pip install ford markdown
+        pip install -r python/docs/requirements.txt
 
     - name: Build Developer Documentation
       run: |
         ford ford.md
+        cd python/docs
+        sphinx-build -b html source build
+        rm -r ../../doc/ford_site/page/python-api
+        mv build ../../doc/ford_site/page/python-api
+        cd ../../
 
     - name: Upload Documentation
       uses: actions/upload-artifact@v2
