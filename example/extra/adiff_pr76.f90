@@ -59,8 +59,8 @@ contains
             amix = 0.0_pr
             bmix = 0.0_pr
 
-            do i=1,size(n)-1
-                do j=i+1,size(n)
+            do j=1,size(n)-1
+                do i=j+1,size(n)
                     nij = n(i) * n(j)
                     amix = amix + 2 * nij * (ai(i) * ai(j)) * (1 - kij(i, j))
                     bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))

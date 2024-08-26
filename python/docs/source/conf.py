@@ -31,6 +31,7 @@ release = project_version
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
@@ -53,6 +54,19 @@ autodoc_member_order = "bysource"
 
 bibtex_bibfiles = ["refs.bib"]
 
+# Mocking imports
+# Have to mock the import of yaeos.lib.yaeos_python because it is a C extension
+# Sphinx believes that it is a module (*.py) and tries to import it or generate
+# documentation of it.
+autodoc_mock_imports = ["yaeos.lib.yaeos_python"]
+
+# Important setting.
+# If you set it as True, for example, PengRobinson76 will appear in the
+# documentation as:
+# yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76
+# When false only appears as: PengRobinson76
+add_module_names = False
+
 # =============================================================================
 # NUMPY DOC
 # =============================================================================
@@ -65,7 +79,10 @@ templates_path = ["_templates"]
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 
 # The master toctree document.
 master_doc = "index"

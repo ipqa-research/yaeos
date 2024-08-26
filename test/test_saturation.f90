@@ -181,4 +181,23 @@ contains
       )
       call check(error, size(envelope%cps) == 1)
    end subroutine test_px2_envelope
+
+   subroutine test_pure_psat(error)
+      use yaeos, only: pr, ArModel, Psat
+      use fixtures_models, only: binary_PR76
+      type(error_type), allocatable, intent(out) :: error
+      class(ArModel), allocatable :: model
+
+      integer :: i
+      real(pr) :: T, Psats(2), Psats_val(2)
+
+      T = 150
+      model = binary_PR76()
+      Psats_val = [260.37450286310201, 30.028551527997834]
+
+      do i=1,2
+         Psats(i) = Psat(model, i, T)
+      end do
+      call check(error, maxval(abs(Psats-Psats_val)) < abs_tolerance)
+   end subroutine
 end module test_saturation
