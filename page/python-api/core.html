@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Core Module &mdash; yaeos 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=01f34227"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Models" href="models/init.html" />
+    <link rel="prev" title="Calculating an isotherm" href="tutorial/tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Core Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#yaeos.core.GeModel"><code class="docutils literal notranslate"><span class="pre">GeModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#yaeos.core.ArModel"><code class="docutils literal notranslate"><span class="pre">ArModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.lnphi_vt"><code class="docutils literal notranslate"><span class="pre">ArModel.lnphi_vt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.lnphi_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.lnphi_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.volume"><code class="docutils literal notranslate"><span class="pre">ArModel.volume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Core Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-yaeos.core">
+<span id="core-module"></span><h1>Core Module<a class="headerlink" href="#module-yaeos.core" title="Link to this heading">¶</a></h1>
+<p>yaeos Python API core module.</p>
+<p>ArModel and GeModel abstract classes definition. Also, the implementation of
+the models’ thermoprops methods.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.core.GeModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeModel</span></span><a class="reference internal" href="_modules/yaeos/core.html#GeModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.GeModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Excess Gibbs (Ge) model abstract class.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.core.ArModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ArModel</span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Residual Helmholtz (Ar) model abstract class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.lnphi_vt">
+<span class="sig-name descname"><span class="pre">lnphi_vt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.lnphi_vt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.lnphi_vt" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate fugacity coefficent given volume and temperature.</p>
+<p>Calculate <span class="math notranslate nohighlight">\(ln \phi_i(n,V,T)\)</span> and its derivatives with respect to
+temperature, pressure and moles number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>volume</strong> (<em>float</em>) – Volume [L]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(ln \phi_i(n,V,T)\)</span> vector or tuple with
+<span class="math notranslate nohighlight">\(ln \phi_i(n,V,T)\)</span> vector and derivatives dictionary if any
+derivative is asked</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Evaluating ln_phi only</span>
+<span class="c1"># will print: [-1.45216274 -2.01044828]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_vt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="c1"># will print:</span>
+<span class="c1"># (</span>
+<span class="c1"># array([-1.45216274, -2.01044828]),</span>
+<span class="c1"># {&#39;dt&#39;: array([0.01400063, 0.01923493]), &#39;dp&#39;: None, &#39;dn&#39;: None}</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_vt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.lnphi_pt">
+<span class="sig-name descname"><span class="pre">lnphi_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.lnphi_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.lnphi_pt" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate fugacity coefficent given pressure and temperature.</p>
+<p>Calculate <span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> and its derivatives with respect to
+temperature, pressure and moles number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> vector or tuple with
+<span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> vector and derivatives dictionary if any
+derivative is asked</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Evaluating ln_phi only</span>
+<span class="c1"># will print: [-0.10288733 -0.11909807]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="c1"># will print:</span>
+<span class="c1"># (</span>
+<span class="c1"># array([-0.10288733, -0.11909807]),</span>
+<span class="c1"># {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.pressure">
+<span class="sig-name descname"><span class="pre">pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.pressure" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate pressure given volume and temperature [bar].</p>
+<p>Calculate <span class="math notranslate nohighlight">\(P(n,V,T)\)</span> and its derivatives with respect to
+volume, temperature and moles number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>volume</strong> (<em>float</em>) – Volume [L]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>dv</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate volume derivative, by default False</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pressure or tuple with Presure and derivatives dictionary if any
+derivative is asked [bar]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Evaluating pressure only</span>
+<span class="c1"># will print: 16.011985733846956</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="c1"># will print:</span>
+<span class="c1"># (</span>
+<span class="c1"># 16.011985733846956,</span>
+<span class="c1"># {&#39;dv&#39;: None, &#39;dt&#39;: np.float64(0.7664672352866752), &#39;dn&#39;: None}</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.volume" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate volume given pressure and temperature [L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Volume [L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Evaluating stable root volume</span>
+<span class="c1"># will print: 23.373902973572587</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+
+<span class="c1"># Liquid root volume (not stable)</span>
+<span class="c1"># will print: 0.8156388756398074</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s2">&quot;liquid&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.flash_pt">
+<span class="sig-name descname"><span class="pre">flash_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.flash_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.flash_pt" title="Link to this definition">¶</a></dt>
+<dd><p>Two-phase split with specification of temperature and pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Flash result dictionary with keys:</dt><dd><ul class="simple">
+<li><p>x: heavy phase mole fractions</p></li>
+<li><p>y: light phase mole fractions</p></li>
+<li><p>Vx: heavy phase volume [L]</p></li>
+<li><p>Vy: light phase volume [L]</p></li>
+<li><p>P: pressure [bar]</p></li>
+<li><p>T: temperature [K]</p></li>
+<li><p>beta: light phase fraction</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.152291</span><span class="p">,</span> <span class="mf">0.301261</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Flash calculation</span>
+<span class="c1"># will print:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &#39;x&#39;: array([0.3008742, 0.6991258]),</span>
+<span class="c1">#   &#39;y&#39;: array([0.85437317, 0.14562683]),</span>
+<span class="c1">#   &#39;Vx&#39;: 0.12742569165483714,</span>
+<span class="c1">#   &#39;Vy&#39;: 3.218831515959867,</span>
+<span class="c1">#   &#39;P&#39;: 8.0,</span>
+<span class="c1">#   &#39;T&#39;: 350.0,</span>
+<span class="c1">#   &#39;beta&#39;: 0.35975821044266726</span>
+<span class="c1"># }</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">flash_pt</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">350.0</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.saturation_pressure">
+<span class="sig-name descname"><span class="pre">saturation_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bubble'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.saturation_pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.saturation_pressure" title="Link to this definition">¶</a></dt>
+<dd><p>Saturation pressure at specified temperature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global molar fractions</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Kind of saturation point, defaults to “bubble”. Options are</dt><dd><ul>
+<li><p>”bubble”</p></li>
+<li><p>”dew”</p></li>
+<li><p>”liquid-liquid”</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Saturation pressure calculation result dictionary with keys:</dt><dd><ul class="simple">
+<li><p>x: heavy phase mole fractions</p></li>
+<li><p>y: light phase mole fractions</p></li>
+<li><p>Vx: heavy phase volume [L]</p></li>
+<li><p>Vy: light phase volume [L]</p></li>
+<li><p>P: pressure [bar]</p></li>
+<li><p>T: temperature [K]</p></li>
+<li><p>beta: light phase fraction</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.152291</span><span class="p">,</span> <span class="mf">0.301261</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Saturation pressure calculation</span>
+<span class="c1"># will print:</span>
+<span class="c1"># {</span>
+<span class="c1"># &#39;x&#39;: array([0.5, 0.5]),</span>
+<span class="c1"># &#39;y&#39;: array([0.9210035 , 0.07899651]),</span>
+<span class="c1"># &#39;Vx&#39;: 0.11974125553488875,</span>
+<span class="c1"># &#39;Vy&#39;: 1.849650524323853,</span>
+<span class="c1"># &#39;T&#39;: 350.0,</span>
+<span class="c1"># &#39;P&#39;: 12.990142036059941,</span>
+<span class="c1"># &#39;beta&#39;: 0.0</span>
+<span class="c1"># }</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span> <span class="mf">350.0</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.phase_envelope_pt">
+<span class="sig-name descname"><span class="pre">phase_envelope_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">150.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_pt" title="Link to this definition">¶</a></dt>
+<dd><p>Two phase envelope calculation (PT).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>optional</em>) – Kind of saturation point to start the envelope calculation,
+defaults to “bubble”. Options are
+- “bubble”
+- “dew”</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Envelope’s maximum points to calculate (T, P), by default 300</p></li>
+<li><p><strong>t0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial guess for temperature [K] for the saturation point of kind:
+<cite>kind</cite>, by default 150.0</p></li>
+<li><p><strong>p0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial guess for pressure [bar] for the saturation point of kind:
+<cite>kind</cite>, by default 1.0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Envelope calculation result dictionary with keys:</dt><dd><ul class="simple">
+<li><p>Ts: temperatures [K]</p></li>
+<li><p>Ps: pressures [bar]</p></li>
+<li><p>Tcs: critical temperatures [K]</p></li>
+<li><p>Pcs: critical pressures [bar]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.152291</span><span class="p">,</span> <span class="mf">0.301261</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Two phase envelope calculation and plot</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+    <span class="n">t0</span><span class="o">=</span><span class="mf">150.0</span><span class="p">,</span>
+    <span class="n">p0</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Tcs&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Pcs&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial/tutorial.html" class="btn btn-neutral float-left" title="Calculating an isotherm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models/init.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

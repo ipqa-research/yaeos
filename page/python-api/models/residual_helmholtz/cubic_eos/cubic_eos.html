@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cubic EoS &mdash; yaeos 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Mixing Rules (Cubic EoS)" href="mixing_rules.html" />
+    <link rel="prev" title="Cubic Equations of State" href="init.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../init.html">Models</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="init.html">Cubic Equations of State</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Cubic EoS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mixing_rules.html">Mixing Rules (Cubic EoS)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../init.html">Models</a></li>
+          <li class="breadcrumb-item"><a href="../init.html">Residual Helmholtz Models</a></li>
+          <li class="breadcrumb-item"><a href="init.html">Cubic Equations of State</a></li>
+      <li class="breadcrumb-item active">Cubic EoS</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/models/residual_helmholtz/cubic_eos/cubic_eos.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-yaeos.models.residual_helmholtz.cubic_eos.cubic_eos">
+<span id="cubic-eos"></span><h1>Cubic EoS<a class="headerlink" href="#module-yaeos.models.residual_helmholtz.cubic_eos.cubic_eos" title="Link to this heading">¶</a></h1>
+<p>Cubic EoS implementations module.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CubicEoS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">critical_temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acentric_factors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#CubicEoS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArModel</span></code></a></p>
+<p>Cubic equation of state base class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>critical_temperatures</strong> (<em>array_like</em>) – Critical temperatures vector [K]</p></li>
+<li><p><strong>critical_pressures</strong> (<em>array_like</em>) – Critical pressures vector [bar]</p></li>
+<li><p><strong>acentric_factors</strong> (<em>array_like</em>) – Acentric factors vector</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.nc">
+<span class="sig-name descname"><span class="pre">nc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.nc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.tc">
+<span class="sig-name descname"><span class="pre">tc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.tc" title="Link to this definition">¶</a></dt>
+<dd><p>Critical temperatures vector [K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.pc">
+<span class="sig-name descname"><span class="pre">pc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.pc" title="Link to this definition">¶</a></dt>
+<dd><p>Critical pressures vector [bar]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.w">
+<span class="sig-name descname"><span class="pre">w</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.w" title="Link to this definition">¶</a></dt>
+<dd><p>Acentric factors vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.set_mixrule">
+<span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixrule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><span class="pre">CubicMixRule</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#CubicEoS.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.set_mixrule" title="Link to this definition">¶</a></dt>
+<dd><p>Set the mixing rule for the EoS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mixrule</strong> (<a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><em>CubicMixRule</em></a>) – Mixing rule object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PengRobinson76</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">critical_temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acentric_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixrule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><span class="pre">CubicMixRule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#PengRobinson76"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicEoS</span></code></a></p>
+<p>Peng-Robinson 1976 cubic equation of state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>critical_temperatures</strong> (<em>array_like</em>) – Critical temperatures vector [K]</p></li>
+<li><p><strong>critical_pressures</strong> (<em>array_like</em>) – Critical pressures vector [bar]</p></li>
+<li><p><strong>acentric_factors</strong> (<em>array_like</em>) – Acentric factors vector</p></li>
+<li><p><strong>mixrule</strong> (<a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><em>CubicMixRule</em></a><em>, </em><em>optional</em>) – Mixing rule object. If no provided the quadratric mixing rule (QMR)
+with zero for kij and lij parameters is set, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.nc">
+<span class="sig-name descname"><span class="pre">nc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.nc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.critical_temperatures">
+<span class="sig-name descname"><span class="pre">critical_temperatures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.critical_temperatures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical temperatures vector [K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.critical_pressures">
+<span class="sig-name descname"><span class="pre">critical_pressures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.critical_pressures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical pressures vector [bar]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.acentric_factors">
+<span class="sig-name descname"><span class="pre">acentric_factors</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.acentric_factors" title="Link to this definition">¶</a></dt>
+<dd><p>Acentric factors vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.id" title="Link to this definition">¶</a></dt>
+<dd><p>EoS identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.mixrule">
+<span class="sig-name descname"><span class="pre">mixrule</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.mixrule" title="Link to this definition">¶</a></dt>
+<dd><p>Mixing rule object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule">CubicMixRule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.56</span><span class="p">,</span> <span class="mf">305.32</span><span class="p">]</span>   <span class="c1"># Critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">48.72</span><span class="p">]</span>     <span class="c1"># Critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0985</span><span class="p">]</span>    <span class="c1"># Acentric factors</span>
+
+<span class="n">pr76</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PengRobinson76'</span></em><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PengRobinson78</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">critical_temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acentric_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixrule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><span class="pre">CubicMixRule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#PengRobinson78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicEoS</span></code></a></p>
+<p>Peng-Robinson 1978 cubic equation of state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>critical_temperatures</strong> (<em>array_like</em>) – Critical temperatures vector [K]</p></li>
+<li><p><strong>critical_pressures</strong> (<em>array_like</em>) – Critical pressures vector [bar]</p></li>
+<li><p><strong>acentric_factors</strong> (<em>array_like</em>) – Acentric factors vector</p></li>
+<li><p><strong>mixrule</strong> (<a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><em>CubicMixRule</em></a><em>, </em><em>optional</em>) – Mixing rule object. If no provided the quadratric mixing rule (QMR)
+with zero for kij and lij parameters is set, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.nc">
+<span class="sig-name descname"><span class="pre">nc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.nc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.critical_temperatures">
+<span class="sig-name descname"><span class="pre">critical_temperatures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.critical_temperatures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical temperatures vector [K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.critical_pressures">
+<span class="sig-name descname"><span class="pre">critical_pressures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.critical_pressures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical pressures vector [bar]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.acentric_factors">
+<span class="sig-name descname"><span class="pre">acentric_factors</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.acentric_factors" title="Link to this definition">¶</a></dt>
+<dd><p>Acentric factors vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.id" title="Link to this definition">¶</a></dt>
+<dd><p>EoS identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.mixrule">
+<span class="sig-name descname"><span class="pre">mixrule</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.mixrule" title="Link to this definition">¶</a></dt>
+<dd><p>Mixing rule object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule">CubicMixRule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson78</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.56</span><span class="p">,</span> <span class="mf">305.32</span><span class="p">]</span>   <span class="c1"># Critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">48.72</span><span class="p">]</span>     <span class="c1"># Critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0985</span><span class="p">]</span>    <span class="c1"># Acentric factors</span>
+
+<span class="n">pr78</span> <span class="o">=</span> <span class="n">PengRobinson78</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PengRobinson78'</span></em><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SoaveRedlichKwong</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">critical_temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acentric_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixrule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><span class="pre">CubicMixRule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#SoaveRedlichKwong"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicEoS</span></code></a></p>
+<p>Soave-Redlich-Kwong cubic equation of state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>critical_temperatures</strong> (<em>array_like</em>) – Critical temperatures vector [K]</p></li>
+<li><p><strong>critical_pressures</strong> (<em>array_like</em>) – Critical pressures vector [bar]</p></li>
+<li><p><strong>acentric_factors</strong> (<em>array_like</em>) – Acentric factors vector</p></li>
+<li><p><strong>mixrule</strong> (<a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><em>CubicMixRule</em></a><em>, </em><em>optional</em>) – Mixing rule object. If no provided the quadratric mixing rule (QMR)
+with zero for kij and lij parameters is set, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.nc">
+<span class="sig-name descname"><span class="pre">nc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.nc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.critical_temperatures">
+<span class="sig-name descname"><span class="pre">critical_temperatures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.critical_temperatures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical temperatures vector [K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.critical_pressures">
+<span class="sig-name descname"><span class="pre">critical_pressures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.critical_pressures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical pressures vector [bar]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.acentric_factors">
+<span class="sig-name descname"><span class="pre">acentric_factors</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.acentric_factors" title="Link to this definition">¶</a></dt>
+<dd><p>Acentric factors vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.id" title="Link to this definition">¶</a></dt>
+<dd><p>EoS identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.mixrule">
+<span class="sig-name descname"><span class="pre">mixrule</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.mixrule" title="Link to this definition">¶</a></dt>
+<dd><p>Mixing rule object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule">CubicMixRule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">SoaveRedlichKwong</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.56</span><span class="p">,</span> <span class="mf">305.32</span><span class="p">]</span>   <span class="c1"># Critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">48.72</span><span class="p">]</span>     <span class="c1"># Critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0985</span><span class="p">]</span>    <span class="c1"># Acentric factors</span>
+
+<span class="n">srk</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SoaveReldichKwong'</span></em><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RKPR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">critical_temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acentric_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixrule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><span class="pre">CubicMixRule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#RKPR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicEoS</span></code></a></p>
+<p>RKPR cubic equation of state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>critical_temperatures</strong> (<em>array_like</em>) – Critical temperatures vector [K]</p></li>
+<li><p><strong>critical_pressures</strong> (<em>array_like</em>) – Critical pressures vector [bar]</p></li>
+<li><p><strong>acentric_factors</strong> (<em>array_like</em>) – Acentric factors vector</p></li>
+<li><p><strong>critical_z</strong> (<em>array_like</em>) – Critical compressibility factor vector</p></li>
+<li><p><strong>k</strong> (<em>array_like</em><em>, </em><em>optional</em>) – k parameter, by default None</p></li>
+<li><p><strong>delta_1</strong> (<em>array_like</em><em>, </em><em>optional</em>) – delta_1 parameter, by default None</p></li>
+<li><p><strong>mixrule</strong> (<a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><em>CubicMixRule</em></a><em>, </em><em>optional</em>) – Mixing rule object. If no provided the quadratric mixing rule (QMR)
+with zero for kij and lij parameters is set, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.nc">
+<span class="sig-name descname"><span class="pre">nc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.nc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.critical_temperatures">
+<span class="sig-name descname"><span class="pre">critical_temperatures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.critical_temperatures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical temperatures vector [K]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.critical_pressures">
+<span class="sig-name descname"><span class="pre">critical_pressures</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.critical_pressures" title="Link to this definition">¶</a></dt>
+<dd><p>Critical pressures vector [bar]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.acentric_factors">
+<span class="sig-name descname"><span class="pre">acentric_factors</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.acentric_factors" title="Link to this definition">¶</a></dt>
+<dd><p>Acentric factors vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.zc">
+<span class="sig-name descname"><span class="pre">zc</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.zc" title="Link to this definition">¶</a></dt>
+<dd><p>Critical compressibility factor vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.id" title="Link to this definition">¶</a></dt>
+<dd><p>EoS identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.mixrule">
+<span class="sig-name descname"><span class="pre">mixrule</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.mixrule" title="Link to this definition">¶</a></dt>
+<dd><p>Mixing rule object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule">CubicMixRule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">RKPR</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.56</span><span class="p">,</span> <span class="mf">305.32</span><span class="p">]</span>   <span class="c1"># Critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">48.72</span><span class="p">]</span>     <span class="c1"># Critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0985</span><span class="p">]</span>    <span class="c1"># Acentric factors</span>
+<span class="n">zc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.28</span><span class="p">]</span>       <span class="c1"># Critical compressibility factor</span>
+
+<span class="n">rkpr</span> <span class="o">=</span> <span class="n">RKPR</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">zc</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RKPR'</span></em><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="init.html" class="btn btn-neutral float-left" title="Cubic Equations of State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mixing_rules.html" class="btn btn-neutral float-right" title="Mixing Rules (Cubic EoS)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
