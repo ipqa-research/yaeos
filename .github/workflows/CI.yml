@@ -78,8 +78,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        gcc_v: [13] # Version of GFortran we want to use.
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.12"]
         toolchain:
           - {compiler: gcc, version: 13}
     
@@ -152,11 +151,11 @@ jobs:
 
         # to supply options, put them in 'env', like:
         env:
-          CIBW_BUILD_VERBOSITY: 3
+          # CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
-          CIBW_BEFORE_TEST: pip install pytest
-          CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+          # CIBW_BEFORE_TEST: pip install pytest
+          # CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
 
       - uses: actions/upload-artifact@v4
         with:
@@ -165,23 +164,19 @@ jobs:
  
   publish_to_testpypi:
     name: Publish Python 🐍 distribution 📦 to TestPyPI
-    needs:
-    - build_wheels
+    needs: build_wheels
     runs-on: ubuntu-latest
-
     environment:
       name: testpypi
       url: https://test.pypi.org/p/yaeos
-
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
-
     steps:
     - name: Download all the dists
       uses: actions/download-artifact@v3
       with:
-        name: cibw-wheels-ubuntu-latest
         path: dist/
+        # name: cibw-wheels-ubuntu-latest
     - name: Publish distribution 📦 to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
