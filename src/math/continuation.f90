@@ -220,41 +220,41 @@ contains
       end do newton
    end subroutine full_newton
 
-   subroutine levenberg_marquardt(&
-      fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &
-      )
-      use minpack_module, only: lmdif1
-      use stdlib_optval, only: optval
-      use yaeos__math_linalg, only: solve_system
-      procedure(continuation_function) :: fun !! Function to solve
-      integer,  intent(out) :: iters !! Number of iterations needed
-      real(pr), intent(in out) :: X(:)  !! Variables vector
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
-      real(pr), intent(in) :: dS
-      real(pr), intent(in) :: dXdS(:)
-      integer, intent(in) :: point
-      integer, intent(in) :: max_iters !! Maximum iterations
-      real(pr), intent(out) :: F(:) !! Function values at solved point
-      real(pr), intent(out) :: df(:, :) !! Jacobian values
-      real(pr), intent(out) :: dfds(:) !! dFdS
-      real(pr), intent(in) :: tol
+   ! subroutine levenberg_marquardt(&
+   !    fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &
+   !    )
+   !    use minpack_module, only: lmdif1
+   !    use stdlib_optval, only: optval
+   !    use yaeos__math_linalg, only: solve_system
+   !    procedure(continuation_function) :: fun !! Function to solve
+   !    integer,  intent(out) :: iters !! Number of iterations needed
+   !    real(pr), intent(in out) :: X(:)  !! Variables vector
+   !    integer, intent(in) :: ns
+   !    real(pr), intent(in) :: S
+   !    real(pr), intent(in) :: dS
+   !    real(pr), intent(in) :: dXdS(:)
+   !    integer, intent(in) :: point
+   !    integer, intent(in) :: max_iters !! Maximum iterations
+   !    real(pr), intent(out) :: F(:) !! Function values at solved point
+   !    real(pr), intent(out) :: df(:, :) !! Jacobian values
+   !    real(pr), intent(out) :: dfds(:) !! dFdS
+   !    real(pr), intent(in) :: tol
 
-      integer :: m, n, info, iwa(size(x))
-      integer :: lwa
-      real(pr) :: wa(size(F) * size(x) + 5*size(x) + size(f))
+   !    integer :: m, n, info, iwa(size(x))
+   !    integer :: lwa
+   !    real(pr) :: wa(size(F) * size(x) + 5*size(x) + size(f))
 
-      m = size(F)
-      n = size(x)
-      lwa = size(F) * size(x)+5*size(x)+size(f)
-      call lmdif1(fcn, m, n, x, F, tol, Info, Iwa, Wa, Lwa)
-      contains
-      subroutine fcn(m, n, xx, fvec, iflag)
-         integer, intent(in) :: m, n
-         real(pr), intent(in) :: xx(n)
-         real(pr), intent(out) :: fvec(m)
-         integer, intent(in out) :: iflag
-         call fun(xx, ns, S, fvec, dF, dFdS)
-      end subroutine
-   end subroutine
+   !    m = size(F)
+   !    n = size(x)
+   !    lwa = size(F) * size(x)+5*size(x)+size(f)
+   !    call lmdif1(fcn, m, n, x, F, tol, Info, Iwa, Wa, Lwa)
+   !    contains
+   !    subroutine fcn(m, n, xx, fvec, iflag)
+   !       integer, intent(in) :: m, n
+   !       real(pr), intent(in) :: xx(n)
+   !       real(pr), intent(out) :: fvec(m)
+   !       integer, intent(in out) :: iflag
+   !       call fun(xx, ns, S, fvec, dF, dFdS)
+   !    end subroutine
+   ! end subroutine
 end module yaeos__math_continuation
