@@ -73,7 +73,7 @@ contains
          dx = X * 0.01_pr
       end if
 
-      priv_data => data
+      if(present(data)) priv_data => data
       priv_foo => foo
 
       call newuoa(&

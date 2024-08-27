@@ -21,7 +21,7 @@ program flasher
    type(EquilibriumState) :: flash_result !! Result of Flash calculation
    type(EquilibriumState) :: sat
 
-   integer, parameter :: nc=4
+   integer, parameter :: nc=7
 
    type(Substance) :: sus(nc)
    type(PTEnvel2) :: env
@@ -53,6 +53,9 @@ program flasher
    sus(2) = Substance("carbon dioxide")
    sus(3) = Substance("n-decane")
    sus(4) = Substance("n-eicosane")
+   sus(5) = Substance("water")
+   sus(6) = Substance("n-dodecane")
+   sus(7) = Substance("n-heptane")
    Tc = sus%critical%critical_temperature%value
    Pc = sus%critical%critical_pressure%value/1e5
    w = sus%critical%acentric_factor%value
@@ -63,7 +66,7 @@ program flasher
    ! Calculate the phase-envelope to determine the upper limits
    ! of pressure and temperature
    ! --------------------------------------------------------------------------
-   sat = saturation_temperature(model, n, P=10._pr, kind="dew", T0=500._pr)
+   sat = saturation_temperature(model, n, P=0.01_pr, kind="dew", T0=500._pr)
    print *, sat
 
    env = pt_envelope_2ph(model, n, sat)
@@ -85,7 +88,6 @@ program flasher
       T = T0 + (i-1)*dt
       P = P0
       do j=1,nt
-         print *, T, P
          P = P0 + (j-1)*dp
          flash_result = flash(model, n, T=T, P_spec=P, iters=iter)
          ts(i, j) = flash_result%T
@@ -94,6 +96,7 @@ program flasher
       end do
    end do
    !$OMP END PARALLEL DO
+   call tim%timer_stop()
 
    ! ==========================================================================
    ! Print the results

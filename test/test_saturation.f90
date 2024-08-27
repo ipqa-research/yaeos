@@ -11,6 +11,7 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Pure Psat", test_pure_psat), &
          new_unittest("Bubble pressure", test_bubble_pressure), &
          new_unittest("Dew pressure", test_dew_pressure), &
          new_unittest("Bubble temperature", test_bubble_temperature), &
@@ -178,7 +179,26 @@ contains
       bubble = saturation_pressure(model, z, T=270._pr, kind="bubble", p0=10._pr)
       envelope = px_envelope_2ph(&
          model, z0=z, first_point=bubble, alpha0=0.0_pr, z_injection=z_inj&
-      )
+         )
       call check(error, size(envelope%cps) == 1)
    end subroutine test_px2_envelope
+
+   subroutine test_pure_psat(error)
+      use yaeos, only: pr, ArModel, Psat
+      use fixtures_models, only: binary_PR76
+      type(error_type), allocatable, intent(out) :: error
+      class(ArModel), allocatable :: model
+
+      integer :: i, j
+      real(pr) :: T, Psats(2), Psats_val(2)
+
+      T = 150
+      model = binary_PR76()
+      Psats_val = [260.37450286310201, 30.028551527997834]
+
+         do i=1,2
+            Psats(i) = Psat(model, i, T)
+         end do
+   ! call check(error, maxval(abs(Psats-Psats_val)) < abs_tolerance)
+   end subroutine test_pure_psat
 end module test_saturation
