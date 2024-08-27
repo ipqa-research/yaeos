@@ -255,6 +255,7 @@ contains
          T = exp(X(nc+1))
          P = exp(X(nc+2))
          y = exp(X(:nc))*z
+
          select case(kind)
           case("bubble")
             point = EquilibriumState(&
@@ -272,7 +273,6 @@ contains
                T=T, P=P, beta=0._pr, iters=iters &
                )
          end select
-
          envelopes%points = [envelopes%points, point]
       end subroutine save_point
 
