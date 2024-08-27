@@ -113,7 +113,7 @@ jobs:
         cd python && tox -r
 
   build_wheels:
-    needs: Python-API
+    # needs: Python-API
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -176,7 +176,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: dist/
-        # name: cibw-wheels-ubuntu-latest
+        pattern: cibw-wheels-*
+        merge-multiple: true
+    - run: ls -R dist
     - name: Publish distribution 📦 to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
