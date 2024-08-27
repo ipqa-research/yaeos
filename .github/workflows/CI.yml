@@ -113,7 +113,7 @@ jobs:
         cd python && tox -r
 
   build_wheels:
-    # needs: Python-API
+    needs: Python-API
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -154,8 +154,8 @@ jobs:
           # CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
-          # CIBW_BEFORE_TEST: pip install pytest
-          # CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+          CIBW_BEFORE_TEST: pip install pytest
+          CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
 
       - uses: actions/upload-artifact@v4
         with:
@@ -167,7 +167,7 @@ jobs:
     needs: build_wheels
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
+      name: pypi
       url: https://test.pypi.org/p/yaeos
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
@@ -179,7 +179,5 @@ jobs:
         pattern: cibw-wheels-*
         merge-multiple: true
     - run: ls -R dist
-    - name: Publish distribution 📦 to TestPyPI
+    - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
