@@ -34,9 +34,6 @@ derivatives so both options are easily available.
 We focus mainly on that the addition of a new thermodynamic model as easily as
 possible. Also providing our models too!
 
-For now, we only include residual Helmholtz model (like Cubic or SAFT Equations
-of State).
-
 ## Available models
 - CubicEoS
    - SoaveRedlichKwong
