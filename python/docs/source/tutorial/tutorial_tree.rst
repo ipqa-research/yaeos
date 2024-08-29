@@ -7,3 +7,4 @@ Tutorial
    getting_started.ipynb
    instantiate_model.ipynb
    more_calculations.ipynb
+   cubic_eos.ipynb
