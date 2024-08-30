@@ -17,6 +17,9 @@ class UNIFACVLE(GeModel):
 
         nc = len(molecules)
         max_ng = max([len(groups) for groups in molecules])
+
+        # The C-API expects two 2D arrays with the groups and their amounts
+        # for each molecule.
         groups_ids = np.zeros((nc, max_ng), dtype=np.int32, order="F")
         groups_ammounts = np.zeros((nc, max_ng), dtype=np.int32, order="F")
 
