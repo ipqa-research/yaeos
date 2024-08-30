@@ -1,3 +1,6 @@
+"""UNIFAC Module.
+"""
+
 import numpy as np
 
 from yaeos.core import GeModel
