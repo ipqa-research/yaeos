@@ -2,6 +2,8 @@
 
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from yaeos.core import GeModel
 from yaeos.lib import yaeos_c
 
@@ -64,8 +66,8 @@ class QMR(CubicMixRule):
     """
 
     def __init__(self, kij, lij) -> None:
-        self.kij = kij
-        self.lij = lij
+        self.kij = np.array(kij, order="F")
+        self.lij = np.array(lij, order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set quadratic mix rule method.
@@ -125,7 +127,7 @@ class MHV(CubicMixRule):
     def __init__(self, ge: GeModel, q: float, lij=None) -> None:
         self.ge = ge
         self.q = q
-        self.lij = lij
+        self.lij = np.array(lij, order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set modified Huron-Vidal mix rule method.

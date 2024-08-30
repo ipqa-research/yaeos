@@ -24,11 +24,15 @@ from yaeos import PengRobinson76
 
 import numpy as np
 
-model = PengRobinson76(np.array([320, 375]), np.array([30, 45]), np.array([0.0123, 0.045]), mr)
+model = PengRobinson76(
+    np.array([320, 375]),
+    np.array([30, 45]),
+    np.array([0.0123, 0.045])
+)
 
 model.lnphi_vt(np.array([5.0, 4.0]), 2.0, 303.15)
 ```
 
 ```
-{'ln_phi': array([0.47647471, 0.35338115]), 'dt': None, 'dp': None, 'dn': None}
+array([0.47647471, 0.35338115])
 ```

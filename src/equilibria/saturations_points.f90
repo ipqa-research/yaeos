@@ -5,7 +5,7 @@ module yaeos__equilibria_saturation_points
    use yaeos__equilibria_auxiliar, only: k_wilson
 
    real(pr) :: tol = 1e-9_pr
-   integer :: max_iterations = 1000
+   integer :: max_iterations = 200
    real(pr) :: step_tol = 0.1_pr
 
 contains

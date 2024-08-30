@@ -7,6 +7,7 @@ Yaeos Gibbs excess module. This module provides the following submodules:
 """
 
 from .nrtl import NRTL
+from .unifac import UNIFACVLE
 
 
-__all__ = ["NRTL"]
+__all__ = ["NRTL", "UNIFACVLE"]

@@ -341,6 +341,7 @@ contains
          P_in = totn*RT/V - ArV
          Z = P_in*V/(totn*RT)
          lnPhi(:) = Arn(:)/RT - log(Z)
+         if (present(P)) P = P_in
          return
       else if (present(dlnPhidn)) then
          call eos%residual_helmholtz(&

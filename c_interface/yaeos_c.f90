@@ -28,6 +28,7 @@ module yaeos_c
    public :: make_available_ge_models_list
    ! GeMoels
    public :: nrtl
+   public :: unifac_vle
    public :: ln_gamma
 
    ! Thermoprops
@@ -71,6 +72,26 @@ contains
       ge_model = fNRTL(a, b, c)
       call extend_ge_models_list(id)
    end subroutine nrtl
+
+   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_unifac, Groups
+      integer(c_int), intent(out) :: id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+      integer :: i
+
+      do i=1,nc
+         molecules(i)%groups_ids = g_ids(i, :ngs(i))
+         molecules(i)%number_of_groups = g_v(i, :ngs(i))
+      end do
+
+      ge_model = setup_unifac(molecules)
+      call extend_ge_models_list(id)
+   end subroutine
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model

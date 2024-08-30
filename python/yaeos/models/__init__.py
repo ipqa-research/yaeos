@@ -4,6 +4,7 @@ Yaeos models module. This module provides the following submodules:
 
 - excess_gibbs: Excess Gibbs energy models
     - NRTL: non-random two-liquid model
+    - UNIFACVLE: Original UNIFAC VLE model
 
 - residual_helmholtz: Residual Helmholtz energy models
     - Cubic EoS:

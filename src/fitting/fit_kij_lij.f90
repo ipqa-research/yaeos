@@ -7,14 +7,14 @@ module yaeos__fitting_fit_kij_lij
    type, extends(FittingProblem) :: FitKijLij
       !! # Binary Interaction Parameters of Cubic EoS fitting problem
       !! Fit the binary interaction parameters of a mixtures.
-      !! 
+      !!
       !! # Description
       !! Fitting setup for quadratic combining rules, it is possible to select
-      !! which parameters will be optimized with the `fit_lij` and `fit_kij` 
+      !! which parameters will be optimized with the `fit_lij` and `fit_kij`
       !! attributes.
-      !! 
+      !!
       !! # Examples
-      !! 
+      !!
       !! ## Fit the kij BIP
       !!
       !! ```fortran
@@ -25,7 +25,7 @@ module yaeos__fitting_fit_kij_lij
       !!  real(pr) :: error
       !!
       !!  ! <some procedure to define exp data>
-      !! 
+      !!
       !!  model = PengRobinson76(tc, pc, w) ! Model to fit
       !!
       !!  fitting_problem%exp_data = exp_data
@@ -53,28 +53,38 @@ contains
 
       real(pr) :: kij(nc, nc), lij(nc, nc)
 
-      if (size(X) /= 2) error stop 1
+      if (size(X) > 2) error stop 1
 
       kij = 0
-      kij(1, 2) = X(1)
-      kij(2, 1) = kij(1, 2)
-
       lij = 0
-      lij(1, 2) = X(2)
-      lij(2, 1) = X(2)
+
+      if (problem%fit_kij .and. problem%fit_lij) then
+         kij(1, 2) = X(1)
+         kij(2, 1) = kij(1, 2)
+         lij(1, 2) = X(2)
+         lij(2, 1) = lij(2, 1)
+      else if (problem%fit_kij) then
+         kij = 0
+         kij(1, 2) = X(1)
+         kij(2, 1) = kij(1, 2)
+      else if (problem%fit_lij) then
+         lij = 0
+         lij(1, 2) = X(1)
+         lij(2, 1) = lij(2, 1)
+      end if
 
       associate(model => problem%model)
-      select type (model)
-       class is (CubicEoS)
-         associate (mr => model%mixrule)
-            select type(mr)
-             class is (QMR)
-               if (problem%fit_kij) mr%k = kij
-               if (problem%fit_lij) mr%l = lij
-            end select
-         end associate
-      end select
+         select type (model)
+          class is (CubicEoS)
+            associate (mr => model%mixrule)
+               select type(mr)
+                class is (QMR)
+                  if (problem%fit_kij) mr%k = kij
+                  if (problem%fit_lij) mr%l = lij
+               end select
+            end associate
+         end select
       end associate
-   end subroutine
+   end subroutine model_from_X
 end module yaeos__fitting_fit_kij_lij
 
