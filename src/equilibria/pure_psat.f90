@@ -36,8 +36,8 @@ contains
          real(pr), intent(in) :: P
          real(pr) :: V_l, V_v
          real(pr) :: phi_v(size(eos)), phi_l(size(eos))
-         call eos%lnphi_pt(n, P, T, V=V_v, lnPhi=phi_v, root_type="vapor")
-         call eos%lnphi_pt(n, P, T, V=V_l, lnPhi=phi_l, root_type="liquid")
+         call eos%lnphi_pt(n, P=P, T=T, V=V_v, lnPhi=phi_v, root_type="vapor")
+         call eos%lnphi_pt(n, P=P, T=T, V=V_l, lnPhi=phi_l, root_type="liquid")
          diff = phi_v(ncomp) - phi_l(ncomp)
       end function
    end function Psat
