@@ -100,6 +100,7 @@ py.install_sources(models_sources, subdir:python_lib / 'models')
 excess_gibbs_sources = [
   python_lib / 'models' / 'excess_gibbs' / '__init__.py',
   python_lib / 'models' / 'excess_gibbs' / 'nrtl.py',
+  python_lib / 'models' / 'excess_gibbs' / 'unifac.py',
 ]
 py.install_sources(excess_gibbs_sources, subdir:python_lib / 'models' / 'excess_gibbs')
 

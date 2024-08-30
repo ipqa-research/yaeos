@@ -18,7 +18,7 @@ class GeModel(ABC):
     def ln_gamma(self, n, T):
         r"""Calculate activity coefficients.
 
-        Calculate :math:`ln \gamma_i(n,T)` vector.
+        Calculate :math:`\ln \gamma_i(n,T)` vector.
 
         Parameters
         ----------
