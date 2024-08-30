@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cubic Equations of State &mdash; yaeos 0.1.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=92734c54"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core Module" href="../core.html" />
+    <link rel="prev" title="More calculations" href="more_calculations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instantiate_model.html">Instantiate a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Cubic Equations of State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Quadratic-mixing-rule-(QMR)">Quadratic mixing rule (QMR)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modified-Huron-Vidal-mixing-rule-(MHV)">Modified Huron-Vidal mixing rule (MHV)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models/init.html">Models</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorial_tree.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Cubic Equations of State</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/cubic_eos.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Cubic-Equations-of-State">
+<h1>Cubic Equations of State<a class="headerlink" href="#Cubic-Equations-of-State" title="Link to this heading">¶</a></h1>
+<p>There is one more thing to show of the Python API that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports. At this point of the tutorial we have been using cubic equations of state to perform different calculations. The experience users may have noticed that we never set any interaction parameters for the cubic equations of state.</p>
+<p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> support the following mixing rules for cubic equations of state:</p>
+<ul class="simple">
+<li><p>QMR: quadratic mixing rule</p></li>
+<li><p>MHV: modified Huron-Vidal mixing rule</p></li>
+</ul>
+<p>You can check the available mixing rules by running the following command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+<span class="o">?</span>yaeos.models
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Type:</span>        module
+<span class="ansi-red-fg">String form:</span> &lt;module &#39;yaeos.models&#39; from &#39;/home/salvador/code/yaeos/python/yaeos/models/__init__.py&#39;&gt;
+<span class="ansi-red-fg">File:</span>        ~/code/yaeos/python/yaeos/models/__init__.py
+<span class="ansi-red-fg">Docstring:</span>
+Models module.
+
+Yaeos models module. This module provides the following submodules:
+
+- excess_gibbs: Excess Gibbs energy models
+    - NRTL: non-random two-liquid model
+
+- residual_helmholtz: Residual Helmholtz energy models
+    - Cubic EoS:
+        - PengRobinson76: Peng-Robinson model (1976)
+        - PengRobinson78: Peng-Robinson model (1978)
+        - SoaveRedlichKwong: Soave-Redlich-Kwong model
+        - RKPR: RKPR model
+    - Mixing rules: mixing rules for cubic EoS
+        - QMR: cuadratic mixing rule
+        - MHV: modified Huron-Vidal mixing rule
+</pre></div></div>
+</div>
+<section id="Quadratic-mixing-rule-(QMR)">
+<h2>Quadratic mixing rule (QMR)<a class="headerlink" href="#Quadratic-mixing-rule-(QMR)" title="Link to this heading">¶</a></h2>
+<p>The QMR is the default mixing rule for all cubic equations of state. But it is always set with all the interaction parameters equals to zero by default.</p>
+<p>To set the <span class="math notranslate nohighlight">\(k_{ij}\)</span> and <span class="math notranslate nohighlight">\(l_{ij}\)</span> interaction matrix you can do the following:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span><span class="p">,</span> <span class="n">QMR</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.6</span><span class="p">,</span> <span class="mf">369.8</span><span class="p">])</span>  <span class="c1"># critical temperatures [K]</span>
+<span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">42.48</span><span class="p">])</span>  <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0866</span><span class="p">])</span>  <span class="c1"># acentric factors [-]</span>
+
+<span class="c1"># binary interaction parameters</span>
+<span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+
+<span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+
+<span class="c1"># Set QMR</span>
+<span class="n">mixing_rule</span> <span class="o">=</span> <span class="n">QMR</span><span class="p">(</span><span class="n">kij</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span> <span class="n">lij</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
+
+<span class="c1"># Set a model with the QMR with parameters</span>
+<span class="n">model_kij</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+    <span class="n">mixrule</span><span class="o">=</span><span class="n">mixing_rule</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Set model without QMR (QMR with all kij and lij as zero)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tcs</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>There we have instantiated a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> with the QMR mixing rule with fantasy interaction parameters. And then we instantiated a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> with no interaction parameters as we have been doing.</p>
+<p>With the model with interaction parameters we can calculate the same things that we have been calculating at this tutorial. But to show that there is a difference, we can calculate a phase envelope and see what happens.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">60.0</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Envelope with the model with kij and lij</span>
+<span class="n">env_kij</span> <span class="o">=</span> <span class="n">model_kij</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+
+<span class="c1"># Envelope with the model without kij and lij</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure [bar]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0, 0.5, &#39;Pressure [bar]&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_cubic_eos_5_1.png" src="../_images/tutorial_cubic_eos_5_1.png" />
+</div>
+</div>
+<p>The QMR mix rule can be used with any cubic equation of state that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports.</p>
+</section>
+<section id="Modified-Huron-Vidal-mixing-rule-(MHV)">
+<h2>Modified Huron-Vidal mixing rule (MHV)<a class="headerlink" href="#Modified-Huron-Vidal-mixing-rule-(MHV)" title="Link to this heading">¶</a></h2>
+<p>The other mixing rule that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the MHV mixing rule. To use it we need to instantiate an Excess Gibbs free energy model and pass it to the MHV mixing rule. The only Excess Gibbs free energy model that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model. Let’s see an example:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">MHV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.6</span><span class="p">,</span> <span class="mf">369.8</span><span class="p">])</span>  <span class="c1"># critical temperatures [K]</span>
+<span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">42.48</span><span class="p">])</span>  <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0866</span><span class="p">])</span>  <span class="c1"># acentric factors [-]</span>
+
+<span class="c1"># binary interaction parameters for NRTL model</span>
+<span class="n">aij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+
+<span class="n">bij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+
+<span class="n">cij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+
+<span class="n">nrtl</span> <span class="o">=</span> <span class="n">NRTL</span><span class="p">(</span><span class="n">aij</span><span class="p">,</span> <span class="n">bij</span><span class="p">,</span> <span class="n">cij</span><span class="p">)</span>
+
+<span class="n">mixing_rule</span> <span class="o">=</span> <span class="n">MHV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">nrtl</span><span class="p">,</span> <span class="n">q</span><span class="o">=-</span><span class="mf">0.53</span><span class="p">)</span>
+
+<span class="c1"># Set a model with the MHV with parameters</span>
+<span class="n">model_nrtl</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+    <span class="n">mixrule</span><span class="o">=</span><span class="n">mixing_rule</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Set model without QMR (QMR with all kij and lij as zero)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tcs</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s make first an envelope to see the difference and then explain what is happening.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">60.0</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Envelope with the model with kij and lij</span>
+<span class="n">env_nrtl</span> <span class="o">=</span> <span class="n">model_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+
+<span class="c1"># Envelope with the model without kij and lij</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure [bar]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0, 0.5, &#39;Pressure [bar]&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_cubic_eos_9_1.png" src="../_images/tutorial_cubic_eos_9_1.png" />
+</div>
+</div>
+<p>We have instantiated a <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model with some interaction parameters and then instantiated a <code class="docutils literal notranslate"><span class="pre">MHV</span></code> mixing rule with the <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model. The <code class="docutils literal notranslate"><span class="pre">q</span></code> value of the <code class="docutils literal notranslate"><span class="pre">MHV</span></code> mixing rule is taken from bibliography. The value to use are:</p>
+<ul class="simple">
+<li><p>q = -0.594 for Soave-Redlich-Kwong</p></li>
+<li><p>q = -0.53 for Peng-Robinson</p></li>
+<li><p>q = -0.85 for Van der Waals</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="more_calculations.html" class="btn btn-neutral float-left" title="More calculations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../core.html" class="btn btn-neutral float-right" title="Core Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

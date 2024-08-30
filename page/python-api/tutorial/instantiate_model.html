@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instantiate a model &mdash; yaeos 0.1.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=92734c54"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="More calculations" href="more_calculations.html" />
+    <link rel="prev" title="Getting started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Instantiate a model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Which-models-are-available?">Which models are available?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#What-can-we-do-with-an-instantiated-model?">What can we do with an instantiated model?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Residual-Helmholtz-free-energy-models-(ArModel)">Residual Helmholtz free energy models (ArModel)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ArModel-properties-listing">ArModel properties listing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Obtaining-derivatives-of-the-properties">Obtaining derivatives of the properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Yaeos-units">Yaeos units</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../models/init.html">Models</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorial_tree.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Instantiate a model</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/instantiate_model.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Instantiate-a-model">
+<h1>Instantiate a model<a class="headerlink" href="#Instantiate-a-model" title="Link to this heading">¶</a></h1>
+<section id="Which-models-are-available?">
+<h2>Which models are available?<a class="headerlink" href="#Which-models-are-available?" title="Link to this heading">¶</a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>, as in thermodynamics, are two kinds of models:</p>
+<ul class="simple">
+<li><p>Residual Helmholtz free energy models (ArModel)</p></li>
+<li><p>Excess Gibbs free energy models (GeModel)</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> provides a set of predefined models that will change in the future. You can check the list of available models in the API documentation or simply executing the following command on an interactive Python session (Jupyter Notebook, Google Colab, etc):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+<span class="o">?</span>yaeos.models
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Type:</span>        module
+<span class="ansi-red-fg">String form:</span> &lt;module &#39;yaeos.models&#39; from &#39;/home/salvador/code/yaeos/python/yaeos/models/__init__.py&#39;&gt;
+<span class="ansi-red-fg">File:</span>        ~/code/yaeos/python/yaeos/models/__init__.py
+<span class="ansi-red-fg">Docstring:</span>
+Models module.
+
+Yaeos models module. This module provides the following submodules:
+
+- excess_gibbs: Excess Gibbs energy models
+    - NRTL: non-random two-liquid model
+
+- residual_helmholtz: Residual Helmholtz energy models
+    - Cubic EoS:
+        - PengRobinson76: Peng-Robinson model (1976)
+        - PengRobinson78: Peng-Robinson model (1978)
+        - SoaveRedlichKwong: Soave-Redlich-Kwong model
+        - RKPR: RKPR model
+    - Mixing rules: mixing rules for cubic EoS
+        - QMR: cuadratic mixing rule
+        - MHV: modified Huron-Vidal mixing rule
+</pre></div></div>
+</div>
+<p>All this models can be imported directly from <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> with the names in the list. For example let’s import and instantiate a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> model:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="c1"># Critical constants</span>
+<span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">320</span><span class="p">,</span> <span class="mi">375</span><span class="p">]</span>  <span class="c1"># critical temperatures [K]</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span>  <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">]</span>  <span class="c1"># acentric factors [-]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>There we have instantiated a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> model with a binary mixture and stored the instance in a variable called <code class="docutils literal notranslate"><span class="pre">model</span></code>. You can check the signature to instantiate any model with the <code class="docutils literal notranslate"><span class="pre">?</span></code> operator in an interactive Python session.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>PengRobinson76
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Init signature:</span>
+PengRobinson76<span class="ansi-blue-fg">(</span>
+    critical_temperatures<span class="ansi-blue-fg">,</span>
+    critical_pressures<span class="ansi-blue-fg">,</span>
+    acentric_factors<span class="ansi-blue-fg">,</span>
+    mixrule<span class="ansi-blue-fg">:</span> yaeos<span class="ansi-blue-fg">.</span>models<span class="ansi-blue-fg">.</span>residual_helmholtz<span class="ansi-blue-fg">.</span>cubic_eos<span class="ansi-blue-fg">.</span>mixing_rules<span class="ansi-blue-fg">.</span>CubicMixRule <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-green-fg">None</span>
+<span class="ansi-red-fg">Docstring:</span>
+Peng-Robinson 1976 cubic equation of state.
+
+Parameters
+----------
+critical_temperatures : array_like
+    Critical temperatures vector [K]
+critical_pressures : array_like
+    Critical pressures vector [bar]
+acentric_factors : array_like
+    Acentric factors vector
+mixrule : CubicMixRule, optional
+    Mixing rule object. If no provided the quadratric mixing rule (QMR)
+    with zero for kij and lij parameters is set, by default None
+
+Attributes
+----------
+nc : int
+    Number of components
+critical_temperatures : array_like
+    Critical temperatures vector [K]
+critical_pressures : array_like
+    Critical pressures vector [bar]
+acentric_factors : array_like
+    Acentric factors vector
+id : int
+    EoS identifier
+mixrule : CubicMixRule
+    Mixing rule object
+
+Example
+-------
+.. code-block:: python
+
+    from yaeos import PengRobinson76
+
+    tc = [190.56, 305.32]   # Critical temperatures [K]
+    pc = [45.99, 48.72]     # Critical pressures [bar]
+    w = [0.0115, 0.0985]    # Acentric factors
+
+    pr76 = PengRobinson76(tc, pc, w)
+<span class="ansi-red-fg">File:</span>           ~/code/yaeos/python/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.py
+<span class="ansi-red-fg">Type:</span>           ABCMeta
+<span class="ansi-red-fg">Subclasses:</span>
+</pre></div></div>
+</div>
+<p>This can be done with all the listed models of <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">PengRobinson76</span><span class="p">,</span> <span class="n">PengRobinson78</span><span class="p">,</span> <span class="n">SoaveRedlichKwong</span><span class="p">,</span> <span class="n">RKPR</span>
+
+
+<span class="o">?</span>RKPR
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Init signature:</span>
+RKPR<span class="ansi-blue-fg">(</span>
+    critical_temperatures<span class="ansi-blue-fg">,</span>
+    critical_pressures<span class="ansi-blue-fg">,</span>
+    acentric_factors<span class="ansi-blue-fg">,</span>
+    critical_z<span class="ansi-blue-fg">,</span>
+    k<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    delta_1<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    mixrule<span class="ansi-blue-fg">:</span> yaeos<span class="ansi-blue-fg">.</span>models<span class="ansi-blue-fg">.</span>residual_helmholtz<span class="ansi-blue-fg">.</span>cubic_eos<span class="ansi-blue-fg">.</span>mixing_rules<span class="ansi-blue-fg">.</span>CubicMixRule <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-green-fg">None</span>
+<span class="ansi-red-fg">Docstring:</span>
+RKPR cubic equation of state.
+
+Parameters
+----------
+critical_temperatures : array_like
+    Critical temperatures vector [K]
+critical_pressures : array_like
+    Critical pressures vector [bar]
+acentric_factors : array_like
+    Acentric factors vector
+critical_z : array_like
+    Critical compressibility factor vector
+k : array_like, optional
+    k parameter, by default None
+delta_1 : array_like, optional
+    delta_1 parameter, by default None
+mixrule : CubicMixRule, optional
+    Mixing rule object. If no provided the quadratric mixing rule (QMR)
+    with zero for kij and lij parameters is set, by default None
+
+Attributes
+----------
+nc : int
+    Number of components
+critical_temperatures : array_like
+    Critical temperatures vector [K]
+critical_pressures : array_like
+    Critical pressures vector [bar]
+acentric_factors : array_like
+    Acentric factors vector
+zc : array_like
+    Critical compressibility factor vector
+id : int
+    EoS identifier
+mixrule : CubicMixRule
+    Mixing rule object
+
+Example
+-------
+.. code-block:: python
+
+    from yaeos import RKPR
+
+    tc = [190.56, 305.32]   # Critical temperatures [K]
+    pc = [45.99, 48.72]     # Critical pressures [bar]
+    w = [0.0115, 0.0985]    # Acentric factors
+    zc = [0.27, 0.28]       # Critical compressibility factor
+
+    rkpr = RKPR(tc, pc, w, zc)
+<span class="ansi-red-fg">File:</span>           ~/code/yaeos/python/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.py
+<span class="ansi-red-fg">Type:</span>           ABCMeta
+<span class="ansi-red-fg">Subclasses:</span>
+</pre></div></div>
+</div>
+</section>
+<section id="What-can-we-do-with-an-instantiated-model?">
+<h2>What can we do with an instantiated model?<a class="headerlink" href="#What-can-we-do-with-an-instantiated-model?" title="Link to this heading">¶</a></h2>
+<section id="Residual-Helmholtz-free-energy-models-(ArModel)">
+<h3>Residual Helmholtz free energy models (ArModel)<a class="headerlink" href="#Residual-Helmholtz-free-energy-models-(ArModel)" title="Link to this heading">¶</a></h3>
+<p>We will get later on what we can do with the Excess Gibbs free energy models instances.</p>
+<p>By now we will use the <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> instantiated in the variable <code class="docutils literal notranslate"><span class="pre">model</span></code> to calculate properties of the mixture. For example the fugacity coefficients of the mixture’s components at a given composition, temperature and pressure.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># moles of each component [mol]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">2.0</span>  <span class="c1"># pressure [bar]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># temperature [K]</span>
+
+<span class="c1"># Calculate ln(phi) with the model (PengRobinson76)</span>
+<span class="n">ln_phi</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Use ln(phi) to calculate the fugacity</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_phi</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">fugacity</span> <span class="o">=</span> <span class="n">z</span> <span class="o">*</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">P</span>
+
+<span class="c1"># Print results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ln(phi) = &quot;</span><span class="p">,</span> <span class="n">ln_phi</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;phi = &quot;</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fugacity = &quot;</span><span class="p">,</span> <span class="n">fugacity</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ln(phi) =  [-0.03026809 -0.03078738]
+phi =  [0.9701854  0.96968172]
+fugacity =  [1.35825956 0.58180903] bar
+</pre></div></div>
+</div>
+<p>Well, analyzing the previous code by parts we have:</p>
+<ul>
+<li><p>import numpy: <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> is compatible with numpy. The functions that receives arrays arguments are able to handle numpy arrays.</p></li>
+<li><p>We create three variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code> array with the number of moles of each component</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code> with the temperature of the system in Kelvin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> with the pressure of the system in bar</p></li>
+</ul>
+</li>
+<li><p>call the <code class="docutils literal notranslate"><span class="pre">lnphi_pt</span></code> method inside the previously instantiated <code class="docutils literal notranslate"><span class="pre">model</span></code> variable</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.&lt;</span><span class="n">thing</span> <span class="n">i</span> <span class="n">want</span> <span class="n">to</span> <span class="n">evaluate</span><span class="o">&gt;</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the users not familiar with Python and object-oriented programming, the dot <code class="docutils literal notranslate"><span class="pre">.</span></code> is used to access the attributes and methods of an object, in this case, the <code class="docutils literal notranslate"><span class="pre">model</span></code> object (PengRobinson76 instance). <code class="docutils literal notranslate"><span class="pre">lnphi_pt</span></code> is a method of the <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> class that calculates the natural logarithm of the fugacity coefficients of the components of the mixture at a given composition, temperature and pressure. In this case the syntax is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Use the ln(phi) returned values to calculate the fugacity coefficients</p>
+<p>First we calculate the fugacity coefficients. <code class="docutils literal notranslate"><span class="pre">python</span>&#160;&#160; <span class="pre">phi</span> <span class="pre">=</span> <span class="pre">np.exp(lnphi)</span></code> Which means: <span class="math notranslate nohighlight">\(\phi_i = e^{\ln(\phi_i)}\)</span></p>
+<p>Then, we calculate the mole fractions of the mixture. <code class="docutils literal notranslate"><span class="pre">python</span>&#160;&#160; <span class="pre">z</span> <span class="pre">=</span> <span class="pre">n</span> <span class="pre">/</span> <span class="pre">np.sum(n)</span></code> Which means: <span class="math notranslate nohighlight">\(z_i = \frac{n_i}{\sum n_i}\)</span></p>
+<p>Then we use the phi variable to calculate fugacities:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fugacity</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">P</span>
+</pre></div>
+</div>
+<p>Which means: <span class="math notranslate nohighlight">\(f = n \; \phi \; P\)</span></p>
+</li>
+</ul>
+</section>
+</section>
+<section id="ArModel-properties-listing">
+<h2>ArModel properties listing<a class="headerlink" href="#ArModel-properties-listing" title="Link to this heading">¶</a></h2>
+<p>All the properties that can be calculated with an ArModel instance can be found on the API documentation (Core Module):</p>
+<p><a class="reference external" href="https://ipqa-research.github.io/yaeos/page/python-api/core.html#yaeos.core.ArModel">https://ipqa-research.github.io/yaeos/page/python-api/core.html#yaeos.core.ArModel</a></p>
+<p>There you will find all the properties that can be calculated with an ArModel, their signatures and a brief description of what they do. Also, an example to calculate each one is provided.</p>
+<p>Some examples that we can calculate now:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># moles of each component [mol]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">15.0</span>  <span class="c1"># pressure [bar]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">20.0</span>  <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># temperature [K]</span>
+
+
+<span class="c1"># Evaluate pressure</span>
+<span class="n">pressure</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">V</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Evaluate ln(phi) but function of temperature and volume</span>
+<span class="n">ln_phi</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_vt</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">V</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Evaluate volume</span>
+<span class="n">volume</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And we can print the results:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pressure: &quot;</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="s2">&quot; bar&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ln_phi: &quot;</span><span class="p">,</span> <span class="n">ln_phi</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Volume: &quot;</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="s2">&quot; L&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pressure:  10.30361077545868  bar
+ln_phi:  [-0.16224585 -0.1669435 ]
+Volume:  12.068572622671574  L
+</pre></div></div>
+</div>
+<p>If you are familiar with thermodynamics, you probably may think:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&quot;Well, which volume root is solving when `model.volume` is evaluated&quot;
+</pre></div>
+</div>
+<p>And you will be right, we didn’t tell you yet. You can get the documentation of all these properties on the API documentation (the link provided above) or by doing:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.volume
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Signature:</span>
+model<span class="ansi-blue-fg">.</span>volume<span class="ansi-blue-fg">(</span>
+    moles<span class="ansi-blue-fg">,</span>
+    pressure<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    root<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;stable&#39;</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> float
+<span class="ansi-red-fg">Docstring:</span>
+Calculate volume given pressure and temperature [L].
+
+Parameters
+----------
+moles : array_like
+    Moles number vector [mol]
+pressure : float
+    Pressure [bar]
+temperature : float
+    Temperature [K]
+root : str, optional
+    Volume root, use: &#34;liquid&#34;, &#34;vapor&#34; or &#34;stable&#34;, by default
+    &#34;stable&#34;
+
+Returns
+-------
+float
+    Volume [L]
+
+Example
+-------
+.. code-block:: python
+
+    import numpy as np
+
+    from yaeos import PengRobinson76
+
+
+    tc = np.array([320.0, 375.0])   # critical temperatures [K]
+    pc = np.array([45.0, 60.0])     # critical pressures [bar]
+    w = np.array([0.0123, 0.045])   # acentric factors
+
+    model = PengRobinson76(tc, pc, w)
+
+    # Evaluating stable root volume
+    # will print: 23.373902973572587
+
+    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0))
+
+    # Liquid root volume (not stable)
+    # will print: 0.8156388756398074
+
+    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0, &#34;liquid&#34;))
+<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
+<span class="ansi-red-fg">Type:</span>      method<span class="ansi-red-fg">Signature:</span>
+model<span class="ansi-blue-fg">.</span>volume<span class="ansi-blue-fg">(</span>
+    moles<span class="ansi-blue-fg">,</span>
+    pressure<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    root<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;stable&#39;</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> float
+<span class="ansi-red-fg">Docstring:</span>
+Calculate volume given pressure and temperature [L].
+
+Parameters
+----------
+moles : array_like
+    Moles number vector [mol]
+pressure : float
+    Pressure [bar]
+temperature : float
+    Temperature [K]
+root : str, optional
+    Volume root, use: &#34;liquid&#34;, &#34;vapor&#34; or &#34;stable&#34;, by default
+    &#34;stable&#34;
+
+Returns
+-------
+float
+    Volume [L]
+
+Example
+-------
+.. code-block:: python
+
+    import numpy as np
+
+    from yaeos import PengRobinson76
+
+
+    tc = np.array([320.0, 375.0])   # critical temperatures [K]
+    pc = np.array([45.0, 60.0])     # critical pressures [bar]
+    w = np.array([0.0123, 0.045])   # acentric factors
+
+    model = PengRobinson76(tc, pc, w)
+
+    # Evaluating stable root volume
+    # will print: 23.373902973572587
+
+    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0))
+
+    # Liquid root volume (not stable)
+    # will print: 0.8156388756398074
+
+    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0, &#34;liquid&#34;))
+<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
+<span class="ansi-red-fg">Type:</span>      method
+</pre></div></div>
+</div>
+<p>If you check the API documentation you have an example of calculating “liquid” volume roots, “vapor” volume roots or “stable” volume roots, but we will explain it here too.</p>
+<p>As you can see in the volume documentation above. There is another argument that we didn’t use: <code class="docutils literal notranslate"><span class="pre">root</span></code>. This argument is set as “stable” by default, but we can change it to “vapor” or “liquid” if we want. Let’s see which was the stable root in the previous evaluation:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># moles of each component [mol]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">15.0</span>  <span class="c1"># pressure [bar]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># temperature [K]</span>
+
+
+<span class="c1"># Stable root</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Stable: &quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Liquid root</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Liquid: &quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Vapor root</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Vapor: &quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Stable:  12.068572622671574
+Liquid:  1.2405831819647626
+Vapor:  12.068572622671574
+</pre></div></div>
+</div>
+<p>As we can see, the stable root was the vapor root. But changing the <code class="docutils literal notranslate"><span class="pre">root</span></code> argument we can also check the value of the liquid root if we want.</p>
+<p>Let back to the <code class="docutils literal notranslate"><span class="pre">lnphi_pt</span></code> method, there we specify temperature and pressure, but again, at which volume root is solving the model? The answer is the same as the <code class="docutils literal notranslate"><span class="pre">volume</span></code> method, the stable root. But we can change it to:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># moles of each component [mol]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">15.0</span>  <span class="c1"># pressure [bar]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># temperature [K]</span>
+
+
+<span class="c1"># Stable root</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Stable: &quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Liquid root</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Liquid: &quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Vapor root</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Vapor: &quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Stable:  [-0.24307099 -0.2526632 ]
+Liquid:  [-0.04887053 -0.3742866 ]
+Vapor:  [-0.24307099 -0.2526632 ]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.lnphi_pt
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Signature:</span>
+model<span class="ansi-blue-fg">.</span>lnphi_pt<span class="ansi-blue-fg">(</span>
+    moles<span class="ansi-blue-fg">,</span>
+    pressure<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    root<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;stable&#39;</span><span class="ansi-blue-fg">,</span>
+    dt<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    dp<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    dn<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Union<span class="ansi-blue-fg">[</span>numpy<span class="ansi-blue-fg">.</span>ndarray<span class="ansi-blue-fg">,</span> tuple<span class="ansi-blue-fg">[</span>numpy<span class="ansi-blue-fg">.</span>ndarray<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span>
+<span class="ansi-red-fg">Docstring:</span>
+Calculate fugacity coefficent given pressure and temperature.
+
+Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
+temperature, pressure and moles number.
+
+Parameters
+----------
+moles : array_like
+    Moles number vector [mol]
+pressure : float
+    Pressure [bar]
+temperature : float
+    Temperature [K]
+root : str, optional
+    Volume root, use: &#34;liquid&#34;, &#34;vapor&#34; or &#34;stable&#34;, by default
+    &#34;stable&#34;
+dt : bool, optional
+    Calculate temperature derivative, by default False
+dp : bool, optional
+    Calculate pressure derivative, by default False
+dn : bool, optional
+    Calculate moles derivative, by default False
+
+Returns
+-------
+Union[np.ndarray, tuple[np.ndarray, dict]]
+    :math:`ln \phi_i(n,P,T)` vector or tuple with
+    :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any
+    derivative is asked
+
+Example
+-------
+.. code-block:: python
+
+    import numpy as np
+
+    from yaeos import PengRobinson76
+
+
+    tc = np.array([320.0, 375.0])   # critical temperatures [K]
+    pc = np.array([45.0, 60.0])     # critical pressures [bar]
+    w = np.array([0.0123, 0.045])   # acentric factors
+
+    model = PengRobinson76(tc, pc, w)
+
+    # Evaluating ln_phi only
+    # will print: [-0.10288733 -0.11909807]
+
+    print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))
+
+    # Asking for derivatives
+    # will print:
+    # (
+    # array([-0.10288733, -0.11909807]),
+    # {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}
+    # )
+
+    print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)
+<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
+<span class="ansi-red-fg">Type:</span>      method
+</pre></div></div>
+</div>
+</section>
+<section id="Obtaining-derivatives-of-the-properties">
+<h2>Obtaining derivatives of the properties<a class="headerlink" href="#Obtaining-derivatives-of-the-properties" title="Link to this heading">¶</a></h2>
+<p>We can obtain some derivatives of the properties that we have been calculating. For example, the fugacity coefficients derivatives with respect to the number of moles of the components of the mixture.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lnphi</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span>
+    <span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ln(phi): &quot;</span><span class="p">,</span> <span class="n">lnphi</span><span class="p">)</span>
+
+<span class="n">derivatives</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ln(phi):  [-0.03026809 -0.03078738]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;dt&#39;: None,
+ &#39;dp&#39;: None,
+ &#39;dn&#39;: array([[-4.89454245e-08,  1.14205991e-07],
+        [ 1.14205991e-07, -2.66480645e-07]])}
+</pre></div></div>
+</div>
+<p>There we set the <code class="docutils literal notranslate"><span class="pre">dn</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code> to calculate the derivatives with respect to the number of moles of the components of the mixture. When we specify any of the derivatives arguments as <code class="docutils literal notranslate"><span class="pre">True</span></code> we will get another return of the method. The first will be the property evaluated as usual and the second is a Python dictionary with the calculated derivatives specified as True.</p>
+<p>If we specify all the derivatives as <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lnphi</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span>
+    <span class="n">moles</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ln(phi): &quot;</span><span class="p">,</span> <span class="n">lnphi</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ln(phi):  [-0.24307099 -0.2526632 ]
+{&#39;dt&#39;: array([0.00247786, 0.00257727]), &#39;dp&#39;: array([-0.01786595, -0.01925548]), &#39;dn&#39;: array([[-2.56426727e-06,  5.98329030e-06],
+       [ 5.98329030e-06, -1.39610107e-05]])}
+</pre></div></div>
+</div>
+<p>There we get all the derivatives of <code class="docutils literal notranslate"><span class="pre">lnphi</span></code>. Of course, we can access the dictionary with the keys:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">derivatives</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.00247786, 0.00257727])
+</pre></div></div>
+</div>
+<p>Check the signature of each property to see which derivatives you can calculate. For example <code class="docutils literal notranslate"><span class="pre">pressure</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.pressure
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Signature:</span>
+model<span class="ansi-blue-fg">.</span>pressure<span class="ansi-blue-fg">(</span>
+    moles<span class="ansi-blue-fg">,</span>
+    volume<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
+    dv<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    dt<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    dn<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Union<span class="ansi-blue-fg">[</span>float<span class="ansi-blue-fg">,</span> tuple<span class="ansi-blue-fg">[</span>float<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span>
+<span class="ansi-red-fg">Docstring:</span>
+Calculate pressure given volume and temperature [bar].
+
+Calculate :math:`P(n,V,T)` and its derivatives with respect to
+volume, temperature and moles number.
+
+Parameters
+----------
+moles : array_like
+    Moles number vector [mol]
+volume : float
+    Volume [L]
+temperature : float
+    Temperature [K]
+dv : bool, optional
+    Calculate volume derivative, by default False
+dt : bool, optional
+    Calculate temperature derivative, by default False
+dn : bool, optional
+    Calculate moles derivative, by default False
+
+Returns
+-------
+Union[float, tuple[float, dict]]
+    Pressure or tuple with Presure and derivatives dictionary if any
+    derivative is asked [bar]
+
+Example
+-------
+.. code-block:: python
+
+    import numpy as np
+
+    from yaeos import PengRobinson76
+
+
+    tc = np.array([320.0, 375.0])   # critical temperatures [K]
+    pc = np.array([45.0, 60.0])     # critical pressures [bar]
+    w = np.array([0.0123, 0.045])   # acentric factors
+
+    model = PengRobinson76(tc, pc, w)
+
+    # Evaluating pressure only
+    # will print: 16.011985733846956
+
+    print(model.pressure(np.array([5.0, 5.6]), 2.0, 300.0))
+
+    # Asking for derivatives
+    # will print:
+    # (
+    # 16.011985733846956,
+    # {&#39;dv&#39;: None, &#39;dt&#39;: np.float64(0.7664672352866752), &#39;dn&#39;: None}
+    # )
+
+    print(model.pressure(np.array([5.0, 5.6]), 2.0, 300.0, dt=True))
+<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
+<span class="ansi-red-fg">Type:</span>      method
+</pre></div></div>
+</div>
+</section>
+<section id="Yaeos-units">
+<h2>Yaeos units<a class="headerlink" href="#Yaeos-units" title="Link to this heading">¶</a></h2>
+<p>If you were paying attention to the previous examples, you may have noticed that the units of <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> are defined according to the ideal gas constant <code class="docutils literal notranslate"><span class="pre">R</span></code> with units:</p>
+<p><span class="math notranslate nohighlight">\(R = 0.08314462618 \frac{bar \; L}{K \; mol}\)</span></p>
+<p>Because of that, pressure must be specified as bar, volume as liters, temperature as Kelvin and number of moles as moles. The returns of the properties will be in the same units as the inputs. Energetic properties as enthalpy, entropy, etc will have unit of <span class="math notranslate nohighlight">\([bar \; L]\)</span>, which equals to centijoules <span class="math notranslate nohighlight">\([cJ]\)</span>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="more_calculations.html" class="btn btn-neutral float-right" title="More calculations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
