@@ -5,6 +5,13 @@ from yaeos.lib import yaeos_c
 
 
 class UNIFACVLE(GeModel):
+    """UNIFAC VLE model.
+
+    Parameters
+    ----------
+    molecules : list of dict
+        List of dicts with the groups and their amounts for each molecule.
+    """
 
     def __init__(self, molecules) -> None:
 
