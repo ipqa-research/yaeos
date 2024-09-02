@@ -130,6 +130,7 @@ Yaeos models module. This module provides the following submodules:
 
 - excess_gibbs: Excess Gibbs energy models
     - NRTL: non-random two-liquid model
+    - UNIFACVLE: Original UNIFAC VLE model
 
 - residual_helmholtz: Residual Helmholtz energy models
     - Cubic EoS:
@@ -147,7 +148,7 @@ Yaeos models module. This module provides the following submodules:
 <p>The QMR is the default mixing rule for all cubic equations of state. But it is always set with all the interaction parameters equals to zero by default.</p>
 <p>To set the <span class="math notranslate nohighlight">\(k_{ij}\)</span> and <span class="math notranslate nohighlight">\(l_{ij}\)</span> interaction matrix you can do the following:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span><span class="p">,</span> <span class="n">QMR</span>
@@ -181,7 +182,7 @@ Yaeos models module. This module provides the following submodules:
 <p>There we have instantiated a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> with the QMR mixing rule with fantasy interaction parameters. And then we instantiated a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> with no interaction parameters as we have been doing.</p>
 <p>With the model with interaction parameters we can calculate the same things that we have been calculating at this tutorial. But to show that there is a difference, we can calculate a phase envelope and see what happens.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -207,7 +208,7 @@ Yaeos models module. This module provides the following submodules:
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -228,7 +229,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <h2>Modified Huron-Vidal mixing rule (MHV)<a class="headerlink" href="#Modified-Huron-Vidal-mixing-rule-(MHV)" title="Link to this heading">¶</a></h2>
 <p>The other mixing rule that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the MHV mixing rule. To use it we need to instantiate an Excess Gibbs free energy model and pass it to the MHV mixing rule. The only Excess Gibbs free energy model that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model. Let’s see an example:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">MHV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
@@ -238,9 +239,9 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0866</span><span class="p">])</span>  <span class="c1"># acentric factors [-]</span>
 
 <span class="c1"># binary interaction parameters for NRTL model</span>
-<span class="n">aij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">aij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
 
-<span class="n">bij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">bij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
 
 <span class="n">cij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
 
@@ -263,7 +264,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>Let’s make first an envelope to see the difference and then explain what is happening.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
@@ -287,7 +288,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">

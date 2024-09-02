@@ -137,6 +137,7 @@ Yaeos models module. This module provides the following submodules:
 
 - excess_gibbs: Excess Gibbs energy models
     - NRTL: non-random two-liquid model
+    - UNIFACVLE: Original UNIFAC VLE model
 
 - residual_helmholtz: Residual Helmholtz energy models
     - Cubic EoS:
@@ -322,7 +323,7 @@ Example
 <p>We will get later on what we can do with the Excess Gibbs free energy models instances.</p>
 <p>By now we will use the <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> instantiated in the variable <code class="docutils literal notranslate"><span class="pre">model</span></code> to calculate properties of the mixture. For example the fugacity coefficients of the mixture’s components at a given composition, temperature and pressure.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -505,65 +506,13 @@ Example
 
     print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0, &#34;liquid&#34;))
 <span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
-<span class="ansi-red-fg">Type:</span>      method<span class="ansi-red-fg">Signature:</span>
-model<span class="ansi-blue-fg">.</span>volume<span class="ansi-blue-fg">(</span>
-    moles<span class="ansi-blue-fg">,</span>
-    pressure<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    root<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;stable&#39;</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> float
-<span class="ansi-red-fg">Docstring:</span>
-Calculate volume given pressure and temperature [L].
-
-Parameters
-----------
-moles : array_like
-    Moles number vector [mol]
-pressure : float
-    Pressure [bar]
-temperature : float
-    Temperature [K]
-root : str, optional
-    Volume root, use: &#34;liquid&#34;, &#34;vapor&#34; or &#34;stable&#34;, by default
-    &#34;stable&#34;
-
-Returns
--------
-float
-    Volume [L]
-
-Example
--------
-.. code-block:: python
-
-    import numpy as np
-
-    from yaeos import PengRobinson76
-
-
-    tc = np.array([320.0, 375.0])   # critical temperatures [K]
-    pc = np.array([45.0, 60.0])     # critical pressures [bar]
-    w = np.array([0.0123, 0.045])   # acentric factors
-
-    model = PengRobinson76(tc, pc, w)
-
-    # Evaluating stable root volume
-    # will print: 23.373902973572587
-
-    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0))
-
-    # Liquid root volume (not stable)
-    # will print: 0.8156388756398074
-
-    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0, &#34;liquid&#34;))
-<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
 <span class="ansi-red-fg">Type:</span>      method
 </pre></div></div>
 </div>
 <p>If you check the API documentation you have an example of calculating “liquid” volume roots, “vapor” volume roots or “stable” volume roots, but we will explain it here too.</p>
 <p>As you can see in the volume documentation above. There is another argument that we didn’t use: <code class="docutils literal notranslate"><span class="pre">root</span></code>. This argument is set as “stable” by default, but we can change it to “vapor” or “liquid” if we want. Let’s see which was the stable root in the previous evaluation:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># moles of each component [mol]</span>
@@ -601,7 +550,7 @@ Vapor:  12.068572622671574
 <p>As we can see, the stable root was the vapor root. But changing the <code class="docutils literal notranslate"><span class="pre">root</span></code> argument we can also check the value of the liquid root if we want.</p>
 <p>Let back to the <code class="docutils literal notranslate"><span class="pre">lnphi_pt</span></code> method, there we specify temperature and pressure, but again, at which volume root is solving the model? The answer is the same as the <code class="docutils literal notranslate"><span class="pre">volume</span></code> method, the stable root. But we can change it to:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>  <span class="c1"># moles of each component [mol]</span>
@@ -639,7 +588,7 @@ Vapor:  [-0.24307099 -0.2526632 ]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.lnphi_pt
@@ -729,7 +678,7 @@ Example
 <h2>Obtaining derivatives of the properties<a class="headerlink" href="#Obtaining-derivatives-of-the-properties" title="Link to this heading">¶</a></h2>
 <p>We can obtain some derivatives of the properties that we have been calculating. For example, the fugacity coefficients derivatives with respect to the number of moles of the components of the mixture.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lnphi</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span>
@@ -747,25 +696,25 @@ Example
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ln(phi):  [-0.03026809 -0.03078738]
+ln(phi):  [-0.24307099 -0.2526632 ]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;dt&#39;: None,
  &#39;dp&#39;: None,
- &#39;dn&#39;: array([[-4.89454245e-08,  1.14205991e-07],
-        [ 1.14205991e-07, -2.66480645e-07]])}
+ &#39;dn&#39;: array([[-2.56426727e-06,  5.98329030e-06],
+        [ 5.98329030e-06, -1.39610107e-05]])}
 </pre></div></div>
 </div>
 <p>There we set the <code class="docutils literal notranslate"><span class="pre">dn</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code> to calculate the derivatives with respect to the number of moles of the components of the mixture. When we specify any of the derivatives arguments as <code class="docutils literal notranslate"><span class="pre">True</span></code> we will get another return of the method. The first will be the property evaluated as usual and the second is a Python dictionary with the calculated derivatives specified as True.</p>
 <p>If we specify all the derivatives as <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lnphi</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span>
@@ -789,7 +738,7 @@ ln(phi):  [-0.24307099 -0.2526632 ]
 </div>
 <p>There we get all the derivatives of <code class="docutils literal notranslate"><span class="pre">lnphi</span></code>. Of course, we can access the dictionary with the keys:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">derivatives</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
@@ -797,7 +746,8 @@ ln(phi):  [-0.24307099 -0.2526632 ]
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -806,7 +756,7 @@ array([0.00247786, 0.00257727])
 </div>
 <p>Check the signature of each property to see which derivatives you can calculate. For example <code class="docutils literal notranslate"><span class="pre">pressure</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.pressure

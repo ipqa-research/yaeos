@@ -101,16 +101,16 @@
 
 <div class="viewcode-block" id="GeModel.ln_gamma">
 <a class="viewcode-back" href="../../core.html#yaeos.core.GeModel.ln_gamma">[docs]</a>
-    <span class="k">def</span> <span class="nf">ln_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ln_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate activity coefficients.</span>
 
 <span class="sd">        Calculate :math:`\ln \gamma_i(n,T)` vector.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n : array_like</span>
+<span class="sd">        moles : array_like</span>
 <span class="sd">            Moles number vector [mol]</span>
-<span class="sd">        T : float</span>
+<span class="sd">        temperature : float</span>
 <span class="sd">            Temperature [K]</span>
 
 <span class="sd">        Returns</span>
@@ -133,10 +133,9 @@
 
 <span class="sd">            nrtl = NRTL(a, b, c)</span>
 
-<span class="sd">            print(nrtl.ln_gamma([5.0, 5.6], 300.0)</span>
+<span class="sd">            print(nrtl.ln_gamma([5.0, 5.6], 300.0))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
