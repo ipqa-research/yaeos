@@ -91,6 +91,7 @@ contains
 
         integer :: i, j
 
+        ! Associate allows us to keep the later expressions simple.
         associate(&
             pc => self%composition%pc, ac => self%ac, b => self%b, k => self%k,&
             kij => self%kij, lij => self%lij, tc => self%compostion%tc & 
