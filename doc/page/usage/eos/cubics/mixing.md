@@ -62,8 +62,21 @@ subroutine my_aij_implementation(self, ai, daidt, daidt2, aij, daijdt, daijdt2)
 end subroutine
 ```
 
-### Constant \(k_{ij}\)
-
 ## \(G^E\) Models Mixing Rules
+It is possible to mix the attractive parameter of Cubic Equations with an 
+excess Gibbs-based model.
+This can be useful for cases of polar molecules and/or systems that have been 
+fitted to \(G^E\) models.
 
 ### Michelsen's Modified Huron-Vidal Mixing Rules
+This mixing rule is based on the aproximate zero-pressure limit 
+of a cubic equation of state. At the aproximate zero-pressure limit the
+attractive parameter can be expressed as:
+
+\[
+\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
+\left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
+\]
+
+Where \(q\) is a weak function of temperature. In the case of `MHV`
+and simplicity it is considered that depends on the model used.
