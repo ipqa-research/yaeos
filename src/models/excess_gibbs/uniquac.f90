@@ -46,9 +46,12 @@ contains
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
       !! \(\frac{d^2G^E}{dn^2}\)
 
-      real(pr) :: theta_i(size(n)), dtheta_i_dn(size(n), size(n))
+      real(pr) :: theta_i(size(n))
+      real(pr) :: dtheta_i_dn(size(n), size(n))
       real(pr) :: d2theta_i_dn(size(n), size(n))
-      real(pr) :: phi_i(size(n)), dphi_i_dn(size(n), size(n))
+
+      real(pr) :: phi_i(size(n))
+      real(pr) :: dphi_i_dn(size(n), size(n))
       real(pr) :: d2phi_i_dn(size(n), size(n))
 
       integer :: i, j
@@ -56,7 +59,8 @@ contains
       logical :: dt, dt2, dn, dtn, dn2
 
       real(pr) :: Ge_comb, Ge_res
-      real(pr) :: tau_ij(size(n), size(n)), dtau_ij(size(n), size(n))
+      real(pr) :: tau_ij(size(n), size(n))
+      real(pr) :: dtau_ij(size(n), size(n))
       real(pr) :: d2tau_ij(size(n), size(n))
 
       ! Auxiliars
@@ -187,7 +191,7 @@ contains
       ! Ge
       ! -----------------------------------------------------------------------
       ! Combinatorial term
-      log_phi_i_xi = log(phi_i * xi)
+      log_phi_i_xi = log(phi_i / xi)
 
       Ge_comb = R * T * ( &
          sum(n * log_phi_i_xi) &
@@ -211,12 +215,11 @@ contains
       ! Compositional derivarives
       ! dn
       if (dn) then
-         ! Mole fraction derivatives
-         dxi_dnj = 0.0_pr
+         dxi_dnj = 0
 
-         do concurrent (i=1:nc, j=1:nc)
+         do concurrent(i=1:nc, j=1:nc)
             if (i == j) then
-               dxi_dnj(i,j) = (n_tot - n(i)) / n_tot**2
+               dxi_dnj(i,i) = (n_tot - n(i)) / n_tot**2
             else
                dxi_dnj(i,j) = -n(i) / n_tot**2
             end if
@@ -224,22 +227,19 @@ contains
 
          ! Combinatorial term
          do i=1,nc
-            Gen_comb(i) = (&
-               log(phi_i(i) * n_tot / n(i)) &
-               + sum(n * (dphi_i_dn(i,:) / phi_i - dxi_dnj(i,:) * n_tot / n)) &
-               + self%z / 2.0_pr * ( &
-               self%qs(i) * (log(theta_i(i)) - log(phi_i(i))) &
-               + sum(self%qs * n * (dtheta_i_dn(i,:) / theta_i(i) - dphi_i_dn(i,:) / phi_i)) &
-               ) &
-            )
+            Gen_comb(i) = ( &
+               log(phi_i(i) / xi(i)) + sum(n * (dphi_i_dn(:, i) / phi_i - dxi_dnj(:, i) / xi)) &
+               + self%z / 2.0_pr * (self%qs(i) * log(theta_i(i) / phi_i(i)) + &
+               sum(self%qs * n * (dtheta_i_dn(:,i) / theta_i - dphi_i_dn(:,i) / phi_i))) &
+               )
          end do
 
          ! Residual term
-         do i = 1,nc
-            Gen_res(i) = - (&
-               sum(self%qs * log(sum_theta_j_tau_ji)) &
-               
-            )
+         do i=1,nc
+            Gen_res(i) = -(&
+               self%qs(i) * log(sum_theta_j_tau_ji(i)) + &
+               sum(self%qs * n * sum(dtheta_i_dn(i,:) * tau_ij(i,:)) / sum_theta_j_tau_ji(i)) &
+               )
          end do
 
          Gen_aux = R * T * (Gen_comb + Gen_res)

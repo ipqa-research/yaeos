@@ -4,6 +4,7 @@ program cositom
    type(UNIQUAC) :: model
 
    real(pr) :: qs(2), rs(2), T, z(2), Ge, GeT, GeT2, Gen(2), Gen2(2,2), GeTn(2)
+   real(pr) :: Ge1, Ge2, delta
    real(pr), dimension(2,2) :: A, B, C, D, E
 
    rs = [0.92_pr, 2.1055_pr]
@@ -21,7 +22,11 @@ program cositom
    T = 298.15_pr
    z = [0.5_pr, 0.5_pr]
 
+   delta = 1e-8_pr
+
    call model%excess_gibbs(z, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, Gen2=Gen2, GeTn=GeTn)
+   call model%excess_gibbs(z + [delta, 0.0_pr], T, Ge=Ge1)
+   call model%excess_gibbs(z + [0.0_pr, delta], T, Ge=Ge2)
 
    print *, 'Ge = ', Ge * 100
    print *, "Ge_thermo = ", -203914.9332908132_pr
@@ -34,5 +39,6 @@ program cositom
    print *, "=================================================================="
    print *, "Gen = ", Gen / R / T
    print *, "Gen_thermo = ", [-164.27158219_pr,   -0.24513258_pr]
+   print *, "Gen numeric = ", (Ge1 - Ge) / delta / R / T, (Ge2 - Ge) / delta / R / T
 
 end program cositom
