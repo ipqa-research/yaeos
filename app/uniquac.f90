@@ -1,5 +1,5 @@
 program cositom
-   use yaeos, only: UNIQUAC, setup_uniquac, pr
+   use yaeos, only: UNIQUAC, setup_uniquac, pr, R
 
    type(UNIQUAC) :: model
 
@@ -32,7 +32,7 @@ program cositom
    print *, "GeT2 = ", GeT2 * 100
    print *, "GeT2_thermo = ", 0.11574726032863471_pr
    print *, "=================================================================="
-   print *, "Gen = ", Gen * 100
-   print *, "Gen_thermo = ", [-101957.4666454066_pr, -101957.4666454066_pr]
+   print *, "Gen = ", Gen / R / T
+   print *, "Gen_thermo = ", [-164.27158219_pr,   -0.24513258_pr]
 
 end program cositom

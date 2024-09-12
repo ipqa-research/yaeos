@@ -62,13 +62,20 @@ contains
       ! Auxiliars
       integer :: nc
       real(pr) :: n_tot
+      real(pr) :: xi(size(n))
       real(pr) :: sum_niqi, sum_niri
 
+      real(pr) :: log_phi_i_xi(size(n))
       real(pr) :: sum_theta_j_tau_ji(size(n))
       real(pr) :: sum_theta_j_dtau_ji(size(n))
       real(pr) :: sum_theta_j_d2tau_ji(size(n))
 
-      real(pr) :: Ge_aux, GeT_aux, GeT2_aux, aux_sum, diff_aux(size(n))
+      ! Auxiliars for compositionals derivatives
+      real(pr) :: dxi_dnj(size(n), size(n))
+      real(pr) :: Gen_comb(size(n)), Gen_res(size(n))
+      real(pr) :: Gen_aux(size(n))
+
+      real(pr) :: Ge_aux, GeT_aux, GeT2_aux, diff_aux(size(n))
 
       ! =======================================================================
       ! Logical variables
@@ -85,6 +92,8 @@ contains
       nc = size(n)
 
       n_tot = sum(n)
+
+      xi = n / n_tot
 
       sum_niqi = sum(n * self%qs)
       sum_niri = sum(n * self%rs)
@@ -178,8 +187,10 @@ contains
       ! Ge
       ! -----------------------------------------------------------------------
       ! Combinatorial term
+      log_phi_i_xi = log(phi_i * xi)
+
       Ge_comb = R * T * ( &
-         sum(n * (log(n_tot * phi_i / n))) &
+         sum(n * log_phi_i_xi) &
          + self%z / 2.0_pr * sum(n * self%qs * (log(theta_i) - log(phi_i))) &
          )
 
@@ -200,10 +211,40 @@ contains
       ! Compositional derivarives
       ! dn
       if (dn) then
+         ! Mole fraction derivatives
+         dxi_dnj = 0.0_pr
+
+         do concurrent (i=1:nc, j=1:nc)
+            if (i == j) then
+               dxi_dnj(i,j) = (n_tot - n(i)) / n_tot**2
+            else
+               dxi_dnj(i,j) = -n(i) / n_tot**2
+            end if
+         end do
+
          ! Combinatorial term
-         Gen_comb = 
-      end do
-      
+         do i=1,nc
+            Gen_comb(i) = (&
+               log(phi_i(i) * n_tot / n(i)) &
+               + sum(n * (dphi_i_dn(i,:) / phi_i - dxi_dnj(i,:) * n_tot / n)) &
+               + self%z / 2.0_pr * ( &
+               self%qs(i) * (log(theta_i(i)) - log(phi_i(i))) &
+               + sum(self%qs * n * (dtheta_i_dn(i,:) / theta_i(i) - dphi_i_dn(i,:) / phi_i)) &
+               ) &
+            )
+         end do
+
+         ! Residual term
+         do i = 1,nc
+            Gen_res(i) = - (&
+               sum(self%qs * log(sum_theta_j_tau_ji)) &
+               
+            )
+         end do
+
+         Gen_aux = R * T * (Gen_comb + Gen_res)
+      end if
+
       ! Temperature derivatives
       if (dt .or. dt2) then
          sum_theta_j_dtau_ji = 0.0_pr
@@ -243,7 +284,7 @@ contains
       if (present(Ge)) Ge = Ge_aux
       if (dt) GeT = GeT_aux
       if (dt2) GeT2 = GeT2_aux
-      if (dn) Gen = 0.0_pr
+      if (dn) Gen = Gen_aux
       if (dtn) GeTn = 0.0_pr
       if (dn2) Gen2 = 0.0_pr
    end subroutine excess_gibbs
