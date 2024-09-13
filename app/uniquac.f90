@@ -4,7 +4,7 @@ program cositom
    type(UNIQUAC) :: model
 
    real(pr) :: qs(2), rs(2), T, z(2), Ge, GeT, GeT2, Gen(2), Gen2(2,2), GeTn(2)
-   real(pr) :: Ge1, Ge2, delta
+   real(pr) :: Ge1, Ge2, delta, gammas(2)
    real(pr), dimension(2,2) :: A, B, C, D, E
 
    rs = [0.92_pr, 2.1055_pr]
@@ -27,6 +27,7 @@ program cositom
    call model%excess_gibbs(z, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, Gen2=Gen2, GeTn=GeTn)
    call model%excess_gibbs(z + [delta, 0.0_pr], T, Ge=Ge1)
    call model%excess_gibbs(z + [0.0_pr, delta], T, Ge=Ge2)
+   call model%ln_activity_coefficient(z, T, gammas)
 
    print *, 'Ge = ', Ge * 100
    print *, "Ge_thermo = ", -203914.9332908132_pr
@@ -37,8 +38,16 @@ program cositom
    print *, "GeT2 = ", GeT2 * 100
    print *, "GeT2_thermo = ", 0.11574726032863471_pr
    print *, "=================================================================="
-   print *, "Gen = ", Gen / R / T
-   print *, "Gen_thermo = ", [-164.27158219_pr,   -0.24513258_pr]
+   print *, "Gen_yaeos = ", Gen / R / T
+   print *, "gammas_yaeos = ", gammas
+   print *, "Gen_thermo = ", [-164.27158219423336_pr,   -0.24513258199664273_pr]
    print *, "Gen numeric = ", (Ge1 - Ge) / delta / R / T, (Ge2 - Ge) / delta / R / T
+   print *, "=================================================================="
+   print *, "Gen2_yaeos = "
+   print *, Gen2(1,:) / R / T
+   print *, Gen2(2,:) / R / T
+   print *, "Gen2_thermo = "
+   print *, [2230.622723883598_pr, -2230.6227238836045_pr]
+   print *, [-2230.622723883596_pr, 2230.6227238836022_pr]
 
 end program cositom

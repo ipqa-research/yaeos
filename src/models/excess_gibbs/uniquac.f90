@@ -54,7 +54,7 @@ contains
       real(pr) :: dphi_i_dn(size(n), size(n))
       real(pr) :: d2phi_i_dn(size(n), size(n))
 
-      integer :: i, j
+      integer :: i, j, k
 
       logical :: dt, dt2, dn, dtn, dn2
 
@@ -68,6 +68,7 @@ contains
       real(pr) :: n_tot
       real(pr) :: xi(size(n))
       real(pr) :: sum_niqi, sum_niri
+      real(pr) :: Ge_aux
 
       real(pr) :: log_phi_i_xi(size(n))
       real(pr) :: sum_theta_j_tau_ji(size(n))
@@ -76,10 +77,13 @@ contains
 
       ! Auxiliars for compositionals derivatives
       real(pr) :: dxi_dnj(size(n), size(n))
+      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
       real(pr) :: Gen_comb(size(n)), Gen_res(size(n))
       real(pr) :: Gen_aux(size(n))
+      real(pr) :: Gen2_comb_term1(size(n), size(n))
 
-      real(pr) :: Ge_aux, GeT_aux, GeT2_aux, diff_aux(size(n))
+      ! Temperature derivatives
+      real(pr) :: GeT_aux, GeT2_aux, diff_aux(size(n))
 
       ! =======================================================================
       ! Logical variables
@@ -243,6 +247,38 @@ contains
          end do
 
          Gen_aux = R * T * (Gen_comb + Gen_res)
+      end if
+
+      ! dn2
+      if (dn2) then
+         ! God help me
+         d2xk_dnidnj = 0
+
+         do concurrent (k=1:nc, i=1:nc, j=1:nc)
+            if (i==k .and. j==k) then
+               d2xk_dnidnj(k,i,j) = -2 * (n_tot - n(i)) / n_tot**3
+            else if (i==k) then
+               d2xk_dnidnj(k,i,j) = (2 * n(i) - n_tot) / n_tot**3
+            else if (j==k) then
+               d2xk_dnidnj(k,i,j) = (2 * n(j) - n_tot) / n_tot**3
+            else
+               d2xk_dnidnj(k,i,j) = 2 * n(k) / n_tot**3
+            end if
+         end do
+
+         ! Combinatorial term
+         do concurrent(i=1:nc, j=1:nc)
+            ! first term
+            Gen2_comb_term1(i,j) = (&
+               dphi_i_dn(i,j) / phi_i(i) - dxi_dnj(i,j) / xi(i) &
+               + dphi_i_dn(j,i) / phi_i(j) - dxi_dnj(j,i) / xi(j) &
+               + sum(n * &
+               (d2phi_i_dn(:,i,j) / phi_i - dphi_i_dn(:,i) * dphi_i_dn(:,j) / phi_i**2 &
+               - d2xk_dnidnj(:,i,j) / xi - dxi_dnj(:,i) * dxi_dnj(:,j) / xi**2) &
+               ) &
+            )
+         end do
+
       end if
 
       ! Temperature derivatives
