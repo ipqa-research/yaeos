@@ -48,29 +48,29 @@ contains
 
       real(pr) :: theta_i(size(n))
       real(pr) :: dtheta_i_dn(size(n), size(n))
-      real(pr) :: d2theta_i_dn(size(n), size(n))
+      real(pr) :: d2thetak_dnidnj(size(n), size(n), size(n))
 
       real(pr) :: phi_i(size(n))
       real(pr) :: dphi_i_dn(size(n), size(n))
-      real(pr) :: d2phi_i_dn(size(n), size(n))
-
-      integer :: i, j, k
-
-      logical :: dt, dt2, dn, dtn, dn2
+      real(pr) :: d2phik_dnidnj(size(n), size(n), size(n))
 
       real(pr) :: Ge_comb, Ge_res
       real(pr) :: tau_ij(size(n), size(n))
       real(pr) :: dtau_ij(size(n), size(n))
       real(pr) :: d2tau_ij(size(n), size(n))
 
+      integer :: i, j, k
+
+      logical :: dt, dt2, dn, dtn, dn2
+
       ! Auxiliars
       integer :: nc
       real(pr) :: n_tot
       real(pr) :: xi(size(n))
+      real(pr) :: r_i, q_i, r_j, q_j, r_k, q_k
       real(pr) :: sum_niqi, sum_niri
       real(pr) :: Ge_aux
 
-      real(pr) :: log_phi_i_xi(size(n))
       real(pr) :: sum_theta_j_tau_ji(size(n))
       real(pr) :: sum_theta_j_dtau_ji(size(n))
       real(pr) :: sum_theta_j_d2tau_ji(size(n))
@@ -133,22 +133,36 @@ contains
       end if
 
       if (dn2) then
-         d2theta_i_dn = 0
-         do concurrent(i=1:nc, j=1:nc)
-            if (i == j) then
-               d2theta_i_dn(i,i) = &
-                  (&
-                  -2.0_pr * (self%qs(i) * sum_niqi &
-                  - n(i) * self%qs(i)**2) * self%qs(i) * sum_niqi &
-                  ) &
-                  / sum_niqi**4
+         d2thetak_dnidnj = 0
+         do concurrent(k=1:nc, i=1:nc, j=1:nc)
+            if (i==k .and. j==k) then
+               q_i = self%qs(i)
+
+               d2thetak_dnidnj(k,i,j) = (&
+                  -2.0_pr * (q_i * sum_niqi - q_i**2 * n(i)) * q_i / sum_niqi**3 &
+                  )
+            else if (i==k) then
+               q_i = self%qs(i)
+               q_j = self%qs(j)
+
+               d2thetak_dnidnj(k,i,j) = (&
+                  (-q_j*q_i*sum_niqi + 2.0_pr * q_i**2 * n(i) * q_j) / sum_niqi**3 &
+                  )
+            else if (j==k) then
+               q_i = self%qs(i)
+               q_j = self%qs(j)
+
+               d2thetak_dnidnj(k,i,j) = (&
+                  (-q_j*q_i*sum_niqi + 2.0_pr * q_j**2 * n(j) * q_i) / sum_niqi**3 &
+                  )
             else
-               d2theta_i_dn(i,j) = &
-                  (&
-                  - self%qs(i) * self%qs(j) * sum_niqi**2 &
-                  + 2.0_pr * n(i) * self%qs(i)**2 * self%qs(j) * sum_niqi &
-                  ) &
-                  / sum_niqi**4
+               q_i = self%qs(i)
+               q_j = self%qs(j)
+               q_k = self%qs(k)
+
+               d2thetak_dnidnj(k,i,j) = (&
+                  2.0_pr * q_k * n(k) * q_i * q_j / sum_niqi**3 &
+                  )
             end if
          end do
       end if
@@ -171,22 +185,36 @@ contains
       end if
 
       if (dn2) then
-         d2phi_i_dn = 0
-         do concurrent(i=1:nc, j=1:nc)
-            if (i == j) then
-               d2phi_i_dn(i,i) = &
-                  (&
-                  -2.0_pr * (self%rs(i) * sum_niri &
-                  - n(i) * self%rs(i)**2) * self%rs(i) * sum_niri &
-                  ) &
-                  / sum_niri**4
+         d2phik_dnidnj = 0
+         do concurrent(k=1:nc, i=1:nc, j=1:nc)
+            if (i==k .and. j==k) then
+               r_i = self%rs(i)
+
+               d2phik_dnidnj(k,i,j) = (&
+                  -2.0_pr * (r_i * sum_niri - r_i**2 * n(i)) * r_i / sum_niri**3 &
+                  )
+            else if (i==k) then
+               r_i = self%rs(i)
+               r_j = self%rs(j)
+
+               d2phik_dnidnj(k,i,j) = (&
+                  (-r_j*r_i*sum_niri + 2.0_pr * r_i**2 * n(i) * r_j) / sum_niri**3 &
+                  )
+            else if (j==k) then
+               r_i = self%rs(i)
+               r_j = self%rs(j)
+
+               d2phik_dnidnj(k,i,j) = (&
+                  (-r_j*r_i*sum_niri + 2.0_pr * r_j**2 * n(j) * r_i) / sum_niri**3 &
+                  )
             else
-               d2phi_i_dn(i,j) = &
-                  (&
-                  - self%rs(i) * self%rs(j) * sum_niri**2 &
-                  + 2.0_pr * n(i) * self%rs(i)**2 * self%rs(j) * sum_niri &
-                  ) &
-                  / sum_niri**4
+               r_i = self%rs(i)
+               r_j = self%rs(j)
+               r_k = self%rs(k)
+
+               d2phik_dnidnj(k,i,j) = (&
+                  2 * r_k * n(k) * r_i * r_j / sum_niri**3 &
+                  )
             end if
          end do
       end if
@@ -195,10 +223,8 @@ contains
       ! Ge
       ! -----------------------------------------------------------------------
       ! Combinatorial term
-      log_phi_i_xi = log(phi_i / xi)
-
       Ge_comb = R * T * ( &
-         sum(n * log_phi_i_xi) &
+         sum(n * log(phi_i / xi)) &
          + self%z / 2.0_pr * sum(n * self%qs * (log(theta_i) - log(phi_i))) &
          )
 
@@ -214,7 +240,7 @@ contains
       Ge_aux = Ge_comb + Ge_res
 
       ! =======================================================================
-      ! Derivatives
+      ! Ge Derivatives
       ! -----------------------------------------------------------------------
       ! Compositional derivarives
       ! dn
@@ -272,11 +298,12 @@ contains
             Gen2_comb_term1(i,j) = (&
                dphi_i_dn(i,j) / phi_i(i) - dxi_dnj(i,j) / xi(i) &
                + dphi_i_dn(j,i) / phi_i(j) - dxi_dnj(j,i) / xi(j) &
-               + sum(n * &
-               (d2phi_i_dn(:,i,j) / phi_i - dphi_i_dn(:,i) * dphi_i_dn(:,j) / phi_i**2 &
+               + sum(&
+               n * &
+               (d2phik_dnidnj(:,i,j) / phi_i - dphi_i_dn(:,i) * dphi_i_dn(:,j) / phi_i**2 &
                - d2xk_dnidnj(:,i,j) / xi - dxi_dnj(:,i) * dxi_dnj(:,j) / xi**2) &
                ) &
-            )
+               )
          end do
 
       end if
