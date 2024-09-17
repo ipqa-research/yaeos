@@ -24,6 +24,7 @@ program tester
     ! Implemented GeModels testings
     ! -------------------------------------------------------------------------
     use test_unifac, only: suite_unifac => collect_suite
+    use test_psrk, only: suite_psrk => collect_suite
     use test_unifac_parameters, only: suite_unifac_parameters => collect_suite
     use test_tape_nrtl, only: suite_nrtl => collect_suite
 
@@ -64,6 +65,7 @@ program tester
         ! Ge particular tests
         ! ---------------------------------------------------------------------
         new_testsuite("UNIFAC", suite_unifac), &
+        new_testsuite("PSRK", suite_psrk), &
         new_testsuite("UNIFACParameters", suite_unifac_parameters), &
         new_testsuite("NRTL", suite_nrtl), &
         ! =====================================================================
