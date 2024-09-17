@@ -80,7 +80,10 @@ contains
       real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
       real(pr) :: Gen_comb(size(n)), Gen_res(size(n))
       real(pr) :: Gen_aux(size(n))
+      real(pr) :: Gen2_aux(size(n), size(n))
       real(pr) :: Gen2_comb_term1(size(n), size(n))
+      real(pr) :: Gen2_comb_term2(size(n), size(n))
+      real(pr) :: Gen2_res(size(n), size(n))
 
       ! Temperature derivatives
       real(pr) :: GeT_aux, GeT2_aux, diff_aux(size(n))
@@ -292,8 +295,8 @@ contains
             end if
          end do
 
-         ! Combinatorial term
          do concurrent(i=1:nc, j=1:nc)
+            ! Combinatorial term
             ! first term
             Gen2_comb_term1(i,j) = (&
                dphi_i_dn(i,j) / phi_i(i) - dxi_dnj(i,j) / xi(i) &
@@ -304,6 +307,34 @@ contains
                - d2xk_dnidnj(:,i,j) / xi - dxi_dnj(:,i) * dxi_dnj(:,j) / xi**2) &
                ) &
                )
+
+            ! second term
+            Gen2_comb_term2(i,j) = (&
+               self%z / 2.0_pr * ( &
+               self%qs(i) * (dtheta_i_dn(i,j) / theta_i(i) - dphi_i_dn(i,j) / phi_i(i)) &
+               + self%qs(j) * (dtheta_i_dn(j,i) / theta_i(j) - dphi_i_dn(j,i) / phi_i(j)) &
+               + sum(&
+               self%qs * n * (&
+               d2thetak_dnidnj(:,i,j) / theta_i - dtheta_i_dn(:,i) * dtheta_i_dn(:,j) / theta_i**2 &
+               - d2phik_dnidnj(:,i,j) / phi_i - dphi_i_dn(:,i) * dphi_i_dn(:,j) / phi_i**2) &
+               ) &
+               ) &
+               )
+
+            ! Resudual term
+            Gen2_res(i,j) = -(&
+               self%qs(i) * sum_theta_j_tau_ji(i) / sum_theta_j_tau_ji &
+               + self%qs(j) * sum(dtheta_i_dn(:, i) * tau_ij(i, :) / sum_theta_j_tau_ji) &
+               + sum(self%qs * n * (&
+               sum((d2thetak_dnidnj(:,i,j) * tau_ij(i,:) * sum_theta_j_tau_ji &
+               - sum(dtheta_i_dn(:,i) * tau_ij(i,:)) * sum(dtheta_i_dn(:,j) * tau_ij(i,:))) / &
+               sum_theta_j_tau_ji**2 &
+               ) &
+               ) &
+               ) &
+               )
+
+            Gen2_aux(i,j) = R * T * (Gen2_comb_term1(i,j) + Gen2_comb_term2(i,j) + Gen2_res(i,j))
          end do
 
       end if
@@ -349,7 +380,7 @@ contains
       if (dt2) GeT2 = GeT2_aux
       if (dn) Gen = Gen_aux
       if (dtn) GeTn = 0.0_pr
-      if (dn2) Gen2 = 0.0_pr
+      if (dn2) Gen2 = Gen2_aux
    end subroutine excess_gibbs
 
    subroutine taus(self, T, tau, tauT, tauT2)

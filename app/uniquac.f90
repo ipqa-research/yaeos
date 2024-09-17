@@ -44,8 +44,8 @@ program cositom
    print *, "Gen numeric = ", (Ge1 - Ge) / delta / R / T, (Ge2 - Ge) / delta / R / T
    print *, "=================================================================="
    print *, "Gen2_yaeos = "
-   print *, Gen2(1,:) / R / T
-   print *, Gen2(2,:) / R / T
+   print *, Gen2(1,:) * 100
+   print *, Gen2(2,:) * 100
    print *, "Gen2_thermo = "
    print *, [2230.622723883598_pr, -2230.6227238836045_pr]
    print *, [-2230.622723883596_pr, 2230.6227238836022_pr]
