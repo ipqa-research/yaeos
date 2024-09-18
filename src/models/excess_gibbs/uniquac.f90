@@ -59,7 +59,7 @@ contains
       real(pr) :: dtau_ij(size(n), size(n))
       real(pr) :: d2tau_ij(size(n), size(n))
 
-      integer :: i, j, k
+      integer :: i, j, k, l
 
       logical :: dt, dt2, dn, dtn, dn2
 
@@ -84,6 +84,8 @@ contains
       real(pr) :: Gen2_comb_term1(size(n), size(n))
       real(pr) :: Gen2_comb_term2(size(n), size(n))
       real(pr) :: Gen2_res(size(n), size(n))
+      real(pr) :: sum_dthetak_dni_taulk(size(n), size(n))
+      real(pr) :: sum_d2thetak_dnidnj_taulk(size(n))
 
       ! Temperature derivatives
       real(pr) :: GeT_aux, GeT2_aux, diff_aux(size(n))
@@ -295,6 +297,24 @@ contains
             end if
          end do
 
+
+         sum_d2thetak_dnidnj_taulk = 0.0_pr
+
+         do k=1,nc
+            do concurrent(i=1:nc, j=1:nc)
+               sum_d2thetak_dnidnj_taulk(k) = (&
+                  sum_d2thetak_dnidnj_taulk(k) + sum(d2thetak_dnidnj(:,i,j) * tau_ij(k,:)) &
+                  )
+            end do
+         end do
+
+
+         sum_dthetak_dni_taulk = 0.0_pr
+
+         do concurrent(k=1:nc, i=1:nc)
+            sum_dthetak_dni_taulk(i,k) = sum(dtheta_i_dn(i,:) * tau_ij(k,:))
+         end do
+
          do concurrent(i=1:nc, j=1:nc)
             ! Combinatorial term
             ! first term
@@ -321,15 +341,14 @@ contains
                ) &
                )
 
-            ! Resudual term
+            ! Residual term
             Gen2_res(i,j) = -(&
-               self%qs(i) * sum_theta_j_tau_ji(i) / sum_theta_j_tau_ji &
-               + self%qs(j) * sum(dtheta_i_dn(:, i) * tau_ij(i, :) / sum_theta_j_tau_ji) &
-               + sum(self%qs * n * (&
-               sum((d2thetak_dnidnj(:,i,j) * tau_ij(i,:) * sum_theta_j_tau_ji &
-               - sum(dtheta_i_dn(:,i) * tau_ij(i,:)) * sum(dtheta_i_dn(:,j) * tau_ij(i,:))) / &
-               sum_theta_j_tau_ji**2 &
-               ) &
+               self%qs(i) * sum(dtheta_i_dn(:,j) * tau_ij(i,:)) / sum_theta_j_tau_ji(i) &
+               + self%qs(j) * sum(dtheta_i_dn(:,i) * tau_ij(j,:)) / sum_theta_j_tau_ji(j) &
+               + sum(&
+               self%qs * n * (&
+               sum_d2thetak_dnidnj_taulk / sum_theta_j_tau_ji &
+               - sum_dthetak_dni_taulk(i, :) * sum_dthetak_dni_taulk(j, :) / sum_theta_j_tau_ji**2 &
                ) &
                ) &
                )
