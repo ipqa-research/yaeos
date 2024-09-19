@@ -202,7 +202,8 @@ contains
 
       real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
       real(pr) :: Ge_i, Gen_i(nc), GeT_i, GeT2_i, GeTn_i(nc), Gen2_i(nc, nc)
-      real(pr) :: ln_gammas(nc)
+      real(pr) :: ln_gammas(nc), psis(ng, ng)
+      integer :: i
 
       real(pr) :: n(nc), T, n_t
 
@@ -226,7 +227,15 @@ contains
       model = setup_psrk(molecules)
 
       ! Call all Ge and derivatives
+      print *, "AAAAAAAAAA"
       call model%excess_gibbs(n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      call model%psi_function%psi(model%groups_stew, T, psi=psis)
+
+      do i=1,ng
+         print *, psis(i, :)
+      end do
+      call exit
+      print *, "AAAAAAAAAA"
 
       ! Call Ge and derivatives individually
       call model%excess_gibbs(n, T, Ge_i)
@@ -243,9 +252,12 @@ contains
       ! Test against Caleb Bell's implementation
       ! ------------------------------------------------------------------------
       ! Ge
+
+      print *, Ge/n_t
       call check(error, abs(Ge / n_t - (-3.223992676822129_pr)) <= 1e-10)
 
       ! Gen
+      print *, Gen
       call check(error, allclose(Gen, [10.53032277_pr,  -2.37758326_pr, -36.65748951_pr], 1e-8_pr))
 
       ! ln_gammas

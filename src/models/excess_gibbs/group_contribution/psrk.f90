@@ -27,7 +27,6 @@ contains
       psi_function%Aij = params%maingroups_aij
       psi_function%Bij = params%maingroups_bij
       psi_function%Cij = params%maingroups_cij
-      
       deallocate(setup_psrk%psi_function)
       setup_psrk%psi_function = psi_function
    end function
