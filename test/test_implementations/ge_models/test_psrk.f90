@@ -190,7 +190,7 @@ contains
    subroutine test_against_caleb_thermo(error)
       ! https://github.com/CalebBell/thermo
       use yaeos, only: pr, R
-      use yaeos, only: Groups, setup_psrk, UNIFAC
+      use yaeos, only: Groups, setup_psrk, UNIFAC, setup_unifac
 
       type(error_type), allocatable, intent(out) :: error
 
@@ -234,8 +234,9 @@ contains
       do i=1,ng
          print *, psis(i, :)
       end do
-      call exit
+
       print *, "AAAAAAAAAA"
+      call exit
 
       ! Call Ge and derivatives individually
       call model%excess_gibbs(n, T, Ge_i)

@@ -1060,6 +1060,7 @@ contains
             Aij(i, j) = params%get_subgroups_aij(&
                soup%groups_ids(i), soup%groups_ids(j) &
                )
+            print *, "SETUP AIJ", soup%groups_ids(i), soup%groups_ids(j), Aij(i, j)
          end do
       end do
       ! ========================================================================

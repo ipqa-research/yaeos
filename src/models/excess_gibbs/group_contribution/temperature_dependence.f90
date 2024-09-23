@@ -194,7 +194,6 @@ contains
       do concurrent(i=1:ngroups, j=1:ngroups)
          Aij = self%Aij(i, j)
          Eij = exp(-Aij / T)
-
          if (present(psi)) &
             psi(i, j) = Eij
          if (present(dpsi_dt)) &
@@ -233,8 +232,7 @@ contains
          a = self%Aij(i, j)
          b = self%Bij(i, j)
          c = self%Cij(i, j)
-
-         u = -(a/T + b + c*T)
+         u = -(A + B*T + C*T**2)/T
          dudt = a / T**2 - c
          dudt2 = -2._pr * a / T**3
 
@@ -249,6 +247,8 @@ contains
          if (present(dpsi_dt2)) then
             dpsi_dt2(i, j) = (dudt2 + dudt**2)*exp(u)
          end if
+
+         print *, i, j, a, b, c, psi(i, j)
       end do
    end subroutine Quadratic_temperature_dependence
 end module yaeos__models_ge_gc_td

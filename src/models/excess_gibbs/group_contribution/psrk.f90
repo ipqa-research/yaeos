@@ -10,6 +10,7 @@ module yaeos__models_ge_group_contribution_psrk
 contains
 
    type(UNIFAC) function setup_psrk(molecules, parameters)
+      use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
       type(Groups), intent(in) :: molecules(:)
       type(GeGCModelParameters), optional, intent(in) :: parameters
       
@@ -21,7 +22,7 @@ contains
       else
          params = PSRKParameters()
       end if
-         
+
       setup_psrk = setup_unifac(molecules, params)
       
       psi_function%Aij = params%maingroups_aij
