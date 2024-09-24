@@ -46,8 +46,8 @@ $$
 \(\qquad G^E\):
 
 $$
-\frac{\partial G^E}{\partial T} = \frac{G^E}{T} - RT \sum_k \frac{q_k
-n_k \sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T}}{\sum_l \theta_l
+\frac{\partial G^E}{\partial T} = \frac{G^E}{T} - RT \sum_k q_k n_k \frac{
+\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T}}{\sum_l \theta_l
 \tau_{lk}}
 $$
 
@@ -56,15 +56,20 @@ $$
 \left(\frac{(\sum_l \theta_l \frac{\partial^2 \tau_{lk}}{\partial T^2})}{\sum_l
 \theta_l \tau_{lk}}
 - \frac{(\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T})^2}{(\sum_l
-- \theta_l \tau_{lk})^2}\right) + 2\left(\sum_k \frac{q_k n_k(\sum_l \theta_l
-- \frac{\partial \tau_{lk}}{\partial T} )}{\sum_l \theta_l \tau_{lk}}\right)
-- \right]
+\theta_l \tau_{lk})^2}\right) + 2\left(\sum_k q_k n_k \frac{(\sum_l \theta_l
+\frac{\partial \tau_{lk}}{\partial T} )}{\sum_l \theta_l \tau_{lk}}\right)
+\right]
 $$
 
 ## Cross temperature-compositional derivative
 
 $$
-\frac{\partial^2 G^E}{\partial n_i \partial T} = TODO
+\frac{\partial^2 G^E}{\partial n_i \partial T} = \frac{1}{T} \frac{\partial
+G^E}{\partial n_i} - R T \left(q_i \frac{\sum_l \theta_l \frac{d \tau_{lk}}{d
+T}}{\sum_l \theta_l \tau_{lk}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
+\theta_l}{d n_i} \frac{d \tau_{lk}}{d T})(\sum_l \theta_l \tau_{lk}) - (\sum_l
+\theta_l \frac{d \tau_{lk}}{d T})(\sum_l \frac{d \theta_l}{d n_i}
+\tau_{lk})}{(\sum_l \theta_l \tau_{lk})^2} \right) \right)
 $$
 
 
@@ -121,19 +126,15 @@ $$
 \(\qquad G^E\):
 
 $$
-\begin{aligned}
-& \frac{\partial \frac{G^E}{RT}}{\partial n_i} = \\
-
-& + \frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} +
-\frac{z}{2} \sum_k {n}_{k} {q}_{k} \frac{\left(\frac{d \theta_{k}}{d
-{n}_{i}}\phi_{k} - \theta_{k} \frac{d \phi_{k}}{d {n}_{i}}\right)}{\theta_{k}
-\phi_{k}} \\
-
-& - {q}_{i} \ln{\left(\sum_l \theta_{l} {\tau}_{l,i} \right)} - \sum_k {n}_{k}
-{q}_{k} \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{l,k}}{\sum_l
-\theta_{l} {\tau}_{l,k}}
-
-\end{aligned}
+\frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln \left(\frac{\phi_i}{x_i}
+\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} + \frac{1}{n_T}
+- \frac{1}{n_k} \right) +
+\frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} + \frac{z}{2}
+\sum_k {n}_{k} {q}_{k} \frac{\left(\frac{d \theta_{k}}{d {n}_{i}}\phi_{k} -
+\theta_{k} \frac{d \phi_{k}}{d {n}_{i}}\right)}{\theta_{k} \phi_{k}} - {q}_{i}
+\ln{\left(\sum_l \theta_{l} {\tau}_{l,i} \right)} - \sum_k {n}_{k} {q}_{k}
+\frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{l,k}}{\sum_l \theta_{l}
+{\tau}_{l,k}}
 $$
 
 \(\frac{\partial^2 \frac{G^E}{RT}}{\partial n_i \partial n_j} \) is obtained by

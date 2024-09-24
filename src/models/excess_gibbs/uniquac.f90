@@ -4,7 +4,7 @@ module yaeos__models_ge_uniquac
    implicit none
 
    type, extends(GeModel) :: UNIQUAC
-      real(pr) :: z = 10.0_pr
+      real(pr) :: z = 10.0
       !! Model coordination number
       real(pr), allocatable :: qs(:)
       !! Molecule's relative areas \(Q_i\)
@@ -46,18 +46,19 @@ contains
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
       !! \(\frac{d^2G^E}{dn^2}\)
 
-      real(pr) :: theta_i(size(n))
-      real(pr) :: dtheta_i_dn(size(n), size(n))
+      real(pr) :: thetak(size(n))
+      real(pr) :: dthetak_dni(size(n), size(n))
       real(pr) :: d2thetak_dnidnj(size(n), size(n), size(n))
 
-      real(pr) :: phi_i(size(n))
-      real(pr) :: dphi_i_dn(size(n), size(n))
+      real(pr) :: phik(size(n))
+      real(pr) :: dphik_dn(size(n), size(n))
       real(pr) :: d2phik_dnidnj(size(n), size(n), size(n))
 
+      real(pr) :: tau(size(n), size(n))
+      real(pr) :: dtau(size(n), size(n))
+      real(pr) :: d2tau(size(n), size(n))
+
       real(pr) :: Ge_comb, Ge_res
-      real(pr) :: tau_ij(size(n), size(n))
-      real(pr) :: dtau_ij(size(n), size(n))
-      real(pr) :: d2tau_ij(size(n), size(n))
 
       integer :: i, j, k, l
 
@@ -66,12 +67,12 @@ contains
       ! Auxiliars
       integer :: nc
       real(pr) :: n_tot
-      real(pr) :: xi(size(n))
+      real(pr) :: xk(size(n))
       real(pr) :: r_i, q_i, r_j, q_j, r_k, q_k
-      real(pr) :: sum_niqi, sum_niri
+      real(pr) :: sum_nq, sum_nr
       real(pr) :: Ge_aux
 
-      real(pr) :: sum_theta_j_tau_ji(size(n))
+      real(pr) :: sum_thetal_tau_lk(size(n))
       real(pr) :: sum_theta_j_dtau_ji(size(n))
       real(pr) :: sum_theta_j_d2tau_ji(size(n))
 
@@ -106,33 +107,33 @@ contains
 
       n_tot = sum(n)
 
-      xi = n / n_tot
+      xk = n / n_tot
 
-      sum_niqi = sum(n * self%qs)
-      sum_niri = sum(n * self%rs)
+      sum_nq = sum(n * self%qs)
+      sum_nr = sum(n * self%rs)
 
       ! =======================================================================
       ! tau call (temperature dependence term)
       ! -----------------------------------------------------------------------
-      if (dt .and. .not. dt2) call self%taus(T, tau_ij, dtau_ij)
-      if (.not. dt .and. dt2) call self%taus(T, tau_ij, tauT2=d2tau_ij)
-      if (dt .and. dt2) call self%taus(T, tau_ij, dtau_ij, d2tau_ij)
-      if (.not. dt .and. .not. dt2) call self%taus(T, tau_ij)
+      if (dt .and. .not. dt2) call self%taus(T, tau, dtau)
+      if (.not. dt .and. dt2) call self%taus(T, tau, tauT2=d2tau)
+      if (dt .and. dt2) call self%taus(T, tau, dtau, d2tau)
+      if (.not. dt .and. .not. dt2) call self%taus(T, tau)
 
 
       ! =======================================================================
-      ! theta_i
+      ! theta_k
       ! -----------------------------------------------------------------------
-      theta_i = n * self%qs / sum_niqi
+      thetak = n * self%qs / sum_nq
 
       if (dn .or. dtn) then
-         dtheta_i_dn = 0
-         do concurrent(i=1:nc, j=1:nc)
-            if (i == j) then
-               dtheta_i_dn(i,i) = &
-                  (self%qs(i) * sum_niqi - n(i) * self%qs(i)**2) / sum_niqi**2
+         dthetak_dni = 0
+         do concurrent(k=1:nc, i=1:nc)
+            if (i == k) then
+               dthetak_dni(i,i) = &
+                  (self%qs(i) * sum_nq - n(i) * self%qs(i)**2) / sum_nq**2
             else
-               dtheta_i_dn(i,j) = -n(i) * self%qs(i) * self%qs(j) / sum_niqi**2
+               dthetak_dni(k,i) = -n(k) * self%qs(i) * self%qs(k) / sum_nq**2
             end if
          end do
       end if
@@ -144,21 +145,21 @@ contains
                q_i = self%qs(i)
 
                d2thetak_dnidnj(k,i,j) = (&
-                  -2.0_pr * (q_i * sum_niqi - q_i**2 * n(i)) * q_i / sum_niqi**3 &
+                  2.0_pr * (q_i**3 * n(i) - q_i**2 * sum_nq) / sum_nq**3 &
                   )
             else if (i==k) then
                q_i = self%qs(i)
                q_j = self%qs(j)
 
                d2thetak_dnidnj(k,i,j) = (&
-                  (-q_j*q_i*sum_niqi + 2.0_pr * q_i**2 * n(i) * q_j) / sum_niqi**3 &
+                  (2.0_pr * n(i) * q_i**2 * q_j - q_i*q_j*sum_nq) / sum_nq**3 &
                   )
             else if (j==k) then
                q_i = self%qs(i)
                q_j = self%qs(j)
 
                d2thetak_dnidnj(k,i,j) = (&
-                  (-q_j*q_i*sum_niqi + 2.0_pr * q_j**2 * n(j) * q_i) / sum_niqi**3 &
+                  (2.0_pr * n(j) * q_j**2 * q_i - q_i*q_j*sum_nq) / sum_nq**3 &
                   )
             else
                q_i = self%qs(i)
@@ -166,25 +167,25 @@ contains
                q_k = self%qs(k)
 
                d2thetak_dnidnj(k,i,j) = (&
-                  2.0_pr * q_k * n(k) * q_i * q_j / sum_niqi**3 &
+                  2.0_pr * n(k) * q_k * q_i * q_j / sum_nq**3 &
                   )
             end if
          end do
       end if
 
       ! =======================================================================
-      ! phi_i
+      ! phi_k
       ! -----------------------------------------------------------------------
-      phi_i = n * self%rs / sum_niri
+      phik = n * self%rs / sum_nr
 
       if (dn .or. dtn) then
-         dphi_i_dn = 0
-         do concurrent(i=1:nc, j=1:nc)
-            if (i == j) then
-               dphi_i_dn(i,i) = &
-                  (self%rs(i) * sum_niri - n(i) * self%rs(i)**2) / sum_niri**2
+         dphik_dn = 0
+         do concurrent(k=1:nc, i=1:nc)
+            if (i == k) then
+               dphik_dn(i,i) = &
+                  (-n(i) * self%rs(i)**2 + self%rs(i) * sum_nr) / sum_nr**2
             else
-               dphi_i_dn(i,j) = -n(i) * self%rs(i) * self%rs(j) / sum_niri**2
+               dphik_dn(k,i) = -n(i) * self%rs(i) * self%rs(k) / sum_nr**2
             end if
          end do
       end if
@@ -196,21 +197,21 @@ contains
                r_i = self%rs(i)
 
                d2phik_dnidnj(k,i,j) = (&
-                  -2.0_pr * (r_i * sum_niri - r_i**2 * n(i)) * r_i / sum_niri**3 &
+                  2.0_pr * (r_i**3 * n(i) - r_i**2 * sum_nr) / sum_nr**3 &
                   )
             else if (i==k) then
                r_i = self%rs(i)
                r_j = self%rs(j)
 
                d2phik_dnidnj(k,i,j) = (&
-                  (-r_j*r_i*sum_niri + 2.0_pr * r_i**2 * n(i) * r_j) / sum_niri**3 &
+                  (2.0_pr * n(i) * r_i**2 * r_j - r_j*r_i*sum_nr) / sum_nr**3 &
                   )
             else if (j==k) then
                r_i = self%rs(i)
                r_j = self%rs(j)
 
                d2phik_dnidnj(k,i,j) = (&
-                  (-r_j*r_i*sum_niri + 2.0_pr * r_j**2 * n(j) * r_i) / sum_niri**3 &
+                  (2.0_pr * n(j) * r_j**2 * r_i - r_j*r_i*sum_nr) / sum_nr**3 &
                   )
             else
                r_i = self%rs(i)
@@ -218,7 +219,7 @@ contains
                r_k = self%rs(k)
 
                d2phik_dnidnj(k,i,j) = (&
-                  2 * r_k * n(k) * r_i * r_j / sum_niri**3 &
+                  2.0_pr * n(k) * r_k * r_i * r_j / sum_nr**3 &
                   )
             end if
          end do
@@ -229,18 +230,18 @@ contains
       ! -----------------------------------------------------------------------
       ! Combinatorial term
       Ge_comb = R * T * ( &
-         sum(n * log(phi_i / xi)) &
-         + self%z / 2.0_pr * sum(n * self%qs * (log(theta_i) - log(phi_i))) &
+         sum(n * log(phik / xk)) &
+         + self%z / 2.0_pr * sum(n * self%qs * (log(thetak) - log(phik))) &
          )
 
       ! Residual term
-      sum_theta_j_tau_ji = 0.0_pr
+      sum_thetal_tau_lk = 0.0_pr
 
-      do i=1,nc
-         sum_theta_j_tau_ji(i) = sum(theta_i * tau_ij(i,:))
+      do k=1,nc
+         sum_thetal_tau_lk(k) = sum(thetak * tau(:,k))
       end do
 
-      Ge_res = - R * T * sum(n * self%qs * log(sum_theta_j_tau_ji))
+      Ge_res = - R * T * sum(n * self%qs * log(sum_thetal_tau_lk))
 
       Ge_aux = Ge_comb + Ge_res
 
@@ -272,8 +273,8 @@ contains
          ! Residual term
          do i=1,nc
             Gen_res(i) = -(&
-               self%qs(i) * log(sum_theta_j_tau_ji(i)) + &
-               sum(self%qs * n * sum(dtheta_i_dn(i,:) * tau_ij(i,:)) / sum_theta_j_tau_ji(i)) &
+               self%qs(i) * log(sum_thetal_tau_lk(i)) + &
+               sum(self%qs * n * sum(dtheta_i_dn(i,:) * tau_ij(i,:)) / sum_thetal_tau_lk(i)) &
                )
          end do
 
@@ -343,12 +344,12 @@ contains
 
             ! Residual term
             Gen2_res(i,j) = -(&
-               self%qs(i) * sum(dtheta_i_dn(:,j) * tau_ij(i,:)) / sum_theta_j_tau_ji(i) &
-               + self%qs(j) * sum(dtheta_i_dn(:,i) * tau_ij(j,:)) / sum_theta_j_tau_ji(j) &
+               self%qs(i) * sum(dtheta_i_dn(:,j) * tau_ij(i,:)) / sum_thetal_tau_lk(i) &
+               + self%qs(j) * sum(dtheta_i_dn(:,i) * tau_ij(j,:)) / sum_thetal_tau_lk(j) &
                + sum(&
                self%qs * n * (&
-               sum_d2thetak_dnidnj_taulk / sum_theta_j_tau_ji &
-               - sum_dthetak_dni_taulk(i, :) * sum_dthetak_dni_taulk(j, :) / sum_theta_j_tau_ji**2 &
+               sum_d2thetak_dnidnj_taulk / sum_thetal_tau_lk &
+               - sum_dthetak_dni_taulk(i, :) * sum_dthetak_dni_taulk(j, :) / sum_thetal_tau_lk**2 &
                ) &
                ) &
                )
@@ -369,7 +370,7 @@ contains
          GeT_aux = ( &
             Ge_aux / T &
             -R * T * sum( &
-            self%qs * n / n_tot * sum_theta_j_dtau_ji / sum_theta_j_tau_ji &
+            self%qs * n / n_tot * sum_theta_j_dtau_ji / sum_thetal_tau_lk &
             ) &
             )
       end if
@@ -382,13 +383,13 @@ contains
          end do
 
          diff_aux = (&
-            sum_theta_j_d2tau_ji / sum_theta_j_tau_ji &
-            - (sum_theta_j_dtau_ji / sum_theta_j_tau_ji)**2 &
+            sum_theta_j_d2tau_ji / sum_thetal_tau_lk &
+            - (sum_theta_j_dtau_ji / sum_thetal_tau_lk)**2 &
             )
 
          GeT2_aux = -R * ( &
             T * sum(self%qs * n / n_tot * diff_aux) &
-            + 2.0_pr * sum(self%qs * n / n_tot * sum_theta_j_dtau_ji / sum_theta_j_tau_ji) &
+            + 2.0_pr * sum(self%qs * n / n_tot * sum_theta_j_dtau_ji / sum_thetal_tau_lk) &
             )
       end if
       ! =======================================================================
