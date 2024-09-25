@@ -232,6 +232,7 @@ contains
          a = self%Aij(i, j)
          b = self%Bij(i, j)
          c = self%Cij(i, j)
+
          u = -(A + B*T + C*T**2)/T
          dudt = a / T**2 - c
          dudt2 = -2._pr * a / T**3
@@ -248,7 +249,6 @@ contains
             dpsi_dt2(i, j) = (dudt2 + dudt**2)*exp(u)
          end if
 
-         print *, i, j, a, b, c, psi(i, j)
       end do
    end subroutine Quadratic_temperature_dependence
 end module yaeos__models_ge_gc_td

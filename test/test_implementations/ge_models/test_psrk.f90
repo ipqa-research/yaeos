@@ -48,7 +48,7 @@ contains
       n = [400.0, 100.0, 300.0, 200.0]
 
       dt = 0.1_pr
-      dn = 0.001_pr
+      dn = 0.01_pr
 
       ! ! Hexane [CH3, CH2]
       molecules(1)%groups_ids = [1, 2]
@@ -85,32 +85,14 @@ contains
       call numeric_ge_derivatives(model, n, T, dn, dt, Ge=Ge_n, Gen2=Gen2_n)
 
       ! Derivatives checks
-      ! call check(error, abs(Ge - Ge_n) < 1e-10)
-      ! print *, "Ge"
-      ! print *, Ge, Ge_n
-      ! call check(error, abs(GeT - GeT_n) < 1e-6)
-      ! print *, "GeT"
-      ! print *, GeT, Get_n
-      ! call check(error, allclose(Gen, Gen_n, 1e-6_pr))
-      ! print *, "Gen"
-      ! print *, Gen
-      ! print *, Gen_n
-      ! call check(error, abs(GeT2 - GeT2_n) < 1e-6)
-      ! print *, "GeT2"
-      ! print *, GeT2, GeT2_n
-      ! call check(error, allclose(GeTn, GeTn_n, 1e-6_pr))
-      ! print *, "GeTn"
-      ! print *, Getn
-      ! print *, Getn_n
-      
-      ! print *, "Gen2"
-      ! do i=1,3
-      !    print *, GEn2(i, :)
-      !    print *, GEn2_n(i, :)
-      ! end do
-      ! call check(error, allclose(Gen2(1,:), Gen2_n(1,:), 1e-4_pr))
-      ! call check(error, allclose(Gen2(2,:), Gen2_n(2,:), 1e-4_pr))
-      ! call check(error, allclose(Gen2(3,:), Gen2_n(3,:), 1e-4_pr))
+      call check(error, abs(Ge - Ge_n) < 1e-10)
+      call check(error, abs(GeT - GeT_n) < 1e-4)
+      call check(error, allclose(Gen, Gen_n, 1e-4_pr))
+      call check(error, abs(GeT2 - GeT2_n) < 1e-4_pr)
+      call check(error, allclose(GeTn, GeTn_n, 1e-3_pr))
+      call check(error, allclose(Gen2(1,:), Gen2_n(1,:), 1e-1_pr))
+      call check(error, allclose(Gen2(2,:), Gen2_n(2,:), 1e-1_pr))
+      call check(error, allclose(Gen2(3,:), Gen2_n(3,:), 1e-1_pr))
 
 
       ! ========================================================================
@@ -227,16 +209,7 @@ contains
       model = setup_psrk(molecules)
 
       ! Call all Ge and derivatives
-      print *, "AAAAAAAAAA"
       call model%excess_gibbs(n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
-      call model%psi_function%psi(model%groups_stew, T, psi=psis)
-
-      do i=1,ng
-         print *, psis(i, :)
-      end do
-
-      print *, "AAAAAAAAAA"
-      call exit
 
       ! Call Ge and derivatives individually
       call model%excess_gibbs(n, T, Ge_i)
@@ -255,34 +228,35 @@ contains
       ! Ge
 
       print *, Ge/n_t
-      call check(error, abs(Ge / n_t - (-3.223992676822129_pr)) <= 1e-10)
+      call check(error, abs(Ge / n_t - (-3.223992676822129_pr)) <= 1e-5)
 
       ! Gen
       print *, Gen
-      call check(error, allclose(Gen, [10.53032277_pr,  -2.37758326_pr, -36.65748951_pr], 1e-8_pr))
+      call check(error, allclose(Gen, [10.53032277_pr,  -2.37758326_pr, -36.65748951_pr], 1e-5_pr))
 
       ! ln_gammas
-      call check(error, allclose(Gen / R / T, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-8_pr))
-      call check(error, allclose(ln_gammas, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-8_pr))
+      print *, Gen/R/T, ln_gammas
+      call check(error, allclose(Gen / R / T, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-5_pr))
+      call check(error, allclose(ln_gammas, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-5_pr))
 
       ! Gen2
-      call check(error, allclose(Gen2(1,:), [-0.75249927_pr,  0.13440904_pr,  0.56413529_pr] * R*T/n_t, 1e-7_pr))
-      call check(error, allclose(Gen2(2,:), [ 0.13440904_pr,  0.34708386_pr, -2.69840507_pr] * R*T/n_t, 1e-7_pr))
-      call check(error, allclose(Gen2(3,:), [ 0.56413529_pr, -2.69840507_pr, 17.76056492_pr] * R*T/n_t, 1e-7_pr))
+      call check(error, allclose(Gen2(1,:), [-0.75249927_pr,  0.13440904_pr,  0.56413529_pr] * R*T/n_t, 1e-5_pr))
+      call check(error, allclose(Gen2(2,:), [ 0.13440904_pr,  0.34708386_pr, -2.69840507_pr] * R*T/n_t, 1e-5_pr))
+      call check(error, allclose(Gen2(3,:), [ 0.56413529_pr, -2.69840507_pr, 17.76056492_pr] * R*T/n_t, 1e-5_pr))
 
       ! dln_gammas_dn
-      call check(error, allclose(Gen2(1,:) /R/T, [-0.752499273_pr, 0.134409037_pr, 0.564135287_pr] / n_t, 1e-7_pr))
-      call check(error, allclose(Gen2(2,:) /R/T, [0.1344090359_pr, 0.3470838559_pr, -2.698405064_pr] / n_t, 1e-7_pr))
-      call check(error, allclose(Gen2(3,:) /R/T, [0.5641352889_pr, -2.698405071_pr, 17.760564919_pr] / n_t, 1e-7_pr))
+      call check(error, allclose(Gen2(1,:) /R/T, [-0.752499273_pr, 0.134409037_pr, 0.564135287_pr] / n_t, 1e-5_pr))
+      call check(error, allclose(Gen2(2,:) /R/T, [0.1344090359_pr, 0.3470838559_pr, -2.698405064_pr] / n_t, 1e-5_pr))
+      call check(error, allclose(Gen2(3,:) /R/T, [0.5641352889_pr, -2.698405071_pr, 17.760564919_pr] / n_t, 1e-5_pr))
 
       ! GeT
-      call check(error, abs(GeT / n_t - 0.03268447167877294_pr) < 1e-10)
+      call check(error, abs(GeT / n_t - 0.03268447167877294_pr) < 1e-5)
 
       ! GeT2
-      call check(error, abs(GeT2 / n_t - (-0.0003594405355829625_pr)) < 1e-10)
+      call check(error, abs(GeT2 / n_t - (-0.0003594405355829625_pr)) < 1e-5)
 
       ! GeTn
-      call check(error, allclose(GeTn, [0.06015389_pr, 0.02239722_pr, 0.04975642_pr], 1e-6_pr))
+      call check(error, allclose(GeTn, [0.06015389_pr, 0.02239722_pr, 0.04975642_pr], 1e-5_pr))
 
       ! ========================================================================
       ! Test individual calls

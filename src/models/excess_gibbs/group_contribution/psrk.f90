@@ -25,9 +25,43 @@ contains
 
       setup_psrk = setup_unifac(molecules, params)
       
-      psi_function%Aij = params%maingroups_aij
-      psi_function%Bij = params%maingroups_bij
-      psi_function%Cij = params%maingroups_cij
+      ! ========================================================================
+      ! Build Aij, Bij and Cij matrix (interaction of the soup's subgroups)
+      ! ------------------------------------------------------------------------
+      matrices: block
+      real(pr) :: Aij(size(setup_psrk%groups_stew%groups_ids), size(setup_psrk%groups_stew%groups_ids))
+      real(pr) :: Bij(size(setup_psrk%groups_stew%groups_ids), size(setup_psrk%groups_stew%groups_ids))
+      real(pr) :: Cij(size(setup_psrk%groups_stew%groups_ids), size(setup_psrk%groups_stew%groups_ids))
+      type(Groups) :: soup
+      integer :: i, j
+
+      soup = setup_psrk%groups_stew
+
+      Aij = 0
+      Bij = 0
+      Cij = 0
+
+      do i=1,size(soup%groups_ids)
+         do j=1,size(soup%groups_ids)
+            Aij(i, j) = params%get_subgroups_aij(&
+               soup%groups_ids(i), soup%groups_ids(j) &
+               )
+            Bij(i, j) = params%get_subgroups_bij(&
+               soup%groups_ids(i), soup%groups_ids(j) &
+               )
+            Cij(i, j) = params%get_subgroups_cij(&
+               soup%groups_ids(i), soup%groups_ids(j) &
+               )
+         end do
+      end do
+      
+      psi_function%Aij = Aij
+      psi_function%Bij = Bij
+      psi_function%Cij = Cij
+
+      end block matrices
+
+      
       deallocate(setup_psrk%psi_function)
       setup_psrk%psi_function = psi_function
    end function
