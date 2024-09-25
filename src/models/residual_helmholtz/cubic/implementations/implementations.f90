@@ -223,6 +223,54 @@ contains
         model%mixrule = mixrule
         model%name = "SRK"
     end function
+    
+    type(CubicEoS) function PSRK(tc, pc, w, molecules, c1, c2, c3) result(model)
+        use yaeos__models_ar_genericcubic, only: CubicEoS
+        use yaeos__models_ar_cubic_alphas, only: AlphaMathiasCopeman, AlphaSoave
+        use yaeos__models_cubic_mixing_rules_huron_vidal, only: MHV
+        use yaeos__models_ge_implementations, only: setup_psrk, UNIFAC
+        use yaeos__models_ge_group_contribution_groups, only: Groups
+        real(pr), intent(in) :: tc(:) !! Critical temperature [K]
+        real(pr), intent(in) :: pc(:) !! Critical pressure [bar]
+        real(pr), intent(in) :: w(:) !! Acentric factor
+        type(Groups), intent(in) :: molecules(:)
+        real(pr), optional, intent(in) :: c1(:), c2(:), c3(:)
+
+        type(UNIFAC) :: ge
+        type(Substances) :: composition
+        type(MHV) :: mixrule
+        type(AlphaSoave) :: alpha
+        type(AlphaMathiasCopeman) :: alpha_mc
+        integer :: nc
+        integer :: i
+
+        nc = size(tc)
+        
+        composition%tc = tc
+        composition%pc = pc
+        composition%w = w
+
+        ge = setup_psrk(molecules)
+
+        if (present(c1) .and. present(c2) .and. present(c3)) then
+            alpha_mc = AlphaMathiasCopeman(c1, c2, c3)
+            model%alpha = alpha_mc
+        else
+            alpha%k = 0.48_pr + 1.574_pr * composition%w - 0.175_pr * composition%w**2
+            model%alpha = alpha
+        end if
+
+        model%components = composition
+        model%ac = 0.427480_pr * R**2 * composition%tc**2/composition%pc
+        model%b = 0.086640_pr * R * composition%tc/composition%pc
+        model%del1 = [(1, i=1,nc)]
+        model%del2 = [(0, i=1,nc)]
+        
+        mixrule = MHV(ge=ge, b=model%b, q=-0.64663_pr)
+        model%mixrule = mixrule
+        
+        model%name = "PSRK"
+    end function
 
     type(CubicEoS) function RKPR(tc, pc, w, zc, kij, lij, delta_1, k) result(model)
         !! RKPR Equation of State
