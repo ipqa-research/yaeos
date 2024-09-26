@@ -15,6 +15,7 @@ module yaeos__models_ar_cubic_implementations
    public :: PengRobinson78
    public :: SoaveRedlichKwong
    public :: RKPR
+   public :: PSRK
 
 contains
 
