@@ -49,5 +49,8 @@ program cositom
    print *, "Gen2_thermo = "
    print *, [2230.622723883598_pr, -2230.6227238836045_pr]
    print *, [-2230.622723883596_pr, 2230.6227238836022_pr]
+   print *, "=================================================================="
+   print *, "GeTn_yaeos = ", GeTn * 100
+   print *, "GeTn_thermo = ", [-1349.966994360248_pr, -10.352608307655686_pr]
 
 end program cositom

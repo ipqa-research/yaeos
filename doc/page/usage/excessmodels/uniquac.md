@@ -65,8 +65,8 @@ $$
 
 $$
 \frac{\partial^2 G^E}{\partial n_i \partial T} = \frac{1}{T} \frac{\partial
-G^E}{\partial n_i} - R T \left(q_i \frac{\sum_l \theta_l \frac{d \tau_{lk}}{d
-T}}{\sum_l \theta_l \tau_{lk}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
+G^E}{\partial n_i} - R T \left(q_i \frac{\sum_l \theta_l \frac{d \tau_{li}}{d
+T}}{\sum_l \theta_l \tau_{li}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
 \theta_l}{d n_i} \frac{d \tau_{lk}}{d T})(\sum_l \theta_l \tau_{lk}) - (\sum_l
 \theta_l \frac{d \tau_{lk}}{d T})(\sum_l \frac{d \theta_l}{d n_i}
 \tau_{lk})}{(\sum_l \theta_l \tau_{lk})^2} \right) \right)
@@ -127,8 +127,8 @@ $$
 
 $$
 \frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln \left(\frac{\phi_i}{x_i}
-\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} + \frac{1}{n_T}
-- \frac{1}{n_k} \right) +
+\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} +
+\frac{\frac{dx_k}{dn_i}}{x_k}\right) +
 \frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} + \frac{z}{2}
 \sum_k {n}_{k} {q}_{k} \frac{\left(\frac{d \theta_{k}}{d {n}_{i}}\phi_{k} -
 \theta_{k} \frac{d \phi_{k}}{d {n}_{i}}\right)}{\theta_{k} \phi_{k}} - {q}_{i}

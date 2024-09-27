@@ -46,6 +46,7 @@ contains
       real(pr), optional, intent(out) :: Gen2(size(n), size(n))
       !! \(\frac{d^2G^E}{dn^2}\)
 
+      ! Main terms
       real(pr) :: thetak(size(n))
       real(pr) :: dthetak_dni(size(n), size(n))
       real(pr) :: d2thetak_dnidnj(size(n), size(n), size(n))
@@ -58,9 +59,8 @@ contains
       real(pr) :: dtau(size(n), size(n))
       real(pr) :: d2tau(size(n), size(n))
 
-      real(pr) :: Ge_comb, Ge_res
-
-      integer :: i, j, k, l
+      ! Indexes and lofical for optional arguments
+      integer :: i, j, k
 
       logical :: dt, dt2, dn, dtn, dn2
 
@@ -70,26 +70,24 @@ contains
       real(pr) :: xk(size(n))
       real(pr) :: r_i, q_i, r_j, q_j, r_k, q_k
       real(pr) :: sum_nq, sum_nr
+      real(pr) :: Ge_comb, Ge_res
       real(pr) :: Ge_aux
 
+      ! Auxiliars for temperature derivatives
       real(pr) :: sum_thetal_tau_lk(size(n))
-      real(pr) :: sum_theta_j_dtau_ji(size(n))
-      real(pr) :: sum_theta_j_d2tau_ji(size(n))
+      real(pr) :: sum_theta_l_dtau_lk(size(n))
+      real(pr) :: sum_theta_l_d2tau_lk(size(n))
+
+      real(pr) :: GeT_aux, GeT2_aux, diff_aux(size(n))
 
       ! Auxiliars for compositionals derivatives
-      real(pr) :: dxi_dnj(size(n), size(n))
-      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
       real(pr) :: Gen_comb(size(n)), Gen_res(size(n))
       real(pr) :: Gen_aux(size(n))
-      real(pr) :: Gen2_aux(size(n), size(n))
-      real(pr) :: Gen2_comb_term1(size(n), size(n))
-      real(pr) :: Gen2_comb_term2(size(n), size(n))
-      real(pr) :: Gen2_res(size(n), size(n))
-      real(pr) :: sum_dthetak_dni_taulk(size(n), size(n))
-      real(pr) :: sum_d2thetak_dnidnj_taulk(size(n))
 
-      ! Temperature derivatives
-      real(pr) :: GeT_aux, GeT2_aux, diff_aux(size(n))
+      real(pr) :: dxi_dnj(size(n), size(n))
+      
+      ! cross derivative auxiliars
+      real(pr) :: GeTn_aux(size(n)), aux, aux2, aux3, aux4
 
       ! =======================================================================
       ! Logical variables
@@ -225,9 +223,9 @@ contains
          end do
       end if
 
-      ! =======================================================================
+      ! ========================================================================
       ! Ge
-      ! -----------------------------------------------------------------------
+      ! ------------------------------------------------------------------------
       ! Combinatorial term
       Ge_comb = R * T * ( &
          sum(n * log(phik / xk)) &
@@ -238,19 +236,19 @@ contains
       sum_thetal_tau_lk = 0.0_pr
 
       do k=1,nc
-         sum_thetal_tau_lk(k) = sum(thetak * tau(:,k))
+         sum_thetal_tau_lk(k) = sum(thetak * tau(k,:))
       end do
 
       Ge_res = - R * T * sum(n * self%qs * log(sum_thetal_tau_lk))
 
       Ge_aux = Ge_comb + Ge_res
 
-      ! =======================================================================
+      ! ========================================================================
       ! Ge Derivatives
-      ! -----------------------------------------------------------------------
+      ! ------------------------------------------------------------------------
       ! Compositional derivarives
       ! dn
-      if (dn) then
+      if (dn .or. dtn) then
          dxi_dnj = 0
 
          do concurrent(i=1:nc, j=1:nc)
@@ -261,20 +259,18 @@ contains
             end if
          end do
 
-         ! Combinatorial term
          do i=1,nc
+            ! Combinatorial term
             Gen_comb(i) = ( &
-               log(phi_i(i) / xi(i)) + sum(n * (dphi_i_dn(:, i) / phi_i - dxi_dnj(:, i) / xi)) &
-               + self%z / 2.0_pr * (self%qs(i) * log(theta_i(i) / phi_i(i)) + &
-               sum(self%qs * n * (dtheta_i_dn(:,i) / theta_i - dphi_i_dn(:,i) / phi_i))) &
+               log(phik(i) / xk(i)) + sum(n * (dphik_dn(:, i) / phik - dxi_dnj(:, i) / xk)) &
+               + self%z / 2.0_pr * (self%qs(i) * log(thetak(i) / phik(i)) + &
+               sum(n * self%qs * (dthetak_dni(:,i) / thetak - dphik_dn(:,i) / phik))) &
                )
-         end do
 
-         ! Residual term
-         do i=1,nc
+            ! Residual term
             Gen_res(i) = -(&
                self%qs(i) * log(sum_thetal_tau_lk(i)) + &
-               sum(self%qs * n * sum(dtheta_i_dn(i,:) * tau_ij(i,:)) / sum_thetal_tau_lk(i)) &
+               sum(self%qs * n * sum(dthetak_dni(i,:) * tau(i,:)) / sum_thetal_tau_lk(i)) &
                )
          end do
 
@@ -283,114 +279,56 @@ contains
 
       ! dn2
       if (dn2) then
-         ! God help me
-         d2xk_dnidnj = 0
-
-         do concurrent (k=1:nc, i=1:nc, j=1:nc)
-            if (i==k .and. j==k) then
-               d2xk_dnidnj(k,i,j) = -2 * (n_tot - n(i)) / n_tot**3
-            else if (i==k) then
-               d2xk_dnidnj(k,i,j) = (2 * n(i) - n_tot) / n_tot**3
-            else if (j==k) then
-               d2xk_dnidnj(k,i,j) = (2 * n(j) - n_tot) / n_tot**3
-            else
-               d2xk_dnidnj(k,i,j) = 2 * n(k) / n_tot**3
-            end if
-         end do
-
-
-         sum_d2thetak_dnidnj_taulk = 0.0_pr
-
-         do k=1,nc
-            do concurrent(i=1:nc, j=1:nc)
-               sum_d2thetak_dnidnj_taulk(k) = (&
-                  sum_d2thetak_dnidnj_taulk(k) + sum(d2thetak_dnidnj(:,i,j) * tau_ij(k,:)) &
-                  )
-            end do
-         end do
-
-
-         sum_dthetak_dni_taulk = 0.0_pr
-
-         do concurrent(k=1:nc, i=1:nc)
-            sum_dthetak_dni_taulk(i,k) = sum(dtheta_i_dn(i,:) * tau_ij(k,:))
-         end do
-
-         do concurrent(i=1:nc, j=1:nc)
-            ! Combinatorial term
-            ! first term
-            Gen2_comb_term1(i,j) = (&
-               dphi_i_dn(i,j) / phi_i(i) - dxi_dnj(i,j) / xi(i) &
-               + dphi_i_dn(j,i) / phi_i(j) - dxi_dnj(j,i) / xi(j) &
-               + sum(&
-               n * &
-               (d2phik_dnidnj(:,i,j) / phi_i - dphi_i_dn(:,i) * dphi_i_dn(:,j) / phi_i**2 &
-               - d2xk_dnidnj(:,i,j) / xi - dxi_dnj(:,i) * dxi_dnj(:,j) / xi**2) &
-               ) &
-               )
-
-            ! second term
-            Gen2_comb_term2(i,j) = (&
-               self%z / 2.0_pr * ( &
-               self%qs(i) * (dtheta_i_dn(i,j) / theta_i(i) - dphi_i_dn(i,j) / phi_i(i)) &
-               + self%qs(j) * (dtheta_i_dn(j,i) / theta_i(j) - dphi_i_dn(j,i) / phi_i(j)) &
-               + sum(&
-               self%qs * n * (&
-               d2thetak_dnidnj(:,i,j) / theta_i - dtheta_i_dn(:,i) * dtheta_i_dn(:,j) / theta_i**2 &
-               - d2phik_dnidnj(:,i,j) / phi_i - dphi_i_dn(:,i) * dphi_i_dn(:,j) / phi_i**2) &
-               ) &
-               ) &
-               )
-
-            ! Residual term
-            Gen2_res(i,j) = -(&
-               self%qs(i) * sum(dtheta_i_dn(:,j) * tau_ij(i,:)) / sum_thetal_tau_lk(i) &
-               + self%qs(j) * sum(dtheta_i_dn(:,i) * tau_ij(j,:)) / sum_thetal_tau_lk(j) &
-               + sum(&
-               self%qs * n * (&
-               sum_d2thetak_dnidnj_taulk / sum_thetal_tau_lk &
-               - sum_dthetak_dni_taulk(i, :) * sum_dthetak_dni_taulk(j, :) / sum_thetal_tau_lk**2 &
-               ) &
-               ) &
-               )
-
-            Gen2_aux(i,j) = R * T * (Gen2_comb_term1(i,j) + Gen2_comb_term2(i,j) + Gen2_res(i,j))
-         end do
-
       end if
 
       ! Temperature derivatives
       if (dt .or. dt2) then
-         sum_theta_j_dtau_ji = 0.0_pr
+         sum_theta_l_dtau_lk = 0.0_pr
 
-         do i=1,nc
-            sum_theta_j_dtau_ji(i) = sum(theta_i * dtau_ij(i,:))
+         do k=1,nc
+            sum_theta_l_dtau_lk(k) = sum(thetak * dtau(k,:))
          end do
 
          GeT_aux = ( &
             Ge_aux / T &
-            -R * T * sum( &
-            self%qs * n / n_tot * sum_theta_j_dtau_ji / sum_thetal_tau_lk &
-            ) &
+            -R * T * sum(self%qs * n * sum_theta_l_dtau_lk / sum_thetal_tau_lk)&
             )
       end if
 
       if (dt2) then
-         sum_theta_j_d2tau_ji = 0.0_pr
+         sum_theta_l_d2tau_lk = 0.0_pr
 
-         do i=1,nc
-            sum_theta_j_d2tau_ji(i) = sum(theta_i * d2tau_ij(i,:))
+         do k=1,nc
+            sum_theta_l_d2tau_lk(k) = sum(thetak * d2tau(k,:))
          end do
 
          diff_aux = (&
-            sum_theta_j_d2tau_ji / sum_thetal_tau_lk &
-            - (sum_theta_j_dtau_ji / sum_thetal_tau_lk)**2 &
+            sum_theta_l_d2tau_lk / sum_thetal_tau_lk &
+            - (sum_theta_l_dtau_lk / sum_thetal_tau_lk)**2 &
             )
 
          GeT2_aux = -R * ( &
-            T * sum(self%qs * n / n_tot * diff_aux) &
-            + 2.0_pr * sum(self%qs * n / n_tot * sum_theta_j_dtau_ji / sum_thetal_tau_lk) &
+            T * sum(self%qs * n * diff_aux) &
+            + 2.0_pr*sum(self%qs * n * sum_theta_l_dtau_lk / sum_thetal_tau_lk)&
             )
+      end if
+
+      ! Cross derivative T n
+      if (dtn) then
+         do i=1,nc
+            aux = sum(thetak * dtau(i,:))
+            aux2 = sum(dthetak_dni(:,i) * dtau(i,:))
+            aux3 = sum(dthetak_dni(:,i) * tau(i,:))
+            aux4 = sum_thetal_tau_lk(i)
+
+            GeTn_aux(i) = ( &
+               1.0_pr / T  * Gen_aux(i) &
+               -R * T * (&
+               self%qs(i) * aux / aux4 &
+               + sum(n * self%qs * (aux2 * aux4 - aux * aux3) / aux4**2) &
+               ) &
+               )
+         end do
       end if
       ! =======================================================================
       ! Excess Gibbs energy returns
@@ -399,8 +337,8 @@ contains
       if (dt) GeT = GeT_aux
       if (dt2) GeT2 = GeT2_aux
       if (dn) Gen = Gen_aux
-      if (dtn) GeTn = 0.0_pr
-      if (dn2) Gen2 = Gen2_aux
+      if (dtn) GeTn = GeTn_aux
+      if (dn2) Gen2 = 0.0_pr
    end subroutine excess_gibbs
 
    subroutine taus(self, T, tau, tauT, tauT2)
