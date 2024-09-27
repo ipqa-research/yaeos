@@ -1,10 +1,11 @@
 module yaeos__models_ge_uniquac
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
+   use yaeos__math, only: derivative_dxk_dni, derivative_d2xk_dnidnj
    implicit none
 
    type, extends(GeModel) :: UNIQUAC
-      real(pr) :: z = 10.0
+      real(pr) :: z = 10.0_pr
       !! Model coordination number
       real(pr), allocatable :: qs(:)
       !! Molecule's relative areas \(Q_i\)
@@ -84,10 +85,13 @@ contains
       real(pr) :: Gen_comb(size(n)), Gen_res(size(n))
       real(pr) :: Gen_aux(size(n))
 
-      real(pr) :: dxi_dnj(size(n), size(n))
-      
+      real(pr) :: dxk_dni(size(n), size(n))
+      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
+
       ! cross derivative auxiliars
-      real(pr) :: GeTn_aux(size(n)), aux, aux2, aux3, aux4
+      real(pr) :: sum_dtheta_l_dtau_lk(size(n), size(n))
+      real(pr) :: sum_dtheta_l_tau_lk(size(n), size(n))
+      real(pr) :: GeTn_aux(size(n))
 
       ! =======================================================================
       ! Logical variables
@@ -118,6 +122,16 @@ contains
       if (dt .and. dt2) call self%taus(T, tau, dtau, d2tau)
       if (.not. dt .and. .not. dt2) call self%taus(T, tau)
 
+      ! =======================================================================
+      ! Mole fractions derivatives
+      ! -----------------------------------------------------------------------
+      if (dn .or. dtn .or. dn2) then
+         dxk_dni = derivative_dxk_dni(n)
+      end if
+
+      if (dn2) then
+         d2xk_dnidnj = derivative_d2xk_dnidnj(n)
+      end if
 
       ! =======================================================================
       ! theta_k
@@ -227,9 +241,9 @@ contains
       ! Ge
       ! ------------------------------------------------------------------------
       ! Combinatorial term
-      Ge_comb = R * T * ( &
+      Ge_comb = ( &
          sum(n * log(phik / xk)) &
-         + self%z / 2.0_pr * sum(n * self%qs * (log(thetak) - log(phik))) &
+         + self%z / 2.0_pr * sum(n * self%qs * log(thetak / phik)) &
          )
 
       ! Residual term
@@ -239,9 +253,9 @@ contains
          sum_thetal_tau_lk(k) = sum(thetak * tau(k,:))
       end do
 
-      Ge_res = - R * T * sum(n * self%qs * log(sum_thetal_tau_lk))
+      Ge_res = -sum(n * self%qs * log(sum_thetal_tau_lk))
 
-      Ge_aux = Ge_comb + Ge_res
+      Ge_aux = R * T * (Ge_comb + Ge_res)
 
       ! ========================================================================
       ! Ge Derivatives
@@ -249,20 +263,10 @@ contains
       ! Compositional derivarives
       ! dn
       if (dn .or. dtn) then
-         dxi_dnj = 0
-
-         do concurrent(i=1:nc, j=1:nc)
-            if (i == j) then
-               dxi_dnj(i,i) = (n_tot - n(i)) / n_tot**2
-            else
-               dxi_dnj(i,j) = -n(i) / n_tot**2
-            end if
-         end do
-
          do i=1,nc
             ! Combinatorial term
             Gen_comb(i) = ( &
-               log(phik(i) / xk(i)) + sum(n * (dphik_dn(:, i) / phik - dxi_dnj(:, i) / xk)) &
+               log(phik(i) / xk(i)) + sum(n * (dphik_dn(:, i) / phik - dxk_dni(:, i) / xk)) &
                + self%z / 2.0_pr * (self%qs(i) * log(thetak(i) / phik(i)) + &
                sum(n * self%qs * (dthetak_dni(:,i) / thetak - dphik_dn(:,i) / phik))) &
                )
@@ -282,13 +286,15 @@ contains
       end if
 
       ! Temperature derivatives
-      if (dt .or. dt2) then
+      if (dt .or. dt2 .or. dtn) then
          sum_theta_l_dtau_lk = 0.0_pr
 
          do k=1,nc
             sum_theta_l_dtau_lk(k) = sum(thetak * dtau(k,:))
          end do
+      end if
 
+      if (dt) then
          GeT_aux = ( &
             Ge_aux / T &
             -R * T * sum(self%qs * n * sum_theta_l_dtau_lk / sum_thetal_tau_lk)&
@@ -313,19 +319,22 @@ contains
             )
       end if
 
-      ! Cross derivative T n
+      ! Cross derivative Tn
       if (dtn) then
-         do i=1,nc
-            aux = sum(thetak * dtau(i,:))
-            aux2 = sum(dthetak_dni(:,i) * dtau(i,:))
-            aux3 = sum(dthetak_dni(:,i) * tau(i,:))
-            aux4 = sum_thetal_tau_lk(i)
+         do concurrent (k=1:nc, i=1:nc)
+            sum_dtheta_l_dtau_lk(i,k) = sum(dthetak_dni(:,i) * dtau(k,:))
+            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(k,:))
+         end do
 
+         do i=1,nc
             GeTn_aux(i) = ( &
                1.0_pr / T  * Gen_aux(i) &
                -R * T * (&
-               self%qs(i) * aux / aux4 &
-               + sum(n * self%qs * (aux2 * aux4 - aux * aux3) / aux4**2) &
+               self%qs(i) * sum_theta_l_dtau_lk(i) / sum_thetal_tau_lk(i) &
+               + sum(n * self%qs * (&
+               sum_dtheta_l_dtau_lk(i,:) * sum_thetal_tau_lk &
+               - sum_theta_l_dtau_lk * sum_dtheta_l_tau_lk(i,:)) &
+               / sum_thetal_tau_lk**2) &
                ) &
                )
          end do

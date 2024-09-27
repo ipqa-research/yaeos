@@ -86,6 +86,58 @@ contains
       dn = dx - sum_xdx
    end function dx_to_dn
 
+   function derivative_dxk_dni(n) result(dxk_dni)
+      !! # derivative_dxk_dni
+      !!
+      !! # Description
+      !! Calculate the mole fraction first derivatives respect to mole numbers
+      real(pr), intent(in) :: n(:)
+      real(pr) :: dxk_dni(size(n), size(n))
+
+      real(pr) :: n_tot
+      integer :: nc, k, i
+
+      n_tot = sum(n)
+      nc = size(n)
+
+      dxk_dni = 0.0_pr
+      do concurrent(k=1:nc, i=1:nc)
+         if (k == i) then
+            dxk_dni(i,i) = (n_tot - n(i)) / n_tot**2
+         else
+            dxk_dni(k,i) = -n(i) / n_tot**2
+         end if
+      end do
+   end function derivative_dxk_dni
+
+   function derivative_d2xk_dnidnj(n) result(d2xk_dnidnj)
+      !! # derivative_d2xk_dnidnj
+      !!
+      !! # Description
+      !! Calculate the mole fraction second derivatives respect to mole numbers
+      real(pr), intent(in) :: n(:)
+      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
+
+      real(pr) :: n_tot
+      integer :: nc, k, i, j
+
+      n_tot = sum(n)
+      nc = size(n)
+
+      d2xk_dnidnj = 0.0_pr
+      do concurrent (k=1:nc, i=1:nc, j=1:nc)
+         if (i==k .and. j==k) then
+            d2xk_dnidnj(k,i,j) = -2 * (n_tot - n(i)) / n_tot**3
+         else if (i==k) then
+            d2xk_dnidnj(k,i,j) = (2 * n(i) - n_tot) / n_tot**3
+         else if (j==k) then
+            d2xk_dnidnj(k,i,j) = (2 * n(j) - n_tot) / n_tot**3
+         else
+            d2xk_dnidnj(k,i,j) = 2 * n(k) / n_tot**3
+         end if
+      end do
+   end function derivative_d2xk_dnidnj
+
    subroutine newton_1d(f, x, tol, max_iters)
       procedure(f_1d) :: f
       real(pr), intent(in out) :: x
