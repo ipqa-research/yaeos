@@ -1,4 +1,4 @@
-module test_psrk
+module test_psrk_ge
    use yaeos, only: pr
    use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose, rel_error
@@ -352,4 +352,4 @@ contains
       call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
       call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
    end subroutine test_against_caleb_thermo
-end module test_psrk
+end module test_psrk_ge

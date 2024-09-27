@@ -19,12 +19,13 @@ program tester
     use test_pr78, only: suite_pr78 => collect_suite
     use test_srk, only: suite_srk => collect_suite
     use test_rkpr, only: suite_rkpr => collect_suite
+    use test_psrk, only: suite_psrk => collect_suite
 
     ! =========================================================================
     ! Implemented GeModels testings
     ! -------------------------------------------------------------------------
     use test_unifac, only: suite_unifac => collect_suite
-    use test_psrk, only: suite_psrk => collect_suite
+    use test_psrk_ge, only: suite_psrk_ge => collect_suite
     use test_unifac_parameters, only: suite_unifac_parameters => collect_suite
     use test_tape_nrtl, only: suite_nrtl => collect_suite
 
@@ -60,12 +61,13 @@ program tester
         new_testsuite("PengRobinson76", suite_pr76), &
         new_testsuite("PengRobinson78", suite_pr78), &
         new_testsuite("SoaveRedlichKwong", suite_srk), &
+        new_testsuite("PSRK", suite_psrk), &
         new_testsuite("RKPR", suite_rkpr), &
         ! =====================================================================
         ! Ge particular tests
         ! ---------------------------------------------------------------------
         new_testsuite("UNIFAC", suite_unifac), &
-        new_testsuite("PSRK", suite_psrk), &
+        new_testsuite("PSRK", suite_psrk_ge), &
         new_testsuite("UNIFACParameters", suite_unifac_parameters), &
         new_testsuite("NRTL", suite_nrtl), &
         ! =====================================================================
