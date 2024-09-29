@@ -88,6 +88,12 @@ contains
       real(pr) :: dxk_dni(size(n), size(n))
       real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
 
+      ! Auxiliars for second compositionals derivatives
+      ! terms of the math expression
+      real(pr) :: trm1, trm2, trm3, trm4, trm5, trm6
+      real(pr) :: sum_d2theta_tau_lk(size(n))
+      real(pr) :: Gen2_aux(size(n), size(n))
+
       ! cross derivative auxiliars
       real(pr) :: sum_dtheta_l_dtau_lk(size(n), size(n))
       real(pr) :: sum_dtheta_l_tau_lk(size(n), size(n))
@@ -113,7 +119,6 @@ contains
 
       sum_nq = sum(n * self%qs)
       sum_nr = sum(n * self%rs)
-
       ! =======================================================================
       ! tau call (temperature dependence term)
       ! -----------------------------------------------------------------------
@@ -138,7 +143,7 @@ contains
       ! -----------------------------------------------------------------------
       thetak = n * self%qs / sum_nq
 
-      if (dn .or. dtn) then
+      if (dn .or. dn2 .or. dtn) then
          dthetak_dni = 0
          do concurrent(k=1:nc, i=1:nc)
             if (i == k) then
@@ -190,7 +195,7 @@ contains
       ! -----------------------------------------------------------------------
       phik = n * self%rs / sum_nr
 
-      if (dn .or. dtn) then
+      if (dn .or. dn2 .or. dtn) then
          dphik_dn = 0
          do concurrent(k=1:nc, i=1:nc)
             if (i == k) then
@@ -281,8 +286,51 @@ contains
          Gen_aux = R * T * (Gen_comb + Gen_res)
       end if
 
+      if (dtn .or. dn2) then
+         do concurrent (k=1:nc, i=1:nc)
+            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(k,:))
+         end do
+      end if
+
       ! dn2
       if (dn2) then
+         do concurrent(i=1:nc, j=1:nc)
+            trm1 = dphik_dn(i,j) / phik(i) - dxk_dni(i,j) / xk(i)
+
+            trm2 = (&
+               dphik_dn(j,i) / phik(j) - dxk_dni(j,i) / xk(j) &
+               + sum(n * (d2phik_dnidnj(:,i,j) * phik - dphik_dn(:,i) * dphik_dn(:,j)) / phik**2) &
+               - sum(n * (d2xk_dnidnj(:,i,j) * xk - dxk_dni(:,i) * dxk_dni(:,j)) / xk**2) &
+               )
+
+            trm3 = self%z / 2 * self%qs(i) * (dthetak_dni(i,j) / thetak(i) - dphik_dn(i,j) / phik(i))
+
+            trm4 = (&
+               self%z / 2 * self%qs(j) * (dthetak_dni(j,i) / thetak(j) - dphik_dn(j,i) / phik(j)) &
+               + self%z / 2 * sum(&
+               self%qs * n * (d2thetak_dnidnj(:,i,j) * thetak - dthetak_dni(:,i) * dthetak_dni(:,j)) / thetak**2 &
+               ) &
+               - self%z / 2 * sum(&
+               self%qs * n * (d2phik_dnidnj(:,i,j) * phik - dphik_dn(:,i) * dphik_dn(:,j)) / phik**2 &
+               ) &
+               )
+
+            trm5 = -self%qs(i) * (sum(dthetak_dni(:,j) * tau(i,:)) / sum_thetal_tau_lk(i))
+
+            do k=1,nc
+               sum_d2theta_tau_lk(k) = sum(d2thetak_dnidnj(:,i,j) * tau(k,:))
+            end do
+
+            trm6 = (&
+               -self%qs(j) * (sum(dthetak_dni(:,i) * tau(j,:)) / sum_thetal_tau_lk(j)) &
+               -sum(self%qs * n * (&
+               sum_d2theta_tau_lk * sum_thetal_tau_lk &
+               - sum_dtheta_l_tau_lk(i,:) * sum_dtheta_l_tau_lk(j,:) &
+               ) / sum_thetal_tau_lk**2) &
+               )
+
+            Gen2_aux(i,j) = R * T * (trm1 + trm2 + trm3 + trm4 + trm5 + trm6)
+         end do
       end if
 
       ! Temperature derivatives
@@ -323,9 +371,10 @@ contains
       if (dtn) then
          do concurrent (k=1:nc, i=1:nc)
             sum_dtheta_l_dtau_lk(i,k) = sum(dthetak_dni(:,i) * dtau(k,:))
-            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(k,:))
          end do
+      end if
 
+      if (dtn) then
          do i=1,nc
             GeTn_aux(i) = ( &
                1.0_pr / T  * Gen_aux(i) &
@@ -347,7 +396,7 @@ contains
       if (dt2) GeT2 = GeT2_aux
       if (dn) Gen = Gen_aux
       if (dtn) GeTn = GeTn_aux
-      if (dn2) Gen2 = 0.0_pr
+      if (dn2) Gen2 = Gen2_aux
    end subroutine excess_gibbs
 
    subroutine taus(self, T, tau, tauT, tauT2)

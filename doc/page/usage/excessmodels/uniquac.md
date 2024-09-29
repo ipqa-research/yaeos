@@ -127,21 +127,70 @@ $$
 
 $$
 \frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln \left(\frac{\phi_i}{x_i}
-\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} +
+\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} -
 \frac{\frac{dx_k}{dn_i}}{x_k}\right) +
 \frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} + \frac{z}{2}
-\sum_k {n}_{k} {q}_{k} \frac{\left(\frac{d \theta_{k}}{d {n}_{i}}\phi_{k} -
-\theta_{k} \frac{d \phi_{k}}{d {n}_{i}}\right)}{\theta_{k} \phi_{k}} - {q}_{i}
+\sum_k {n}_{k} {q}_{k} \left(\frac{\frac{d \theta_{k}}{d {n}_{i}}}{\theta_k} -
+\frac{\frac{d \phi_{k}}{d {n}_{i}}}{\phi_k} \right) - {q}_{i}
 \ln{\left(\sum_l \theta_{l} {\tau}_{l,i} \right)} - \sum_k {n}_{k} {q}_{k}
 \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{l,k}}{\sum_l \theta_{l}
 {\tau}_{l,k}}
 $$
 
-\(\frac{\partial^2 \frac{G^E}{RT}}{\partial n_i \partial n_j} \) is obtained by
-automatic differentiation.
+
+Differentiating each term of the first compositional derivative respect to
+$n_j$
+
+\(\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =\)
+
+$$
+\frac{\frac{d \phi_i}{d n_j}}{\phi_i} - \frac{\frac{d x_i}{d n_j}}{x_i}
+$$
+
+$$
++ \frac{\frac{d \phi_j}{dn_i}}{\phi_j} -
+\frac{\frac{dx_j}{dn_i}}{x_j}
+
++ \sum_k n_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
+  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
+
+- \sum_k n_k \left(\frac{\frac{d^2x_k}{dn_i dn_j} x_k -
+  \frac{dx_k}{dn_i} \frac{dx_k}{dn_j}}{x_k^2} \right)
+$$
+
+$$
++ \frac{z}{2} q_i \left( \frac{\frac{d \theta_i}{d n_j}}{\theta_i} - \frac
+{\frac{d \phi_i}{d n_j}}{\phi_i} \right)
+$$
+
+$$
++ \frac{z}{2} q_j \left( \frac{\frac{d \theta_j}{d n_i}}{\theta_j} - \frac
+{\frac{d \phi_j}{d n_i}}{\phi_j} \right)
+
++ \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\theta_k}{dn_i dn_j} \theta_k -
+  \frac{d\theta_k}{dn_i} \frac{d\theta_k}{dn_j}}{\theta_k^2} \right)
+
+- \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
+  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
+$$
+
+$$
+- q_i \left( \frac{\sum_l \frac{d \theta_l}{d n_j} \tau_{li}}{\sum_l \theta_l 
+\tau_{li}} \right)
+$$
+
+$$
+- {q}_{j} \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{l,j}}{\sum_l
+\theta_{l}{\tau}_{l,j}} - \sum_k {n}_{k} {q}_{k} \frac{\left(\sum_l
+\frac{d^2\theta_l}{dn_idn_j} \tau_{lk} \right) \left(\sum_l
+\theta_l \tau_{lk} \right) - \left(\sum_l \frac{d\theta_l}{dn_i}
+\tau_{lk} \right) \left(\sum_l \frac{d\theta_l}{dn_j} \tau_{lk}
+\right)}{(\sum_l \theta_{l} {\tau}_{l,k})^2}
+$$
 
 ## Examples
-
+\(\frac{\partial^2 \frac{G^E}{RT}}{\partial n_i \partial n_j} \) is obtained by
+automatic differentiation.
 
 ## References
 1. Maurer, G., & Prausnitz, J. M. (1978). On the derivation and extension of
