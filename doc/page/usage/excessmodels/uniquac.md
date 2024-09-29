@@ -141,7 +141,7 @@ $$
 Differentiating each term of the first compositional derivative respect to
 $n_j$
 
-\(\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =\)
+$\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =$
 
 $$
 \frac{\frac{d \phi_i}{d n_j}}{\phi_i} - \frac{\frac{d x_i}{d n_j}}{x_i}
