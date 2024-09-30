@@ -103,9 +103,9 @@ contains
       dxk_dni = 0.0_pr
       do concurrent(k=1:nc, i=1:nc)
          if (k == i) then
-            dxk_dni(i,i) = (n_tot - n(i)) / n_tot**2
+            dxk_dni(k,i) = (n_tot - n(i)) / n_tot**2
          else
-            dxk_dni(k,i) = -n(i) / n_tot**2
+            dxk_dni(k,i) = -n(k) / n_tot**2
          end if
       end do
    end function derivative_dxk_dni

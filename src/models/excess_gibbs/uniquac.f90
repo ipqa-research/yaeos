@@ -1,10 +1,51 @@
 module yaeos__models_ge_uniquac
+   !! # UNIQUAC module
+   !! UNIQUAC (**uni**versal **qua**si**c**hemical) Excess Gibbs free energy
+   !! model.
+   !!
+   !! ## References
+   !! 1. Maurer, G., & Prausnitz, J. M. (1978). On the derivation and extension
+   !! of the UNIQUAC equation. Fluid Phase Equilibria, 2(2), 91-99.
+   !! 2. Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.
+   !! Chemical Thermodynamics for Process Simulation. 1st edition. Weinheim:
+   !! Wiley-VCH, 2012.
+   !! 3. Caleb Bell and Contributors (2016-2024). Thermo: Chemical properties
+   !! component of Chemical Engineering Design Library (ChEDL)
+   !! https://github.com/CalebBell/thermo.
+   !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ge, only: GeModel
    use yaeos__math, only: derivative_dxk_dni, derivative_d2xk_dnidnj
    implicit none
 
    type, extends(GeModel) :: UNIQUAC
+      !! # UNIQUAC model
+      !!
+      !! # Description
+      !! UNIQUAC (**uni**versal **qua**si**c**hemical) Excess Gibbs free energy
+      !! model.
+      !!
+      !! \[
+      !! \frac{G^E}{RT} = \sum_k n_k \ln\frac{\phi_k}{x_k}
+      !! + \frac{z}{2}\sum_k q_k n_k \ln\frac{\theta_k}{\phi_k}
+      !! - \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{kl} \right)
+      !! \]
+      !!
+      !! With:
+      !!
+      !! \[ x_k = \frac{n_k}{\sum_l n_l} \]
+      !!
+      !! \[ \phi_k = \frac{r_k n_k}{\sum_l r_l n_l} \]
+      !!
+      !! \[ \theta_k = \frac{q_k n_k}{\sum_l q_l n_l} \]
+      !!
+      !! \[ \tau_{lk} = \exp \left[\frac{-\Delta U_{lk}}{R T} \right] \]
+      !!
+      !! \[
+      !! \frac{-\Delta U_{lk}}{R T} = a_{lk}+\frac{b_{lk}}{T}+c_{lk}\ln T +
+      !! d_{lk}T + e_{lk}{T^2}
+      !! \]
+      !!
       real(pr) :: z = 10.0_pr
       !! Model coordination number
       real(pr), allocatable :: qs(:)
@@ -28,6 +69,9 @@ module yaeos__models_ge_uniquac
 
 contains
    subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !! Calculate the excess Gibbs free energy and its derivatives of the
+      !! UNIQUAC model.
+      !!
       class(UNIQUAC), intent(in) :: self
       !! UNIQUAC model
       real(pr), intent(in) :: n(:)
@@ -63,7 +107,7 @@ contains
       ! Indexes and lofical for optional arguments
       integer :: i, j, k
 
-      logical :: dt, dt2, dn, dtn, dn2
+      logical :: dt, dt2, dn, dtn, dn2, dt_or_dtn
 
       ! Auxiliars
       integer :: nc
@@ -86,11 +130,13 @@ contains
       real(pr) :: Gen_aux(size(n))
 
       real(pr) :: dxk_dni(size(n), size(n))
-      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
+      real(pr) :: dln_nk_dni(size(n), size(n))
 
       ! Auxiliars for second compositionals derivatives
       ! terms of the math expression
       real(pr) :: trm1, trm2, trm3, trm4, trm5, trm6
+
+      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
       real(pr) :: sum_d2theta_tau_lk(size(n))
       real(pr) :: Gen2_aux(size(n), size(n))
 
@@ -108,6 +154,8 @@ contains
       dtn = present(GeTn)
       dn2 = present(Gen2)
 
+      dt_or_dtn = dt .or. dtn
+
       ! =======================================================================
       ! Auxiliars
       ! -----------------------------------------------------------------------
@@ -122,10 +170,10 @@ contains
       ! =======================================================================
       ! tau call (temperature dependence term)
       ! -----------------------------------------------------------------------
-      if (dt .and. .not. dt2) call self%taus(T, tau, dtau)
-      if (.not. dt .and. dt2) call self%taus(T, tau, tauT2=d2tau)
-      if (dt .and. dt2) call self%taus(T, tau, dtau, d2tau)
-      if (.not. dt .and. .not. dt2) call self%taus(T, tau)
+      if (dt_or_dtn .and. .not. dt2) call self%taus(T, tau, dtau)
+      if (.not. dt_or_dtn .and. dt2) call self%taus(T, tau, dtau, d2tau)
+      if (dt_or_dtn .and. dt2) call self%taus(T, tau, dtau, d2tau)
+      if (.not. dt_or_dtn .and. .not. dt2) call self%taus(T, tau)
 
       ! =======================================================================
       ! Mole fractions derivatives
@@ -202,7 +250,7 @@ contains
                dphik_dn(i,i) = &
                   (-n(i) * self%rs(i)**2 + self%rs(i) * sum_nr) / sum_nr**2
             else
-               dphik_dn(k,i) = -n(i) * self%rs(i) * self%rs(k) / sum_nr**2
+               dphik_dn(k,i) = -n(k) * self%rs(i) * self%rs(k) / sum_nr**2
             end if
          end do
       end if
@@ -265,31 +313,31 @@ contains
       ! ========================================================================
       ! Ge Derivatives
       ! ------------------------------------------------------------------------
+      if (dn .or. dtn .or. dn2) then
+         do concurrent (k=1:nc, i=1:nc)
+            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(k,:))
+         end do
+      end if
+
       ! Compositional derivarives
       ! dn
       if (dn .or. dtn) then
          do i=1,nc
             ! Combinatorial term
-            Gen_comb(i) = ( &
-               log(phik(i) / xk(i)) + sum(n * (dphik_dn(:, i) / phik - dxk_dni(:, i) / xk)) &
-               + self%z / 2.0_pr * (self%qs(i) * log(thetak(i) / phik(i)) + &
-               sum(n * self%qs * (dthetak_dni(:,i) / thetak - dphik_dn(:,i) / phik))) &
+            Gen_comb(i) = (&
+               log(phik(i) / xk(i)) + sum(n * (dphik_dn(:,i) / phik - dxk_dni(:,i) / xk)) &
+               + self%z / 2.0_pr * self%qs(i) * log(thetak(i) / phik(i)) &
+               + self%z / 2.0_pr * sum(n * self%qs * (dthetak_dni(:,i) / thetak - dphik_dn(:,i) / phik)) &
                )
 
             ! Residual term
-            Gen_res(i) = -(&
-               self%qs(i) * log(sum_thetal_tau_lk(i)) + &
-               sum(self%qs * n * sum(dthetak_dni(i,:) * tau(i,:)) / sum_thetal_tau_lk(i)) &
+            Gen_res(i) = (&
+               -self%qs(i) * log(sum_thetal_tau_lk(i)) &
+               -sum(n * self%qs * sum_dtheta_l_tau_lk(i,:) / sum_thetal_tau_lk) &
                )
          end do
 
          Gen_aux = R * T * (Gen_comb + Gen_res)
-      end if
-
-      if (dtn .or. dn2) then
-         do concurrent (k=1:nc, i=1:nc)
-            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(k,:))
-         end do
       end if
 
       ! dn2
@@ -344,8 +392,7 @@ contains
 
       if (dt) then
          GeT_aux = ( &
-            Ge_aux / T &
-            -R * T * sum(self%qs * n * sum_theta_l_dtau_lk / sum_thetal_tau_lk)&
+            Ge_aux/T - R*T*sum(n * self%qs * sum_theta_l_dtau_lk / sum_thetal_tau_lk)&
             )
       end if
 
@@ -400,6 +447,8 @@ contains
    end subroutine excess_gibbs
 
    subroutine taus(self, T, tau, tauT, tauT2)
+      !! Calculate the temperature dependence term of the UNIQUAC model.
+      !!
       class(UNIQUAC), intent(in) :: self
       !! UNIQUAC model
       real(pr), intent(in) :: T
@@ -432,7 +481,7 @@ contains
 
       ! dT
       if (dt .or. dt2) then
-         du = -self%bij / T**2 + self%cij / T + self%dij + 2.0_pr * self%eij * T
+         du = -self%bij / T**2 + self%cij / T + self%dij + 2.0_pr * T * self%eij
       end if
 
       ! d2T
@@ -447,18 +496,64 @@ contains
    end subroutine taus
 
    type(UNIQUAC) function setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
+      !! Instantiate a UNIQUAC model.
+      !!
+      !! # Example
+      !!
+      !! ```fortran
+      !! use yaeos, only: pr, setup_uniquac, UNIQUAC
+      !!
+      !! integer, parameter :: nc = 3
+      !!
+      !! real(pr) :: rs(nc), qs(nc)
+      !! real(pr) :: b(nc, nc)
+      !! real(pr) :: n(nc)
+      !!
+      !! real(pr) :: ln_gammas(nc), T
+      !!
+      !! type(UNIQUAC) :: model
+      !!
+      !! rs = [0.92_pr, 2.1055_pr, 3.1878_pr]
+      !! qs = [1.4_pr, 1.972_pr, 2.4_pr]
+      !!
+      !! T = 298.15_pr
+      !!
+      !! ! Calculate bij from DUij. We need -DU/R to get bij
+      !! b = reshape(&
+      !! [0.0_pr, -526.02_pr, -309.64_pr, &
+      !! 318.06_pr, 0.0_pr, 91.532_pr, &
+      !! -1325.1_pr, -302.57_pr, 0.0_pr], [nc, nc])
+      !!
+      !! model = setup_uniquac(qs, rs, bij=b)
+      !!
+      !! n = [0.8_pr, 0.1_pr, 0.2_pr]
+      !!
+      !! call model%ln_activity_coefficient(n, T, ln_gammas)
+      !!
+      !! print *, exp(ln_gammas) ! [8.856, 0.860, 1.425]
+      !!
+      !! ```
+      !!
       real(pr), intent(in) :: qs(:)
-      real(pr), intent(in) :: rs(:)
-      real(pr), optional, intent(in) :: aij(:,:)
-      real(pr), optional, intent(in) :: bij(:,:)
-      real(pr), optional, intent(in) :: cij(:,:)
-      real(pr), optional, intent(in) :: dij(:,:)
-      real(pr), optional, intent(in) :: eij(:,:)
+      !! Molecule's relative volumes \(Q_i\)
+      real(pr), intent(in) :: rs(size(qs))
+      !! Molecule's relative areas \(R_i\)
+      real(pr), optional, intent(in) :: aij(size(qs),size(qs))
+      !! Interaction parameters matrix \(a_{ij}\), zero matrix if no provided.
+      real(pr), optional, intent(in) :: bij(size(qs),size(qs))
+      !! Interaction parameters matrix \(b_{ij}\), zero matrix if no provided.
+      real(pr), optional, intent(in) :: cij(size(qs),size(qs))
+      !! Interaction parameters matrix \(c_{ij}\), zero matrix if no provided.
+      real(pr), optional, intent(in) :: dij(size(qs),size(qs))
+      !! Interaction parameters matrix \(d_{ij}\), zero matrix if no provided.
+      real(pr), optional, intent(in) :: eij(size(qs),size(qs))
+      !! Interaction parameters matrix \(e_{ij}\), zero matrix if no provided.
 
       ! aij
       if (present(aij)) then
          setup_uniquac%aij = aij
       else
+         allocate(setup_uniquac%aij(size(qs),size(qs)))
          setup_uniquac%aij = 0.0_pr
       end if
 
@@ -466,6 +561,7 @@ contains
       if (present(bij)) then
          setup_uniquac%bij = bij
       else
+         allocate(setup_uniquac%bij(size(qs),size(qs)))
          setup_uniquac%bij = 0.0_pr
       end if
 
@@ -473,6 +569,7 @@ contains
       if (present(cij)) then
          setup_uniquac%cij = cij
       else
+         allocate(setup_uniquac%cij(size(qs),size(qs)))
          setup_uniquac%cij = 0.0_pr
       end if
 
@@ -480,6 +577,7 @@ contains
       if (present(dij)) then
          setup_uniquac%dij = dij
       else
+         allocate(setup_uniquac%dij(size(qs),size(qs)))
          setup_uniquac%dij = 0.0_pr
       end if
 
@@ -487,6 +585,7 @@ contains
       if (present(eij)) then
          setup_uniquac%eij = eij
       else
+         allocate(setup_uniquac%eij(size(qs),size(qs)))
          setup_uniquac%eij = 0.0_pr
       end if
 
