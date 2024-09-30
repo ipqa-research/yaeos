@@ -76,12 +76,18 @@ contains
 
       ! The associate statement allows to abreviate the expresions
       associate(c1 => self%c1, c2 => self%c2, c3 => self%c3)
-         a = (1 + c1 * (sqrt_Tr) + c2 * (sqrt_Tr) + c3 * (sqrt_Tr))**2
-         dadt = (c1 + c2 + c3) * (c1*(sqrt(Tr) - 1) &
-            + c2*(sqrt(Tr) - 1) + c3*(sqrt(Tr) - 1) - 1)/sqrt(Tr)
-         dadt2 = (1.0_pr/2.0_pr) * (&
-            c1**2 + 2*c1*c2 + 2*c1*c3 &
-            + c1 + c2**2 + 2*c2*c3 +  c2 + c3**2 + c3)/Tr**(3.0_pr/2.0_pr)
+         where (Tr > 1)
+            a = (1 + c1*(1 - sqrt(Tr)))**2
+            dadT = c1*(c1*(sqrt(Tr) - 1) - 1)/sqrt(Tr)
+            dadT2 = (1.0_pr/2.0_pr)*c1*(c1 + 1)/Tr**(1.5_pr)
+         elsewhere
+            a = (1 + c1 * (sqrt_Tr) + c2 * (sqrt_Tr) + c3 * (sqrt_Tr))**2
+            dadt = (c1 + c2 + c3) * (c1*(sqrt(Tr) - 1) &
+               + c2*(sqrt(Tr) - 1) + c3*(sqrt(Tr) - 1) - 1)/sqrt(Tr)
+            dadt2 = (1.0_pr/2.0_pr) * (&
+               c1**2 + 2*c1*c2 + 2*c1*c3 &
+               + c1 + c2**2 + 2*c2*c3 +  c2 + c3**2 + c3)/Tr**(3.0_pr/2.0_pr)
+         end where
       end associate
    end subroutine alpha_mc
 
