@@ -21,7 +21,7 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
-      real(pr) :: tc(2), pc(2), w(2), C(3, 2)
+      real(pr) :: tc(2), pc(2), w(2), C(2, 3)
       type(Groups) :: molecules(2)
 
       real(pr) :: n(2), t, v
@@ -38,8 +38,8 @@ contains
       tc = [304.21_pr, 553.8_pr]
       pc = [7.383e6_pr, 4.080358e6_pr] / 1e5
       w = [0.223621_pr, 0.213_pr]
-      c(:, 1) = [0.8255_pr, 0.16755_pr, -1.7039_pr]
-      c(:, 2)= [0.84082_pr, -0.39847_pr, 0.94148_pr]
+      c(1, :) = [0.8255_pr, 0.16755_pr, -1.7039_pr]
+      c(2, :)= [0.84082_pr, -0.39847_pr, 0.94148_pr]
 
       molecules(1)%groups_ids = [117]
       molecules(1)%number_of_groups = [2]
@@ -52,7 +52,7 @@ contains
       ! ========================================================================
       ! Model without kij and lij
       ! ------------------------------------------------------------------------
-      model = PSRK(tc, pc, w, molecules, c1=C(1, :), c2=C(2, :), c3=C(3, :))
+      model = PSRK(tc, pc, w, molecules, c1=C(:, 1), c2=C(:, 2), c3=C(:, 3))
 
       call model%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
