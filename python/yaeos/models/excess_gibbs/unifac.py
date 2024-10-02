@@ -37,22 +37,24 @@ class UNIFACVLE(GeModel):
         max_ng = max([len(groups) for groups in molecules])
 
         # The C-API expects two 2D arrays with the groups and their amounts
-        # for each molecule.
+        # for each molecule. Each row in the arrays corresponds to a molecule
+        # and the columns to the groups. The arrays are padded with zeros.
         groups_ids = np.zeros((nc, max_ng), dtype=np.int32, order="F")
         groups_ammounts = np.zeros((nc, max_ng), dtype=np.int32, order="F")
 
-        ngs = []
-        for i, grp in enumerate(molecules):
+        # Construction of the arrays from the input dictionary
+        number_of_groups = []
+        for i, molecule_groups in enumerate(molecules):
             ids = []
-            vs = []
-            for group_id, group_count in grp.items():
+            ammount = []
+            for group_id, group_count in molecule_groups.items():
                 ids.append(int(group_id))
-                vs.append(int(group_count))
+                ammount.append(int(group_count))
 
-            ngs.append(len(ids))
+            number_of_groups.append(len(ids))
             groups_ids[i, : len(ids)] = ids
-            groups_ammounts[i, : len(ids)] = vs
+            groups_ammounts[i, : len(ids)] = ammount
 
         self.id = yaeos_c.unifac_vle(
-            ngs=ngs, g_ids=groups_ids, g_v=groups_ammounts
+            ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
         )

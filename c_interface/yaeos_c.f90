@@ -35,7 +35,7 @@ module yaeos_c
    public :: lnphi_vt, lnphi_pt, pressure, volume
    
    ! Phase equilibria
-   public :: flash
+   public :: flash, flash_grid
    public :: saturation_pressure
    public :: pt2_phase_envelope
 
@@ -434,4 +434,41 @@ contains
       Tcs(:i) = env%cps%T
       Pcs(:i) = env%cps%P
    end subroutine pt2_phase_envelope
+
+   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas)
+      use yaeos, only: EquilibriumState, flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: Ts(:)
+      real(c_double), intent(in) :: Ps(:)
+      real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
+      real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: flash_result
+
+      real(8) :: T, P
+
+      integer :: i, j, nt, np, iter
+
+      model = ar_models(id)%model
+      np = size(Ps)
+      nt = size(Ts)
+
+      !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) shared(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+      do i=1,np
+         do j=1,nt
+            T = Ts(j)
+            P = Ps(i)
+            flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+            betas(i, j) = flash_result%beta
+            
+            Vxs(i, j) = flash_result%Vx
+            Vys(i, j) = flash_result%Vy
+            xs(i, j, :) = flash_result%x
+            ys(i, j, :) = flash_result%y
+         end do
+      end do
+   !$OMP END PARALLEL DO
+   end subroutine
 end module yaeos_c
