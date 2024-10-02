@@ -46,6 +46,41 @@ module yaeos__models_ge_uniquac
       !! d_{lk}T + e_{lk}{T^2}
       !! \]
       !!
+      !! # Example
+      !!
+      !! ```fortran
+      !! use yaeos, only: pr, setup_uniquac, UNIQUAC
+      !!
+      !! integer, parameter :: nc = 3
+      !!
+      !! real(pr) :: rs(nc), qs(nc)
+      !! real(pr) :: b(nc, nc)
+      !! real(pr) :: n(nc)
+      !!
+      !! real(pr) :: ln_gammas(nc), T
+      !!
+      !! type(UNIQUAC) :: model
+      !!
+      !! rs = [0.92_pr, 2.1055_pr, 3.1878_pr]
+      !! qs = [1.4_pr, 1.972_pr, 2.4_pr]
+      !!
+      !! T = 298.15_pr
+      !!
+      !! ! Calculate bij from DUij. We need -DU/R to get bij
+      !! b(1, :) = [0.0_pr, -526.02_pr, -309.64_pr]
+      !! b(2, :) = [318.06_pr, 0.0_pr, 91.532_pr]
+      !! b(3, :) = [-1325.1_pr, -302.57_pr, 0.0_pr]
+      !!
+      !! model = setup_uniquac(qs, rs, bij=b)
+      !!
+      !! n = [0.8_pr, 0.1_pr, 0.2_pr]
+      !!
+      !! call model%ln_activity_coefficient(n, T, ln_gammas)
+      !!
+      !! print *, exp(ln_gammas) ! [8.856, 0.860, 1.425]
+      !!
+      !! ```
+      !!
       real(pr) :: z = 10.0_pr
       !! Model coordination number
       real(pr), allocatable :: qs(:)
@@ -303,7 +338,7 @@ contains
       sum_thetal_tau_lk = 0.0_pr
 
       do k=1,nc
-         sum_thetal_tau_lk(k) = sum(thetak * tau(k,:))
+         sum_thetal_tau_lk(k) = sum(thetak * tau(:,k))
       end do
 
       Ge_res = -sum(n * self%qs * log(sum_thetal_tau_lk))
@@ -315,7 +350,7 @@ contains
       ! ------------------------------------------------------------------------
       if (dn .or. dtn .or. dn2) then
          do concurrent (k=1:nc, i=1:nc)
-            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(k,:))
+            sum_dtheta_l_tau_lk(i,k) = sum(dthetak_dni(:,i) * tau(:,k))
          end do
       end if
 
@@ -363,14 +398,14 @@ contains
                ) &
                )
 
-            trm5 = -self%qs(i) * (sum(dthetak_dni(:,j) * tau(i,:)) / sum_thetal_tau_lk(i))
+            trm5 = -self%qs(i) * (sum(dthetak_dni(:,j) * tau(:,i)) / sum_thetal_tau_lk(i))
 
             do k=1,nc
-               sum_d2theta_tau_lk(k) = sum(d2thetak_dnidnj(:,i,j) * tau(k,:))
+               sum_d2theta_tau_lk(k) = sum(d2thetak_dnidnj(:,i,j) * tau(:,k))
             end do
 
             trm6 = (&
-               -self%qs(j) * (sum(dthetak_dni(:,i) * tau(j,:)) / sum_thetal_tau_lk(j)) &
+               -self%qs(j) * (sum(dthetak_dni(:,i) * tau(:,j)) / sum_thetal_tau_lk(j)) &
                -sum(self%qs * n * (&
                sum_d2theta_tau_lk * sum_thetal_tau_lk &
                - sum_dtheta_l_tau_lk(i,:) * sum_dtheta_l_tau_lk(j,:) &
@@ -386,7 +421,7 @@ contains
          sum_theta_l_dtau_lk = 0.0_pr
 
          do k=1,nc
-            sum_theta_l_dtau_lk(k) = sum(thetak * dtau(k,:))
+            sum_theta_l_dtau_lk(k) = sum(thetak * dtau(:,k))
          end do
       end if
 
@@ -400,7 +435,7 @@ contains
          sum_theta_l_d2tau_lk = 0.0_pr
 
          do k=1,nc
-            sum_theta_l_d2tau_lk(k) = sum(thetak * d2tau(k,:))
+            sum_theta_l_d2tau_lk(k) = sum(thetak * d2tau(:,k))
          end do
 
          diff_aux = (&
@@ -417,7 +452,7 @@ contains
       ! Cross derivative Tn
       if (dtn) then
          do concurrent (k=1:nc, i=1:nc)
-            sum_dtheta_l_dtau_lk(i,k) = sum(dthetak_dni(:,i) * dtau(k,:))
+            sum_dtheta_l_dtau_lk(i,k) = sum(dthetak_dni(:,i) * dtau(:,k))
          end do
       end if
 
@@ -498,41 +533,7 @@ contains
    type(UNIQUAC) function setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
       !! Instantiate a UNIQUAC model.
       !!
-      !! # Example
-      !!
-      !! ```fortran
-      !! use yaeos, only: pr, setup_uniquac, UNIQUAC
-      !!
-      !! integer, parameter :: nc = 3
-      !!
-      !! real(pr) :: rs(nc), qs(nc)
-      !! real(pr) :: b(nc, nc)
-      !! real(pr) :: n(nc)
-      !!
-      !! real(pr) :: ln_gammas(nc), T
-      !!
-      !! type(UNIQUAC) :: model
-      !!
-      !! rs = [0.92_pr, 2.1055_pr, 3.1878_pr]
-      !! qs = [1.4_pr, 1.972_pr, 2.4_pr]
-      !!
-      !! T = 298.15_pr
-      !!
-      !! ! Calculate bij from DUij. We need -DU/R to get bij
-      !! b = reshape(&
-      !! [0.0_pr, -526.02_pr, -309.64_pr, &
-      !! 318.06_pr, 0.0_pr, 91.532_pr, &
-      !! -1325.1_pr, -302.57_pr, 0.0_pr], [nc, nc])
-      !!
-      !! model = setup_uniquac(qs, rs, bij=b)
-      !!
-      !! n = [0.8_pr, 0.1_pr, 0.2_pr]
-      !!
-      !! call model%ln_activity_coefficient(n, T, ln_gammas)
-      !!
-      !! print *, exp(ln_gammas) ! [8.856, 0.860, 1.425]
-      !!
-      !! ```
+      !! Non provided interaction parameters are set to zero matrices.
       !!
       real(pr), intent(in) :: qs(:)
       !! Molecule's relative volumes \(Q_i\)

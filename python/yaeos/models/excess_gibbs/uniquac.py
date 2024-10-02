@@ -55,17 +55,28 @@ class UNIQUAC(GeModel):
     -------
     .. code-block:: python
 
-        from yaeos import UNIFACVLE
+        import numpy as np
 
-        # Groups for water and ethanol
-        water = {16: 1}
-        ethanol = {1: 1, 2: 1, 14: 1}
+        from yaeos import UNIQUAC
 
-        groups = [water, ethanol]
+        b = np.array(
+            [
+                [0.0, -526.02, -309.64],
+                [318.06, 0.0, 91.532],
+                [-1325.1, -302.57, 0.0],
+            ]
+        )
 
-        model = UNIFAVLE(groups)
+        rs = np.array([0.92, 2.1055, 3.1878])
+        qs = np.array([1.4, 1.972, 2.4])
 
-        model.ln_gamma([0.5, 0.5], 298.15)
+        t = 298.15
+
+        model = UNIQUAC(qs, rs, bij=b)
+
+        n = np.array([2.0, 2.0, 8.0])
+
+        gammas = np.exp(model.ln_gamma(n, t)) # [8.856, 0.860, 1.425]
     """
 
     def __init__(

@@ -11,7 +11,7 @@ UNIQUAC (**uni**versal **qua**si**c**hemical) Excess Gibbs free energy model.
 $$ 
 \frac{G^E}{RT} = \sum_k n_k \ln\frac{\phi_k}{x_k}
 + \frac{z}{2}\sum_k q_k n_k \ln\frac{\theta_k}{\phi_k}
-- \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{kl} \right)
+- \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{lk} \right)
 $$
 
 With:
@@ -48,17 +48,17 @@ $$
 
 $$
 \frac{\partial G^E}{\partial T} = \frac{G^E}{T} - RT \sum_k q_k n_k \frac{
-\sum_l \theta_l \frac{\partial \tau_{kl}}{\partial T}}{\sum_l \theta_l
-\tau_{kl}}
+\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T}}{\sum_l \theta_l
+\tau_{lk}}
 $$
 
 $$
 \frac{\partial G^E}{\partial T^2} = -R\left[T \sum_k q_k n_k
-\left(\frac{(\sum_l \theta_l \frac{\partial^2 \tau_{kl}}{\partial T^2})}{\sum_l
-\theta_l \tau_{kl}}
-- \frac{(\sum_l \theta_l \frac{\partial \tau_{kl}}{\partial T})^2}{(\sum_l
-\theta_l \tau_{kl})^2}\right) + 2\left(\sum_k q_k n_k \frac{(\sum_l \theta_l
-\frac{\partial \tau_{kl}}{\partial T} )}{\sum_l \theta_l \tau_{kl}}\right)
+\left(\frac{(\sum_l \theta_l \frac{\partial^2 \tau_{lk}}{\partial T^2})}{\sum_l
+\theta_l \tau_{lk}}
+- \frac{(\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T})^2}{(\sum_l
+\theta_l \tau_{lk})^2}\right) + 2\left(\sum_k q_k n_k \frac{(\sum_l \theta_l
+\frac{\partial \tau_{lk}}{\partial T} )}{\sum_l \theta_l \tau_{lk}}\right)
 \right]
 $$
 
@@ -66,11 +66,11 @@ $$
 
 $$
 \frac{\partial^2 G^E}{\partial n_i \partial T} = \frac{1}{T} \frac{\partial
-G^E}{\partial n_i} - R T \left(q_i \frac{\sum_l \theta_l \frac{d \tau_{il}}{d
-T}}{\sum_l \theta_l \tau_{il}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
-\theta_l}{d n_i} \frac{d \tau_{kl}}{d T})(\sum_l \theta_l \tau_{kl}) - (\sum_l
-\theta_l \frac{d \tau_{kl}}{d T})(\sum_l \frac{d \theta_l}{d n_i}
-\tau_{kl})}{(\sum_l \theta_l \tau_{kl})^2} \right) \right)
+G^E}{\partial n_i} - R T \left(q_i \frac{\sum_l \theta_l \frac{d \tau_{li}}{d
+T}}{\sum_l \theta_l \tau_{li}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
+\theta_l}{d n_i} \frac{d \tau_{lk}}{d T})(\sum_l \theta_l \tau_{lk}) - (\sum_l
+\theta_l \frac{d \tau_{lk}}{d T})(\sum_l \frac{d \theta_l}{d n_i}
+\tau_{lk})}{(\sum_l \theta_l \tau_{lk})^2} \right) \right)
 $$
 
 
@@ -133,7 +133,7 @@ $$
 \frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} + \frac{z}{2}
 \sum_k {n}_{k} {q}_{k} \left(\frac{\frac{d \theta_{k}}{d {n}_{i}}}{\theta_k} -
 \frac{\frac{d \phi_{k}}{d {n}_{i}}}{\phi_k} \right) - {q}_{i}
-\ln{\left(\sum_l \theta_{l} {\tau}_{il} \right)} - \sum_k {n}_{k} {q}_{k}
+\ln{\left(\sum_l \theta_{l} {\tau}_{li} \right)} - \sum_k {n}_{k} {q}_{k}
 \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lk}}{\sum_l \theta_{l}
 {\tau}_{lk}}
 $$
@@ -172,17 +172,17 @@ $$
 $$
 
 $$
-- q_i \left( \frac{\sum_l \frac{d \theta_l}{d n_j} \tau_{il}}{\sum_l \theta_l 
-\tau_{il}} \right)
+- q_i \left( \frac{\sum_l \frac{d \theta_l}{d n_j} \tau_{li}}{\sum_l \theta_l 
+\tau_{li}} \right)
 $$
 
 $$
-- {q}_{j} \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{jl}}{\sum_l
-\theta_{l}{\tau}_{jl}} - \sum_k {n}_{k} {q}_{k} \frac{\left(\sum_l
-\frac{d^2\theta_l}{dn_idn_j} \tau_{kl} \right) \left(\sum_l
-\theta_l \tau_{kl} \right) - \left(\sum_l \frac{d\theta_l}{dn_i}
-\tau_{kl} \right) \left(\sum_l \frac{d\theta_l}{dn_j} \tau_{kl}
-\right)}{(\sum_l \theta_{l} {\tau}_{kl})^2}
+- {q}_{j} \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lj}}{\sum_l
+\theta_{l}{\tau}_{lj}} - \sum_k {n}_{k} {q}_{k} \frac{\left(\sum_l
+\frac{d^2\theta_l}{dn_idn_j} \tau_{lk} \right) \left(\sum_l
+\theta_l \tau_{lk} \right) - \left(\sum_l \frac{d\theta_l}{dn_i}
+\tau_{lk} \right) \left(\sum_l \frac{d\theta_l}{dn_j} \tau_{lk}
+\right)}{(\sum_l \theta_{l} {\tau}_{lk})^2}
 $$
 
 ## Examples
@@ -217,14 +217,13 @@ qs = [1.4_pr, 1.972_pr, 2.4_pr]
 T = 298.15_pr
 
 ! Calculate bij from DUij. We need -DU/R to get bij
-b = reshape(&
-[0.0_pr, -526.02_pr, -309.64_pr, &
-318.06_pr, 0.0_pr, 91.532_pr, &
--1325.1_pr, -302.57_pr, 0.0_pr], [nc, nc])
+b(1,:) = [0.0_pr, -526.02_pr, -309.64_pr]
+b(2,:) = [318.06_pr, 0.0_pr, 91.532_pr]
+b(3,:) = [-1325.1_pr, -302.57_pr, 0.0_pr]
 
 model = setup_uniquac(qs, rs, bij=b)
 
-n = [0.8_pr, 0.1_pr, 0.2_pr]
+n = [2.0_pr, 2.0_pr, 8.0_pr]
 
 call model%ln_activity_coefficient(n, T, ln_gammas)
 
