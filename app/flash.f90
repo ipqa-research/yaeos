@@ -20,23 +20,23 @@ program flasher
     
     ! Methane/ Butane mixture
     n = [0.4, 0.6]                      ! Composition
-    tc = [190.564, 425.12]              ! Critical temperatures
-    pc = [45.99, 37.96]                 ! Critical pressures
+    Tc = [190.564, 425.12]              ! Critical temperatures
+    Pc = [45.99, 37.96]                 ! Critical pressures
     w = [0.0115478, 0.200164]           ! Acentric factors
 
     ! Use the PengRobinson76 model
-    model = PengRobinson76(tc, pc, w)
+    model = PengRobinson76(Tc, Pc, w)
 
     ! Set pressure and temperatures
     P = 60
     T = 294
 
     ! K-wilson factors for initialization
-    k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
+    k0 = (Pc/P)*exp(5.373*(1 + w)*(1 - Tc/T))
 
     ! Calculate flashes
-    flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iter)
-
+    flash_result = flash(model, n, t=T, p_spec=P, k0=k0, iters=iter)
+    
     ! Print results with format statements
     print "(A,5x, *(F6.4,1x))", "X:", flash_result%x
     print "(A,5x, *(F6.4,1x))", "Y:", flash_result%y
