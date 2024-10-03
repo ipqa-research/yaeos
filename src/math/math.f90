@@ -112,4 +112,42 @@ contains
          x = x - step
       end do
    end subroutine newton_1d
+
+   elemental function interpol(x1, x2, y1, y2, x_obj) result(y)
+      !! Linear interpolation.
+      !!
+      !! Calculates the linear interpolation between two points at a desired
+      !! x value with the equation:
+      !! \[
+      !!    y = \frac{y_2 - y_1}{x_2 - x_1} \cdot (x_{obj})  - x_1 + y_1
+      !! \]
+      !!
+      !! Since this function is defined as `elemental` it will also interpolate
+      !! a set of vectors.
+      !!
+      !! Examples of usage:
+      !!
+      !! ```fortran
+      !! x1 = 2
+      !! x2 = 5
+      !! y1 = 2
+      !! y2 = 9
+      !! y = interpol(x1, x2, y1, y2, 2.3)
+      !! ```
+      !!
+      !! ```fortran
+      !! x1 = 2
+      !! x2 = 5
+      !! y1 = [2, 6]
+      !! y2 = [9, 15]
+      !! y = interpol(x1, x2, y1, y2, 2.3)
+      !! ```
+      real(pr), intent(in) :: x1 !! First point x value
+      real(pr), intent(in) :: x2 !! Second point x value
+      real(pr), intent(in) :: y1 !! First point y value
+      real(pr), intent(in) :: y2 !! Second point y value
+      real(pr), intent(in) :: x_obj !! Desired x value to interpolate
+      real(pr) :: y !! y value at `x_obj`
+      y = (y2 - y1)/(x2 - x1)*(x_obj - x1) + y1
+   end function interpol
 end module yaeos__math
