@@ -6,6 +6,7 @@ module yaeos__math_linalg
 contains
    function solve_system(a, b) result(x)
       !! Solve a linear sytem AX = b
+      use iso_fortran_env, only: error_unit
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: a(size(b), size(b))
       integer, parameter :: dp = selected_real_kind(15)
@@ -38,7 +39,7 @@ contains
       b_lapack = b
       call dgesv(n, nrhs, a_lapack, lda, ipiv, b_lapack, ldb, info)
 
-      if (info > 0) error stop 1
+      if (info > 0) write(error_unit, *) "WARN: dgesv error"
 
       x = b_lapack
    end function solve_system
