@@ -15,16 +15,16 @@ from yaeos.lib import yaeos_c
 class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
 
-    def ln_gamma(self, n, T):
+    def ln_gamma(self, moles, temperature):
         r"""Calculate activity coefficients.
 
         Calculate :math:`\ln \gamma_i(n,T)` vector.
 
         Parameters
         ----------
-        n : array_like
+        moles : array_like
             Moles number vector [mol]
-        T : float
+        temperature : float
             Temperature [K]
 
         Returns
@@ -47,10 +47,9 @@ class GeModel(ABC):
 
             nrtl = NRTL(a, b, c)
 
-            print(nrtl.ln_gamma([5.0, 5.6], 300.0)
+            print(nrtl.ln_gamma([5.0, 5.6], 300.0))
         """
-
-        return yaeos_c.ln_gamma(self.id, n, T)
+        return yaeos_c.ln_gamma(self.id, moles, temperature)
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

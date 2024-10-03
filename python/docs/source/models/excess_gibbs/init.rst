@@ -9,3 +9,4 @@ Excess Gibbs Models
    :maxdepth: 1
 
    nrtl
+   unifacvle

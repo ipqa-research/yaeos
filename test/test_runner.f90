@@ -28,6 +28,7 @@ program tester
     use test_psrk_ge, only: suite_psrk_ge => collect_suite
     use test_unifac_parameters, only: suite_unifac_parameters => collect_suite
     use test_tape_nrtl, only: suite_nrtl => collect_suite
+    use test_uniquac, only: suite_uniquac => collect_suite
 
     ! =========================================================================
     ! Fitting procedures tests
@@ -70,6 +71,7 @@ program tester
         new_testsuite("PSRK", suite_psrk_ge), &
         new_testsuite("UNIFACParameters", suite_unifac_parameters), &
         new_testsuite("NRTL", suite_nrtl), &
+        new_testsuite("UNIQUAC", suite_uniquac), &
         ! =====================================================================
         ! Fitting procedures tests
         ! ---------------------------------------------------------------------

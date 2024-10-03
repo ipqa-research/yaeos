@@ -1,5 +1,4 @@
-"""UNIFAC Module.
-"""
+"""UNIFAC Module."""
 
 import numpy as np
 
@@ -14,6 +13,22 @@ class UNIFACVLE(GeModel):
     ----------
     molecules : list of dict
         List of dicts with the groups and their amounts for each molecule.
+
+    Example
+    -------
+    .. code-block:: python
+
+        from yaeos import UNIFACVLE
+
+        # Groups for water and ethanol
+        water = {16: 1}
+        ethanol = {1: 1, 2: 1, 14: 1}
+
+        groups = [water, ethanol]
+
+        model = UNIFAVLE(groups)
+
+        model.ln_gamma([0.5, 0.5], 298.15)
     """
 
     def __init__(self, molecules) -> None:

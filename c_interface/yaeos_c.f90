@@ -29,6 +29,7 @@ module yaeos_c
    ! GeMoels
    public :: nrtl
    public :: unifac_vle
+   public :: uniquac
    public :: ln_gamma
 
    ! Thermoprops
@@ -92,6 +93,28 @@ contains
       ge_model = setup_unifac(molecules)
       call extend_ge_models_list(id)
    end subroutine unifac_vle
+
+   subroutine uniquac(id, qs, rs, aij, bij, cij, dij, eij)
+      use yaeos, only: setup_uniquac
+      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: qs(:)
+      !! Molecule's relative areas \(Q_i\)
+      real(c_double), intent(in) :: rs(size(qs))
+      !! Molecule's relative volumes \(R_i\)
+      real(c_double), intent(in) :: aij(size(qs),size(qs))
+      !! Interaction parameters matrix \(a_{ij}\)
+      real(c_double), intent(in) :: bij(size(qs),size(qs))
+      !! Interaction parameters matrix \(b_{ij}\)
+      real(c_double), intent(in) :: cij(size(qs),size(qs))
+      !! Interaction parameters matrix \(c_{ij}\)
+      real(c_double), intent(in) :: dij(size(qs),size(qs))
+      !! Interaction parameters matrix \(d_{ij}\)
+      real(c_double), intent(in) :: eij(size(qs),size(qs))
+      !! Interaction parameters matrix \(e_{ij}\)
+
+      ge_model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
+      call extend_ge_models_list(id)
+   end subroutine
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
