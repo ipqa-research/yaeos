@@ -33,7 +33,7 @@ module yaeos_c
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume
-   
+
    ! Phase equilibria
    public :: flash, flash_grid
    public :: saturation_pressure
@@ -91,7 +91,7 @@ contains
 
       ge_model = setup_unifac(molecules)
       call extend_ge_models_list(id)
-   end subroutine
+   end subroutine unifac_vle
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
@@ -262,7 +262,7 @@ contains
          n, V, T, P, lnphi, dlnPhidP, dlnphidT, dlnPhidn &
          )
    end subroutine lnphi_vt
-   
+
    subroutine lnphi_pt(id, n, p, t, root_type, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), p, t
@@ -275,7 +275,7 @@ contains
       call ar_models(id)%model%lnphi_pt(&
          n, P=P, T=T, root_type=root_type, &
          lnphi=lnphi, dlnphidp=dlnPhidP, dlnphidt=dlnphidT, dlnphidn=dlnPhidn &
-      )
+         )
    end subroutine lnphi_pt
 
    subroutine pressure(id, n, V, T, P, dPdV, dPdT, dPdn)
@@ -286,7 +286,7 @@ contains
 
       call ar_models(id)%model%pressure(&
          n, V, T, P, dPdV, dPdT, dPdn &
-      )
+         )
    end subroutine pressure
 
    subroutine volume(id, n, P, T, root_type, V)
@@ -353,12 +353,13 @@ contains
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
 
-   subroutine saturation_pressure(id, z, T, kind, P, x, y, Vx, Vy, beta)
+   subroutine saturation_pressure(id, z, T, kind, P0, P, x, y, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fsaturation_pressure => saturation_pressure
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
       character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: P0
 
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: x(size(z))
@@ -369,7 +370,11 @@ contains
 
       type(EquilibriumState) :: sat
 
-      sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      if (P0 == 0) then
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      else
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0)
+      end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
 
@@ -435,7 +440,7 @@ contains
       Pcs(:i) = env%cps%P
    end subroutine pt2_phase_envelope
 
-   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas)
+   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
       use yaeos, only: EquilibriumState, flash
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
@@ -443,6 +448,7 @@ contains
       real(c_double), intent(in) :: Ps(:)
       real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
       real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
+      logical, intent(in) :: parallel
 
       class(ArModel), allocatable :: model
       type(EquilibriumState) :: flash_result
@@ -455,20 +461,38 @@ contains
       np = size(Ps)
       nt = size(Ts)
 
-      !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) shared(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
-      do i=1,np
-         do j=1,nt
-            T = Ts(j)
-            P = Ps(i)
-            flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
-            betas(i, j) = flash_result%beta
-            
-            Vxs(i, j) = flash_result%Vx
-            Vys(i, j) = flash_result%Vy
-            xs(i, j, :) = flash_result%x
-            ys(i, j, :) = flash_result%y
+      if (parallel) then
+         print *, "parallel run"
+         !$OMP  PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
          end do
-      end do
-   !$OMP END PARALLEL DO
-   end subroutine
+         !$OMP END PARALLEL DO
+      else
+         print *, "non parallel run"
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+      end if
+   end subroutine flash_grid
 end module yaeos_c
