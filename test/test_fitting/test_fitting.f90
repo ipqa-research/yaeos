@@ -103,11 +103,11 @@ contains
       model%mixrule = mixrule
       
       fitting_problem%experimental_points = [exp_point]
+      fitting_problem%verbose = .true.
 
-      X = [3.458, -0.8, -586.0, 246.0, 0.3, 0.3, 0.0]
+      X = [3.458, -0.8, -586.0, 246.0, 0.3, 0.3, -0.1]
       fitting_problem%model = model
       fitting_problem%fit_lij = .true.
-      fitting_problem%verbose = .true.
       call  error_function(x, err0, func_data=fitting_problem)
       err_lij = optimize(X, opt, fitting_problem)
       
