@@ -2,6 +2,7 @@
 
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
+from yaeos.models.groups import groups_from_dicts
 from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import CubicMixRule
 
 
@@ -333,3 +334,97 @@ class RKPR(CubicEoS):
         self.mixrule = mixrule
         if mixrule:
             mixrule.set_mixrule(self.id)
+
+
+class PSRK(CubicEoS):
+    """Predictive-Soave-Redlich-Kwong cubic equation of state.
+
+    Parameters
+    ----------
+    critical_temperatures : array_like
+        Critical temperatures vector [K]
+    critical_pressures : array_like
+        Critical pressures vector [bar]
+    acentric_factors : array_like
+        Acentric factors vector
+    molecules: list of dict
+        List of dicts with the groups and their amounts for each molecule
+    c1: array_like
+        Mathias-Copeman parameters c1
+    c2: array_like
+        Mathias-Copeman parameters c3
+    c3: array_like
+        Mathias-Copeman parameters c3
+
+    Attributes
+    ----------
+    nc : int
+        Number of components
+    critical_temperatures : array_like
+        Critical temperatures vector [K]
+    critical_pressures : array_like
+        Critical pressures vector [bar]
+    acentric_factors : array_like
+        Acentric factors vector
+    id : int
+        EoS identifier
+
+    Example
+    -------
+    .. code-block:: python
+
+        from yaeos import SoaveRedlichKwong
+
+        # methanol/n-hexane mixture
+        tc = [512.5, 507.6]   # Critical temperatures [K]
+        pc = [80.84, 30.25]     # Critical pressures [bar]
+        w = [0.565831, 0.301261]    # Acentric factors
+
+        molecules = [{15:1, 1:2, 2:4}]
+
+        # Mathias-copeman constants
+        c1 = [1.31458917, 0.93830213]
+        c2 = [0.0, 0.0]
+        c3 = [0.0, 0.0]
+
+        psrk = PSRK(tc, pc, w, molecules=molecules, c1=c1, c2=c2, c3=c3)
+    """
+
+    def __init__(
+        self,
+        critical_temperatures,
+        critical_pressures,
+        acentric_factors,
+        molecules,
+        c1=None,
+        c2=None,
+        c3=None,
+    ) -> None:
+
+        super(PSRK, self).__init__(
+            critical_temperatures,
+            critical_pressures,
+            acentric_factors,
+        )
+        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
+            molecules
+        )
+
+        if not c1:
+            c1 = 0.48 + 1.574 * self.w - 0.175 * self.w**2
+        if not c2:
+            c2 = [0 for i in range(len(self.w))]
+        if not c3:
+            c3 = [0 for i in range(len(self.w))]
+
+        self.id = yaeos_c.psrk(
+            self.tc,
+            self.pc,
+            self.w,
+            number_of_groups,
+            groups_ids,
+            groups_ammounts,
+            c1,
+            c2,
+            c3,
+        )
