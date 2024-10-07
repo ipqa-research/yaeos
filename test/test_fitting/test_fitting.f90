@@ -62,6 +62,7 @@ contains
 
    subroutine test_fit_mhv_nrtl(error)
       use yaeos__optimizers_powell_wrap, only: PowellWrapper
+      use yaeos__optimizers_nelder_mead, only: NelderMead
       use yaeos__fitting, only: optimize, error_function
       use yaeos__fitting_fit_nrtl_mhv, only: FitMHVNRTL
       use yaeos__models, only: CubicEoS, GeModel, NRTL, SoaveRedlichKwong, MHV
@@ -80,7 +81,7 @@ contains
       real(pr) :: err0, err_lij, err_ge, err_ge_lij
 
       type(FitMHVNRTL) :: fitting_problem
-      type(PowellWrapper) :: opt
+      type(NelderMead) :: opt
       type(PTEnvel2) :: env
 
       exp_point = EquilibriumState( &
@@ -95,8 +96,6 @@ contains
       ge_model%a=reshape([0.0, 3.458, -0.80, 0.0], [2, 2])
       ge_model%b=reshape([0.0, -586.0, 246.0, 0.0], [2, 2])
       ge_model%c=reshape([0.0, 0.3, 0.3, 0.0], [2, 2])
-
-      opt%parameter_step = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1]
 
       model = SoaveRedlichKwong(tc, pc, w)
       mixrule = MHV(ge=ge_model, q=-0.593_pr, b=model%b)
