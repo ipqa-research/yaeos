@@ -81,7 +81,7 @@ contains
       real(pr) :: err0, err_lij, err_ge, err_ge_lij
 
       type(FitMHVNRTL) :: fitting_problem
-      type(NelderMead) :: opt
+      type(PowellWrapper) :: opt
       type(PTEnvel2) :: env
 
       exp_point = EquilibriumState( &
@@ -111,8 +111,8 @@ contains
       fitting_problem%fit_lij = .true.
       call  error_function(x, err0, func_data=fitting_problem)
       err_lij = optimize(X, opt, fitting_problem)
-      fitting_problem%verbose = .false.
       
+      fitting_problem%verbose = .false.
       X = [3.458, -0.8, -586.0, 246.0, 0.3, 0.3, 0.0]
       fitting_problem%model = model
       fitting_problem%fit_lij = .false.
