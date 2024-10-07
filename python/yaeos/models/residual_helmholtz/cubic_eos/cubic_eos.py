@@ -426,21 +426,21 @@ class PSRK(CubicEoS):
             molecules
         )
 
-        if not c1:
+        if c1 is None:
             c1 = 0.48 + 1.574 * self.w - 0.175 * self.w**2
-        if not c2:
+        if c2 is None:
             c2 = [0 for i in range(len(self.w))]
-        if not c3:
+        if c3 is None:
             c3 = [0 for i in range(len(self.w))]
 
         self.id = yaeos_c.psrk(
-            self.tc,
-            self.pc,
-            self.w,
-            number_of_groups,
-            groups_ids,
-            groups_ammounts,
-            c1,
-            c2,
-            c3,
+            tc=self.tc,
+            pc=self.pc,
+            w=self.w,
+            ngs=number_of_groups,
+            g_ids=groups_ids,
+            g_v=groups_ammounts,
+            c1=c1,
+            c2=c2,
+            c3=c3,
         )
