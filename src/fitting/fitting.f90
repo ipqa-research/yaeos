@@ -98,19 +98,19 @@ contains
                    case("bubble")
                      model_point = saturation_pressure(&
                         model, exp_point%x, exp_point%t, kind="bubble", &
-                        p0=exp_point%p)
+                        p0=exp_point%p, y0=exp_point%y)
                    case("dew")
                      model_point = saturation_pressure(&
                         model, exp_point%y, exp_point%t, kind="dew", &
-                        p0=exp_point%p)
+                        p0=exp_point%p, y0=exp_point%x)
                    case("liquid-liquid")
                      model_point = saturation_pressure(&
                         model, exp_point%x, exp_point%t, kind="liquid-liquid", &
-                        p0=exp_point%p)
+                        p0=exp_point%p, y0=exp_point%y)
                   end select
 
 
-                  if (model_point%iters > max_iterations) then
+                  if (model_point%iters > max_iterations .or. isnan(model_point%P)) then
                      ! If the point did not converge, calculate the phase
                      ! envelope and get the closest point
                      call calc_pt_envel(model, exp_point, model_point, pt_converged)
@@ -126,17 +126,18 @@ contains
                      ! Calculate the error
                      fobjs(i) = sq_error(exp_point%p, model_point%p)
                   end if
-
-                  print *, exp_point%T, model_point%T, exp_point%P, model_point%P, fobjs(i)
+                  ! print *, exp_point%T, model_point%T, exp_point%P, model_point%P, fobjs(i)
                end associate
             end do
+
 
             fobjs = fobjs * func_data%experimental_points%P**2
             fobj = sum(fobjs)/size(fobjs)
 
-            print *, fobj, X
-            ! write(*, "(I3,2x(E20.9),2x, '[',*(E15.6,', '),'] ')") n_nconv, fobj, X
-            write (*, *) "======================================================"
+            if (func_data%verbose) then
+               write(*, "(I3,2x(E20.9),2x, '[',*(E15.6,','))", advance="no") n_nconv, fobj, X
+               write(*, "(']', /, '==========================================')")
+            end if
 
          end block
       end select

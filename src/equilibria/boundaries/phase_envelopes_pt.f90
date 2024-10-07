@@ -315,7 +315,10 @@ contains
          Xold = X
 
          inner = 0
-         do while (maxval(abs(X(:nc))) < 0.1 .and. inner < 500)
+         do while (&
+                  maxval(abs(X(:nc))) < 0.1 &
+            .and. inner < 500&
+            .and. abs(Vz - Vy) < 0.1)
             ! If near a critical point, jump over it
             inner = inner + 1
 

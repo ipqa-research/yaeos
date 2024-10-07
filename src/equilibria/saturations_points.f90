@@ -9,7 +9,7 @@ module yaeos__equilibria_saturation_points
 
    real(pr) :: tol = 1e-9_pr
    integer :: max_iterations = 2000
-   integer :: iters_first_step = 30
+   integer :: iters_first_step = 100
    real(pr) :: step_tol = 0.1_pr
 
    class(ArModel), pointer, private :: hidden_model
@@ -131,6 +131,7 @@ contains
          hidden_model => model
          hidden_z = z
 
+         its = 0
          call full_newton(foo, its, X, ns, S, dS, dXdS, 1, max_iterations, F, dF, dFdS, tol=1.e-5_pr)
          K = exp(X(:size(n)))
          P = exp(X(size(n)+2))
