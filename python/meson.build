@@ -97,6 +97,10 @@ py.install_sources(fapi_sources, subdir:python_lib / 'lib')
 models_sources = [python_lib / 'models' / '__init__.py']
 py.install_sources(models_sources, subdir:python_lib / 'models')
 
+## groups
+groups_sources = [python_lib / 'models' / 'groups.py']
+py.install_sources(groups_sources, subdir:python_lib / 'models')
+
 ### models.excess_gibbs
 excess_gibbs_sources = [
   python_lib / 'models' / 'excess_gibbs' / '__init__.py',
