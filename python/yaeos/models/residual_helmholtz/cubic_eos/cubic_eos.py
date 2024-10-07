@@ -388,6 +388,22 @@ class PSRK(CubicEoS):
         c3 = [0.0, 0.0]
 
         psrk = PSRK(tc, pc, w, molecules=molecules, c1=c1, c2=c2, c3=c3)
+
+    .. code-block:: python
+        # The dictionary of molecules can be created using the `ugropy` library
+
+        import ugropy as ug
+
+        molecules = ["methanol", "ethanol"]
+
+        groups = [ug.get_groups(ug.psrk, molecule) for molecule in molecules]
+        molecules = [
+            ug.writers.to_thermo(grp.subgroups, ug.psrk) for grp in groups
+        ]
+
+        print(molecules)
+
+        >>> [{15: 1}, {1: 1, 2: 1, 14: 1}]
     """
 
     def __init__(
