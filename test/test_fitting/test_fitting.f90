@@ -20,11 +20,11 @@ contains
       use yaeos__fitting_fit_kij_lij, only: FitKijLij
       use yaeos__models, only: ArModel, SoaveRedlichKwong
       use yaeos__equilibria, only: EquilibriumState
-      use yaeos__optimizers_powell_wrap, only: PowellWrapper
+      use yaeos__optimizers_powell_wrap, only: NelderMead
       type(error_type), allocatable, intent(out) :: error
       class(ArModel), allocatable :: model
       type(EquilibriumState) :: exp_points
-      type(PowellWrapper) :: opt
+      type(NelderMead) :: opt
 
       real(pr) :: Tc(2) = [126.2, 568.7]
       real(pr) :: pc(2) = [33.98, 24.90]
