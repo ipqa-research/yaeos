@@ -124,6 +124,8 @@ contains
       fitting_problem%fit_nrtl = .true.
       err_ge_lij = optimize(X, opt, fitting_problem)
 
+      print *, err0, err_lij, err_ge, err_ge_lij
+
       call check(error, err_lij < err0)
       call check(error, err_ge_lij < err_lij)
       call check(error, err_ge < err_lij)
