@@ -128,6 +128,8 @@ contains
                      fobjs(i) = sq_error(exp_point%p, model_point%p)
                   end if
                   ! print *, exp_point%T, model_point%T, exp_point%P, model_point%P, fobjs(i)
+
+                  if (isnan(fobjs(i))) fobjs(i) = HUGE(0.0_pr)
                end associate
             end do
 

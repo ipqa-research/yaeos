@@ -113,8 +113,10 @@ jobs:
         cd python && tox -r
 
   build_wheels:
-    needs: Python-API
     name: Build wheels on ${{ matrix.os }}
+    needs: 
+      - tests_and_coverage
+      - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
