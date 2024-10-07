@@ -129,7 +129,7 @@ contains
                   end if
                   ! print *, exp_point%T, model_point%T, exp_point%P, model_point%P, fobjs(i)
 
-                  if (isnan(fobjs(i))) fobjs(i) = 1e250
+                  if (isnan(fobjs(i))) fobjs(i) = 1e25
                end associate
             end do
 
