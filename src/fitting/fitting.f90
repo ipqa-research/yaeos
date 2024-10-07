@@ -4,6 +4,7 @@ module yaeos__fitting
    use yaeos__equilibria, only: &
       EquilibriumState, saturation_pressure, saturation_temperature, flash
    use yaeos__optimizers, only: Optimizer, obj_func
+   use ieee_arithmetic, only: isnan => ieee_is_nan
    implicit none
 
    type, abstract :: FittingProblem
