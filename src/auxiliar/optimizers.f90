@@ -146,7 +146,7 @@ contains
       if (allocated(self%step)) then
          step = self%step
       else
-         step = [(0.1, i=1,n)]
+         step = [(0.01, i=1,n)]*X
       end if
 
       ! If there is data present point to it with the hidden pointer

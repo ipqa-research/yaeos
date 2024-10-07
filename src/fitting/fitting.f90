@@ -134,7 +134,7 @@ contains
             end do
 
 
-            fobjs = fobjs * func_data%experimental_points%P**2
+            fobjs = fobjs * func_data%experimental_points%P
             fobj = sum(fobjs)/size(fobjs)
 
             if (func_data%verbose) then
