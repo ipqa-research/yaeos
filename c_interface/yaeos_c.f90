@@ -512,7 +512,6 @@ contains
       nt = size(Ts)
 
       if (parallel) then
-         print *, "parallel run"
          !$OMP  PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
          do i=1,np
             do j=1,nt
@@ -529,7 +528,6 @@ contains
          end do
          !$OMP END PARALLEL DO
       else
-         print *, "non parallel run"
          do i=1,np
             do j=1,nt
                T = Ts(j)
