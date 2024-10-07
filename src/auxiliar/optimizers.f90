@@ -115,7 +115,6 @@ module yaeos__optimizers_nelder_mead
       integer :: max_iters = 10000 !! Maxium number of iterations
       integer :: konvge = 1000 !! Convergence check is carried out every KONVGE iterations
       integer :: kcount = 1e8 !! Maximum number of function evaluations
-      real(pr), allocatable :: step(:)
    contains
       procedure :: optimize
    end type NelderMead
@@ -143,10 +142,10 @@ contains
       n = size(X)
 
       ! Check step size
-      if (allocated(self%step)) then
-         step = self%step
+      if (allocated(self%parameter_step)) then
+         step = self%parameter_step
       else
-         step = [(0.1, i=1,n)]*(X+1e-15)
+         step = [(0.1, i=1,n)]*(X)
       end if
 
       ! If there is data present point to it with the hidden pointer

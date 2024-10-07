@@ -86,12 +86,10 @@ contains
                 type is (QMR_RKPR)
                   if (problem%fit_kij) mr%k = kij
                   if (problem%fit_lij) mr%l = lij
-                  ! call model%set_delta1(X(2:))
                 type is (QMRTD)
                   if (problem%fit_kij) mr%k = kij   ! kinf
                   if (problem%fit_kij) mr%k0  = lij ! k0
                end select
-
             end associate
          end select
       end associate

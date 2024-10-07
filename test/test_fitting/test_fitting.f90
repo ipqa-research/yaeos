@@ -43,21 +43,32 @@ contains
 
       fitting_problem%model = SoaveRedlichKwong(tc, pc, w)
       fitting_problem%experimental_points = [exp_points]
-      opt%parameter_step = [0.1, 0.1] 
+      fitting_problem%verbose = .true.
 
-      fitting_problem%fit_kij = .true.
-      fitting_problem%verbose = .false.
+      opt%parameter_step = [1, 1] 
+      opt%kcount = 1e9
+      opt%konvge = 100
+      opt%convergence_tolerance = 1e-5
+
 
       call error_function(x, err0, func_data=fitting_problem)
+
+      fitting_problem%fit_kij = .true.
+      fitting_problem%fit_lij = .false.
+      X = 0
       err_kij = optimize(X, opt, fitting_problem)
 
       call check(error, err_kij < err0)
       
       fitting_problem%fit_lij = .true.
-      fitting_problem%verbose = .true.
+      fitting_problem%verbose = .false.
+      
       X = 0
       err_kij_lij = optimize(X, opt, fitting_problem)
-      call check(error, err_kij_lij < err_kij)
+
+      print *, err0, err_kij, err_kij_lij
+
+      call check(error, err_kij_lij < err0)
    end subroutine
 
    subroutine test_fit_mhv_nrtl(error)
