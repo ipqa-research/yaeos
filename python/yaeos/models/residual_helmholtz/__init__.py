@@ -8,6 +8,7 @@ Yaeos Residual Helmholtz module. This module provides the following submodules:
         - PengRobinson78: Peng-Robinson model (1978)
         - SoaveRedlichKwong: Soave-Redlich-Kwong model
         - RKPR: RKPR model
+        - PSRK: Predictive-Soave-Redlich-Kwong model
     - Mixing rules: mixing rules for cubic EoS
         - QMR: cuadratic mixing rule
         - MHV: modified Huron-Vidal mixing rule
