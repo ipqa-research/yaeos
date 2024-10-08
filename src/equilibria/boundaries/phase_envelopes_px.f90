@@ -120,6 +120,7 @@ contains
          integer :: i
          integer :: loc(2)
          real(pr) :: maxerr
+         exit test_numdiff
 
          do i=1,size(X)
             dx = 0
@@ -279,7 +280,7 @@ contains
 
          dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
 
-         do while(abs(dXdS(nc+2)*dS) > 0.1_pr)
+         do while(abs(dXdS(nc+2)*dS) > 0.1_pr .or. abs(dXdS(nc+1)*dS) > 0.1_pr)
             dS = dS/2
          end do
 
@@ -355,8 +356,9 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.03_pr .and. abs(Vz - Vy) < 0.01_pr)
+         do while (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.05_pr)
             ! If near a critical point, jump over it
+            if (nc == 2) exit
             S = S + dS
             X = X + dXdS*dS
          end do

@@ -15,7 +15,7 @@ module yaeos__models_ge_NRTL
       !!
       !! \[\tau_{ij} = A_{ij} + \frac{B_{ij}}{T}\]
       !!
-      !! \[G_{ij} = -\frac{C}{tau_ij}\]
+      !! \[G_{ij} = exp(-\frac{C}{tau_ij})\]
       real(pr), allocatable :: a(:, :) !! A_{ij} matrix
       real(pr), allocatable :: b(:, :) !! B_{ij} matrix
       real(pr), allocatable :: c(:, :) !! C_{ij} matrix

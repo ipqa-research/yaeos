@@ -14,6 +14,7 @@ Implemented models:
 
 from .cubic_eos import (
     CubicEoS,
+    PSRK,
     PengRobinson76,
     PengRobinson78,
     RKPR,
@@ -28,6 +29,7 @@ __all__ = [
     "PengRobinson78",
     "SoaveRedlichKwong",
     "RKPR",
+    "PSRK",
     "CubicMixRule",
     "QMR",
     "MHV",

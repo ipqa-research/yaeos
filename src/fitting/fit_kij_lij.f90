@@ -40,6 +40,7 @@ module yaeos__fitting_fit_kij_lij
       !!
       logical :: fit_lij = .false. !! Fit the \(l_{ij}\) parameter
       logical :: fit_kij = .false. !! Fit the \(k_{ij}\) parameter
+      logical :: fit_kij_exp_t = .false. !! Fit \(k_{ij}(T)\)
    contains
       procedure :: get_model_from_X => model_from_X
    end type FitKijLij
@@ -47,13 +48,14 @@ module yaeos__fitting_fit_kij_lij
 contains
 
    subroutine model_from_X(problem, X)
-      use yaeos, only: R, RKPR, PengRobinson78, ArModel, QMR, CubicEoS
+      use yaeos, only: pr, CubicEoS, QMR, QMR_RKPR
+      use yaeos__models_ar_cubic_quadratic_mixing, only: QMRTD
       real(pr), intent(in) :: X(:)
       class(FitKijLij), intent(in out) :: problem
 
-      real(pr) :: kij(nc, nc), lij(nc, nc)
+      real(pr) :: kij(nc, nc), lij(nc, nc), Tref(nc,nc)
 
-      if (size(X) > 2) error stop 1
+      if (size(X) > 3) error stop 1
 
       kij = 0
       lij = 0
@@ -62,7 +64,7 @@ contains
          kij(1, 2) = X(1)
          kij(2, 1) = kij(1, 2)
          lij(1, 2) = X(2)
-         lij(2, 1) = lij(2, 1)
+         lij(2, 1) = lij(1, 2)
       else if (problem%fit_kij) then
          kij = 0
          kij(1, 2) = X(1)
@@ -78,9 +80,15 @@ contains
           class is (CubicEoS)
             associate (mr => model%mixrule)
                select type(mr)
-                class is (QMR)
+                type is (QMR)
                   if (problem%fit_kij) mr%k = kij
                   if (problem%fit_lij) mr%l = lij
+                type is (QMR_RKPR)
+                  if (problem%fit_kij) mr%k = kij
+                  if (problem%fit_lij) mr%l = lij
+                type is (QMRTD)
+                  if (problem%fit_kij) mr%k = kij   ! kinf
+                  if (problem%fit_kij) mr%k0  = lij ! k0
                end select
             end associate
          end select

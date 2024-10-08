@@ -19,7 +19,7 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78, rkpr
+   public :: srk, pr76, pr78, rkpr, psrk
    ! Mixing rules
    public :: set_mhv, set_qmr
 
@@ -74,22 +74,33 @@ contains
       call extend_ge_models_list(id)
    end subroutine nrtl
 
-   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
-      use yaeos, only: UNIFAC, setup_unifac, Groups
-      integer(c_int), intent(out) :: id
+
+   subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
+      use yaeos, only: Groups
       integer(c_int), intent(in) :: nc !! Number of components
       integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
       integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
       integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-
-      type(Groups) :: molecules(nc)
+      type(Groups), intent(out) :: molecules(nc)
       integer :: i
 
       do i=1,nc
          molecules(i)%groups_ids = g_ids(i, :ngs(i))
          molecules(i)%number_of_groups = g_v(i, :ngs(i))
       end do
+   end subroutine
 
+   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_unifac, Groups
+      integer(c_int), intent(out) :: id !! Saved model id 
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+      
+      type(Groups) :: molecules(nc)
+      
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
       ge_model = setup_unifac(molecules)
       call extend_ge_models_list(id)
    end subroutine unifac_vle
@@ -268,6 +279,22 @@ contains
       end if
       call extend_ar_models_list(id)
    end subroutine rkpr
+
+   subroutine psrk(id, nc, tc, pc, w, c1, c2, c3, ngs, g_ids, g_v)
+      use yaeos, only: Groups, fPSRK => PSRK
+      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: tc(:), pc(:), w(:)
+      real(c_double), intent(in) :: c1(:), c2(:), c3(:)
+      integer, intent(in) :: nc
+      integer, intent(in) :: ngs(nc)
+      integer, intent(in) :: g_ids(:, :)
+      integer, intent(in) :: g_v(:, :)
+
+      type(Groups) :: molecules(nc)
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ar_model = fPSRK(tc, pc, w, molecules, c1, c2, c3)
+      call extend_ar_models_list(id)
+   end subroutine
 
    ! ==========================================================================
    !  Thermodynamic properties
@@ -485,7 +512,6 @@ contains
       nt = size(Ts)
 
       if (parallel) then
-         print *, "parallel run"
          !$OMP  PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
          do i=1,np
             do j=1,nt
@@ -502,7 +528,6 @@ contains
          end do
          !$OMP END PARALLEL DO
       else
-         print *, "non parallel run"
          do i=1,np
             do j=1,nt
                T = Ts(j)
