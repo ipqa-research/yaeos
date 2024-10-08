@@ -15,7 +15,7 @@ jobs:
           - {compiler: gcc, version: 11}
           - {compiler: gcc, version: 12}
           - {compiler: gcc, version: 13}
-          - {compiler: intel, version: '2024.1'}
+          - {compiler: intel, version: '2024.2'}
           - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
@@ -113,8 +113,10 @@ jobs:
         cd python && tox -r
 
   build_wheels:
-    needs: Python-API
     name: Build wheels on ${{ matrix.os }}
+    needs: 
+      - tests_and_coverage
+      - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

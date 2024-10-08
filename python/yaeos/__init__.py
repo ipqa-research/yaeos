@@ -5,7 +5,7 @@ relevant constants, procedures and objects to have better access to them.
 """
 
 from yaeos.lib import yaeos_c
-from yaeos.models.excess_gibbs import NRTL, UNIFACVLE
+from yaeos.models.excess_gibbs import NRTL, UNIFACVLE, UNIQUAC
 from yaeos.models.residual_helmholtz.cubic_eos import (
     MHV,
     PengRobinson76,
@@ -13,6 +13,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     QMR,
     RKPR,
     SoaveRedlichKwong,
+    PSRK,
 )
 
 
@@ -22,8 +23,10 @@ __all__ = [
     "PengRobinson76",
     "PengRobinson78",
     "RKPR",
+    "PSRK",
     "QMR",
     "NRTL",
     "UNIFACVLE",
+    "UNIQUAC",
     "MHV",
 ]

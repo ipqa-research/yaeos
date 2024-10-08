@@ -444,8 +444,68 @@ class ArModel(ABC):
 
         return flash_result
 
+    def flash_pt_grid(
+        self, z, pressures, temperatures, parallel=False
+    ) -> dict:
+        """Two-phase split with specification of temperature and pressure grid.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressures : array_like
+            Pressures grid [bar]
+        temperatures : array_like
+            Temperatures grid [K]
+        parallel : bool, optional
+            Use parallel processing, by default False
+
+        Returns
+        -------
+        dict
+            Flash grid result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+            tc = np.array([369.83, 507.6])       # critical temperatures [K]
+            pc = np.array([42.48, 30.25])        # critical pressures [bar]
+            w = np.array([0.152291, 0.301261])
+
+            temperatures = [350.0, 360.0, 400.0]
+            pressures = [10, 20, 30]
+        """
+
+        xs, ys, Vxs, Vys, betas = yaeos_c.flash_grid(
+            self.id, z, pressures, temperatures, parallel=parallel
+        )
+
+        flash = {
+            "x": xs,
+            "y": ys,
+            "Vx": Vxs,
+            "Vy": Vys,
+            "P": pressures,
+            "T": temperatures,
+            "beta": betas,
+        }
+
+        return flash
+
     def saturation_pressure(
-        self, z, temperature: float, kind: str = "bubble"
+        self, z, temperature: float, kind: str = "bubble", P0: float = 0
     ) -> dict:
         """Saturation pressure at specified temperature.
 
@@ -503,7 +563,7 @@ class ArModel(ABC):
             print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))
         """
         p, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
-            self.id, z, temperature, kind
+            id=self.id, z=z, t=temperature, kind=kind, p0=P0
         )
 
         return {

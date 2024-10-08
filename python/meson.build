@@ -97,11 +97,16 @@ py.install_sources(fapi_sources, subdir:python_lib / 'lib')
 models_sources = [python_lib / 'models' / '__init__.py']
 py.install_sources(models_sources, subdir:python_lib / 'models')
 
+## groups
+groups_sources = [python_lib / 'models' / 'groups.py']
+py.install_sources(groups_sources, subdir:python_lib / 'models')
+
 ### models.excess_gibbs
 excess_gibbs_sources = [
   python_lib / 'models' / 'excess_gibbs' / '__init__.py',
   python_lib / 'models' / 'excess_gibbs' / 'nrtl.py',
   python_lib / 'models' / 'excess_gibbs' / 'unifac.py',
+  python_lib / 'models' / 'excess_gibbs' / 'uniquac.py',
 ]
 py.install_sources(excess_gibbs_sources, subdir:python_lib / 'models' / 'excess_gibbs')
 
@@ -130,8 +135,8 @@ py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
-  dependencies : py_dep,
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack'],
+  dependencies : [py_dep, omp],
+  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp'],
   subdir: python_lib / 'lib',
   install : true,
 )

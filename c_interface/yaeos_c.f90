@@ -19,7 +19,7 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78, rkpr
+   public :: srk, pr76, pr78, rkpr, psrk
    ! Mixing rules
    public :: set_mhv, set_qmr
 
@@ -29,13 +29,14 @@ module yaeos_c
    ! GeMoels
    public :: nrtl
    public :: unifac_vle
+   public :: uniquac
    public :: ln_gamma
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume
-   
+
    ! Phase equilibria
-   public :: flash
+   public :: flash, flash_grid
    public :: saturation_pressure
    public :: pt2_phase_envelope
 
@@ -73,23 +74,56 @@ contains
       call extend_ge_models_list(id)
    end subroutine nrtl
 
-   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
-      use yaeos, only: UNIFAC, setup_unifac, Groups
-      integer(c_int), intent(out) :: id
+
+   subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
+      use yaeos, only: Groups
       integer(c_int), intent(in) :: nc !! Number of components
       integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
       integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
       integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-
-      type(Groups) :: molecules(nc)
+      type(Groups), intent(out) :: molecules(nc)
       integer :: i
 
       do i=1,nc
          molecules(i)%groups_ids = g_ids(i, :ngs(i))
          molecules(i)%number_of_groups = g_v(i, :ngs(i))
       end do
+   end subroutine
 
+   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_unifac, Groups
+      integer(c_int), intent(out) :: id !! Saved model id 
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+      
+      type(Groups) :: molecules(nc)
+      
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
       ge_model = setup_unifac(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_vle
+
+   subroutine uniquac(id, qs, rs, aij, bij, cij, dij, eij)
+      use yaeos, only: setup_uniquac
+      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: qs(:)
+      !! Molecule's relative areas \(Q_i\)
+      real(c_double), intent(in) :: rs(size(qs))
+      !! Molecule's relative volumes \(R_i\)
+      real(c_double), intent(in) :: aij(size(qs),size(qs))
+      !! Interaction parameters matrix \(a_{ij}\)
+      real(c_double), intent(in) :: bij(size(qs),size(qs))
+      !! Interaction parameters matrix \(b_{ij}\)
+      real(c_double), intent(in) :: cij(size(qs),size(qs))
+      !! Interaction parameters matrix \(c_{ij}\)
+      real(c_double), intent(in) :: dij(size(qs),size(qs))
+      !! Interaction parameters matrix \(d_{ij}\)
+      real(c_double), intent(in) :: eij(size(qs),size(qs))
+      !! Interaction parameters matrix \(e_{ij}\)
+
+      ge_model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
       call extend_ge_models_list(id)
    end subroutine
 
@@ -246,6 +280,22 @@ contains
       call extend_ar_models_list(id)
    end subroutine rkpr
 
+   subroutine psrk(id, nc, tc, pc, w, c1, c2, c3, ngs, g_ids, g_v)
+      use yaeos, only: Groups, fPSRK => PSRK
+      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: tc(:), pc(:), w(:)
+      real(c_double), intent(in) :: c1(:), c2(:), c3(:)
+      integer, intent(in) :: nc
+      integer, intent(in) :: ngs(nc)
+      integer, intent(in) :: g_ids(:, :)
+      integer, intent(in) :: g_v(:, :)
+
+      type(Groups) :: molecules(nc)
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ar_model = fPSRK(tc, pc, w, molecules, c1, c2, c3)
+      call extend_ar_models_list(id)
+   end subroutine
+
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
@@ -262,7 +312,7 @@ contains
          n, V, T, P, lnphi, dlnPhidP, dlnphidT, dlnPhidn &
          )
    end subroutine lnphi_vt
-   
+
    subroutine lnphi_pt(id, n, p, t, root_type, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), p, t
@@ -275,7 +325,7 @@ contains
       call ar_models(id)%model%lnphi_pt(&
          n, P=P, T=T, root_type=root_type, &
          lnphi=lnphi, dlnphidp=dlnPhidP, dlnphidt=dlnphidT, dlnphidn=dlnPhidn &
-      )
+         )
    end subroutine lnphi_pt
 
    subroutine pressure(id, n, V, T, P, dPdV, dPdT, dPdn)
@@ -286,7 +336,7 @@ contains
 
       call ar_models(id)%model%pressure(&
          n, V, T, P, dPdV, dPdT, dPdn &
-      )
+         )
    end subroutine pressure
 
    subroutine volume(id, n, P, T, root_type, V)
@@ -353,12 +403,13 @@ contains
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
 
-   subroutine saturation_pressure(id, z, T, kind, P, x, y, Vx, Vy, beta)
+   subroutine saturation_pressure(id, z, T, kind, P0, P, x, y, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fsaturation_pressure => saturation_pressure
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
       character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: P0
 
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: x(size(z))
@@ -369,7 +420,11 @@ contains
 
       type(EquilibriumState) :: sat
 
-      sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      if (P0 == 0) then
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      else
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0)
+      end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
 
@@ -434,4 +489,58 @@ contains
       Tcs(:i) = env%cps%T
       Pcs(:i) = env%cps%P
    end subroutine pt2_phase_envelope
+
+   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
+      use yaeos, only: EquilibriumState, flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: Ts(:)
+      real(c_double), intent(in) :: Ps(:)
+      real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
+      real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
+      logical, intent(in) :: parallel
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: flash_result
+
+      real(8) :: T, P
+
+      integer :: i, j, nt, np, iter
+
+      model = ar_models(id)%model
+      np = size(Ps)
+      nt = size(Ts)
+
+      if (parallel) then
+         !$OMP  PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+         !$OMP END PARALLEL DO
+      else
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+      end if
+   end subroutine flash_grid
 end module yaeos_c

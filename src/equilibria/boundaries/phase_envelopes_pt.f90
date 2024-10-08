@@ -3,6 +3,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_auxiliar, only: k_wilson
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
    implicit none
@@ -94,7 +95,6 @@ contains
       dS0 = optval(delta_0, 0.1_pr)
 
 
-      ! Correctly define the K-values based on the provided incipient point.
       select case(first_point%kind)
        case("bubble", "liquid-liquid")
          X(:nc) = log(first_point%y/z)
@@ -213,7 +213,7 @@ contains
          integer, intent(in) :: step_iters
          !! Iterations used in the solver
 
-         real(pr) :: maxdS
+         real(pr) :: maxdS, dT, dP, Xold(size(X))
 
          ! =====================================================================
          ! Update specification
@@ -237,8 +237,10 @@ contains
             abs(dS)*3/step_iters &
             ] &
             )
-
-         dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
+         
+         do while(maxval(abs(dXdS(:nc)*dS)) > 0.07)
+            dS = 0.7*dS
+         end do
 
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
@@ -308,10 +310,18 @@ contains
          real(pr) :: Xold(size(X)) !! Old value of X
          real(pr) :: Xnew(size(X)) !! Value of the next initialization
 
+         integer :: inner
+
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.01)
+         inner = 0
+         do while (&
+                  maxval(abs(X(:nc))) < 0.1 &
+            .and. inner < 500&
+            .and. abs(Vz - Vy) < 0.1)
             ! If near a critical point, jump over it
+            inner = inner + 1
+
             S = S + dS
             X = X + dXdS*dS
          end do
