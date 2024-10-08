@@ -102,4 +102,52 @@ contains
             end do
         end do
     end subroutine
+
+    subroutine lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
+        !! Infinite pressure limit parameter \(\Lambda\)
+        !!
+        !! \[
+        !! \Lambda = \frac{1}{\delta_1 + \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
+        !! \]
+        real(pr), intent(in) :: d1
+        real(pr), intent(in) :: dd1i(:)
+        real(pr), intent(in) :: dd1ij(:, :)
+        real(pr), intent(out) :: L
+        real(pr), intent(out) :: dLi(:)
+        real(pr), intent(out) :: dLij(:, :)
+
+        real(pr) :: f, g, h
+        real(pr), dimension(size(dd1i)) :: df, dg, dh
+        real(pr), dimension(size(dd1i), size(dd1i)) :: d2f, d2g, d2h
+
+        integer :: i, j, nc
+
+        nc = size(dd1i)
+
+        f = d1 + 1
+        g = (d1 + 1)*d1 + d1 - 1
+        h = log((d1+1)**2 / 2)
+
+        L = f/g * h
+
+        df = dd1i
+        dg = 2*(d1 + 1)*dd1i
+        dh = 2 * dd1i/(d1 + 1)
+
+        dLi = f/g * dh - f*h*dg/g**2 + h * df/g
+        
+        do concurrent (i=1:nc, j=1:nc)
+            d2f(i, j) = dd1ij(i, j)
+            d2g(i, j) = 2*dd1ij(i, j)*(d1 + 1) + 2*dd1i(i)*dd1i(j)
+            d2h(i, j) = 2*(dd1ij(i, j)/(d1 + 1) - dd1i(i)*dd1i(j)/(d1 + 1)**2)
+        end do
+
+        dLij =  0
+        do concurrent (i=1:nc, j=1:nc)
+            dLij(i, j) = f/g * d2h(i, j) - f * dh(i) * dg(j) / g**2 + dh(i)*df(j)/g
+            dLij(i, j) = dLij(i, j) - f * h * d2g(i, j)/g**2 + f*dg(i)*dh(j)/g**2 &
+            - 2*f*h*dg(i)*dg(j)/g**3 + h*df(j)*dg(i)/g**2
+            dLij(i, j) = dLij(i, j) + h * d2f(i,j)/g + df(i)*dh(j)/g - h*df(i)*dg(j)/g**2
+        end do
+    end subroutine
 end module
