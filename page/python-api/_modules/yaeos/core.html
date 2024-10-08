@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -5,20 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>yaeos.core &mdash; yaeos 0.1.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/documentation_options.js?v=92734c54"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../_static/copybutton.js?v=f281be69"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -549,10 +547,73 @@
         <span class="k">return</span> <span class="n">flash_result</span></div>
 
 
+<div class="viewcode-block" id="ArModel.flash_pt_grid">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.flash_pt_grid">[docs]</a>
+    <span class="k">def</span> <span class="nf">flash_pt_grid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Two-phase split with specification of temperature and pressure grid.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        pressures : array_like</span>
+<span class="sd">            Pressures grid [bar]</span>
+<span class="sd">        temperatures : array_like</span>
+<span class="sd">            Temperatures grid [K]</span>
+<span class="sd">        parallel : bool, optional</span>
+<span class="sd">            Use parallel processing, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Flash grid result dictionary with keys:</span>
+<span class="sd">                - x: heavy phase mole fractions</span>
+<span class="sd">                - y: light phase mole fractions</span>
+<span class="sd">                - Vx: heavy phase volume [L]</span>
+<span class="sd">                - Vy: light phase volume [L]</span>
+<span class="sd">                - P: pressure [bar]</span>
+<span class="sd">                - T: temperature [K]</span>
+<span class="sd">                - beta: light phase fraction</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+<span class="sd">            tc = np.array([369.83, 507.6])       # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([42.48, 30.25])        # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.152291, 0.301261])</span>
+
+<span class="sd">            temperatures = [350.0, 360.0, 400.0]</span>
+<span class="sd">            pressures = [10, 20, 30]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">Vxs</span><span class="p">,</span> <span class="n">Vys</span><span class="p">,</span> <span class="n">betas</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">flash_grid</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span>
+        <span class="p">)</span>
+
+        <span class="n">flash</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ys</span><span class="p">,</span>
+            <span class="s2">&quot;Vx&quot;</span><span class="p">:</span> <span class="n">Vxs</span><span class="p">,</span>
+            <span class="s2">&quot;Vy&quot;</span><span class="p">:</span> <span class="n">Vys</span><span class="p">,</span>
+            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">pressures</span><span class="p">,</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">temperatures</span><span class="p">,</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="n">betas</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">flash</span></div>
+
+
 <div class="viewcode-block" id="ArModel.saturation_pressure">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.saturation_pressure">[docs]</a>
     <span class="k">def</span> <span class="nf">saturation_pressure</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bubble&quot;</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">P0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saturation pressure at specified temperature.</span>
 
@@ -610,7 +671,7 @@
 <span class="sd">            print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">volume_x</span><span class="p">,</span> <span class="n">volume_y</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">kind</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">P0</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>

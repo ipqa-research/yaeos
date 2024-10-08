@@ -86,6 +86,58 @@ contains
       dn = dx - sum_xdx
    end function dx_to_dn
 
+   function derivative_dxk_dni(n) result(dxk_dni)
+      !! # derivative_dxk_dni
+      !!
+      !! # Description
+      !! Calculate the mole fraction first derivatives respect to mole numbers
+      real(pr), intent(in) :: n(:)
+      real(pr) :: dxk_dni(size(n), size(n))
+
+      real(pr) :: n_tot
+      integer :: nc, k, i
+
+      n_tot = sum(n)
+      nc = size(n)
+
+      dxk_dni = 0.0_pr
+      do concurrent(k=1:nc, i=1:nc)
+         if (k == i) then
+            dxk_dni(k,i) = (n_tot - n(i)) / n_tot**2
+         else
+            dxk_dni(k,i) = -n(k) / n_tot**2
+         end if
+      end do
+   end function derivative_dxk_dni
+
+   function derivative_d2xk_dnidnj(n) result(d2xk_dnidnj)
+      !! # derivative_d2xk_dnidnj
+      !!
+      !! # Description
+      !! Calculate the mole fraction second derivatives respect to mole numbers
+      real(pr), intent(in) :: n(:)
+      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
+
+      real(pr) :: n_tot
+      integer :: nc, k, i, j
+
+      n_tot = sum(n)
+      nc = size(n)
+
+      d2xk_dnidnj = 0.0_pr
+      do concurrent (k=1:nc, i=1:nc, j=1:nc)
+         if (i==k .and. j==k) then
+            d2xk_dnidnj(k,i,j) = -2 * (n_tot - n(i)) / n_tot**3
+         else if (i==k) then
+            d2xk_dnidnj(k,i,j) = (2 * n(i) - n_tot) / n_tot**3
+         else if (j==k) then
+            d2xk_dnidnj(k,i,j) = (2 * n(j) - n_tot) / n_tot**3
+         else
+            d2xk_dnidnj(k,i,j) = 2 * n(k) / n_tot**3
+         end if
+      end do
+   end function derivative_d2xk_dnidnj
+
    subroutine newton_1d(f, x, tol, max_iters)
       procedure(f_1d) :: f
       real(pr), intent(in out) :: x
@@ -112,4 +164,42 @@ contains
          x = x - step
       end do
    end subroutine newton_1d
+
+   elemental function interpol(x1, x2, y1, y2, x_obj) result(y)
+      !! Linear interpolation.
+      !!
+      !! Calculates the linear interpolation between two points at a desired
+      !! x value with the equation:
+      !! \[
+      !!    y = \frac{y_2 - y_1}{x_2 - x_1} \cdot (x_{obj})  - x_1 + y_1
+      !! \]
+      !!
+      !! Since this function is defined as `elemental` it will also interpolate
+      !! a set of vectors.
+      !!
+      !! Examples of usage:
+      !!
+      !! ```fortran
+      !! x1 = 2
+      !! x2 = 5
+      !! y1 = 2
+      !! y2 = 9
+      !! y = interpol(x1, x2, y1, y2, 2.3)
+      !! ```
+      !!
+      !! ```fortran
+      !! x1 = 2
+      !! x2 = 5
+      !! y1 = [2, 6]
+      !! y2 = [9, 15]
+      !! y = interpol(x1, x2, y1, y2, 2.3)
+      !! ```
+      real(pr), intent(in) :: x1 !! First point x value
+      real(pr), intent(in) :: x2 !! Second point x value
+      real(pr), intent(in) :: y1 !! First point y value
+      real(pr), intent(in) :: y2 !! Second point y value
+      real(pr), intent(in) :: x_obj !! Desired x value to interpolate
+      real(pr) :: y !! y value at `x_obj`
+      y = (y2 - y1)/(x2 - x1)*(x_obj - x1) + y1
+   end function interpol
 end module yaeos__math

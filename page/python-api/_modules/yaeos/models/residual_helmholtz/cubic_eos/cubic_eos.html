@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,20 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 0.1.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=92734c54"></script>
-        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../../../../_static/copybutton.js?v=f281be69"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -84,6 +82,7 @@
 
 <span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
+<span class="kn">from</span> <span class="nn">yaeos.models.groups</span> <span class="kn">import</span> <span class="n">groups_from_dicts</span>
 <span class="kn">from</span> <span class="nn">yaeos.models.residual_helmholtz.cubic_eos.mixing_rules</span> <span class="kn">import</span> <span class="n">CubicMixRule</span>
 
 
@@ -432,6 +431,119 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span> <span class="o">=</span> <span class="n">mixrule</span>
         <span class="k">if</span> <span class="n">mixrule</span><span class="p">:</span>
             <span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PSRK">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PSRK">[docs]</a>
+<span class="k">class</span> <span class="nc">PSRK</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predictive-Soave-Redlich-Kwong cubic equation of state.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    critical_temperatures : array_like</span>
+<span class="sd">        Critical temperatures vector [K]</span>
+<span class="sd">    critical_pressures : array_like</span>
+<span class="sd">        Critical pressures vector [bar]</span>
+<span class="sd">    acentric_factors : array_like</span>
+<span class="sd">        Acentric factors vector</span>
+<span class="sd">    molecules: list of dict</span>
+<span class="sd">        List of dicts with the groups and their amounts for each molecule</span>
+<span class="sd">    c1: array_like</span>
+<span class="sd">        Mathias-Copeman parameters c1</span>
+<span class="sd">    c2: array_like</span>
+<span class="sd">        Mathias-Copeman parameters c3</span>
+<span class="sd">    c3: array_like</span>
+<span class="sd">        Mathias-Copeman parameters c3</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nc : int</span>
+<span class="sd">        Number of components</span>
+<span class="sd">    critical_temperatures : array_like</span>
+<span class="sd">        Critical temperatures vector [K]</span>
+<span class="sd">    critical_pressures : array_like</span>
+<span class="sd">        Critical pressures vector [bar]</span>
+<span class="sd">    acentric_factors : array_like</span>
+<span class="sd">        Acentric factors vector</span>
+<span class="sd">    id : int</span>
+<span class="sd">        EoS identifier</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from yaeos import SoaveRedlichKwong</span>
+
+<span class="sd">        # methanol/n-hexane mixture</span>
+<span class="sd">        tc = [512.5, 507.6]   # Critical temperatures [K]</span>
+<span class="sd">        pc = [80.84, 30.25]     # Critical pressures [bar]</span>
+<span class="sd">        w = [0.565831, 0.301261]    # Acentric factors</span>
+
+<span class="sd">        molecules = [{15:1, 1:2, 2:4}]</span>
+
+<span class="sd">        # Mathias-copeman constants</span>
+<span class="sd">        c1 = [1.31458917, 0.93830213]</span>
+<span class="sd">        c2 = [0.0, 0.0]</span>
+<span class="sd">        c3 = [0.0, 0.0]</span>
+
+<span class="sd">        psrk = PSRK(tc, pc, w, molecules=molecules, c1=c1, c2=c2, c3=c3)</span>
+
+<span class="sd">    .. code-block:: python</span>
+<span class="sd">        # The dictionary of molecules can be created using the `ugropy` library</span>
+
+<span class="sd">        import ugropy as ug</span>
+
+<span class="sd">        molecules = [&quot;methanol&quot;, &quot;ethanol&quot;]</span>
+
+<span class="sd">        groups = [ug.get_groups(ug.psrk, molecule) for molecule in molecules]</span>
+<span class="sd">        molecules = [</span>
+<span class="sd">            ug.writers.to_thermo(grp.subgroups, ug.psrk) for grp in groups</span>
+<span class="sd">        ]</span>
+
+<span class="sd">        print(molecules)</span>
+
+<span class="sd">        &gt;&gt;&gt; [{15: 1}, {1: 1, 2: 1, 14: 1}]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">critical_temperatures</span><span class="p">,</span>
+        <span class="n">critical_pressures</span><span class="p">,</span>
+        <span class="n">acentric_factors</span><span class="p">,</span>
+        <span class="n">molecules</span><span class="p">,</span>
+        <span class="n">c1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">c2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">c3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">PSRK</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">critical_temperatures</span><span class="p">,</span>
+            <span class="n">critical_pressures</span><span class="p">,</span>
+            <span class="n">acentric_factors</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="p">(</span><span class="n">number_of_groups</span><span class="p">,</span> <span class="n">groups_ids</span><span class="p">,</span> <span class="n">groups_ammounts</span><span class="p">)</span> <span class="o">=</span> <span class="n">groups_from_dicts</span><span class="p">(</span>
+            <span class="n">molecules</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">c1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">c1</span> <span class="o">=</span> <span class="mf">0.48</span> <span class="o">+</span> <span class="mf">1.574</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="mf">0.175</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">c2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="n">c3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">c3</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">psrk</span><span class="p">(</span>
+            <span class="n">tc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">,</span>
+            <span class="n">pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">ngs</span><span class="o">=</span><span class="n">number_of_groups</span><span class="p">,</span>
+            <span class="n">g_ids</span><span class="o">=</span><span class="n">groups_ids</span><span class="p">,</span>
+            <span class="n">g_v</span><span class="o">=</span><span class="n">groups_ammounts</span><span class="p">,</span>
+            <span class="n">c1</span><span class="o">=</span><span class="n">c1</span><span class="p">,</span>
+            <span class="n">c2</span><span class="o">=</span><span class="n">c2</span><span class="p">,</span>
+            <span class="n">c3</span><span class="o">=</span><span class="n">c3</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 </pre></div>
 

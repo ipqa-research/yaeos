@@ -3,10 +3,20 @@ module yaeos__equilibria_saturation_points
    use yaeos__models, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_auxiliar, only: k_wilson
+   use ieee_arithmetic, only: ieee_is_nan, ieee_is_finite
+
+   implicit none
 
    real(pr) :: tol = 1e-9_pr
-   integer :: max_iterations = 200
+   integer :: max_iterations = 2000
+   integer :: iters_first_step = 100
    real(pr) :: step_tol = 0.1_pr
+
+   class(ArModel), pointer, private :: hidden_model
+   real(pr), private, allocatable :: hidden_z(:)
+   character(len=14), private :: hidden_kind
+
+   real(pr), private :: Vz, Vy
 
 contains
 
@@ -21,7 +31,7 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      class(ArModel), intent(in) :: model
+      class(ArModel), target, intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
       character(len=*), intent(in) :: kind !! [bubble|dew|liquid-liquid]
@@ -81,7 +91,7 @@ contains
       ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      do its=1, iterations
+      do its=1, iters_first_step
          y = k*z
          call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
          call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
@@ -103,6 +113,32 @@ contains
 
       end do
       ! ========================================================================
+      if (its > iters_first_step) then
+      fsolve: block
+         use yaeos__math_continuation, only: full_newton
+         real(pr) :: X(size(n)+2)
+         real(pr) :: S, dS, dXdS(size(n)+2)
+         real(pr) :: F(size(n)+2), dF(size(n)+2, size(n)+2), dFdS(size(n)+2)
+         integer :: ns
+
+         ns = size(n)+1
+         K = k_wilson(model, T, P)
+         if (kind == "dew") K =1/K
+         X = log([K, T, P])
+         S = X(ns)
+
+         hidden_kind = kind
+         hidden_model => model
+         hidden_z = z
+
+         its = 0
+         call full_newton(foo, its, X, ns, S, dS, dXdS, 1, max_iterations, F, dF, dFdS, tol=1.e-5_pr)
+         K = exp(X(:size(n)))
+         P = exp(X(size(n)+2))
+         y = K*z
+      end block fsolve
+      end if
+      
       select case(kind)
        case("bubble")
          saturation_pressure = EquilibriumState(kind="bubble", &
@@ -130,7 +166,8 @@ contains
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
       use stdlib_optval, only: optval
-      class(ArModel), intent(in) :: model
+      use yaeos__math_continuation, only: full_newton
+      class(ArModel), target, intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
       character(len=*), intent(in) :: kind !! [bubble|dew|liquid-liquid]
@@ -194,11 +231,9 @@ contains
       end where
 
       ! ========================================================================
-
-      ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      do its=1, iterations
+      do its=1, iters_first_step
          y = k*z
          where (.not. is_incipient)
             y = 0
@@ -211,7 +246,10 @@ contains
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dt_z - dlnphi_dt_y))
 
-         do while (abs(step) > 0.25*T .or. T - step < 0)
+         if (.not. ieee_is_finite(step) .or. ieee_is_nan(step)) exit
+
+         do while (abs(step) > 0.5*T .or. T - step < 0)
+            if (isnan(step)) step = 10
             step = step/2
          end do
 
@@ -220,6 +258,30 @@ contains
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
+      if (its > iters_first_step) then
+      fsolve: block
+         real(pr) :: X(size(n)+2)
+         real(pr) :: S, dS, dXdS(size(n)+2)
+         real(pr) :: F(size(n)+2), dF(size(n)+2, size(n)+2), dFdS(size(n)+2)
+         integer :: ns
+
+         ns = size(n)+2
+         K = k_wilson(model, T, P)
+         if (kind == "dew") K =1/K
+         X = log([K, T, P])
+         S = X(ns)
+
+         hidden_kind = kind
+         hidden_model => model
+         hidden_z = z
+
+         call full_newton(foo, its, X, ns, S, dS, dXdS, 1, max_iterations, F, dF, dFdS, tol=tol)
+         K = exp(X(:size(n)))
+         T = exp(X(size(n)+1))
+         y = K*z
+      end block fsolve
+      end if
+
       select case(kind)
        case("bubble")
          saturation_temperature = EquilibriumState(kind="bubble", &
@@ -234,5 +296,91 @@ contains
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
+
+
    end function saturation_temperature
+
+   subroutine foo(X, ns, S, F, dF, dFdS)
+      !! Function that needs to be solved at each envelope point
+      real(pr), intent(in) :: X(:)
+      integer, intent(in) :: ns
+      real(pr), intent(in) :: S
+
+      real(pr), intent(out) :: F(:)
+      real(pr), intent(out) :: dF(:, :)
+      real(pr), intent(out) :: dFdS(:)
+
+      character(len=14) :: kind_z, kind_y
+
+      real(pr) :: y(size(X)-2)
+      real(pr) :: lnPhi_z(size(X)-2), lnPhi_y(size(X)-2)
+      real(pr) :: dlnphi_dt_z(size(X)-2), dlnphi_dt_y(size(X)-2)
+      real(pr) :: dlnphi_dp_z(size(X)-2), dlnphi_dp_y(size(X)-2)
+      real(pr) :: dlnphi_dn_z(size(X)-2, size(X)-2), dlnphi_dn_y(size(X)-2, size(X)-2)
+
+      real(pr) :: T, P, K(size(X)-2)
+
+      real(pr) :: z(size(X)-2)
+
+      integer :: i, j, nc
+
+      nc = size(X)-2
+
+      F = 0
+      dF = 0
+
+      K = exp(X(:nc))
+      T = exp(X(nc+1))
+      P = exp(X(nc+2))
+
+      z = hidden_z
+      y = K*z
+
+      select case(hidden_kind)
+       case ("bubble")
+         kind_z = "liquid"
+         kind_y = "vapor"
+       case ("dew")
+         kind_z = "vapor"
+         kind_y = "liquid"
+       case ("liquid-liquid")
+         kind_z = "liquid"
+         kind_y = "liquid"
+       case default
+         kind_z = "stable"
+         kind_y = "stable"
+      end select
+
+      call hidden_model%lnphi_pt(&
+         z, P, T, V=Vz, root_type=kind_z, &
+         lnPhi=lnphi_z, dlnPhidt=dlnphi_dt_z, &
+         dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
+         )
+      call hidden_model%lnphi_pt(&
+         y, P, T, V=Vy, root_type=kind_y, &
+         lnPhi=lnphi_y, dlnPhidt=dlnphi_dt_y, &
+         dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
+         )
+
+      F(:nc) = X(:nc) + lnPhi_y - lnPhi_z
+      F(nc + 1) = sum(y - z)
+      F(nc + 2) = X(ns) - S
+
+      ! Jacobian Matrix
+      do j=1,nc
+         df(:nc, j) = dlnphi_dn_y(:, j) * y(j)
+         df(j, j) = dF(j, j) + 1
+      end do
+
+      df(:nc, nc + 1) = T * (dlnphi_dt_y - dlnphi_dt_z)
+      df(:nc, nc + 2) = P * (dlnphi_dp_y - dlnphi_dp_z)
+
+      df(nc + 1, :nc) = y
+
+      df(nc + 2, :) = 0
+      df(nc + 2, ns) = 1
+
+      dFdS = 0
+      dFdS(nc+2) = -1
+   end subroutine foo
 end module yaeos__equilibria_saturation_points

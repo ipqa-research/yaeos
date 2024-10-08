@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,22 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Core Module &mdash; yaeos 0.1.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/documentation_options.js?v=92734c54"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="_static/copybutton.js?v=f281be69"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="_static/documentation_options.js?v=92734c54"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -65,6 +63,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.pressure()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.volume"><code class="docutils literal notranslate"><span class="pre">ArModel.volume()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt_grid"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt_grid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_pressure()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt()</span></code></a></li>
 </ul>
@@ -420,8 +419,55 @@ derivative is asked [bar]</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.flash_pt_grid">
+<span class="sig-name descname"><span class="pre">flash_pt_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.flash_pt_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.flash_pt_grid" title="Link to this definition">¶</a></dt>
+<dd><p>Two-phase split with specification of temperature and pressure grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>pressures</strong> (<em>array_like</em>) – Pressures grid [bar]</p></li>
+<li><p><strong>temperatures</strong> (<em>array_like</em>) – Temperatures grid [K]</p></li>
+<li><p><strong>parallel</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use parallel processing, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Flash grid result dictionary with keys:</dt><dd><ul class="simple">
+<li><p>x: heavy phase mole fractions</p></li>
+<li><p>y: light phase mole fractions</p></li>
+<li><p>Vx: heavy phase volume [L]</p></li>
+<li><p>Vy: light phase volume [L]</p></li>
+<li><p>P: pressure [bar]</p></li>
+<li><p>T: temperature [K]</p></li>
+<li><p>beta: light phase fraction</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.152291</span><span class="p">,</span> <span class="mf">0.301261</span><span class="p">])</span>
+
+<span class="n">temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mf">350.0</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">]</span>
+<span class="n">pressures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.saturation_pressure">
-<span class="sig-name descname"><span class="pre">saturation_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bubble'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.saturation_pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.saturation_pressure" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">saturation_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.saturation_pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.saturation_pressure" title="Link to this definition">¶</a></dt>
 <dd><p>Saturation pressure at specified temperature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

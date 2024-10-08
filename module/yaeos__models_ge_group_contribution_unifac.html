@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 6.5% of total for modules and submodules.">410 statements</a>
+                 title=" 5.0% of total for modules and submodules.">367 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,18 +118,7 @@
   
   
   
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#absints-0"
-         aria-expanded="false" aria-controls="absints-0">
-         <h4 class="card-header bg-primary text-white">Abstract Interfaces</h4>
-      </a>
-      <div id="absints-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#interface-temperature_dependence">temperature_dependence</a>
-        </div>
-      </div>
-    </div>
-
+  
       <div class="card mb-4">
       <a data-bs-toggle="collapse" href="#types-0"
          aria-expanded="false" aria-controls="types-0">
@@ -137,10 +126,7 @@
       </a>
       <div id="types-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#type-groups">Groups</a>
-            <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#type-psifunction">PsiFunction</a>
             <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#type-unifac">UNIFAC</a>
-            <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#type-unifacpsi">UNIFACPsi</a>
         </div>
       </div>
     </div>
@@ -167,7 +153,6 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#proc-ge_combinatorial">Ge_combinatorial</a>
             <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#proc-ge_residual">Ge_residual</a>
-            <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#proc-unifac_temperature_dependence">UNIFAC_temperature_dependence</a>
             <a class="list-group-item" href="../module/yaeos__models_ge_group_contribution_unifac.html#proc-excess_gibbs~2">excess_gibbs</a>
         </div>
       </div>
@@ -261,10 +246,12 @@ Engineering Chemistry Research, 42(1), 183–188.
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ge_group_contribution_model_parameters.html'>yaeos__models_ge_group_contribution_model_parameters</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ge_group_contribution_unifac_parameters.html'>yaeos__models_ge_group_contribution_unifac_parameters</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge_group_contribution_model_parameters.html'>yaeos__models_ge_group_contribution_model_parameters</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge_group_contribution_groups.html'>yaeos__models_ge_group_contribution_groups</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge_gc_td.html'>yaeos__models_ge_gc_td</a></li>
               </ul>
             </li>
         </ul>
@@ -278,273 +265,9 @@ Engineering Chemistry Research, 42(1), 183–188.
 
 
 
-        <section>
-          <h2>Abstract Interfaces</h2>
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="interface-temperature_dependence"></span><h3>abstract interface
-        
-    </h3></div>
-    <ul class="list-group">
-      <li class="list-group-item">
-            <h3>
-    public  subroutine temperature_dependence(self, systems_groups, T, psi, dpsi_dt, dpsi_dt2)  
-
-    </h3>
-  <h1 id="temperature_dependence-interface">temperature_dependence interface</h1>
-<p>Interface subroutine for UNIFAC models temperature dependent
-functions</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~15"></span>
-              class(<a href='../type/psifunction.html'>PsiFunction</a>)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-                <p>PsiFunction type variable</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-systems_groups"></span>
-              class(<a href='../type/groups.html'>Groups</a>)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>systems_groups</strong></td>
-            <td>
-                <p>Groups type variable containig all the system&rsquo;s groups. See the
-<code>groups_stew</code> variable on the <code>UNIFAC</code> documentation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~27"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-                <p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-psi~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>psi</strong>(:,:)</td>
-            <td>
-                <p>
-<script type="math/tex">\psi(T)</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpsi_dt"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dpsi_dt</strong>(:,:)</td>
-            <td>
-                <p>
-<script type="math/tex">\frac{d \psi (T)}{dT}</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpsi_dt2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dpsi_dt2</strong>(:,:)</td>
-            <td>
-                <p>
-<script type="math/tex">\frac{d^2 \psi (T)}{dT^2}</script>
-</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-      </li>
-    </ul>
-  </div>
-
-        </section>
-        <br>
 
         <section>
           <h2>Derived Types</h2>
-              <div class="card">
-    <div class="card-header codesum">
-      <span class="anchor" id="type-groups"></span>
-      <h3>
-        type, public&nbsp;::&nbsp;
-        <a href='../type/groups.html'>Groups</a>
-        
-      </h3>
-    </div>
-    <div class="card-body">
-      <p>Derived type used to represent a molecule and its UNIFAC groups.</p><a href="../type/groups.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-        <h4>Components</h4>
-          <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-<th></th><th scope="col">Initial</th>        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-groups_ids"></span>
-              integer,
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>groups_ids</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Indexes (ids) of each subgroup in the main group matrix</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-number_of_groups"></span>
-              integer,
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>number_of_groups</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Occurrences of each subgroup in the molecule</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-surface_area"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>surface_area</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Molecule surface area <script type="math/tex">q</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-volume~2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>volume</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-<p>Molecule volume <script type="math/tex">r</script>
-</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum">
-      <span class="anchor" id="type-psifunction"></span>
-      <h3>
-        type, public, abstract&nbsp;::&nbsp;
-        <a href='../type/psifunction.html'>PsiFunction</a>
-        
-      </h3>
-    </div>
-    <div class="card-body">
-      <p>UNIFAC <script type="math/tex">\psi(T)</script> functions abstract type</p><a href="../type/psifunction.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-
-
-
-        <h4>Type-Bound Procedures</h4>
-        <table class="table table-striped varlist">
-          <tbody>
-              <tr>
-                <td>  procedure(<a href='../interface/temperature_dependence.html'>temperature_dependence</a>), public, deferred ::
-  <strong><a href='../type/psifunction.html#boundprocedure-psi'>psi</a></strong></td>
-                <td></td>
-              </tr>
-          </tbody>
-        </table>
-    </div>
-  </div>
-
               <div class="card">
     <div class="card-header codesum">
       <span class="anchor" id="type-unifac"></span>
@@ -640,7 +363,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-molecules"></span>
+              <span class="anchor" id="variable-molecules~2"></span>
               type(<a href='../type/groups.html'>Groups</a>),
             </td>
               <td>public,</td>
@@ -691,7 +414,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-psi_function"></span>
+              <span class="anchor" id="variable-psi_function~2"></span>
               class(<a href='../type/psifunction.html'>PsiFunction</a>),
             </td>
               <td>public,</td>
@@ -759,7 +482,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~22"></span>
+              <span class="anchor" id="variable-z~16"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -785,75 +508,12 @@ functions</p>
           <tbody>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/unifac.html#boundprocedure-excess_gibbs~3'>excess_gibbs</a></strong></td>
+  <strong><a href='../type/unifac.html#boundprocedure-excess_gibbs~2'>excess_gibbs</a></strong></td>
                 <td></td>
               </tr>
               <tr>
                 <td>  procedure, public ::
   <strong><a href='../type/gemodel.html#boundprocedure-ln_activity_coefficient'>ln_activity_coefficient</a></strong></td>
-                <td></td>
-              </tr>
-          </tbody>
-        </table>
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum">
-      <span class="anchor" id="type-unifacpsi"></span>
-      <h3>
-        type, public, extends(<a href='../type/psifunction.html'>PsiFunction</a>)&nbsp;::&nbsp;
-        <a href='../type/unifacpsi.html'>UNIFACPsi</a>
-        
-      </h3>
-    </div>
-    <div class="card-body">
-      <p>
-<script type="math/tex; mode=display">
-   \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
-</script>
-</p><a href="../type/unifacpsi.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-        <h4>Components</h4>
-          <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-<th></th><th scope="col">Initial</th>        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-aij"></span>
-              real(kind=pr),
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>Aij</strong>(:,:)</td>
-                <td></td>
-                <td></td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-
-        <h4>Type-Bound Procedures</h4>
-        <table class="table table-striped varlist">
-          <tbody>
-              <tr>
-                <td>  procedure, public ::
-  <strong><a href='../type/unifacpsi.html#boundprocedure-psi~3'>psi</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/unifac_temperature_dependence.html'>UNIFAC_temperature_dependence</a></td>
                 <td></td>
               </tr>
           </tbody>
@@ -886,7 +546,7 @@ functions</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-molecules~3"></span>
+              <span class="anchor" id="variable-molecules~4"></span>
               type(<a href='../type/groups.html'>Groups</a>),
             </td>
 <td>intent(in)</td>
@@ -901,7 +561,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-parameters~2"></span>
+              <span class="anchor" id="variable-parameters~5"></span>
               type(<a href='../type/gegcmodelparameters.html'>GeGCModelParameters</a>),
             </td>
 <td>intent(in),</td>
@@ -961,7 +621,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ng"></span>
+              <span class="anchor" id="variable-ng~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -976,7 +636,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-parameters"></span>
+              <span class="anchor" id="variable-parameters~4"></span>
               type(<a href='../type/gegcmodelparameters.html'>GeGCModelParameters</a>),
             </td>
 <td>intent(in)</td>
@@ -1006,7 +666,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-molecules~2"></span>
+              <span class="anchor" id="variable-molecules~3"></span>
               type(<a href='../type/groups.html'>Groups</a>),
             </td>
 <td>intent(in)</td>
@@ -1056,7 +716,7 @@ functions</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~17"></span>
+              <span class="anchor" id="variable-self~14"></span>
               class(<a href='../type/unifac.html'>UNIFAC</a>)
             </td>
 <td></td>
@@ -1071,7 +731,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~33"></span>
+              <span class="anchor" id="variable-n~38"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1086,7 +746,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~29"></span>
+              <span class="anchor" id="variable-t~27"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1101,7 +761,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~6"></span>
+              <span class="anchor" id="variable-ge~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1175,7 +835,7 @@ functions</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~18"></span>
+              <span class="anchor" id="variable-self~15"></span>
               class(<a href='../type/unifac.html'>UNIFAC</a>)
             </td>
 <td></td>
@@ -1190,7 +850,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~34"></span>
+              <span class="anchor" id="variable-n~39"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1205,7 +865,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~30"></span>
+              <span class="anchor" id="variable-t~28"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1220,7 +880,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~7"></span>
+              <span class="anchor" id="variable-ge~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1326,128 +986,6 @@ functions</p>
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-unifac_temperature_dependence"></span> <h3>public  subroutine <a href='../proc/unifac_temperature_dependence.html'>UNIFAC_temperature_dependence</a>(self, systems_groups, T, psi, dpsi_dt, dpsi_dt2)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Implementation of the <script type="math/tex">\psi(T) </script> function of the UNIFAC model.</p><a href="../proc/unifac_temperature_dependence.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~19"></span>
-              class(<a href='../type/unifacpsi.html'>UNIFACPsi</a>)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-<p>
-<script type="math/tex">\psi</script> function</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-systems_groups~2"></span>
-              class(<a href='../type/groups.html'>Groups</a>)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>systems_groups</strong></td>
-            <td>
-<p>Groups in the system</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~31"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-<p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-psi~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>psi</strong>(:,:)</td>
-            <td>
-<p>
-<script type="math/tex">\psi</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpsi_dt~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dpsi_dt</strong>(:,:)</td>
-            <td>
-<p>
-<script type="math/tex">\frac{d \psi}{dT}</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpsi_dt2~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dpsi_dt2</strong>(:,:)</td>
-            <td>
-<p>
-<script type="math/tex">\frac{d^2 \psi}{dT^2}</script>
-</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-excess_gibbs~2"></span> <h3>public  subroutine <a href='../proc/excess_gibbs~2.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h3></div>
     <div class="card-body">
@@ -1467,7 +1005,7 @@ functions</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~16"></span>
+              <span class="anchor" id="variable-self~13"></span>
               class(<a href='../type/unifac.html'>UNIFAC</a>),
             </td>
 <td>intent(in)</td>
@@ -1482,7 +1020,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~32"></span>
+              <span class="anchor" id="variable-n~37"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1497,7 +1035,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~28"></span>
+              <span class="anchor" id="variable-t~26"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1512,7 +1050,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~5"></span>
+              <span class="anchor" id="variable-ge~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1527,7 +1065,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~4"></span>
+              <span class="anchor" id="variable-get~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1544,7 +1082,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~4"></span>
+              <span class="anchor" id="variable-get2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1578,7 +1116,7 @@ functions</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~4"></span>
+              <span class="anchor" id="variable-getn~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1640,7 +1178,7 @@ functions</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-09-10 13:54              </p>
+ on 2024-10-08 12:58              </p>
           </div>
         </div>
         <br>

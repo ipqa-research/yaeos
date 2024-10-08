@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.5% of total for modules and submodules.">155 statements</a>
+                 title=" 3.6% of total for modules and submodules.">262 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -117,9 +117,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-max_iterations~2">max_iterations</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-iters_first_step">iters_first_step</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-max_iterations~3">max_iterations</a>
             <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-step_tol">step_tol</a>
-            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-tol~2">tol</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-tol~4">tol</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-vy~6">Vy</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-vz~3">Vz</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-hidden_kind">hidden_kind</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-hidden_model">hidden_model</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#variable-hidden_z">hidden_z</a>
         </div>
       </div>
     </div>
@@ -146,7 +152,18 @@
       </div>
     </div>
 
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__equilibria_saturation_points.html#proc-foo">foo</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -168,10 +185,11 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
               </ul>
             </li>
         </ul>
@@ -196,7 +214,24 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iterations~2"></span>
+              <span class="anchor" id="variable-iters_first_step"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iters_first_step</strong></td>
+<td> =</td>
+                <td>100</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iterations~3"></span>
               integer,
             </td>
               <td>public</td>
@@ -206,7 +241,7 @@
             <td>::</td>
             <td><strong>max_iterations</strong></td>
 <td> =</td>
-                <td>200</td>
+                <td>2000</td>
             <td>
                 
             </td>
@@ -230,7 +265,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~2"></span>
+              <span class="anchor" id="variable-tol~4"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -241,6 +276,91 @@
             <td><strong>tol</strong></td>
 <td> =</td>
                 <td>1e-9_pr</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vy~6"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vz~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hidden_kind"></span>
+              character(len=14),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>hidden_kind</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hidden_model"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+              <td>private,</td>
+            <td>
+              pointer
+            </td>
+            <td>::</td>
+            <td><strong>hidden_model</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hidden_z"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>hidden_z</strong>(:)</td>
+                <td></td>
+                <td></td>
             <td>
                 
             </td>
@@ -277,12 +397,12 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~13"></span>
+              <span class="anchor" id="variable-model~30"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(in),</td>
               <td></td>            <td>
-              
+              target
             </td>
             <td>::</td>
             <td><strong>model</strong></td>
@@ -292,7 +412,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~30"></span>
+              <span class="anchor" id="variable-n~73"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -307,7 +427,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~21"></span>
+              <span class="anchor" id="variable-t~41"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -322,7 +442,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind~2"></span>
+              <span class="anchor" id="variable-kind~4"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -367,7 +487,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~2"></span>
+              <span class="anchor" id="variable-max_iters~5"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -412,12 +532,12 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~14"></span>
+              <span class="anchor" id="variable-model~31"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(in),</td>
               <td></td>            <td>
-              
+              target
             </td>
             <td>::</td>
             <td><strong>model</strong></td>
@@ -427,7 +547,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~31"></span>
+              <span class="anchor" id="variable-n~74"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -442,7 +562,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~10"></span>
+              <span class="anchor" id="variable-p~15"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -457,7 +577,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind~3"></span>
+              <span class="anchor" id="variable-kind~5"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -502,7 +622,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~3"></span>
+              <span class="anchor" id="variable-max_iters~6"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -530,6 +650,125 @@
         </section>
         <br>
 
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-foo"></span> <h3>public  subroutine <a href='../proc/foo.html'>foo</a>(X, ns, S, F, dF, dFdS)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Function that needs to be solved at each envelope point</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~18"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns~10"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ns</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>F</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dF</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dfds~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dFdS</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
 
 
 
@@ -551,7 +790,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-09-10 13:54              </p>
+ on 2024-10-08 12:58              </p>
           </div>
         </div>
         <br>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
@@ -5,20 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>yaeos.models.excess_gibbs.unifac &mdash; yaeos 0.1.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=7ab3649f" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../_static/documentation_options.js?v=92734c54"></script>
-        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../../../_static/copybutton.js?v=f281be69"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -82,10 +80,13 @@
   <h1>Source code for yaeos.models.excess_gibbs.unifac</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;UNIFAC Module.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">GeModel</span>
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
+<span class="kn">from</span> <span class="nn">yaeos.models.groups</span> <span class="kn">import</span> <span class="n">groups_from_dicts</span>
 
 
 <div class="viewcode-block" id="UNIFACVLE">
@@ -117,28 +118,11 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecules</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
-        <span class="n">max_ng</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="k">for</span> <span class="n">groups</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">])</span>
-
-        <span class="c1"># The C-API expects two 2D arrays with the groups and their amounts</span>
-        <span class="c1"># for each molecule.</span>
-        <span class="n">groups_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">max_ng</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
-        <span class="n">groups_ammounts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">max_ng</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
-
-        <span class="n">ngs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">grp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">molecules</span><span class="p">):</span>
-            <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">vs</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">group_count</span> <span class="ow">in</span> <span class="n">grp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">group_id</span><span class="p">))</span>
-                <span class="n">vs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">group_count</span><span class="p">))</span>
-
-            <span class="n">ngs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
-            <span class="n">groups_ids</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ids</span>
-            <span class="n">groups_ammounts</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vs</span>
-
+        <span class="p">(</span><span class="n">number_of_groups</span><span class="p">,</span> <span class="n">groups_ids</span><span class="p">,</span> <span class="n">groups_ammounts</span><span class="p">)</span> <span class="o">=</span> <span class="n">groups_from_dicts</span><span class="p">(</span>
+            <span class="n">molecules</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">unifac_vle</span><span class="p">(</span>
-            <span class="n">ngs</span><span class="o">=</span><span class="n">ngs</span><span class="p">,</span> <span class="n">g_ids</span><span class="o">=</span><span class="n">groups_ids</span><span class="p">,</span> <span class="n">g_v</span><span class="o">=</span><span class="n">groups_ammounts</span>
+            <span class="n">ngs</span><span class="o">=</span><span class="n">number_of_groups</span><span class="p">,</span> <span class="n">g_ids</span><span class="o">=</span><span class="n">groups_ids</span><span class="p">,</span> <span class="n">g_v</span><span class="o">=</span><span class="n">groups_ammounts</span>
         <span class="p">)</span></div>
 
 </pre></div>

@@ -1,0 +1,471 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../../../favicon.png">
+
+    <title>UNIQUAC &ndash; yaeos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../../../css/local.css" rel="stylesheet">
+      <link  href="../../../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>UNIQUAC</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Gibbs Excess Models</a></li>
+              <li class="breadcrumb-item active" aria-current="page">UNIQUAC</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../index.html">Using yaeos</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="nrtl.html">NRTL</a>
+              <a class="nav-link" href="unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link active disabled" href="uniquac.html">UNIQUAC</a>
+
+                </nav>
+              <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#uniquac">UNIQUAC</a><ul>
+<li><a href="#temperature-derivatives">Temperature derivatives</a></li>
+<li><a href="#cross-temperature-compositional-derivative">Cross temperature-compositional derivative</a></li>
+<li><a href="#compositional-derivatives">Compositional derivatives</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="uniquac">UNIQUAC</h1>
+<p>UNIQUAC (<strong>uni</strong>versal <strong>qua</strong>si<strong>c</strong>hemical) Excess Gibbs free energy model.</p>
+<p>
+<script type="math/tex; mode=display"> 
+\frac{G^E}{RT} = \sum_k n_k \ln\frac{\phi_k}{x_k}
++ \frac{z}{2}\sum_k q_k n_k \ln\frac{\theta_k}{\phi_k}
+- \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{lk} \right)
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">x_k = \frac{n_k}{\sum_l n_l}</script>
+</p>
+<p>
+<script type="math/tex; mode=display"> \phi_k = \frac{r_k n_k}{\sum_l r_l n_l} </script>
+</p>
+<p>
+<script type="math/tex; mode=display"> \theta_k = \frac{q_k n_k}{\sum_l q_l n_l} </script>
+</p>
+<p>
+<script type="math/tex; mode=display"> \tau_{lk} = \exp \left[\frac{-\Delta U_{lk}}{R T} \right] </script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{-\Delta U_{lk}}{R T} = a_{lk}+\frac{b_{lk}}{T}+c_{lk}\ln T + d_{lk}T +
+e_{lk}{T^2}
+</script>
+</p>
+<h2 id="temperature-derivatives">Temperature derivatives</h2>
+<p>
+<script type="math/tex">\qquad \tau_{lk}:</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d \tau_{lk}}{dT} = \tau_{lk} \left(2 T e_{lk} + d_{lk} + \frac{c_{lk}}{T}
+- \frac{b_{lk}}{T^{2}}\right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d^2 \tau_{lk}}{dT^2} = \tau_{lk} \left(2 T e_{lk} + d_{lk} + \frac{c_{lk}}{T}
+- \frac{b_{lk}}{T^{2}}\right)^2 + \tau_{lk} \left(2 e_{lk} - \frac{c_{lk}}{T^{2}} +
+\frac{2 b_{lk}}{T^{3}}\right)
+</script>
+</p>
+<p>
+<script type="math/tex">\qquad G^E</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial G^E}{\partial T} = \frac{G^E}{T} - RT \sum_k q_k n_k \frac{
+\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T}}{\sum_l \theta_l
+\tau_{lk}}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial G^E}{\partial T^2} = -R\left[T \sum_k q_k n_k
+\left(\frac{(\sum_l \theta_l \frac{\partial^2 \tau_{lk}}{\partial T^2})}{\sum_l
+\theta_l \tau_{lk}}
+- \frac{(\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T})^2}{(\sum_l
+\theta_l \tau_{lk})^2}\right) + 2\left(\sum_k q_k n_k \frac{(\sum_l \theta_l
+\frac{\partial \tau_{lk}}{\partial T} )}{\sum_l \theta_l \tau_{lk}}\right)
+\right]
+</script>
+</p>
+<h2 id="cross-temperature-compositional-derivative">Cross temperature-compositional derivative</h2>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial^2 G^E}{\partial n_i \partial T} = \frac{1}{T} \frac{\partial
+G^E}{\partial n_i} - R T \left(q_i \frac{\sum_l \theta_l \frac{d \tau_{li}}{d
+T}}{\sum_l \theta_l \tau_{li}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
+\theta_l}{d n_i} \frac{d \tau_{lk}}{d T})(\sum_l \theta_l \tau_{lk}) - (\sum_l
+\theta_l \frac{d \tau_{lk}}{d T})(\sum_l \frac{d \theta_l}{d n_i}
+\tau_{lk})}{(\sum_l \theta_l \tau_{lk})^2} \right) \right)
+</script>
+</p>
+<h2 id="compositional-derivatives">Compositional derivatives</h2>
+<p>
+<script type="math/tex">\qquad \phi_k</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d \phi_k}{dn_i} = \begin{cases} - \frac{{n}_{i}
+{r}_{i}^{2}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{2}} +
+\frac{{r}_{i}}{\sum_l {n}_{l} {r}_{l}} & \text{for}\: i = k \\-
+\frac{{n}_{k} {r}_{i} {r}_{k}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{2}}
+& \text{otherwise} \end{cases}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d^2 \phi_k}{dn_i dn_j} = \begin{cases} \frac{2 {n}_{i}
+{r}_{i}^{3}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{3}} - \frac{2
+{r}_{i}^{2}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{2}} & \text{for}\: i
+= k \wedge j = k \\\frac{2 {n}_{i} {r}_{i}^{2} {r}_{j}}{\left(\sum_l
+{n}_{l} {r}_{l}\right)^{3}} - \frac{{r}_{i} {r}_{j}}{\left(\sum_l
+{n}_{l} {r}_{l}\right)^{2}} & \text{for}\: i = k \wedge j \neq k \\\frac{2
+{n}_{j} {r}_{i} {r}_{j}^{2}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{3}} -
+\frac{{r}_{i} {r}_{j}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{2}} &
+\text{for}\: j = k \wedge i \neq k \\\frac{2 {n}_{k} {r}_{i} {r}_{j}
+{r}_{k}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{3}} & \text{otherwise}
+\end{cases}
+</script>
+</p>
+<p>
+<script type="math/tex">\qquad \theta_k</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d \theta_k}{dn_i} = \begin{cases} - \frac{{n}_{i}
+{q}_{i}^{2}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{2}} +
+\frac{{q}_{i}}{\sum_l {n}_{l} {q}_{l}} & \text{for}\: i = k \\-
+\frac{{n}_{k} {q}_{i} {q}_{k}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{2}}
+& \text{otherwise} \end{cases}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d^2 \theta_k}{dn_i dn_j} = \begin{cases} \frac{2 {n}_{i}
+{q}_{i}^{3}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{3}} - \frac{2
+{q}_{i}^{2}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{2}} & \text{for}\: i
+= k \wedge j = k \\\frac{2 {n}_{i} {q}_{i}^{2} {q}_{j}}{\left(\sum_l
+{n}_{l} {q}_{l}\right)^{3}} - \frac{{q}_{i} {q}_{j}}{\left(\sum_l
+{n}_{l} {q}_{l}\right)^{2}} & \text{for}\: i = k \wedge j \neq k \\\frac{2
+{n}_{j} {q}_{i} {q}_{j}^{2}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{3}} -
+\frac{{q}_{i} {q}_{j}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{2}} &
+\text{for}\: j = k \wedge i \neq k \\\frac{2 {n}_{k} {q}_{i} {q}_{j}
+{q}_{k}}{\left(\sum_l {n}_{l} {q}_{l}\right)^{3}} & \text{otherwise}
+\end{cases}
+</script>
+</p>
+<p>
+<script type="math/tex">\qquad G^E</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln \left(\frac{\phi_i}{x_i}
+\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} -
+\frac{\frac{dx_k}{dn_i}}{x_k}\right) +
+\frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} + \frac{z}{2}
+\sum_k {n}_{k} {q}_{k} \left(\frac{\frac{d \theta_{k}}{d {n}_{i}}}{\theta_k} -
+\frac{\frac{d \phi_{k}}{d {n}_{i}}}{\phi_k} \right) - {q}_{i}
+\ln{\left(\sum_l \theta_{l} {\tau}_{li} \right)} - \sum_k {n}_{k} {q}_{k}
+\frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lk}}{\sum_l \theta_{l}
+{\tau}_{lk}}
+</script>
+</p>
+<p>Differentiating each term of the first compositional derivative respect to
+$n_j$</p>
+<p>
+<script type="math/tex">\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\frac{d \phi_i}{d n_j}}{\phi_i} - \frac{\frac{d x_i}{d n_j}}{x_i} 
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
++\frac{\frac{d \phi_j}{dn_i}}{\phi_j} -
+\frac{\frac{dx_j}{dn_i}}{x_j}
++ \sum_k n_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
+  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
+- \sum_k n_k \left(\frac{\frac{d^2x_k}{dn_i dn_j} x_k -
+  \frac{dx_k}{dn_i} \frac{dx_k}{dn_j}}{x_k^2} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
++ \frac{z}{2} q_i \left( \frac{\frac{d \theta_i}{d n_j}}{\theta_i} - \frac
+{\frac{d \phi_i}{d n_j}}{\phi_i} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
++ \frac{z}{2} q_j \left( \frac{\frac{d \theta_j}{d n_i}}{\theta_j} - \frac
+{\frac{d \phi_j}{d n_i}}{\phi_j} \right)
++ \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\theta_k}{dn_i dn_j} \theta_k -
+  \frac{d\theta_k}{dn_i} \frac{d\theta_k}{dn_j}}{\theta_k^2} \right)
+- \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
+  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+- q_i \left( \frac{\sum_l \frac{d \theta_l}{d n_j} \tau_{li}}{\sum_l \theta_l 
+\tau_{li}} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+- {q}_{j} \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lj}}{\sum_l
+\theta_{l}{\tau}_{lj}} - \sum_k {n}_{k} {q}_{k} \frac{\left(\sum_l
+\frac{d^2\theta_l}{dn_idn_j} \tau_{lk} \right) \left(\sum_l
+\theta_l \tau_{lk} \right) - \left(\sum_l \frac{d\theta_l}{dn_i}
+\tau_{lk} \right) \left(\sum_l \frac{d\theta_l}{dn_j} \tau_{lk}
+\right)}{(\sum_l \theta_{l} {\tau}_{lk})^2}
+</script>
+</p>
+<h2 id="examples">Examples</h2>
+<p>Example from: Gmehling et al. (2012) [2]</p>
+<p>An example of having a mixture of Water-Ethanol-Bezene at 298.15 K with 
+constant <script type="math/tex">\Delta U</script> [K]:</p>
+<table>
+<thead>
+<tr>
+<th>Water</th>
+<th>Ethanol</th>
+<th>Benzene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>526.02</td>
+<td>309.64</td>
+</tr>
+<tr>
+<td>−318.06</td>
+<td>0</td>
+<td>−91.532</td>
+</tr>
+<tr>
+<td>1325.1</td>
+<td>302.57</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIQUAC</span>
+
+<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rs</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">qs</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">T</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">UNIQUAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+
+<span class="n">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.92_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">2.1055_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">3.1878_pr</span><span class="p">]</span>
+<span class="n">qs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">1.972_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">2.4_pr</span><span class="p">]</span>
+
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.15_pr</span>
+
+<span class="c">! Calculate bij from DUij. We need -DU/R to get bij</span>
+<span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">52</span><span class="mf">6.02_pr</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">30</span><span class="mf">9.64_pr</span><span class="p">]</span>
+<span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">31</span><span class="mf">8.06_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="mf">1.532_pr</span><span class="p">]</span>
+<span class="n">b</span><span class="p">(</span><span class="mi">3</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">132</span><span class="mf">5.1_pr</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">30</span><span class="mf">2.57_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">]</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span><span class="w"> </span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">bij</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">2.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">8.0_pr</span><span class="p">]</span>
+
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">ln_gammas</span><span class="p">)</span><span class="w"> </span><span class="c">! [8.856, 0.860, 1.425]</span>
+</code></pre></div>
+
+<h2 id="references">References</h2>
+<ol>
+<li>Maurer, G., &amp; Prausnitz, J. M. (1978). On the derivation and extension of
+   the UNIQUAC equation. Fluid Phase Equilibria, 2(2), 91-99.</li>
+<li>Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey. Chemical
+   Thermodynamics for Process Simulation. 1st edition. Weinheim: Wiley-VCH,
+   2012.</li>
+<li>Caleb Bell and Contributors (2016-2024). Thermo: Chemical properties
+   component of Chemical Engineering Design Library (ChEDL)
+   https://github.com/CalebBell/thermo.</li>
+</ol>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2024 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-10-08 12:58              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../../../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../../../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../../../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>
