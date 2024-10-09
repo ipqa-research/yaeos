@@ -144,7 +144,7 @@ contains
       real(pr) :: totn !! Total number of moles
 
       integer :: i, j, nc
-      real(pr) :: lambda, dlambdadn(size(n)), dlambdadn2(size(n), size(n))
+      real(pr) :: L, dL(size(n)), dL2(size(n), size(n))
 
       nc = size(n)
       totn = sum(n)
@@ -154,25 +154,21 @@ contains
 
       call self%Bmix(n, bi, B, dBi, dBij)
       call self%D1Mix(n, del1, D1, dD1i, dD1ij)
-      call lamdba_hv(D1, dD1i, dD1ij, lambda, dlambdadn, dlambdadn2)
+      call lamdba_hv(D1, dD1i, dD1ij, L, dL, dL2)
 
       call self%ge%excess_gibbs( &
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
          )
 
-      f = sum(n*ai/bi) - Ge/lambda
-      fdt = sum(n*daidt/bi) - GeT/lambda
-      fdt2 = sum(n*daidt2/bi) - GeT2/lambda
+      f = sum(n*ai/bi) - Ge/L
+      fdt = sum(n*daidt/bi) - GeT/L
+      fdt2 = sum(n*daidt2/bi) - GeT2/L
 
-      fdi = ai/bi - (Gen/lambda - dlambdadn * Ge/lambda**2)
-      fdiT = daidt/bi - (GeTn/lambda - dlambdadn * GeT/lambda**2)
+      fdi = ai/bi - (Gen/L - dL * Ge/L**2)
+      fdiT = daidt/bi - (GeTn/L - dL * GeT/L**2)
 
-      do i=1,nc
-         do j=1,nc
-            fdij(i,j) = (Gen(j) * lambda + Ge*dlambdadn2(i, j))/lambda**2  &
-               + dlambdadn(j)*Gen(i)/lambda**2 - Gen2(i, j)/lambda  &
-               - 2*Ge*dlambdadn(i)*dlambdadn(j)/lambda**3
-         end do
+      do concurrent(i=1:nc, j=1:nc)
+         fdij(i, j) = Gen2(i, j)/L - dL(j) * Gen(i)/L**2 - (dL2(i,j) * Gen2(i,j)/L**2 + dL(i)*(Gen2(i,j)/L**2-Gen(i)/L * dL(j)/2))
       end do
 
       dDi = B*fdi + f*dBi
@@ -181,6 +177,12 @@ contains
       D = f*B
       dDdT = fdT*B
       dDdT2 = fdT2*B
+      dDij = fdij
+      ! do i=1,nc
+      !    do j=1,nc
+      !       dDij(i,j) = dBi(j)*fdi(i) + B*fdij(i,j) + f*dBij(i,j) + fdi(j)*dBi(i)
+      !    end do
+      ! end do
       do j=1,nc
          dDij(:, j) = dBi(j)*fdi + B*fdij(:, j) + f*dBij(:, j) + fdi(j)*dBi
       end do

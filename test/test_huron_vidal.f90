@@ -11,8 +11,8 @@ program main
    real(pr) :: test_dDi(nc) = [44.282156269357145, 65.486908012229634]
    real(pr) :: test_dDidT(nc) = [-0.11932459578485301, -0.20145758095042413]
    real(pr) :: test_dDij(nc, nc) = reshape( &
-      [26.365653783750915, 48.961850282093884, &
-      48.816907571095129, 69.673797730130701], [nc, nc])
+      [25.301358190454181, 49.027354964263466, &
+      49.027354964263466, 69.601795054432472], [nc, nc])
 
    real(pr) :: ai(nc), daidt(nc), daidt2(nc)
    real(pr) :: n(nc), T, Tr(nc), Tc(nc)
@@ -37,6 +37,12 @@ program main
    daidt2 = daidt2*model%ac/Tc**2
 
    call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+   print *, D
+   print *, dDdT
+   print *, dDdT2
+   print *, dDi
+   print *, dDidT
+   print *, dDij
 
    if (.not. allclose([D], [test_D], test_tol)) error stop 1
    if (.not. allclose([dDdT], [test_dDdT], test_tol)) error stop 1
@@ -45,13 +51,6 @@ program main
    if (.not. allclose([dDidT], [test_dDidT], test_tol)) error stop 1
    if (.not. allclose([dDij], [test_dDij], test_tol)) error stop 1
 
-
-   print *, D
-   print *, dDdT
-   print *, dDdT2
-   print *, dDi
-   print *, dDidT
-   print *, dDij
 
 
 end program main
