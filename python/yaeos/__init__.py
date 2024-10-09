@@ -7,13 +7,14 @@ relevant constants, procedures and objects to have better access to them.
 from yaeos.lib import yaeos_c
 from yaeos.models.excess_gibbs import NRTL, UNIFACVLE, UNIQUAC
 from yaeos.models.residual_helmholtz.cubic_eos import (
+    HV,
     MHV,
+    PSRK,
     PengRobinson76,
     PengRobinson78,
     QMR,
     RKPR,
     SoaveRedlichKwong,
-    PSRK,
 )
 
 
@@ -29,4 +30,5 @@ __all__ = [
     "UNIFACVLE",
     "UNIQUAC",
     "MHV",
+    "HV",
 ]

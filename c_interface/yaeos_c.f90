@@ -76,7 +76,6 @@ contains
       call extend_ge_models_list(id)
    end subroutine nrtl
 
-
    subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
       use yaeos, only: Groups
       integer(c_int), intent(in) :: nc !! Number of components
@@ -221,18 +220,15 @@ contains
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
 
-      type(HV) :: mixrule
-
-      ar_model = ar_models(ar_id)%model
-      ge_model = ge_models(ge_id)%model
-
-      select type(ar_model)
-       class is(CubicEoS)
-         mixrule = HV(ge=ge_model, bi=ar_model%b, del1=ar_model%del1)
-         call ar_model%set_mixrule(mixrule)
-      end select
-
-      call move_alloc(ar_model, ar_models(ar_id)%model)
+      associate(&
+         ar_model => ar_models(ar_id)%model,&
+         ge_model => ge_models(ge_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = HV(ge=ge_models(ge_id)%model, bi=ar_model%b, del1=ar_model%del1)
+         end select
+      end associate
    end subroutine set_hv
 
    subroutine set_qmr(ar_id, kij, lij)

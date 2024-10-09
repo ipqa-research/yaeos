@@ -184,4 +184,4 @@ class HV(CubicMixRule):
         ar_model_id : int
             ID of the cubic EoS model
         """
-        yaeos_c.set_mhv(ar_model_id, self.ge.id)
+        yaeos_c.set_hv(ar_model_id, self.ge.id)
