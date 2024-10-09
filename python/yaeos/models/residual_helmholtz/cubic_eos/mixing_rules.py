@@ -138,3 +138,50 @@ class MHV(CubicMixRule):
             ID of the cubic EoS model
         """
         yaeos_c.set_mhv(ar_model_id, self.ge.id, self.q)
+
+
+class HV(CubicMixRule):
+    """Huron-Vidal mixing rule.
+
+    Parameters
+    ----------
+    ge : GeModel
+        Excess Gibbs energy model
+
+    Attributes
+    ----------
+    ge : GeModel
+        Excess Gibbs energy model
+
+    Example
+    -------
+    .. code-block:: python
+
+        from yaeos import HV, SoaveRedlichKwong, NRTL
+
+        tc = [647.14, 513.92]               # critical temperature [K]
+        pc = [220.64, 61.48]                # critical pressure [bar]
+        w =  [0.344, 0.649]                 # acentric factor
+
+        a = [[0, 3.458], [-0.801, 0]]       # NRTL aij parameters
+        b = [[0, -586.1], [246.2, 0]]       # NRTL bij parameters
+        c = [[0, 0.3], [0.3, 0]]            # NRTL cij parameters
+
+        ge_model = NRTL(a, b, c)
+        mixrule = HV(ge_model)
+
+        model_hv = PengRobinson76(tc, pc, w, mixrule)
+    """
+
+    def __init__(self, ge: GeModel) -> None:
+        self.ge = ge
+
+    def set_mixrule(self, ar_model_id: int) -> None:
+        """Set modified Huron-Vidal mix rule method.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
+        yaeos_c.set_mhv(ar_model_id, self.ge.id)
