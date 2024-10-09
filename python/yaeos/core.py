@@ -375,7 +375,207 @@ class ArModel(ABC):
         res = yaeos_c.volume(self.id, moles, pressure, temperature, root)
         return res
 
-    def flash_pt(self, z, pressure: float, temperature: float) -> dict:
+    def enthalpy_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ):
+        """Calculate residual enthalpy given volume and temperature [J/mol].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dv = np.empty(1, order="F") if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.enthalpy_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            hrt=dt,
+            hrv=dv,
+            hrn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else dv[0],
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def gibbs_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ):
+        """Calculate residual Gibbs energy given volume and temperature [bar L/mol].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dv = np.empty(1, order="F") if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.gibbs_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            grt=dt,
+            grv=dv,
+            grn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else dv[0],
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def entropy_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ):
+        """Calculate residual entropy given volume and temperature [barL/molK].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dv = np.empty(1, order="F") if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.entropy_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            srt=dt,
+            srv=dv,
+            srn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else dv[0],
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def cv_residual_vt(
+        self, moles, volume: float, temperature: float
+    ) -> float:
+        """Calculate residual isochoric heat capacity given V and T [barL/molK].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        float
+            Residual isochoric heat capacity [barL/molK]
+        """
+        return yaeos_c.cv_residual_vt(self.id, moles, volume, temperature)
+
+    def cp_residual_vt(
+        self, moles, volume: float, temperature: float
+    ) -> float:
+        """Calculate residual isobaric heat capacity given V and T [barL/molK].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        float
+            Residual isochoric heat capacity [barL/molK]
+        """
+        return yaeos_c.cp_residual_vt(self.id, moles, volume, temperature)
+
+    def flash_pt(
+        self, z, pressure: float, temperature: float, k0=None
+    ) -> dict:
         """Two-phase split with specification of temperature and pressure.
 
         Parameters
@@ -386,6 +586,8 @@ class ArModel(ABC):
             Pressure [bar]
         temperature : float
             Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
 
         Returns
         -------
@@ -428,6 +630,8 @@ class ArModel(ABC):
 
             print(model.flash_pt([0.5, 0.5], 8.0, 350.0))
         """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
             self.id, z, p=pressure, t=temperature
         )
