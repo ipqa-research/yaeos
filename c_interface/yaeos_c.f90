@@ -228,7 +228,7 @@ contains
 
       select type(ar_model)
        class is(CubicEoS)
-         mixrule = HV(ge=ge_model, b=ar_model%b, del1=ar_model%del1)
+         mixrule = HV(ge=ge_model, bi=ar_model%b, del1=ar_model%del1)
          call ar_model%set_mixrule(mixrule)
       end select
 
