@@ -1,16 +1,18 @@
 program main
    use yaeos, only: pr, CubicEoS
    use fixtures_models, only: binary_NRTL_SRK_HV
+   use auxiliar_functions, only: allclose
 
    integer, parameter :: nc = 2
-   real(pr) :: test_D = 30.797085158580309
-   real(pr) :: test_dDdT = -8.4060598003984383E-002
-   real(pr) :: test_dDdT2 = 3.5988912573413091E-004
-   real(pr) :: test_dDi(nc) = [45.043635428115536, 65.731805235540278]
-   real(pr) :: test_dDidT(nc) = [-8.2934765998547377E-002, -0.18941780037882283]
+   real(pr) :: test_tol = 1e-7
+   real(pr) :: test_D =    30.622979288145512
+   real(pr) :: test_dDdT = -9.2515493337243210E-002
+   real(pr) :: test_dDdT2 =4.8515216513941623E-004
+   real(pr) :: test_dDi(nc) = [44.282156269357145, 65.486908012229634]
+   real(pr) :: test_dDidT(nc) = [-0.11932459578485301, -0.20145758095042413]
    real(pr) :: test_dDij(nc, nc) = reshape( &
-      [25.390034959603035, 49.957034706240584, &
-      49.957034706240584, 69.675496643514933], [nc, nc])
+      [26.365653783750915, 48.961850282093884, &
+      48.816907571095129, 69.673797730130701], [nc, nc])
 
    real(pr) :: ai(nc), daidt(nc), daidt2(nc)
    real(pr) :: n(nc), T, Tr(nc), Tc(nc)
@@ -20,6 +22,8 @@ program main
    type(CubicEoS) :: model
 
    model = binary_NRTL_SRK_HV()
+
+   print *, "HURON_VIDAL MIXING RULE"
 
    n = [0.2, 0.8]
    T = 150
@@ -33,10 +37,21 @@ program main
    daidt2 = daidt2*model%ac/Tc**2
 
    call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+
+   if (.not. allclose([D], [test_D], test_tol)) error stop 1
+   if (.not. allclose([dDdT], [test_dDdT], test_tol)) error stop 1
+   if (.not. allclose([dDdT2], [test_dDdT2], test_tol)) error stop 1
+   if (.not. allclose([dDi], [test_dDi], test_tol)) error stop 1
+   if (.not. allclose([dDidT], [test_dDidT], test_tol)) error stop 1
+   if (.not. allclose([dDij], [test_dDij], test_tol)) error stop 1
+
+
    print *, D
    print *, dDdT
    print *, dDdT2
    print *, dDi
    print *, dDidT
    print *, dDij
+
+
 end program main
