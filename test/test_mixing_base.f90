@@ -1,5 +1,6 @@
 program main
    use yaeos__models_ar_cubic_mixing_base
+   use auxiliar_functions, only: allclose
    implicit none
 
    integer, parameter :: nc=3
@@ -10,15 +11,10 @@ program main
 
    integer :: i, j
 
-   n = [1, 5, 2]
+   n = [9, 5, 2]
    d1i = [0.1_pr, 0.2_pr, 0.3_pr]
    call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
    call lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
-
-   print *, "L  = ", L
-
-   print *, 'd1i  = ', d1i
-   print *, 'dd1i = ', dd1i
 
    dn = 0.0001_pr
    do i=1,nc
@@ -41,12 +37,6 @@ program main
 
    call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
    call lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
-
-   print *, 'dLi_num = ', dLi_num
-   print *, 'dLi     = ', dLi
-
-   print *, 'dlij_num = ', dlij_num
-   print *, 'dlij     = ', dLij
 
 contains
 
