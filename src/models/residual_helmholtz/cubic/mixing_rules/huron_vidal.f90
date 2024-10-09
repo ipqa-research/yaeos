@@ -129,6 +129,7 @@ contains
       ai, daidt, daidt2, &
       D, dDdT, dDdT2, dDi, dDidT, dDij &
       )
+      use yaeos__models_ar_cubic_mixing_base, only: lamdba_hv
       class(HV), intent(in) :: self
       real(pr), intent(in) :: T, n(:)
       real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
@@ -155,7 +156,7 @@ contains
 
       call self%Bmix(n, bi, B, dBi, dBij)
       call self%D1Mix(n, del1, D1, dD1i, dD1ij)
-
+      call lamdba_hv(D1, dD1i, dD1ij, lambda, dlambdadn, dlambdadn2)
 
       call self%ge%excess_gibbs( &
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
@@ -175,7 +176,6 @@ contains
                       - 2*Ge*dlambdadn(i)*dlambdadn(j)/lambda**3 
          end do
       end do
-
 
       dDi = B*fdi + f*dBi
       dDidT = B*fdiT + fdT*dBi
