@@ -8,12 +8,12 @@ contains
         rel_error = abs(x - y)/abs(x)
     end function rel_error
 
-    elemental function allclose(x, y, rtol)
-        real(pr), intent(in) :: x
-        real(pr), intent(in) :: y
+    function allclose(x, y, rtol)
+        real(pr), intent(in) :: x(:)
+        real(pr), intent(in) :: y(:)
         real(pr), intent(in) :: rtol
 
         logical :: allclose
-        allclose = maxval(rel_error([x],[y])) < rtol
+        allclose = maxval(rel_error(x, y)) < rtol
     end function allclose
 end module auxiliar_functions

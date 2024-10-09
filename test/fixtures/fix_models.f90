@@ -147,4 +147,38 @@ contains
       deallocate (model%mixrule)
       model%mixrule = mixrule
    end function
+   
+   type(CubicEoS) function binary_NRTL_SRK_HV() result(model)
+      use yaeos, only: NRTL, SoaveRedlichKwong, pr, CubicEoS, HV
+
+      integer, parameter :: nc = 2
+      real(pr), dimension(nc,nc) :: a, b, c
+      real(pr), dimension(nc) :: tc, pc, w
+      type(HV) :: mixrule
+      type(NRTL) :: ge_model
+
+      tc = [647.13999999999999, 513.91999999999996]
+      pc = [220.63999999999999, 61.479999999999997]
+      w =  [0.34399999999999997, 0.64900000000000002]
+      a = 0; b = 0; c = 0
+
+      ! NRTL model parameters
+      a(1, 2) = 3.458
+      a(2, 1) = -0.801
+
+      b(1, 2) = -586.1
+      b(2, 1) = 246.2
+
+      c(1, 2) = 0.3
+      c(2, 1) = 0.3
+
+      ge_model = NRTL(a, b, c)
+
+      ! Define the model to be SRK
+      model = SoaveRedlichKwong(tc, pc, w)
+      mixrule%ge = ge_model
+      mixrule%bi = model%b
+      mixrule%del1 = model%del1
+      call model%set_mixrule(mixrule)
+   end function
 end module

@@ -24,14 +24,14 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
 
    private
 
+   public :: HV
    public :: MHV
    public :: DmixMHV
 
    type, extends(CubicMixRule) :: HV
       class(GeModel), allocatable :: ge
-      real(pr), allocatable :: bi(:)
       real(pr), allocatable :: del1(:)
-      real(pr), allocatable :: del2(:)
+      real(pr), allocatable :: bi(:)
    contains
       procedure :: Bmix => BmixHV
       procedure :: D1Mix => D1MixHV
@@ -134,7 +134,7 @@ contains
       real(pr), intent(in) :: T, n(:)
       real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
       real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
-      
+
       real(pr) :: f, fdt, fdt2, fdi(size(n)), fdit(size(n)), fdij(size(n), size(n))
       real(pr) :: b, bi(size(n)), dbi(size(n)), dbij(size(n), size(n))
       real(pr) :: del1(size(n)), del2(size(n))
@@ -150,8 +150,6 @@ contains
       totn = sum(n)
 
       del1 = self%del1
-      del2 = self%del2
-
       bi = self%bi
 
       call self%Bmix(n, bi, B, dBi, dBij)
@@ -160,7 +158,7 @@ contains
 
       call self%ge%excess_gibbs( &
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
-      )
+         )
 
       f = sum(n*ai/bi) - Ge/lambda
       fdt = sum(n*daidt/bi) - GeT/lambda
@@ -172,8 +170,8 @@ contains
       do i=1,nc
          do j=1,nc
             fdij(i,j) = (Gen(j) * lambda + Ge*dlambdadn2(i, j))/lambda**2  &
-                      + dlambdadn(j)*Gen(i)/lambda**2 - Gen2(i, j)/lambda  &
-                      - 2*Ge*dlambdadn(i)*dlambdadn(j)/lambda**3 
+               + dlambdadn(j)*Gen(i)/lambda**2 - Gen2(i, j)/lambda  &
+               - 2*Ge*dlambdadn(i)*dlambdadn(j)/lambda**3
          end do
       end do
 
@@ -183,9 +181,11 @@ contains
       D = f*B
       dDdT = fdT*B
       dDdT2 = fdT2*B
-      dDij = fdij
+      do j=1,nc
+         dDij(:, j) = dBi(j)*fdi + B*fdij(:, j) + f*dBij(:, j) + fdi(j)*dBi
+      end do
 
-      error stop "Not implemented"
+      ! error stop "Not implemented"
 
    end subroutine DmixHV
 
