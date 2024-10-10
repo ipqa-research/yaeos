@@ -369,8 +369,8 @@ contains
    subroutine enthalpy_residual_vt(id, n, V, T, Hr, HrT, HrV, Hrn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), V, T
-      real(c_double), intent(out) :: Hr
-      real(c_double), optional, intent(out) :: HrT, HrV, Hrn(size(n))
+      real(c_double), intent(in out) :: Hr
+      real(c_double), optional, intent(in out) :: HrT, HrV, Hrn(size(n))
 
       call ar_models(id)%model%enthalpy_residual_vt(&
          n, V, T, Hr, HrT, HrV, Hrn &
@@ -381,7 +381,7 @@ contains
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: Gr
-      real(c_double), optional, intent(out) :: GrT, GrV, Grn(size(n))
+      real(c_double), optional, intent(in out) :: GrT, GrV, Grn(size(n))
 
       call ar_models(id)%model%gibbs_residual_vt(&
          n, V, T, Gr, GrT, GrV, Grn &
@@ -392,7 +392,7 @@ contains
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: Sr
-      real(c_double), optional, intent(out) :: SrT, SrV, Srn(size(n))
+      real(c_double), optional, intent(in out) :: SrT, SrV, Srn(size(n))
 
       call ar_models(id)%model%entropy_residual_vt(&
          n, V, T, Sr, SrT, SrV, Srn &
