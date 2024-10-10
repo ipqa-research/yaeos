@@ -20,7 +20,7 @@ from .cubic_eos import (
     RKPR,
     SoaveRedlichKwong,
 )
-from .mixing_rules import CubicMixRule, MHV, HV, QMR
+from .mixing_rules import CubicMixRule, HV, MHV, QMR
 
 
 __all__ = [

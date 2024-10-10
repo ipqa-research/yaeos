@@ -436,7 +436,7 @@ class ArModel(ABC):
         dv: bool = False,
         dn: bool = False,
     ):
-        """Calculate residual Gibbs energy given volume and temperature [bar L/mol].
+        """Rresidual Gibbs energy given volume and temperature [barL/mol].
 
         Parameters
         ----------
@@ -534,7 +534,7 @@ class ArModel(ABC):
     def cv_residual_vt(
         self, moles, volume: float, temperature: float
     ) -> float:
-        """Calculate residual isochoric heat capacity given V and T [barL/molK].
+        """Residual isochoric heat capacity given V and T [barL/molK].
 
         Parameters
         ----------
@@ -692,15 +692,15 @@ class ArModel(ABC):
             pressures = [10, 20, 30]
         """
 
-        xs, ys, Vxs, Vys, betas = yaeos_c.flash_grid(
+        xs, ys, vxs, vys, betas = yaeos_c.flash_grid(
             self.id, z, pressures, temperatures, parallel=parallel
         )
 
         flash = {
             "x": xs,
             "y": ys,
-            "Vx": Vxs,
-            "Vy": Vys,
+            "Vx": vxs,
+            "Vy": vys,
             "P": pressures,
             "T": temperatures,
             "beta": betas,
@@ -709,7 +709,7 @@ class ArModel(ABC):
         return flash
 
     def saturation_pressure(
-        self, z, temperature: float, kind: str = "bubble", P0: float = 0
+        self, z, temperature: float, kind: str = "bubble", p0: float = 0
     ) -> dict:
         """Saturation pressure at specified temperature.
 
@@ -767,7 +767,7 @@ class ArModel(ABC):
             print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))
         """
         p, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
-            id=self.id, z=z, t=temperature, kind=kind, p0=P0
+            id=self.id, z=z, t=temperature, kind=kind, p0=p0
         )
 
         return {
@@ -781,7 +781,7 @@ class ArModel(ABC):
         }
 
     def saturation_temperature(
-        self, z, pressure: float, kind: str = "bubble", T0: float = 0
+        self, z, pressure: float, kind: str = "bubble", t0: float = 0
     ) -> dict:
         """Saturation pressure at specified temperature.
 
@@ -839,7 +839,7 @@ class ArModel(ABC):
             print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))
         """
         t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
-            id=self.id, z=z, p=pressure, kind=kind, t0=T0
+            id=self.id, z=z, p=pressure, kind=kind, t0=t0
         )
 
         return {
@@ -848,7 +848,7 @@ class ArModel(ABC):
             "Vx": volume_x,
             "Vy": volume_y,
             "T": t,
-            "P": p,
+            "P": pressure,
             "beta": beta,
         }
 
