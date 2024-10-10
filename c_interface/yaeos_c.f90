@@ -21,7 +21,7 @@ module yaeos_c
    ! CubicEoS
    public :: srk, pr76, pr78, rkpr, psrk
    ! Mixing rules
-   public :: set_mhv, set_qmr
+   public :: set_mhv, set_qmr, set_hv
 
    ! __del__
    public :: make_available_ar_models_list
@@ -33,7 +33,9 @@ module yaeos_c
    public :: ln_gamma
 
    ! Thermoprops
-   public :: lnphi_vt, lnphi_pt, pressure, volume
+   public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
+   public :: gibbs_residual_vt, entropy_residual_vt
+   public :: Cv_residual_vt, Cp_residual_vt
 
    ! Phase equilibria
    public :: flash, flash_grid
@@ -74,7 +76,6 @@ contains
       call extend_ge_models_list(id)
    end subroutine nrtl
 
-
    subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
       use yaeos, only: Groups
       integer(c_int), intent(in) :: nc !! Number of components
@@ -88,18 +89,18 @@ contains
          molecules(i)%groups_ids = g_ids(i, :ngs(i))
          molecules(i)%number_of_groups = g_v(i, :ngs(i))
       end do
-   end subroutine
+   end subroutine setup_groups
 
    subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
       use yaeos, only: UNIFAC, setup_unifac, Groups
-      integer(c_int), intent(out) :: id !! Saved model id 
+      integer(c_int), intent(out) :: id !! Saved model id
       integer(c_int), intent(in) :: nc !! Number of components
       integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
       integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
       integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-      
+
       type(Groups) :: molecules(nc)
-      
+
       call setup_groups(nc, ngs, g_ids, g_v, molecules)
       ge_model = setup_unifac(molecules)
       call extend_ge_models_list(id)
@@ -125,7 +126,7 @@ contains
 
       ge_model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
       call extend_ge_models_list(id)
-   end subroutine
+   end subroutine uniquac
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
@@ -213,6 +214,23 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_mhv
 
+   subroutine set_hv(ar_id, ge_id)
+      !! Huron-Vidal Mixing rule
+      use yaeos, only: HV, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      integer(c_int), intent(in) :: ge_id
+
+      associate(&
+         ar_model => ar_models(ar_id)%model,&
+         ge_model => ge_models(ge_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = HV(ge=ge_models(ge_id)%model, bi=ar_model%b, del1=ar_model%del1)
+         end select
+      end associate
+   end subroutine set_hv
+
    subroutine set_qmr(ar_id, kij, lij)
       use yaeos, only: QMR, CubicEoS
       integer(c_int), intent(in) :: ar_id
@@ -294,7 +312,7 @@ contains
       call setup_groups(nc, ngs, g_ids, g_v, molecules)
       ar_model = fPSRK(tc, pc, w, molecules, c1, c2, c3)
       call extend_ar_models_list(id)
-   end subroutine
+   end subroutine psrk
 
    ! ==========================================================================
    !  Thermodynamic properties
@@ -348,6 +366,56 @@ contains
       call ar_models(id)%model%volume(n=n, P=P, T=T, root_type=root_type, V=V)
    end subroutine volume
 
+   subroutine enthalpy_residual_vt(id, n, V, T, Hr, HrT, HrV, Hrn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: Hr
+      real(c_double), optional, intent(in out) :: HrT, HrV, Hrn(size(n))
+
+      call ar_models(id)%model%enthalpy_residual_vt(&
+         n, V, T, Hr, HrT, HrV, Hrn &
+         )
+   end subroutine enthalpy_residual_vt
+
+   subroutine gibbs_residual_vt(id, n, V, T, Gr, GrT, GrV, Grn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: Gr
+      real(c_double), optional, intent(in out) :: GrT, GrV, Grn(size(n))
+
+      call ar_models(id)%model%gibbs_residual_vt(&
+         n, V, T, Gr, GrT, GrV, Grn &
+         )
+   end subroutine gibbs_residual_vt
+
+   subroutine entropy_residual_vt(id, n, V, T, Sr, SrT, SrV, Srn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: Sr
+      real(c_double), optional, intent(in out) :: SrT, SrV, Srn(size(n))
+
+      call ar_models(id)%model%entropy_residual_vt(&
+         n, V, T, Sr, SrT, SrV, Srn &
+         )
+   end subroutine entropy_residual_vt
+
+   subroutine Cv_residual_vt(id, n, V, T, Cv)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: Cv
+
+      call ar_models(id)%model%cv_residual_vt(&
+         n, V, T, Cv &
+         )
+   end subroutine Cv_residual_vt
+
+   subroutine Cp_residual_vt(id, n, V, T, Cp)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: CP
+
+      call ar_models(id)%model%cp_residual_vt(n, V, T, Cp)
+   end subroutine Cp_residual_vt
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
@@ -371,12 +439,13 @@ contains
       beta = eq_state%beta
    end subroutine equilibria_state_to_arrays
 
-   subroutine flash(id, z, T, P, x, y, Pout, Tout, Vx, Vy, beta)
+   subroutine flash(id, z, T, P, x, y, k0, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fflash => flash
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
       real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: k0(size(z))
       real(c_double), intent(out) :: x(size(z))
       real(c_double), intent(out) :: y(size(z))
       real(c_double), intent(out) :: Pout
@@ -388,7 +457,12 @@ contains
       type(EquilibriumState) :: result
       integer :: iters
 
-      result = fflash(ar_models(id)%model, z, t, p_spec=p, iters=iters)
+      if (all(k0 == 0)) then
+         result = fflash(ar_models(id)%model, z, t, p_spec=p, iters=iters)
+      else
+         result = fflash(ar_models(id)%model, z, t, p_spec=p, k0=k0, iters=iters)
+      end if
+
       if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
          Pout = P
          Tout = T
@@ -427,6 +501,31 @@ contains
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
+
+   subroutine saturation_temperature(id, z, P, kind, T0, T, x, y, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState, fsaturation_temperature => saturation_temperature
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: P
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: T0
+
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Vx, Vy, beta
+
+      real(c_double) :: aux
+
+      type(EquilibriumState) :: sat
+
+      if (T0 == 0) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
+      else
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
+      end if
+      call equilibria_state_to_arrays(sat, x, y, T, aux, Vx, Vy, beta)
+   end subroutine saturation_temperature
 
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &

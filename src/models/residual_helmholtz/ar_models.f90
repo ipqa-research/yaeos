@@ -392,7 +392,7 @@ contains
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), intent(in) :: v !! Volume [L]
-      real(pr), intent(out) :: Hr !! Residual enthalpy [bar L / mol]
+      real(pr), intent(out) :: Hr !! Residual enthalpy [bar L]
       real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
       real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}}{dV}\)
       real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
@@ -418,7 +418,7 @@ contains
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Gr !! Gibbs energy [bar L / mol]
+      real(pr), intent(out) :: Gr !! Gibbs energy [bar L]
       real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
       real(pr), optional, intent(out) :: GrV !! \(\frac{dG^r}}{dV}\)
       real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
@@ -445,7 +445,7 @@ contains
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Sr !! Entropy [bar L / K / mol]
+      real(pr), intent(out) :: Sr !! Entropy [bar L / K]
       real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
       real(pr), optional, intent(out) :: SrV !! \(\frac{dS^r}}{dV}\)
       real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
@@ -469,7 +469,7 @@ contains
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
-      real(pr), intent(out) :: Cv !! heat capacity v constant [bar L / K / mol]
+      real(pr), intent(out) :: Cv !! heat capacity v constant [bar L / K]
 
       real(pr) :: Ar, ArT2
 
@@ -485,7 +485,7 @@ contains
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Cp !! heat capacity p constant [bar L / K / mol]
+      real(pr), intent(out) :: Cp !! heat capacity p constant [bar L / K]
 
       real(pr) :: Ar, ArT2, Cv, p, dPdT, dPdV, totn
 

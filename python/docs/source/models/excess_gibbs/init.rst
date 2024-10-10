@@ -10,3 +10,4 @@ Excess Gibbs Models
 
    nrtl
    unifacvle
+   uniquac

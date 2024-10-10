@@ -2,8 +2,6 @@
 
 from typing import List
 
-import numpy as np
-
 from yaeos.core import GeModel
 from yaeos.lib import yaeos_c
 from yaeos.models.groups import groups_from_dicts
@@ -34,7 +32,7 @@ class UNIFACVLE(GeModel):
         model.ln_gamma([0.5, 0.5], 298.15)
     """
 
-    def __init__(self, molecules) -> None:
+    def __init__(self, molecules: List[dict]) -> None:
 
         (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
             molecules

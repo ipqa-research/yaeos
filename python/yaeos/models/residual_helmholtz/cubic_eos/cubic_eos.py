@@ -373,14 +373,16 @@ class PSRK(CubicEoS):
     -------
     .. code-block:: python
 
-        from yaeos import SoaveRedlichKwong
+        from yaeos import PSRK
 
         # methanol/n-hexane mixture
         tc = [512.5, 507.6]   # Critical temperatures [K]
         pc = [80.84, 30.25]     # Critical pressures [bar]
         w = [0.565831, 0.301261]    # Acentric factors
 
-        molecules = [{15:1, 1:2, 2:4}]
+        # Methanol: 1 CH3OH subgroup
+        # n-hexane: 2 CH3, 4 CH2 subgroups
+        molecules = [{15:1}, {1:2, 2:4}]
 
         # Mathias-copeman constants
         c1 = [1.31458917, 0.93830213]
@@ -390,6 +392,7 @@ class PSRK(CubicEoS):
         psrk = PSRK(tc, pc, w, molecules=molecules, c1=c1, c2=c2, c3=c3)
 
     .. code-block:: python
+
         # The dictionary of molecules can be created using the `ugropy` library
 
         import ugropy as ug

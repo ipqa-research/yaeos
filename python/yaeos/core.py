@@ -375,7 +375,366 @@ class ArModel(ABC):
         res = yaeos_c.volume(self.id, moles, pressure, temperature, root)
         return res
 
-    def flash_pt(self, z, pressure: float, temperature: float) -> dict:
+    def enthalpy_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual enthalpy given volume and temperature [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual enthalpy or tuple with Residual enthalpy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual enthalpy only
+            # will print: -182.50424367123696
+
+            print(
+                model.enthalpy_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0)
+            )
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # -182.50424367123696,
+            # {'dt': 0.21542452742588686, 'dv': None, 'dn': None}
+            # )
+
+            print(
+                model.enthalpy_residual_vt(
+                    np.array([5.0, 5.6]),
+                    10.0,
+                    300.0,
+                    dt=True)
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dv = np.empty(1, order="F") if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.enthalpy_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            hrt=dt,
+            hrv=dv,
+            hrn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else dv[0],
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def gibbs_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual Gibbs energy at volume and temperature [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual Gibbs energy or tuple with Residual Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual gibbs energy only
+            # will print: -138.60374582274
+
+            print(model.gibbs_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # -138.60374582274,
+            # {'dt': 0.289312908265414, 'dv': None, 'dn': None}
+            # )
+
+            print(
+                model.gibbs_residual_vt(
+                    np.array([5.0, 5.6]),
+                    10.0,
+                    300.0,
+                    dt=True
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dv = np.empty(1, order="F") if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.gibbs_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            grt=dt,
+            grv=dv,
+            grn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else dv[0],
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def entropy_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual entropy given volume and temperature [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual entropy or tuple with Residual entropy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual entropy only
+            # will print: -0.1463349928283233
+
+            print(model.entropy_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # (-0.1463349928283233,
+            # {'dt': 0.00024148870662932045, 'dv': None, 'dn': None})
+            # )
+
+            print(
+                model.entropy_residual_vt(
+                    np.array([5.0, 5.6]),
+                    10.0,
+                    300.0,
+                    dt=True
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dv = np.empty(1, order="F") if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.entropy_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            srt=dt,
+            srv=dv,
+            srn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else dv[0],
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def cv_residual_vt(
+        self, moles, volume: float, temperature: float
+    ) -> float:
+        """Residual isochoric heat capacity given V and T [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        float
+            Residual isochoric heat capacity [bar L / K]
+
+        Example
+        -------
+            .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual isochoric heat capacity only
+            # will print: 0.07244661198879614
+
+            print(model.cv_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
+        """
+        return yaeos_c.cv_residual_vt(self.id, moles, volume, temperature)
+
+    def cp_residual_vt(
+        self, moles, volume: float, temperature: float
+    ) -> float:
+        """Calculate residual isobaric heat capacity given V and T [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        float
+            Residual isochoric heat capacity [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual isobaric heat capacity only
+            # will print: 1.4964025088916886
+
+            print(model.cp_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
+        """
+        return yaeos_c.cp_residual_vt(self.id, moles, volume, temperature)
+
+    def flash_pt(
+        self, z, pressure: float, temperature: float, k0=None
+    ) -> dict:
         """Two-phase split with specification of temperature and pressure.
 
         Parameters
@@ -386,6 +745,8 @@ class ArModel(ABC):
             Pressure [bar]
         temperature : float
             Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
 
         Returns
         -------
@@ -428,8 +789,10 @@ class ArModel(ABC):
 
             print(model.flash_pt([0.5, 0.5], 8.0, 350.0))
         """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
-            self.id, z, p=pressure, t=temperature
+            self.id, z, p=pressure, t=temperature, k0=k0
         )
 
         flash_result = {
@@ -487,16 +850,15 @@ class ArModel(ABC):
             temperatures = [350.0, 360.0, 400.0]
             pressures = [10, 20, 30]
         """
-
-        xs, ys, Vxs, Vys, betas = yaeos_c.flash_grid(
+        xs, ys, vxs, vys, betas = yaeos_c.flash_grid(
             self.id, z, pressures, temperatures, parallel=parallel
         )
 
         flash = {
             "x": xs,
             "y": ys,
-            "Vx": Vxs,
-            "Vy": Vys,
+            "Vx": vxs,
+            "Vy": vys,
             "P": pressures,
             "T": temperatures,
             "beta": betas,
@@ -505,7 +867,7 @@ class ArModel(ABC):
         return flash
 
     def saturation_pressure(
-        self, z, temperature: float, kind: str = "bubble", P0: float = 0
+        self, z, temperature: float, kind: str = "bubble", p0: float = 0
     ) -> dict:
         """Saturation pressure at specified temperature.
 
@@ -563,7 +925,7 @@ class ArModel(ABC):
             print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))
         """
         p, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
-            id=self.id, z=z, t=temperature, kind=kind, p0=P0
+            id=self.id, z=z, t=temperature, kind=kind, p0=p0
         )
 
         return {
@@ -573,6 +935,78 @@ class ArModel(ABC):
             "Vy": volume_y,
             "T": temperature,
             "P": p,
+            "beta": beta,
+        }
+
+    def saturation_temperature(
+        self, z, pressure: float, kind: str = "bubble", t0: float = 0
+    ) -> dict:
+        """Saturation pressure at specified temperature.
+
+        Arguments
+        ---------
+        z: array_like
+            Global molar fractions
+        pressure: float
+            Pressure [bar]
+        kind: str, optional
+            Kind of saturation point, defaults to "bubble". Options are
+                - "bubble"
+                - "dew"
+                - "liquid-liquid"
+
+        Returns
+        -------
+        dict
+            Saturation pressure calculation result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])       # critical temperatures [K]
+            pc = np.array([42.48, 30.25])        # critical pressures [bar]
+            w = np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Saturation pressure calculation
+            # will print:
+            # {
+            # 'x': array([0.5, 0.5]),
+            # 'y': array([0.9210035 , 0.07899651]),
+            # 'Vx': 0.11974125553488875,
+            # 'Vy': 1.849650524323853,
+            # 'T': 350.0,
+            # 'P': 12.99,
+            # 'beta': 0.0
+            # }
+
+            print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))
+        """
+        t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
+            id=self.id, z=z, p=pressure, kind=kind, t0=t0
+        )
+
+        return {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "T": t,
+            "P": pressure,
             "beta": beta,
         }
 
