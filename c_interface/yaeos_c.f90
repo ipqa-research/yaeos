@@ -414,9 +414,7 @@ contains
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: CP
 
-      call ar_models(id)%model%cp_residual_vt(&
-         n, V, T, Cp &
-         )
+      call ar_models(id)%model%cp_residual_vt(n, V, T, Cp)
    end subroutine Cp_residual_vt
    ! ==========================================================================
    ! Phase equilibria
@@ -503,6 +501,31 @@ contains
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
+
+   subroutine saturation_temperature(id, z, P, kind, T0, T, x, y, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState, fsaturation_temperature => saturation_temperature
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: P
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: T0
+
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Vx, Vy, beta
+
+      real(c_double) :: aux
+
+      type(EquilibriumState) :: sat
+
+      if (T0 == 0) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
+      else
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
+      end if
+      call equilibria_state_to_arrays(sat, x, y, T, aux, Vx, Vy, beta)
+   end subroutine saturation_temperature
 
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
