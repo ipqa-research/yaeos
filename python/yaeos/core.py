@@ -780,6 +780,78 @@ class ArModel(ABC):
             "beta": beta,
         }
 
+    def saturation_temperature(
+        self, z, pressure: float, kind: str = "bubble", T0: float = 0
+    ) -> dict:
+        """Saturation pressure at specified temperature.
+
+        Arguments
+        ---------
+        z: array_like
+            Global molar fractions
+        pressure: float
+            Pressure [bar]
+        kind: str, optional
+            Kind of saturation point, defaults to "bubble". Options are
+                - "bubble"
+                - "dew"
+                - "liquid-liquid"
+
+        Returns
+        -------
+        dict
+            Saturation pressure calculation result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])       # critical temperatures [K]
+            pc = np.array([42.48, 30.25])        # critical pressures [bar]
+            w = np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Saturation pressure calculation
+            # will print:
+            # {
+            # 'x': array([0.5, 0.5]),
+            # 'y': array([0.9210035 , 0.07899651]),
+            # 'Vx': 0.11974125553488875,
+            # 'Vy': 1.849650524323853,
+            # 'T': 350.0,
+            # 'P': 12.99,
+            # 'beta': 0.0
+            # }
+
+            print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))
+        """
+        t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
+            id=self.id, z=z, p=pressure, kind=kind, t0=T0
+        )
+
+        return {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "T": t,
+            "P": p,
+            "beta": beta,
+        }
+
     def phase_envelope_pt(
         self,
         z,
