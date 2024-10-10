@@ -633,7 +633,7 @@ class ArModel(ABC):
         if k0 is None:
             k0 = [0 for i in range(len(z))]
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
-            self.id, z, p=pressure, t=temperature
+            self.id, z, p=pressure, t=temperature, k0=k0
         )
 
         flash_result = {
