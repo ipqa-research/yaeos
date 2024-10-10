@@ -5,14 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 0.1.2 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
 
   
-      <script src="../../../../../_static/documentation_options.js?v=92734c54"></script>
-      <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../../_static/copybutton.js?v=f281be69"></script>
@@ -234,6 +236,59 @@
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_mhv</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HV">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV">[docs]</a>
+<span class="k">class</span> <span class="nc">HV</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Huron-Vidal mixing rule.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ge : GeModel</span>
+<span class="sd">        Excess Gibbs energy model</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ge : GeModel</span>
+<span class="sd">        Excess Gibbs energy model</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from yaeos import HV, SoaveRedlichKwong, NRTL</span>
+
+<span class="sd">        tc = [647.14, 513.92]               # critical temperature [K]</span>
+<span class="sd">        pc = [220.64, 61.48]                # critical pressure [bar]</span>
+<span class="sd">        w =  [0.344, 0.649]                 # acentric factor</span>
+
+<span class="sd">        a = [[0, 3.458], [-0.801, 0]]       # NRTL aij parameters</span>
+<span class="sd">        b = [[0, -586.1], [246.2, 0]]       # NRTL bij parameters</span>
+<span class="sd">        c = [[0, 0.3], [0.3, 0]]            # NRTL cij parameters</span>
+
+<span class="sd">        ge_model = NRTL(a, b, c)</span>
+<span class="sd">        mixrule = HV(ge_model)</span>
+
+<span class="sd">        model_hv = PengRobinson76(tc, pc, w, mixrule)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ge</span><span class="p">:</span> <span class="n">GeModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ge</span> <span class="o">=</span> <span class="n">ge</span>
+
+<div class="viewcode-block" id="HV.set_mixrule">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV.set_mixrule">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set modified Huron-Vidal mix rule method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ar_model_id : int</span>
+<span class="sd">            ID of the cubic EoS model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_hv</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

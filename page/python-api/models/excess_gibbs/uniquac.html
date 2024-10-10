@@ -1,0 +1,264 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNIQUAC &mdash; yaeos 1.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="UNIFACVLE" href="unifacvle.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core.html">Core Module</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../init.html">Models</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nrtl.html">NRTL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">UNIQUAC</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC"><code class="docutils literal notranslate"><span class="pre">UNIQUAC</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../init.html">Models</a></li>
+          <li class="breadcrumb-item"><a href="init.html">Excess Gibbs Models</a></li>
+      <li class="breadcrumb-item active">UNIQUAC</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/models/excess_gibbs/uniquac.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-yaeos.models.excess_gibbs.uniquac">
+<span id="uniquac"></span><h1>UNIQUAC<a class="headerlink" href="#module-yaeos.models.excess_gibbs.uniquac" title="Link to this heading"></a></h1>
+<p>UNIQUAC (UNIversal QUAsiChemical) Excess Gibbs free energy model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UNIQUAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/yaeos/models/excess_gibbs/uniquac.html#UNIQUAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core.html#yaeos.core.GeModel" title="yaeos.core.GeModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeModel</span></code></a></p>
+<p>UNIQUAC (UNIversal QUAsiChemical) Excess Gibbs free energy model.</p>
+<p>Please refer to the <cite>yaeos</cite> user documentation for an in-depth look at the
+model’s information: <a class="reference external" href="https://ipqa-research.github.io/yaeos/page/index.html">https://ipqa-research.github.io/yaeos/page/index.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qs</strong> (<em>array_like</em>) – Molecule’s relative areas <span class="math notranslate nohighlight">\(Q_i\)</span></p></li>
+<li><p><strong>rs</strong> (<em>array_like</em>) – Molecule’s relative volumes <span class="math notranslate nohighlight">\(R_i\)</span></p></li>
+<li><p><strong>aij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(a_{ij}\)</span> zero matrix if no
+provided, by default None</p></li>
+<li><p><strong>bij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(b_{ij}\)</span> zero matrix if no
+provided, by default None</p></li>
+<li><p><strong>cij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(c_{ij}\)</span> zero matrix if no
+provided, by default None</p></li>
+<li><p><strong>dij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(d_{ij}\)</span> zero matrix if no
+provided, by default None</p></li>
+<li><p><strong>eij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(e_{ij}\)</span> zero matrix if no
+provided, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.qs">
+<span class="sig-name descname"><span class="pre">qs</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.qs" title="Link to this definition"></a></dt>
+<dd><p>Molecule’s relative areas <span class="math notranslate nohighlight">\(Q_i\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.rs">
+<span class="sig-name descname"><span class="pre">rs</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.rs" title="Link to this definition"></a></dt>
+<dd><p>Molecule’s relative volumes <span class="math notranslate nohighlight">\(R_i\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.aij">
+<span class="sig-name descname"><span class="pre">aij</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.aij" title="Link to this definition"></a></dt>
+<dd><p>Interaction parameters matrix <span class="math notranslate nohighlight">\(a_{ij}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.bij">
+<span class="sig-name descname"><span class="pre">bij</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.bij" title="Link to this definition"></a></dt>
+<dd><p>Interaction parameters matrix <span class="math notranslate nohighlight">\(b_{ij}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.cij">
+<span class="sig-name descname"><span class="pre">cij</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.cij" title="Link to this definition"></a></dt>
+<dd><p>Interaction parameters matrix <span class="math notranslate nohighlight">\(c_{ij}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.dij">
+<span class="sig-name descname"><span class="pre">dij</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.dij" title="Link to this definition"></a></dt>
+<dd><p>Interaction parameters matrix <span class="math notranslate nohighlight">\(d_{ij}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC.eij">
+<span class="sig-name descname"><span class="pre">eij</span></span><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC.eij" title="Link to this definition"></a></dt>
+<dd><p>Interaction parameters matrix <span class="math notranslate nohighlight">\(e_{ij}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIQUAC</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">526.02</span><span class="p">,</span> <span class="o">-</span><span class="mf">309.64</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">318.06</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">91.532</span><span class="p">],</span>
+        <span class="p">[</span><span class="o">-</span><span class="mf">1325.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">302.57</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.92</span><span class="p">,</span> <span class="mf">2.1055</span><span class="p">,</span> <span class="mf">3.1878</span><span class="p">])</span>
+<span class="n">qs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.972</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">])</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mf">298.15</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNIQUAC</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">bij</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">])</span>
+
+<span class="n">gammas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="c1"># [8.856, 0.860, 1.425]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unifacvle.html" class="btn btn-neutral float-left" title="UNIFACVLE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

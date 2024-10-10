@@ -5,14 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 0.1.2 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
 
   
-      <script src="../../../../../_static/documentation_options.js?v=92734c54"></script>
-      <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../../_static/copybutton.js?v=f281be69"></script>
@@ -473,14 +475,16 @@
 <span class="sd">    -------</span>
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        from yaeos import SoaveRedlichKwong</span>
+<span class="sd">        from yaeos import PSRK</span>
 
 <span class="sd">        # methanol/n-hexane mixture</span>
 <span class="sd">        tc = [512.5, 507.6]   # Critical temperatures [K]</span>
 <span class="sd">        pc = [80.84, 30.25]     # Critical pressures [bar]</span>
 <span class="sd">        w = [0.565831, 0.301261]    # Acentric factors</span>
 
-<span class="sd">        molecules = [{15:1, 1:2, 2:4}]</span>
+<span class="sd">        # Methanol: 1 CH3OH subgroup</span>
+<span class="sd">        # n-hexane: 2 CH3, 4 CH2 subgroups</span>
+<span class="sd">        molecules = [{15:1}, {1:2, 2:4}]</span>
 
 <span class="sd">        # Mathias-copeman constants</span>
 <span class="sd">        c1 = [1.31458917, 0.93830213]</span>
@@ -490,6 +494,7 @@
 <span class="sd">        psrk = PSRK(tc, pc, w, molecules=molecules, c1=c1, c2=c2, c3=c3)</span>
 
 <span class="sd">    .. code-block:: python</span>
+
 <span class="sd">        # The dictionary of molecules can be created using the `ugropy` library</span>
 
 <span class="sd">        import ugropy as ug</span>

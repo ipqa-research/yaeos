@@ -6,15 +6,17 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cubic Equations of State &mdash; yaeos 0.1.2 documentation</title>
+  <title>Cubic Equations of State &mdash; yaeos 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
-      <script src="../_static/documentation_options.js?v=92734c54"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -55,6 +57,9 @@
 <li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cubic Equations of State</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Quadratic-mixing-rule-(QMR)">Quadratic mixing rule (QMR)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Modified-Huron-Vidal-mixing-rule-(MHV)">Modified Huron-Vidal mixing rule (MHV)</a></li>
 </ul>
 </li>
@@ -95,7 +100,7 @@
            <div itemprop="articleBody">
              
   <section id="Cubic-Equations-of-State">
-<h1>Cubic Equations of State<a class="headerlink" href="#Cubic-Equations-of-State" title="Link to this heading">¶</a></h1>
+<h1>Cubic Equations of State<a class="headerlink" href="#Cubic-Equations-of-State" title="Link to this heading"></a></h1>
 <p>There is one more thing to show of the Python API that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports. At this point of the tutorial we have been using cubic equations of state to perform different calculations. The experience users may have noticed that we never set any interaction parameters for the cubic equations of state.</p>
 <p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> support the following mixing rules for cubic equations of state:</p>
 <ul class="simple">
@@ -129,6 +134,7 @@ Yaeos models module. This module provides the following submodules:
 - excess_gibbs: Excess Gibbs energy models
     - NRTL: non-random two-liquid model
     - UNIFACVLE: Original UNIFAC VLE model
+    - UNIQUAC: UNIversal QUAsiChemical Excess Gibbs free energy model
 
 - residual_helmholtz: Residual Helmholtz energy models
     - Cubic EoS:
@@ -142,7 +148,7 @@ Yaeos models module. This module provides the following submodules:
 </pre></div></div>
 </div>
 <section id="Quadratic-mixing-rule-(QMR)">
-<h2>Quadratic mixing rule (QMR)<a class="headerlink" href="#Quadratic-mixing-rule-(QMR)" title="Link to this heading">¶</a></h2>
+<h2>Quadratic mixing rule (QMR)<a class="headerlink" href="#Quadratic-mixing-rule-(QMR)" title="Link to this heading"></a></h2>
 <p>The QMR is the default mixing rule for all cubic equations of state. But it is always set with all the interaction parameters equals to zero by default.</p>
 <p>To set the <span class="math notranslate nohighlight">\(k_{ij}\)</span> and <span class="math notranslate nohighlight">\(l_{ij}\)</span> interaction matrix you can do the following:</p>
 <div class="nbinput nblast docutils container">
@@ -223,60 +229,100 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>The QMR mix rule can be used with any cubic equation of state that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports.</p>
 </section>
-<section id="Modified-Huron-Vidal-mixing-rule-(MHV)">
-<h2>Modified Huron-Vidal mixing rule (MHV)<a class="headerlink" href="#Modified-Huron-Vidal-mixing-rule-(MHV)" title="Link to this heading">¶</a></h2>
-<p>The other mixing rule that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the MHV mixing rule. To use it we need to instantiate an Excess Gibbs free energy model and pass it to the MHV mixing rule. The only Excess Gibbs free energy model that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model. Let’s see an example:</p>
+</section>
+<section id="Huron-Vidal-mixing-rule">
+<h1>Huron-Vidal mixing rule<a class="headerlink" href="#Huron-Vidal-mixing-rule" title="Link to this heading"></a></h1>
+<p>The Huron-Vidal mixing rule allows linking a Cubic Equation of State with an Excess Gibbs model, this can be helpful to predict behaviour of systems with high asymmetry in polarity.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">MHV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">HV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.6</span><span class="p">,</span> <span class="mf">369.8</span><span class="p">])</span>  <span class="c1"># critical temperatures [K]</span>
 <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">42.48</span><span class="p">])</span>  <span class="c1"># critical pressures [bar]</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0115</span><span class="p">,</span> <span class="mf">0.0866</span><span class="p">])</span>  <span class="c1"># acentric factors [-]</span>
 
 <span class="c1"># binary interaction parameters for NRTL model</span>
-<span class="n">aij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">aij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
 
-<span class="n">bij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">bij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
 
-<span class="n">cij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">cij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
 
 <span class="n">nrtl</span> <span class="o">=</span> <span class="n">NRTL</span><span class="p">(</span><span class="n">aij</span><span class="p">,</span> <span class="n">bij</span><span class="p">,</span> <span class="n">cij</span><span class="p">)</span>
 
-<span class="n">mixing_rule</span> <span class="o">=</span> <span class="n">MHV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">nrtl</span><span class="p">,</span> <span class="n">q</span><span class="o">=-</span><span class="mf">0.53</span><span class="p">)</span>
+<span class="n">mixing_rule</span> <span class="o">=</span> <span class="n">HV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">nrtl</span><span class="p">)</span>
 
 <span class="c1"># Set a model with the MHV with parameters</span>
-<span class="n">model_nrtl</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+<span class="n">model_hv_nrtl</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
     <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span>
     <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span>
     <span class="n">acentric_factors</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
     <span class="n">mixrule</span><span class="o">=</span><span class="n">mixing_rule</span><span class="p">,</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Modified-Huron-Vidal-mixing-rule-(MHV)">
+<h2>Modified Huron-Vidal mixing rule (MHV)<a class="headerlink" href="#Modified-Huron-Vidal-mixing-rule-(MHV)" title="Link to this heading"></a></h2>
+<p>The other mixing rule that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the MHV mixing rule. To use it we need to instantiate an Excess Gibbs free energy model and pass it to the MHV mixing rule. The only Excess Gibbs free energy model that <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> supports is the <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model. Let’s see an example:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">MHV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="c1"># Set model without QMR (QMR with all kij and lij as zero)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tcs</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="n">mixing_rule</span> <span class="o">=</span> <span class="n">MHV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">nrtl</span><span class="p">,</span> <span class="n">q</span><span class="o">=-</span><span class="mf">0.53</span><span class="p">)</span>
+
+<span class="c1"># Set a model with the MHV with parameters</span>
+<span class="n">model_mhv_nrtl</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+    <span class="n">mixrule</span><span class="o">=</span><span class="n">mixing_rule</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set a model with null kij and lij to compare later</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span> <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span> <span class="n">acentric_factors</span><span class="o">=</span><span class="n">w</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Let’s make first an envelope to see the difference and then explain what is happening.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="n">t0</span> <span class="o">=</span> <span class="mf">60.0</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">100.0</span>
 <span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
 
-<span class="c1"># Envelope with the model with kij and lij</span>
-<span class="n">env_nrtl</span> <span class="o">=</span> <span class="n">model_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+<span class="c1"># Envelope with the model with HV and NRTL</span>
+<span class="n">env_mhv_nrtl</span> <span class="o">=</span> <span class="n">model_mhv_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">5000</span>
+<span class="p">)</span>
+
+<span class="c1"># Envelope with the model with MHV and NRTL</span>
+<span class="n">env_hv_nrtl</span> <span class="o">=</span> <span class="n">model_hv_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
 
 <span class="c1"># Envelope with the model without kij and lij</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -286,7 +332,16 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+ WARN: possible bad root solving:                   Infinity   7.2869289762081603E+026
+ WARN: possible bad root solving:                   Infinity   7.2869289762081603E+026
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -298,7 +353,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorial_cubic_eos_9_1.png" src="../_images/tutorial_cubic_eos_9_1.png" />
+<img alt="../_images/tutorial_cubic_eos_13_2.png" src="../_images/tutorial_cubic_eos_13_2.png" />
 </div>
 </div>
 <p>We have instantiated a <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model with some interaction parameters and then instantiated a <code class="docutils literal notranslate"><span class="pre">MHV</span></code> mixing rule with the <code class="docutils literal notranslate"><span class="pre">NRTL</span></code> model. The <code class="docutils literal notranslate"><span class="pre">q</span></code> value of the <code class="docutils literal notranslate"><span class="pre">MHV</span></code> mixing rule is taken from bibliography. The value to use are:</p>

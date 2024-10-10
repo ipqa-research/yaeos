@@ -67,7 +67,7 @@
     <div class="container">
   <div class="row">
     <h1>optimize
-      <small>Function</small>
+      <small>Subroutine</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -78,20 +78,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">6 statements</a>
+                 title=" 0.3% of total for procedures.">20 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/fitting.f90"> Source File</a>
+              <a href="../src/optimizers.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/fitting.f90.html'>fitting.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__fitting.html'>yaeos__fitting</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/optimizers.f90.html'>optimizers.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__optimizers_nelder_mead.html'>yaeos__optimizers_nelder_mead</a></li>
             <li class="breadcrumb-item active" aria-current="page">optimize</li>
           </ol>
         </nav>
@@ -111,7 +111,24 @@
       <div id="sidebar">
       <h3>Contents</h3>
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-x0~3">X0</a>
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-i~64">i</a>
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-ifault">ifault</a>
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-iters~7">iters</a>
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-n~61">n</a>
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-numres">numres</a>
+            <a class="list-group-item" href="../proc/optimize~2.html#variable-step~3">step</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -137,11 +154,14 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  function optimize(X, opt, data) result(y)  
+    <h2>private  subroutine optimize(self, foo, x, F, data)  
 </h2>
     
 
+    <p>Optimize the input function</p>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/neldermead.html'>NelderMead</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -156,7 +176,37 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~27"></span>
+              <span class="anchor" id="variable-self~47"></span>
+              class(<a href='../type/neldermead.html'>NelderMead</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+                <p>Optimizer</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-foo~6"></span>
+              procedure(<a href='../interface/obj_func.html'>obj_func</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>foo</strong></td>
+            <td>
+                <p>Objective function</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~14"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -164,55 +214,183 @@
               
             </td>
             <td>::</td>
-            <td><strong>X</strong>(:)</td>
+            <td><strong>x</strong>(:)</td>
             <td>
-                <p>Vector of parameters to fit</p>
+                <p>Initial guess and final result</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-opt~2"></span>
-              class(<a href='../type/optimizer.html'>Optimizer</a>),
+              <span class="anchor" id="variable-f~10"></span>
+              real(kind=pr),
             </td>
-<td>intent(inout)</td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>opt</strong></td>
+            <td><strong>F</strong></td>
             <td>
-                <p>Optimizer object, bsaed on the <code>Optimizer</code> class from
-<code>yaeos__optimizers</code></p>
+                <p>Objective function value at final step</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-data~7"></span>
-              class(<a href='../type/fittingproblem.html'>FittingProblem</a>),
+              <span class="anchor" id="variable-data~5"></span>
+              class(*),
             </td>
 <td>intent(inout),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              target
             </td>
             <td>::</td>
             <td><strong>data</strong></td>
             <td>
-                <p>Fitting problem to optimize</p>
+                <p>Optional data for the objective function</p>
             </td>
         </tr>
     </tbody>
   </table>
 
-      <h3>Return Value
-        <small>
-          <span class="anchor" id="variable-y~19"></span>
-          real(kind=pr)
-        </small>
-      </h3>
-      
     <br>
 
 
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x0~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X0</strong>(size(x))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~64"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ifault"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ifault</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iters~7"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iters</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~61"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-numres"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>numres</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-step~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>step</strong>(size(x))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
     
     
 
@@ -241,7 +419,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-08 12:58              </p>
+ on 2024-10-10 17:41              </p>
           </div>
         </div>
         <br>
