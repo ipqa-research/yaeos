@@ -178,16 +178,9 @@ contains
       dDdT = fdT*B
       dDdT2 = fdT2*B
       dDij = fdij
-      ! do i=1,nc
-      !    do j=1,nc
-      !       dDij(i,j) = dBi(j)*fdi(i) + B*fdij(i,j) + f*dBij(i,j) + fdi(j)*dBi(i)
-      !    end do
-      ! end do
       do j=1,nc
          dDij(:, j) = dBi(j)*fdi + B*fdij(:, j) + f*dBij(:, j) + fdi(j)*dBi
       end do
-
-      ! error stop "Not implemented"
 
    end subroutine DmixHV
 
