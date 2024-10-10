@@ -458,9 +458,9 @@ contains
       integer :: iters
 
       if (all(k0 == 0)) then
-         result = fflash(ar_models(id)%model, z, t, p_spec=p)
+         result = fflash(ar_models(id)%model, z, t, p_spec=p, iters=iters)
       else
-         result = fflash(ar_models(id)%model, z, t, p_spec=p, k0=k0)
+         result = fflash(ar_models(id)%model, z, t, p_spec=p, k0=k0, iters=iters)
       end if
 
       if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
