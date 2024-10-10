@@ -383,8 +383,8 @@ class ArModel(ABC):
         dt: bool = False,
         dv: bool = False,
         dn: bool = False,
-    ):
-        """Calculate residual enthalpy given volume and temperature [J/mol].
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual enthalpy given volume and temperature [bar L].
 
         Parameters
         ----------
@@ -397,6 +397,47 @@ class ArModel(ABC):
 
         Returns
         -------
+        Union[float, tuple[float, dict]]
+            Residual enthalpy or tuple with Residual enthalpy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual enthalpy only
+            # will print: -182.50424367123696
+
+            print(
+                model.enthalpy_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0)
+            )
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # -182.50424367123696,
+            # {'dt': 0.21542452742588686, 'dv': None, 'dn': None}
+            # )
+
+            print(
+                model.enthalpy_residual_vt(
+                    np.array([5.0, 5.6]),
+                    10.0,
+                    300.0,
+                    dt=True)
+                )
+            )
         """
         nc = len(moles)
 
@@ -435,8 +476,8 @@ class ArModel(ABC):
         dt: bool = False,
         dv: bool = False,
         dn: bool = False,
-    ):
-        """Rresidual Gibbs energy given volume and temperature [barL/mol].
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual Gibbs energy at volume and temperature [bar L].
 
         Parameters
         ----------
@@ -449,6 +490,45 @@ class ArModel(ABC):
 
         Returns
         -------
+        Union[float, tuple[float, dict]]
+            Residual Gibbs energy or tuple with Residual Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual gibbs energy only
+            # will print: -138.60374582274
+
+            print(model.gibbs_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # -138.60374582274,
+            # {'dt': 0.289312908265414, 'dv': None, 'dn': None}
+            # )
+
+            print(
+                model.gibbs_residual_vt(
+                    np.array([5.0, 5.6]),
+                    10.0,
+                    300.0,
+                    dt=True
+                )
+            )
         """
         nc = len(moles)
 
@@ -487,8 +567,8 @@ class ArModel(ABC):
         dt: bool = False,
         dv: bool = False,
         dn: bool = False,
-    ):
-        """Calculate residual entropy given volume and temperature [barL/molK].
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual entropy given volume and temperature [bar L / K].
 
         Parameters
         ----------
@@ -501,6 +581,45 @@ class ArModel(ABC):
 
         Returns
         -------
+        Union[float, tuple[float, dict]]
+            Residual entropy or tuple with Residual entropy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual entropy only
+            # will print: -0.1463349928283233
+
+            print(model.entropy_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # (-0.1463349928283233,
+            # {'dt': 0.00024148870662932045, 'dv': None, 'dn': None})
+            # )
+
+            print(
+                model.entropy_residual_vt(
+                    np.array([5.0, 5.6]),
+                    10.0,
+                    300.0,
+                    dt=True
+                )
+            )
         """
         nc = len(moles)
 
@@ -534,7 +653,7 @@ class ArModel(ABC):
     def cv_residual_vt(
         self, moles, volume: float, temperature: float
     ) -> float:
-        """Residual isochoric heat capacity given V and T [barL/molK].
+        """Residual isochoric heat capacity given V and T [bar L / K].
 
         Parameters
         ----------
@@ -548,14 +667,34 @@ class ArModel(ABC):
         Returns
         -------
         float
-            Residual isochoric heat capacity [barL/molK]
+            Residual isochoric heat capacity [bar L / K]
+
+        Example
+        -------
+            .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual isochoric heat capacity only
+            # will print: 0.07244661198879614
+
+            print(model.cv_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
         """
         return yaeos_c.cv_residual_vt(self.id, moles, volume, temperature)
 
     def cp_residual_vt(
         self, moles, volume: float, temperature: float
     ) -> float:
-        """Calculate residual isobaric heat capacity given V and T [barL/molK].
+        """Calculate residual isobaric heat capacity given V and T [bar L / K].
 
         Parameters
         ----------
@@ -569,7 +708,27 @@ class ArModel(ABC):
         Returns
         -------
         float
-            Residual isochoric heat capacity [barL/molK]
+            Residual isochoric heat capacity [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual isobaric heat capacity only
+            # will print: 1.4964025088916886
+
+            print(model.cp_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0))
         """
         return yaeos_c.cp_residual_vt(self.id, moles, volume, temperature)
 
@@ -691,7 +850,6 @@ class ArModel(ABC):
             temperatures = [350.0, 360.0, 400.0]
             pressures = [10, 20, 30]
         """
-
         xs, ys, vxs, vys, betas = yaeos_c.flash_grid(
             self.id, z, pressures, temperatures, parallel=parallel
         )

@@ -1,5 +1,4 @@
-"""Handling groups for Group Contribution Models.
-"""
+"""Handling groups for Group Contribution Models."""
 
 from typing import List
 
@@ -7,8 +6,10 @@ import numpy as np
 
 
 def groups_from_dicts(molecules: List[dict]):
-    """Convert list of dicts with groups and their amounts to the format
-    required by the C-API.
+    """Convert list of dicts with groups and their to C-API format.
+
+    Convert list of dicts with groups and their amounts to the format required
+    by the C-API.
 
     Parameters
     ----------
