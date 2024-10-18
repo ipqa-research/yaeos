@@ -72,6 +72,8 @@ contains
 
       real(pr) :: sqrt_Tr(size(Tr))
 
+      real(pr) :: u(size(Tr)), dudt(size(Tr)), dudt2(size(Tr))
+
       sqrt_Tr = 1 - sqrt(Tr)
 
       ! The associate statement allows to abreviate the expresions
@@ -81,12 +83,13 @@ contains
             dadT = c1*(c1*(sqrt(Tr) - 1) - 1)/sqrt(Tr)
             dadT2 = (1.0_pr/2.0_pr)*c1*(c1 + 1)/Tr**(1.5_pr)
          elsewhere
-            a = (1 + c1 * (sqrt_Tr) + c2 * (sqrt_Tr) + c3 * (sqrt_Tr))**2
-            dadt = (c1 + c2 + c3) * (c1*(sqrt(Tr) - 1) &
-               + c2*(sqrt(Tr) - 1) + c3*(sqrt(Tr) - 1) - 1)/sqrt(Tr)
-            dadt2 = (1.0_pr/2.0_pr) * (&
-               c1**2 + 2*c1*c2 + 2*c1*c3 &
-               + c1 + c2**2 + 2*c2*c3 +  c2 + c3**2 + c3)/Tr**(3.0_pr/2.0_pr)
+            u = -c1*(sqrt(Tr) - 1) + c2*(sqrt(Tr) - 1)**2 - c3*(sqrt(Tr) - 1)**3 + 1
+            dudt = (1.0_pr/2.0_pr)*(-c1 + 2*c2*(sqrt(Tr) - 1) - 3*c3*(sqrt(Tr) - 1)**2) /sqrt(Tr)
+            dudt2 = (1.0_pr/4.0_pr)*(-3*Tr*c3 + c1 + 2*c2 + 3*c3)/Tr**(3.0_pr/2.0_pr)
+            
+            a = u**2
+            dadt = 2*u*dudt
+            dadt2 = 2*(dudt**2 + u*dudt2)
          end where
       end associate
    end subroutine alpha_mc
