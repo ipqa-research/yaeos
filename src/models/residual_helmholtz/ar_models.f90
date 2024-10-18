@@ -291,23 +291,18 @@ contains
    end subroutine fugacity_pt
 
    subroutine fugacity_vt(eos, &
-      n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn &
+      n, V, T, P, lnPhi, &
+      dlnPhidP, dlnPhidT, dlnPhidn, &
+      dPdV, dPdT, dPdn &
       )
       !! Calculate fugacity coefficent given volume and temperature.
-      !!
-      !!@note
-      !!While the natural output variable is \(ln \phi_i P\). The calculated
-      !!derivatives will be the derivatives of the fugacity coefficient
-      !!\(ln \phi_i\)
-      !!@endnote
-      !!
       class(ArModel) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
 
       real(pr), optional, intent(out) :: P !! Pressure [bar]
-      real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(\phi_i*P)\) vector
+      real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(\phi_i)\) vector
       real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! \(ln(phi_i)\) Temp derivative
       real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! \(ln(phi_i)\) Presssure derivative
       real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! \(ln(phi_i)\) compositional derivative
