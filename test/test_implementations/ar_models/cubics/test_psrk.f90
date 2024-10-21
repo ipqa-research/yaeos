@@ -59,7 +59,7 @@ contains
          ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
 
       call numeric_ar_derivatives(&
-         model, n, v, t, d_n = 0.01_pr, d_v = 0.01_pr, d_t = 0.01_pr, &
+         model, n, v, t, d_n = 0.01_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
          Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
          ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
          Arn2=Arn2_num &
@@ -70,19 +70,19 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-4)
-      call check(error, rel_error(ArV, ArV_num) < 1e-3)
-      call check(error, rel_error(ArT, ArT_num) < 1e-4)
-      call check(error, allclose(Arn, Arn_num, 1e-4_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-3)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-4)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-3)
-      call check(error, allclose(ArVn, ArVn_num, 1e-4_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-4_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-4)
+      call check(error, rel_error(Ar, Ar_num) < 1e-10)
+      call check(error, rel_error(ArV, ArV_num) < 1e-5)
+      call check(error, rel_error(ArT, ArT_num) < 1e-5)
+      call check(error, allclose(Arn, Arn_num, 1e-5_pr))
+      call check(error, rel_error(ArV2, ArV2_num) < 1e-5)
+      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
+      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
+      call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
+      call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
+      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-13)
+      call check(error, abs(eq31) <= 1e-12)
       call check(error, maxval(abs(eq33)) < 1e-13)
       call check(error, maxval(abs(eq34)) < 1e-13)
       call check(error, abs(eq36) <= 1e-13)
@@ -128,7 +128,7 @@ contains
          ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
 
       call numeric_ar_derivatives(&
-         model, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.001_pr, &
+         model, n, v, t, d_n = 0.001_pr, d_v = 0.001_pr, d_t = 0.001_pr, &
          Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
          ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
          Arn2=Arn2_num &
@@ -139,16 +139,16 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-4)
-      call check(error, rel_error(ArV, ArV_num) < 1e-3)
-      call check(error, rel_error(ArT, ArT_num) < 1e-4)
-      call check(error, allclose(Arn, Arn_num, 1e-4_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-2)
+      call check(error, rel_error(Ar, Ar_num) < 1e-10)
+      call check(error, rel_error(ArV, ArV_num) < 1e-6)
+      call check(error, rel_error(ArT, ArT_num) < 1e-6)
+      call check(error, allclose(Arn, Arn_num, 1e-6_pr))
+      call check(error, rel_error(ArV2, ArV2_num) < 1e-4)
       call check(error, rel_error(ArT2, ArT2_num) < 1e-4)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-3)
-      call check(error, allclose(ArVn, ArVn_num, 1e-3_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-3_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-4)
+      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
+      call check(error, allclose(ArVn, ArVn_num, 1e-5_pr))
+      call check(error, allclose(ArTn, ArTn_num, 1e-5_pr))
+      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
 
       ! Consistency tests
       call check(error, abs(eq31) <= 1e-13)
