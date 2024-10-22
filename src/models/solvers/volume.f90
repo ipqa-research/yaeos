@@ -116,7 +116,10 @@ contains
          iter = 0
          DEL = 1
          pcalc = 2*p
-         do while(abs(DEL) > 1.e-10_pr .and. iter < maximum_iterations)
+         do while(&
+            abs(DEL) > 1.e-10_pr &
+            .and. iter < maximum_iterations &
+         )
             V = B/ZETA
             iter = iter + 1
             call eos%residual_helmholtz(n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
