@@ -238,10 +238,10 @@ contains
             ] &
             )
          
-         do while(maxval(abs(dXdS(:nc)*dS)) > 0.07)
+         do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
             dS = 0.7*dS
          end do
-
+         
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
       end subroutine update_spec
@@ -316,9 +316,8 @@ contains
 
          inner = 0
          do while (&
-                  maxval(abs(X(:nc))) < 0.1 &
-            .and. inner < 500&
-            .and. abs(Vz - Vy) < 0.1)
+                  maxval(abs(X(:nc))) < 0.06 &
+            .and. inner < 5000)
             ! If near a critical point, jump over it
             inner = inner + 1
 
