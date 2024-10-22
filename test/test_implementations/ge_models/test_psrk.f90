@@ -62,9 +62,9 @@ contains
       molecules(3)%groups_ids = [9, 11]
       molecules(3)%number_of_groups = [5, 1]
 
-      ! ! Cyclohexane [CH2]
-      molecules(4)%groups_ids = [2]
-      molecules(4)%number_of_groups = [6]
+      ! ! Carbon dioxide [CO2]
+      molecules(4)%groups_ids = [117]
+      molecules(4)%number_of_groups = [1]
 
       parameters = PSRKParameters()
 
@@ -227,15 +227,15 @@ contains
       ! ------------------------------------------------------------------------
       ! Ge
 
-      print *, Ge/n_t
+      !print *, Ge/n_t
       call check(error, abs(Ge / n_t - (-3.223992676822129_pr)) <= 1e-5)
 
       ! Gen
-      print *, Gen
+      !print *, Gen
       call check(error, allclose(Gen, [10.53032277_pr,  -2.37758326_pr, -36.65748951_pr], 1e-5_pr))
 
       ! ln_gammas
-      print *, Gen/R/T, ln_gammas
+      !print *, Gen/R/T, ln_gammas
       call check(error, allclose(Gen / R / T, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-5_pr))
       call check(error, allclose(ln_gammas, [0.84433781_pr, -0.19063836_pr, -2.93925506_pr], 1e-5_pr))
 
