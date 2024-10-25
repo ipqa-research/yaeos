@@ -16,13 +16,14 @@ module yaeos__equilibria_critical
 
 contains
 
-   type(CriticalLine) function critical_line(model, a0, z0, zi)
+   type(CriticalLine) function critical_line(model, a0, z0, zi, dS0)
       use yaeos__math_continuation, only: continuation
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: a0
       real(pr), intent(in) :: z0(:)
       real(pr), intent(in) :: zi(:)
+      real(pr), intent(in) :: dS0
 
       real(pr) :: u(size(z0)), u_new(size(z0))
 
@@ -42,15 +43,16 @@ contains
 
       u = [(1, i=1, size(z0))]
       u = u/sum(u)
+      u = zi
 
       XS = continuation(&
          f=foo, X0=X0, ns0=ns, S0=X0(ns), &
-         dS0=0.1_pr, max_points=50, solver_tol=1e-5_pr &
+         dS0=dS0, max_points=2500, solver_tol=1e-5_pr, &
+         update_specification=update_specification &
          )
 
       last_point = 0
       do i=1, size(XS, 1)
-         print *, XS(i, 1), exp(XS(i, 2:3))
          if (all(abs(XS(i, :)) < 0.001)) exit
          last_point = i + 1
       end do
@@ -96,6 +98,27 @@ contains
          dFdS = 0
          dFdS(size(dFdS)) = -1
       end subroutine foo
+
+      subroutine update_specification(X, ns, S, dS, dXdS, iterations)
+         real(pr), intent(in out) :: X(:) !! Vector of variables \(X\)
+         integer, intent(in out) :: ns !! Position of specified variable
+         real(pr), intent(in out) :: S !! Specification variable value
+         real(pr), intent(in out) :: dS !! Step of specification in the method
+         real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
+         integer, intent(in) :: iterations !! Iterations needed to converge point
+
+         ns = maxloc(abs(dXdS), dim=1)
+         dS = dXdS(ns)*dS
+         dXdS = dXdS/dXdS(ns)
+         do while(abs(dXdS(1)*dS) > 0.06_pr &
+            .or. abs(dXdS(2)*dS) > 0.1_pr &
+            .or. abs(dXdS(3)*dS) > 0.1_pr &
+            )
+            dS = dS/2
+         end do
+         print *, ns, X(ns) + dXdS(ns)*dS, dS
+      end subroutine update_specification
+
    end function critical_line
 
 
@@ -147,7 +170,10 @@ contains
       real(pr) :: F_critical(3)
       real(pr) :: z(size(u))
 
-      real(pr), parameter :: eps=1e-5_pr
+      real(pr), parameter :: eps=1e-10_pr
+
+      if(any(zi * X(1) + z0 * (1-X(1))<0) ) return
+
 
       F_critical(1) = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u)
       F_critical(2) = (&
@@ -227,7 +253,7 @@ program main
       lambda1, F_critical, df_critical, CriticalLine, critical_line, solve_cp
    implicit none
 
-   integer, parameter :: nc=2
+   integer, parameter :: nc=5
 
    type(CubicEoS) :: model
    type(EquilibriumState) :: sat
@@ -248,17 +274,28 @@ program main
    real(pr) :: F(3), X(3)
    integer :: i, j
 
-   model = binary_PR76()
-   z0 = [0, 1]
-   zi = [1, 0]
-   u = [1, 0]
+   ! model = binary_PR76()
+   ! z0 = [0, 1]
+   ! zi = [1, 0]
+   ! u = [1, 0]
 
+   model = get_model()
+   z0 = [0.0, 0.4, 0.3, 0.2, 0.1]
+   zi = [1, 0, 0, 0, 0]
+   
    a = real(1, pr)/100._pr
-
-   cl = critical_line(model, a, z0, zi)
+   cl = critical_line(model, a, z0, zi, 0.1_pr)
    do i=1, size(cl%a)
       write(2, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
    end do
+   write (2, *)
+   write (2, *)
+   
+   ! a = real(99, pr)/100._pr
+   ! cl = critical_line(model, a, z0, zi, -0.001_pr)
+   ! do i=1, size(cl%a)
+   !    write(2, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
+   ! end do
 
    z = a*zi + (1-a)*z0
    T = sum(model%components%Tc * z)
@@ -268,30 +305,37 @@ program main
    ns = 1
    S = X(ns)
 
-   do j=1, 99, 5
+
+   open(unit=4, file="pt")
+   do j=1, 99
       a = real(j, pr)/100
       z = a*zi + (1-a)*z0
-      sat = saturation_pressure(model, z, T=150._pr, kind="bubble")
+      sat = saturation_temperature(model, z, P=0.01_pr, kind="dew")
       env = pt_envelope_2ph(model, z, sat)
-      X = [a, X(2), X(3)]
-      S = X(ns)
 
-      call solve_cp(model, X, ns, S, z0, zi, u)
-      F = F_critical(model, x, ns, s, z0, zi, u)
-      call model%pressure(n=z, V=exp(X(2)), T=exp(X(3)), P=P)
-      write(11, *) X(1), exp(X(2)), exp(X(3)), P
-      write(1, *) a, env%cps
+      do i=1,size(env%points)
+         write(4, *) a, env%points(i)%T, env%points(i)%P
+      end do
+      write(4, *)
    end do
+   close(4)
 
 contains
 
    type(CubicEoS) function get_model()
       use yaeos__models, only: SoaveRedlichKwong
-      real(pr) :: tc(3), pc(3), w(3)
-      Tc=  [190.564, 304.21, 617.7]
-      Pc=  [45.99, 73.83000000000001, 21.1]
-      w=  [0.0115478, 0.223621, 0.492328]
-      ! Vc=  [0.09859999999999998, 0.09399999999999999, 0.5999999999999999]
-      get_model = SoaveRedlichKwong(tc, pc, w)
+      real(pr) :: tc(nc), pc(nc), w(nc), kij(nc,nc)
+      ! Tc=  [190.564, 304.21, 617.7]
+      ! Pc=  [45.99, 73.83000000000001, 21.1]
+      ! w=  [0.0115478, 0.223621, 0.492328]
+      
+      Tc=  [304.21, 190.564, 425.12, 617.7, 874.0]
+      Pc=  [73.83000000000001, 45.99, 37.96, 21.1, 6.800000000000001]
+      w=  [0.223621, 0.0115478, 0.200164, 0.492328, 1.52596]
+      
+      kij = 0
+      kij(1, :) = 0.12
+      kij(:, 1) = 0.12
+      get_model = SoaveRedlichKwong(tc, pc, w, kij=kij)
    end function get_model
 end program main
