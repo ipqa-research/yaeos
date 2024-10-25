@@ -290,47 +290,8 @@ program main
       write(4, *)
       write(4, *)
 
-
-      ! X = [a, log(V), log(T)]
-      ! F = F_critical(model, X, ns, S, z0, zi, u)
-      ! df = df_critical(model, X, ns, S, z0, zi, u)
-      ! dX = solve_system(A=df, b=-F)
-      ! do while(maxval(abs(dX/X)) > 1e-1)
-      !    dX = dX/10
-      ! end do
-
-      ! print *, X
-      ! print *, dX
-
-      ! X = X + dX
-      ! l = lambda1(model, X, 0.0_pr, z, u, u_new)
-      ! F = F_critical(model, X, ns, S, z0, zi, u)
-      ! print *, X
-
-
-      ! X = [a, log(V), log(T)]
-      ! u = [0.3_pr, 0.5_pr, 0.2_pr]
       call solve_cp(model, X, ns, S, z0, zi, u)
-
-      ! do i=1,250
-      !    F = F_critical(model, X, ns, S, z0, zi, u)
-      !    df = df_critical(model, X, ns, S, z0, zi, u)
-
-      !    dX = solve_system(A=df, b=-F)
-
-      !    do while(maxval(abs(dX/X)) > 1e-1)
-      !       dX = dX/10
-      !    end do
-
-      !    if (maxval(abs(X)) < 1e-7) exit
-
-      !    X = X + dX
-      !    l = lambda1(model, X, 0.0_pr, z, u, u_new)
-      !    u = u_new
-      ! end do
-
-      ! call solve_cp(model, X, ns, S, z0, zi, u)
-
+      F = F_critical(model, x, ns, s, z0, zi, u)
       print *, X(1), exp(X(2:3)), sum(abs(F))
 
       call model%pressure(n=z, V=exp(X(2)), T=exp(X(3)), P=P)
