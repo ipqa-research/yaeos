@@ -18,6 +18,7 @@ contains
 
    type(CriticalLine) function critical_line(model, a0, z0, zi)
       use yaeos__math_continuation, only: continuation
+      use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: a0
       real(pr), intent(in) :: z0(:)
@@ -26,10 +27,10 @@ contains
       real(pr) :: u(size(z0)), u_new(size(z0))
 
       real(pr), allocatable :: XS(:, :)
-      real(pr) :: X0(3), T, P, V
+      real(pr) :: X0(3), T, P, V, z(size(z0))
 
       integer :: i, j, ns, last_point
-      u = [0.3_pr, 0.5_pr, 0.2_pr]
+      u = z0
 
       T = sum(model%components%Tc * z0)
       P = sum(model%components%Pc * z0)
@@ -37,7 +38,6 @@ contains
 
       X0 = [a0, v, T]
       X0(2:3) = log(X0(2:3))
-
       ns = 1
 
       u = [(1, i=1, size(z0))]
@@ -45,30 +45,31 @@ contains
 
       XS = continuation(&
          f=foo, X0=X0, ns0=ns, S0=X0(ns), &
-         dS0=0.1_pr, max_points=50, solver_tol=1e-15_pr &
+         dS0=0.1_pr, max_points=50, solver_tol=1e-5_pr &
          )
 
       last_point = 0
       do i=1, size(XS, 1)
+         print *, XS(i, 1), exp(XS(i, 2:3))
          if (all(abs(XS(i, :)) < 0.001)) exit
          last_point = i + 1
       end do
 
       XS = XS(1:last_point-1, :)
 
-      critical_line%a = XS(:, 1)
       critical_line%z0 = z0
       critical_line%zi = zi
-      critical_line%V = (XS(:, 2))
-      critical_line%T = (XS(:, 3))
+      critical_line%a =  XS(:, 1)
+      critical_line%V = exp(XS(:, 2))
+      critical_line%T = exp(XS(:, 3))
 
       allocate(critical_line%P(size(critical_line%a)))
       do i=1, size(critical_line%a)
-         ! z = critical_line%a(i)*zi + (1-critical_line%a(i))*z0
+         z = critical_line%a(i)*zi + (1-critical_line%a(i))*z0
 
-         ! call model%pressure(&
-         !    n=z, V=critical_line%V(i), T=critical_line%T(i), &
-         !    P=critical_line%P(i))
+         call model%pressure(&
+            n=z, V=critical_line%V(i), T=critical_line%T(i), &
+            P=critical_line%P(i))
       end do
 
    contains
@@ -82,16 +83,16 @@ contains
          real(pr), intent(out) :: dFdS(:)
          real(pr) :: l1
 
-         real(pr) :: z(size(u))
+         real(pr) :: z(size(u)), Xsol(3)
 
          if (X(1) > 1) then
             return
          end if
 
-         z = X(1) * zi + (1 - X(1)) * z0
-         F = F_critical(model=model, X=X, ns=ns, S=S, z0=z0, zi=zi, u=u)
-         dF = dF_critical(model=model, X=X, ns=ns, S=S, z0=z0, zi=zi, u=u)
+         F = F_critical(model, X, ns, S, z0, zi, u)
+         df = df_critical(model, X, ns, S, z0, zi, u)
          l1 = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u, u_new=u_new)
+         u = u_new
          dFdS = 0
          dFdS(size(dFdS)) = -1
       end subroutine foo
@@ -148,7 +149,6 @@ contains
 
       real(pr), parameter :: eps=1e-5_pr
 
-      z = X(1) * zi + (1-X(1)) * z0
       F_critical(1) = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u)
       F_critical(2) = (&
          lambda1(model=model, X=X, s= eps, zi=zi, z0=z0, u=u) &
@@ -180,8 +180,8 @@ contains
          F1 = F_critical(model, X-dx, ns, S, z0, zi, u)
          df_critical(:, i) = (F2 - F1)/(2*eps)
       end do
-      df_critical(3, :) = 0
-      df_critical(3, ns) = 1
+      ! df_critical(3, :) = 0
+      ! df_critical(3, ns) = 1
    end function df_critical
 
    subroutine solve_cp(model, X, ns, S, z0, zi, u)
@@ -208,7 +208,7 @@ contains
             dX = dX/10
          end do
 
-         if (maxval(abs(X)) < 1e-7) exit
+         if (maxval(abs(X)) < 1e-5) exit
 
          X = X + dX
          l = lambda1(model, X, 0.0_pr, z0, zi, u, u_new)
@@ -223,10 +223,11 @@ program main
    use yaeos__math, only: solve_system
    use stdlib_linalg, only: eigh
    use fixtures_models, only: binary_PR76
-   use yaeos__equilibria_critical, only: lambda1, F_critical, df_critical, CriticalLine, critical_line, solve_cp
+   use yaeos__equilibria_critical, only: &
+      lambda1, F_critical, df_critical, CriticalLine, critical_line, solve_cp
    implicit none
 
-   integer, parameter :: nc=3
+   integer, parameter :: nc=2
 
    type(CubicEoS) :: model
    type(EquilibriumState) :: sat
@@ -235,68 +236,51 @@ program main
    type(CriticalLine) :: cl
 
    real(pr) ::  V, T, P, a
+
    real(pr) :: z(nc)
    real(pr) :: z0(nc)
    real(pr) :: zi(nc)
 
-   real(pr) :: u(nc), u_new(nc)
+   real(pr) :: u(nc)
    integer :: ns
    real(pr) :: S
 
-   real(pr) :: F(3), X(3), dX(3), dF(3, 3), l
+   real(pr) :: F(3), X(3)
    integer :: i, j
 
-   ! ==============================================================
-   ! Initial
-   ! --------------------------------------------------------------
-   model = get_model()
-   z0 = [0.3_pr, 0.1_pr, 0.6_pr]
-   zi = [0, 1, 0]
+   model = binary_PR76()
+   z0 = [0, 1]
+   zi = [1, 0]
+   u = [1, 0]
 
-   u = [0.3_pr, 0.5_pr, 0.2_pr]
-   a = 5./100.
-   z = a*zi + (1-a)*z0
-
-   T = sum(model%components%Tc * z)
-   P = sum(model%components%Pc * z)
-   call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
-
-   ! sat = saturation_pressure(model, z, T=150._pr, kind="bubble")
-   ! env = pt_envelope_2ph(model, z, sat)
-   ! write(1, *) env
+   a = real(1, pr)/100._pr
 
    cl = critical_line(model, a, z0, zi)
    do i=1, size(cl%a)
       write(2, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
    end do
 
+   z = a*zi + (1-a)*z0
+   T = sum(model%components%Tc * z)
+   P = sum(model%components%Pc * z)
+   call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
    X = [a, log(V), log(T)]
    ns = 1
    S = X(ns)
 
-   open(4, file="envlops")
    do j=1, 99, 5
       a = real(j, pr)/100
       z = a*zi + (1-a)*z0
+      sat = saturation_pressure(model, z, T=150._pr, kind="bubble")
+      env = pt_envelope_2ph(model, z, sat)
       X = [a, X(2), X(3)]
       S = X(ns)
 
-      ! sat = saturation_pressure(model, z, T=150._pr, kind="bubble")
-      ! env = pt_envelope_2ph(model, z, sat)
-      ! do i=1,size(env%points)
-      !    write(4, *) a, env%points(i)%T, env%points(i)%P
-      ! end do
-
-      write(4, *)
-      write(4, *)
-
       call solve_cp(model, X, ns, S, z0, zi, u)
       F = F_critical(model, x, ns, s, z0, zi, u)
-      print *, X(1), exp(X(2:3)), sum(abs(F))
-
       call model%pressure(n=z, V=exp(X(2)), T=exp(X(3)), P=P)
-      write(11, *) X(1), X(2), X(3), P
-      ! write(3, *) a, env%cps
+      write(11, *) X(1), exp(X(2)), exp(X(3)), P
+      write(1, *) a, env%cps
    end do
 
 contains
