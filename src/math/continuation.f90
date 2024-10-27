@@ -155,7 +155,6 @@ contains
             ns = maxloc(abs(dXdS), dim=1)
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
-            dS = sign(minval(abs([0.05_pr, dS])), dS)
          end if
 
          if (present(postprocess)) then
@@ -204,7 +203,7 @@ contains
       X0 = X
       newton: do iters = 1, max_iters
          ! Converged point
-         if (maxval(abs(dx)) < tol .or. maxval(abs(F)) < 1e-7) exit newton
+         if (maxval(abs(dx)) < tol .or. maxval(abs(F)) < 1e-13) exit newton
 
          call fun(X, ns, S, F, dF, dFdS)
          if (maxval(abs(F)) < tol) exit
