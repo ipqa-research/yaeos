@@ -49,7 +49,8 @@ contains
       !! Thermodyanmic model
       real(pr), intent(in) :: z(:)
       !! Vector of molar fractions
-      type(EquilibriumState) :: first_point
+      type(EquilibriumState), intent(in) :: first_point
+      !! Initial point of the envelope
       integer, optional, intent(in) :: points
       !! Maxmimum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
@@ -238,9 +239,9 @@ contains
             ] &
             )
          
-         do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
-            dS = 0.7*dS
-         end do
+         ! do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
+         !    dS = 0.7*dS
+         ! end do
          
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
@@ -392,5 +393,49 @@ contains
          write(unit, *) pt2%cps(cp)%T, pt2%cps(cp)%P
       end do
    end subroutine write_PTEnvel2
+
+   type(PTEnvel2) function find_hpl(model, z, T0, P0)
+      class(ArModel), intent(in) :: model
+      real(pr), intent(in) :: z(:), T0, P0
+      
+      integer :: i
+      real(pr) :: y(size(z))
+      real(pr) :: lnphi_y(size(z)), lnphi_z(size(z))
+      type(EquilibriumState) :: fr
+      real(pr) :: diffs(size(z)), Ts(size(z)), T, P
+      integer :: ncomp, nc
+
+      nc = size(z)
+      P = P0
+      do ncomp=1,nc
+         T = T0
+         y = 0
+         y(ncomp) = 1
+         do i=500, 100, -10
+            T = real(i, pr)
+            call model%lnphi_pt(z, P, T, root_type="liquid", lnPhi=lnphi_z)
+            call model%lnphi_pt(y, P, T, root_type="liquid", lnPhi=lnphi_y)
+            diffs(ncomp) = log(z(ncomp)) + lnphi_z(ncomp) - log(y(ncomp)) - lnphi_y(ncomp)
+            if (diffs(ncomp) > 0) exit
+         end do
+         Ts(ncomp) = T
+      end do
+
+      T = maxval(Ts, mask=diffs>0)
+      ncomp = findloc(Ts, T, dim=1)
+
+      y=0
+      y(ncomp) = 1
+
+      fr%x = z
+      fr%y = y + 1e-5
+      fr%y = fr%y/sum(fr%y)
+      fr%T = T
+      fr%P = P
+      fr%kind = "liquid-liquid"
+      find_hpl = pt_envelope_2ph( &
+         model, z, fr, &
+         specified_variable_0=nc+2, delta_0=-5.0_pr, iterations=1000)
+   end function
 
 end module yaeos__equilibria_boundaries_phase_envelopes_pt
