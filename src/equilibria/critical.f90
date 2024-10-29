@@ -314,6 +314,7 @@ contains
 
       critical_point%x = z
       critical_point%y = z
+      critical_point%beta = 0
       critical_point%Vx = exp(X(2))
       critical_point%Vy = exp(X(2))
       critical_point%T  = exp(X(3))
