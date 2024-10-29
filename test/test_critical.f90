@@ -1,13 +1,12 @@
 program main
    !! Test the calculation of critical lines
    use yaeos
-   use yaeos__equilibria_critical, only:  CriticalLine, critical_line, solve_cp
    implicit none
 
    integer, parameter :: nc=12
 
    type(CubicEoS) :: model
-   type(EquilibriumState) :: sat
+   type(EquilibriumState) :: sat, crit
    type(PTEnvel2) :: env
    type(CriticalLine) :: cl
 
@@ -18,11 +17,8 @@ program main
    real(pr) :: zi(nc)
 
    real(pr) :: u(nc)
-   integer :: ns
-   real(pr) :: S
-
    real(pr) :: X(3)
-   integer :: i, j
+   integer :: i
 
    model = get_model()
 
@@ -41,13 +37,9 @@ program main
 
    ! Solve a critical point
    X = [a, log(V), log(T)]
-   u = [(1, i=1, size(z0))]
-   u = u/sum(u)
-   call solve_cp(model, X, 1, X(1), z0, zi, u)
-   V = exp(X(2)); T = exp(X(3))
-   call model%pressure(z, V=V, T=T, P=P)
+   crit = critical_point(model, z0, zi, spec="z", max_iters=300, a0=a)
 
-   if (sum([T, P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
+   if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
       print *, "Critical point failed"
       stop 1
    end if
