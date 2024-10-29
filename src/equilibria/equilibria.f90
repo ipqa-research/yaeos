@@ -15,7 +15,8 @@ module yaeos__equilibria
       saturation_pressure, saturation_temperature
 
    ! Critical points
-   use yaeos__equilibria_critical, only: critical_line, CriticalLine, solve_cp
+   use yaeos__equilibria_critical, only: &
+      critical_line, CriticalLine, critical_point
 
    ! Phase equilibria boundaries
    use yaeos__equilibria_boundaries_phase_envelopes_pt, only:&

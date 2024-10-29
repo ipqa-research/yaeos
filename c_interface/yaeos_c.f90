@@ -41,6 +41,7 @@ module yaeos_c
    public :: flash, flash_grid
    public :: saturation_pressure
    public :: pt2_phase_envelope
+   public :: critical_point
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -416,9 +417,29 @@ contains
 
       call ar_models(id)%model%cp_residual_vt(n, V, T, Cp)
    end subroutine Cp_residual_vt
+
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
+   subroutine critical_point(id, z0, zi, spec, max_iters, x, T, P, V)
+      use yaeos, only: EquilibriumState, fcritical_point => critical_point
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      character(len=*), intent(in) :: spec
+      integer, intent(in) :: max_iters
+      real(c_double), intent(out) :: x(size(z0))
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: P
+      real(c_double), intent(out) :: V
+
+      real(c_double) :: y(size(z0)), Vx, Vy, beta
+
+      type(EquilibriumState) :: crit
+      crit = fcritical_point(model=ar_models(id)%model, z0=z0, zi=zi, spec=spec, max_iters=max_iters)
+      call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
+   end subroutine critical_point
+
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
       type(EquilibriumState) :: eq_state

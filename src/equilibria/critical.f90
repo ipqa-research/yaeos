@@ -1,6 +1,7 @@
 module yaeos__equilibria_critical
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
 
    implicit none
 
@@ -18,6 +19,7 @@ contains
    type(CriticalLine) function critical_line(model, a0, z0, zi, dS0)
       use yaeos__math_continuation, only: continuation
       use yaeos__math, only: solve_system
+      use yaeos__equilibria_equilibrium_state, only: EquilibriumState
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: a0
       real(pr), intent(in) :: z0(:)
@@ -29,18 +31,23 @@ contains
       real(pr), allocatable :: XS(:, :)
       real(pr) :: X0(3), T, P, V, z(size(z0))
 
-      integer :: i, j, ns, last_point
-      u = z0
+      type(EquilibriumState) :: first
 
-      T = sum(model%components%Tc * z0)
-      P = sum(model%components%Pc * z0)
-      call model%volume(n=z0, P=P, T=T, V=V, root_type="stable")
+      integer :: i, j, ns, last_point
+      ! u = z0
+      ! u = zi
+      u = (z0 + zi)/sum(z0 + zi)
+      z = a0*zi + (1-a0)*z0
+
+      T = sum(model%components%Tc * z)
+      P = sum(model%components%Pc * z)
+      call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
       X0 = [a0, v, T]
       X0(2:3) = log(X0(2:3))
       ns = 1
 
-      call solve_cp(model, X0, ns, X0(ns), z0, zi, u)
+      ! call solve_cp(model, X0, ns, X0(ns), z0, zi, u)
 
       u = [(1, i=1, size(z0))]
       u = u/sum(u)
@@ -108,13 +115,17 @@ contains
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
 
-         integer :: other(2) = [2,3]
-
          ns = maxloc(abs(dXdS), dim=1)
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
-      end subroutine update_specification
 
+         if (exp(X(2)) < 0.1) then
+            ! If the volume is too small, reduce the step size
+            do while(abs(dXdS(2)*dS) > abs(0.01 * X(2)))
+               dS = dS/2
+            end do
+         end if
+      end subroutine update_specification
    end function critical_line
 
    real(pr) function lambda1(model, X, s, z0, zi, u, u_new)
@@ -150,7 +161,7 @@ contains
             M(i, j) = sqrt(z(i)*z(j)) * dlnf_dn(i, j)
          end do
       end do
-      
+
       call eigh(A=M, lambda=lambda, vectors=vectors, err=stat)
       if (.not. stat%ok()) write(*, *) stat%print_msg()
       lambda1 = minval(lambda)
@@ -209,22 +220,81 @@ contains
       ! df_critical(3, ns) = 1
    end function df_critical
 
-   subroutine solve_cp(model, X, ns, S, z0, zi, u)
+   type(EquilibriumState) function critical_point(&
+      model, z0, zi, spec, &
+      max_iters, u0, V0, T0, a0 &
+      )
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
-      real(pr), intent(inout) :: X(3)
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
       real(pr), intent(in) :: z0(:)
       real(pr), intent(in) :: zi(:)
-      real(pr), intent(in out) :: u(:)
+      character(len=*), intent(in) :: spec
+      integer, intent(in) :: max_iters
 
-      real(pr) :: F(3), df(3, 3), dX(3)
+      real(pr), optional, intent(in) :: V0
+      real(pr), optional, intent(in) :: T0
+      real(pr), optional, intent(in) :: a0
+
+      real(pr), optional, intent(in) :: u0(:)
+
+      real(pr) :: X(3)
+      integer :: ns
+      real(pr) :: S
+      real(pr) :: F(3), df(3, 3), dX(3), u(size(z0))
+      real(pr) :: V, T, P
 
       real(pr) :: z(size(z0)), u_new(size(z0)), l
       integer :: i
 
-      do i=1,250
+      ! ========================================================================
+      ! Handle the input
+      ! ------------------------------------------------------------------------
+      if (present(a0)) then
+         X(1) = a0
+      else
+         X(1) = 0.0_pr
+      end if
+
+      z = X(1)*zi + (1-X(1))*z0
+
+      if (present(u0)) then
+         u = u0
+      else
+         u = (z0 + zi)/sum(z0 + zi)
+      end if
+
+      if (present(T0)) then
+         X(3) = log(T0)
+      else
+         X(3) = log(sum(model%components%Tc * z))
+      end if
+
+      if (present(V0)) then
+         X(2) = log(V0)
+      else
+         call model%volume(&
+            n=z, P=sum(model%components%Pc * z), T=exp(X(3)), V=X(2), root_type="stable")
+         X(2) = log(X(2))
+      end if
+
+      select case (spec)
+       case("z")
+         ns = 1
+         S = X(1)
+       case("V")
+         ns = 2
+         S = X(2)
+       case("T")
+         ns = 3
+         S = X(3)
+       case default
+         stop "Invalid specification"
+      end select
+
+      ! ========================================================================
+      ! Solve the system of equations
+      ! ------------------------------------------------------------------------
+      do i=1,max_iters
          F = F_critical(model, X, ns, S, z0, zi, u)
          df = df_critical(model, X, ns, S, z0, zi, u)
          dX = solve_system(A=df, b=-F)
@@ -238,7 +308,17 @@ contains
          X = X + dX
          l = lambda1(model, X, 0.0_pr, z0, zi, u, u_new)
          u = u_new
+
+         critical_point%iters = i
       end do
 
-   end subroutine solve_cp
+      critical_point%x = z
+      critical_point%y = z
+      critical_point%Vx = exp(X(2))
+      critical_point%Vy = exp(X(2))
+      critical_point%T  = exp(X(3))
+      call model%pressure(n=z, V=critical_point%Vx, T=critical_point%T, P=critical_point%P)
+      critical_point%kind = "critical"
+
+   end function critical_point
 end module yaeos__equilibria_critical

@@ -1082,6 +1082,32 @@ class ArModel(ABC):
 
         return res
 
+    def critical_point(self, z, max_iters=100) -> dict:
+        """Critical point calculation.
+
+        Calculate the critical point of a mixture. At a given composition
+
+        Parameters
+        ----------
+        z: array_like
+            Global mole fractions
+        max_iters: int, optional
+
+        Returns
+        -------
+        dict
+            Critical point calculation result dictionary with keys:
+                - Tc: critical temperature [K]
+                - Pc: critical pressure [bar]
+                - Vc: critical volume [L]
+        """
+
+        *x, t, p, v = yaeos_c.critical_point(
+            self.id, z0=z, zi=[0, 0], spec="z", max_iters=max_iters
+        )
+
+        return {"Tc": t, "Pc": p, "Vc": v}
+
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""
         yaeos_c.make_available_ar_models_list(self.id)
