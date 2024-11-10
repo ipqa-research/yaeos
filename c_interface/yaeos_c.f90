@@ -465,7 +465,6 @@ contains
       Ps = makenan()
       Vs = makenan()
 
-      print *, da0
       cl = fcritical_line(model=ar_models(id)%model, a0=a0, z0=z0, zi=zi, ds0=da0)
 
       do i=1,size(cl%a)
