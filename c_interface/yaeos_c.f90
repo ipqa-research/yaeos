@@ -39,9 +39,9 @@ module yaeos_c
 
    ! Phase equilibria
    public :: flash, flash_grid
-   public :: saturation_pressure
+   public :: saturation_pressure, saturation_temperature
    public :: pt2_phase_envelope
-   public :: critical_point
+   public :: critical_point, critical_line
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -440,6 +440,39 @@ contains
       call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
    end subroutine critical_point
 
+   subroutine critical_line(id, a0, da0, z0, zi, max_points, as, Vs, Ts, Ps)
+      use yaeos, only: EquilibriumState, CriticalLine, fcritical_line => critical_line
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(in) :: da0
+      integer, intent(in) :: max_points
+      real(c_double), intent(out) :: as(max_points)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: Vs(max_points)
+
+      type(CriticalLine) :: cl
+
+      integer :: i
+
+      as = makenan()
+      Ts = makenan()
+      Ps = makenan()
+      Vs = makenan()
+
+      print *, da0
+      cl = fcritical_line(model=ar_models(id)%model, a0=a0, z0=z0, zi=zi, ds0=da0)
+
+      do i=1,size(cl%a)
+         as(i) = cl%a(i)
+         Ts(i) = cl%T(i)
+         Ps(i) = cl%P(i)
+         Vs(i) = cl%V(i)
+      end do
+   end subroutine critical_line
+
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
       type(EquilibriumState) :: eq_state
@@ -561,7 +594,7 @@ contains
       real(c_double), intent(out) :: Tcs(5), Pcs(5)
       real(c_double), optional, intent(in) :: T0, P0
 
-      real(8) :: makenan, nan
+      real(8) :: nan
       type(EquilibriumState) :: sat
       type(PTEnvel2) :: env
 
@@ -569,10 +602,8 @@ contains
 
       real(c_double) :: T, P
 
-      makenan=0
-
       neval = neval + 1
-      nan = makenan/makenan
+      nan = makenan()
       Ts = nan
       Ps = nan
       Tcs = nan
@@ -663,4 +694,13 @@ contains
          end do
       end if
    end subroutine flash_grid
+
+   ! ==========================================================================
+   ! Auxiliar
+   ! --------------------------------------------------------------------------
+   function makenan()
+      real(c_double) :: makenan
+      makenan = 0
+      makenan = makenan/makenan
+   end function
 end module yaeos_c

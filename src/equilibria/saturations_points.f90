@@ -12,10 +12,6 @@ module yaeos__equilibria_saturation_points
    integer :: iters_first_step = 100
    real(pr) :: step_tol = 0.1_pr
 
-   class(ArModel), pointer, private :: hidden_model
-   real(pr), private, allocatable :: hidden_z(:)
-   character(len=14), private :: hidden_kind
-
    real(pr), private :: Vz, Vy
 
 contains
@@ -93,6 +89,7 @@ contains
       !  Solve point
       ! ------------------------------------------------------------------------
       do its=1, iters_first_step
+         ! print *, "sat solving", z, T, P
          y = k*z
          call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
          call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)

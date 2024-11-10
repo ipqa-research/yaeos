@@ -16,8 +16,6 @@ program main
    real(pr) :: z0(nc)
    real(pr) :: zi(nc)
 
-   real(pr) :: u(nc)
-   real(pr) :: X(3)
    integer :: i
 
    model = get_model()
@@ -36,8 +34,7 @@ program main
    call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
    ! Solve a critical point
-   X = [a, log(V), log(T)]
-   crit = critical_point(model, z0, zi, spec="z", max_iters=300, a0=a)
+   crit = critical_point(model, z0, zi, S=a, spec=CPSpec%a, max_iters=300, a0=a)
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
       print *, "Critical point failed"
@@ -45,8 +42,10 @@ program main
    end if
 
    ! Now test the critical lines
-   cl = critical_line(model, a, z0, zi, 0.01_pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, dS0=0.01_pr)
+   
    do i=1,5
+      print *, "env", i
       a = cl%a(i)
       z = a*zi + (1-a)*z0
       sat = saturation_temperature(model, z, P=0.01_pr, kind="dew")

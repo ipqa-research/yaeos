@@ -186,6 +186,8 @@ contains
       integer, intent(in) :: max_iterations
       integer, intent(out) :: its
 
+      integer :: innits
+
       real(pr) :: F(size(X))
       real(pr) :: dF(size(X), size(X))
       real(pr) :: dFdS(size(X))
@@ -199,10 +201,14 @@ contains
          dX = solve_system(dF, -F)
          X = X + dX
 
+         innits = 0
          do while (any(isnan(F)))
+            innits = innits + 1
+            if (innits > 100) exit
             X = X - dx*0.9
             call saturation_TP(model, kind, z, X, ns, S, F, dF, dFdS)
          end do
+         
          its = its + 1
       end do
 

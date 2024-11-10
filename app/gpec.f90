@@ -23,7 +23,7 @@ program gpec
 
    integer :: diagram_type !! Diagram type
 
-   integer :: i, j
+   integer :: i
 
    forsus_dir = "build/dependencies/forsus/" // forsus_default_dir
 
@@ -56,11 +56,18 @@ program gpec
    ! Calculate the first critical line (2 -> 1)
    ! ---------------------------------------------------------------------------
    cl = critical_line(model, a0=0.99_pr, z0=z0, zi=zi, dS0=-0.01_pr)
-
    do i=1,size(cl%a)
-      print *, cl%a(i), cl%T(i), cl%P(i), cl%V(i)
+      write(1, *) cl%a(i), cl%T(i), cl%P(i), cl%V(i)
    end do
+
    call exit
+   
+   ! cl = critical_line(model, a0=0.001_pr, z0=z0, zi=zi, dS0=0.001_pr)
+   ! do i=1,size(cl%a)
+   !    write(2, *) cl%a(i), cl%T(i), cl%P(i), cl%V(i)
+   ! end do
+   
+   call plot_pts([(real(i,pr)/100, i=1,99,10)])
 
    if (cl%a(size(cl%a)) < 1e-3) then
       type_1_or_2 : block
@@ -76,7 +83,7 @@ program gpec
 
 contains
 
-type(CubicEoS) function get_model_nrtl_mhv() result(model)
+   type(CubicEoS) function get_model_nrtl_mhv() result(model)
       type(MHV) :: mr
       type(NRTL) :: ge
       real(pr) :: a(nc,nc), b(nc,nc), c(nc,nc)
@@ -101,4 +108,23 @@ type(CubicEoS) function get_model_nrtl_mhv() result(model)
       deallocate(model%mixrule)
       model%mixrule = mr
    end function get_model_nrtl_mhv
+
+   subroutine plot_pts(zs)
+      real(pr), intent(in) :: zs(:)
+      type(EquilibriumState) :: sat
+      type(PTEnvel2) :: env
+      integer :: i
+      real(pr) :: z(nc)
+
+      do i=1,size(zs)
+         z = z0*zs(i) + zi*(1-zs(i))
+         sat = saturation_pressure(model, z, T=200._pr, kind="bubble")
+         env = pt_envelope_2ph(model, z, sat)
+         write(i+10, *) env
+         
+         sat = saturation_temperature(model, z, P=0.01_pr, kind="dew")
+         env = pt_envelope_2ph(model, z, sat)
+         write(i+10, *) env
+      end do
+   end subroutine
 end program gpec
