@@ -426,7 +426,7 @@ contains
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
-      character(len=*), intent(in) :: spec
+      integer, intent(in) :: spec
       integer, intent(in) :: max_iters
       real(c_double), intent(out) :: x(size(z0))
       real(c_double), intent(out) :: T
@@ -434,9 +434,12 @@ contains
       real(c_double), intent(out) :: V
 
       real(c_double) :: y(size(z0)), Vx, Vy, beta
+      real(c_double) :: S
 
       type(EquilibriumState) :: crit
-      crit = fcritical_point(model=ar_models(id)%model, z0=z0, zi=zi, spec=spec, max_iters=max_iters)
+
+      S = 0
+      crit = fcritical_point(model=ar_models(id)%model, z0=z0, zi=zi, S=S, spec=spec, max_iters=max_iters)
       call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
    end subroutine critical_point
 
