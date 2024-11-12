@@ -37,20 +37,11 @@ program main
    daidt2 = daidt2*model%ac/Tc**2
 
    call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-   print *, D
-   print *, dDdT
-   print *, dDdT2
-   print *, dDi
-   print *, dDidT
-   print *, dDij
-
+   
    if (.not. allclose([D], [test_D], test_tol)) error stop 1
    if (.not. allclose([dDdT], [test_dDdT], test_tol)) error stop 1
    if (.not. allclose([dDdT2], [test_dDdT2], test_tol)) error stop 1
    if (.not. allclose([dDi], [test_dDi], test_tol)) error stop 1
    if (.not. allclose([dDidT], [test_dDidT], test_tol)) error stop 1
    if (.not. allclose([dDij], [test_dDij], test_tol)) error stop 1
-
-
-
 end program main
