@@ -17,8 +17,11 @@ module yaeos__equilibria_saturation_points
 contains
 
    type(EquilibriumState) function saturation_pressure(model, n, t, kind, p0, y0, max_iters)
+      !! # saturation_pressure
+      !!
       !! Saturation pressure calculation function.
       !!
+      !! ## Description
       !! Calculates the saturation pressure of a multicomponent mixture with
       !! a given molar composition `n`.
       !! It is possible to calculate:
@@ -26,6 +29,16 @@ contains
       !! - Bubble point: `kind="bubble"`
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
+      !!
+      !! It will first try to converge a solution using a \(1D\) Newton method to
+      !! solve the equation
+      !! \[
+      !!    f(P) = \sum_i z_i K_i - 1 = 0
+      !! \]
+      !!
+      !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
+      !! If the solution does not converge, it will use a full Newton method to
+      !! solve the system of equations using the variables \(K_i\) and \(\ln P\).
       use stdlib_optval, only: optval
       use yaeos__m_s_sp, only: solve_TP
       class(ArModel), target, intent(in) :: model
@@ -89,7 +102,6 @@ contains
       !  Solve point
       ! ------------------------------------------------------------------------
       do its=1, iters_first_step
-         ! print *, "sat solving", z, T, P
          y = k*z
          call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidp=dlnphi_dp_y)
          call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidp=dlnphi_dp_z)
@@ -156,6 +168,15 @@ contains
       !! - Bubble point: `kind="bubble"`
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
+      !! It will first try to converge a solution using a \(1D\) Newton method to
+      !! solve the equation
+      !! \[
+      !!    f(P) = \sum_i z_i K_i - 1 = 0
+      !! \]
+      !!
+      !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
+      !! If the solution does not converge, it will use a full Newton method to
+      !! solve the system of equations using the variables \(K_i\) and \(\ln T\).
       use stdlib_optval, only: optval
       use yaeos__m_s_sp, only: solve_TP
       class(ArModel), target, intent(in) :: model

@@ -199,6 +199,11 @@ contains
          if (all(abs(F) < tol)) exit
 
          dX = solve_system(dF, -F)
+
+         do while(maxval(abs(dX/X)) > 1)
+            dX = dX / 2
+         end do
+
          X = X + dX
 
          innits = 0

@@ -5,8 +5,12 @@ module yaeos__equilibria_auxiliar
    implicit none
 
 contains
+
    function k_wilson(model, T, P) result(K)
-      !! K-factors regressión done by Wilson, used for initialization.
+      !! # K_wilson
+      !!
+      !! ## Description
+      !! K-factors regression done by Wilson, used for initialization.
       class(BaseModel), intent(in) :: model
       real(pr), intent(in) :: T
       real(pr), intent(in) :: P
@@ -18,9 +22,14 @@ contains
    end function k_wilson
 
    real(pr) function P_wilson(model, z, T) result(P)
-      class(BaseModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: T
+      !! # P_wilson
+      !!
+      !! ## Description
+      !! Calculate the pressure at a given T of a mixture using the Wilson
+      !! equation.
+      class(BaseModel), intent(in) :: model !! Model of the mixture.
+      real(pr), intent(in) :: z(:) !! Mole fractions of the components.
+      real(pr), intent(in) :: T !! Temperature [K].
 
       P = 1.0_pr/sum(&
          z*model%components%Pc &

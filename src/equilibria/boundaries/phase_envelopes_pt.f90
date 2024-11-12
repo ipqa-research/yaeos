@@ -103,6 +103,10 @@ contains
          X(:nc) = log(first_point%x/z)
       end select
 
+      where(z == 0)
+         X(:nc) = 0
+      end where   
+
       X(nc+1) = log(first_point%T)
       X(nc+2) = log(first_point%P)
       S0 = X(ns)
@@ -191,6 +195,15 @@ contains
          df(:nc, nc + 2) = P * (dlnphi_dp_y - dlnphi_dp_z)
 
          df(nc + 1, :nc) = y
+         
+         do i=1,nc
+            if (z(i) == 0) then
+               F(i) = 0
+               df(:, i) = 0
+               ! df(i, :) = 0
+               df(i, i) = 1
+            end if
+         end do
 
          df(nc + 2, :) = 0
          df(nc + 2, ns) = 1
@@ -238,6 +251,10 @@ contains
             abs(dS)*3/step_iters &
             ] &
             )
+
+         do while(abs(dXdS(ns)*dS) < 0.1 .and. ns > nc)
+            dS = dS*2
+         end do
          
          ! do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
          !    dS = 0.7*dS
@@ -321,7 +338,6 @@ contains
             .and. inner < 5000)
             ! If near a critical point, jump over it
             inner = inner + 1
-
             S = S + dS
             X = X + dXdS*dS
          end do
@@ -395,8 +411,22 @@ contains
    end subroutine write_PTEnvel2
 
    type(PTEnvel2) function find_hpl(model, z, T0, P0)
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:), T0, P0
+      !! # find_hpl
+      !!
+      !! ## Description
+      !! Find a liquid-liquid phase boundary on the PT plane. At a specified
+      !! pressure.
+      !! The procedure consists in looking for the temperature at which the
+      !! fugacity of a component in the mixture is higher than the fugacity
+      !! of the same component in a pure phase. This is done for each component
+      !! in the mixture. The component with the highest temperature is selected
+      !! as it should be the first one appearing. If all components have a
+      !! negative difference then the mixture is probably stable at all 
+      !! temperatures.
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z(:) !! Mole fractions
+      real(pr), intent(in) :: T0 !! Initial temperature [K]
+      real(pr), intent(in) :: P0 !! Search pressure [bar]
       
       integer :: i
       real(pr) :: y(size(z))
@@ -407,19 +437,30 @@ contains
 
       nc = size(z)
       P = P0
+
       do ncomp=1,nc
-         T = T0
          y = 0
          y(ncomp) = 1
-         do i=500, 100, -10
+         
+         do i=int(T0), 1, -10
             T = real(i, pr)
             call model%lnphi_pt(z, P, T, root_type="liquid", lnPhi=lnphi_z)
             call model%lnphi_pt(y, P, T, root_type="liquid", lnPhi=lnphi_y)
+
+            ! Fugacity of the component ncomp 
+            ! z * phi_i_mixture / phi_i_pure
+            ! if eq > 1 then the fugacity in the mixture is above the pure,
+            ! so the component is more stable on another phase
             diffs(ncomp) = log(z(ncomp)) + lnphi_z(ncomp) - log(y(ncomp)) - lnphi_y(ncomp)
             if (diffs(ncomp) > 0) exit
          end do
+
          Ts(ncomp) = T
       end do
+
+      if (all(diffs < 0)) then
+         return
+      end if
 
       T = maxval(Ts, mask=diffs>0)
       ncomp = findloc(Ts, T, dim=1)
