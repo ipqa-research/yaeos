@@ -39,7 +39,7 @@ contains
       b_lapack = b
       call dgesv(n, nrhs, a_lapack, lda, ipiv, b_lapack, ldb, info)
 
-      if (info > 0) write(error_unit, *) "WARN: dgesv error"
+      ! if (info > 0) write(error_unit, *) "WARN: dgesv error"
 
       x = b_lapack
    end function solve_system

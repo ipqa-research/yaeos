@@ -23,31 +23,33 @@ program main
       P=P, dlnfdt=dlnfdt, &
       dlnfdv=dlnfdv, dlnfdn=dlnfdn)
 
-   print *, "lnf"
-   print *, lnf
-   print *, lnfug(n, V, T)
+
+   if (sum(abs(lnf - lnfug(n, V, T))) > 1e-6) then
+      error stop "lnf failed"
+   end if
 
    dx = 0.0001
-   print *, "dt"
    numdiff = (lnfug(n, V, T+dx) - lnfug(n, V, T))/dx
-   print *, dlnfdt
-   print *, numdiff
+
+   if (sum(abs(dlnfdt - numdiff)) > 1e-6) then
+      error stop "dlnfdt failed"
+   end if
    
-   print *, "dv"
    dx = 0.0001_pr
    numdiff = (lnfug(n, V+dx, T ) - lnfug(n, V, T))/dx
-   print *, dlnfdv
-   print *, numdiff
+   if (sum(abs(dlnfdv - numdiff)) > 1e-4) then
+      error stop "dlnfdv failed"
+   end if
 
-   print *, "dn"
    do i=1,nc
       dn = 0.0_pr
       dn(i) = 0.000001_pr
       numdiff_dn(i, :) = (lnfug(n+dn, V, T) - lnfug(n, V, T))/dn(i)
    end do
 
-   print *, dlnfdn
-   print *, numdiff_dn
+   if (sum(abs(dlnfdn - numdiff_dn)) > 1e-6) then
+      error stop "dlnfdn failed"
+   end if
 
 contains
 

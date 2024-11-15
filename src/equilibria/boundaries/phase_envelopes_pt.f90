@@ -35,7 +35,7 @@ contains
    function pt_envelope_2ph(&
       model, z, first_point, &
       points, iterations, delta_0, specified_variable_0, &
-      solver, stop_conditions &
+      solver, stop_conditions, maximum_pressure &
       ) result(envelopes)
       !! PT two-phase envelope calculation procedure.
       !!
@@ -66,6 +66,8 @@ contains
       !! Specify solver for each point, defaults to a full newton procedure
       procedure(continuation_stopper), optional :: stop_conditions
       !! Function that returns true if the continuation method should stop
+      real(pr), optional, intent(in) :: maximum_pressure
+      !! Maximum pressure to calculate [bar]
       type(PTEnvel2) :: envelopes
       ! ------------------------------------------------------------------------
 
@@ -117,7 +119,7 @@ contains
       ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
-         dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
+         dS0=dS0, max_points=max_points, solver_tol=1.e-7_pr, &
          update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
@@ -252,13 +254,17 @@ contains
             ] &
             )
 
-         do while(abs(dXdS(ns)*dS) < 0.1 .and. ns > nc)
-            dS = dS*2
+         do while(abs(dXdS(nc+1)*dS) < 0.01 .and. abs(dXdS(nc+2)*dS) < 0.01)
+            dS = dS * 1.1
          end do
-         
-         ! do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
-         !    dS = 0.7*dS
-         ! end do
+
+         do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
+            dS = 0.7*dS
+         end do
+
+         if (present(maximum_pressure)) then
+            if (X(nc+2) > log(maximum_pressure)) dS = 0
+         end if
          
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
@@ -334,7 +340,7 @@ contains
 
          inner = 0
          do while (&
-                  maxval(abs(X(:nc))) < 0.06 &
+                  maxval(abs(X(:nc))) < 0.01 &
             .and. inner < 5000)
             ! If near a critical point, jump over it
             inner = inner + 1

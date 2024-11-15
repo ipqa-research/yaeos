@@ -318,6 +318,19 @@ contains
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
+   subroutine residual_helmholtz(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), v, t
+      real(c_double), intent(out) :: ar
+      real(c_double), optional, intent(out) :: &
+         ArT, ArV, ArTV, ArV2, ArT2, Arn(size(n)), ArVn(size(n)), ArTn(size(n)), Arn2(size(n), size(n))
+
+      call ar_models(id)%model%residual_helmholtz(&
+         n=n, V=V, T=T, &
+         Ar=Ar,  ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         ArV2=ARV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
+   end subroutine
+
    subroutine lnphi_vt(id, n, v, t, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t

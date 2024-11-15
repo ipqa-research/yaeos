@@ -111,6 +111,8 @@ contains
       X(nc+1) = log(first_point%P)
       X(nc+2) = alpha0
       S0 = X(ns)
+      ! print *, X, S0
+      ! call exit
       allocate(envelopes%points(0), envelopes%cps(0), envelopes%alpha(0))
 
       test_numdiff: block
@@ -124,7 +126,7 @@ contains
 
          do i=1,size(X)
             dx = 0
-            dx(i) = 1.e-3_pr * X(i)
+            dx(i) = 1.e-5_pr * X(i)
             call foo(X - dx, ns, S0, FdX, df, dFdS)
             call foo(X + dx, ns, S0, FdX2, df, dFdS)
             call foo(X, ns, S0, F, df, dFdS)
@@ -140,7 +142,7 @@ contains
             loc = maxloc(abs(numdiff - df))
             print *, loc
             print *, df(loc(1), loc(2)), numdiff(loc(1), loc(2))
-            ! error stop 1
+            error stop 1
          end if
       end block test_numdiff
 
@@ -150,7 +152,7 @@ contains
       ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
-         dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
+         dS0=dS0, max_points=max_points, solver_tol=1.e-5_pr, &
          update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
@@ -220,9 +222,10 @@ contains
          ! Jacobian Matrix
          do i = 1, nc
             do j = 1, nc
-               df(i, j) = y(j)*dlnphi_dn_y(i, j)
+               df(i, j) = y(j) * dlnphi_dn_y(i, j)
             end do
             df(i, i) = df(i, i) + 1
+            
             df(i, nc + 2) = sum(K*dlnphi_dn_y(i, :)*dzda - dlnphi_dn_z(i, :)*dzda)
          end do
 
@@ -260,8 +263,7 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         write(1, *) X
-         if (maxval(abs(X(:nc))) < 0.5_pr) then
+         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.01) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS = 0.01_pr
          else
@@ -271,6 +273,7 @@ contains
 
          dS = dXdS(ns) * dS
          dXdS = dXdS/dXdS(ns)
+         
 
          dS = sign(1.0_pr, dS) * minval([ &
             max(sqrt(abs(X(ns))/10._pr), 0.1_pr), &
@@ -278,10 +281,8 @@ contains
             ] &
             )
 
-         dS = sign(1.0_pr, dS) * maxval([abs(dS), maxdS])
-
-         do while(abs(dXdS(nc+2)*dS) > 0.1_pr .or. abs(dXdS(nc+1)*dS) > 0.1_pr)
-            dS = dS/2
+         do while (maxval(abs(dXdS(:nc)*dS)) < 0.05)
+            dS = dS*1.1_pr
          end do
 
          call save_point(X, step_iters)

@@ -25,8 +25,8 @@ program main
    z = a*zi + (1-a)*z0
 
    ! Get the full phase envelope of the fluid
-   sat = saturation_temperature(model, z, P=0.01_pr, kind="dew")
-   env = pt_envelope_2ph(model, z, sat)
+   sat = saturation_temperature(model, z, P=0.0001_pr, kind="dew")
+   env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
 
    ! Calculate the critical point
    T = sum(model%components%Tc * z)
@@ -37,23 +37,21 @@ program main
    crit = critical_point(model, z0, zi, S=a, spec=CPSpec%a, max_iters=300, a0=a)
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
-      print *, "Critical point failed"
-      stop 1
+      error stop "Critical point failed"
    end if
 
    ! Now test the critical lines
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, dS0=0.01_pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, dS0=0.1_pr, max_points=5000)
+
    
    do i=1,5
-      print *, "env", i
       a = cl%a(i)
       z = a*zi + (1-a)*z0
-      sat = saturation_temperature(model, z, P=0.01_pr, kind="dew")
-      env = pt_envelope_2ph(model, z, sat)
+      sat = saturation_temperature(model, z, P=0.1_pr, kind="dew")
+      env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
 
       if (sum(([cl%T(i), cl%P(i)] - [env%cps(1)%T, env%cps(1)%P]))**2 > 1e-2) then
-         print *, "Critical line failed"
-         stop 1
+         error stop "Critical line failed"
       end if
    end do
 

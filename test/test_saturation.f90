@@ -102,6 +102,9 @@ contains
       model = binary_PR76()
 
       dew = saturation_temperature(model, n, P, kind="dew", t0=250._pr)
+
+      print *, dew
+
       call check(error, abs(dew%P-P) < abs_tolerance)
       call check(error, abs(dew%T-T) < abs_tolerance)
       call check(error, maxval(abs(dew%x-x)) < abs_tolerance)

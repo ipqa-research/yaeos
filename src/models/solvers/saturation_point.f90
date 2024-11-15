@@ -31,6 +31,8 @@ contains
       real(pr) :: dlnfug_dP_y(size(model))
       real(pr) :: Py, dPdTy, dPdVy, dPdn_y(size(z))
 
+      real(pr) :: lnPspec
+
       integer :: j, nc
 
       nc = size(z)
@@ -38,7 +40,8 @@ contains
       y  = z * exp(X(:nc))
       Vz = exp(X(nc+1))
       Vy = exp(X(nc+2))
-      T  = X(nc+3)
+      T  = exp(X(nc+3))
+      lnPspec = X(nc+4)
 
       if (present(df)) then
          call model%lnfug_vt(&
@@ -62,7 +65,8 @@ contains
       F(:nc) = lnfug_y - lnfug_z
       F(nc + 1) = sum(y - z)
       F(nc + 2) = Py - Pz
-      F(nc + 3) = X(ns) - S
+      F(nc + 3) = lnPspec - log(Py)
+      F(nc + 4) = X(ns) - S
 
       if (present(dF)) then
          dF = 0
@@ -74,7 +78,7 @@ contains
 
          dF(:nc, nc+1) = -dlnfug_dV_z * Vz
          dF(:nc, nc+2) =  dlnfug_dV_y * Vy
-         dF(:nc, nc+3) =  dlnfug_dT_y - dlnfug_dT_z
+         dF(:nc, nc+3) =  T * (dlnfug_dT_y - dlnfug_dT_z)
 
          ! mass balance
          df(nc+1, :nc) = y
@@ -83,9 +87,15 @@ contains
          df(nc+2, :nc)  = y * dPdn_y
          df(nc+2, nc+1) = -dPdVz * Vz
          df(nc+2, nc+2) = dPdVy * Vy
-         df(nc+2, nc+3) = dPdTy - dPdTz
+         df(nc+2, nc+3) = T*(dPdTy - dPdTz)
 
-         df(nc+3, ns) = 1
+         df(nc+3, :nc) = -y * dPdn_y/Py
+         df(nc+3, nc+1) = 0
+         df(nc+3, nc+2) = -dPdVy * Vy / Py
+         df(nc+3, nc+3) = -dPdTy * T / Py
+         df(nc+3, nc+4) = 1
+
+         df(nc+4, ns) = 1
       end if
    end subroutine saturation_F
 
@@ -193,27 +203,15 @@ contains
       real(pr) :: dFdS(size(X))
       real(pr) :: dx(size(X))
 
-      its = 0
+
+
+      its= 0
       do while (its < max_iterations)
-         call saturation_TP(model, kind, z, X, ns, S, F, dF, dFdS)
-         if (all(abs(F) < tol)) exit
+         call saturation_TP(model=model, z=z, kind=kind, X=X, ns=ns, S=S, F=F, dF=dF, dFdS=dFdS)
 
          dX = solve_system(dF, -F)
-
-         do while(maxval(abs(dX/X)) > 1)
-            dX = dX / 2
-         end do
-
          X = X + dX
-
-         innits = 0
-         do while (any(isnan(F)))
-            innits = innits + 1
-            if (innits > 100) exit
-            X = X - dx*0.9
-            call saturation_TP(model, kind, z, X, ns, S, F, dF, dFdS)
-         end do
-         
+         if (all(abs(F) < tol)) exit
          its = its + 1
       end do
 
@@ -229,11 +227,14 @@ contains
       real(pr), intent(in) :: tol
       integer, intent(in) :: max_iterations
       integer, intent(out) :: its
-
+      
+      integer :: nc
       real(pr) :: F(size(X))
       real(pr) :: dF(size(X), size(X))
       real(pr) :: dFdS(size(X))
-      real(pr) :: dx(size(X))
+      real(pr) :: Xold(size(X)), dx(size(X)), dx_old(size(x))
+
+      nc = size(X) - 4
 
       its = 0
       do while (its < max_iterations)
@@ -244,10 +245,6 @@ contains
 
          X = X + dX
 
-         do while (any(isnan(F)))
-            X = X - 0.9_pr * dx
-            call saturation_F(model, z, X, ns, S, F, dF)
-         end do
          its = its + 1
       end do
    end subroutine solve_VxVyT

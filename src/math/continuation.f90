@@ -203,10 +203,9 @@ contains
       X0 = X
       newton: do iters = 1, max_iters
          ! Converged point
-         ! if (maxval(abs(dx)) < tol .or. maxval(abs(F)) < 1e-13) exit newton
+         if (maxval(abs(dx)) < tol .or. maxval(abs(F)) < tol) exit newton
 
          call fun(X, ns, S, F, dF, dFdS)
-         if (maxval(abs(F)) < tol) exit
 
          dX = solve_system(dF, -F)
 

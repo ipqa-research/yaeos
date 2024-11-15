@@ -359,7 +359,7 @@ contains
       if (present(a0)) then
          X(1) = a0
       else
-         X(1) = 0.0_pr
+         X(1) = 0.5_pr
       end if
 
       z = X(1)*zi + (1-X(1))*z0

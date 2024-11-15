@@ -15,11 +15,12 @@ program gpec
 
    real(pr) :: z(nc) !! Molar fractions
    real(pr) :: a !! Fraction between component 1 and 2
-   real(pr), parameter :: z0(nc) = [1-epsilon(1.0), epsilon(1.0)] !! Component 1 molar fractions
-   real(pr), parameter :: zi(nc) = [epsilon(1.0), 1-epsilon(1.0)] !! Component 2 molar fractions
+   real(pr), parameter :: z0(nc) = [1, 0] !! Component 1 molar fractions
+   real(pr), parameter :: zi(nc) = [0, 1] !! Component 2 molar fractions
    real(pr) :: P !! Pressure [bar]
    real(pr) :: T !! Temperature [K]
    real(pr) :: V !! Volume [L/mol]
+   real(pr) :: S
 
    integer :: diagram_type !! Diagram type
 
@@ -30,27 +31,40 @@ program gpec
    ! ===========================================================================
    ! Set up the model
    ! ---------------------------------------------------------------------------
-   model = get_model_nrtl_mhv()
-   ! sus(1) = Substance("methane")
-   ! sus(2) = Substance("n-butane")
-   ! model = PengRobinson76(&
-   !    Tc=sus%critical%critical_temperature%value, &
-   !    Pc=sus%critical%critical_pressure%value/1e5, &
-   !    w=sus%critical%acentric_factor%value &
-   !    )
+   ! model = get_model_nrtl_mhv()
+   sus(1) = Substance("methane")
+   sus(2) = Substance("n-butane")
+   model = PengRobinson76(&
+      Tc=sus%critical%critical_temperature%value, &
+      Pc=sus%critical%critical_pressure%value/1e5, &
+      w=sus%critical%acentric_factor%value &
+      )
 
    ! ===========================================================================
    ! Calculate both saturation curves
    ! ---------------------------------------------------------------------------
+   print *, model%components%Tc
+   print *, model%components%Pc
    do i=0,1
-      z = i*zi + (1-i)*z0
-      sat_point = saturation_temperature(model, z, P=0.1_pr, kind="bubble")
-      psats(i+1) = pt_envelope_2ph(model, z, sat_point)
+      sat_point = critical_point(model, z0, zi, S=S, spec=CPSpec%a, max_iters=1000, a0=S)
+
+      print *, sat_point%iters, sat_point
+      psats(i+1) = pt_envelope_2ph(model, z, sat_point, delta_0=-0.1_pr)
    end do
-   print *, psats(1)
+   call exit
+
+   print *, "Psat 1"
+   do i=1,size(psats(1)%points)
+      print *, psats(1)%points(i)%T, psats(1)%points(i)%P
+   end do
+
    print *, ""
    print *, ""
-   print *, psats(2)
+   
+   print *, "Psat 2"
+   do i=1,size(psats(2)%points)
+      print *, psats(2)%points(i)%T, psats(2)%points(i)%P
+   end do
 
    ! ===========================================================================
    ! Calculate the first critical line (2 -> 1)

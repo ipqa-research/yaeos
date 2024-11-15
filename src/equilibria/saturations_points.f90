@@ -1,5 +1,5 @@
 module yaeos__equilibria_saturation_points
-   use yaeos__constants, only: pr
+   use yaeos__constants, only: pr, R
    use yaeos__models, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_auxiliar, only: k_wilson
@@ -7,12 +7,10 @@ module yaeos__equilibria_saturation_points
 
    implicit none
 
-   real(pr) :: tol = 1e-9_pr
+   real(pr) :: tol = 1e-6_pr
    integer :: max_iterations = 2000
-   integer :: iters_first_step = 100
+   integer :: iters_first_step = 15
    real(pr) :: step_tol = 0.1_pr
-
-   real(pr), private :: Vz, Vy
 
 contains
 
@@ -54,12 +52,13 @@ contains
       real(pr) :: k(size(n)), y(size(n)), z(size(n)), lnk(size(n))
       real(pr) :: lnfug_y(size(n)), dlnphi_dp_y(size(n))
       real(pr) :: lnfug_z(size(n)), dlnphi_dp_z(size(n))
+      real(pr) :: Vz, Vy
 
       character(len=50) :: incipient
       character(len=50) :: main
 
       real(pr) :: f, step
-      integer :: its, iterations, i
+      integer :: its, iterations
 
       ! =======================================================================
       ! Handle arguments
@@ -270,7 +269,8 @@ contains
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
-      if (its > iters_first_step) then
+      !if (its >= iters_first_step) then
+      if (.true.) then
          block
             real(pr) :: X(size(n)+2), S
             integer :: ns, nc

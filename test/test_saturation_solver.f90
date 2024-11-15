@@ -9,14 +9,16 @@ program main
 
    class(ArModel), allocatable :: model
    type(EquilibriumState) :: sat
+   type(PTEnvel2) :: env
 
-   integer, parameter :: nc = 2, nf = nc + 3
+   integer, parameter :: nc = 2, nf = nc + 4
 
    real(pr) :: n(nc), T, P, Vy, Vz, X(nf), S, F(nf), df(nf,nf)
    real(pr) :: dx(nf), dFnum(nf, nf), Fdx(nf), dftmp(nf,nf)
    real(pr) :: Px, Py
    integer :: i, ns
    type(timer) :: tim
+   real(pr) :: et,st, t1, t2
 
    model = binary_PR76()
 
@@ -25,16 +27,28 @@ program main
    T = 200._pr
 
    sat = saturation_pressure(model, n, T=T, kind="bubble")
+   sat = saturation_temperature(model, n, P=20._pr, kind="bubble")
+
 
    print *, "saturation_pressure"
-   print *, sat%iters, sat%x, sat%y, sat%P
-
-   print *, "solve yVxVy"
-
+   print *, sat%iters, sat%x, sat%y, sat%T, sat%P
+   
    ! call numdiff
 
+   call cpu_time(st)
+   print *, "solve yVxVy"
    call VxVy
+   call cpu_time(et)
+   t1 = et-st
+   print *, (et-st)*1e6, "us"
+   
+   call cpu_time(st)
    call TP
+   call cpu_time(et)
+   t2 = et-st
+   print *, (et-st)*1e6, "us"
+
+   print *, t2/t1
 
 contains
 
@@ -44,9 +58,10 @@ contains
       call model%pressure(n=n, V=Vz, T=T, P=P)
 
       X(:nc) = log(sat%y/sat%x)
-      X(nc+1) = Vz
-      X(nc+2) = Vy
-      X(nc+3) = T
+      X(nc+1) = log(Vz)
+      X(nc+2) = log(Vy)
+      X(nc+3) = log(T)
+      X(nc+4) = log(P)
       S = T
       ns = nc+3
       dx = 0
@@ -68,34 +83,42 @@ contains
    end subroutine numdiff
 
    subroutine VxVy
-      real(pr) :: X(nc+3), S, tol=1e-10
+      real(pr) :: X(nc+4), S, tol=1e-10
       integer :: ns, its
       X(1) = 1.0
       X(2) = 0.5
       X(3) = log(0.1)
       X(4) = log(0.7)
-      X(5) = T
+      X(5) = log(T)
+      X(6) = log(20.0)
 
-      ns = 5
+      ns = 6
       S = X(ns)
 
-      call solve_VxVyT(model, n, X, ns, S, tol, 100, its)
-      print *, its, n*exp(X(:nc)), exp(X(nc+1)), exp(X(nc+2)), X(5)
+      print *, "solveVxVyPT"
+
+      call solve_VxVyT(model, n, X, ns, S, tol, 1000, its)
+      print *, its, n*exp(X(:nc)), exp(X(5)), exp(X(6))
    end subroutine VxVy
 
    subroutine TP
       real(pr) :: X(nc+2), S, tol=1e-10
+
+      real(pr) :: lnphi_z(nc), lnphi_y(nc)
+
+      real(pr) :: Vz, Vy, y(nc), Pz, Py
       integer :: its, ns
       print *, "solve_TP"
       X(1) = log(1.0)
       X(2) = log(0.1)
-      X(3) = log(T)
-      X(4) = log(200.0)
-      ns = 3
+      X(3) = log(230.)
+      X(4) = log(20.0)
+      ns = 4
 
       S = X(ns)
 
-      call solve_TP(model, "bubble", n, X, ns, S, tol, 100, its)
-      print *, its, n*exp(X(:nc)), exp(X(nc+1:))
+      call solve_TP(model, "bubble", n, X, ns, S, tol, 1000, its)
+      y = n * exp(X(:nc))
+      print *, its, y, exp(X(nc+1:))
    end subroutine TP
 end program main
