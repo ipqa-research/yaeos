@@ -159,7 +159,7 @@ contains
 
          real(pr) :: z(size(u)), Xsol(3)
 
-         if (X(1) > 1) then
+         if (X(CPSpec%a) > 1) then
             return
          end if
 
@@ -179,12 +179,10 @@ contains
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
 
-
-
          ns = maxloc(abs(dXdS), dim=1)
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
-         if (exp(X(4)) > max_P) then
+         if (exp(X(CPSpec%P)) > max_P) then
             dS = 0
          end if
 

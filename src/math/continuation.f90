@@ -165,6 +165,8 @@ contains
             if (stop(X, ns, S, dS, dXdS, newton_its)) exit
          end if
 
+         if (dS == 0) exit
+
          X = X + dXdS * dS
          S = X(ns)
       end do
