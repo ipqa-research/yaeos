@@ -89,7 +89,7 @@ contains
       class(ArModel), allocatable :: model
       type(EquilibriumState) :: dew
 
-      real(pr) :: x(nc) = [6.7245630132141868E-002, 0.93275436999337613]
+      real(pr) :: x(nc) = [6.7257479103310133E-002,  0.93274263301184768]
       real(pr) :: y(nc)  = [0.4, 0.6]
       real(pr) :: P = 10.867413040635611
 
@@ -102,8 +102,6 @@ contains
       model = binary_PR76()
 
       dew = saturation_temperature(model, n, P, kind="dew", t0=250._pr)
-
-      print *, dew
 
       call check(error, abs(dew%P-P) < abs_tolerance)
       call check(error, abs(dew%T-T) < abs_tolerance)
