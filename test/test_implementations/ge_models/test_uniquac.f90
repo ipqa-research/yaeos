@@ -14,7 +14,8 @@ contains
          new_unittest("Test UNIQUAC consistency pure", test_uniquac_cons_pure), &
          new_unittest("Test UNIQUAC against Caleb Bell's Thermo lib", test_against_caleb_thermo), &
          new_unittest("Test UNIQUAC against Gmehling et al. book", test_against_gmehling), &
-         new_unittest("Test UNIQUAC against Gmehling et al. book 2", test_against_gmehling2) &
+         new_unittest("Test UNIQUAC against Gmehling et al. book 2", test_against_gmehling2), &
+         new_unittest("Test UNIQUAC Temperature dependence", test_temperature_dependence) &
          ]
    end subroutine collect_suite
 
@@ -429,4 +430,66 @@ contains
       call check(error, allclose(exp(ln_gammas), [8.856_pr, 0.860_pr, 1.425_pr], 1e-3_pr))
 
    end subroutine test_against_gmehling2
+
+   subroutine test_temperature_dependence(error)
+      use yaeos, only: pr, R
+      use yaeos, only: setup_uniquac, UNIQUAC
+
+      type(error_type), allocatable, intent(out) :: error
+
+      integer, parameter :: nc = 3
+
+      real(pr) :: rs(nc), qs(nc)
+      real(pr) :: n(nc)
+
+      real(pr) :: ln_gammas_exp(nc), ln_gammas_trial(nc)
+
+      ! models
+      type(UNIQUAC) :: model20
+      type(UNIQUAC) :: model30
+      type(UNIQUAC) :: model_const
+      type(UNIQUAC) :: model_lineal
+      type(UNIQUAC) :: model_ln
+      type(UNIQUAC) :: model_quad
+
+      ! Parameters
+      real(pr) :: bij20(nc, nc), bij30(nc, nc)
+
+      n = [5.0_pr, 15.0_pr, 65.0_pr]
+      rs = [0.92_pr, 2.1055_pr, 3.1878_pr]
+      qs = [1.4_pr, 1.972_pr, 2.4_pr]
+
+      ! =======================================================================
+      ! Models with constants parameters to test
+      ! -----------------------------------------------------------------------
+      bij20(1,:) = [0.0_pr, 43.552026684128634_pr, 97.82405844415928_pr]
+      bij20(2,:) = [-48.846029213395745_pr, 0.0_pr, 180.94738666155268_pr]
+      bij20(3,:) = [-384.11635874542793_pr, -208.59497463051014_pr, 0.0_pr]
+
+      model20 = setup_uniquac(qs, rs, bij=bij20)
+
+      bij30(1,:) = [0.0_pr, 21.657910812761273_pr, 99.58458376639004_pr]
+      bij30(2,:) = [-37.74765519959855_pr, 0.0_pr, 186.155606345583_pr]
+      bij30(3,:) = [-379.32149369269956_pr, -233.34490510114676_pr, 0.0_pr]
+
+      model30 = setup_uniquac(qs, rs, bij=bij30)
+
+      ! =======================================================================
+      ! Tests
+      ! -----------------------------------------------------------------------
+      ! Test against a non temperature dependent model
+      ! 20 C
+      model_const = setup_uniquac(qs, rs, bij=bij20 / 298.15_pr)
+
+      call model_const%ln_activity_coefficient(n, 298.15_pr, ln_gammas_trial)
+      call model20%ln_activity_coefficient(n, 298.15_pr, ln_gammas_exp)
+
+      print *, ln_gammas_exp
+      print *, ln_gammas_trial
+
+      call check(error, allclose(ln_gammas_trial, ln_gammas_exp, 1e-10_pr))
+
+
+
+   end subroutine test_temperature_dependence
 end module test_uniquac
