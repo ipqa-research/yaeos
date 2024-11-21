@@ -140,7 +140,7 @@ $$
 
 
 Differentiating each term of the first compositional derivative respect to
-$n_j$
+\(n_j\) we get:
 
 \(\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =\)
 
@@ -189,7 +189,7 @@ $$
 Example from: Gmehling et al. (2012) [2]
 
 An example of having a mixture of Water-Ethanol-Bezene at 298.15 K with 
-constant \(\Delta U\) [K]:
+constant \(\frac{\Delta U}{R}\) [K]:
 
 |Water|Ethanol|Benzene|
 |---------|--------|---------|

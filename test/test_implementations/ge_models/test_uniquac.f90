@@ -442,7 +442,11 @@ contains
       real(pr) :: rs(nc), qs(nc)
       real(pr) :: n(nc)
 
-      real(pr) :: ln_gammas_exp(nc), ln_gammas_trial(nc)
+      real(pr) :: ln_gammas_p(nc), Ge_p, GeT_p, GeT2_p, Gen_p(nc)
+      real(pr) :: GeTn_p(nc), Gen2_p(nc, nc)
+
+      real(pr) :: ln_gammas_t(nc), Ge_t, GeT_t, GeT2_t, Gen_t(nc)
+      real(pr) :: GeTn_t(nc), Gen2_t(nc, nc)
 
       ! models
       type(UNIQUAC) :: model20
@@ -453,11 +457,12 @@ contains
       type(UNIQUAC) :: model_quad
 
       ! Parameters
-      real(pr) :: bij20(nc, nc), bij30(nc, nc)
+      real(pr) :: bij20(nc, nc), bij30(nc, nc), aij(nc, nc), dij(nc, nc)
+      real(pr) :: cij(nc, nc), eij(nc, nc)
 
       n = [5.0_pr, 15.0_pr, 65.0_pr]
-      rs = [0.92_pr, 2.1055_pr, 3.1878_pr]
-      qs = [1.4_pr, 1.972_pr, 2.4_pr]
+      rs = [1.972_pr, 10.496_pr, 31.764_pr]
+      qs = [2.105_pr, 12.746_pr, 39.178_pr]
 
       ! =======================================================================
       ! Models with constants parameters to test
@@ -479,17 +484,190 @@ contains
       ! -----------------------------------------------------------------------
       ! Test against a non temperature dependent model
       ! 20 C
-      model_const = setup_uniquac(qs, rs, bij=bij20 / 298.15_pr)
+      model_const = setup_uniquac(qs, rs, aij=bij20 / 293.15_pr)
 
-      call model_const%ln_activity_coefficient(n, 298.15_pr, ln_gammas_trial)
-      call model20%ln_activity_coefficient(n, 298.15_pr, ln_gammas_exp)
+      call model_const%ln_activity_coefficient(n, 293.15_pr, ln_gammas_t)
+      call model_const%excess_gibbs(&
+         n, 293.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
 
-      print *, ln_gammas_exp
-      print *, ln_gammas_trial
+      call model20%ln_activity_coefficient(n, 293.15_pr, ln_gammas_p)
+      call model20%excess_gibbs(&
+         n, 293.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
 
-      call check(error, allclose(ln_gammas_trial, ln_gammas_exp, 1e-10_pr))
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, abs(GeT_t - Ge_t / 293.15_pr) < 1e-10_pr) ! funny
+      call check(error, abs(GeT2_t) < 1e-10_pr) ! funny x2
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(GeTn_t, Gen_t / 293.15_pr, 1e-10_pr)) ! funny3
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
 
+      ! 30 C
+      model_const = setup_uniquac(qs, rs, aij=bij30 / 303.15_pr)
 
+      call model_const%ln_activity_coefficient(n, 303.15_pr, ln_gammas_t)
+      call model_const%excess_gibbs(&
+         n, 303.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
 
+      call model30%ln_activity_coefficient(n, 303.15_pr, ln_gammas_p)
+      call model30%excess_gibbs(&
+         n, 303.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, abs(GeT_t - Ge_t / 303.15_pr) < 1e-10_pr)
+      call check(error, abs(GeT2_t) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(GeTn_t, Gen_t / 303.15_pr, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
+
+      ! Test against a linear temperature dependent model
+      aij(1,:) = [0.0_pr, 2.4094201446651944_pr, 0.4861465075816882_pr]
+      aij(2,:) = [-1.4009801734684584_pr, 0.0_pr, 0.710500847827416_pr]
+      aij(3,:) = [-3.0410597123328746_pr, 0.9936949460465081_pr, 0.0_pr]
+
+      dij(1,:) = [0.0_pr, -0.007712278604397001_pr, -0.0005200301448241018_pr]
+      dij(2,:) = [0.004210661705262751_pr, 0.0_pr, -0.0003180930394505843_pr]
+      dij(3,:) = [0.005903984936450968_pr, -0.005817018267835272_pr, 0.0_pr]
+
+      model_lineal = setup_uniquac(qs, rs, aij=aij, dij=dij)
+
+      ! 20 C
+      call model_lineal%ln_activity_coefficient(n, 293.15_pr, ln_gammas_t)
+      call model_lineal%excess_gibbs(&
+         n, 293.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
+
+      call model20%ln_activity_coefficient(n, 293.15_pr, ln_gammas_p)
+      call model20%excess_gibbs(&
+         n, 293.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
+
+      ! 30 C
+      call model_lineal%ln_activity_coefficient(n, 303.15_pr, ln_gammas_t)
+      call model_lineal%excess_gibbs(&
+         n, 303.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
+
+      call model30%ln_activity_coefficient(n, 303.15_pr, ln_gammas_p)
+      call model30%excess_gibbs(&
+         n, 303.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
+
+      ! Test against a logarithmic temperature dependent model
+      aij(1,:) = [0.0_pr, 13.209596948268368_pr, 1.214390103981535_pr]
+      aij(2,:) = [-7.297537236522662_pr, 0.0_pr, 1.155954291911136_pr]
+      aij(3,:) = [-11.308925077456808_pr, 9.139773295263835_pr, 0.0_pr]
+
+      cij(1,:) = [0.0_pr, -2.2992002904891815_pr, -0.1550324516753101_pr]
+      cij(2,:) = [1.2552910900252325_pr, 0.0_pr, -0.09483054830130232_pr]
+      cij(3,:) = [1.7601080792377783_pr, -1.73418139790263_pr, 0.0_pr]
+
+      model_ln = setup_uniquac(qs, rs, aij=aij, cij=cij)
+
+      ! 20 C
+      call model_ln%ln_activity_coefficient(n, 293.15_pr, ln_gammas_t)
+      call model_ln%excess_gibbs(&
+         n, 293.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
+
+      call model20%ln_activity_coefficient(n, 293.15_pr, ln_gammas_p)
+      call model20%excess_gibbs(&
+         n, 293.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
+
+      ! 30 C
+      call model_ln%ln_activity_coefficient(n, 303.15_pr, ln_gammas_t)
+      call model_ln%excess_gibbs(&
+         n, 303.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
+
+      call model30%ln_activity_coefficient(n, 303.15_pr, ln_gammas_p)
+      call model30%excess_gibbs(&
+         n, 303.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
+
+      ! Test against a quadratic temperature dependent model
+      aij(1,:) = [0.0_pr, 1.2600355505795615_pr, 0.40864481611268855_pr]
+      aij(2,:) = [-0.773452312613418_pr, 0.0_pr, 0.6630944640873461_pr]
+      aij(3,:) = [-2.1611706837127835_pr, 0.12676682745485435_pr, 0.0_pr]
+
+      eij(1,:) = [0.0_pr, -1.293355459399128e-05_pr, -8.720948261346668e-07_pr]
+      eij(2,:) = [7.0613142801656066e-06_pr, 0.0_pr, -5.33444641037371e-07_pr]
+      eij(3,:) = [9.901031253481415e-06_pr, -9.755187435578186e-06_pr, 0.0_pr]
+
+      model_quad = setup_uniquac(qs, rs, aij=aij, eij=eij)
+
+      ! 20 C
+      call model_quad%ln_activity_coefficient(n, 293.15_pr, ln_gammas_t)
+      call model_quad%excess_gibbs(&
+         n, 293.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
+
+      call model20%ln_activity_coefficient(n, 293.15_pr, ln_gammas_p)
+      call model20%excess_gibbs(&
+         n, 293.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
+
+      ! 30 C
+      call model_quad%ln_activity_coefficient(n, 303.15_pr, ln_gammas_t)
+      call model_quad%excess_gibbs(&
+         n, 303.15_pr, Ge_t, GeT_t, GeT2_t, Gen_t, GeTn_t, Gen2_t &
+         )
+
+      call model30%ln_activity_coefficient(n, 303.15_pr, ln_gammas_p)
+      call model30%excess_gibbs(&
+         n, 303.15_pr, Ge_p, GeT_p, GeT2_p, Gen_p, GeTn_p, Gen2_p &
+         )
+
+      call check(error, allclose(ln_gammas_t, ln_gammas_p, 1e-10_pr))
+      call check(error, abs(Ge_t - Ge_p) < 1e-10_pr)
+      call check(error, allclose(Gen_t, Gen_p, 1e-10_pr))
+      call check(error, allclose(Gen2_t(1,:), Gen2_p(1,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(2,:), Gen2_p(2,:), 1e-10_pr))
+      call check(error, allclose(Gen2_t(3,:), Gen2_p(3,:), 1e-10_pr))
    end subroutine test_temperature_dependence
 end module test_uniquac
