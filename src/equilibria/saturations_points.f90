@@ -208,7 +208,7 @@ contains
       if (present (t0)) then
          t = t0
       else
-         t = 150._pr
+         t = 250._pr
       end if
 
       if (present(y0)) then
@@ -259,7 +259,7 @@ contains
 
          if (.not. ieee_is_finite(step) .or. ieee_is_nan(step)) exit
 
-         do while (abs(step) > 0.5*T .or. T - step < 0)
+         do while (T - step < 0)
             if (isnan(step)) step = 10
             step = step/2
          end do
@@ -269,8 +269,7 @@ contains
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
-      !if (its >= iters_first_step) then
-      if (.true.) then
+      if (its >= iters_first_step) then
          block
             real(pr) :: X(size(n)+2), S
             integer :: ns, nc
