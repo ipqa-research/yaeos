@@ -29,6 +29,24 @@ $$
 e_{lk}{T^2}
 $$
 
+Some of the model's terms can be simplified to reduce the complexity of the
+derivatives. Also, allows the model to be evaluated in mole vector `n` where
+some of the composition are equal to zero.
+
+$$\frac{\phi_k}{x_k} = \frac{n_T r_k}{\sum_l r_l n_l}$$
+
+$$\frac{\theta_k}{\phi_k} = \frac{q_k \sum_l r_l n_l}{r_k \sum_l q_l n_l}$$
+
+Being \(n_T \) the total number of moles in the system. The expression for the
+Excess Gibbs free energy can be rewritten as:
+
+$$ 
+\frac{G^E}{RT} = \sum_k n_k \ln \left(\frac{n_T r_k}{\sum_l r_l n_l} \right)
++ \frac{z}{2}\sum_k q_k n_k \ln \left(\frac{q_k \sum_l r_l n_l}{r_k \sum_l q_l
+n_l} \right) - \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{lk} \right) 
+$$
+
+
 ## Temperature derivatives
 
 \(\qquad \tau_{lk}:\)
@@ -137,6 +155,19 @@ $$
 \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lk}}{\sum_l \theta_{l}
 {\tau}_{lk}}
 $$
+
+Nueva:
+$$
+\frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln 
+\left(\frac{n_T r_i}{\sum_l r_l n_l} \right) + \sum_k n_k 
+\left(\frac{r_k \sum_l r_l n_l - n_T r_k r_i}{(\sum_l r_l n_l)^2}\right) +
+\frac{z}{2} q_i n_i \ln \left(\frac{q_i \sum_l r_l n_l}{r_i \sum_l q_l n_l} 
+\right) - {q}_{i}
+\ln{\left(\sum_l \theta_{l} {\tau}_{li} \right)} - \sum_k {n}_{k} {q}_{k}
+\frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lk}}{\sum_l \theta_{l}
+{\tau}_{lk}}
+$$
+
 
 
 Differentiating each term of the first compositional derivative respect to

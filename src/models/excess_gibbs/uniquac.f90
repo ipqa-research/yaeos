@@ -330,8 +330,8 @@ contains
       ! ------------------------------------------------------------------------
       ! Combinatorial term
       Ge_comb = ( &
-         sum(n * log(phik / xk)) &
-         + self%z / 2.0_pr * sum(n * self%qs * log(thetak / phik)) &
+         sum(n * log(n_tot * self%rs / sum_nr)) &
+         + self%z / 2.0_pr * sum(n * self%qs * log(self%qs * sum_nr / self%rs / sum_nq)) &
          )
 
       ! Residual term
@@ -360,9 +360,10 @@ contains
          do i=1,nc
             ! Combinatorial term
             Gen_comb(i) = (&
-               log(phik(i) / xk(i)) + sum(n * (dphik_dn(:,i) / phik - dxk_dni(:,i) / xk)) &
-               + self%z / 2.0_pr * self%qs(i) * log(thetak(i) / phik(i)) &
-               + self%z / 2.0_pr * sum(n * self%qs * (dthetak_dni(:,i) / thetak - dphik_dn(:,i) / phik)) &
+               log(n_tot * self%rs(i) / sum_nr) &
+               + sum(n * (self%rs * sum_nr - n_tot * self%rs(i)* self%rs) / sum_nr**2) &
+               + self%z / 2.0_pr * self%qs(i) * n(i) * log(self%qs(i) * sum_nr / self%rs(i) / sum_nq) &
+               + self%z / 2.0_pr * sum(n * self%qs * (self%rs(i) * sum_nq - self%qs(i) * sum_nr) / sum_nq / sum_nr) &
                )
 
             ! Residual term

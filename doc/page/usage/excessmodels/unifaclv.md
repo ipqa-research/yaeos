@@ -2,6 +2,8 @@
 title: UNIFAC-LV
 ---
 
+[TOC]
+
 # UNIFAC
 
 [[UNIFAC]] (UNIQUAC Functional-group Activity Coefficients) is an Excess Gibbs
@@ -15,13 +17,9 @@ $$ \frac{G^E}{RT} = \frac{G^{E,r}}{RT} + \frac{G^{E,c}}{RT} $$
 
 Being:
 
-- Combinatorial: Accounts for the size and shape of the molecules. The involved
-equations can be checked in the API documentation:
-[[yaeos__models_ge_group_contribution_unifac:Ge_combinatorial]]
+- Combinatorial: Accounts for the size and shape of the molecules.
 
-- Residual: Accounts for the energy interactions between different functional
-groups. The involved equations can be checked in the API documentation:
-[[yaeos__models_ge_group_contribution_unifac:Ge_residual]]
+- Residual: Accounts for the energy interactions between different functional groups.
 
 Each substance of a mixture modeled with [[UNIFAC]] must be represented by a
 list a functional groups and other list with the ocurrence of each functional
@@ -29,11 +27,11 @@ group on the substance. The list of the functional groups culd be accesed on
 the DDBST web page:
 [https://www.ddbst.com/published-parameters-unifac.html](https://www.ddbst.com/published-parameters-unifac.html)
 
-# Examples
-## Calculating activity coefficients
-We can instantiate a [[UNIFAC]] model with a mixture  ethanol-water and
-evaluate the logarithm of activity coefficients of the model for a 0.5 mole
-fraction of each, and a temperature of 298.0 K.
+## Examples
+### Calculating activity coefficients
+We can instantiate a [[UNIFAC]] model with a mixture ethanol-water and evaluate
+the logarithm of activity coefficients of the model for a 0.5 mole fraction of
+each, and a temperature of 298.0 K.
 
 ```fortran
 use yaeos__constants, only: pr
