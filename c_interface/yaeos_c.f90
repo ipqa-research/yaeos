@@ -287,14 +287,14 @@ contains
       real(c_double), optional, intent(in) :: delta_1(size(tc)), k(size(tc))
       integer(c_int), intent(out) :: id
 
-      if (present(delta_1) .and. present(k)) then
-         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1, k=k)
-      elseif (present(delta_1))  then
-         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1)
-      elseif (present(k))  then
-         ar_model = fRKPR(tc, pc, w, zc, k=k)
-      else
+      if (all(delta_1 == 0) .and. all(k == 0)) then
          ar_model = fRKPR(tc, pc, w, zc)
+      else if (all(delta_1 == 0)) then
+         ar_model = fRKPR(tc, pc, w, zc, k=k)
+      else if (all(k == 0)) then
+         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1)
+      else
+         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1, k=k)
       end if
       call extend_ar_models_list(id)
    end subroutine rkpr
