@@ -361,8 +361,8 @@ contains
             ! Combinatorial term
             Gen_comb(i) = (&
                log(n_tot * self%rs(i) / sum_nr) &
-               + sum(n * (self%rs * sum_nr - n_tot * self%rs(i)* self%rs) / sum_nr**2) &
-               + self%z / 2.0_pr * self%qs(i) * n(i) * log(self%qs(i) * sum_nr / self%rs(i) / sum_nq) &
+               + sum(n * (sum_nr - n_tot * self%rs(i)) / n_tot / sum_nr) &
+               + self%z / 2.0_pr * self%qs(i) * log(self%qs(i) * sum_nr / self%rs(i) / sum_nq) &
                + self%z / 2.0_pr * sum(n * self%qs * (self%rs(i) * sum_nq - self%qs(i) * sum_nr) / sum_nq / sum_nr) &
                )
 
@@ -379,15 +379,17 @@ contains
       ! dn2
       if (dn2) then
          do concurrent(i=1:nc, j=1:nc)
-            trm1 = dphik_dn(i,j) / phik(i) - dxk_dni(i,j) / xk(i)
+            trm1 = (sum_nr - n_tot * self%rs(j)) / n_tot / sum_nr
 
             trm2 = (&
-               dphik_dn(j,i) / phik(j) - dxk_dni(j,i) / xk(j) &
-               + sum(n * (d2phik_dnidnj(:,i,j) * phik - dphik_dn(:,i) * dphik_dn(:,j)) / phik**2) &
-               - sum(n * (d2xk_dnidnj(:,i,j) * xk - dxk_dni(:,i) * dxk_dni(:,j)) / xk**2) &
+               (sum_nr - n_tot * self%rs(i)) / n_tot / sum_nr &
+               + sum(n * (self%rs(i) * self%rs(j) / sum_nr**2 - 1.0_pr / n_tot**2)) &
                )
 
-            trm3 = self%z / 2 * self%qs(i) * (dthetak_dni(i,j) / thetak(i) - dphik_dn(i,j) / phik(i))
+            trm3 = (&
+               self%z / 2 * self%qs(i) * (self%rs(i) * self%rs(j) * sum_nq - &
+               self%rs(i) * self%qs(j) * sum_nr) / sum_nq / sum_nr &
+               )
 
             trm4 = (&
                self%z / 2 * self%qs(j) * (dthetak_dni(j,i) / thetak(j) - dphik_dn(j,i) / phik(j)) &
