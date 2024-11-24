@@ -35,7 +35,7 @@ contains
    function pt_envelope_2ph(&
       model, z, first_point, &
       points, iterations, delta_0, specified_variable_0, &
-      solver, stop_conditions &
+      solver, stop_conditions, maximum_pressure &
       ) result(envelopes)
       !! PT two-phase envelope calculation procedure.
       !!
@@ -49,7 +49,8 @@ contains
       !! Thermodyanmic model
       real(pr), intent(in) :: z(:)
       !! Vector of molar fractions
-      type(EquilibriumState) :: first_point
+      type(EquilibriumState), intent(in) :: first_point
+      !! Initial point of the envelope
       integer, optional, intent(in) :: points
       !! Maxmimum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
@@ -65,6 +66,8 @@ contains
       !! Specify solver for each point, defaults to a full newton procedure
       procedure(continuation_stopper), optional :: stop_conditions
       !! Function that returns true if the continuation method should stop
+      real(pr), optional, intent(in) :: maximum_pressure
+      !! Maximum pressure to calculate [bar]
       type(PTEnvel2) :: envelopes
       ! ------------------------------------------------------------------------
 
@@ -102,6 +105,10 @@ contains
          X(:nc) = log(first_point%x/z)
       end select
 
+      where(z == 0)
+         X(:nc) = 0
+      end where
+
       X(nc+1) = log(first_point%T)
       X(nc+2) = log(first_point%P)
       S0 = X(ns)
@@ -112,7 +119,7 @@ contains
       ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
-         dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
+         dS0=dS0, max_points=max_points, solver_tol=1.e-7_pr, &
          update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
@@ -191,6 +198,15 @@ contains
 
          df(nc + 1, :nc) = y
 
+         do i=1,nc
+            if (z(i) == 0) then
+               F(i) = 0
+               df(:, i) = 0
+               ! df(i, :) = 0
+               df(i, i) = 1
+            end if
+         end do
+
          df(nc + 2, :) = 0
          df(nc + 2, ns) = 1
 
@@ -237,10 +253,23 @@ contains
             abs(dS)*3/step_iters &
             ] &
             )
-         
-         do while(maxval(abs(dXdS(:nc)*dS)) > 0.07)
+
+         ! Avoid small steps on T or P
+         do while(&
+            abs(dXdS(nc+1)*dS) < 0.05 &
+            .and. abs(dXdS(nc+2)*dS) < 0.05 &
+            .and. dS /= 0)
+            dS = dS * 1.1
+         end do
+
+         ! Dont make big steps in compositions
+         do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
             dS = 0.7*dS
          end do
+
+         if (present(maximum_pressure)) then
+            if (X(nc+2) > log(maximum_pressure)) dS = 0
+         end if
 
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
@@ -316,12 +345,10 @@ contains
 
          inner = 0
          do while (&
-                  maxval(abs(X(:nc))) < 0.1 &
-            .and. inner < 500&
-            .and. abs(Vz - Vy) < 0.1)
+            maxval(abs(X(:nc))) < 0.07 &
+            .and. inner < 5000)
             ! If near a critical point, jump over it
             inner = inner + 1
-
             S = S + dS
             X = X + dXdS*dS
          end do
@@ -393,5 +420,74 @@ contains
          write(unit, *) pt2%cps(cp)%T, pt2%cps(cp)%P
       end do
    end subroutine write_PTEnvel2
+
+   type(PTEnvel2) function find_hpl(model, z, T0, P0)
+      !! # find_hpl
+      !!
+      !! ## Description
+      !! Find a liquid-liquid phase boundary on the PT plane. At a specified
+      !! pressure.
+      !! The procedure consists in looking for the temperature at which the
+      !! fugacity of a component in the mixture is higher than the fugacity
+      !! of the same component in a pure phase. This is done for each component
+      !! in the mixture. The component with the highest temperature is selected
+      !! as it should be the first one appearing. If all components have a
+      !! negative difference then the mixture is probably stable at all
+      !! temperatures.
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z(:) !! Mole fractions
+      real(pr), intent(in) :: T0 !! Initial temperature [K]
+      real(pr), intent(in) :: P0 !! Search pressure [bar]
+
+      integer :: i
+      real(pr) :: y(size(z))
+      real(pr) :: lnphi_y(size(z)), lnphi_z(size(z))
+      type(EquilibriumState) :: fr
+      real(pr) :: diffs(size(z)), Ts(size(z)), T, P
+      integer :: ncomp, nc
+
+      nc = size(z)
+      P = P0
+
+      do ncomp=1,nc
+         y = 0
+         y(ncomp) = 1
+
+         do i=int(T0), 1, -10
+            T = real(i, pr)
+            call model%lnphi_pt(z, P, T, root_type="liquid", lnPhi=lnphi_z)
+            call model%lnphi_pt(y, P, T, root_type="liquid", lnPhi=lnphi_y)
+
+            ! Fugacity of the component ncomp
+            ! z * phi_i_mixture / phi_i_pure
+            ! if eq > 1 then the fugacity in the mixture is above the pure,
+            ! so the component is more stable on another phase
+            diffs(ncomp) = log(z(ncomp)) + lnphi_z(ncomp) - log(y(ncomp)) - lnphi_y(ncomp)
+            if (diffs(ncomp) > 0) exit
+         end do
+
+         Ts(ncomp) = T
+      end do
+
+      if (all(diffs < 0)) then
+         return
+      end if
+
+      T = maxval(Ts, mask=diffs>0)
+      ncomp = findloc(Ts, T, dim=1)
+
+      y=0
+      y(ncomp) = 1
+
+      fr%x = z
+      fr%y = y + 1e-5
+      fr%y = fr%y/sum(fr%y)
+      fr%T = T
+      fr%P = P
+      fr%kind = "liquid-liquid"
+      find_hpl = pt_envelope_2ph( &
+         model, z, fr, &
+         specified_variable_0=nc+2, delta_0=-5.0_pr, iterations=1000)
+   end function find_hpl
 
 end module yaeos__equilibria_boundaries_phase_envelopes_pt

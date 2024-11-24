@@ -941,7 +941,7 @@ class ArModel(ABC):
     def saturation_temperature(
         self, z, pressure: float, kind: str = "bubble", t0: float = 0
     ) -> dict:
-        """Saturation pressure at specified temperature.
+        """Saturation temperature at specified pressure.
 
         Arguments
         ---------
@@ -958,7 +958,7 @@ class ArModel(ABC):
         Returns
         -------
         dict
-            Saturation pressure calculation result dictionary with keys:
+            Saturation temperature calculation result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
                 - Vx: heavy phase volume [L]
@@ -996,7 +996,7 @@ class ArModel(ABC):
 
             print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))
         """
-        t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
+        t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_temperature(
             id=self.id, z=z, p=pressure, kind=kind, t0=t0
         )
 
@@ -1081,6 +1081,56 @@ class ArModel(ABC):
         res = {"Ts": ts, "Ps": ps, "Tcs": tcs, "Pcs": pcs}
 
         return res
+
+    def critical_point(self, z, max_iters=100) -> dict:
+        """Critical point calculation.
+
+        Calculate the critical point of a mixture. At a given composition
+
+        Parameters
+        ----------
+        z: array_like
+            Global mole fractions
+        max_iters: int, optional
+
+        Returns
+        -------
+        dict
+            Critical point calculation result dictionary with keys:
+                - Tc: critical temperature [K]
+                - Pc: critical pressure [bar]
+                - Vc: critical volume [L]
+        """
+
+        *x, t, p, v = yaeos_c.critical_point(
+            self.id, z0=z, zi=[0, 0], spec=1, max_iters=max_iters
+        )
+
+        return {"Tc": t, "Pc": p, "Vc": v}
+
+    def critical_line(self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000):
+        """Critical Line calculation.
+
+        Calculate the critical line between two compositions
+
+        Parameters
+        ----------
+        z0: array_like
+            Initial global mole fractions
+        zi: array_like
+            Final global mole fractions
+        a0: float, optional
+            Initial molar fraction of composition `i`
+        da0: float, optional
+            Step for molar fraction of composition `i`
+        max_poitns: int, optional
+            Maximum number of points to calculate
+        """
+        alphas, vs, ts, ps = yaeos_c.critical_line(
+            self.id, a0=a0, da0=da0, z0=z0, zi=zi, max_points=max_points
+        )
+
+        return {"a": alphas, "T": ts, "P": ps, "V": vs}
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

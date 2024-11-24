@@ -39,8 +39,9 @@ module yaeos_c
 
    ! Phase equilibria
    public :: flash, flash_grid
-   public :: saturation_pressure
+   public :: saturation_pressure, saturation_temperature
    public :: pt2_phase_envelope
+   public :: critical_point, critical_line
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -286,14 +287,14 @@ contains
       real(c_double), optional, intent(in) :: delta_1(size(tc)), k(size(tc))
       integer(c_int), intent(out) :: id
 
-      if (present(delta_1) .and. present(k)) then
-         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1, k=k)
-      elseif (present(delta_1))  then
-         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1)
-      elseif (present(k))  then
-         ar_model = fRKPR(tc, pc, w, zc, k=k)
-      else
+      if (all(delta_1 == 0) .and. all(k == 0)) then
          ar_model = fRKPR(tc, pc, w, zc)
+      else if (all(delta_1 == 0)) then
+         ar_model = fRKPR(tc, pc, w, zc, k=k)
+      else if (all(k == 0)) then
+         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1)
+      else
+         ar_model = fRKPR(tc, pc, w, zc, delta_1=delta_1, k=k)
       end if
       call extend_ar_models_list(id)
    end subroutine rkpr
@@ -317,6 +318,19 @@ contains
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
+   subroutine residual_helmholtz(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), v, t
+      real(c_double), intent(out) :: ar
+      real(c_double), optional, intent(out) :: &
+         ArT, ArV, ArTV, ArV2, ArT2, Arn(size(n)), ArVn(size(n)), ArTn(size(n)), Arn2(size(n), size(n))
+
+      call ar_models(id)%model%residual_helmholtz(&
+         n=n, V=V, T=T, &
+         Ar=Ar,  ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         ArV2=ARV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
+   end subroutine
+
    subroutine lnphi_vt(id, n, v, t, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
@@ -416,9 +430,64 @@ contains
 
       call ar_models(id)%model%cp_residual_vt(n, V, T, Cp)
    end subroutine Cp_residual_vt
+
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
+   subroutine critical_point(id, z0, zi, spec, max_iters, x, T, P, V)
+      use yaeos, only: EquilibriumState, fcritical_point => critical_point
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer, intent(in) :: spec
+      integer, intent(in) :: max_iters
+      real(c_double), intent(out) :: x(size(z0))
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: P
+      real(c_double), intent(out) :: V
+
+      real(c_double) :: y(size(z0)), Vx, Vy, beta
+      real(c_double) :: S
+
+      type(EquilibriumState) :: crit
+
+      S = 0
+      crit = fcritical_point(model=ar_models(id)%model, z0=z0, zi=zi, S=S, spec=spec, max_iters=max_iters)
+      call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
+   end subroutine critical_point
+
+   subroutine critical_line(id, a0, da0, z0, zi, max_points, as, Vs, Ts, Ps)
+      use yaeos, only: EquilibriumState, CriticalLine, fcritical_line => critical_line
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(in) :: da0
+      integer, intent(in) :: max_points
+      real(c_double), intent(out) :: as(max_points)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: Vs(max_points)
+
+      type(CriticalLine) :: cl
+
+      integer :: i
+
+      as = makenan()
+      Ts = makenan()
+      Ps = makenan()
+      Vs = makenan()
+
+      cl = fcritical_line(model=ar_models(id)%model, a0=a0, z0=z0, zi=zi, ds0=da0)
+
+      do i=1,size(cl%a)
+         as(i) = cl%a(i)
+         Ts(i) = cl%T(i)
+         Ps(i) = cl%P(i)
+         Vs(i) = cl%V(i)
+      end do
+   end subroutine critical_line
+
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
       type(EquilibriumState) :: eq_state
@@ -540,7 +609,7 @@ contains
       real(c_double), intent(out) :: Tcs(5), Pcs(5)
       real(c_double), optional, intent(in) :: T0, P0
 
-      real(8) :: makenan, nan
+      real(8) :: nan
       type(EquilibriumState) :: sat
       type(PTEnvel2) :: env
 
@@ -548,10 +617,8 @@ contains
 
       real(c_double) :: T, P
 
-      makenan=0
-
       neval = neval + 1
-      nan = makenan/makenan
+      nan = makenan()
       Ts = nan
       Ps = nan
       Tcs = nan
@@ -642,4 +709,13 @@ contains
          end do
       end if
    end subroutine flash_grid
+
+   ! ==========================================================================
+   ! Auxiliar
+   ! --------------------------------------------------------------------------
+   function makenan()
+      real(c_double) :: makenan
+      makenan = 0
+      makenan = makenan/makenan
+   end function
 end module yaeos_c

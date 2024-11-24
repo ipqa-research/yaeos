@@ -160,15 +160,24 @@ contains
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
          )
 
-      f = sum(n*ai/bi) - Ge/L
-      fdt = sum(n*daidt/bi) - GeT/L
+      f    = sum(n*ai/bi) - Ge/L
+      fdt  = sum(n*daidt/bi) - GeT/L
       fdt2 = sum(n*daidt2/bi) - GeT2/L
 
       fdi = ai/bi - (Gen/L - dL * Ge/L**2)
       fdiT = daidt/bi - (GeTn/L - dL * GeT/L**2)
 
       do concurrent(i=1:nc, j=1:nc)
-         fdij(i, j) = Gen2(i, j)/L - dL(j) * Gen(i)/L**2 - (dL2(i,j) * Gen2(i,j)/L**2 + dL(i)*(Gen2(i,j)/L**2-Gen(i)/L * dL(j)/2))
+         fdij(i, j) = &
+            Ge * dL2(i, j) / L**2 &
+            - 2 * Ge * dL(i) * dL(j) / L**3 &
+            - Gen2(i, j) / L &
+            + Gen(i) * dL(j) / L**2 &
+            + Gen(j) * dL(i) / L**2 
+            !   Gen2(i, j)/L &
+            ! - dL(j) * Gen(i)/L**2 &
+            ! - (dL2(i,j) * Gen2(i,j)/L**2 &
+            ! + dL(i)*(Gen2(i,j)/L**2-Gen(i)/L * dL(j)/2))
       end do
 
       dDi = B*fdi + f*dBi
@@ -178,8 +187,11 @@ contains
       dDdT = fdT*B
       dDdT2 = fdT2*B
       dDij = fdij
-      do j=1,nc
-         dDij(:, j) = dBi(j)*fdi + B*fdij(:, j) + f*dBij(:, j) + fdi(j)*dBi
+
+      do i=1,nc
+         do j=1,nc
+            dDij(i, j) = dBi(j)*fdi(i) + B*fdij(j, i) + f*dBij(i, j) + fdi(j)*dBi(i)
+         end do
       end do
 
    end subroutine DmixHV

@@ -3,6 +3,9 @@ module yaeos__equilibria_rachford_rice
    implicit none
 contains
    subroutine betato01(z, K)
+      !! # betato01
+      !!
+      !! ## Description
       !! Modify K-factor values to assure that \(\beta\) lies between (0,1)
       implicit none
       real(pr), intent(in) :: z(:) !! Molar fractions of the system
@@ -31,6 +34,9 @@ contains
    end subroutine betato01
 
    subroutine betalimits(z, K, bmin, bmax)
+      !! # betalimits
+      !!
+      !! ## Description
       !! Define beta limits to avoid overshooting when solving the Rachford-Rice
       !! equation.
       !!
@@ -57,13 +63,22 @@ contains
    end subroutine betalimits
 
    subroutine rachford_rice(z, K, beta, rr, drrdb)
-      !! Rachford-Rice equation for a two phase system
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: K(:)
-      real(pr), intent(in) :: beta
+      !! # rachford_rice
+      !!
+      !! ## Description
+      !! Rachford-Rice equation for a two phase system. This equation is used to
+      !! calculate the \(\beta\) value that satisfies the mass balance
+      !! between two phases.
+      !!
+      !! \[
+      !! rr(\beta) = \sum_i \frac{z_i(K_i - 1)}{1 + \beta(K_i - 1)}]
+      !! \]
+      real(pr), intent(in) :: z(:) !! Mole fractions vector
+      real(pr), intent(in) :: K(:) !! K-factors
+      real(pr), intent(in) :: beta !! \(\beta\) value
 
-      real(pr), intent(out) :: rr
-      real(pr), intent(out) :: drrdb
+      real(pr), intent(out) :: rr !! Rachford-Rice function value
+      real(pr), intent(out) :: drrdb !! Derivative of the Rachford-Rice function
 
       real(pr) :: denom(size(z))
 
@@ -73,7 +88,10 @@ contains
    end subroutine rachford_rice
 
    subroutine solve_rr(z, K, beta, beta_min, beta_max)
-      !! Solve the Rachford-Rice Equation.
+      !! # solve_rr
+      !!
+      !! ## Description
+      !! Solve the Rachford-Rice Equation using the Newton method.
       real(pr), intent(in) :: z(:) !! Mole fractions vector
       real(pr), intent(in) :: K(:) !! K-factors
       real(pr), intent(out) :: beta_min !! Lower limit for \(\beta\)
