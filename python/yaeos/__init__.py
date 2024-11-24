@@ -15,6 +15,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     PengRobinson76,
     PengRobinson78,
     QMR,
+    QMRTD,
     RKPR,
     SoaveRedlichKwong,
 )
@@ -28,6 +29,7 @@ __all__ = [
     "RKPR",
     "PSRK",
     "QMR",
+    "QMRTD",
     "NRTL",
     "UNIFACVLE",
     "UNIQUAC",

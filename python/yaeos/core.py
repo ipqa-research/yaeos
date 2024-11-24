@@ -1106,7 +1106,7 @@ class ArModel(ABC):
             self.id, z0=z, zi=[0, 0], spec=1, max_iters=max_iters
         )
 
-        return {"Tc": t, "Pc": p, "Vc": v}
+        return {"x": x, "Tc": t, "Pc": p, "Vc": v}
 
     def critical_line(self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000):
         """Critical Line calculation.
