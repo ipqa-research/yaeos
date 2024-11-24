@@ -21,7 +21,7 @@ module yaeos_c
    ! CubicEoS
    public :: srk, pr76, pr78, rkpr, psrk
    ! Mixing rules
-   public :: set_mhv, set_qmr, set_hv
+   public :: set_mhv, set_qmr, set_qmrtd, set_hv
 
    ! __del__
    public :: make_available_ar_models_list
@@ -193,6 +193,27 @@ contains
    ! ==========================================================================
    !  Cubic Mixing rules
    ! --------------------------------------------------------------------------
+   subroutine set_qmrtd(ar_id, kij_0, kij_inf, t_star, lij)
+      use yaeos, only: QMRTD, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: kij_0(:, :)
+      real(c_double), intent(in) :: kij_inf(:, :)
+      real(c_double), intent(in) :: t_star(:, :)
+      real(c_double), intent(in) :: lij(:, :)
+
+      type(QMRTD) :: mixrule
+
+      mixrule = QMRTD(k=kij_inf, k0=kij_0, Tref=t_star, l=lij)
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = mixrule
+         end select
+      end associate
+   end subroutine set_qmrtd
+
    subroutine set_mhv(ar_id, ge_id, q)
       !! Michelsen's Modified Huron-Vidal 1 with constant `q_1` parameter
       use yaeos, only: MHV, CubicEoS
@@ -329,7 +350,7 @@ contains
          n=n, V=V, T=T, &
          Ar=Ar,  ArV=ArV, ArT=ArT, ArTV=ArTV, &
          ArV2=ARV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
-   end subroutine
+   end subroutine residual_helmholtz
 
    subroutine lnphi_vt(id, n, v, t, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
@@ -717,5 +738,5 @@ contains
       real(c_double) :: makenan
       makenan = 0
       makenan = makenan/makenan
-   end function
+   end function makenan
 end module yaeos_c
