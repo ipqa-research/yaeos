@@ -174,6 +174,78 @@
 
 
 
+<div class="viewcode-block" id="QMRTD">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD">[docs]</a>
+<span class="k">class</span> <span class="nc">QMRTD</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Quadratic mixing rule, with temperature dependence.</span>
+
+<span class="sd">    ..math::</span>
+<span class="sd">        k_{ij}(T) = k_{ij}^{\infty} + k_{ij}^0 \exp{\left(-T/T^{ref}\right)}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kij_0 : array_like</span>
+<span class="sd">        kij_0 binary interaction parameters matrix</span>
+<span class="sd">    kij_inf : array_like</span>
+<span class="sd">        kij_inf binary interaction parameters matrix</span>
+<span class="sd">    t_ref: array_like</span>
+<span class="sd">        Reference temperature</span>
+<span class="sd">    lij : array_like</span>
+<span class="sd">        lij binary interaction parameters matrix</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kij_0 : array_like</span>
+<span class="sd">        kij_0 binary interaction parameters matrix</span>
+<span class="sd">    kij_inf : array_like</span>
+<span class="sd">        kij_inf binary interaction parameters matrix</span>
+<span class="sd">    t_ref: array_like</span>
+<span class="sd">        Reference temperature</span>
+<span class="sd">    lij : array_like</span>
+<span class="sd">        lij binary interaction parameters matrix</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from yaeos import QMRTD, SoaveRedlichKwong</span>
+
+<span class="sd">        kij_0 = [[0.0, 0.1], [0.1, 0.0]]</span>
+<span class="sd">        kij_inf = [[0.0, 0.1], [0.1, 0.0]]</span>
+<span class="sd">        Tref = [[0.0, 390], [390, 0.0]]</span>
+<span class="sd">        lij = [[0.0, 0.02], [0.02, 0.0]]</span>
+
+<span class="sd">        # Quadratic mixing rule instance</span>
+<span class="sd">        mixrule = QMRTD(kij_0, kij_inf, Tref, lij)</span>
+
+<span class="sd">        tc = [305.32, 469.7]        # critical temperature [K]</span>
+<span class="sd">        pc = [48.72, 33.7]          # critical pressure [bar]</span>
+<span class="sd">        w = [0.0995, 0.152]         # acentric factor</span>
+
+<span class="sd">        model = SoaveRedlichKwong(tc, pc, w, mixrule)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kij_0</span><span class="p">,</span> <span class="n">kij_inf</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">lij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_inf</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_ref</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QMRTD.set_mixrule">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD.set_mixrule">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set mix rule method.&quot;&quot;&quot;</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_qmrtd</span><span class="p">(</span>
+            <span class="n">ar_model_id</span><span class="p">,</span>
+            <span class="n">kij_0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">,</span>
+            <span class="n">kij_inf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span><span class="p">,</span>
+            <span class="n">t_star</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span>
+            <span class="n">lij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="MHV">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV">[docs]</a>
 <span class="k">class</span> <span class="nc">MHV</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>

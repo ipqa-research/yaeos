@@ -1,37 +1,39 @@
-module yaeos__auxiliar
+module yaeos__equilibria_auxiliar
+   !! Auxiliar functions used for phase-equilibria calculation.
    use yaeos__constants, only: pr
+   use yaeos__models_base, only: BaseModel
    implicit none
-
-   interface optval
-      module procedure optval_integer, optval_real
-   end interface optval
 
 contains
 
-   integer function optval_integer(val, default)
-      !! Set a value to a default if it is not defined
-      use stdlib_optval, only: std => optval
-      integer, optional, intent(in out) :: val
-      integer, intent(in) :: default
-      optval_integer = std(val, default)
-   end function optval_integer
+   function k_wilson(model, T, P) result(K)
+      !! # K_wilson
+      !!
+      !! ## Description
+      !! K-factors regression done by Wilson, used for initialization.
+      class(BaseModel), intent(in) :: model
+      real(pr), intent(in) :: T
+      real(pr), intent(in) :: P
+      real(pr)  :: K(size(model%components%pc))
 
-   real(pr) function optval_real(val, default)
-      !! Set a value to a default if it is not defined
-      use stdlib_optval, only: std => optval
-      real(pr), optional, intent(in out) :: val
-      real(pr), intent(in) :: default
+      K = (model%components%Pc/P) &
+         * exp(5.373_pr*(1 + model%components%w)&
+         * (1 - model%components%Tc/T))
+   end function k_wilson
 
-      optval_real = std(val, default)
-   end function optval_real
+   real(pr) function P_wilson(model, z, T) result(P)
+      !! # P_wilson
+      !!
+      !! ## Description
+      !! Calculate the pressure at a given T of a mixture using the Wilson
+      !! equation.
+      class(BaseModel), intent(in) :: model !! Model of the mixture.
+      real(pr), intent(in) :: z(:) !! Mole fractions of the components.
+      real(pr), intent(in) :: T !! Temperature [K].
 
-   subroutine sort(array, idx)
-      use stdlib_sorting, only: std => sort
-      !! Sort an array and return the indexes
-      real(pr), intent(in out) :: array(:)
-      integer, optional, intent(out) :: idx(:)
-
-      call std(array)
-
-   end subroutine sort
-end module yaeos__auxiliar
+      P = 1.0_pr/sum(&
+         z*model%components%Pc &
+         * exp(5.373_pr &
+         * (1 + model%components%w)*(1 - model%components%Tc/T)))
+   end function P_wilson
+end module yaeos__equilibria_auxiliar
