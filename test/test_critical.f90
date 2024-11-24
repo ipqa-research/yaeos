@@ -61,8 +61,7 @@ program main
    cl = critical_line(model, a0=a, z0=z0, zi=zi, dS0=0.1_pr, max_points=5000)
    call tim%timer_stop()
 
-   if (WRITE_FILES) call write_cl
-
+   ! if (WRITE_FILES) call write_cl
 
    da = (cl%a(size(cl%a)) - cl%a(1))/(npt+1)
    do i=1,npt
@@ -73,7 +72,7 @@ program main
       env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=1.5_pr)
       print *, "Running PT Envelope", i, size(env%points)
       call tim%timer_stop()
-      if (WRITE_FILES) call write_env
+      ! if (WRITE_FILES) call write_env
 
       a_nearest = minloc(abs(cl%a - a), dim=1)
 
@@ -111,21 +110,22 @@ contains
       get_model = PengRobinson78(tc, pc, w, kij=kij)
    end function get_model
 
-   subroutine write_cl
-      do i=1,size(cl%a)
-         write(1, *) cl%a(i), cl%T(i), cl%P(i)
-      end do
-      write(1, *)
-      write(1, *)
-   end subroutine
+   ! Write to files when internally testing
+   ! subroutine write_cl
+   !    do i=1,size(cl%a)
+   !       write(1, *) cl%a(i), cl%T(i), cl%P(i)
+   !    end do
+   !    write(1, *)
+   !    write(1, *)
+   ! end subroutine
 
-   subroutine write_env
-      integer :: i
-      do i=1,size(env%points)
-         write(1, *) a, env%points(i)%T, env%points(i)%P
-      end do
-      write(1, *)
-      write(1, *)
-      call flush(1)
-   end subroutine write_env
+   ! subroutine write_env
+   !    integer :: i
+   !    do i=1,size(env%points)
+   !       write(1, *) a, env%points(i)%T, env%points(i)%P
+   !    end do
+   !    write(1, *)
+   !    write(1, *)
+   !    call flush(1)
+   ! end subroutine write_env
 end program main
