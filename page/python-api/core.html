@@ -74,6 +74,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_pressure()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_temperature"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_temperature()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_point"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_point()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_line"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_line()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -785,7 +787,7 @@ w = np.array([0.0123, 0.045])   # acentric factors</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.saturation_temperature">
 <span class="sig-name descname"><span class="pre">saturation_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.saturation_temperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.saturation_temperature" title="Link to this definition"></a></dt>
-<dd><p>Saturation pressure at specified temperature.</p>
+<dd><p>Saturation temperature at specified pressure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -804,7 +806,7 @@ w = np.array([0.0123, 0.045])   # acentric factors</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Saturation pressure calculation result dictionary with keys:</dt><dd><ul class="simple">
+<dt>Saturation temperature calculation result dictionary with keys:</dt><dd><ul class="simple">
 <li><p>x: heavy phase mole fractions</p></li>
 <li><p>y: light phase mole fractions</p></li>
 <li><p>Vx: heavy phase volume [L]</p></li>
@@ -908,6 +910,53 @@ defaults to “bubble”. Options are
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Tcs&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Pcs&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.critical_point">
+<span class="sig-name descname"><span class="pre">critical_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_point" title="Link to this definition"></a></dt>
+<dd><p>Critical point calculation.</p>
+<p>Calculate the critical point of a mixture. At a given composition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Critical point calculation result dictionary with keys:</dt><dd><ul class="simple">
+<li><p>Tc: critical temperature [K]</p></li>
+<li><p>Pc: critical pressure [bar]</p></li>
+<li><p>Vc: critical volume [L]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.critical_line">
+<span class="sig-name descname"><span class="pre">critical_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_line" title="Link to this definition"></a></dt>
+<dd><p>Critical Line calculation.</p>
+<p>Calculate the critical line between two compositions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>array_like</em>) – Initial global mole fractions</p></li>
+<li><p><strong>zi</strong> (<em>array_like</em>) – Final global mole fractions</p></li>
+<li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of composition <cite>i</cite></p></li>
+<li><p><strong>da0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for molar fraction of composition <cite>i</cite></p></li>
+<li><p><strong>max_poitns</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of points to calculate</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

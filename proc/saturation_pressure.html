@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.4% of total for procedures.">91 statements</a>
+                 title=" 1.3% of total for procedures.">88 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,23 +118,22 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-p~26">P</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-vy~7">Vy</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-vz~4">Vz</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-dlnphi_dp_y~3">dlnphi_dp_y</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-dlnphi_dp_z~3">dlnphi_dp_z</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-f~15">f</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-i~75">i</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-f~12">f</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-incipient">incipient</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-iterations~5">iterations</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-its~2">its</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-k~15">k</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-lnfug_y~2">lnfug_y</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-lnfug_z">lnfug_z</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-iterations~3">iterations</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-its~4">its</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-k~6">k</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-lnfug_y~3">lnfug_y</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-lnfug_z~2">lnfug_z</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-lnk">lnk</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-main">main</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-p~14">p</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-step~5">step</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-vy">vy</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-vz~2">vz</a>
-            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-y~17">y</a>
+            <a class="list-group-item" href="../proc/saturation_pressure.html#variable-y~15">y</a>
             <a class="list-group-item" href="../proc/saturation_pressure.html#variable-z~28">z</a>
         </div>
       </div>
@@ -173,8 +172,8 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__math_continuation.html'>yaeos__math_continuation</a></li>
                   <li class="list-inline-item">stdlib_optval</li>
+                  <li class="list-inline-item"><a href='../module/yaeos__m_s_sp.html'>yaeos__m_s_sp</a></li>
               </ul>
             </li>
         </ul>
@@ -182,7 +181,9 @@
     </div>
 
 
-    <p>Saturation pressure calculation function.</p>
+    <h1 id="saturation_pressure">saturation_pressure</h1>
+<p>Saturation pressure calculation function.</p>
+<h2 id="description">Description</h2>
 <p>Calculates the saturation pressure of a multicomponent mixture with
 a given molar composition <code>n</code>.
 It is possible to calculate:</p>
@@ -191,6 +192,15 @@ It is possible to calculate:</p>
 <li>Dew point: <code>kind="dew"</code></li>
 <li>Liquid-Liquid point: <code>kind="liquid-liquid"</code></li>
 </ul>
+<p>It will first try to converge a solution using a <script type="math/tex">1D</script> Newton method to
+solve the equation
+<script type="math/tex; mode=display">
+   f(P) = \sum_i z_i K_i - 1 = 0
+</script>
+</p>
+<p>updating <script type="math/tex">K_i</script> at each step as the ratio of fugacities of the phases.
+If the solution does not converge, it will use a full Newton method to
+solve the system of equations using the variables <script type="math/tex">K_i</script> and <script type="math/tex">\ln P</script>.</p>
 
 
     <h3>Arguments</h3>
@@ -221,7 +231,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~76"></span>
+              <span class="anchor" id="variable-n~65"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -236,7 +246,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~41"></span>
+              <span class="anchor" id="variable-t~27"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -251,7 +261,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind~4"></span>
+              <span class="anchor" id="variable-kind~5"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -296,7 +306,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~8"></span>
+              <span class="anchor" id="variable-max_iters~5"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -336,6 +346,57 @@ It is possible to calculate:</p>
     <tbody>
         <tr>
             <td>
+              <span class="anchor" id="variable-p~26"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vy~7"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vz~4"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-dlnphi_dp_y~3"></span>
               real(kind=pr),
             </td>
@@ -370,7 +431,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~15"></span>
+              <span class="anchor" id="variable-f~12"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -379,23 +440,6 @@ It is possible to calculate:</p>
             </td>
             <td>::</td>
             <td><strong>f</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-i~75"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>i</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -421,7 +465,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iterations~5"></span>
+              <span class="anchor" id="variable-iterations~3"></span>
               integer,
             </td>
               <td>public</td>
@@ -438,7 +482,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~2"></span>
+              <span class="anchor" id="variable-its~4"></span>
               integer,
             </td>
               <td>public</td>
@@ -455,7 +499,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~15"></span>
+              <span class="anchor" id="variable-k~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -472,7 +516,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnfug_y~2"></span>
+              <span class="anchor" id="variable-lnfug_y~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -489,7 +533,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnfug_z"></span>
+              <span class="anchor" id="variable-lnfug_z~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -540,23 +584,6 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~14"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>p</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
               <span class="anchor" id="variable-step~5"></span>
               real(kind=pr),
             </td>
@@ -574,41 +601,7 @@ It is possible to calculate:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>vy</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-vz~2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>vz</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-y~17"></span>
+              <span class="anchor" id="variable-y~15"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -673,7 +666,7 @@ It is possible to calculate:</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-10 17:41              </p>
+ on 2024-11-24 22:02 +0000             </p>
           </div>
         </div>
         <br>

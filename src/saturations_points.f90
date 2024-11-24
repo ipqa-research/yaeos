@@ -1,5 +1,5 @@
 module yaeos__equilibria_saturation_points
-   use yaeos__constants, only: pr
+   use yaeos__constants, only: pr, R
    use yaeos__models, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_auxiliar, only: k_wilson
@@ -7,22 +7,19 @@ module yaeos__equilibria_saturation_points
 
    implicit none
 
-   real(pr) :: tol = 1e-9_pr
+   real(pr) :: tol = 1e-6_pr
    integer :: max_iterations = 2000
-   integer :: iters_first_step = 100
+   integer :: iters_first_step = 15
    real(pr) :: step_tol = 0.1_pr
-
-   class(ArModel), pointer, private :: hidden_model
-   real(pr), private, allocatable :: hidden_z(:)
-   character(len=14), private :: hidden_kind
-
-   real(pr), private :: Vz, Vy
 
 contains
 
    type(EquilibriumState) function saturation_pressure(model, n, t, kind, p0, y0, max_iters)
+      !! # saturation_pressure
+      !!
       !! Saturation pressure calculation function.
       !!
+      !! ## Description
       !! Calculates the saturation pressure of a multicomponent mixture with
       !! a given molar composition `n`.
       !! It is possible to calculate:
@@ -30,7 +27,18 @@ contains
       !! - Bubble point: `kind="bubble"`
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
+      !!
+      !! It will first try to converge a solution using a \(1D\) Newton method to
+      !! solve the equation
+      !! \[
+      !!    f(P) = \sum_i z_i K_i - 1 = 0
+      !! \]
+      !!
+      !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
+      !! If the solution does not converge, it will use a full Newton method to
+      !! solve the system of equations using the variables \(K_i\) and \(\ln P\).
       use stdlib_optval, only: optval
+      use yaeos__m_s_sp, only: solve_TP
       class(ArModel), target, intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -39,17 +47,18 @@ contains
       real(pr), optional, intent(in) :: y0(:) !! Initial composition
       integer, optional, intent(in) :: max_iters !! Maximum number of iterations
 
-      real(pr) :: p, vy, vz
+      real(pr) :: P
 
       real(pr) :: k(size(n)), y(size(n)), z(size(n)), lnk(size(n))
       real(pr) :: lnfug_y(size(n)), dlnphi_dp_y(size(n))
       real(pr) :: lnfug_z(size(n)), dlnphi_dp_z(size(n))
+      real(pr) :: Vz, Vy
 
       character(len=50) :: incipient
       character(len=50) :: main
 
       real(pr) :: f, step
-      integer :: its, iterations, i
+      integer :: its, iterations
 
       ! =======================================================================
       ! Handle arguments
@@ -100,7 +109,6 @@ contains
 
          if (all(k < 1e-9_pr) .or. all(abs(k-1) < tol)) exit
 
-
          f = sum(z*k) - 1
          step = f/sum(z * k * (dlnphi_dp_z - dlnphi_dp_y))
 
@@ -114,29 +122,23 @@ contains
       end do
       ! ========================================================================
       if (its > iters_first_step) then
-      fsolve: block
-         use yaeos__math_continuation, only: full_newton
-         real(pr) :: X(size(n)+2)
-         real(pr) :: S, dS, dXdS(size(n)+2)
-         real(pr) :: F(size(n)+2), dF(size(n)+2, size(n)+2), dFdS(size(n)+2)
-         integer :: ns
+         block
+            real(pr) :: X(size(n)+2), S
+            integer :: ns, nc
+            nc = size(n)
+            X(:nc) = log(y/z)
+            X(nc+1) = log(T)
+            X(nc+2) = log(P)
+            ns = nc+1
+            S = X(ns)
 
-         ns = size(n)+1
-         K = k_wilson(model, T, P)
-         if (kind == "dew") K =1/K
-         X = log([K, T, P])
-         S = X(ns)
+            call solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
 
-         hidden_kind = kind
-         hidden_model => model
-         hidden_z = z
-
-         its = 0
-         call full_newton(foo, its, X, ns, S, dS, dXdS, 1, max_iterations, F, dF, dFdS, tol=1.e-5_pr)
-         K = exp(X(:size(n)))
-         P = exp(X(size(n)+2))
-         y = K*z
-      end block fsolve
+            P = exp(X(nc+2))
+            y = z * exp(X(:nc))
+            call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+            call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
+         end block
       end if
       
       select case(kind)
@@ -165,8 +167,17 @@ contains
       !! - Bubble point: `kind="bubble"`
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
+      !! It will first try to converge a solution using a \(1D\) Newton method to
+      !! solve the equation
+      !! \[
+      !!    f(P) = \sum_i z_i K_i - 1 = 0
+      !! \]
+      !!
+      !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
+      !! If the solution does not converge, it will use a full Newton method to
+      !! solve the system of equations using the variables \(K_i\) and \(\ln T\).
       use stdlib_optval, only: optval
-      use yaeos__math_continuation, only: full_newton
+      use yaeos__m_s_sp, only: solve_TP
       class(ArModel), target, intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
@@ -197,7 +208,7 @@ contains
       if (present (t0)) then
          t = t0
       else
-         t = 150._pr
+         t = 250._pr
       end if
 
       if (present(y0)) then
@@ -248,7 +259,7 @@ contains
 
          if (.not. ieee_is_finite(step) .or. ieee_is_nan(step)) exit
 
-         do while (abs(step) > 0.5*T .or. T - step < 0)
+         do while (T - step < 0)
             if (isnan(step)) step = 10
             step = step/2
          end do
@@ -258,28 +269,24 @@ contains
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
-      if (its > iters_first_step) then
-      fsolve: block
-         real(pr) :: X(size(n)+2)
-         real(pr) :: S, dS, dXdS(size(n)+2)
-         real(pr) :: F(size(n)+2), dF(size(n)+2, size(n)+2), dFdS(size(n)+2)
-         integer :: ns
+      if (its >= iters_first_step) then
+         block
+            real(pr) :: X(size(n)+2), S
+            integer :: ns, nc
+            nc = size(n)
+            X(:nc) = log(y/z)
+            X(nc+1) = log(T)
+            X(nc+2) = log(P)
+            ns = nc+2
+            S = X(ns)
 
-         ns = size(n)+2
-         K = k_wilson(model, T, P)
-         if (kind == "dew") K =1/K
-         X = log([K, T, P])
-         S = X(ns)
+            call solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
 
-         hidden_kind = kind
-         hidden_model => model
-         hidden_z = z
-
-         call full_newton(foo, its, X, ns, S, dS, dXdS, 1, max_iterations, F, dF, dFdS, tol=tol)
-         K = exp(X(:size(n)))
-         T = exp(X(size(n)+1))
-         y = K*z
-      end block fsolve
+            T = exp(X(nc+1))
+            y = z * exp(X(:nc))
+            call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+            call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
+         end block
       end if
 
       select case(kind)
@@ -296,91 +303,6 @@ contains
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
-
-
    end function saturation_temperature
 
-   subroutine foo(X, ns, S, F, dF, dFdS)
-      !! Function that needs to be solved at each envelope point
-      real(pr), intent(in) :: X(:)
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
-
-      real(pr), intent(out) :: F(:)
-      real(pr), intent(out) :: dF(:, :)
-      real(pr), intent(out) :: dFdS(:)
-
-      character(len=14) :: kind_z, kind_y
-
-      real(pr) :: y(size(X)-2)
-      real(pr) :: lnPhi_z(size(X)-2), lnPhi_y(size(X)-2)
-      real(pr) :: dlnphi_dt_z(size(X)-2), dlnphi_dt_y(size(X)-2)
-      real(pr) :: dlnphi_dp_z(size(X)-2), dlnphi_dp_y(size(X)-2)
-      real(pr) :: dlnphi_dn_z(size(X)-2, size(X)-2), dlnphi_dn_y(size(X)-2, size(X)-2)
-
-      real(pr) :: T, P, K(size(X)-2)
-
-      real(pr) :: z(size(X)-2)
-
-      integer :: i, j, nc
-
-      nc = size(X)-2
-
-      F = 0
-      dF = 0
-
-      K = exp(X(:nc))
-      T = exp(X(nc+1))
-      P = exp(X(nc+2))
-
-      z = hidden_z
-      y = K*z
-
-      select case(hidden_kind)
-       case ("bubble")
-         kind_z = "liquid"
-         kind_y = "vapor"
-       case ("dew")
-         kind_z = "vapor"
-         kind_y = "liquid"
-       case ("liquid-liquid")
-         kind_z = "liquid"
-         kind_y = "liquid"
-       case default
-         kind_z = "stable"
-         kind_y = "stable"
-      end select
-
-      call hidden_model%lnphi_pt(&
-         z, P, T, V=Vz, root_type=kind_z, &
-         lnPhi=lnphi_z, dlnPhidt=dlnphi_dt_z, &
-         dlnPhidp=dlnphi_dp_z, dlnphidn=dlnphi_dn_z &
-         )
-      call hidden_model%lnphi_pt(&
-         y, P, T, V=Vy, root_type=kind_y, &
-         lnPhi=lnphi_y, dlnPhidt=dlnphi_dt_y, &
-         dlnPhidp=dlnphi_dp_y, dlnphidn=dlnphi_dn_y &
-         )
-
-      F(:nc) = X(:nc) + lnPhi_y - lnPhi_z
-      F(nc + 1) = sum(y - z)
-      F(nc + 2) = X(ns) - S
-
-      ! Jacobian Matrix
-      do j=1,nc
-         df(:nc, j) = dlnphi_dn_y(:, j) * y(j)
-         df(j, j) = dF(j, j) + 1
-      end do
-
-      df(:nc, nc + 1) = T * (dlnphi_dt_y - dlnphi_dt_z)
-      df(:nc, nc + 2) = P * (dlnphi_dp_y - dlnphi_dp_z)
-
-      df(nc + 1, :nc) = y
-
-      df(nc + 2, :) = 0
-      df(nc + 2, ns) = 1
-
-      dFdS = 0
-      dFdS(nc+2) = -1
-   end subroutine foo
 end module yaeos__equilibria_saturation_points

@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>FitMHVNRTL &ndash; yaeos </title>
+    <title>solve_VxVyT &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,8 +66,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>FitMHVNRTL
-      <small>Derived Type</small>
+    <h1>solve_VxVyT
+      <small>Subroutine</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -78,21 +78,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.9% of total for derived types.</p>Including implementation: 37 statements,  1.1% of total for derived types.">6 statements</a>
+                 title=" 0.4% of total for procedures.">25 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/fit_nrtl_mhv.f90"> Source File</a>
+              <a href="../src/saturation_point.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/fit_nrtl_mhv.f90.html'>fit_nrtl_mhv.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__fitting_fit_nrtl_mhv.html'>yaeos__fitting_fit_nrtl_mhv</a></li>
-            <li class="breadcrumb-item active" aria-current="page">FitMHVNRTL</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/saturation_point.f90.html'>saturation_point.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__m_s_sp.html'>yaeos__m_s_sp</a></li>
+            <li class="breadcrumb-item active" aria-current="page">solve_VxVyT</li>
           </ol>
         </nav>
       </div>
@@ -118,11 +118,13 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/fitmhvnrtl.html#variable-experimental_points">experimental_points</a>
-            <a class="list-group-item" href="../type/fitmhvnrtl.html#variable-fit_lij~2">fit_lij</a>
-            <a class="list-group-item" href="../type/fitmhvnrtl.html#variable-fit_nrtl">fit_nrtl</a>
-            <a class="list-group-item" href="../type/fitmhvnrtl.html#variable-model~9">model</a>
-            <a class="list-group-item" href="../type/fitmhvnrtl.html#variable-verbose">verbose</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-f~8">F</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-xold~3">Xold</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-df~7">dF</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-dfds~5">dFdS</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-dx~5">dx</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-dx_old">dx_old</a>
+            <a class="list-group-item" href="../proc/solve_vxvyt.html#variable-nc~25">nc</a>
         </div>
       </div>
     </div>
@@ -142,18 +144,7 @@
   
   
   
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#boundprocs-0"
-         aria-expanded="false" aria-controls="boundprocs-0">
-         <h4 class="card-header bg-primary text-white">Type-Bound Procedures</h4>
-      </a>
-      <div id="boundprocs-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/fitmhvnrtl.html#boundprocedure-get_model_from_x~3">get_model_from_X</a>
-        </div>
-      </div>
-    </div>
-
+  
   
   
 
@@ -163,13 +154,163 @@
     </div>
     
     <div class="col-md-9" id='text'>
-      <h2 id="type-def-statement">
-        type, public, extends(<a href='fittingproblem.html'>FittingProblem</a>) :: FitMHVNRTL</h2>
-    
+    <h2>public  subroutine solve_VxVyT(model, z, X, ns, S, tol, max_iterations, its)  
+</h2>
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-model~22"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~19"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns~14"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ns</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iterations~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iterations</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-its~2"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>its</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
     <br>
 
-    <section>
-    <h2>Components</h2>
+
+    <section>    
+      <h2>Variables</h2>
       <table class="table table-striped varlist">
     <thead>
       <tr>
@@ -182,87 +323,121 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-experimental_points"></span>
-              type(<a href='equilibriumstate.html'>EquilibriumState</a>),
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>experimental_points</strong>(:)</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Experimental points to fit</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-fit_lij~2"></span>
-              logical,
+              <span class="anchor" id="variable-f~8"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>fit_lij</strong></td>
-<td> =</td>
-                <td>.false.</td>
+            <td><strong>F</strong>(size(X))</td>
+                <td></td>
+                <td></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-fit_nrtl"></span>
-              logical,
+              <span class="anchor" id="variable-xold~3"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>fit_nrtl</strong></td>
-<td> =</td>
-                <td>.false.</td>
+            <td><strong>Xold</strong>(size(X))</td>
+                <td></td>
+                <td></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~9"></span>
-              class(<a href='armodel.html'>ArModel</a>),
-            </td>
-              <td>public,</td>
-            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>model</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Residual Helmholtz Model to fit</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-verbose"></span>
-              logical,
+              <span class="anchor" id="variable-df~7"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>verbose</strong></td>
-<td> =</td>
-                <td>.false.</td>
+            <td><strong>dF</strong>(size(X),size(X))</td>
+                <td></td>
+                <td></td>
             <td>
-                <p>If true log the fitting process</p>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dfds~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dFdS</strong>(size(X))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dx</strong>(size(X))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx_old"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dx_old</strong>(size(x))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~25"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
             </td>
         </tr>
     </tbody>
@@ -271,81 +446,14 @@
     </section>
     <br>
     
-
-
-      <section>
-        <h2>Type-Bound Procedures</h2>
-          <div class="row">
-              <div class="card mt-3">
-    <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_model_from_x~3"></span>
-      <h3>
-          procedure, public ::
-  <strong>get_model_from_X</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/model_from_x~2.html'>model_from_X</a>
-        
-      </h3>
-    </div>
-    <ul class="list-group">
-        <li class="list-group-item">
-                  <h3>
-    public  subroutine <a href='../proc/model_from_x~2.html'>model_from_X</a>(problem, X)  
-</h3>
     
 
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              class(<a href='fitmhvnrtl.html'>FitMHVNRTL</a>),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>problem</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>X</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
+    
+    
 
 
-        </li>
-    </ul>
-  </div>
 
-          </div>
-      </section>
-
+    
     
     </div>
   </div>
@@ -365,7 +473,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-10 17:41              </p>
+ on 2024-11-24 22:02 +0000             </p>
           </div>
         </div>
         <br>

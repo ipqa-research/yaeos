@@ -64,6 +64,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Flash-calculation">Flash calculation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#PT-phase-envelope-calculation">PT phase envelope calculation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Calculation-of-critical-points">Calculation of critical points</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
@@ -110,16 +111,8 @@
 <section id="Calculating-an-isotherm">
 <h2>Calculating an isotherm<a class="headerlink" href="#Calculating-an-isotherm" title="Link to this heading"></a></h2>
 <p>Let’s create a plot Pressure vs Volume at a given temperature (250 K) for a pure component. Let’s use carbon dioxide.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">pip</span> install yaeos
-</pre></div>
-</div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">SoaveRedlichKwong</span>
@@ -156,7 +149,7 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -168,7 +161,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorial_more_calculations_3_1.png" src="../_images/tutorial_more_calculations_3_1.png" />
+<img alt="../_images/tutorial_more_calculations_2_1.png" src="../_images/tutorial_more_calculations_2_1.png" />
 </div>
 </div>
 </section>
@@ -178,7 +171,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <h3>Pure compound<a class="headerlink" href="#Pure-compound" title="Link to this heading"></a></h3>
 <p>In the previous example we obtained an isotherm for carbon dioxide at 250 K. We can check in the plot that the saturation pressure is around 18 bar. Let’s calculate the previous saturation pressure using <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> and the instantiated <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sat_point</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">250.0</span><span class="p">)</span>
@@ -188,23 +181,23 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;x&#39;: array([1.]),
- &#39;y&#39;: array([1.00000563]),
- &#39;Vx&#39;: 0.047274015789694014,
- &#39;Vy&#39;: 225.60748624499604,
+ &#39;y&#39;: array([1.]),
+ &#39;Vx&#39;: 0.046689498895146085,
+ &#39;Vy&#39;: 0.9534768478036645,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 17.916481601359543,
+ &#39;P&#39;: 17.91670638243004,
  &#39;beta&#39;: 0.0}
 </pre></div></div>
 </div>
 <p>There we obtained a Python dictionary with the result of the saturation pressure calculation. In this example we have a pure compound (CO2), so we are only interested in the <code class="docutils literal notranslate"><span class="pre">P</span></code> result (the saturation pressure).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sat_point</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="s2">&quot; bar&quot;</span><span class="p">)</span>
@@ -216,7 +209,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-17.916481601359543  bar
+17.91670638243004  bar
 </pre></div></div>
 </div>
 <p>The DIPPR correlated value for the saturation pressure of CO2 at 250 K is 17.88 bar, so SoaveRedlichKwong is doing a good job in this case.</p>
@@ -224,8 +217,8 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <section id="Mixture">
 <h3>Mixture<a class="headerlink" href="#Mixture" title="Link to this heading"></a></h3>
 <p>Of course, in thermodynamics there is not only pure compounds, we can also use <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> to calculate the saturation pressure of a mixture. Let’s calculate the saturation pressure of a mixture of 50% CO2 and 50% n-butane at 250 K. But now let’s use <code class="docutils literal notranslate"><span class="pre">PengRobinson78</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson78</span>
@@ -248,9 +241,18 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+ WARN: possible bad root solving:                   Infinity   1.5230874125981815E+044
+ WARN: possible bad root solving:                   Infinity   1.5230874125981815E+044
+</pre></div></div>
+</div>
 <p>Let’s check our results:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bubble_point</span>
@@ -258,22 +260,22 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;x&#39;: array([0.5, 0.5]),
- &#39;y&#39;: array([0.96800412, 0.03199696]),
- &#39;Vx&#39;: 0.0652408635277093,
- &#39;Vy&#39;: 146.15829716092955,
+ &#39;y&#39;: array([0.96800305, 0.03199695]),
+ &#39;Vx&#39;: 0.06509074642358811,
+ &#39;Vy&#39;: 2.2963934569225612,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 8.269678810727767,
+ &#39;P&#39;: 8.269690420846004,
  &#39;beta&#39;: 0.0}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dew_point</span>
@@ -281,17 +283,17 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;x&#39;: array([0.02630095, 0.97369904]),
+{&#39;x&#39;: array([nan, nan]),
  &#39;y&#39;: array([0.5, 0.5]),
- &#39;Vx&#39;: 0.0869521889708558,
- &#39;Vy&#39;: 26.111737262892674,
+ &#39;Vx&#39;: nan,
+ &#39;Vy&#39;: 0.09902225300774423,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 0.7816128221171396,
+ &#39;P&#39;: nan,
  &#39;beta&#39;: 1.0}
 </pre></div></div>
 </div>
@@ -305,7 +307,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <h2>Pxy diagram for a mixture<a class="headerlink" href="#Pxy-diagram-for-a-mixture" title="Link to this heading"></a></h2>
 <p>We can use what we have learned to obtain a Pxy diagram for a mixture. Let’s try it out with the CO2 and n-butane mixture at 250 K.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson78</span>
@@ -321,7 +323,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson78</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
 
 <span class="c1"># Mole compositions from 0 to 1 for CO2</span>
-<span class="n">z_co2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">z_co2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">,</span> <span class="mf">0.99999</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">z_butane</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">z_co2</span>
 
 <span class="n">t</span> <span class="o">=</span> <span class="mi">250</span>  <span class="c1"># K</span>
@@ -352,7 +354,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -364,7 +366,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorial_more_calculations_16_1.png" src="../_images/tutorial_more_calculations_16_1.png" />
+<img alt="../_images/tutorial_more_calculations_15_1.png" src="../_images/tutorial_more_calculations_15_1.png" />
 </div>
 </div>
 </section>
@@ -372,7 +374,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <h2>Flash calculation<a class="headerlink" href="#Flash-calculation" title="Link to this heading"></a></h2>
 <p>Flash calculation are also supported by <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>. Let’s calculate a liquid-vapor flash at 250 K for the CO2 and n-butane mixture.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pure compounds properties</span>
@@ -391,7 +393,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -407,7 +409,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>The result of the flash calculation is a Python dictionary with the same information as the saturation pressure calculation. We can plot the results in the Pxy diagram that we created before.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bubble_point_z_co2</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Bubble pressures&quot;</span><span class="p">)</span>
@@ -460,7 +462,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -472,7 +474,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorial_more_calculations_20_1.png" src="../_images/tutorial_more_calculations_20_1.png" />
+<img alt="../_images/tutorial_more_calculations_19_1.png" src="../_images/tutorial_more_calculations_19_1.png" />
 </div>
 </div>
 </section>
@@ -480,11 +482,11 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <h2>PT phase envelope calculation<a class="headerlink" href="#PT-phase-envelope-calculation" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> also provides a method to calculate the 2 phase envelope of a mixture. Of course, we are going to keep using the CO2 and n-butane mixture, with a global composition [0.5, 0.5].</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span>
-    <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mf">4.0</span>
+    <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">150.0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mf">4.0</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -493,7 +495,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 first saturation point of the envelope of kind: <code class="docutils literal notranslate"><span class="pre">kind</span></code>.</p>
 <p>The result of the envelope calculation is a Python dictionary with the keys:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">env</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -501,7 +503,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -518,7 +520,7 @@ dict_keys([&#39;Ts&#39;, &#39;Ps&#39;, &#39;Tcs&#39;, &#39;Pcs&#39;])
 </ul>
 <p>We can plot the phase envelope as follow:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># envelope</span>
@@ -542,7 +544,7 @@ dict_keys([&#39;Ts&#39;, &#39;Ps&#39;, &#39;Tcs&#39;, &#39;Pcs&#39;])
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -554,7 +556,86 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorial_more_calculations_26_1.png" src="../_images/tutorial_more_calculations_26_1.png" />
+<img alt="../_images/tutorial_more_calculations_25_1.png" src="../_images/tutorial_more_calculations_25_1.png" />
+</div>
+</div>
+</section>
+<section id="Calculation-of-critical-points">
+<h2>Calculation of critical points<a class="headerlink" href="#Calculation-of-critical-points" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculation of the critical point at z = [0.5, 0.5]</span>
+<span class="n">model</span><span class="o">.</span><span class="n">critical_point</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;Tc&#39;: 167.37715958605696,
+ &#39;Pc&#39;: -397.01119465595315,
+ &#39;Vc&#39;: 0.029381104224426535}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cl</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span><span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x_2$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$P [bar]$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_28_0.png" src="../_images/tutorial_more_calculations_28_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$T [K]$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$P [bar]$&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0, 0.5, &#39;$P [bar]$&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_29_1.png" src="../_images/tutorial_more_calculations_29_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 </div>
 </section>

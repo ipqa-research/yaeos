@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>error_function &ndash; yaeos</title>
+    <title>find_hpl &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,8 +66,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>error_function
-      <small>Subroutine</small>
+    <h1>find_hpl
+      <small>Function</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -78,21 +78,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.8% of total for procedures.">53 statements</a>
+                 title=" 0.6% of total for procedures.">40 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/fitting.f90"> Source File</a>
+              <a href="../src/phase_envelopes_pt.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/fitting.f90.html'>fitting.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__fitting.html'>yaeos__fitting</a></li>
-            <li class="breadcrumb-item active" aria-current="page">error_function</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt.f90.html'>phase_envelopes_pt.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt.html'>yaeos__equilibria_boundaries_phase_envelopes_pt</a></li>
+            <li class="breadcrumb-item active" aria-current="page">find_hpl</li>
           </ol>
         </nav>
       </div>
@@ -118,11 +118,17 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/error_function.html#variable-exp_point">exp_point</a>
-            <a class="list-group-item" href="../proc/error_function.html#variable-i~13">i</a>
-            <a class="list-group-item" href="../proc/error_function.html#variable-model_point">model_point</a>
-            <a class="list-group-item" href="../proc/error_function.html#variable-n_nconv">n_nconv</a>
-            <a class="list-group-item" href="../proc/error_function.html#variable-pt_converged">pt_converged</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-p~13">P</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-t~20">T</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-ts">Ts</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-diffs">diffs</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-fr">fr</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-i~23">i</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-lnphi_y">lnphi_y</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-lnphi_z~3">lnphi_z</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-nc~14">nc</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-ncomp">ncomp</a>
+            <a class="list-group-item" href="../proc/find_hpl.html#variable-y~7">y</a>
         </div>
       </div>
     </div>
@@ -152,33 +158,21 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine error_function(X, Fobj, dF, func_data)  
+    <h2>public  function find_hpl(model, z, T0, P0)  
 </h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__equilibria_saturation_points.html'>yaeos__equilibria_saturation_points</a></li>
-                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+    
 
-
-    <h1 id="error_function"><code>error_function</code></h1>
-<p>Error function for phase-equilibria optimization. Using two-phase
-points and an error function of:</p>
-<p>
-<script type="math/tex; mode=display">
-  FO =   \sum_i (\frac{P_i^{exp} - P_i^{calc}}{P_i^{exp}})^2
-       + \sum_i (y_i^{exp} - y_i^{calc})**2
-       + \sum_i (x_i^{exp} - x_i^{calc})**2
-</script>
-</p>
+    <h1 id="find_hpl">find_hpl</h1>
+<h2 id="description">Description</h2>
+<p>Find a liquid-liquid phase boundary on the PT plane. At a specified
+pressure.
+The procedure consists in looking for the temperature at which the
+fugacity of a component in the mixture is higher than the fugacity
+of the same component in a pure phase. This is done for each component
+in the mixture. The component with the highest temperature is selected
+as it should be the first one appearing. If all components have a
+negative difference then the mixture is probably stable at all
+temperatures.</p>
 
 
     <h3>Arguments</h3>
@@ -194,7 +188,22 @@ points and an error function of:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~3"></span>
+              <span class="anchor" id="variable-model~11"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+                <p>Equation of state model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -202,60 +211,51 @@ points and an error function of:</p>
               
             </td>
             <td>::</td>
-            <td><strong>X</strong>(:)</td>
+            <td><strong>z</strong>(:)</td>
             <td>
-                <p>Vector of parameters</p>
+                <p>Mole fractions</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-fobj"></span>
+              <span class="anchor" id="variable-t0"></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>Fobj</strong></td>
+            <td><strong>T0</strong></td>
             <td>
-                <p>Objective function</p>
+                <p>Initial temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df"></span>
+              <span class="anchor" id="variable-p0"></span>
               real(kind=pr),
             </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
+<td>intent(in)</td>
+              <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>dF</strong>(:)</td>
+            <td><strong>P0</strong></td>
             <td>
-                <p>Gradient of the objective function, only exists to be consistent
-with the <code>Optimizer</code> class API</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-func_data"></span>
-              class(*),
-            </td>
-<td>intent(inout),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>func_data</strong></td>
-            <td>
-                
+                <p>Search pressure [bar]</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-find_hpl"></span>
+          type(<a href='../type/ptenvel2.html'>PTEnvel2</a>)
+        </small>
+      </h3>
+      
     <br>
 
 
@@ -273,15 +273,15 @@ with the <code>Optimizer</code> class API</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-exp_point"></span>
-              type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>),
+              <span class="anchor" id="variable-p~13"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>exp_point</strong></td>
+            <td><strong>P</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -290,7 +290,75 @@ with the <code>Optimizer</code> class API</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~13"></span>
+              <span class="anchor" id="variable-t~20"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ts"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ts</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-diffs"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>diffs</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fr"></span>
+              type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fr</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~23"></span>
               integer,
             </td>
               <td>public</td>
@@ -307,32 +375,15 @@ with the <code>Optimizer</code> class API</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-model_point"></span>
-              type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>),
+              <span class="anchor" id="variable-lnphi_y"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>model_point</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Each solved point</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n_nconv"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n_nconv</strong></td>
+            <td><strong>lnphi_y</strong>(size(z))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -341,15 +392,66 @@ with the <code>Optimizer</code> class API</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pt_converged"></span>
-              logical,
+              <span class="anchor" id="variable-lnphi_z~3"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>pt_converged</strong></td>
+            <td><strong>lnphi_z</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~14"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncomp"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncomp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~7"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y</strong>(size(z))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -389,7 +491,7 @@ with the <code>Optimizer</code> class API</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-10 17:41              </p>
+ on 2024-11-24 22:02 +0000             </p>
           </div>
         </div>
         <br>

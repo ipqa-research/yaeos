@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 3.4% of total for derived types.</p>Including implementation: 351 statements, 10.9% of total for derived types.">11 statements</a>
+                 title="<p> 3.5% of total for derived types.</p>Including implementation: 423 statements, 12.3% of total for derived types.">11 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -148,20 +148,21 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-cp_residual_vt">Cp_residual_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-cv_residual_vt">Cv_residual_vt</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar">ar</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar~2">ar</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_b">ar_b</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_d">ar_d</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_d_b">ar_d_b</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_d_d">ar_d_d</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-enthalpy_residual_vt">enthalpy_residual_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-entropy_residual_vt">entropy_residual_vt</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-get_v0~2">get_v0</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-get_v0~3">get_v0</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-gibbs_residual_vt">gibbs_residual_vt</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-lnfug_vt">lnfug_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-lnphi_pt">lnphi_pt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-lnphi_vt">lnphi_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-pressure">pressure</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-residual_helmholtz~2">residual_helmholtz</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-v0">v0</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-residual_helmholtz~3">residual_helmholtz</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-v0~2">v0</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-volume">volume</a>
         </div>
       </div>
@@ -468,7 +469,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ar"></span>
+      <span class="anchor" id="boundprocedure-ar~2"></span>
       <h3>
           procedure(<a href='../interface/tapenade_ar.html'>tapenade_ar</a>), public, deferred ::
   <strong>ar</strong>
@@ -1783,7 +1784,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_v0~2"></span>
+      <span class="anchor" id="boundprocedure-get_v0~3"></span>
       <h3>
           procedure, public ::
   <strong>get_v0</strong>
@@ -2052,21 +2053,250 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-lnphi_pt"></span>
+      <span class="anchor" id="boundprocedure-lnfug_vt"></span>
       <h3>
           procedure, public ::
-  <strong>lnphi_pt</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/fugacity_pt.html'>fugacity_pt</a>
+  <strong>lnfug_vt</strong>
         
       </h3>
     </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/fugacity_pt.html'>fugacity_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+    public  subroutine <a href='../proc/lnfug_vt.html'>lnfug_vt</a>(eos, n, V, T, P, lnf, dlnfdV, dlnfdT, dlnfdn, dPdV, dPdT, dPdn)  
 </h3>
     
 
-  <p>Calculate logarithm of fugacity, given pressure and temperature.</p><a href="../proc/fugacity_pt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Calculate fugacity coefficent given volume and temperature.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='armodel.html'>ArModel</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Mixture mole numbers</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+<p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnf</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\ln(\f_i)</script> vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdV</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(f_i)</script> Volume derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdT</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(f_i)</script> Temp derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdn</strong>(size(n),size(n))</td>
+            <td>
+<p>
+<script type="math/tex">ln(f_i)</script> compositional derivative</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dP}{dn_i}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-lnphi_pt"></span>
+      <h3>
+          procedure, public ::
+  <strong>lnphi_pt</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/lnphi_pt.html'>lnphi_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+</h3>
+    
+
+  <p>Calculate logarithm of fugacity, given pressure and temperature.</p><a href="../proc/lnphi_pt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2296,18 +2526,18 @@
       <span class="anchor" id="boundprocedure-lnphi_vt"></span>
       <h3>
           procedure, public ::
-  <strong>lnphi_vt</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/fugacity_vt.html'>fugacity_vt</a>
+  <strong>lnphi_vt</strong>
         
       </h3>
     </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/fugacity_vt.html'>fugacity_vt</a>(eos, n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+    public  subroutine <a href='../proc/lnphi_vt.html'>lnphi_vt</a>(eos, n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
 </h3>
     
 
-  <p>Calculate fugacity coefficent given volume and temperature.</p><a href="../proc/fugacity_vt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Calculate fugacity coefficent given volume and temperature.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2408,7 +2638,7 @@
             <td><strong>lnPhi</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\ln(\phi_i*P)</script> vector</p>
+<script type="math/tex">\ln(\phi_i)</script> vector</p>
             </td>
         </tr>
         <tr>
@@ -2687,7 +2917,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-residual_helmholtz~2"></span>
+      <span class="anchor" id="boundprocedure-residual_helmholtz~3"></span>
       <h3>
           procedure, public ::
   <strong>residual_helmholtz</strong>
@@ -2936,7 +3166,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-v0"></span>
+      <span class="anchor" id="boundprocedure-v0~2"></span>
       <h3>
           procedure(<a href='../interface/tapenade_v0.html'>tapenade_v0</a>), public, deferred ::
   <strong>v0</strong>
@@ -3187,7 +3417,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-10 17:41              </p>
+ on 2024-11-24 22:02 +0000             </p>
           </div>
         </div>
         <br>

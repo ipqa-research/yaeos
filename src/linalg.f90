@@ -39,7 +39,7 @@ contains
       b_lapack = b
       call dgesv(n, nrhs, a_lapack, lda, ipiv, b_lapack, ldb, info)
 
-      if (info > 0) write(error_unit, *) "WARN: dgesv error"
+      ! if (info > 0) write(error_unit, *) "WARN: dgesv error"
 
       x = b_lapack
    end function solve_system
@@ -147,6 +147,55 @@ contains
          real_roots = (A + B) - d1 / 3.0_16
          flag = 1
       end if
+   end subroutine
+
+   subroutine eigen(A, eigenvalues, eigenvectors)
+      !! # eigen
+      !!
+      !! # Description
+      !! Calculate the eigenvalues and eigenvectors of a real symmetric matrix
+      !! `A` using LAPACK's `dsyev`. The eigenvectors are stored in the columns
+      !! of `eigenvectors`. The eigenvalues are stored in `eigenvalues`.
+
+      ! use stdlib_linalg, only: eigh, linalg_state_type
+      ! type(linalg_state_type) :: stat
+      real(pr), intent(in out) :: A(:, :)
+      real(pr), intent(out) :: eigenvalues(:)
+      real(pr), optional, intent(out) :: eigenvectors(:, :)
+      
+      interface
+         subroutine dsyev(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO) 	
+            character(1) :: JOBZ
+            character(1) :: UPLO
+            integer :: N
+            double precision :: A(lda, *)
+            integer :: lda
+            double precision :: W(*)
+            double precision :: WORK(*)
+            integer :: LWORK
+            integer :: INFO
+         end subroutine
+      end interface
+      integer :: istat
+      real(pr) :: work(size(A, 1)*10)
+      real(pr) :: Ain(size(A, 1), size(A, 1))
+      integer :: n
+
+      n = size(A, 1)
+      Ain = A
+
+      call dsyev(jobz='V', uplo='U', n=n, A=Ain, lda=n, w=eigenvalues, &
+         work=work, lwork=size(work, 1), info=istat &
+      )
+      eigenvectors = Ain
+
+      ! call eigh(&
+      !    A=A, lambda=eigenvalues, vectors=eigenvectors, err=stat  &
+      ! )
+      
+      ! if (.not. stat%ok()) then
+      !    write(*, *) stat%print_msg()
+      ! end if
    end subroutine
 
 end module yaeos__math_linalg

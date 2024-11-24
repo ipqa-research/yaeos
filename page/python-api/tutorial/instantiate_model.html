@@ -113,7 +113,7 @@
 <li><p>Excess Gibbs free energy models (GeModel)</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> provides a set of predefined models that will change in the future. You can check the list of available models in the API documentation or simply executing the following command on an interactive Python session (Jupyter Notebook, Google Colab, etc):</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -122,35 +122,6 @@
 <span class="o">?</span>yaeos.models
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">Type:</span>        module
-<span class="ansi-red-fg">String form:</span> &lt;module &#39;yaeos.models&#39; from &#39;/home/salvador/code/yaeos/python/yaeos/models/__init__.py&#39;&gt;
-<span class="ansi-red-fg">File:</span>        ~/code/yaeos/python/yaeos/models/__init__.py
-<span class="ansi-red-fg">Docstring:</span>
-Models module.
-
-Yaeos models module. This module provides the following submodules:
-
-- excess_gibbs: Excess Gibbs energy models
-    - NRTL: non-random two-liquid model
-    - UNIFACVLE: Original UNIFAC VLE model
-    - UNIQUAC: UNIversal QUAsiChemical Excess Gibbs free energy model
-
-- residual_helmholtz: Residual Helmholtz energy models
-    - Cubic EoS:
-        - PengRobinson76: Peng-Robinson model (1976)
-        - PengRobinson78: Peng-Robinson model (1978)
-        - SoaveRedlichKwong: Soave-Redlich-Kwong model
-        - RKPR: RKPR model
-    - Mixing rules: mixing rules for cubic EoS
-        - QMR: cuadratic mixing rule
-        - MHV: modified Huron-Vidal mixing rule
-</pre></div></div>
 </div>
 <p>All this models can be imported directly from <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> with the names in the list. For example let’s import and instantiate a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> model:</p>
 <div class="nbinput nblast docutils container">
@@ -169,7 +140,7 @@ Yaeos models module. This module provides the following submodules:
 </div>
 </div>
 <p>There we have instantiated a <code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code> model with a binary mixture and stored the instance in a variable called <code class="docutils literal notranslate"><span class="pre">model</span></code>. You can check the signature to instantiate any model with the <code class="docutils literal notranslate"><span class="pre">?</span></code> operator in an interactive Python session.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -177,66 +148,8 @@ Yaeos models module. This module provides the following submodules:
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">Init signature:</span>
-PengRobinson76<span class="ansi-blue-fg">(</span>
-    critical_temperatures<span class="ansi-blue-fg">,</span>
-    critical_pressures<span class="ansi-blue-fg">,</span>
-    acentric_factors<span class="ansi-blue-fg">,</span>
-    mixrule<span class="ansi-blue-fg">:</span> yaeos<span class="ansi-blue-fg">.</span>models<span class="ansi-blue-fg">.</span>residual_helmholtz<span class="ansi-blue-fg">.</span>cubic_eos<span class="ansi-blue-fg">.</span>mixing_rules<span class="ansi-blue-fg">.</span>CubicMixRule <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-green-fg">None</span>
-<span class="ansi-red-fg">Docstring:</span>
-Peng-Robinson 1976 cubic equation of state.
-
-Parameters
-----------
-critical_temperatures : array_like
-    Critical temperatures vector [K]
-critical_pressures : array_like
-    Critical pressures vector [bar]
-acentric_factors : array_like
-    Acentric factors vector
-mixrule : CubicMixRule, optional
-    Mixing rule object. If no provided the quadratric mixing rule (QMR)
-    with zero for kij and lij parameters is set, by default None
-
-Attributes
-----------
-nc : int
-    Number of components
-critical_temperatures : array_like
-    Critical temperatures vector [K]
-critical_pressures : array_like
-    Critical pressures vector [bar]
-acentric_factors : array_like
-    Acentric factors vector
-id : int
-    EoS identifier
-mixrule : CubicMixRule
-    Mixing rule object
-
-Example
--------
-.. code-block:: python
-
-    from yaeos import PengRobinson76
-
-    tc = [190.56, 305.32]   # Critical temperatures [K]
-    pc = [45.99, 48.72]     # Critical pressures [bar]
-    w = [0.0115, 0.0985]    # Acentric factors
-
-    pr76 = PengRobinson76(tc, pc, w)
-<span class="ansi-red-fg">File:</span>           ~/code/yaeos/python/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.py
-<span class="ansi-red-fg">Type:</span>           ABCMeta
-<span class="ansi-red-fg">Subclasses:</span>
-</pre></div></div>
-</div>
 <p>This can be done with all the listed models of <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -246,76 +159,6 @@ Example
 <span class="o">?</span>RKPR
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">Init signature:</span>
-RKPR<span class="ansi-blue-fg">(</span>
-    critical_temperatures<span class="ansi-blue-fg">,</span>
-    critical_pressures<span class="ansi-blue-fg">,</span>
-    acentric_factors<span class="ansi-blue-fg">,</span>
-    critical_z<span class="ansi-blue-fg">,</span>
-    k<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    delta_1<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-    mixrule<span class="ansi-blue-fg">:</span> yaeos<span class="ansi-blue-fg">.</span>models<span class="ansi-blue-fg">.</span>residual_helmholtz<span class="ansi-blue-fg">.</span>cubic_eos<span class="ansi-blue-fg">.</span>mixing_rules<span class="ansi-blue-fg">.</span>CubicMixRule <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-green-fg">None</span>
-<span class="ansi-red-fg">Docstring:</span>
-RKPR cubic equation of state.
-
-Parameters
-----------
-critical_temperatures : array_like
-    Critical temperatures vector [K]
-critical_pressures : array_like
-    Critical pressures vector [bar]
-acentric_factors : array_like
-    Acentric factors vector
-critical_z : array_like
-    Critical compressibility factor vector
-k : array_like, optional
-    k parameter, by default None
-delta_1 : array_like, optional
-    delta_1 parameter, by default None
-mixrule : CubicMixRule, optional
-    Mixing rule object. If no provided the quadratric mixing rule (QMR)
-    with zero for kij and lij parameters is set, by default None
-
-Attributes
-----------
-nc : int
-    Number of components
-critical_temperatures : array_like
-    Critical temperatures vector [K]
-critical_pressures : array_like
-    Critical pressures vector [bar]
-acentric_factors : array_like
-    Acentric factors vector
-zc : array_like
-    Critical compressibility factor vector
-id : int
-    EoS identifier
-mixrule : CubicMixRule
-    Mixing rule object
-
-Example
--------
-.. code-block:: python
-
-    from yaeos import RKPR
-
-    tc = [190.56, 305.32]   # Critical temperatures [K]
-    pc = [45.99, 48.72]     # Critical pressures [bar]
-    w = [0.0115, 0.0985]    # Acentric factors
-    zc = [0.27, 0.28]       # Critical compressibility factor
-
-    rkpr = RKPR(tc, pc, w, zc)
-<span class="ansi-red-fg">File:</span>           ~/code/yaeos/python/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.py
-<span class="ansi-red-fg">Type:</span>           ABCMeta
-<span class="ansi-red-fg">Subclasses:</span>
-</pre></div></div>
 </div>
 </section>
 <section id="What-can-we-do-with-an-instantiated-model?">
@@ -443,73 +286,13 @@ Volume:  12.068572622671574  L
 </pre></div>
 </div>
 <p>And you will be right, we didn’t tell you yet. You can get the documentation of all these properties on the API documentation (the link provided above) or by doing:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.volume
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">Signature:</span>
-model<span class="ansi-blue-fg">.</span>volume<span class="ansi-blue-fg">(</span>
-    moles<span class="ansi-blue-fg">,</span>
-    pressure<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    root<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;stable&#39;</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> float
-<span class="ansi-red-fg">Docstring:</span>
-Calculate volume given pressure and temperature [L].
-
-Parameters
-----------
-moles : array_like
-    Moles number vector [mol]
-pressure : float
-    Pressure [bar]
-temperature : float
-    Temperature [K]
-root : str, optional
-    Volume root, use: &#34;liquid&#34;, &#34;vapor&#34; or &#34;stable&#34;, by default
-    &#34;stable&#34;
-
-Returns
--------
-float
-    Volume [L]
-
-Example
--------
-.. code-block:: python
-
-    import numpy as np
-
-    from yaeos import PengRobinson76
-
-
-    tc = np.array([320.0, 375.0])   # critical temperatures [K]
-    pc = np.array([45.0, 60.0])     # critical pressures [bar]
-    w = np.array([0.0123, 0.045])   # acentric factors
-
-    model = PengRobinson76(tc, pc, w)
-
-    # Evaluating stable root volume
-    # will print: 23.373902973572587
-
-    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0))
-
-    # Liquid root volume (not stable)
-    # will print: 0.8156388756398074
-
-    print(model.volume(np.array([5.0, 5.6]), 10.0, 300.0, &#34;liquid&#34;))
-<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
-<span class="ansi-red-fg">Type:</span>      method
-</pre></div></div>
 </div>
 <p>If you check the API documentation you have an example of calculating “liquid” volume roots, “vapor” volume roots or “stable” volume roots, but we will explain it here too.</p>
 <p>As you can see in the volume documentation above. There is another argument that we didn’t use: <code class="docutils literal notranslate"><span class="pre">root</span></code>. This argument is set as “stable” by default, but we can change it to “vapor” or “liquid” if we want. Let’s see which was the stable root in the previous evaluation:</p>
@@ -589,91 +372,13 @@ Liquid:  [-0.04887053 -0.3742866 ]
 Vapor:  [-0.24307099 -0.2526632 ]
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.lnphi_pt
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">Signature:</span>
-model<span class="ansi-blue-fg">.</span>lnphi_pt<span class="ansi-blue-fg">(</span>
-    moles<span class="ansi-blue-fg">,</span>
-    pressure<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    root<span class="ansi-blue-fg">:</span> str <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;stable&#39;</span><span class="ansi-blue-fg">,</span>
-    dt<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
-    dp<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
-    dn<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Union<span class="ansi-blue-fg">[</span>numpy<span class="ansi-blue-fg">.</span>ndarray<span class="ansi-blue-fg">,</span> tuple<span class="ansi-blue-fg">[</span>numpy<span class="ansi-blue-fg">.</span>ndarray<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span>
-<span class="ansi-red-fg">Docstring:</span>
-Calculate fugacity coefficent given pressure and temperature.
-
-Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
-temperature, pressure and moles number.
-
-Parameters
-----------
-moles : array_like
-    Moles number vector [mol]
-pressure : float
-    Pressure [bar]
-temperature : float
-    Temperature [K]
-root : str, optional
-    Volume root, use: &#34;liquid&#34;, &#34;vapor&#34; or &#34;stable&#34;, by default
-    &#34;stable&#34;
-dt : bool, optional
-    Calculate temperature derivative, by default False
-dp : bool, optional
-    Calculate pressure derivative, by default False
-dn : bool, optional
-    Calculate moles derivative, by default False
-
-Returns
--------
-Union[np.ndarray, tuple[np.ndarray, dict]]
-    :math:`ln \phi_i(n,P,T)` vector or tuple with
-    :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any
-    derivative is asked
-
-Example
--------
-.. code-block:: python
-
-    import numpy as np
-
-    from yaeos import PengRobinson76
-
-
-    tc = np.array([320.0, 375.0])   # critical temperatures [K]
-    pc = np.array([45.0, 60.0])     # critical pressures [bar]
-    w = np.array([0.0123, 0.045])   # acentric factors
-
-    model = PengRobinson76(tc, pc, w)
-
-    # Evaluating ln_phi only
-    # will print: [-0.10288733 -0.11909807]
-
-    print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))
-
-    # Asking for derivatives
-    # will print:
-    # (
-    # array([-0.10288733, -0.11909807]),
-    # {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}
-    # )
-
-    print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)
-<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
-<span class="ansi-red-fg">Type:</span>      method
-</pre></div></div>
 </div>
 </section>
 <section id="Obtaining-derivatives-of-the-properties">
@@ -757,86 +462,13 @@ array([0.00247786, 0.00257727])
 </pre></div></div>
 </div>
 <p>Check the signature of each property to see which derivatives you can calculate. For example <code class="docutils literal notranslate"><span class="pre">pressure</span></code>.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>model.pressure
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">Signature:</span>
-model<span class="ansi-blue-fg">.</span>pressure<span class="ansi-blue-fg">(</span>
-    moles<span class="ansi-blue-fg">,</span>
-    volume<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    temperature<span class="ansi-blue-fg">:</span> float<span class="ansi-blue-fg">,</span>
-    dv<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
-    dt<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
-    dn<span class="ansi-blue-fg">:</span> bool <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> Union<span class="ansi-blue-fg">[</span>float<span class="ansi-blue-fg">,</span> tuple<span class="ansi-blue-fg">[</span>float<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">]</span>
-<span class="ansi-red-fg">Docstring:</span>
-Calculate pressure given volume and temperature [bar].
-
-Calculate :math:`P(n,V,T)` and its derivatives with respect to
-volume, temperature and moles number.
-
-Parameters
-----------
-moles : array_like
-    Moles number vector [mol]
-volume : float
-    Volume [L]
-temperature : float
-    Temperature [K]
-dv : bool, optional
-    Calculate volume derivative, by default False
-dt : bool, optional
-    Calculate temperature derivative, by default False
-dn : bool, optional
-    Calculate moles derivative, by default False
-
-Returns
--------
-Union[float, tuple[float, dict]]
-    Pressure or tuple with Presure and derivatives dictionary if any
-    derivative is asked [bar]
-
-Example
--------
-.. code-block:: python
-
-    import numpy as np
-
-    from yaeos import PengRobinson76
-
-
-    tc = np.array([320.0, 375.0])   # critical temperatures [K]
-    pc = np.array([45.0, 60.0])     # critical pressures [bar]
-    w = np.array([0.0123, 0.045])   # acentric factors
-
-    model = PengRobinson76(tc, pc, w)
-
-    # Evaluating pressure only
-    # will print: 16.011985733846956
-
-    print(model.pressure(np.array([5.0, 5.6]), 2.0, 300.0))
-
-    # Asking for derivatives
-    # will print:
-    # (
-    # 16.011985733846956,
-    # {&#39;dv&#39;: None, &#39;dt&#39;: np.float64(0.7664672352866752), &#39;dn&#39;: None}
-    # )
-
-    print(model.pressure(np.array([5.0, 5.6]), 2.0, 300.0, dt=True))
-<span class="ansi-red-fg">File:</span>      ~/code/yaeos/python/yaeos/core.py
-<span class="ansi-red-fg">Type:</span>      method
-</pre></div></div>
 </div>
 </section>
 <section id="Yaeos-units">

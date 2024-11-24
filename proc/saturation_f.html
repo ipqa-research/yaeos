@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">21 statements</a>
+                 title=" 0.9% of total for procedures.">60 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,16 +118,31 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-p_inc">P_inc</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-p_main">P_main</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-t~17">T</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-v_inc">V_inc</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-v_main">V_main</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-lnphi_inc">lnphi_inc</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-lnphi_main">lnphi_main</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-nc~12">nc</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-y~7">y</a>
-            <a class="list-group-item" href="../proc/saturation_f.html#variable-z~12">z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-py">Py</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-pz">Pz</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-t~31">T</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-vy~3">Vy</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-vz~2">Vz</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dpdty">dPdTy</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dpdtz">dPdTz</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dpdvy">dPdVy</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dpdvz">dPdVz</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dpdn_y">dPdn_y</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dpdn_z">dPdn_z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dp_y">dlnfug_dP_y</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dp_z">dlnfug_dP_z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dt_y">dlnfug_dT_y</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dt_z">dlnfug_dT_z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dv_y">dlnfug_dV_y</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dv_z">dlnfug_dV_z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dn_y">dlnfug_dn_y</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-dlnfug_dn_z">dlnfug_dn_z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-j~25">j</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-lnpspec">lnPspec</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-lnfug_y~2">lnfug_y</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-lnfug_z">lnfug_z</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-nc~23">nc</a>
+            <a class="list-group-item" href="../proc/saturation_f.html#variable-y~9">y</a>
         </div>
       </div>
     </div>
@@ -157,7 +172,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine saturation_F(model, X, ns, S, F)  
+    <h2>public  subroutine saturation_F(model, z, X, ns, S, F, dF)  
 </h2>
     
 
@@ -191,7 +206,22 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~10"></span>
+              <span class="anchor" id="variable-z~16"></span>
+              real(kind=pr)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(size(model))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~13"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -206,7 +236,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~5"></span>
+              <span class="anchor" id="variable-ns~11"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -221,7 +251,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~4"></span>
+              <span class="anchor" id="variable-s~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -236,7 +266,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~2"></span>
+              <span class="anchor" id="variable-f~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -245,6 +275,21 @@
             </td>
             <td>::</td>
             <td><strong>F</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dF</strong>(:,:)</td>
             <td>
                 
             </td>
@@ -269,7 +314,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p_inc"></span>
+              <span class="anchor" id="variable-py"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -277,7 +322,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>P_inc</strong></td>
+            <td><strong>Py</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -286,7 +331,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p_main"></span>
+              <span class="anchor" id="variable-pz"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -294,7 +339,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>P_main</strong></td>
+            <td><strong>Pz</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -303,7 +348,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~17"></span>
+              <span class="anchor" id="variable-t~31"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -320,7 +365,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v_inc"></span>
+              <span class="anchor" id="variable-vy~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -328,7 +373,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>V_inc</strong></td>
+            <td><strong>Vy</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -337,7 +382,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v_main"></span>
+              <span class="anchor" id="variable-vz~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -345,7 +390,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>V_main</strong></td>
+            <td><strong>Vz</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -354,7 +399,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnphi_inc"></span>
+              <span class="anchor" id="variable-dpdty"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -362,7 +407,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>lnphi_inc</strong>(size(model))</td>
+            <td><strong>dPdTy</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -371,7 +416,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnphi_main"></span>
+              <span class="anchor" id="variable-dpdtz"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -379,7 +424,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>lnphi_main</strong>(size(model))</td>
+            <td><strong>dPdTz</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -388,7 +433,279 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~12"></span>
+              <span class="anchor" id="variable-dpdvy"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdVy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdvz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdVz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdn_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn_y</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdn_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdn_z</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dp_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dP_y</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dp_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dP_z</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dt_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dT_y</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dt_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dT_z</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dv_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dV_y</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dv_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dV_z</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dn_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dn_y</strong>(size(model),size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfug_dn_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfug_dn_z</strong>(size(model),size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~25"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnpspec"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPspec</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_y~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_y</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_z</strong>(size(model))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~23"></span>
               integer,
             </td>
               <td>public</td>
@@ -405,7 +722,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y~7"></span>
+              <span class="anchor" id="variable-y~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -414,23 +731,6 @@
             </td>
             <td>::</td>
             <td><strong>y</strong>(size(z))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-z~12"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>z</strong>(size(model))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -470,7 +770,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-10 17:41              </p>
+ on 2024-11-24 22:02 +0000             </p>
           </div>
         </div>
         <br>

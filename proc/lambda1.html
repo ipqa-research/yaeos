@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>fugacity_pt &ndash; yaeos</title>
+    <title>lambda1 &ndash; yaeos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -66,8 +66,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>fugacity_pt
-      <small>Subroutine</small>
+    <h1>lambda1
+      <small>Function</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -78,21 +78,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">23 statements</a>
+                 title=" 0.5% of total for procedures.">31 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/ar_models.f90"> Source File</a>
+              <a href="../src/critical.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
-            <li class="breadcrumb-item active" aria-current="page">fugacity_pt</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/critical.f90.html'>critical.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_critical.html'>yaeos__equilibria_critical</a></li>
+            <li class="breadcrumb-item active" aria-current="page">lambda1</li>
           </ol>
         </nav>
       </div>
@@ -118,8 +118,18 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/fugacity_pt.html#variable-p_in">P_in</a>
-            <a class="list-group-item" href="../proc/fugacity_pt.html#variable-v_in">V_in</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-m">M</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-pin">Pin</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-t~24">T</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-v~16">V</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-dlnf_dn">dlnf_dn</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-i~27">i</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-j~17">j</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-lambda">lambda</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-n~28">n</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-nc~15">nc</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-vectors">vectors</a>
+            <a class="list-group-item" href="../proc/lambda1.html#variable-z~13">z</a>
         </div>
       </div>
     </div>
@@ -149,7 +159,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine fugacity_pt(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+    <h2>public  function lambda1(model, X, s, z0, zi, u, u_new, P)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -157,7 +167,7 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='../module/yaeos__math_linalg.html'>yaeos__math_linalg</a></li>
               </ul>
             </li>
         </ul>
@@ -165,12 +175,14 @@
     </div>
 
 
-    <p>Calculate logarithm of fugacity, given pressure and temperature.</p>
-<p>This routine will obtain the desired volume root at the specified
-pressure and calculate fugacity at that point.</p>
+    <h1 id="lambda1">lambda1</h1>
+<p>Calculation of the first restriction of a critical point</p>
+<p>
+<script type="math/tex; mode=display">
+ \lambda_1(s) = \frac{d^2tpd}{ds^2} = 0
+</script>
+</p>
 
-    <h3>Type Bound</h3>
-    <p><a href='../type/armodel.html'>ArModel</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -185,7 +197,7 @@ pressure and calculate fugacity at that point.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~4"></span>
+              <span class="anchor" id="variable-model~15"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -193,14 +205,14 @@ pressure and calculate fugacity at that point.</p>
               
             </td>
             <td>::</td>
-            <td><strong>eos</strong></td>
+            <td><strong>model</strong></td>
             <td>
-                <p>Model</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~20"></span>
+              <span class="anchor" id="variable-x~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -208,186 +220,115 @@ pressure and calculate fugacity at that point.</p>
               
             </td>
             <td>::</td>
-            <td><strong>n</strong>(:)</td>
+            <td><strong>X</strong>(4)</td>
             <td>
-                <p>Mixture mole numbers</p>
+                <p>Vector of variables</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~3"></span>
+              <span class="anchor" id="variable-s"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>s</strong></td>
+            <td>
+                <p>Distance between the two fluids compositions to the main composition</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z0~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z0</strong>(:)</td>
+            <td>
+                <p>Molar fractions of the first fluid</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zi~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
+            <td>
+                <p>Molar fractions of the second fluid</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>u</strong>(:)</td>
+            <td>
+                <p>Eigen-vector that defines the direction between the two compositions
+<script type="math/tex; mode=display"> n_i = z_i + s  u_i \sqrt{z_i} </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u_new~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>u_new</strong>(:)</td>
+            <td>
+                <p>Eigen-vector corresponding to the smallest eigenvalue of the matrix
+<script type="math/tex; mode=display"> M_{ij} = \sqrt{z_i z_j} \frac{\partial \ln f_i}{\partial n_j} </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~17"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-                <p>Pressure [bar]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-                <p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-v~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>V</strong></td>
-            <td>
-                <p>Volume [L]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-root_type~2"></span>
-              character(len=*),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>root_type</strong></td>
-            <td>
-                <p>Type of root desired [&ldquo;liquid&rdquo;, &ldquo;vapor&rdquo;, &ldquo;stable&rdquo;]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnphi"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lnPhi</strong>(size(n))</td>
-            <td>
-                <p>
-<script type="math/tex">\ln(phi)</script> vector</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dlnphidp"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dlnPhidP</strong>(size(n))</td>
-            <td>
-                <p>ln(phi) Presssure derivative</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dlnphidt"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dlnPhidT</strong>(size(n))</td>
-            <td>
-                <p>ln(phi) Temp derivative</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dlnphidn"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
-            <td>
-                <p>ln(phi) compositional derivative</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpdv~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dPdV</strong></td>
-            <td>
-                <p>
-<script type="math/tex">\frac{dP}{dV}</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpdt~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dPdT</strong></td>
-            <td>
-                <p>
-<script type="math/tex">\frac{dP}{dT}</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dpdn~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dPdn</strong>(size(n))</td>
-            <td>
-                <p>
-<script type="math/tex">\frac{dP}{dn_i}</script>
-</p>
+                <p>Pressure of the system [bar]</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-lambda1"></span>
+          real(kind=pr)
+        </small>
+      </h3>
+      
     <br>
 
 
@@ -405,7 +346,7 @@ pressure and calculate fugacity at that point.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p_in"></span>
+              <span class="anchor" id="variable-m"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -413,7 +354,7 @@ pressure and calculate fugacity at that point.</p>
               
             </td>
             <td>::</td>
-            <td><strong>P_in</strong></td>
+            <td><strong>M</strong>(size(z0),size(z0))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -422,7 +363,7 @@ pressure and calculate fugacity at that point.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v_in"></span>
+              <span class="anchor" id="variable-pin"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -430,7 +371,177 @@ pressure and calculate fugacity at that point.</p>
               
             </td>
             <td>::</td>
-            <td><strong>V_in</strong></td>
+            <td><strong>Pin</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~24"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~16"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnf_dn"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnf_dn</strong>(size(z0),size(z0))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~27"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~17"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda</strong>(size(z0))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~28"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(size(z0))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~15"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vectors"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>vectors</strong>(size(z0),size(z0))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~13"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(size(z0))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -470,7 +581,7 @@ pressure and calculate fugacity at that point.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-10-10 17:41              </p>
+ on 2024-11-24 22:02 +0000             </p>
           </div>
         </div>
         <br>

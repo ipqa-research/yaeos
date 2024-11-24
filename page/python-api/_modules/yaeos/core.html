@@ -1069,7 +1069,7 @@
     <span class="k">def</span> <span class="nf">saturation_temperature</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saturation pressure at specified temperature.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saturation temperature at specified pressure.</span>
 
 <span class="sd">        Arguments</span>
 <span class="sd">        ---------</span>
@@ -1086,7 +1086,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            Saturation pressure calculation result dictionary with keys:</span>
+<span class="sd">            Saturation temperature calculation result dictionary with keys:</span>
 <span class="sd">                - x: heavy phase mole fractions</span>
 <span class="sd">                - y: light phase mole fractions</span>
 <span class="sd">                - Vx: heavy phase volume [L]</span>
@@ -1124,7 +1124,7 @@
 
 <span class="sd">            print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">volume_x</span><span class="p">,</span> <span class="n">volume_y</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">volume_x</span><span class="p">,</span> <span class="n">volume_y</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span>
         <span class="p">)</span>
 
@@ -1212,6 +1212,62 @@
         <span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;Ps&quot;</span><span class="p">:</span> <span class="n">ps</span><span class="p">,</span> <span class="s2">&quot;Tcs&quot;</span><span class="p">:</span> <span class="n">tcs</span><span class="p">,</span> <span class="s2">&quot;Pcs&quot;</span><span class="p">:</span> <span class="n">pcs</span><span class="p">}</span>
 
         <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.critical_point">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.critical_point">[docs]</a>
+    <span class="k">def</span> <span class="nf">critical_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Critical point calculation.</span>
+
+<span class="sd">        Calculate the critical point of a mixture. At a given composition</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z: array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        max_iters: int, optional</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Critical point calculation result dictionary with keys:</span>
+<span class="sd">                - Tc: critical temperature [K]</span>
+<span class="sd">                - Pc: critical pressure [bar]</span>
+<span class="sd">                - Vc: critical volume [L]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">critical_point</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spec</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="n">max_iters</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Tc&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span> <span class="s2">&quot;Pc&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;Vc&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ArModel.critical_line">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.critical_line">[docs]</a>
+    <span class="k">def</span> <span class="nf">critical_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">da0</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Critical Line calculation.</span>
+
+<span class="sd">        Calculate the critical line between two compositions</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z0: array_like</span>
+<span class="sd">            Initial global mole fractions</span>
+<span class="sd">        zi: array_like</span>
+<span class="sd">            Final global mole fractions</span>
+<span class="sd">        a0: float, optional</span>
+<span class="sd">            Initial molar fraction of composition `i`</span>
+<span class="sd">        da0: float, optional</span>
+<span class="sd">            Step for molar fraction of composition `i`</span>
+<span class="sd">        max_poitns: int, optional</span>
+<span class="sd">            Maximum number of points to calculate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alphas</span><span class="p">,</span> <span class="n">vs</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span> <span class="n">da0</span><span class="o">=</span><span class="n">da0</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">alphas</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">ps</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">:</span> <span class="n">vs</span><span class="p">}</span></div>
 
 
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
