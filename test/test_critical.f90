@@ -24,7 +24,6 @@ program main
    real(pr) :: z0(nc)
    real(pr) :: zi(nc)
 
-
    integer :: i
 
    write(*, *) test_title("CRITICAL POINTS AND LINES")
