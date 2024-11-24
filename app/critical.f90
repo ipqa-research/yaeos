@@ -2,7 +2,6 @@ program main
    !! Test the calculation of critical lines
    use yaeos
    use yaeos__math, only: solve_system
-   use stdlib_linalg, only: eigh
    use yaeos__equilibria_critical, only: &
       lambda1, F_critical, df_critical, CriticalLine, critical_line, critical_point
    implicit none

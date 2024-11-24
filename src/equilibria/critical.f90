@@ -197,7 +197,7 @@ contains
       !! \[
       !!  \lambda_1(s) = \frac{d^2tpd}{ds^2} = 0
       !! \]
-      use stdlib_linalg, only: eigh, linalg_state_type
+      use yaeos__math_linalg, only: eigen
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
@@ -216,7 +216,7 @@ contains
       real(pr) :: dlnf_dn(size(z0), size(z0))
       real(pr) :: lambda(size(z0)), vectors(size(z0), size(z0))
 
-      type(linalg_state_type) :: stat
+      ! type(linalg_state_type) :: stat
 
       integer :: i, j, nc
       real(pr) :: M(size(z0), size(z0)), z(size(z0)), Pin
@@ -236,10 +236,7 @@ contains
          end do
       end do
 
-      call eigh(A=M, lambda=lambda, vectors=vectors, err=stat)
-      if (.not. stat%ok()) then
-         write(*, *) stat%print_msg()
-      end if
+      call eigen(A=M, eigenvalues=lambda, eigenvectors=vectors)
 
       lambda1 = lambda(minloc(abs(lambda), dim=1))
       if (present(u_new)) u_new = vectors(:, minloc(abs(lambda), dim=1))
@@ -393,11 +390,11 @@ contains
          df = df_critical(model, X, ns, S, z0, zi, u)
          dX = solve_system(A=df, b=-F)
 
-         do while(maxval(abs(dX/X)) > 1e-1)
+         do while(maxval(abs(dX)) > 1e-1)
             dX = dX/10
          end do
 
-         if (maxval(abs(X)) < 1e-5) exit
+         if (maxval(abs(F)) < 1e-5) exit
 
          X = X + dX
          l = lambda1(model, X, 0.0_pr, z0, zi, u, u_new)
