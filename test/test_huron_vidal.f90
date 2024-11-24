@@ -2,6 +2,7 @@ program main
    use yaeos, only: pr, CubicEoS
    use fixtures_models, only: binary_NRTL_SRK_HV
    use auxiliar_functions, only: allclose
+   use testing_aux, only: test_ok, test_title
 
    integer, parameter :: nc = 2
    real(pr) :: test_tol = 1e-7
@@ -24,7 +25,7 @@ program main
 
    model = binary_NRTL_SRK_HV()
 
-   write(*, *) "TESTING: HURON_VIDAL MIXING RULE"
+   write(*, *) test_title("HURON_VIDAL MIXING RULE")
 
    n = [0.2, 0.8]
    T = 150
@@ -40,11 +41,19 @@ program main
    call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
    
    if (.not. allclose([D], [test_D], test_tol)) error stop 1
+   write(*, *) test_ok("Huron-Vidal Mixing Rule: D")
    if (.not. allclose([dDdT], [test_dDdT], test_tol)) error stop 1
+   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDdT")
    if (.not. allclose([dDdT2], [test_dDdT2], test_tol)) error stop 1
+   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDdT2")
    if (.not. allclose([dDi], [test_dDi], test_tol)) error stop 1
+   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDi")
    if (.not. allclose([dDidT], [test_dDidT], test_tol)) error stop 1
+   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDidT")
    if (.not. allclose([dDij], [test_dDij], test_tol)) error stop 1
+   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDij")
+
+   write(*, *) test_ok("Huron-Vidal Mixing Rule")
 
    ! Below are the numerical derivatives used to generate the test values 
 

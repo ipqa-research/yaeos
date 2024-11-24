@@ -3,9 +3,10 @@ program main
    use yaeos
    use yaeos__math, only: interpol
    use fortime, only: Timer
+   use testing_aux, only: test_ok, test_title
    implicit none
    
-   logical :: WRITE_FILES=.true.
+   logical :: WRITE_FILES=.false.
 
    integer, parameter :: nc=12
    integer :: a_nearest
@@ -26,6 +27,8 @@ program main
 
    integer :: i
 
+   write(*, *) test_title("CRITICAL POINTS AND LINES")
+
    model = get_model()
 
    ! Calculate the composition at at specified alpha
@@ -33,6 +36,7 @@ program main
    z = a*zi + (1-a)*z0
 
    ! Get the full phase envelope of the fluid
+   print *, "Calculating PT envelope"
    call tim%timer_start()
    sat = saturation_temperature(model, z, P=0.1_pr, kind="dew")
    env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
@@ -49,6 +53,7 @@ program main
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
       error stop "Critical point failed"
    end if
+   write(*, *) test_ok("Critical point")
 
    ! Now test the critical lines
    print *, "CL"
@@ -66,7 +71,7 @@ program main
       call tim%timer_start()
       sat = saturation_temperature(model, z, P=0.1_pr, kind="dew")
       env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=1.5_pr)
-      print *, "Envelope", i, size(env%points)
+      print *, "Running PT Envelope", i, size(env%points)
       call tim%timer_stop()
       if (WRITE_FILES) call write_env
 
@@ -81,6 +86,7 @@ program main
          error stop "Critical line failed"
       end if
    end do
+   write(*, *) test_ok("Critical line compared to individual PT lines")
 
 contains
    
