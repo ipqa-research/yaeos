@@ -10,6 +10,9 @@ from yaeos.models.groups import groups_from_dicts
 class UNIFACVLE(GeModel):
     """UNIFAC VLE model.
 
+    Please refer to the `yaeos` user documentation for an in-depth look at the
+    model's information: https://ipqa-research.github.io/yaeos/page/index.html
+
     Parameters
     ----------
     molecules : list of dict
