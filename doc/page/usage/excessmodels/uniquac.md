@@ -96,6 +96,8 @@ $$
 
 \(\qquad \phi_k\):
 
+\(\phi_k \) derivatives are not really needed, but we also provide them.
+
 $$
 \frac{d \phi_k}{dn_i} = \begin{cases} - \frac{{n}_{i}
 {r}_{i}^{2}}{\left(\sum_l {n}_{l} {r}_{l}\right)^{2}} +
@@ -171,17 +173,14 @@ $$
 $$
 
 $$
-+ \frac{z}{2} q_i \left( \frac{\frac{d \theta_i}{d n_j}}{\theta_i} - \frac
-{\frac{d \phi_i}{d n_j}}{\phi_i} \right)
++ \frac{z}{2} q_i \left( \frac{r_j \sum_l n_l q_l - q_j \sum_l n_l r_l}
+{(\sum_l n_l q_l)(\sum_l n_l r_l)}\right)
 $$
 
 $$
-+ \frac{z}{2} q_j \left( \frac{\frac{d \theta_j}{d n_i}}{\theta_j} - \frac
-{\frac{d \phi_j}{d n_i}}{\phi_j} \right)
-+ \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\theta_k}{dn_i dn_j} \theta_k -
-  \frac{d\theta_k}{dn_i} \frac{d\theta_k}{dn_j}}{\theta_k^2} \right)
-- \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
-  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
+\frac{z}{2} q_j \left( \frac{r_i \sum_l n_l q_l - q_i \sum_l n_l r_l}
+{(\sum_l n_l q_l)(\sum_l n_l r_l)}\right) + \frac{z}{2} \sum_k n_k q_k \left(
+\frac{q_i q_j}{(\sum_l n_l q_l)^2} - \frac{r_i r_j}{(\sum_l n_l r_l)^2} \right)
 $$
 
 $$

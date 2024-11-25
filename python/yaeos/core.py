@@ -1101,7 +1101,6 @@ class ArModel(ABC):
                 - Pc: critical pressure [bar]
                 - Vc: critical volume [L]
         """
-
         *x, t, p, v = yaeos_c.critical_point(
             self.id, z0=z, zi=[0, 0], spec=1, max_iters=max_iters
         )
