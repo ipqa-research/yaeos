@@ -102,7 +102,7 @@ contains
             end if
         end if
 
-        if (present(Ar)) Ar = d_Ar%f1
+        if (present(Ar)) Ar = d_Ar%f0
 
     contains
 
