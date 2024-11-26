@@ -88,27 +88,27 @@ class UNIQUAC(GeModel):
         nc = len(qs)
 
         if aij is not None:
-            self.aij = aij
+            self.aij = np.array(aij, order="F")
         else:
             self.aij = np.zeros((nc, nc), order="F")
 
         if bij is not None:
-            self.bij = bij
+            self.bij = np.array(bij, order="F")
         else:
             self.bij = np.zeros((nc, nc), order="F")
 
         if cij is not None:
-            self.cij = cij
+            self.cij = np.array(cij, order="F")
         else:
             self.cij = np.zeros((nc, nc), order="F")
 
         if dij is not None:
-            self.dij = dij
+            self.dij = np.array(dij, order="F")
         else:
             self.dij = np.zeros((nc, nc), order="F")
 
         if eij is not None:
-            self.eij = eij
+            self.eij = np.array(eij, order="F")
         else:
             self.eij = np.zeros((nc, nc), order="F")
 
