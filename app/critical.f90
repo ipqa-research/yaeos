@@ -30,7 +30,7 @@ program main
 
    a = real(1, pr)/100._pr
    print *, "1stCL"
-   cl = critical_line(model, a, z0, zi, 0.1_pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.1_pr)
    do i=1, size(cl%a)
       write(2, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
    end do
@@ -39,7 +39,7 @@ program main
 
    print *, "2ndCL"
    a = 0.001
-   cl = critical_line(model, a0=a, z0=zi, zi=z0, dS0=0.01_pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.01_pr)
    do i=1, size(cl%a)
       write(2, *) 1-cl%a(i), cl%V(i), cl%T(i), cl%P(i)
    end do

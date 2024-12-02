@@ -16,7 +16,7 @@ module yaeos__equilibria
 
    ! Critical points
    use yaeos__equilibria_critical, only: &
-      critical_line, CriticalLine, critical_point, CPSpec
+      critical_line, CriticalLine, critical_point, spec_CP
 
    ! Phase equilibria boundaries
    use yaeos__equilibria_boundaries_phase_envelopes_pt, only:&

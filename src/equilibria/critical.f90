@@ -46,17 +46,22 @@ module yaeos__equilibria_critical
    end type CriticalLine
 
    type, private :: CPSpecs
-      integer :: a=1
-      integer :: V=2
-      integer :: T=3
-      integer :: P=4
-   end type
+      !! Enumerator to handle the possible specifications for a critical point.
+      integer :: a=1 !! Specify \( \alpha \)
+      integer :: V=2 !! Specify \( V \)
+      integer :: T=3 !! Specify \( T \)
+      integer :: P=4 !! Specify \( P \)
+   end type CPSpecs
 
-   type(CPSpecs), parameter :: CPSpec = CPSpecs()
+   type(CPSpecs), parameter :: spec_CP = CPSpecs() 
+      !! Specification variables for a critical point or critical line
+      !! calculation.
 
 contains
 
-   type(CriticalLine) function critical_line(model, a0, z0, zi, dS0, max_points, maxP)
+   type(CriticalLine) function critical_line(&
+      model, a0, z0, zi, ns, S, dS0, max_points, maxP&
+      )
       !! # critical_line
       !!
       !! ## Description
@@ -72,6 +77,8 @@ contains
       real(pr), intent(in) :: a0 !! Initial \(\alpha\) value
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      integer, intent(in) :: ns !! Position of the specification variable
+      real(pr), intent(in) :: S !! Specified value
       real(pr), intent(in) :: dS0 !! Initial step size
       integer, optional, intent(in) :: max_points !! Maximum number of points
       real(pr), optional, intent(in) :: maxP !! Maximum pressure
@@ -83,7 +90,7 @@ contains
 
       real(pr) :: X0(4), T, P, V, z(size(z0))
 
-      integer :: i, j, ns, last_point, npoints
+      integer :: i, j, last_point, npoints
 
       real(pr) :: max_P
 
@@ -111,7 +118,7 @@ contains
       call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
       X0 = [a0, log([v, T, P])]
-      ns = 1
+      X0(ns) = S
 
       ! ========================================================================
       ! Calculate the points
@@ -159,7 +166,7 @@ contains
 
          real(pr) :: z(size(u)), Xsol(3)
 
-         if (X(CPSpec%a) > 1) then
+         if (X(spec_CP%a) > 1) then
             return
          end if
 
@@ -182,7 +189,7 @@ contains
          ns = maxloc(abs(dXdS), dim=1)
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
-         if (exp(X(CPSpec%P)) > max_P) then
+         if (exp(X(spec_CP%P)) > max_P) then
             dS = 0
          end if
 
@@ -326,7 +333,25 @@ contains
       !! ## Description
       !! Calculates a single critical point of a mixture using a Newton-Raphson
       !! method. It is possible to specify different variables to be fixed with
-      !! the `spec` argument. 
+      !! the `spec` argument, the `spec_CP` variable helps when selecting the
+      !! specified variable.
+      !! 
+      !! ## Examples
+      !!
+      !! ### Default behaviour
+      !!
+      !! ```fortran
+      !!   cp = critical_point(&
+      !!        model, z0, zi, S=0.5_pr, spec=spec_CP%a, max_iters=1000)
+      !! ```
+      !!
+      !! ### Specifiying another variable
+      !! The natural variables are a, lnV, lnT and lnP. So it is important to
+      !! specify the variable in logaritmic scale if that is the case.
+      !!
+      !! ```fortran
+      !!   cp = critical_point(model, z0, zi, S=log(200._pr), spec=spec_CP%P, max_iters=1000)
+      !! ```
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model !! Equation of state model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
@@ -353,6 +378,8 @@ contains
       ! ------------------------------------------------------------------------
       if (present(a0)) then
          X(1) = a0
+      else if (spec == spec_CP%a) then
+         X(1) = S
       else
          X(1) = 0.5_pr
       end if
@@ -381,6 +408,7 @@ contains
 
       X(4) = log(sum(model%components%Pc * z))
       ns = spec
+      X(ns) = S
 
       ! ========================================================================
       ! Solve the system of equations
@@ -403,6 +431,7 @@ contains
          critical_point%iters = i
       end do
 
+      z = X(1)*zi + (1-X(1))*z0
       critical_point%x = z
       critical_point%y = z
       critical_point%beta = 0
