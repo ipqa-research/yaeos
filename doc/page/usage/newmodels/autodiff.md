@@ -56,61 +56,61 @@ module hyperdual_pr76
 
 contains
 
-   type(PR76) function setup(tc, pc, w, kij, lij) result(self)
-      !! Function to obtain a defined PR76 model with setted up parameters
-      !! as function of Tc, Pc, and w
-      real(pr) :: tc(:)
-      real(pr) :: pc(:)
-      real(pr) :: w(:)
-      real(pr) :: kij(:, :)
-      real(pr) :: lij(:, :)
+    type(PR76) function setup(tc, pc, w, kij, lij) result(self)
+        !! Function to obtain a defined PR76 model with setted up parameters
+        !! as function of Tc, Pc, and w
+        real(pr) :: tc(:)
+        real(pr) :: pc(:)
+        real(pr) :: w(:)
+        real(pr) :: kij(:, :)
+        real(pr) :: lij(:, :)
 
-      self%components%tc = tc
-      self%components%pc = pc
-      self%components%w = w
+        self%composition%tc = tc
+        self%composition%pc = pc
+        self%composition%w = w
 
-      self%ac = 0.45723553_pr * R**2 * tc**2 / pc
-      self%b = 0.07779607_pr * R * tc/pc
-      self%k = 0.37464_pr + 1.54226_pr * w - 0.26993_pr * w**2
+        self%ac = 0.45723553_pr * R**2 * tc**2 / pc
+        self%b = 0.07779607_pr * R * tc_in/pc_in
+        self%k = 0.37464_pr + 1.54226_pr * w - 0.26993_pr * w**2
 
-      self%kij = kij
-      self%lij = lij
-   end function setup
+        self%kij = kij
+        self%lij = lij
+    end function
 
-   function arfun(self, n, v, t) result(ar)
-      !! Residual Helmholtz calculation for a generic cubic with
-      !! quadratic mixing rules.
-      use hyperdual_mod
-      class(PR76) :: self
-      type(hyperdual), intent(in) :: n(:), v, t
-      type(hyperdual) :: ar
+    function arfun(self, n, v, t) result(ar)
+        !! Residual Helmholtz calculation for a generic cubic with
+        !! quadratic mixing rules.
+        class(PR76) :: self
+        type(hyperdual), intent(in) :: n(:), v, t
+        type(hyperdual) :: ar
+    
+        type(hyperdual) :: amix, a(size(n)), ai(size(n)), n2(size(n))
+        type(hyperdual) :: bmix
+        type(hyperdual) :: b_v, nij
 
-      type(hyperdual) :: amix, a(size(n)), ai(size(n)), n2(size(n))
-      type(hyperdual) :: bmix
-      type(hyperdual) :: b_v, nij
+        integer :: i, j
 
-      integer :: i, j
+        ! Associate allows us to keep the later expressions simple.
+        associate(&
+            pc => self%composition%pc, ac => self%ac, b => self%b, k => self%k,&
+            kij => self%kij, lij => self%lij, tc => self%compostion%tc & 
+            )
 
-      ! Associate allows us to keep the later expressions simple.
-      associate(&
-         pc => self%components%pc, ac => self%ac, b => self%b, k => self%k,&
-         kij => self%kij, lij => self%lij, tc => self%components%tc &
-         )
+            ! Soave alpha function
+            a = 1.0_pr + k * (1.0_pr - sqrt(t/tc))
+            a = ac * a ** 2
+            ai = sqrt(a)
 
-         ! Soave alpha function
-         a = 1.0_pr + k * (1.0_pr - sqrt(t/tc))
-         a = ac * a ** 2
-         ai = sqrt(a)
+            ! Quadratic Mixing Rule
+            amix = 0.0_pr
+            bmix = 0.0_pr
 
-         ! Quadratic Mixing Rule
-         amix = 0.0_pr
-         bmix = 0.0_pr
-
-         do i=1,size(n)-1
-            do j=i+1,size(n)
-               nij = n(i) * n(j)
-               amix = amix + 2 * nij * (ai(i) * ai(j)) * (1 - kij(i, j))
-               bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))
+            do i=1,size(n)-1
+                do j=i+1,size(n)
+                    nij = n(i) * n(j)
+                    amix = amix + 2 * nij * (ai(i) * ai(j)) * (1 - kij(i, j))
+                    bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))
+                end do
             end do
          end do
 
