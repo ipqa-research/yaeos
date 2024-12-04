@@ -1,5 +1,5 @@
 project('yaeos', 'c',
-  version : '1.5.0',
+  version : '2.1.0',
   license: 'MPL',
   meson_version: '>=0.64.0',
   default_options : ['warning_level=2'],
