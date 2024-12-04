@@ -53,14 +53,14 @@ module yaeos__equilibria_critical
       integer :: P=4 !! Specify \( P \)
    end type CPSpecs
 
-   type(CPSpecs), parameter :: spec_CP = CPSpecs() 
-      !! Specification variables for a critical point or critical line
-      !! calculation.
+   type(CPSpecs), parameter :: spec_CP = CPSpecs()
+   !! Specification variables for a critical point or critical line
+   !! calculation.
 
 contains
 
    type(CriticalLine) function critical_line(&
-      model, a0, z0, zi, ns, S, dS0, max_points, maxP&
+      model, a0, z0, zi, ns, S, dS0, max_points, maxP, first_point &
       )
       !! # critical_line
       !!
@@ -82,6 +82,8 @@ contains
       real(pr), intent(in) :: dS0 !! Initial step size
       integer, optional, intent(in) :: max_points !! Maximum number of points
       real(pr), optional, intent(in) :: maxP !! Maximum pressure
+      type(EquilibriumState), optional, intent(in) :: first_point
+
 
       real(pr) :: u(size(z0)) !! eigen-vector
       real(pr) :: u_new(size(z0)) !! eigen-vector
@@ -118,6 +120,10 @@ contains
       call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
       X0 = [a0, log([v, T, P])]
+
+      if (present(first_point)) then
+         X0 = [first_point%x(2), log([first_point%Vx, first_point%T, first_point%P])]
+      end if
       X0(ns) = S
 
       ! ========================================================================
@@ -335,7 +341,7 @@ contains
       !! method. It is possible to specify different variables to be fixed with
       !! the `spec` argument, the `spec_CP` variable helps when selecting the
       !! specified variable.
-      !! 
+      !!
       !! ## Examples
       !!
       !! ### Default behaviour
@@ -398,15 +404,23 @@ contains
          X(3) = log(sum(model%components%Tc * z))
       end if
 
+      if (ns == spec_CP%P) then
+         X(4) = S
+      else
+         X(4) = log(sum(model%components%Pc * z))
+      end if
+
+
       if (present(V0)) then
          X(2) = log(V0)
       else
-         call model%volume(&
-            n=z, P=sum(model%components%Pc * z), T=exp(X(3)), V=X(2), root_type="stable")
+         print *, exp(X(2))
+         print *, exp(X(3))
+         call model%volume(n=z, P=exp(X(4)), T=exp(X(3)), V=X(2), root_type="stable")
+
          X(2) = log(X(2))
       end if
 
-      X(4) = log(sum(model%components%Pc * z))
       ns = spec
       X(ns) = S
 
