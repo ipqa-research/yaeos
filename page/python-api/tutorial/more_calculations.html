@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>More calculations &mdash; yaeos 2.0.0 documentation</title>
+  <title>More calculations &mdash; yaeos 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/documentation_options.js?v=20623aea"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -67,6 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Calculation-of-critical-points">Calculation of critical points</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#Stability-analysis">Stability analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cubic_eos.html#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a></li>
 </ul>
@@ -188,10 +189,10 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="highlight"><pre>
 {&#39;x&#39;: array([1.]),
  &#39;y&#39;: array([1.]),
- &#39;Vx&#39;: 0.046689498895146085,
- &#39;Vy&#39;: 0.9534768478036645,
+ &#39;Vx&#39;: 0.046689498895145704,
+ &#39;Vy&#39;: 0.9534768478027251,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 17.91670638243004,
+ &#39;P&#39;: 17.916706382441284,
  &#39;beta&#39;: 0.0}
 </pre></div></div>
 </div>
@@ -209,7 +210,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-17.91670638243004  bar
+17.916706382441284  bar
 </pre></div></div>
 </div>
 <p>The DIPPR correlated value for the saturation pressure of CO2 at 250 K is 17.88 bar, so SoaveRedlichKwong is doing a good job in this case.</p>
@@ -217,7 +218,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <section id="Mixture">
 <h3>Mixture<a class="headerlink" href="#Mixture" title="Link to this heading"></a></h3>
 <p>Of course, in thermodynamics there is not only pure compounds, we can also use <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> to calculate the saturation pressure of a mixture. Let’s calculate the saturation pressure of a mixture of 50% CO2 and 50% n-butane at 250 K. But now let’s use <code class="docutils literal notranslate"><span class="pre">PengRobinson78</span></code>.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -241,15 +242,6 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
- WARN: possible bad root solving:                   Infinity   1.5230874125981815E+044
- WARN: possible bad root solving:                   Infinity   1.5230874125981815E+044
-</pre></div></div>
-</div>
 <p>Let’s check our results:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -267,10 +259,10 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="highlight"><pre>
 {&#39;x&#39;: array([0.5, 0.5]),
  &#39;y&#39;: array([0.96800305, 0.03199695]),
- &#39;Vx&#39;: 0.06509074642358811,
- &#39;Vy&#39;: 2.2963934569225612,
+ &#39;Vx&#39;: 0.0650907464235881,
+ &#39;Vy&#39;: 2.296393456922435,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 8.269690420846004,
+ &#39;P&#39;: 8.269690420846427,
  &#39;beta&#39;: 0.0}
 </pre></div></div>
 </div>
@@ -288,12 +280,12 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;x&#39;: array([nan, nan]),
+{&#39;x&#39;: array([0.02630095, 0.97369905]),
  &#39;y&#39;: array([0.5, 0.5]),
- &#39;Vx&#39;: nan,
- &#39;Vy&#39;: 0.09902225300774423,
+ &#39;Vx&#39;: 0.08695218910075529,
+ &#39;Vy&#39;: 26.111737262933246,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: nan,
+ &#39;P&#39;: 0.7816128221169543,
  &#39;beta&#39;: 1.0}
 </pre></div></div>
 </div>
@@ -486,7 +478,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span>
-    <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">150.0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mf">4.0</span>
+    <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">200.0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mf">1.0</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -571,16 +563,25 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   1.0000000000000000
+   364.64999999999992
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;x&#39;: [array([0.25, 0.25])],
- &#39;Tc&#39;: 167.37715958605696,
- &#39;Pc&#39;: -397.01119465595315,
- &#39;Vc&#39;: 0.029381104224426535}
+{&#39;x&#39;: [array([0.5, 0.5])],
+ &#39;Tc&#39;: 385.9303795748075,
+ &#39;Pc&#39;: 68.20063426935891,
+ &#39;Vc&#39;: 0.18481752004904956}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -631,15 +632,270 @@ Text(0, 0.5, &#39;$P [bar]$&#39;)
 <img alt="../_images/tutorial_more_calculations_29_1.png" src="../_images/tutorial_more_calculations_29_1.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
+</section>
+<section id="Stability-analysis">
+<h1>Stability analysis<a class="headerlink" href="#Stability-analysis" title="Link to this heading"></a></h1>
+<p>In <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> it is possible to make stability analysis using the <span class="math notranslate nohighlight">\(tm\)</span> function defined by Michelsen and Møllerup</p>
+<p><span class="math">\begin{equation}
+tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\mathbf{z}))
+\end{equation}</span></p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> are the mole numbers of the trial and test phase.</p>
+<p>To show how to use the stability methods, we first define a system a find a region where there is phase equilibria. For this we obtain the critical constants with the <code class="docutils literal notranslate"><span class="pre">chemicals</span></code> library and trace a phase envelope.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">chemicals</span>
+
+<span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;methane&quot;</span><span class="p">,</span> <span class="s2">&quot;propane&quot;</span><span class="p">]</span>
+
+<span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">CAS_from_any</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+
+<span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="o">/</span><span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">w</span>  <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PengRobinson78</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Envelope&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Tcs&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Pcs&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Critical point&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;T [K]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;P [bar]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_31_0.png" src="../_images/tutorial_more_calculations_31_0.png" />
+</div>
+</div>
+<p>We can take a point of the phase envelope and calculate the <span class="math notranslate nohighlight">\(tm\)</span> function at pressures sligthly above and slightly below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We take the high pressure point of the envelope closest to 250 K</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="n">closest_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Psat</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">][</span><span class="n">closest_index</span><span class="p">])</span>
+
+<span class="n">T_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Psat</span><span class="p">))</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">][</span><span class="n">T_index</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Envelope&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;P [bar]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;T [K]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">Psat</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_33_0.png" src="../_images/tutorial_more_calculations_33_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+36.295000810814706
+</pre></div></div>
+</div>
+<p>How would the <code class="docutils literal notranslate"><span class="pre">tm</span></code> function values compare in those three points? To know that, we will sweep on values of <span class="math notranslate nohighlight">\(\mathbf{w_1}\)</span> between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span> and plot the results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="n">Ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">Psat</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">Psat</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">P</span> <span class="ow">in</span> <span class="n">Ps</span><span class="p">:</span>
+    <span class="n">tms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">w1</span> <span class="ow">in</span> <span class="n">ws</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">w1</span><span class="p">]</span>
+        <span class="n">tm</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_tm</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">tms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tm</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">tms</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">P</span><span class="si">:</span><span class="s2">2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;w1&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;tm&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pressure [bar]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          Comparison of tm values at different pressures.</span>
+<span class="s2">          It is clear that above the saturation pressure the composition z is stable.</span>
+<span class="s2">          But, below the saturation pressure the composition z is unstable and another phase appears.</span>
+<span class="s2">          &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_35_0.png" src="../_images/tutorial_more_calculations_35_0.png" />
+</div>
+</div>
+<p>What if we have a ternary mixture?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">chemicals</span>
+
+<span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;methane&quot;</span><span class="p">,</span> <span class="s2">&quot;propane&quot;</span><span class="p">,</span> <span class="s2">&quot;n-butane&quot;</span><span class="p">]</span>
+
+<span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">CAS_from_any</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+
+<span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="o">/</span><span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">w</span>  <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PengRobinson78</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Envelope&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Tcs&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Pcs&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Critical point&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;P [bar]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;T [K]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_37_0.png" src="../_images/tutorial_more_calculations_37_0.png" />
+</div>
+</div>
+<p>We can make the stability anaylisis sweeping on the composition of two components (using <span class="math notranslate nohighlight">\(1 - w_1 - w_2\)</span> for the remaining one) at a specified <span class="math notranslate nohighlight">\(T\)</span> and <span class="math notranslate nohighlight">\(P\)</span>, and save the results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-15</span>
+<span class="n">npoints</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">w1s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">npoints</span><span class="p">)</span>
+<span class="n">w2s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">npoints</span><span class="p">)</span>
+<span class="n">tms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">npoints</span><span class="p">,</span> <span class="n">npoints</span><span class="p">))</span>
+<span class="n">tms</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">350</span>
+
+<span class="n">minval</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">w1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">w1s</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">w2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">w2s</span><span class="p">):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">w1</span> <span class="o">-</span> <span class="n">w2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">tm</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_tm</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tm</span> <span class="o">&lt;</span> <span class="n">minval</span><span class="p">:</span>
+            <span class="n">w_min</span> <span class="o">=</span> <span class="n">w</span>
+            <span class="n">minval</span> <span class="o">=</span> <span class="n">tm</span>
+        <span class="n">tms</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tm</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tms</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span>
+    <span class="n">tms</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">/</span><span class="mi">10</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)],</span>
+    <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test pahse&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w_min</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w_min</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;New phase&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$z_1$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$z_2$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_39_0.png" src="../_images/tutorial_more_calculations_39_0.png" />
+</div>
+</div>
+<p>It is easy to notice that finding a minima by sweeping variables becomes harder and harder as more components are added. Luckily, in <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> there is also the method <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> that will use specific procedures to find the possible minima in an efficient way.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stab_analysis</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_analysis</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+<span class="n">stab_analysis</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;w_min&#39;: array([0.65460666, 0.13648048, 0.20891286]),
+ &#39;tm_min&#39;: -0.15793334532739212,
+ &#39;all_mins_w&#39;: array([[0.65460666, 0.13648048, 0.20891286],
+        [0.20000002, 0.2       , 0.59999998],
+        [0.19999997, 0.2       , 0.60000003]])}
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> method returns a dictionary with three different keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">w_min</span></code>: The trial phase composition at the minimimum found value of <code class="docutils literal notranslate"><span class="pre">tm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tm_min</span></code>: The miniumum value of <code class="docutils literal notranslate"><span class="pre">tm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_mins_w</span></code>: All the trial phase composition that give a local minima. It will have each composition as a row, corresponding to each minimization intent. It is possible to see that in this case there is only one minima found different than that of the test phase.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Comparing the found w_min with the one obtained before by sweeping</span>
+<span class="c1"># the composition space</span>
+<span class="n">stab_analysis</span><span class="p">[</span><span class="s2">&quot;w_min&quot;</span><span class="p">],</span> <span class="n">w_min</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(array([0.65460666, 0.13648048, 0.20891286]),
+ [0.6546546546546547, 0.13613613613613612, 0.2092092092092092])
+</pre></div></div>
+</div>
 </section>
 
 

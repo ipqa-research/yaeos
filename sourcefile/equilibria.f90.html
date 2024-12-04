@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for source files.">11 statements</a>
+                 title=" 0.2% of total for source files.">12 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -156,35 +156,38 @@
       <section>
         <h2><span class="anchor" id="src"></span>Source Code</h2>
         <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="k">module </span><span class="n">yaeos__equilibria</span>
-<a id="ln-2" name="ln-2" href="#ln-2"></a>
+<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">   </span><span class="c">!! Module to handle phase equilibria calculations.</span>
 <a id="ln-3" name="ln-3" href="#ln-3"></a>
-<a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">   </span><span class="c">! Equilibrium State definitions</span>
-<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_equilibrium_state</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">EquilibriumState</span>
+<a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">   </span><span class="c">! Stability analysis</span>
+<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_stability</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">min_tpd</span>
 <a id="ln-6" name="ln-6" href="#ln-6"></a>
-<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">   </span><span class="c">! Pure component saturation pressure</span>
-<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_pure_psat</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Psat</span>
+<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">   </span><span class="c">! Equilibrium State definitions</span>
+<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_equilibrium_state</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">EquilibriumState</span>
 <a id="ln-9" name="ln-9" href="#ln-9"></a>
-<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">   </span><span class="c">! Phase split calculations</span>
-<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_flash</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">flash</span>
+<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">   </span><span class="c">! Pure component saturation pressure</span>
+<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_pure_psat</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Psat</span>
 <a id="ln-12" name="ln-12" href="#ln-12"></a>
-<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">   </span><span class="c">! Saturation points</span>
-<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_saturation_points</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:&amp;</span>
-<a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">      </span><span class="n">saturation_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_temperature</span>
-<a id="ln-16" name="ln-16" href="#ln-16"></a>
-<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">   </span><span class="c">! Critical points</span>
-<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_critical</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="p">&amp;</span>
-<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">      </span><span class="n">critical_line</span><span class="p">,</span><span class="w"> </span><span class="n">CriticalLine</span><span class="p">,</span><span class="w"> </span><span class="n">critical_point</span><span class="p">,</span><span class="w"> </span><span class="n">CPSpec</span>
-<a id="ln-20" name="ln-20" href="#ln-20"></a>
-<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">   </span><span class="c">! Phase equilibria boundaries</span>
-<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_boundaries_phase_envelopes_pt</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:&amp;</span>
-<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">      </span><span class="n">PTEnvel2</span><span class="p">,</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">,</span><span class="w"> </span><span class="n">find_hpl</span>
-<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_boundaries_phase_envelopes_px</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:&amp;</span>
-<a id="ln-25" name="ln-25" href="#ln-25"></a><span class="w">      </span><span class="n">PXEnvel2</span><span class="p">,</span><span class="w"> </span><span class="n">px_envelope_2ph</span>
-<a id="ln-26" name="ln-26" href="#ln-26"></a>
-<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">   </span><span class="c">! Extra</span>
-<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_auxiliar</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">k_wilson</span><span class="p">,</span><span class="w"> </span><span class="n">p_wilson</span>
-<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">   </span><span class="k">implicit none</span>
-<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="k">end module </span><span class="n">yaeos__equilibria</span>
+<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">   </span><span class="c">! Phase split calculations</span>
+<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_flash</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">flash</span>
+<a id="ln-15" name="ln-15" href="#ln-15"></a>
+<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">   </span><span class="c">! Saturation points</span>
+<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_saturation_points</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:&amp;</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">      </span><span class="n">saturation_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_temperature</span>
+<a id="ln-19" name="ln-19" href="#ln-19"></a>
+<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">   </span><span class="c">! Critical points</span>
+<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_critical</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">      </span><span class="n">critical_line</span><span class="p">,</span><span class="w"> </span><span class="n">CriticalLine</span><span class="p">,</span><span class="w"> </span><span class="n">critical_point</span><span class="p">,</span><span class="w"> </span><span class="n">spec_CP</span>
+<a id="ln-23" name="ln-23" href="#ln-23"></a>
+<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">   </span><span class="c">! Phase equilibria boundaries</span>
+<a id="ln-25" name="ln-25" href="#ln-25"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_boundaries_phase_envelopes_pt</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:&amp;</span>
+<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">      </span><span class="n">PTEnvel2</span><span class="p">,</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">,</span><span class="w"> </span><span class="n">find_hpl</span>
+<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_boundaries_phase_envelopes_px</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:&amp;</span>
+<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">      </span><span class="n">PXEnvel2</span><span class="p">,</span><span class="w"> </span><span class="n">px_envelope_2ph</span>
+<a id="ln-29" name="ln-29" href="#ln-29"></a>
+<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">   </span><span class="c">! Extra</span>
+<a id="ln-31" name="ln-31" href="#ln-31"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__equilibria_auxiliar</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">k_wilson</span><span class="p">,</span><span class="w"> </span><span class="n">p_wilson</span>
+<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">   </span><span class="k">implicit none</span>
+<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="k">end module </span><span class="n">yaeos__equilibria</span>
 </pre></div>
 
       </section>
@@ -206,7 +209,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-11-24 23:48 +0000             </p>
+ on 2024-12-04 23:53 +0000             </p>
           </div>
         </div>
         <br>

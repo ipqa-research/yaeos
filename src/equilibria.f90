@@ -1,5 +1,8 @@
 module yaeos__equilibria
+   !! Module to handle phase equilibria calculations.
 
+   ! Stability analysis
+   use yaeos__equilibria_stability, only: tm, min_tpd
 
    ! Equilibrium State definitions
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
@@ -16,7 +19,7 @@ module yaeos__equilibria
 
    ! Critical points
    use yaeos__equilibria_critical, only: &
-      critical_line, CriticalLine, critical_point, CPSpec
+      critical_line, CriticalLine, critical_point, spec_CP
 
    ! Phase equilibria boundaries
    use yaeos__equilibria_boundaries_phase_envelopes_pt, only:&

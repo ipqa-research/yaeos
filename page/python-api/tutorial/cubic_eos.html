@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cubic Equations of State &mdash; yaeos 2.0.0 documentation</title>
+  <title>Cubic Equations of State &mdash; yaeos 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/documentation_options.js?v=20623aea"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="instantiate_model.html">Instantiate a model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_calculations.html#Stability-analysis">Stability analysis</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cubic Equations of State</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Quadratic-mixing-rule-(QMR)">Quadratic mixing rule (QMR)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#QMR-with-temperature-dependance-of-k_{ij}">QMR with temperature dependance of <span class="math notranslate nohighlight">\(k_{ij}\)</span></a></li>
@@ -366,8 +367,8 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
-<span class="n">t0</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">150.0</span>
 <span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1"># Envelope with the model with HV and NRTL</span>
@@ -376,10 +377,10 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="p">)</span>
 
 <span class="c1"># Envelope with the model with MHV and NRTL</span>
-<span class="n">env_hv_nrtl</span> <span class="o">=</span> <span class="n">model_hv_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">env_hv_nrtl</span> <span class="o">=</span> <span class="n">model_hv_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Envelope with the model without kij and lij</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
@@ -389,6 +390,8 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure [bar]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">350</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -398,7 +401,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0, 0.5, &#39;Pressure [bar]&#39;)
+(0.0, 150.0)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 2.0.0 documentation</title>
+  <title>yaeos.core &mdash; yaeos 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../../_static/documentation_options.js?v=20623aea"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1214,12 +1214,77 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
+<div class="viewcode-block" id="ArModel.stability_analysis">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.stability_analysis">[docs]</a>
+    <span class="k">def</span> <span class="nf">stability_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform stability analysis.</span>
+
+<span class="sd">        Find all the possible minima values that the :math:`tm` function,</span>
+<span class="sd">        defined by Michelsen and Møllerup.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Stability analysis result dictionary with keys:</span>
+<span class="sd">                - w_min: </span>
+<span class="sd">                    value of the test phase that minimizes</span>
+<span class="sd">                    the :math:`tm` function</span>
+<span class="sd">                - tm_min: </span>
+<span class="sd">                    minimum value of the :math:`tm` function</span>
+<span class="sd">                - all_mins_w: </span>
+<span class="sd">                    all values of :math:`w` that minimize the </span>
+<span class="sd">                    :math:`tm` function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">w_min</span><span class="p">,</span> <span class="n">tm_min</span><span class="p">,</span> <span class="n">all_mins_w</span><span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">stability_zpt</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;w_min&quot;</span><span class="p">:</span> <span class="n">w_min</span><span class="p">,</span> <span class="s2">&quot;tm_min&quot;</span><span class="p">:</span> <span class="n">tm_min</span><span class="p">,</span> <span class="s2">&quot;all_mins_w&quot;</span><span class="p">:</span> <span class="n">all_mins_w</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ArModel.stability_tm">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.stability_tm">[docs]</a>
+    <span class="k">def</span> <span class="nf">stability_tm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the :math:`tm` function.</span>
+
+<span class="sd">        Calculate the :math:`tm` function, defined by Michelsen and Møllerup.</span>
+<span class="sd">        If this value is negative, it means that the feed with composition `z`</span>
+<span class="sd">        is unstable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        w : array_like</span>
+<span class="sd">            Test Phase mole fractions </span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Value of the :math:`tm` function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">tm</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ArModel.critical_point">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.critical_point">[docs]</a>
     <span class="k">def</span> <span class="nf">critical_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Critical point calculation.</span>
 
-<span class="sd">        Calculate the critical point of a mixture. At a given composition</span>
+<span class="sd">        Calculate the critical point of a mixture. At a given composition.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1235,7 +1300,6 @@
 <span class="sd">                - Pc: critical pressure [bar]</span>
 <span class="sd">                - Vc: critical volume [L]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">critical_point</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spec</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="n">max_iters</span>
         <span class="p">)</span>

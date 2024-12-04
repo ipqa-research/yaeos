@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Module &mdash; yaeos 2.0.0 documentation</title>
+  <title>Core Module &mdash; yaeos 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=51b770b3"></script>
+      <script src="_static/documentation_options.js?v=20623aea"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,6 +74,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_pressure()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_temperature"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_temperature()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_analysis"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_analysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_tm"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_tm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_point"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_point()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_line"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_line()</span></code></a></li>
 </ul>
@@ -913,10 +915,80 @@ defaults to “bubble”. Options are
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.stability_analysis">
+<span class="sig-name descname"><span class="pre">stability_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.stability_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.stability_analysis" title="Link to this definition"></a></dt>
+<dd><p>Perform stability analysis.</p>
+<p>Find all the possible minima values that the <span class="math notranslate nohighlight">\(tm\)</span> function,
+defined by Michelsen and Møllerup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Stability analysis result dictionary with keys:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>w_min:</dt><dd><p>value of the test phase that minimizes
+the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tm_min:</dt><dd><p>minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>all_mins_w:</dt><dd><p>all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the
+<span class="math notranslate nohighlight">\(tm\)</span> function</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.stability_tm">
+<span class="sig-name descname"><span class="pre">stability_tm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.stability_tm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.stability_tm" title="Link to this definition"></a></dt>
+<dd><p>Calculate the <span class="math notranslate nohighlight">\(tm\)</span> function.</p>
+<p>Calculate the <span class="math notranslate nohighlight">\(tm\)</span> function, defined by Michelsen and Møllerup.
+If this value is negative, it means that the feed with composition <cite>z</cite>
+is unstable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – Test Phase mole fractions</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.critical_point">
 <span class="sig-name descname"><span class="pre">critical_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_point" title="Link to this definition"></a></dt>
 <dd><p>Critical point calculation.</p>
-<p>Calculate the critical point of a mixture. At a given composition</p>
+<p>Calculate the critical point of a mixture. At a given composition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

@@ -142,7 +142,31 @@
       </div>
 
     <div class="col-9" id='text'>
-      <h1 id="unifac">UNIFAC</h1>
+      <div class="toc">
+<ul>
+<li><a href="#unifac">UNIFAC</a><ul>
+<li><a href="#combinatorial-term-derivatives">Combinatorial term derivatives</a><ul>
+<li><a href="#flory-huggins">Flory-Huggins</a></li>
+<li><a href="#staverman-guggenheim">Staverman-Guggenheim</a></li>
+<li><a href="#fredenslund-et-al-unifac">Fredenslund et al. (UNIFAC)</a></li>
+</ul>
+</li>
+<li><a href="#residual-terms-derivatives">Residual terms derivatives</a><ul>
+<li><a href="#the-compositional-derivatives">The compositional derivatives:</a></li>
+<li><a href="#the-temperature-derivatives">The temperature derivatives:</a></li>
+<li><a href="#temperature-compositional-cross-derivative">Temperature-compositional cross derivative:</a></li>
+</ul>
+</li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#calculating-activity-coefficients">Calculating activity coefficients</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<h1 id="unifac">UNIFAC</h1>
 <p><a href="../../../type/unifac.html">UNIFAC</a> (UNIQUAC Functional-group Activity Coefficients) is an Excess Gibbs
 free energy model used to estimate activity coefficients in non-ideal mixtures.
 It is particularly useful for predicting the phase behavior of chemical
@@ -155,14 +179,10 @@ from the contribution of a combinatorial term and a residual term.</p>
 <p>Being:</p>
 <ul>
 <li>
-<p>Combinatorial: Accounts for the size and shape of the molecules. The involved
-equations can be checked in the API documentation:
-<a href="../../../proc/ge_combinatorial.html">Ge_combinatorial</a></p>
+<p>Combinatorial: Accounts for the size and shape of the molecules.</p>
 </li>
 <li>
-<p>Residual: Accounts for the energy interactions between different functional
-groups. The involved equations can be checked in the API documentation:
-<a href="../../../proc/ge_residual.html">Ge_residual</a></p>
+<p>Residual: Accounts for the energy interactions between different functional groups.</p>
 </li>
 </ul>
 <p>Each substance of a mixture modeled with <a href="../../../type/unifac.html">UNIFAC</a> must be represented by a
@@ -170,11 +190,231 @@ list a functional groups and other list with the ocurrence of each functional
 group on the substance. The list of the functional groups culd be accesed on
 the DDBST web page:
 <a href="https://www.ddbst.com/published-parameters-unifac.html">https://www.ddbst.com/published-parameters-unifac.html</a></p>
-<h1 id="examples">Examples</h1>
-<h2 id="calculating-activity-coefficients">Calculating activity coefficients</h2>
-<p>We can instantiate a <a href="../../../type/unifac.html">UNIFAC</a> model with a mixture  ethanol-water and
-evaluate the logarithm of activity coefficients of the model for a 0.5 mole
-fraction of each, and a temperature of 298.0 K.</p>
+<h2 id="combinatorial-term-derivatives">Combinatorial term derivatives</h2>
+<p>Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
+The subroutine uses the Flory-Huggins and Staverman-Guggenheim
+combinatory terms as follows:</p>
+<h3 id="flory-huggins">Flory-Huggins</h3>
+<p>
+<script type="math/tex; mode=display">
+   G^{E,FH} =
+   RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i
+   - n \, \text{ln} \, \sum_j^{NC} n_j r_j
+   + n \, \text{ln} \, n \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{dG^{E,FH}}{dn_i} =
+   RT \left(\text{ln} \, r_i - \text{ln} \, \sum_j^{NC} n_j r_j
+   + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle
+   \sum_j^{NC} n_j r_j} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{d^2G^{E,FH}}{dn_i dn_j} =
+   RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l}
+   + \frac{1}{n} + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC}
+   n_l r_l \right)^2} \right)
+</script>
+</p>
+<h3 id="staverman-guggenheim">Staverman-Guggenheim</h3>
+<p>
+<script type="math/tex; mode=display">
+   \frac{G^{E,SG}}{RT} =
+   \frac{z}{2} \sum_i^{NC} n_i q_i
+   \left(\text{ln} \frac{q_i}{r_i}
+   - \text{ln} \, \sum_j^{NC} n_j q_j
+   + \text{ln} \, \sum_j^{NC} n_j r_j \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{1}{RT}\frac{dG^{E,SG}}{dn_i} =
+   \frac{z}{2} q_i \left(
+   - \text{ln} \, \left(
+   \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC}
+   n_j r_j} \right) - 1 + \frac{\displaystyle r_i \sum_j^{NC} n_j
+   q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{1}{RT}\frac{d^2G^{E,SG}}{dn_i dn_j} =
+   \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_lq_l}
+   + \frac{q_i r_j + q_j r_i}{\displaystyle \sum_l^{NC} n_l r_l}
+   - \frac{\displaystyle r_i r_j \sum_l^{NC} n_l q_l}
+   {\left(\displaystyle \sum_l^{NC} n_l r_l \right)^2} \right)
+</script>
+</p>
+<h3 id="fredenslund-et-al-unifac">Fredenslund et al. (UNIFAC)</h3>
+<p>
+<script type="math/tex; mode=display">
+   \frac{G^{E,\text{UNIFAC}}}{RT} =
+   \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
+</script>
+</p>
+<h2 id="residual-terms-derivatives">Residual terms derivatives</h2>
+<p>Evaluate the UNIFAC residual term. The residual Gibbs excess energy
+and its derivatives are evaluated as:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
+ (\Lambda_k - \Lambda_k^i)
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
+ {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
+</script>
+</p>
+<p>In the UNIFAC model, the <script type="math/tex">\Theta_j^i </script> values are calculated assuming
+that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molecule
+&ldquo;i&rdquo; must be considered for the calculation. On the other hand, for the
+<script type="math/tex">\Theta_j </script> values, all the system&rsquo;s subgroups are considered.</p>
+<h3 id="the-compositional-derivatives">The compositional derivatives:</h3>
+<p>
+<script type="math/tex; mode=display">
+ \frac{1}{R T} \frac{\partial G^{E,R}}{\partial n_\alpha} =
+ - \sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\Lambda_k -
+ \Lambda_k^\alpha \right) - \sum_i^{\mathrm{NC}} n_i
+ \sum_k^{\mathrm{NG}} v_k^i Q_k
+ \frac{\partial \Lambda_k}{\partial n_\alpha}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_
+ \alpha \partial n_\beta} = -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha
+ \frac{\partial \Lambda_k}{\partial n_\beta} + v_k^\beta
+ \frac{\partial \Lambda_k}{\partial n_\alpha}\right)
+ - \sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
+ \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \Lambda_k}{\partial n_\alpha}
+ = \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}}
+ {\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+ E_{j k}} - \frac{\sum_m^{\mathrm{NG}} v_m^\alpha Q_m}
+ {\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+ = - \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}\right)
+ \left(\sum_j^{\mathrm{NG}} v_j^\beta Q_j E_{j k}\right)}
+ {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+ E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
+ Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
+ {\left(\sum_l^{\mathrm{NC}} n_l
+ \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
+</script>
+</p>
+<h3 id="the-temperature-derivatives">The temperature derivatives:</h3>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} =
+ -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+ \left(\frac{\partial \Lambda_k}{\partial T}
+ -\frac{\partial \Lambda_k^i}{\partial T}\right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
+ -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+ \left(\frac{\partial^2 \Lambda_k}{\partial T^2} -
+ \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \Lambda_k}{\partial T} =
+ \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
+ {\sum_{j}^{NG} \Theta_j E_{jk}}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \Lambda_k^i}{\partial T} =
+ \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
+ {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k}{\partial T^2} =
+ \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
+ {\sum_{j}^{NG} \Theta_j E_{jk}}
+ - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k^i}{\partial T^2} =
+ \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
+ {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+ - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
+</script>
+</p>
+<h3 id="temperature-compositional-cross-derivative">Temperature-compositional cross derivative:</h3>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
+ {\partial n_\alpha \partial T}=
+ -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
+ {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right)
+ -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right)
+ Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T} =
+ \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \frac{\partial
+ \tilde{E}_{j k}}{\partial T}}{\sum_l^{\mathrm{NC}} n_l
+ \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}} -
+ \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \tilde{E}_{j k}\right)
+ \left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+ \frac{\partial \tilde{E}_{j k}}{\partial T}\right)}
+ {\left(\sum_l^{\mathrm{NC}} n_l
+ \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}\right)^2}
+</script>
+</p>
+<h2 id="examples">Examples</h2>
+<h3 id="calculating-activity-coefficients">Calculating activity coefficients</h3>
+<p>We can instantiate a <a href="../../../type/unifac.html">UNIFAC</a> model with a mixture ethanol-water and evaluate
+the logarithm of activity coefficients of the model for a 0.5 mole fraction of
+each, and a temperature of 298.0 K.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
 <span class="k">use </span><span class="n">yaeos__models_ge_group_contribution_unifac</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span>
 
@@ -240,7 +480,7 @@ extension. Industrial &amp; Engineering Chemistry Research, 30 (10), 2352–2355
 UNIFAC Group Contribution. 6. Revision and Extension. Industrial &amp; Engineering
 Chemistry Research, 42(1), 183–188.
 <a href="https://doi.org/10.1021/ie020506l">https://doi.org/10.1021/ie020506l</a></li>
-<li><a href="https://github.com/thermotools/thermopack">SINTEF - Thermopack</a></li>
+<li><a href="https://github.com/termotools/thermopack">SINTEF - Thermopack</a></li>
 </ol>
     </div>
   </div>
@@ -259,7 +499,7 @@ Chemistry Research, 42(1), 183–188.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-11-24 23:48 +0000             </p>
+ on 2024-12-04 23:53 +0000             </p>
           </div>
         </div>
         <br>

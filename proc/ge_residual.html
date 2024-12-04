@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.6% of total for procedures.">174 statements</a>
+                 title=" 2.7% of total for procedures.">174 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -138,10 +138,10 @@
             <a class="list-group-item" href="../proc/ge_residual.html#variable-dt">dt</a>
             <a class="list-group-item" href="../proc/ge_residual.html#variable-dt2">dt2</a>
             <a class="list-group-item" href="../proc/ge_residual.html#variable-dtn">dtn</a>
-            <a class="list-group-item" href="../proc/ge_residual.html#variable-i~24">i</a>
-            <a class="list-group-item" href="../proc/ge_residual.html#variable-j~15">j</a>
-            <a class="list-group-item" href="../proc/ge_residual.html#variable-k~5">k</a>
-            <a class="list-group-item" href="../proc/ge_residual.html#variable-l~3">l</a>
+            <a class="list-group-item" href="../proc/ge_residual.html#variable-i~17">i</a>
+            <a class="list-group-item" href="../proc/ge_residual.html#variable-j~10">j</a>
+            <a class="list-group-item" href="../proc/ge_residual.html#variable-k~2">k</a>
+            <a class="list-group-item" href="../proc/ge_residual.html#variable-l">l</a>
             <a class="list-group-item" href="../proc/ge_residual.html#variable-lambda_ik">lambda_ik</a>
             <a class="list-group-item" href="../proc/ge_residual.html#variable-lambda_k">lambda_k</a>
             <a class="list-group-item" href="../proc/ge_residual.html#variable-pge~2">pge</a>
@@ -192,167 +192,14 @@
     
 
     <h1 id="unifac-residual-term">UNIFAC residual term</h1>
-<p>Evaluate the UNIFAC residual therm</p>
-<h1 id="description">Description</h1>
-<p>Evaluate the UNIFAC residual therm. The residual Gibbs excess energy
-and its derivatives are evaluated as:</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
- (\Lambda_k - \Lambda_k^i)
-</script>
-</p>
-<p>With:</p>
-<p>
-<script type="math/tex; mode=display">
- \Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
- {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
-</script>
-</p>
-<p>In the UNIFAC model, the <script type="math/tex">\Theta_j^i </script> values are calculated assuming
-that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molecule
-&ldquo;i&rdquo; must be considered for the calculation. On the other hand, for the
-<script type="math/tex">\Theta_j </script> values, all the system&rsquo;s subgroups are considered.</p>
-<h5 id="the-compositional-derivatives">The compositional derivatives:</h5>
-<p>
-<script type="math/tex; mode=display">
- \frac{1}{R T} \frac{\partial G^{E,R}}{\partial n_\alpha} =
- - \sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\Lambda_k -
- \Lambda_k^\alpha \right) - \sum_i^{\mathrm{NC}} n_i
- \sum_k^{\mathrm{NG}} v_k^i Q_k
- \frac{\partial \Lambda_k}{\partial n_\alpha}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_
- \alpha \partial n_\beta} = -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha
- \frac{\partial \Lambda_k}{\partial n_\beta} + v_k^\beta
- \frac{\partial \Lambda_k}{\partial n_\alpha}\right)
- - \sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
- \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
-</script>
-</p>
-<p>With:</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial \Lambda_k}{\partial n_\alpha}
- = \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}}
- {\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
- E_{j k}} - \frac{\sum_m^{\mathrm{NG}} v_m^\alpha Q_m}
- {\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
- = - \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}\right)
- \left(\sum_j^{\mathrm{NG}} v_j^\beta Q_j E_{j k}\right)}
- {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
- E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
- Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
- {\left(\sum_l^{\mathrm{NC}} n_l
- \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
-</script>
-</p>
-<h5 id="the-temperature-derivatives">The temperature derivatives:</h5>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} =
- -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
- \left(\frac{\partial \Lambda_k}{\partial T}
- -\frac{\partial \Lambda_k^i}{\partial T}\right)
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
- -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
- \left(\frac{\partial^2 \Lambda_k}{\partial T^2} -
- \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
-</script>
-</p>
-<p>With:</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial \Lambda_k}{\partial T} =
- \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
- {\sum_{j}^{NG} \Theta_j E_{jk}}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial \Lambda_k^i}{\partial T} =
- \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
- {\sum_{j}^{NG} \Theta_j^i E_{jk}}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial^2 \Lambda_k}{\partial T^2} =
- \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
- {\sum_{j}^{NG} \Theta_j E_{jk}}
- - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial^2 \Lambda_k^i}{\partial T^2} =
- \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
- {\sum_{j}^{NG} \Theta_j^i E_{jk}}
- - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
-</script>
-</p>
-<h5 id="temperature-compositional-cross-derivative">Temperature-compositional cross derivative:</h5>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
- {\partial n_\alpha \partial T}=
- -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
- {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right)
- -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right)
- Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
-</script>
-</p>
-<p>With:</p>
-<p>
-<script type="math/tex; mode=display">
- \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T} =
- \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \frac{\partial
- \tilde{E}_{j k}}{\partial T}}{\sum_l^{\mathrm{NC}} n_l
- \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}} -
- \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \tilde{E}_{j k}\right)
- \left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
- \frac{\partial \tilde{E}_{j k}}{\partial T}\right)}
- {\left(\sum_l^{\mathrm{NC}} n_l
- \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}\right)^2}
-</script>
-</p>
+<p>Evaluate the UNIFAC residual term</p>
 <h1 id="references">References</h1>
 <ol>
 <li><a href="https://github.com/thermotools/thermopack">SINTEF - Thermopack</a></li>
 </ol>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/unifac.html'>UNIFAC</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -367,7 +214,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~15"></span>
+              <span class="anchor" id="variable-self~5"></span>
               class(<a href='../type/unifac.html'>UNIFAC</a>)
             </td>
 <td></td>
@@ -382,7 +229,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~35"></span>
+              <span class="anchor" id="variable-n~23"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -397,7 +244,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~27"></span>
+              <span class="anchor" id="variable-t~15"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -412,7 +259,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~6"></span>
+              <span class="anchor" id="variable-ge~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -870,7 +717,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~24"></span>
+              <span class="anchor" id="variable-i~17"></span>
               integer,
             </td>
               <td>public</td>
@@ -887,7 +734,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~15"></span>
+              <span class="anchor" id="variable-j~10"></span>
               integer,
             </td>
               <td>public</td>
@@ -904,7 +751,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~5"></span>
+              <span class="anchor" id="variable-k~2"></span>
               integer,
             </td>
               <td>public</td>
@@ -921,7 +768,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~3"></span>
+              <span class="anchor" id="variable-l"></span>
               integer,
             </td>
               <td>public</td>
@@ -1241,7 +1088,7 @@ that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molec
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-11-24 23:48 +0000             </p>
+ on 2024-12-04 23:53 +0000             </p>
           </div>
         </div>
         <br>

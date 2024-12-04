@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 4.8% of total for derived types.</p>Including implementation: 56 statements,  1.6% of total for derived types.">15 statements</a>
+                 title="<p> 5.8% of total for derived types.</p>Including implementation: 272 statements,  7.7% of total for derived types.">17 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -123,13 +123,13 @@
             <a class="list-group-item" href="../type/unifac.html#variable-group_volume">group_volume</a>
             <a class="list-group-item" href="../type/unifac.html#variable-groups_stew">groups_stew</a>
             <a class="list-group-item" href="../type/unifac.html#variable-molecules~2">molecules</a>
-            <a class="list-group-item" href="../type/unifac.html#variable-ngroups~3">ngroups</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-ngroups">ngroups</a>
             <a class="list-group-item" href="../type/unifac.html#variable-nmolecules">nmolecules</a>
-            <a class="list-group-item" href="../type/unifac.html#variable-psi_function~2">psi_function</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-psi_function">psi_function</a>
             <a class="list-group-item" href="../type/unifac.html#variable-qk">qk</a>
             <a class="list-group-item" href="../type/unifac.html#variable-thetas_ij">thetas_ij</a>
             <a class="list-group-item" href="../type/unifac.html#variable-vij">vij</a>
-            <a class="list-group-item" href="../type/unifac.html#variable-z~19">z</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-z~10">z</a>
         </div>
       </div>
     </div>
@@ -156,7 +156,9 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/unifac.html#boundprocedure-excess_gibbs~2">excess_gibbs</a>
+            <a class="list-group-item" href="../type/unifac.html#boundprocedure-ge_combinatorial">Ge_combinatorial</a>
+            <a class="list-group-item" href="../type/unifac.html#boundprocedure-ge_residual">Ge_residual</a>
+            <a class="list-group-item" href="../type/unifac.html#boundprocedure-excess_gibbs">excess_gibbs</a>
             <a class="list-group-item" href="../type/unifac.html#boundprocedure-ln_activity_coefficient">ln_activity_coefficient</a>
         </div>
       </div>
@@ -348,7 +350,7 @@ Engineering Chemistry Research, 42(1), 183–188.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ngroups~3"></span>
+              <span class="anchor" id="variable-ngroups"></span>
               integer,
             </td>
               <td>public</td>
@@ -382,7 +384,7 @@ Engineering Chemistry Research, 42(1), 183–188.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-psi_function~2"></span>
+              <span class="anchor" id="variable-psi_function"></span>
               class(<a href='psifunction.html'>PsiFunction</a>),
             </td>
               <td>public,</td>
@@ -450,7 +452,7 @@ Engineering Chemistry Research, 42(1), 183–188.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~19"></span>
+              <span class="anchor" id="variable-z~10"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -478,7 +480,324 @@ Engineering Chemistry Research, 42(1), 183–188.
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-excess_gibbs~2"></span>
+      <span class="anchor" id="boundprocedure-ge_combinatorial"></span>
+      <h3>
+          procedure, public ::
+  <strong>Ge_combinatorial</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/ge_combinatorial.html'>Ge_combinatorial</a>(self, n, T, Ge, dGe_dn, dGe_dn2)  
+</h3>
+    
+
+  <p>Calculate the UNIFAC combinatorial term of Gibbs excess energy</p><a href="../proc/ge_combinatorial.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='unifac.html'>UNIFAC</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(self%nmolecules)</td>
+            <td>
+<p>Moles vector [mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ge</strong></td>
+            <td>
+<p>Combinatorial Gibbs excess energy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dn</strong>(self%nmolecules)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dGe}{dn}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dn2</strong>(self%nmolecules,self%nmolecules)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2Ge}{dn^2}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-ge_residual"></span>
+      <h3>
+          procedure, public ::
+  <strong>Ge_residual</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/ge_residual.html'>Ge_residual</a>(self, n, T, Ge, dGe_dn, dGe_dn2, dGe_dT, dGe_dT2, dGe_dTn)  
+</h3>
+    
+
+  <p>Evaluate the UNIFAC residual term</p><a href="../proc/ge_residual.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='unifac.html'>UNIFAC</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(self%nmolecules)</td>
+            <td>
+<p>Moles vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ge</strong></td>
+            <td>
+<p>Residual Gibbs excess energy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dn</strong>(self%nmolecules)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{\partial G^{E,R}}{\partial n} </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dn2</strong>(self%nmolecules,self%nmolecules)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{\partial^2 G^{E,R}}{\partial n^2} </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{\partial G^{E,R}}{\partial T} </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dT2</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{\partial^2 G^{E,R}}{\partial T^2} </script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dGe_dTn</strong>(self%nmolecules)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{\partial^2 G^{E,R}}{\partial n \partial T} </script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-excess_gibbs"></span>
       <h3>
           procedure, public ::
   <strong>excess_gibbs</strong>
@@ -488,11 +807,11 @@ Engineering Chemistry Research, 42(1), 183–188.
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/excess_gibbs~2.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    public  subroutine <a href='../proc/excess_gibbs.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h3>
     
 
-  <p>Calculate the Gibbs excess energy of the UNIFAC model</p><a href="../proc/excess_gibbs~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Calculate the Gibbs excess energy of the UNIFAC model</p><a href="../proc/excess_gibbs.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -779,7 +1098,7 @@ Engineering Chemistry Research, 42(1), 183–188.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-11-24 23:48 +0000             </p>
+ on 2024-12-04 23:53 +0000             </p>
           </div>
         </div>
         <br>

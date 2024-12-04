@@ -180,17 +180,16 @@ the Python package manager <code>pip</code> with a simple:</p>
 <p>Or maybe you want a specific version:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
 <span class="n">stdlib</span><span class="o">=</span><span class="s2">&quot;*&quot;</span>
-<span class="n">yaeos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/ipqa-research/yaeos&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="p">=</span><span class="s2">&quot;0.1.0b2&quot;</span><span class="p">}</span>
+<span class="n">yaeos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/ipqa-research/yaeos&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="p">=</span><span class="s2">&quot;2.0.0&quot;</span><span class="p">}</span>
 </code></pre></div>
 
 <h1 id="setting-up-a-model">Setting up a model</h1>
 <p>On <code>yaeos</code> there is a series of models implemented, right now we include
 Residual Helmholtz energy models (like Cubic Equations of State), but plan on
 extening to a broader variety.</p>
-<p>In this example we&rsquo;ll show how a model in <code>yaeos</code> can be used. We&rsquo;ll take
-the <code>Peng-Robinson</code> equation of state as an example, but all the implemented
-models can be seen at <a href="../../module/yaeos__models.html">yaeos__models</a>. Inside
-your <code>app/main.f90</code> file use</p>
+<p>In this example we&rsquo;ll show how a model in <code>yaeos</code> can be used. We&rsquo;ll take the
+<code>Peng-Robinson</code> equation of state as an example, but all the implemented models
+can be seen at <a href="../../module/yaeos__models.html">yaeos__models</a>. Inside your <code>app/main.f90</code> file use</p>
 <div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">main</span>
 <span class="w">    </span><span class="k">use </span><span class="n">yaeos</span>
 
@@ -232,7 +231,7 @@ to be extensions of the previous one, before the <code>end program</code> senten
 <span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n_points</span>
 <span class="w">        </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="o">*</span><span class="n">dv</span><span class="w">  </span><span class="c">! Set new volume point</span>
 
-<span class="w">        </span><span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="c">! Calculate pressure</span>
+<span class="w">        </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="c">! Calculate pressure</span>
 
 <span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">p</span>
 <span class="w">    </span><span class="k">end do</span>
@@ -243,11 +242,9 @@ to be extensions of the previous one, before the <code>end program</code> senten
 can be easily accessed as optional arguments of the routine. For example, to 
 obtain the derivative of pressure with respect to volume the line that
 calculates pressure should be changed to:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dpdv</span><span class="o">=</span><span class="n">dpdv</span><span class="p">)</span><span class="w"> </span><span class="c">! Calculate pressure and dPdV</span>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dpdv</span><span class="o">=</span><span class="n">dpdv</span><span class="p">)</span><span class="w"> </span><span class="c">! Calculate pressure and dPdV</span>
 </code></pre></div>
 
-<p>The available thermodynamic properties to calculate can be seen at the
-<a>yaeos__thermoprops</a> module.</p>
 <h1 id="phase-equilibria">Phase equilibria</h1>
     </div>
   </div>
@@ -266,7 +263,7 @@ calculates pressure should be changed to:</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-11-24 23:48 +0000             </p>
+ on 2024-12-04 23:53 +0000             </p>
           </div>
         </div>
         <br>

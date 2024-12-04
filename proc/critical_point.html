@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.9% of total for procedures.">64 statements</a>
+                 title=" 1.1% of total for procedures.">74 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,19 +118,19 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/critical_point.html#variable-f~2">F</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-p~6">P</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-t~6">T</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-v~6">V</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-x~6">X</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-dx">dX</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-df">df</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-i~4">i</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-l">l</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-ns~6">ns</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-f~6">F</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-p~16">P</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-t~21">T</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-v~17">V</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-x~18">X</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-dx~2">dX</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-df~5">df</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-i~23">i</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-l~2">l</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-ns~17">ns</a>
             <a class="list-group-item" href="../proc/critical_point.html#variable-u~6">u</a>
             <a class="list-group-item" href="../proc/critical_point.html#variable-u_new~3">u_new</a>
-            <a class="list-group-item" href="../proc/critical_point.html#variable-z~5">z</a>
+            <a class="list-group-item" href="../proc/critical_point.html#variable-z~15">z</a>
         </div>
       </div>
     </div>
@@ -180,7 +180,19 @@
 <h2 id="description">Description</h2>
 <p>Calculates a single critical point of a mixture using a Newton-Raphson
 method. It is possible to specify different variables to be fixed with
-the <code>spec</code> argument. </p>
+the <code>spec</code> argument, the <code>spec_CP</code> variable helps when selecting the
+specified variable.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="default-behaviour">Default behaviour</h3>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="n">cp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_point</span><span class="p">(&amp;</span>
+<span class="w">       </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">=</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="n">spec</span><span class="o">=</span><span class="n">spec_CP</span><span class="p">%</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="specifiying-another-variable">Specifiying another variable</h3>
+<p>The natural variables are a, lnV, lnT and lnP. So it is important to
+specify the variable in logaritmic scale if that is the case.</p>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="n">cp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_point</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">=</span><span class="nb">log</span><span class="p">(</span><span class="mi">20</span><span class="mf">0._pr</span><span class="p">),</span><span class="w"> </span><span class="n">spec</span><span class="o">=</span><span class="n">spec_CP</span><span class="p">%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</code></pre></div>
 
 
     <h3>Arguments</h3>
@@ -196,7 +208,7 @@ the <code>spec</code> argument. </p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~5"></span>
+              <span class="anchor" id="variable-model~12"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -211,7 +223,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~6"></span>
+              <span class="anchor" id="variable-z0~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -241,7 +253,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-spec"></span>
+              <span class="anchor" id="variable-spec~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -256,7 +268,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~5"></span>
+              <span class="anchor" id="variable-s~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -271,7 +283,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters"></span>
+              <span class="anchor" id="variable-max_iters~5"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -371,7 +383,7 @@ the <code>spec</code> argument. </p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~2"></span>
+              <span class="anchor" id="variable-f~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -388,7 +400,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~6"></span>
+              <span class="anchor" id="variable-p~16"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -405,7 +417,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~6"></span>
+              <span class="anchor" id="variable-t~21"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -422,7 +434,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~6"></span>
+              <span class="anchor" id="variable-v~17"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -439,7 +451,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~6"></span>
+              <span class="anchor" id="variable-x~18"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -456,7 +468,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx"></span>
+              <span class="anchor" id="variable-dx~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -473,7 +485,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df"></span>
+              <span class="anchor" id="variable-df~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -490,7 +502,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~4"></span>
+              <span class="anchor" id="variable-i~23"></span>
               integer,
             </td>
               <td>public</td>
@@ -507,7 +519,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l"></span>
+              <span class="anchor" id="variable-l~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -524,7 +536,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~6"></span>
+              <span class="anchor" id="variable-ns~17"></span>
               integer,
             </td>
               <td>public</td>
@@ -575,7 +587,7 @@ the <code>spec</code> argument. </p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~5"></span>
+              <span class="anchor" id="variable-z~15"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -623,7 +635,7 @@ the <code>spec</code> argument. </p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-11-24 23:48 +0000             </p>
+ on 2024-12-04 23:53 +0000             </p>
           </div>
         </div>
         <br>
