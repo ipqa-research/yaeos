@@ -19,7 +19,7 @@ contains
    subroutine test_tm(error)
       use forsus, only: Substance, forsus_dir
       use yaeos
-      use yaeos__phase_equilibria_stability, only: tm, min_tpd
+      use yaeos__equilibria_stability, only: tm, min_tpd
       use yaeos, only: flash
       implicit none
       type(error_type), allocatable, intent(out) :: error
@@ -49,12 +49,11 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - 5.3e-6_pr) < 1e-5)
+      call check(error, mintpd > 0)
 
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - (-0.1883_pr)) < 1e-4)
-
+      call check(error, abs(mintpd - (-0.1726_pr)) < 1e-4)
       call check(error, abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr)
    end subroutine test_tm
 

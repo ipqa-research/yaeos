@@ -1,5 +1,8 @@
 module yaeos__equilibria
+   !! Module to handle phase equilibria calculations.
 
+   ! Stability analysis
+   use yaeos__equilibria_stability, only: tm, min_tpd
 
    ! Equilibrium State definitions
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState

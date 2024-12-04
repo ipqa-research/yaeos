@@ -42,6 +42,7 @@ module yaeos_c
    public :: saturation_pressure, saturation_temperature
    public :: pt2_phase_envelope
    public :: critical_point, critical_line
+   public :: stability_zpt, tm
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -473,12 +474,19 @@ contains
       type(EquilibriumState) :: crit
 
       S = 0
-      crit = fcritical_point(model=ar_models(id)%model, z0=z0, zi=zi, S=S, spec=spec, max_iters=max_iters)
+      crit = fcritical_point(&
+         model=ar_models(id)%model, z0=z0, zi=zi, &
+         S=S, spec=spec, max_iters=max_iters &
+      )
       call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
    end subroutine critical_point
 
-   subroutine critical_line(id, a0, da0, z0, zi, max_points, as, Vs, Ts, Ps)
-      use yaeos, only: EquilibriumState, CriticalLine, fcritical_line => critical_line
+   subroutine critical_line(&
+         id, a0, da0, &
+         z0, zi, max_points, &
+         as, Vs, Ts, Ps)
+      use yaeos, only: EquilibriumState, CriticalLine, &
+         fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
@@ -499,7 +507,10 @@ contains
       Ps = makenan()
       Vs = makenan()
 
-      cl = fcritical_line(model=ar_models(id)%model, a0=a0, z0=z0, zi=zi, ds0=da0)
+      cl = fcritical_line(&
+         model=ar_models(id)%model, a0=a0, &
+         z0=z0, zi=zi, &
+         ns=spec_CP%a, S=a0, ds0=da0)
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
@@ -614,7 +625,7 @@ contains
       else
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
       end if
-      call equilibria_state_to_arrays(sat, x, y, T, aux, Vx, Vy, beta)
+      call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
    end subroutine saturation_temperature
 
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
@@ -730,6 +741,30 @@ contains
          end do
       end if
    end subroutine flash_grid
+
+   subroutine stability_zpt(id, z, P, T, w_min, tm_val) !, all_mins)
+      use yaeos, only: min_tpd
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), P, T
+      real(c_double), intent(out) :: w_min(size(z))
+      real(c_double), intent(out) :: tm_val
+      ! real(c_double), intent(out) :: all_mins(size(z), size(z))
+
+      print *, id
+
+      call min_tpd(&
+         ar_models(id)%model, z=z, P=P, T=T, &
+         mintpd=tm_val, w=w_min)!, all_minima=all_mins)
+   end subroutine
+
+   subroutine tm(id, z, w, P, T, tm_value)
+      use yaeos, only: ftm => tm
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), w(size(z)), P, T
+      real(c_double), intent(out) :: tm_value
+
+      tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
+   end subroutine
 
    ! ==========================================================================
    ! Auxiliar
