@@ -26,28 +26,40 @@ program main
    real(pr) :: F(3), X(3)
    integer :: i, j
 
+   integer :: unit_cl
+   integer :: unit_pt
+   integer :: unit_pt_cp, unit_pt_hpl
+
    model = get_model()
 
-   a = real(1, pr)/100._pr
+   open(newunit=unit_cl, file="tmp/cl.dat")
+   open(newunit=unit_pt, file="tmp/pt.dat")
+   open(newunit=unit_pt_cp, file="tmp/pt_cp.dat")
+   open(newunit=unit_pt_hpl, file="tmp/pt_hpl.dat")
+
    print *, "1stCL"
+   a = real(1, pr)/100._pr
    cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.1_pr)
+   print *, size(cl%a)
    do i=1, size(cl%a)
-      write(2, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
+      write(unit_cl, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
    end do
-   write (2, *)
-   write (2, *)
+   write (unit_cl, *)
+   write (unit_cl, *)
 
    print *, "2ndCL"
-   a = 0.001
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.01_pr)
+   a = 1-epsilon(1._pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=-0.01_pr)
+   print *, size(cl%a)
    do i=1, size(cl%a)
-      write(2, *) 1-cl%a(i), cl%V(i), cl%T(i), cl%P(i)
+      write(unit_cl, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
    end do
 
    z = a*zi + (1-a)*z0
    T = sum(model%components%Tc * z)
    P = sum(model%components%Pc * z)
    call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
+   
    X = [a, log(V), log(T)]
    ns = 1
    S = X(ns)
@@ -60,39 +72,34 @@ program main
    write(20, *) env
    write(21, *) env
 
-
-
-   open(unit=4, file="pt")
-   open(unit=60, file="pt_cp")
-   open(unit=61, file="pt_hpl")
-   
-!   !$OMP PARALLEL DO PRIVATE(j, a, z, sat, env, i) shared(model, z0, zi)
-   do j=9999999, 999999999, 1000000
-      print *, j
-      a = real(j, pr)/1000000000
+   !$OMP PARALLEL DO PRIVATE(j, a, z, sat, env, i) shared(model, z0, zi)
+   do j=1, 99, 3
+      a = real(j, pr)/100
       z = a*zi + (1-a)*z0
       sat = saturation_temperature(model, z, P=0.01_pr, kind="dew")
       env = pt_envelope_2ph(model, z, sat)
 
       do i=1,size(env%points)
-         write(4, *) a, env%points(i)%T, env%points(i)%P
+         write(unit_pt, *) a, env%points(i)%T, env%points(i)%P
       end do
-      write(4, *)
-      write(4, *)
+      write(unit_pt, *)
+      write(unit_pt, *)
       
-      write(60, *) a, env%cps
+      write(unit_pt_cp, *) a, env%cps
 
       env = find_hpl(model, z, t0=500._pr, P0=1000._pr)
       do i=1,size(env%points)
-         write(61, *) a, env%points(i)%T, env%points(i)%P
+         write(unit_pt_hpl, *) a, env%points(i)%T, env%points(i)%P
       end do
-      write(61, *)
-      write(61, *)
+      write(unit_pt_hpl, *)
+      write(unit_pt_hpl, *)
    end do
-!   !$OMP END PARALLEL DO
-   close(4)
-   close(60)
-   close(61)
+   !$OMP END PARALLEL DO
+
+   close(unit_cl)
+   close(unit_pt)
+   close(unit_pt_cp)
+   close(unit_pt_hpl)
 contains
 
    type(CubicEoS) function get_model()
