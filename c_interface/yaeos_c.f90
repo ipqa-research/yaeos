@@ -750,8 +750,6 @@ contains
       real(c_double), intent(out) :: tm_val
       real(c_double), intent(out) :: all_mins(size(z), size(z))
 
-      print *, id
-
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
          mintpd=tm_val, w=w_min, all_minima=all_mins)
