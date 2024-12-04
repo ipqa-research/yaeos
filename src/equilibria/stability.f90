@@ -1,11 +1,11 @@
-module yaeos__phase_equilibria_stability
+module yaeos__equilibria_stability
    !! # Phase Stability module
    !! Phase stability related calculations.
    !!
    !! # Description
    !! Contains the basics rotuines to make phase stability analysis for
    !! phase-equilibria detection.
-   !! 
+   !!
    !! - `tpd(model, z, w, P, T)`: reduced Tangent-Plane-Distance
    !! - `min_tpd(model, z, P, T, mintpd, w)`: Find minimal tpd for a multicomponent mixture
    !!
@@ -33,14 +33,6 @@ module yaeos__phase_equilibria_stability
    use yaeos__models_ar, only: ArModel
    implicit none
 
-   type, private :: TMOptimizeData
-      !! Data structure to hold the data for the `min_tpd` optimization
-      class(ArModel), pointer :: model
-      real(pr), allocatable :: z(:)
-      real(pr), allocatable :: di(:)
-      real(pr) :: P, T
-   end type
-
 contains
 
    real(pr) function tm(model, z, w, P, T, d, dtpd)
@@ -48,7 +40,7 @@ contains
       !! Michelsen's modified \(tpd\) function, \(tm\).
       !!
       !! # Description
-      !! Alternative formulation of the reduced tangent plane \(tpd\) function, 
+      !! Alternative formulation of the reduced tangent plane \(tpd\) function,
       !! where the test phase is defined in moles, which enables for unconstrained
       !! minimization.
       !! \[
@@ -93,12 +85,12 @@ contains
 
       call model%lnphi_pt(&
          w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
-      )
+         )
 
       if (.not. present(d)) then
          call model%lnphi_pt(&
             z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
-         )
+            )
          di = log(z) + lnphi_z
       else
          di = d
@@ -114,25 +106,25 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
-      use yaeos__optimizers_powell_wrap, only: PowellWrapper
       class(ArModel), target :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(out) :: w(:) !! Trial composition
       real(pr), intent(out) :: mintpd !! Minimal value of \(tm\)
-      real(pr), optional, intent(out) :: all_minima(:, :) 
-         !! All the found minima
-      type(PowellWrapper) :: opt
-      type(TMOptimizeData) :: data
+      real(pr), optional, intent(out) :: all_minima(:, :)
+      !! All the found minima
 
       real(pr) :: dx(size(w))
       real(pr) :: lnphi_z(size(z)), di(size(z))
 
-      real(pr) :: mins(size(w)), ws(size(w), size(w)), V
-      integer :: i
+      real(pr) :: lnphi_w(size(w))
+      real(pr) :: dw(size(w)), mins(size(w)), ws(size(w), size(w)), V
+      integer :: i, j
 
-      integer :: stat
+      integer :: nc, stat
+
+      nc = size(z)
 
       dx = 0.001_pr
 
@@ -144,23 +136,19 @@ contains
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
-
-      data%model => model
-      data%di = di
-      data%P = P
-      data%T = T
-      data%z = z
-
-      opt%parameter_step = dx
-      !$OMP PARALLEL DO PRIVATE(i, w, mintpd, stat) SHARED(opt, ws, mins)
-      do i=1,size(w)
-         w = 0.001_pr
-         w(i) = 0.999_pr
-         call opt%optimize(min_tpd_to_optimize, w, mintpd, data=data)
-         mins(i) = mintpd
+      do i=1,nc
+         w = 1e-10
+         w(i) = 1 - 1e-10
+         dw = 100
+         do while(maxval(abs(dw)) > 1e-7)
+            call model%lnphi_pt(w, P, T, root_type="stable", lnPhi=lnphi_w)
+            dw = exp(di - lnphi_w) - w
+            w = w + dw
+         end do
+         w = w/sum(w)
+         mins(i) = tm(model, z, w, P, T, d=di)
          ws(i, :) = w
       end do
-      !$OMP END PARALLEL DO
 
       i = minloc(mins, dim=1)
       mintpd = mins(i)
@@ -168,15 +156,4 @@ contains
 
       if(present(all_minima)) all_minima = ws
    end subroutine min_tpd
-
-   subroutine min_tpd_to_optimize(X, F, dF, data)
-      real(pr), intent(in) :: X(:)
-      real(pr), intent(out) :: F
-      real(pr), optional, intent(out) :: dF(:)
-      class(*), optional, intent(in out) :: data
-      select type(data)
-      type is (TMOptimizeData)
-         F = tm(data%model, data%z, X, data%P, data%T, d=data%di)
-      end select
-   end subroutine
-end module yaeos__phase_equilibria_stability
+end module yaeos__equilibria_stability

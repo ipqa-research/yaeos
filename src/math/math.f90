@@ -91,6 +91,7 @@ contains
       !!
       !! # Description
       !! Calculate the mole fraction first derivatives respect to mole numbers
+      !!
       real(pr), intent(in) :: n(:)
       real(pr) :: dxk_dni(size(n), size(n))
 
@@ -115,6 +116,7 @@ contains
       !!
       !! # Description
       !! Calculate the mole fraction second derivatives respect to mole numbers
+      !!
       real(pr), intent(in) :: n(:)
       real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
 

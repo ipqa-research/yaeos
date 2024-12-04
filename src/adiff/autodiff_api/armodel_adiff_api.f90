@@ -89,9 +89,10 @@ contains
 
         if (present(ArT)) then
             if (present(ArT2)) call get_dardt2
-            if (present(ArTn)) call get_dardtn
             if (.not. (present(ArT2) .and. present(ArTn))) call get_dardt
         end if
+
+        if (present(ArTn)) call get_dardtn
 
         if (present(Arn)) then
             if (present(Arn2)) then
@@ -169,7 +170,7 @@ contains
                 d_t%f2 = 1
                 d_Ar = self%Ar(d_n, d_v, d_t)
                 Arn(i) = d_Ar%f1
-                ArT = d_Ar%f2
+                if (present(ArT)) ArT = d_Ar%f2
                 ArTn(i) = d_Ar%f12
             end do
         end subroutine

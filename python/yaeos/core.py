@@ -1082,10 +1082,69 @@ class ArModel(ABC):
 
         return res
 
+    def stability_analysis(self, z, pressure, temperature):
+        """Perform stability analysis.
+
+        Find all the possible minima values that the :math:`tm` function,
+        defined by Michelsen and Møllerup.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        dict
+            Stability analysis result dictionary with keys:
+                - w_min: 
+                    value of the test phase that minimizes
+                    the :math:`tm` function
+                - tm_min: 
+                    minimum value of the :math:`tm` function
+                - all_mins_w: 
+                    all values of :math:`w` that minimize the 
+                    :math:`tm` function
+        """
+        (w_min, tm_min, all_mins_w) = yaeos_c.stability_zpt(
+            id=self.id, z=z, p=pressure, t=temperature
+        )
+
+        return {"w_min": w_min, "tm_min": tm_min, "all_mins_w": all_mins_w}
+
+    def stability_tm(self, z, w, pressure, temperature):
+        """Calculate the :math:`tm` function.
+
+        Calculate the :math:`tm` function, defined by Michelsen and Møllerup.
+        If this value is negative, it means that the feed with composition `z`
+        is unstable.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        w : array_like
+            Test Phase mole fractions 
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        float
+            Value of the :math:`tm` function
+        """
+        return yaeos_c.tm(id=self.id, z=z, w=w, p=pressure, t=temperature)
+
     def critical_point(self, z, max_iters=100) -> dict:
         """Critical point calculation.
 
-        Calculate the critical point of a mixture. At a given composition
+        Calculate the critical point of a mixture. At a given composition.
 
         Parameters
         ----------
@@ -1101,7 +1160,6 @@ class ArModel(ABC):
                 - Pc: critical pressure [bar]
                 - Vc: critical volume [L]
         """
-
         *x, t, p, v = yaeos_c.critical_point(
             self.id, z0=z, zi=[0, 0], spec=1, max_iters=max_iters
         )

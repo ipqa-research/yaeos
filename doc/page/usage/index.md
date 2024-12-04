@@ -47,7 +47,7 @@ Or maybe you want a specific version:
 ```toml
 [dependencies]
 stdlib="*"
-yaeos = {git="https://github.com/ipqa-research/yaeos", tag="0.1.0b2"}
+yaeos = {git="https://github.com/ipqa-research/yaeos", tag="2.0.0"}
 ```
 
 
@@ -56,10 +56,9 @@ On `yaeos` there is a series of models implemented, right now we include
 Residual Helmholtz energy models (like Cubic Equations of State), but plan on
 extening to a broader variety.
 
-In this example we'll show how a model in `yaeos` can be used. We'll take
-the `Peng-Robinson` equation of state as an example, but all the implemented
-models can be seen at [[yaeos__models(module)]]. Inside
-your `app/main.f90` file use
+In this example we'll show how a model in `yaeos` can be used. We'll take the
+`Peng-Robinson` equation of state as an example, but all the implemented models
+can be seen at [[yaeos__models(module)]]. Inside your `app/main.f90` file use
 
 ```fortran
 program main
@@ -106,7 +105,7 @@ pv_isotherm: block
     do i=1,n_points
         v = v0 + i*dv  ! Set new volume point
 
-        call pressure(model, n, v, t, p) ! Calculate pressure
+        call model%pressure(n, v, t, p) ! Calculate pressure
 
         print *, v, p
     end do
@@ -119,10 +118,6 @@ obtain the derivative of pressure with respect to volume the line that
 calculates pressure should be changed to:
 
 ```fortran        
-call pressure(model, n, v, t, p, dpdv=dpdv) ! Calculate pressure and dPdV
+call model%pressure(n, v, t, p, dpdv=dpdv) ! Calculate pressure and dPdV
 ```
-
-The available thermodynamic properties to calculate can be seen at the
-[[yaeos__thermoprops(module)]] module.
-
 # Phase equilibria

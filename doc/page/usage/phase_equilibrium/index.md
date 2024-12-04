@@ -1,13 +1,12 @@
 ---
 title: Phase Equilibrium
-copy_subdir: ../figs
 ---
 
 Phase Equilibria calculations are fundamental for the majority of EoS based
 modelling either for processes or when studying phase-behaviour.
 
-In `yaeos` most of phase-equilibria procedures return the `EquilibriaState`
-type [[EquilibriaState]], which holds all the relevant information of an
+In `yaeos` most of phase-equilibria procedures return the `EquilibriumState`
+type [[EquilibriumState]], which holds all the relevant information of an
 equilibria point.
 
 The implemented methods, and their usage are:

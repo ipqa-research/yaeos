@@ -84,3 +84,55 @@ def test_give_only_bij():
     excepted = np.array([8.856, 0.860, 1.425])
 
     assert np.allclose(gammas, excepted, atol=1e-3)
+
+
+def test_temperature_dependence():
+    bij20 = np.array(
+        [
+            [0.0, 43.552026684128634, 97.82405844415928],
+            [-48.846029213395745, 0.0, 180.94738666155268],
+            [-384.11635874542793, -208.59497463051014, 0.0],
+        ]
+    )
+
+    bij30 = np.array(
+        [
+            [0.0, 21.657910812761273, 99.58458376639004],
+            [-37.74765519959855, 0.0, 186.155606345583],
+            [-379.32149369269956, -233.34490510114676, 0.0],
+        ]
+    )
+
+    aij = np.array(
+        [
+            [0.0, 2.4094201446651944, 0.4861465075816882],
+            [-1.4009801734684584, 0.0, 0.710500847827416],
+            [-3.0410597123328746, 0.9936949460465081, 0.0],
+        ]
+    )
+
+    dij = np.array(
+        [
+            [0.0, -0.007712278604397001, -0.0005200301448241018],
+            [0.004210661705262751, 0.0, -0.0003180930394505843],
+            [0.005903984936450968, -0.005817018267835272, 0.0],
+        ]
+    )
+
+    rs = np.array([1.972, 10.496, 31.764])
+    qs = np.array([2.105, 12.746, 39.178])
+
+    uni20 = UNIQUAC(qs, rs, bij=bij20)
+    uni30 = UNIQUAC(qs, rs, bij=bij30)
+    uni_linear = UNIQUAC(qs, rs, aij=aij, dij=dij)
+
+    n = np.array([5.0, 15.0, 65.0])
+
+    ln_gamma20 = uni20.ln_gamma(n, 293.15)
+    ln_gamma30 = uni30.ln_gamma(n, 303.15)
+
+    ln_gamma_linear20 = uni_linear.ln_gamma(n, 293.15)
+    ln_gamma_linear30 = uni_linear.ln_gamma(n, 303.15)
+
+    assert np.allclose(ln_gamma20, ln_gamma_linear20)
+    assert np.allclose(ln_gamma30, ln_gamma_linear30)

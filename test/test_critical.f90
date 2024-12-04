@@ -47,7 +47,7 @@ program main
    call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
    ! Solve a critical point
-   crit = critical_point(model, z0, zi, S=a, spec=CPSpec%a, max_iters=300, a0=a)
+   crit = critical_point(model, z0, zi, S=a, spec=spec_CP%a, max_iters=300, a0=a)
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
       error stop "Critical point failed"
@@ -57,7 +57,7 @@ program main
    ! Now test the critical lines
    print *, "CL"
    call tim%timer_start()
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, dS0=0.1_pr, max_points=5000)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.1_pr, max_points=5000)
    call tim%timer_stop()
 
    ! if (WRITE_FILES) call write_cl

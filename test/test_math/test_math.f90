@@ -11,6 +11,7 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test dxk_dn d2xk_dn2", test_dxk_dn), &
          new_unittest("Test dx_to_dn", test_dx_to_dn), &
          new_unittest("Test sq_error", test_sq_error), &
          new_unittest("Test cardano", test_cardano_method), &
@@ -18,6 +19,57 @@ contains
          new_unittest("Test newton", test_newton_method) &
          ]
    end subroutine collect_suite
+
+   subroutine test_dxk_dn(error)
+      use yaeos__math, only: derivative_dxk_dni, derivative_d2xk_dnidnj
+      type(error_type), allocatable, intent(out) :: error
+
+      integer, parameter :: nc = 3
+
+      real(pr) :: n(nc), n_tot
+      real(pr) :: dxk_dn(nc, nc), dxk_dni
+      real(pr) :: d2xk_dn(nc, nc, nc), d2xk_dninj
+
+      integer i, j, k
+
+      n = [10.0_pr, 2.543_pr, 3.123_pr]
+      n_tot = sum(n)
+
+      dxk_dn = derivative_dxk_dni(n)
+      d2xk_dn = derivative_d2xk_dnidnj(n)
+
+      ! First derivative
+      do k = 1, nc
+         do i = 1, nc
+            if (k == i) then
+               dxk_dni = (n_tot - n(i)) / n_tot**2
+            else
+               dxk_dni = -n(k) / n_tot**2
+            end if
+
+            call check(error, abs(dxk_dn(k, i) - dxk_dni) < 1e-10_pr)
+         end do
+      end do
+
+      ! Second derivative
+      do k=1, nc
+         do i=1, nc
+            do j=1, nc
+               if (i==k .and. j==k) then
+                  d2xk_dninj = -2 * (n_tot - n(i)) / n_tot**3
+               else if (i==k) then
+                  d2xk_dninj = (2 * n(i) - n_tot) / n_tot**3
+               else if (j==k) then
+                  d2xk_dninj = (2 * n(j) - n_tot) / n_tot**3
+               else
+                  d2xk_dninj = 2 * n(k) / n_tot**3
+               end if
+
+               call check(error, abs(d2xk_dn(k, i, j) - d2xk_dninj) < 1e-10_pr)
+            end do
+         end do
+      end do
+   end subroutine test_dxk_dn
 
    subroutine test_dx_to_dn(error)
       use yaeos__math, only: dx_to_dn

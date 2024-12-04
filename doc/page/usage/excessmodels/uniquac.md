@@ -29,6 +29,24 @@ $$
 e_{lk}{T^2}
 $$
 
+Some of the model's terms can be simplified to reduce the complexity of the
+derivatives. Also, allows the model to be evaluated in mole vector `n` where
+some of the composition are equal to zero.
+
+$$\frac{\phi_k}{x_k} = \frac{n_T r_k}{\sum_l r_l n_l}$$
+
+$$\frac{\theta_k}{\phi_k} = \frac{q_k \sum_l r_l n_l}{r_k \sum_l q_l n_l}$$
+
+Being \(n_T \) the total number of moles in the system. The expression for the
+Excess Gibbs free energy can be rewritten as:
+
+$$ 
+\frac{G^E}{RT} = \sum_k n_k \ln \left(\frac{n_T r_k}{\sum_l r_l n_l} \right)
++ \frac{z}{2}\sum_k q_k n_k \ln \left(\frac{q_k \sum_l r_l n_l}{r_k \sum_l q_l
+n_l} \right) - \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{lk} \right) 
+$$
+
+
 ## Temperature derivatives
 
 \(\qquad \tau_{lk}:\)
@@ -77,6 +95,8 @@ $$
 ## Compositional derivatives
 
 \(\qquad \phi_k\):
+
+\(\phi_k \) derivatives are not really needed, but we also provide them.
 
 $$
 \frac{d \phi_k}{dn_i} = \begin{cases} - \frac{{n}_{i}
@@ -127,48 +147,40 @@ $$
 \(\qquad G^E\):
 
 $$
-\frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln \left(\frac{\phi_i}{x_i}
-\right) + \sum_k n_k \left(\frac{\frac{d \phi_k}{dn_i}}{\phi_k} -
-\frac{\frac{dx_k}{dn_i}}{x_k}\right) +
-\frac{z}{2}{q}_{i}\ln{\left(\frac{\theta_{i}}{\phi_{i}} \right)} + \frac{z}{2}
-\sum_k {n}_{k} {q}_{k} \left(\frac{\frac{d \theta_{k}}{d {n}_{i}}}{\theta_k} -
-\frac{\frac{d \phi_{k}}{d {n}_{i}}}{\phi_k} \right) - {q}_{i}
+\frac{\partial \frac{G^E}{RT}}{\partial n_i} = \ln 
+\left(\frac{n_T r_i}{\sum_l r_l n_l} \right) + \sum_k n_k 
+\left(\frac{\sum_l r_l n_l - n_T r_i}{n_T \sum_l r_l n_l}\right) +
+\frac{z}{2} q_i \ln \left(\frac{q_i \sum_l r_l n_l}{r_i \sum_l q_l n_l} 
+\right) + \frac{z}{2} \sum_k n_k q_k \left(\frac{r_i \sum_l n_l q_l - q_i
+\sum_l n_l r_l}{(\sum_l n_l q_l) (\sum_l n_l r_l)} \right) - {q}_{i}
 \ln{\left(\sum_l \theta_{l} {\tau}_{li} \right)} - \sum_k {n}_{k} {q}_{k}
 \frac{\sum_l \frac{d \theta_{l}}{d {n}_{i}} {\tau}_{lk}}{\sum_l \theta_{l}
 {\tau}_{lk}}
 $$
 
-
 Differentiating each term of the first compositional derivative respect to
-$n_j$
+\(n_j\) we get:
 
 \(\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =\)
 
 $$
-\frac{\frac{d \phi_i}{d n_j}}{\phi_i} - \frac{\frac{d x_i}{d n_j}}{x_i} 
+\frac{\sum_l n_l r_l - n_T r_j}{n_T \sum_l n_l r_l} 
 $$
 
 $$
-+\frac{\frac{d \phi_j}{dn_i}}{\phi_j} -
-\frac{\frac{dx_j}{dn_i}}{x_j}
-+ \sum_k n_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
-  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
-- \sum_k n_k \left(\frac{\frac{d^2x_k}{dn_i dn_j} x_k -
-  \frac{dx_k}{dn_i} \frac{dx_k}{dn_j}}{x_k^2} \right)
++ \frac{\sum_l n_l r_l - n_T r_i}{n_T \sum_l r_l n_l}
++ \sum_k n_k \left(\frac{r_i r_j}{(\sum_l n_l r_l)^2} - \frac{1}{n_T^2} \right)
 $$
 
 $$
-+ \frac{z}{2} q_i \left( \frac{\frac{d \theta_i}{d n_j}}{\theta_i} - \frac
-{\frac{d \phi_i}{d n_j}}{\phi_i} \right)
++ \frac{z}{2} q_i \left( \frac{r_j \sum_l n_l q_l - q_j \sum_l n_l r_l}
+{(\sum_l n_l q_l)(\sum_l n_l r_l)}\right)
 $$
 
 $$
-+ \frac{z}{2} q_j \left( \frac{\frac{d \theta_j}{d n_i}}{\theta_j} - \frac
-{\frac{d \phi_j}{d n_i}}{\phi_j} \right)
-+ \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\theta_k}{dn_i dn_j} \theta_k -
-  \frac{d\theta_k}{dn_i} \frac{d\theta_k}{dn_j}}{\theta_k^2} \right)
-- \frac{z}{2} \sum_k n_k q_k \left(\frac{\frac{d^2\phi_k}{dn_i dn_j} \phi_k -
-  \frac{d\phi_k}{dn_i} \frac{d\phi_k}{dn_j}}{\phi_k^2} \right)
+\frac{z}{2} q_j \left( \frac{r_i \sum_l n_l q_l - q_i \sum_l n_l r_l}
+{(\sum_l n_l q_l)(\sum_l n_l r_l)}\right) + \frac{z}{2} \sum_k n_k q_k \left(
+\frac{q_i q_j}{(\sum_l n_l q_l)^2} - \frac{r_i r_j}{(\sum_l n_l r_l)^2} \right)
 $$
 
 $$
@@ -189,7 +201,7 @@ $$
 Example from: Gmehling et al. (2012) [2]
 
 An example of having a mixture of Water-Ethanol-Bezene at 298.15 K with 
-constant \(\Delta U\) [K]:
+constant \(\frac{\Delta U}{R}\) [K]:
 
 |Water|Ethanol|Benzene|
 |---------|--------|---------|
