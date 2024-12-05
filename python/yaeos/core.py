@@ -1166,7 +1166,10 @@ class ArModel(ABC):
 
         return {"x": x, "Tc": t, "Pc": p, "Vc": v}
 
-    def critical_line(self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000):
+    def critical_line(
+            self, z0, zi,
+            a0=1e-5, da0=1e-2, max_points=1000, stop_pressure=2500
+            ):
         """Critical Line calculation.
 
         Calculate the critical line between two compositions
@@ -1181,11 +1184,14 @@ class ArModel(ABC):
             Initial molar fraction of composition `i`
         da0: float, optional
             Step for molar fraction of composition `i`
-        max_poitns: int, optional
+        max_points: int, optional
             Maximum number of points to calculate
+        stop_pressure: float, optional
+            Stop when reaching this pressure value
         """
         alphas, vs, ts, ps = yaeos_c.critical_line(
-            self.id, a0=a0, da0=da0, z0=z0, zi=zi, max_points=max_points
+            self.id, a0=a0, da0=da0, z0=z0, zi=zi,
+            max_points=max_points, stop_pressure=stop_pressure
         )
 
         return {"a": alphas, "T": ts, "P": ps, "V": vs}
