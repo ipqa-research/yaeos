@@ -1101,13 +1101,13 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-                - w_min: 
+                - w_min:
                     value of the test phase that minimizes
                     the :math:`tm` function
-                - tm_min: 
+                - tm_min:
                     minimum value of the :math:`tm` function
-                - all_mins_w: 
-                    all values of :math:`w` that minimize the 
+                - all_mins_w:
+                    all values of :math:`w` that minimize the
                     :math:`tm` function
         """
         (w_min, tm_min, all_mins_w) = yaeos_c.stability_zpt(
@@ -1128,7 +1128,7 @@ class ArModel(ABC):
         z : array_like
             Global mole fractions
         w : array_like
-            Test Phase mole fractions 
+            Test Phase mole fractions
         pressure : float
             Pressure [bar]
         temperature : float
