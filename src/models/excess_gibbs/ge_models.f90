@@ -24,7 +24,7 @@ module yaeos__models_ge
          real(pr), optional, intent(out) :: Ge !! Excess Gibbs free energy
          real(pr), optional, intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
          real(pr), optional, intent(out) :: GeT2 !! \(\frac{d^2G^E}{dT^2}\)
-         real(pr), optional, intent(out) :: Gen(size(n)) !! \(\frac{dG}{dn}\)
+         real(pr), optional, intent(out) :: Gen(size(n)) !! \(\frac{dG^E}{dn}\)
          real(pr), optional, intent(out) :: GeTn(size(n)) !! \(\frac{d^2G^E}{dTdn}\)
          real(pr), optional, intent(out) :: Gen2(size(n), size(n)) !! \(\frac{d^2G^E}{dn^2}\)
       end subroutine
@@ -47,13 +47,31 @@ contains
    subroutine excess_enthalpy(self, n, T, He, HeT, Hen)
       !! Calculate Excess enthalpy and its derivatives.
       !!
+      !! From the Gibbs-Helmholtz equation [1]:
+      !!
       !! \[
-      !!  \frac{\partial \frac{G^E}{T}}{\partial T} = \frac{-H^E}{T^2}
+      !!  \left(\frac{\partial \left(\frac{G^E}{T} \right)}{\partial T} 
+      !!  \right)_P = \frac{-H^E}{T^2}
       !! \]
+      !!
+      !! We can calculate the excess enthalpy and its derivatives as:
       !!
       !! \[
       !!  H^E = G^E - T \frac{\partial G^E}{\partial T}
       !! \]
+      !!
+      !! \[
+      !! \frac{\partial H^E}{\partial T} =
+      !! -T \frac{\partial^2 G^E}{\partial T^2}
+      !! \]
+      !!
+      !! \[
+      !! \frac{\partial H^E}{\partial n_i} = \frac{\partial G^E}{\partial n_i}
+      !! - T \frac{\partial^2 G^E}{\partial T \partial n_i}
+      !! \]
+      !!
+      !! ## References
+      !! [1] https://en.wikipedia.org/wiki/Gibbs%E2%80%93Helmholtz_equation
       !!
       class(GeModel), intent(in) :: self !! Model
       real(pr), intent(in) :: n(:) !! Moles vector
@@ -78,6 +96,15 @@ contains
       !!
       !! \[
       !! S^E = \frac{H^E - G^E}{T}
+      !! \]
+      !!
+      !! \[
+      !! \frac{\partial S^E}{\partial T} = \frac{(H^E - G^E)T - H^E + G^E}{T^2}
+      !! \]
+      !!
+      !! \[
+      !! \frac{\partial S^E}{\partial n_i} = \frac{\frac{\partial H^E}
+      !! {\partial n_i} - \frac{\partial G^E}{\partial n_i}}{T}
       !! \]
       !!
       class(GeModel), intent(in) :: self !! Model
