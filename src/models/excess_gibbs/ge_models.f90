@@ -32,42 +32,37 @@ module yaeos__models_ge
 
 contains
 
-   subroutine ln_activity_coefficient(self, n, T, lngamma)
-      class(GeModel), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: lngamma(:)
+   subroutine ln_activity_coefficient(self, n, T, lngamma, dlngammadT, dlngammadn)
+      !! Calculate natural logarithm of activity coefficients.
+      !!
+      !! \[
+      !!  \ln \gamma_i = \frac{1}{RT} \frac{\partial G^E}{\partial n_i}
+      !! \]
+      !!
+      class(GeModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles vector
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), optional, intent(out) :: lngamma(:)
+      !! Natural logarithm of activity coefficients
+      real(pr), optional, intent(out) :: dlngammadT(size(n))
+      !! \(\frac{d\ln \gamma_i}{dT}\)
+      real(pr), optional, intent(out) :: dlngammadn(size(n),size(n))
+      !! \(\frac{d\ln \gamma_i}{dn_j}\)
 
-      real(pr) :: ge, dgedn(size(n))
+      real(pr) :: Ge, Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
 
-      call self%excess_gibbs(n, t, ge=ge, gen=dgedn)
-      lngamma = dgedn/(R*T)
+      call self%excess_gibbs(n, T, Ge=Ge, GeN=GeN, GeTn=GeTn, Gen2=Gen2)
+      
+      if (present(lngamma)) lngamma = GeN / (R * T)
+      if (present(dlngammadT)) dlngammadT = (GeTn - GeN / T) / (R * T)
+      if (present(dlngammadn)) dlngammadn = Gen2 / (R * T)
    end subroutine
 
    subroutine excess_enthalpy(self, n, T, He, HeT, Hen)
       !! Calculate Excess enthalpy and its derivatives.
       !!
-      !! From the Gibbs-Helmholtz equation [1]:
-      !!
       !! \[
-      !!  \left(\frac{\partial \left(\frac{G^E}{T} \right)}{\partial T} 
-      !!  \right)_P = \frac{-H^E}{T^2}
-      !! \]
-      !!
-      !! We can calculate the excess enthalpy and its derivatives as:
-      !!
-      !! \[
-      !!  H^E = G^E - T \frac{\partial G^E}{\partial T}
-      !! \]
-      !!
-      !! \[
-      !! \frac{\partial H^E}{\partial T} =
-      !! -T \frac{\partial^2 G^E}{\partial T^2}
-      !! \]
-      !!
-      !! \[
-      !! \frac{\partial H^E}{\partial n_i} = \frac{\partial G^E}{\partial n_i}
-      !! - T \frac{\partial^2 G^E}{\partial T \partial n_i}
+      !! H^E = G^E - T \frac{\partial G^E}{\partial T}
       !! \]
       !!
       !! ## References
@@ -96,15 +91,6 @@ contains
       !!
       !! \[
       !! S^E = \frac{H^E - G^E}{T}
-      !! \]
-      !!
-      !! \[
-      !! \frac{\partial S^E}{\partial T} = \frac{(H^E - G^E)T - H^E + G^E}{T^2}
-      !! \]
-      !!
-      !! \[
-      !! \frac{\partial S^E}{\partial n_i} = \frac{\frac{\partial H^E}
-      !! {\partial n_i} - \frac{\partial G^E}{\partial n_i}}{T}
       !! \]
       !!
       class(GeModel), intent(in) :: self !! Model

@@ -10,6 +10,7 @@ program main
 
    real(pr) :: n(nc), T, n_t
 
+   real(pr) :: lngamma(nc), dlngammadT(nc), dlngammadn(nc, nc)
    real(pr) :: He, HeT, Hen(nc)
    real(pr) :: Se, SeT, Sen(nc)
 
@@ -32,8 +33,15 @@ program main
    ! setup UNIFAC model
    model = setup_unifac(molecules)
 
+   call model%ln_activity_coefficient(n, T, lngamma=lngamma, dlngammadT=dlngammadT, dlngammadn=dlngammadn)
    call model%excess_enthalpy(n, T, He=He, HeT=HeT, Hen=Hen)
    call model%excess_entropy(n, T, Se=Se, SeT=SeT, Sen=Sen)
+
+   print *, 'Activity coefficients:', lngamma, [0.0_pr, 0.0_pr, 0.0_pr]
+   print *, 'dln(gamma)/dT:', dlngammadT, [0.0_pr, 0.0_pr, 0.0_pr]
+   print *, 'dln(gamma)/dn:', dlngammadn
+   
+   print *, " "
 
    print *, 'Excess enthalpy:', He / n_t, -8.12666342863807_pr
    print *, 'Excess entropy:', Se / n_t, -0.03268447167877293_pr
