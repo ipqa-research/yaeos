@@ -51,8 +51,17 @@ contains
 
       real(pr) :: Ge, Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
 
-      call self%excess_gibbs(n, T, Ge=Ge, GeN=GeN, GeTn=GeTn, Gen2=Gen2)
-      
+      ! little if present optmization
+      if (.not. present(dlngammadn)) then
+         if (.not. present(dlngammadT)) then
+            call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen)
+         else
+            call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen, GeTn=GeTn)
+         end if
+      else
+         call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen, GeTn=GeTn, Gen2=Gen2)
+      end if
+
       if (present(lngamma)) lngamma = GeN / (R * T)
       if (present(dlngammadT)) dlngammadT = (GeTn - GeN / T) / (R * T)
       if (present(dlngammadn)) dlngammadn = Gen2 / (R * T)
