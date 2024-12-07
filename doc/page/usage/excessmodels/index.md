@@ -168,16 +168,22 @@ $$
 S^E = \frac{H^E - G^E}{T}
 $$
 
+Replacing \(H^E\):
+
+$$
+S^E= \frac{G^E - T \frac{\partial G^E}{\partial T} - G^E}{T} = 
+-\frac{\partial G^E}{\partial T}
+$$
+
 The derivatives of the excess entropy can be calculated as:
 
 $$
-\frac{\partial S^E}{\partial T} = \frac{(\frac{\partial H^E}{\partial T} 
-- \frac{\partial G^E}{\partial T})T - H^E + G^E}{T^2}
+\frac{\partial S^E}{\partial T} = -\frac{\partial^2 G^E}{\partial T^2}
 $$
 
 $$
-\frac{\partial S^E}{\partial n_i} = \frac{\frac{\partial H^E}
-{\partial n_i} - \frac{\partial G^E}{\partial n_i}}{T}
+\frac{\partial S^E}{\partial n_i} = 
+-\frac{\partial^2 G^E}{\partial T \partial n_i}
 $$
 
 #### Example

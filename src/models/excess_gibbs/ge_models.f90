@@ -25,8 +25,10 @@ module yaeos__models_ge
          real(pr), optional, intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
          real(pr), optional, intent(out) :: GeT2 !! \(\frac{d^2G^E}{dT^2}\)
          real(pr), optional, intent(out) :: Gen(size(n)) !! \(\frac{dG^E}{dn}\)
-         real(pr), optional, intent(out) :: GeTn(size(n)) !! \(\frac{d^2G^E}{dTdn}\)
-         real(pr), optional, intent(out) :: Gen2(size(n), size(n)) !! \(\frac{d^2G^E}{dn^2}\)
+         real(pr), optional, intent(out) :: GeTn(size(n))
+         !! \(\frac{d^2G^E}{dTdn}\)
+         real(pr), optional, intent(out) :: Gen2(size(n), size(n))
+         !! \(\frac{d^2G^E}{dn^2}\)
       end subroutine
    end interface
 
@@ -51,20 +53,23 @@ contains
 
       real(pr) :: Ge, Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
 
-      ! little if present optmization
-      if (.not. present(dlngammadn)) then
-         if (.not. present(dlngammadT)) then
-            call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen)
-         else
-            call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen, GeTn=GeTn)
-         end if
+      logical :: tt, dt, dn
+
+      tt = present(lngamma)
+      dt = present(dlngammadT)
+      dn = present(dlngammadn)
+
+      if (tt .and. .not. dt .and. .not. dn) then
+         call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen)
+      else if (.not. dn) then
+         call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen, GeTn=GeTn)
       else
          call self%excess_gibbs(n, T, Ge=Ge, Gen=Gen, GeTn=GeTn, Gen2=Gen2)
       end if
 
-      if (present(lngamma)) lngamma = GeN / (R * T)
-      if (present(dlngammadT)) dlngammadT = (GeTn - GeN / T) / (R * T)
-      if (present(dlngammadn)) dlngammadn = Gen2 / (R * T)
+      if (tt) lngamma = Gen / (R * T)
+      if (dt) dlngammadT = (GeTn - Gen / T) / (R * T)
+      if (dn) dlngammadn = Gen2 / (R * T)
    end subroutine
 
    subroutine excess_enthalpy(self, n, T, He, HeT, Hen)
@@ -109,14 +114,12 @@ contains
       real(pr), optional, intent(out) :: SeT !! \(\frac{dS^E}{dT}\)
       real(pr), optional, intent(out) :: Sen(:) !! \(\frac{dS^E}{dn}\)
 
-      real(pr) :: Ge, GeT, Gen(size(n))
-      real(pr) :: He, HeT, Hen(size(n))
+      real(pr) :: Ge, GeT, GeT2, GeTn(size(n))
 
-      call self%excess_gibbs(n, T, Ge=Ge, GeT=GeT, Gen=Gen)
-      call self%excess_enthalpy(n, T, He=He, HeT=HeT, Hen=Hen)
+      call self%excess_gibbs(n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, GeTn=GeTn)
 
-      if (present(Se)) Se = (He - Ge) / T
-      if (present(SeT)) SeT = ((HeT - GeT) * T - He + Ge) / T**2
-      if (present(Sen)) Sen = (Hen - Gen) / T
+      if (present(Se)) Se = -GeT
+      if (present(SeT)) SeT = -GeT2
+      if (present(Sen)) Sen = -GeTn
    end subroutine excess_entropy
 end module
