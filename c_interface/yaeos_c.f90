@@ -26,11 +26,15 @@ module yaeos_c
    ! __del__
    public :: make_available_ar_models_list
    public :: make_available_ge_models_list
+
    ! GeMoels
    public :: nrtl
    public :: unifac_vle
    public :: uniquac
-   public :: ln_gamma
+   public :: ln_gamma_ge
+   public :: excess_gibbs_ge
+   public :: excess_enthalpy_ge
+   public :: excess_entropy_ge
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
@@ -70,6 +74,7 @@ contains
    ! ==========================================================================
    !  Ge Models
    ! --------------------------------------------------------------------------
+   ! NRTL
    subroutine nrtl(a, b, c, id)
       use yaeos, only: fNRTL => NRTL
       real(c_double), intent(in) :: a(:,:), b(:,:), c(:,:)
@@ -78,36 +83,7 @@ contains
       call extend_ge_models_list(id)
    end subroutine nrtl
 
-   subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
-      use yaeos, only: Groups
-      integer(c_int), intent(in) :: nc !! Number of components
-      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
-      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
-      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-      type(Groups), intent(out) :: molecules(nc)
-      integer :: i
-
-      do i=1,nc
-         molecules(i)%groups_ids = g_ids(i, :ngs(i))
-         molecules(i)%number_of_groups = g_v(i, :ngs(i))
-      end do
-   end subroutine setup_groups
-
-   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
-      use yaeos, only: UNIFAC, setup_unifac, Groups
-      integer(c_int), intent(out) :: id !! Saved model id
-      integer(c_int), intent(in) :: nc !! Number of components
-      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
-      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
-      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-
-      type(Groups) :: molecules(nc)
-
-      call setup_groups(nc, ngs, g_ids, g_v, molecules)
-      ge_model = setup_unifac(molecules)
-      call extend_ge_models_list(id)
-   end subroutine unifac_vle
-
+   ! UNIQUAC
    subroutine uniquac(id, qs, rs, aij, bij, cij, dij, eij)
       use yaeos, only: setup_uniquac
       integer(c_int), intent(out) :: id
@@ -129,6 +105,37 @@ contains
       ge_model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
       call extend_ge_models_list(id)
    end subroutine uniquac
+
+   ! UNIFAC
+   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_unifac, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_unifac(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_vle
+
+   subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
+      use yaeos, only: Groups
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+      type(Groups), intent(out) :: molecules(nc)
+      integer :: i
+
+      do i=1,nc
+         molecules(i)%groups_ids = g_ids(i, :ngs(i))
+         molecules(i)%number_of_groups = g_v(i, :ngs(i))
+      end do
+   end subroutine setup_groups
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
@@ -155,17 +162,88 @@ contains
       free_ge_model(id) = .true.
    end subroutine make_available_ge_models_list
 
-   subroutine ln_gamma(id, n, T, lngamma)
+   ! Ge Thermoprops
+   subroutine excess_gibbs_ge(id, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:)
+      !! Moles vector
       real(c_double), intent(in) :: T
-      real(c_double), intent(out) :: lngamma(size(n))
-      call ge_models(id)%model%ln_activity_coefficient(n, T, lngamma)
-   end subroutine ln_gamma
+      !! Temperature [K]
+      real(c_double), intent(out) :: Ge
+      !! Excess gibbs energy
+      real(c_double), optional, intent(inout) :: GeT
+      !! \(\frac{dG^E}{dT}\)
+      real(c_double), optional, intent(inout) :: GeT2
+      !! \(\frac{d^2G^E}{dT^2}\)
+      real(c_double), optional, intent(inout) :: Gen(size(n))
+      !! \(\frac{dG^E}{dn_i}\)
+      real(c_double), optional, intent(inout) :: GeTn(size(n))
+      !! \(\frac{d^2G^E}{dTdn_i}\)
+      real(c_double), optional, intent(inout) :: Gen2(size(n), size(n))
+      !! \(\frac{d^2G^E}{dn_idn_j}\)
 
-   ! =============================================================================
+      call ge_models(id)%model%excess_gibbs(&
+         n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+         )
+   end subroutine excess_gibbs_ge
+
+   subroutine ln_gamma_ge(id, n, T, lngamma, dlngamma_dt, dlngamma_dn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: lngamma(size(n))
+      !! Natural logarithm of activity coefficients
+      real(c_double), optional, intent(inout) :: dlngamma_dt(size(n))
+      !! \(\frac{d\ln \gamma_i}{dT}\)
+      real(c_double), optional, intent(inout) :: dlngamma_dn(size(n),size(n))
+      !! \(\frac{d\ln \gamma_i}{dn_j}\)
+
+      call ge_models(id)%model%ln_activity_coefficient(&
+         n, T, lngamma=lngamma, dlngammadT=dlngamma_dt, dlngammadn=dlngamma_dn&
+      )
+   end subroutine ln_gamma_ge
+
+   subroutine excess_enthalpy_ge(id, n, T, He, HeT, Hen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: He
+      !! Excess enthalpy
+      real(c_double), optional, intent(inout) :: HeT
+      !! \(\frac{dH^E}{dT}\)
+      real(c_double), optional, intent(inout) :: Hen(size(n))
+      !! \(\frac{dH^E}{dn}\)
+
+      call ge_models(id)%model%excess_enthalpy(&
+         n, T, He=He, HeT=HeT, Hen=Hen &
+         )
+   end subroutine excess_enthalpy_ge
+
+   subroutine excess_entropy_ge(id, n, T, Se, SeT, Sen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: Se
+      !! Excess entropy
+      real(c_double), optional, intent(inout) :: SeT
+      !! \(\frac{dS^E}{dT}\)
+      real(c_double), optional, intent(inout) :: Sen(size(n))
+      !! \(\frac{dS^E}{dn}\)
+
+      call ge_models(id)%model%excess_entropy(&
+         n, T, Se=Se, SeT=SeT, Sen=Sen &
+         )
+   end subroutine excess_entropy_ge
+
+   ! ==========================================================================
    !  Ar Models
-   ! -----------------------------------------------------------------------------
+   ! --------------------------------------------------------------------------
    subroutine extend_ar_models_list(id)
       !! Find the first available model container and allocate the model
       !! there. Then return the found id.
