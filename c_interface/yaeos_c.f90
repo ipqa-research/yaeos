@@ -31,8 +31,10 @@ module yaeos_c
    public :: nrtl
    public :: unifac_vle
    public :: uniquac
-   public :: excess_gibbs
-   public :: ln_gamma
+   public :: ln_gamma_ge
+   public :: excess_gibbs_ge
+   public :: excess_enthalpy_ge
+   public :: excess_entropy_ge
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
@@ -160,37 +162,83 @@ contains
    end subroutine make_available_ge_models_list
 
    ! Ge Thermoprops
-   subroutine excess_gibbs(id, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+   subroutine excess_gibbs_ge(id, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:)
       !! Moles vector
       real(c_double), intent(in) :: T
       !! Temperature [K]
-      real(c_double), optional, intent(out) :: Ge
-      !! Excess Gibbs free energy
-      real(c_double), optional, intent(out) :: GeT
+      real(c_double), intent(out) :: Ge
+      !! Excess gibbs energy
+      real(c_double), optional, intent(inout) :: GeT
       !! \(\frac{dG^E}{dT}\)
-      real(c_double), optional, intent(out) :: GeT2
+      real(c_double), optional, intent(inout) :: GeT2
       !! \(\frac{d^2G^E}{dT^2}\)
-      real(c_double), optional, intent(out) :: Gen(size(n))
-      !! \(\frac{dG^E}{dn}\)
-      real(c_double), optional, intent(out) :: GeTn(size(n))
-      !! \(\frac{d^2G^E}{dTdn}\)
-      real(c_double), optional, intent(out) :: Gen2(size(n), size(n))
-      !! \(\frac{d^2G^E}{dn^2}\)
+      real(c_double), optional, intent(inout) :: Gen(size(n))
+      !! \(\frac{dG^E}{dn_i}\)
+      real(c_double), optional, intent(inout) :: GeTn(size(n))
+      !! \(\frac{d^2G^E}{dTdn_i}\)
+      real(c_double), optional, intent(inout) :: Gen2(size(n), size(n))
+      !! \(\frac{d^2G^E}{dn_idn_j}\)
 
       call ge_models(id)%model%excess_gibbs(&
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
          )
-   end subroutine excess_gibbs
+   end subroutine excess_gibbs_ge
 
-   subroutine ln_gamma(id, n, T, lngamma)
+   subroutine ln_gamma_ge(id, n, T, lngamma, dlngamma_dt, dlngamma_dn)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:)
+      !! Moles vector
       real(c_double), intent(in) :: T
+      !! Temperature [K]
       real(c_double), intent(out) :: lngamma(size(n))
-      call ge_models(id)%model%ln_activity_coefficient(n, T, lngamma)
-   end subroutine ln_gamma
+      !! Natural logarithm of activity coefficients
+      real(c_double), optional, intent(inout) :: dlngamma_dt(size(n))
+      !! \(\frac{d\ln \gamma_i}{dT}\)
+      real(c_double), optional, intent(inout) :: dlngamma_dn(size(n),size(n))
+      !! \(\frac{d\ln \gamma_i}{dn_j}\)
+
+      call ge_models(id)%model%ln_activity_coefficient(&
+         n, T, lngamma=lngamma, dlngammadT=dlngamma_dt, dlngammadn=dlngamma_dn&
+      )
+   end subroutine ln_gamma_ge
+
+   subroutine excess_enthalpy_ge(id, n, T, He, HeT, Hen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: He
+      !! Excess enthalpy
+      real(c_double), optional, intent(inout) :: HeT
+      !! \(\frac{dH^E}{dT}\)
+      real(c_double), optional, intent(inout) :: Hen(size(n))
+      !! \(\frac{dH^E}{dn}\)
+
+      call ge_models(id)%model%excess_enthalpy(&
+         n, T, He=He, HeT=HeT, Hen=Hen &
+         )
+   end subroutine excess_enthalpy_ge
+
+   subroutine excess_entropy_ge(id, n, T, Se, SeT, Sen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: Se
+      !! Excess entropy
+      real(c_double), optional, intent(inout) :: SeT
+      !! \(\frac{dS^E}{dT}\)
+      real(c_double), optional, intent(inout) :: Sen(size(n))
+      !! \(\frac{dS^E}{dn}\)
+
+      call ge_models(id)%model%excess_entropy(&
+         n, T, Se=Se, SeT=SeT, Sen=Sen &
+         )
+   end subroutine excess_entropy_ge
 
    ! ==========================================================================
    !  Ar Models
