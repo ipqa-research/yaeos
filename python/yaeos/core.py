@@ -49,7 +49,12 @@ class GeModel(ABC):
 
             nrtl = NRTL(a, b, c)
 
+            # Evaluating ln_gamma only
             print(nrtl.ln_gamma([5.0, 5.6], 300.0))
+
+            # Asking for derivatives
+
+            print(nrtl.ln_gamma([5.0, 5.6], 300.0, dt=True, dn=True))
         """
         nc = len(moles)
 
@@ -68,6 +73,110 @@ class GeModel(ABC):
             ...
         else:
             res = (res, {"dt": dt, "dn": dn})
+        return res
+
+    def excess_gibbs(
+        self,
+        moles,
+        temperature: float,
+        dt: bool = False,
+        dt2: bool = False,
+        dn: bool = False,
+        dtn: bool = False,
+        dn2: bool = False,
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate excess Gibbs energy [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dt2 : bool, optional
+            Calculate temperature second derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+        dtn : bool, optional
+            Calculate cross temperature and moles derivative, by default False
+        dn2 : bool, optional
+            Calculate moles second derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            Excess Gibbs energy or tuple with excess Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess Gibbs energy only
+            print(model.excess_gibbs(model.excess_gibbs([0.5,0.5], 303.15))
+
+            # Asking for derivatives
+            print(
+                model.excess_gibbs(
+                    [0.5,0.5],
+                    303.15,
+                    dt=True,
+                    dt2=True,
+                    dn=True,
+                    dtn=True,
+                    dn2=True
+            )
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dt2 = np.empty(1, order="F") if dt2 else None
+        dn = np.empty(nc, order="F") if dn else None
+        dtn = np.empty(nc, order="F") if dtn else None
+        dn2 = np.empty((nc, nc), order="F") if dn2 else None
+
+        all_none = (
+            dt is None
+            and dt2 is None
+            and dn is None
+            and dtn is None
+            and dn2 is None
+        )
+
+        res = yaeos_c.excess_gibbs_ge(
+            self.id,
+            moles,
+            temperature,
+            get=dt,
+            get2=dt2,
+            gen=dn,
+            getn=dtn,
+            gen2=dn2,
+        )
+
+        if all_none:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dt2": dt2 if dt2 is None else dt2[0],
+                    "dn": dn,
+                    "dtn": dtn,
+                    "dn2": dn2,
+                },
+            )
+
         return res
 
     def excess_enthalpy(
@@ -91,6 +200,23 @@ class GeModel(ABC):
         Union[np.ndarray, tuple[np.ndarray, dict]]
             Excess enthalpy or tuple with excess enthalpy and derivatives
             dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess enthalpy only
+            print(model.excess_enthalpy([0.5, 0.5], 303.15))
+
+            # Asking for derivatives
+            print(model.excess_enthalpy([0.5, 0.5], 303.15, dt=True, dn=True))
         """
         nc = len(moles)
 
@@ -108,10 +234,10 @@ class GeModel(ABC):
         if dt is None and dn is None:
             ...
         else:
-            res = (res, {"dt": dt, "dn": dn})
-        
+            res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+
         return res
-    
+
     def excess_entropy(
         self, moles, temperature: float, dt: bool = False, dn: bool = False
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
@@ -133,6 +259,23 @@ class GeModel(ABC):
         Union[np.ndarray, tuple[np.ndarray, dict]]
             Excess entropy or tuple with excess entropy and derivatives
             dictionary if any derivative is asked [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess entropy only
+            print(model.excess_entropy([0.5, 0.5], 303.15))
+
+            # Asking for derivatives
+            print(model.excess_entropy([0.5, 0.5], 303.15, dt=True, dn=True))
         """
         nc = len(moles)
 
@@ -150,8 +293,8 @@ class GeModel(ABC):
         if dt is None and dn is None:
             ...
         else:
-            res = (res, {"dt": dt, "dn": dn})
-        
+            res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+
         return res
 
     def __del__(self) -> None:
