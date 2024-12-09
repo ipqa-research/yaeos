@@ -477,14 +477,14 @@ contains
       crit = fcritical_point(&
          model=ar_models(id)%model, z0=z0, zi=zi, &
          S=S, spec=spec, max_iters=max_iters &
-      )
+         )
       call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
    end subroutine critical_point
 
    subroutine critical_line(&
-         id, a0, da0, &
-         z0, zi, max_points, &
-         as, Vs, Ts, Ps)
+      id, a0, da0, &
+      z0, zi, max_points, stop_pressure, &
+      as, Vs, Ts, Ps)
       use yaeos, only: EquilibriumState, CriticalLine, &
          fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
@@ -493,6 +493,7 @@ contains
       real(c_double), intent(in) :: a0
       real(c_double), intent(in) :: da0
       integer, intent(in) :: max_points
+      real(c_double), intent(in) :: stop_pressure
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
@@ -510,7 +511,7 @@ contains
       cl = fcritical_line(&
          model=ar_models(id)%model, a0=a0, &
          z0=z0, zi=zi, &
-         ns=spec_CP%a, S=a0, ds0=da0)
+         ns=spec_CP%a, S=a0, ds0=da0, maxp=stop_pressure, max_points=max_points)
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
@@ -631,7 +632,7 @@ contains
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
-         EquilibriumState, PTEnvel2
+         EquilibriumState, PTEnvel2, find_hpl
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       integer, intent(in) :: max_points
@@ -671,14 +672,16 @@ contains
       select case(kind)
        case("bubble")
          sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind)
+         env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("dew")
          sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("liquid-liquid")
-         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         ! sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         env = find_hpl(ar_models(id)%model, z, T, P)
       end select
 
 
-      env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
       i = size(env%points)
       Ts(:i) = env%points%T
       Ps(:i) = env%points%P
@@ -710,7 +713,7 @@ contains
       nt = size(Ts)
 
       if (parallel) then
-         !$OMP  PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+         !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
          do i=1,np
             do j=1,nt
                T = Ts(j)
@@ -732,6 +735,7 @@ contains
                P = Ps(i)
                flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
                betas(i, j) = flash_result%beta
+               print *, i, j, flash_result%iters, flash_result%beta
 
                Vxs(i, j) = flash_result%Vx
                Vys(i, j) = flash_result%Vy
@@ -753,7 +757,7 @@ contains
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
          mintpd=tm_val, w=w_min, all_minima=all_mins)
-   end subroutine
+   end subroutine stability_zpt
 
    subroutine tm(id, z, w, P, T, tm_value)
       use yaeos, only: ftm => tm
@@ -762,7 +766,7 @@ contains
       real(c_double), intent(out) :: tm_value
 
       tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
-   end subroutine
+   end subroutine tm
 
    ! ==========================================================================
    ! Auxiliar
