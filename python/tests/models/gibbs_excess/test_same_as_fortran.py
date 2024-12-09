@@ -150,9 +150,9 @@ def test_same_as_fortran():
         ge_v, derivatives = model.excess_gibbs(
             n, temp, dt=True, dt2=True, dn=True, dtn=True, dn2=True
         )
-        
-        ge_i= model.excess_gibbs(n, temp)
-        
+
+        ge_i = model.excess_gibbs(n, temp)
+
         assert np.isclose(ge_i, ge_v, rtol=1e-10)
         assert np.isclose(ge, ge_v, rtol=1e-10)
         assert np.isclose(get, derivatives["dt"], rtol=1e-10)
@@ -163,7 +163,7 @@ def test_same_as_fortran():
 
         # Test HE
         he_v, derivatives = model.excess_enthalpy(n, temp, dt=True, dn=True)
-        
+
         he_i = model.excess_enthalpy(n, temp)
 
         assert np.isclose(he_i, he_v, rtol=1e-10)
@@ -173,7 +173,7 @@ def test_same_as_fortran():
 
         # Test SE
         se_v, derivatives = model.excess_entropy(n, temp, dt=True, dn=True)
-        
+
         se_i = model.excess_entropy(n, temp)
 
         assert np.isclose(se_i, se_v, rtol=1e-10)
@@ -183,7 +183,7 @@ def test_same_as_fortran():
 
         # Test ln(gamma)
         lngamma_v, derivatives = model.ln_gamma(n, temp, dt=True, dn=True)
-        
+
         lngamma_i = model.ln_gamma(n, temp)
 
         assert np.allclose(lngamma_i, lngamma_v, rtol=1e-10)
