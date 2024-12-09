@@ -14,7 +14,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_tx
    end type CriticalPoint
 
    type :: TXEnvel2
-      !! Two-phase PX envelope.
+      !! Two-phase TX envelope.
       !! Phase boundary line of a fluid at constant temperature
       !! with variation in composition.
       real(pr), allocatable :: alpha(:) !! Second fluid molar fraction

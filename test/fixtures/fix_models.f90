@@ -16,7 +16,7 @@ contains
       kij = reshape([0., 0.1, 0.1, 0.], [n, n])
       lij = kij/2
       eos = PengRobinson76(tc, pc, w, kij, lij)
-   end function
+   end function binary_PR76
 
    type(CubicEoS) function binary_PR78() result(eos)
       use yaeos, only: PengRobinson78
@@ -31,7 +31,7 @@ contains
       lij = kij/2
 
       eos = PengRobinson78(tc, pc, w, kij, lij)
-   end function
+   end function binary_PR78
 
    type(CubicEoS) function binary_SRK() result(eos)
       use yaeos, only: SoaveRedlichKwong
@@ -46,7 +46,7 @@ contains
       lij = kij/2
 
       eos = SoaveRedlichKwong(tc, pc, w, kij, lij)
-   end function
+   end function binary_SRK
 
    type(CubicEoS) function binary_RKPR() result(eos)
       use yaeos, only: RKPR
@@ -62,7 +62,7 @@ contains
       lij = kij/2
 
       eos = RKPR(tc, pc, w, zc, kij, lij)
-   end function
+   end function binary_RKPR
 
    type(hdPR76) function binary_PR76_hd() result(eos)
       use autodiff_hyperdual_pr76, only: setup, hdPR76
@@ -77,7 +77,7 @@ contains
       lij = kij/2
 
       eos = setup(tc, pc, w, kij, lij)
-   end function
+   end function binary_PR76_hd
 
    type(TPR76) function binary_PR76_tape() result(eos)
       use autodiff_tapenade_pr76, only: setup_model, TPR76
@@ -92,7 +92,7 @@ contains
       lij = kij/2
 
       eos = setup_model(tc, pc, w, kij, lij)
-   end function
+   end function binary_PR76_tape
 
    type(NRTL) function binary_NRTL_tape() result(model)
       integer, parameter :: n = 2
@@ -113,7 +113,7 @@ contains
       c(2, 1) = 0.3
 
       model = NRTL(a, b, c)
-   end function
+   end function binary_NRTL_tape
 
    type(CubicEoS) function binary_NRTL_SRK() result(model)
       use yaeos, only: NRTL, SoaveRedlichKwong, pr, CubicEoS, MHV
@@ -146,8 +146,8 @@ contains
       mixrule = MHV(ge=ge_model, q=0.593_pr, b=model%b)
       deallocate (model%mixrule)
       model%mixrule = mixrule
-   end function
-   
+   end function binary_NRTL_SRK
+
    type(CubicEoS) function binary_NRTL_SRK_HV() result(model)
       use yaeos, only: NRTL, SoaveRedlichKwong, pr, CubicEoS, HV
 
@@ -180,5 +180,31 @@ contains
       mixrule%bi = model%b
       mixrule%del1 = model%del1
       call model%set_mixrule(mixrule)
-   end function
-end module
+   end function binary_NRTL_SRK_HV
+
+   type(CubicEoS) function multicomponent_PR(z0, zi) result(model)
+      use yaeos, only: PengRobinson78
+      integer, parameter :: nc = 12
+      real(pr), intent(out) :: z0(nc), zi(nc)
+      
+      real(pr) :: tc(nc), pc(nc), w(nc), kij(nc,nc)
+      z0=[0.0656,0.3711,0.0538,0.0373,0.0261,0.0187,&
+         0.0218,0.1791,0.091,0.0605,0.0447,0.0302]
+      zi = 0*z0
+      zi(1) = 1
+
+      tc=[304.088888888889,190.6,305.4,369.8,425.2,469.6,507.4,616.2,&
+         698.9,770.4,853.1,1001.2]
+      pc=[73.7343491450634,45.9196083838941,48.7516547159404,42.3795504688362, &
+         37.9291919470491,33.6811224489796,29.6353419746277,28.8261858797573,&
+         19.3186017650303,16.5876999448428,15.2728212906784,14.6659542195256]
+      w= [0.228,0.008,0.098,0.152,0.193,0.251,0.296,&
+         0.454,0.787,1.048,1.276,1.299]
+      kij = 0
+      kij(1, 2) = 0.12
+      kij(1, 3:) = 0.15
+      kij(:, 1) = kij(1, :)
+
+      model = PengRobinson78(tc, pc, w, kij=kij)
+   end function multicomponent_PR
+end module fixtures_models
