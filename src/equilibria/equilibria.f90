@@ -26,6 +26,8 @@ module yaeos__equilibria
       PTEnvel2, pt_envelope_2ph, find_hpl
    use yaeos__equilibria_boundaries_phase_envelopes_px, only:&
       PXEnvel2, px_envelope_2ph
+   use yaeos__equilibria_boundaries_phase_envelopes_tx, only:&
+      TXEnvel2, tx_envelope_2ph
 
    ! Extra
    use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
