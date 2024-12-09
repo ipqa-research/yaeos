@@ -1328,6 +1328,68 @@ class ArModel(ABC):
 
         return res
 
+    def phase_envelope_px(
+        self,
+        z0,
+        zi,
+        temperature,
+        kind="bubble",
+        max_points=300,
+        p0=10.0,
+        a0=0.001,
+        ds0=0.1,
+    ):
+        """Two phase envelope calculation (PX).
+
+        Calculation of a phase envelope that starts at a given composition and
+        its related to another composition with some proportion.
+
+        Parameters
+        ----------
+        z0 : array_like
+            Initial global mole fractions
+        zi : array_like
+            Final global mole fractions
+        temperature : float
+            Temperature [K]
+        kind : str, optional
+            Kind of saturation point to start the envelope calculation,
+            defaults to "bubble". Options are
+            - "bubble"
+            - "dew"
+        max_points : int, optional
+            Envelope's maximum points to calculate (P, X), by default 300
+        p0 : float, optional
+            Initial guess for pressure [bar] for the saturation point of kind:
+            `kind`, by default 10.0
+        a0 : float, optional
+            Initial molar fraction of composition `zi`, by default 0.001
+        ds0 : float, optional
+            Step for a, by default 0.1
+        """
+
+        a, ps, xs, ys, acs, pcs, kinds = yaeos_c.px2_phase_envelope(
+            self.id,
+            z0=z0,
+            zi=zi,
+            kind=kind,
+            max_points=max_points,
+            p0=p0,
+            a0=a0,
+            t=temperature,
+            ds0=ds0,
+        )
+
+        return {
+            "a": a,
+            "P": ps,
+            "x": xs,
+            "y": ys,
+            "ac": acs,
+            "Pc": pcs,
+            "kind": kinds,
+        }
+
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
 
@@ -1413,9 +1475,8 @@ class ArModel(ABC):
         return {"x": x, "Tc": t, "Pc": p, "Vc": v}
 
     def critical_line(
-            self, z0, zi,
-            a0=1e-5, da0=1e-2, max_points=1000, stop_pressure=2500
-            ):
+        self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000, stop_pressure=2500
+    ):
         """Critical Line calculation.
 
         Calculate the critical line between two compositions
@@ -1436,8 +1497,13 @@ class ArModel(ABC):
             Stop when reaching this pressure value
         """
         alphas, vs, ts, ps = yaeos_c.critical_line(
-            self.id, a0=a0, da0=da0, z0=z0, zi=zi,
-            max_points=max_points, stop_pressure=stop_pressure
+            self.id,
+            a0=a0,
+            da0=da0,
+            z0=z0,
+            zi=zi,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
         )
 
         return {"a": alphas, "T": ts, "P": ps, "V": vs}

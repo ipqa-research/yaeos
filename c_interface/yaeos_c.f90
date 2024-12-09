@@ -44,7 +44,7 @@ module yaeos_c
    ! Phase equilibria
    public :: flash, flash_grid
    public :: saturation_pressure, saturation_temperature
-   public :: pt2_phase_envelope
+   public :: pt2_phase_envelope, px2_phase_envelope
    public :: critical_point, critical_line
    public :: stability_zpt, tm
 
@@ -202,7 +202,7 @@ contains
 
       call ge_models(id)%model%ln_activity_coefficient(&
          n, T, lngamma=lngamma, dlngammadT=dlngamma_dt, dlngammadn=dlngamma_dn&
-      )
+         )
    end subroutine ln_gamma_ge
 
    subroutine excess_enthalpy_ge(id, n, T, He, HeT, Hen)
@@ -768,6 +768,62 @@ contains
       Tcs(:i) = env%cps%T
       Pcs(:i) = env%cps%P
    end subroutine pt2_phase_envelope
+
+   subroutine px2_phase_envelope(&
+      id, z0, zi, kind, max_points, T, P0, ds0, &
+      as, Ps, xs, ys, acs, pcs, a0, kinds)
+      use yaeos, only: &
+         saturation_pressure, saturation_temperature, px_envelope_2ph, &
+         EquilibriumState, PXEnvel2
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer, intent(in) :: max_points
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: ds0
+      real(c_double), intent(out) :: as(max_points)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: xs(max_points, size(z0))
+      real(c_double), intent(out) :: ys(max_points, size(z0))
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(out) :: acs(5), Pcs(5)
+      real(c_double), intent(in) :: P0
+      character(len=15), intent(out) :: kinds(max_points)
+
+      real(8) :: nan
+      type(EquilibriumState) :: sat
+      type(PXEnvel2) :: env
+
+      integer :: i, j
+
+      real(c_double) :: z(size(z0))
+
+      nan = makenan()
+      as = nan
+      Ps = nan
+      acs = nan
+      Pcs = nan
+
+      z = a0 * zi + (1-a0)*z0
+
+      sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
+      env = px_envelope_2ph(ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, first_point=sat, points=max_points, delta_0=ds0)
+
+      i = size(env%points)
+      as(:i) = env%alpha
+      Ps(:i) = env%points%P
+
+      do j=1,i
+         xs(j, :) = env%points(j)%x
+         ys(j, :) = env%points(j)%y
+      end do
+
+      i = size(env%cps)
+      acs(:i) = env%cps%alpha
+      Pcs(:i) = env%cps%P
+      kinds = env%points%kind
+   end subroutine px2_phase_envelope
 
    subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
       use yaeos, only: EquilibriumState, flash
