@@ -181,7 +181,7 @@ contains
 
       type(Groups) :: molecules(nc)
 
-      real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
+      real(pr) :: He, Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
       real(pr) :: Ge_i, Gen_i(nc), GeT_i, GeT2_i, GeTn_i(nc), Gen2_i(nc, nc)
       real(pr) :: ln_gammas(nc)
 
@@ -206,6 +206,9 @@ contains
       ! setup UNIFAC model
       model = setup_unifac(molecules)
 
+      ! Call He
+      call model%excess_enthalpy(n, T, He=He)
+
       ! Call all Ge and derivatives
       call model%excess_gibbs(n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
 
@@ -220,9 +223,12 @@ contains
       ! Call GeModel class method
       call model%ln_activity_coefficient(n, T, ln_gammas)
 
-      ! ========================================================================
+      ! =======================================================================
       ! Test against Caleb Bell's implementation
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
+      ! He
+      call check(error, abs(He + 812.66634286380702_pr) < 1e-7)
+
       ! Ge
       call check(error, abs(Ge / n_t - (-3.223992676822129_pr)) <= 1e-10)
 
@@ -252,9 +258,9 @@ contains
       ! GeTn
       call check(error, allclose(GeTn, [0.06015389_pr, 0.02239722_pr, 0.04975642_pr], 1e-6_pr))
 
-      ! ========================================================================
+      ! =======================================================================
       ! Test individual calls
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       call check(error, abs(Ge - Ge_i) <= 1e-10)
       call check(error, abs(GeT - GeT_i) <= 1e-10)
       call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
@@ -265,9 +271,9 @@ contains
       call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
       call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
 
-      ! ========================================================================
+      ! =======================================================================
       ! Test pair calls
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       ! Ge
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT=GeT_i)
       call check(error, abs(Ge - Ge_i) <= 1e-10)
@@ -336,9 +342,9 @@ contains
       call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
       call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
 
-      ! ========================================================================
+      ! =======================================================================
       ! Just one triplet call test
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT=GeT_i, Gen2=Gen2_i)
       call check(error, abs(Ge - Ge_i) <= 1e-10)
       call check(error, abs(GeT - GeT_i) <= 1e-10)
