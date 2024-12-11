@@ -2,6 +2,7 @@ program main
    use yaeos, only: pr, R
    use yaeos, only: setup_unifac, UNIFAC, Groups
    use auxiliar_functions, only: allclose, rel_error
+   use testing_aux, only: assert, test_title, test_ok
 
    implicit none
 
@@ -27,6 +28,8 @@ program main
    real(pr) :: dn=0.0001_pr, dT=0.0001_pr
 
    integer :: i, j
+
+   print *, test_title("Thermoprops With Excess Gibbs Models")
 
    T = 303.15_pr
    n = [21.48_pr, 11.42_pr, 16.38_pr]
@@ -61,14 +64,17 @@ program main
    ! Obvious test
    ! --------------------------------------------------------------------------
    ! Activity coefficients
-   if (.not. rel_error(R * T * sum(n * lngamma), Ge) < 1e-10_pr) then
-      error stop "Test Thermoprops GE: ln(gamma) and GE failed"
-   end if
+
+   call assert(&
+      rel_error(R * T * sum(n * lngamma), Ge) < 1e-10_pr,&
+      "Test Thermoprops GE: ln(gamma) and GE"&
+      )
 
    ! Entropy
-   if (.not. rel_error(Se, (He - Ge) / T) < 1e-10_pr) then
-      error stop "Test Thermoprops GE: Se and GE failed"
-   end if
+   call assert(&
+      rel_error(Se, (He - Ge) / T) < 1e-10_pr,&
+      "Test Thermoprops GE: Se and GE"&
+      )
 
    ! ==========================================================================
    ! Individual calls
@@ -78,18 +84,18 @@ program main
    call model%ln_activity_coefficient(n, T, dlngammadT=dlngammadT_aux)
    call model%ln_activity_coefficient(n, T, dlngammadn=dlngammadn_aux)
 
-   if (.not. allclose(lngamma, lngamma_aux1, 1.0E-10_pr)) then
-      error stop "Test Thermoprops GE: ln(gamma) failed"
-   end if
+   call assert(&
+      allclose(lngamma, lngamma_aux1, 1.0E-10_pr),&
+      "Test Thermoprops GE: ln(gamma)")
 
-   if (.not. allclose(dlngammadT, dlngammadT_aux, 1.0E-10_pr)) then
-      error stop "Test Thermoprops GE: dln(gamma)/dT failed"
-   end if
+   call assert(&
+      allclose(dlngammadT, dlngammadT_aux, 1.0E-10_pr),&
+      "Test Thermoprops GE: dln(gamma)/dT")
 
    do i = 1,nc
-      if (.not. allclose(dlngammadn(i,:), dlngammadn_aux(i,:),1.0E-10_pr)) then
-         error stop "Test Thermoprops GE: dln(gamma)/dn failed"
-      end if
+      call assert(&
+         allclose(dlngammadn(i,:), dlngammadn_aux(i,:),1.0E-10_pr),&
+         "Test Thermoprops GE: dln(gamma)/dn")
    end do
 
    ! Excess enthalpy
@@ -97,34 +103,28 @@ program main
    call model%excess_enthalpy(n, T, HeT=HeT_aux)
    call model%excess_enthalpy(n, T, Hen=Hen_aux)
 
-   if (.not. rel_error(He, He_aux1) < 1e-10_pr) then
-      error stop "Test Thermoprops GE: He failed"
-   end if
+   call assert(rel_error(He, He_aux1) < 1e-10_pr, &
+      "Test Thermoprops GE: He")
 
-   if (.not. rel_error(HeT, HeT_aux) < 1e-10_pr) then
-      error stop "Test Thermoprops GE: HeT failed"
-   end if
+   call assert(rel_error(HeT, HeT_aux) < 1e-10_pr, &
+      "Test Thermoprops GE: HeT")
 
-   if (.not. allclose(Hen, Hen_aux, 1.0E-10_pr)) then
-      error stop "Test Thermoprops GE: Hen failed"
-   end if
+   call assert(allclose(Hen, Hen_aux, 1.0E-10_pr), &
+      "Test Thermoprops GE: Hen")
 
    ! Excess entropy
    call model%excess_entropy(n, T, Se=Se_aux1)
    call model%excess_entropy(n, T, SeT=SeT_aux)
    call model%excess_entropy(n, T, Sen=Sen_aux)
 
-   if (.not. rel_error(Se, Se_aux1) < 1e-10_pr) then
-      error stop "Test Thermoprops GE: Se failed"
-   end if
+   call assert(rel_error(Se, Se_aux1) < 1e-10_pr, &
+      "Test Thermoprops GE: Se")
 
-   if (.not. rel_error(SeT, SeT_aux) < 1e-10_pr) then
-      error stop "Test Thermoprops GE: SeT failed"
-   end if
+   call assert(rel_error(SeT, SeT_aux) < 1e-10_pr, &
+      "Test Thermoprops GE: SeT")
 
-   if (.not. allclose(Sen, Sen_aux, 1.0E-10_pr)) then
-      error stop "Test Thermoprops GE: Sen failed"
-   end if
+   call assert(allclose(Sen, Sen_aux, 1.0E-10_pr), &
+      "Test Thermoprops GE: Sen")
 
    ! ==========================================================================
    ! Derivatives
@@ -135,9 +135,8 @@ program main
 
    lngammadT_num = (lngamma_aux1 - lngamma_aux2)/(2.0_pr*dT)
 
-   if (.not. allclose(dlngammadT, lngammadT_num, 1.0E-5_pr)) then
-      error stop "Test Thermoprops GE: dln(gamma)/dT failed"
-   end if
+   call assert(allclose(dlngammadT, lngammadT_num, 1.0E-5_pr), &
+      "Test Thermoprops GE: dln(gamma)/dT")
 
    ! dln(gamma)/dn
    lngammadn_num = 0.0_pr
@@ -158,9 +157,8 @@ program main
    end do
 
    do i = 1,nc
-      if (.not. allclose(dlngammadn(i,:), lngammadn_num(i,:), 1.0E-5_pr)) then
-         error stop "Test Thermoprops GE: dln(gamma)/dn failed"
-      end if
+      call assert(allclose(dlngammadn(i,:), lngammadn_num(i,:), 1.0E-5_pr),&
+         "Test Thermoprops GE: dln(gamma)/dn")
    end do
 
    ! dHe/dT
@@ -169,9 +167,8 @@ program main
 
    HeT_num = (He_aux1 - He_aux2) / (2.0_pr * dT)
 
-   if (.not. rel_error(HeT, HeT_num) < 1e-6) then
-      error stop "Test Thermoprops GE: dHe/dT failed"
-   end if
+   call assert(rel_error(HeT, HeT_num) < 1e-6,&
+      "Test Thermoprops GE: dHe/dT")
 
    ! dHe/dn
    Hen_num = 0.0_pr
@@ -189,9 +186,7 @@ program main
       Hen_num(i) = (He_aux1 - He_aux2) / (2.0_pr * dn)
    end do
 
-   if (.not. allclose(Hen, Hen_num, 1.0E-6_pr)) then
-      error stop "Test Thermoprops GE: dHe/dn failed"
-   end if
+   call assert (allclose(Hen, Hen_num, 1.0E-6_pr),"Test Thermoprops GE: dHe/dn")
 
    ! dSe/dT
    call model%excess_entropy(n, T + dT, Se=Se_aux1)
@@ -199,9 +194,8 @@ program main
 
    SeT_num = (Se_aux1 - Se_aux2) / (2.0_pr * dT)
 
-   if (.not. rel_error(SeT, SeT_num) < 1e-6) then
-      error stop "Test Thermoprops GE: dSe/dT failed"
-   end if
+   call assert(rel_error(SeT, SeT_num) < 1e-6, &
+      "Test Thermoprops GE: dSe/dT")
 
    ! dSe/dn
    Sen_num = 0.0_pr
@@ -219,7 +213,6 @@ program main
       Sen_num(i) = (Se_aux1 - Se_aux2) / (2.0_pr * dn)
    end do
 
-   if (.not. allclose(Sen, Sen_num, 1.0E-6_pr)) then
-      error stop "Test Thermoprops GE: dSe/dn failed"
-   end if
+   call assert(allclose(Sen, Sen_num, 1.0E-6_pr), &
+      "Test Thermoprops GE: dSe/dn")
 end program main

@@ -22,11 +22,11 @@ module yaeos__equilibria
       critical_line, CriticalLine, critical_point, spec_CP
 
    ! Phase equilibria boundaries
-   use yaeos__equilibria_boundaries_phase_envelopes_pt, only:&
+   use yaeos__equilibria_boundaries_phase_envelopes_pt, only: &
       PTEnvel2, pt_envelope_2ph, find_hpl
-   use yaeos__equilibria_boundaries_phase_envelopes_px, only:&
+   use yaeos__equilibria_boundaries_phase_envelopes_px, only: &
       PXEnvel2, px_envelope_2ph
-   use yaeos__equilibria_boundaries_phase_envelopes_tx, only:&
+   use yaeos__equilibria_boundaries_phase_envelopes_tx, only: &
       TXEnvel2, tx_envelope_2ph
 
    ! Extra
