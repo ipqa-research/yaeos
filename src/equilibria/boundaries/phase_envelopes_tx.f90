@@ -263,11 +263,11 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.01) then
+         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy)/maxval([Vz,Vy]) < 0.01) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS = 0.01_pr
          else
-            ns = maxloc(abs(dXdS), dim=1)
+            ns = maxloc(abs(dXdS(nc+1:)), dim=1) + nc
             maxdS = 0.5_pr
          end if
 
