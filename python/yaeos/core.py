@@ -1394,7 +1394,7 @@ class ArModel(ABC):
         """Perform stability analysis.
 
         Find all the possible minima values that the :math:`tm` function,
-        defined by Michelsen and Møllerup.
+        defined by Michelsen and Mollerup.
 
         Parameters
         ----------
@@ -1409,25 +1409,33 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-                - w_min:
+                - w:
                     value of the test phase that minimizes
                     the :math:`tm` function
-                - tm_min:
+                - tm:
                     minimum value of the :math:`tm` function
-                - all_mins_w:
-                    all values of :math:`w` that minimize the
-                    :math:`tm` function
+        dict
+            All found minimum values of the :math:`tm` function and the
+            corresponding test phase mole fractions.
+            - w:
+                all values of :math:`w` that minimize the
+                :math:`tm` function
+            - tm:
+                all values found minima of the :math:`tm` function
         """
-        (w_min, tm_min, all_mins_w) = yaeos_c.stability_zpt(
+        (w_min, tm_min, all_mins, all_mins_w) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
 
-        return {"w_min": w_min, "tm_min": tm_min, "all_mins_w": all_mins_w}
+        return {"w": w_min, "tm": tm_min}, {
+            "tm": all_mins,
+            "w": all_mins_w,
+        }
 
     def stability_tm(self, z, w, pressure, temperature):
         """Calculate the :math:`tm` function.
 
-        Calculate the :math:`tm` function, defined by Michelsen and Møllerup.
+        Calculate the :math:`tm` function, defined by Michelsen and Mollerup.
         If this value is negative, it means that the feed with composition `z`
         is unstable.
 
