@@ -16,12 +16,19 @@ contains
       character(100) :: test_ok
       test_ok = fg_color_green // "OK: " // str // style_reset
    end function
+   
+   function test_notok(str)
+      use stdlib_ansi, only: fg_color_red, style_reset, operator(//)
+      character(*), intent(in) :: str
+      character(100) :: test_notok
+      test_notok = fg_color_red // "ERROR: " // str // style_reset
+   end function
 
    subroutine assert(expr, test_name)
       logical, intent(in) :: expr
       character(*), intent(in) :: test_name
       if (.not. expr) then
-         error stop "ERROR: " // test_name
+         error stop test_notok(test_name)
       else
          print *, test_ok(test_name)
       end if
