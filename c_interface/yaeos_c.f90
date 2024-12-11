@@ -880,17 +880,30 @@ contains
       end if
    end subroutine flash_grid
 
-   subroutine stability_zpt(id, z, P, T, w_min, tm_val, all_mins)
-      use yaeos, only: min_tpd
+   subroutine stability_zpt(id, z, P, T, w_min, min_tm, tm_vals, all_mins)
+      use yaeos, only: min_tpd, tm
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:), P, T
       real(c_double), intent(out) :: w_min(size(z))
-      real(c_double), intent(out) :: tm_val
+      real(c_double), intent(out) :: min_tm
+      real(c_double), intent(out) :: tm_vals(size(z))
       real(c_double), intent(out) :: all_mins(size(z), size(z))
+
+      real(c_double) :: d_i(size(z))
+
+      integer :: i
 
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
-         mintpd=tm_val, w=w_min, all_minima=all_mins)
+         mintpd=min_tm, w=w_min, all_minima=all_mins &
+      )
+
+      call ar_models(id)%model%lnphi_pt(n=z, P=T, T=T, root_type="stable", lnPhi=d_i)
+
+      d_i = log(z) + d_i
+      do i=1,size(z)
+         tm_vals(i) = tm(ar_models(id)%model, z, all_mins(i, :), P, T, d=d_i)
+      end do
    end subroutine stability_zpt
 
    subroutine tm(id, z, w, P, T, tm_value)
