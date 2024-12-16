@@ -373,15 +373,18 @@ contains
 
       model%mixrule = mixrule
       model%name = "RKPR 2005"
-      do i=1,nc
-         diff = 1
-         do while (abs(diff) > 1e-6)
-            Psat_i = Psat(model, i, 0.7*Tc(i))
-            diff = (w(i) - (-1 - log10(Psat_i/Pc(i))))
-            alpha%k(i) = alpha%k(i) + 0.1*diff
-            model%alpha = alpha
+
+      if (.not. present(k)) then
+         do i=1,nc
+            diff = 1
+            do while (abs(diff) > 1e-6)
+               Psat_i = Psat(model, i, 0.7*Tc(i))
+               diff = (w(i) - (-1 - log10(Psat_i/Pc(i))))
+               alpha%k(i) = alpha%k(i) + 0.1*diff
+               model%alpha = alpha
+            end do
          end do
-      end do
+      end if
    end function RKPR
 
    subroutine get_OMa_OMb(del1, OMa, OMb)
