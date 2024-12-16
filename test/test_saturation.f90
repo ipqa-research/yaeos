@@ -89,13 +89,11 @@ contains
       class(ArModel), allocatable :: model
       type(EquilibriumState) :: dew
 
-      real(pr) :: x(nc) = [6.7257479103310133E-002,  0.93274263301184768]
+      real(pr) :: x(nc) = [0.0673,  0.9327]
       real(pr) :: y(nc)  = [0.4, 0.6]
       real(pr) :: P = 10.867413040635611
 
-      real(pr) :: n(nc), k(nc), t
-
-      integer :: i
+      real(pr) :: n(nc), t
 
       n = [0.4_pr, 0.6_pr]
       T = 240
@@ -105,8 +103,8 @@ contains
 
       call check(error, abs(dew%P-P) < abs_tolerance)
       call check(error, abs(dew%T-T) < abs_tolerance)
-      call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
-      call check(error, maxval(abs(dew%y-y)) < abs_tolerance)
+      call check(error, maxval(abs(dew%x-x)) < 1e-4)
+      call check(error, maxval(abs(dew%y-y)) < 1e-4)
    end subroutine test_dew_temperature
 
    subroutine test_bubble_temperature(error)

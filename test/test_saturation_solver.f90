@@ -13,7 +13,7 @@ program main
 
    integer, parameter :: nc = 2, nf = nc + 4
 
-   real(pr) :: n(nc), T, P, Vy, Vz, X(nf), S, F(nf), df(nf,nf)
+   real(pr) :: n(nc), T, P, Vy, Vz, dPdVy, dPdVz, X(nf), S, F(nf), df(nf,nf)
    real(pr) :: dx(nf), dFnum(nf, nf), Fdx(nf), dftmp(nf,nf)
    real(pr) :: Px, Py
    integer :: i, ns
@@ -65,7 +65,7 @@ contains
       S = T
       ns = nc+3
       dx = 0
-      call saturation_F(model, n, X, ns, S, F, dF)
+      call saturation_F(model, n, X, ns, S, F, dF, dPdVz, dPdVy)
 
       print *, F
       print *, "numdiff"
@@ -73,7 +73,7 @@ contains
          dx = 0
          dx(i) = 1e-9
 
-         call saturation_F(model, n, X+dx, ns, S, Fdx, dFtmp)
+         call saturation_F(model, n, X+dx, ns, S, Fdx, dFtmp, dPdVz, dPdVy)
          dFnum(:, i) = (Fdx - F) / dx(i)
 
          print *, dfnum(:, i)

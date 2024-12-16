@@ -255,7 +255,7 @@ contains
 
          k = exp(lnfug_z - lnfug_y)
          f = sum(z*k) - 1
-         step = f/sum(z * k * (dlnphi_dt_z - dlnphi_dt_y))
+         step = f/sum(T * z * k * (dlnphi_dt_z - dlnphi_dt_y))
 
          if (.not. ieee_is_finite(step) .or. ieee_is_nan(step)) exit
 
