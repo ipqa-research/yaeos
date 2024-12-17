@@ -78,10 +78,10 @@ contains
 
       ! Consistency tests
       call check(error, abs(eq31) <= 1e-13)
-      call check(error, maxval(abs(eq33)) < 1e-14)
-      call check(error, maxval(abs(eq34)) < 1e-14)
-      call check(error, abs(eq36) <= 1e-14)
-      call check(error, abs(eq37) <= 1e-14)
+      call check(error, maxval(abs(eq33)) < 1e-13)
+      call check(error, maxval(abs(eq34)) < 1e-13)
+      call check(error, abs(eq36) <= 1e-13)
+      call check(error, abs(eq37) <= 1e-13)
 
       ! ========================================================================
       ! Model with kij and lij

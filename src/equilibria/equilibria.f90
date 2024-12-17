@@ -7,9 +7,6 @@ module yaeos__equilibria
    ! Equilibrium State definitions
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
 
-   ! Pure component saturation pressure
-   use yaeos__equilibria_pure_psat, only: Psat
-
    ! Phase split calculations
    use yaeos__equilibria_flash, only: flash
 

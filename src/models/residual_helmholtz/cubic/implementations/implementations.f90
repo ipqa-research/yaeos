@@ -295,7 +295,6 @@ contains
       !!
       !! \[\delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6\]
       !! \[k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0)\]
-      use yaeos__equilibria, only: Psat
       use yaeos__models_ar_cubic_quadratic_mixing, only: QMR_RKPR
       use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
       real(pr), intent(in) :: tc(:) !! Critical Temperature [K]
@@ -378,7 +377,7 @@ contains
          do i=1,nc
             diff = 1
             do while (abs(diff) > 1e-6)
-               Psat_i = Psat(model, i, 0.7*Tc(i))
+               Psat_i = model%Psat_pure(i, 0.7*Tc(i))
                diff = (w(i) - (-1 - log10(Psat_i/Pc(i))))
                alpha%k(i) = alpha%k(i) + 0.1*diff
                model%alpha = alpha
