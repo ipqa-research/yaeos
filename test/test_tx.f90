@@ -1,22 +1,22 @@
 program main
    use yaeos
    use yaeos__math, only: interpol
+   use yaeos__equilibria_boundaries_pure_saturation, only: PurePsat, pure_saturation_line
    use forsus, only: forsus_default_dir, forsus_dir, Substance
    use testing_aux, only: test_title, assert
 
    type(EquilibriumState) :: sat
    type(TXEnvel2) :: tx
    type(CubicEoS) :: model
-   type(CriticalLine) :: cl, cl_ll
-   type(EquilibriumState) :: cp_ll
 
    integer, parameter :: nc=2
    real(pr) :: z0(nc)= [1, 0]
    real(pr) :: zi(nc)= [0, 1]
-   real(pr) :: z(nc), P
+   real(pr) :: z(nc), T, P
    real(pr) :: a
    real(pr) :: Tenv
    type(Substance) :: sus(nc)
+   type(PurePsat) :: vp1, vp2
 
    integer :: i, tf_brute, tf_criti, tf_envel
 
@@ -35,11 +35,15 @@ program main
       w=sus%critical%acentric_factor%value &
       )
 
-   p = 10
+   vp1 = pure_saturation_line(model, 1)
+   vp2 = pure_saturation_line(model, 2)
 
-   a = 0.01
+   P = 10._pr
+   T = vp1%get_T(P)
+
+   a = 0.001
    z = zi*a + z0*(1-a)
-   sat = saturation_temperature(model, z, P=P, kind="bubble", T0=150._pr)
+   sat = saturation_temperature(model, z, P=P, kind="bubble", T0=T)
    tx = tx_envelope_2ph(model, z0=z0, alpha0=a, z_injection=zi, first_point=sat)
 
    i = minloc(abs(270._pr - tx%points%T), dim=1)
@@ -47,7 +51,14 @@ program main
    Tenv = interpol(&
       tx%points(i)%y(1), tx%points(i+1)%y(1), &
       tx%points(i)%T, tx%points(i+1)%T, 0.53_pr &
-      )
+   )
 
    call assert(abs(Tenv - 270.3_pr) < 0.1_pr, "Predicted Dew Temperature")
+
+   P = sum(model%components%Pc)/2
+   T = vp1%get_T(P)
+   sat = saturation_temperature(model, z, P=P, kind="bubble", T0=T)
+   tx = tx_envelope_2ph(model, z0=z0, alpha0=a, z_injection=zi, first_point=sat)
+
+   call assert(abs(tx%points(size(tx%points))%T - 368) < 1, "Reach to critical point")
 end program main

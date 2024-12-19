@@ -357,7 +357,7 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.05_pr)
+         do while (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.01_pr)
             ! If near a critical point, jump over it
             if (nc == 2) exit
             S = S + dS
