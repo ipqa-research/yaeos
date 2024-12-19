@@ -19,6 +19,8 @@ module yaeos__equilibria
       critical_line, CriticalLine, critical_point, spec_CP
 
    ! Phase equilibria boundaries
+   use yaeos__equilibria_boundaries_pure_saturation, only: &
+      PurePsat, pure_saturation_line
    use yaeos__equilibria_boundaries_phase_envelopes_pt, only: &
       PTEnvel2, pt_envelope_2ph, find_hpl
    use yaeos__equilibria_boundaries_phase_envelopes_px, only: &
