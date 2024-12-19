@@ -10,7 +10,7 @@ module yaeos__math_continuation
       integer :: ns
       real(pr) :: S
       real(pr) :: dS
-   end type
+   end type ContinuationVariable
 
    abstract interface
       subroutine continuation_function(X, ns, S, F, dF, dFdS)
