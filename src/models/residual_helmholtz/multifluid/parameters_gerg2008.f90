@@ -1,4 +1,8 @@
-Module parameters
+module yaeos__models_ar_multifluid_parameters_gerg2008
+   use yaeos__constants, only: pr
+   use yaeos__models_base, only: Substances
+   implicit none
+
    integer :: max_residual_terms = 24, generalized_departure(8, 2)
    integer, parameter :: N = 21
    real(8), dimension(21, 21, 4) :: red_params
@@ -15,9 +19,94 @@ Module parameters
    real(8), dimension(21, 7) :: n0i=0, th0i=0
    real(8) :: R=0, eps = 1d-10
 
+   type :: Gerg2008Pure
+      integer :: Kpol
+      integer :: Kexp
+      real(8), allocatable :: n(:)
+      real(8), allocatable :: d(:)
+      real(8), allocatable :: t(:)
+      real(8), allocatable :: c(:)
+   end type Gerg2008Pure
+
+   type :: Gerg2008Binary
+      integer :: i !! Component i
+      integer :: j !! Component j
+      real(8) :: Bv !! Binary volume interaction parameters
+      real(8) :: Gv !! Binary volume interaction parameters
+      real(8) :: Bt !! Binary temperature interaction parameters
+      real(8) :: Gt !! Binary temperature interaction parameters
+      integer :: Kpolij
+      integer :: Kexpij
+      real(8), allocatable :: nij(:)
+      real(8), allocatable :: dij(:)
+      real(8), allocatable :: tij(:)
+      real(8), allocatable :: ethaij(:)
+      real(8), allocatable :: epsij(:)
+      real(8), allocatable :: betaij(:)
+      real(8), allocatable :: gammaij(:)
+      real(8) :: Fij
+   end type Gerg2008Binary
+
 contains
 
-   Subroutine get_params()
+   subroutine get_original_parameters(ids, pures, binaries, components)
+      integer, intent(in) :: ids(:)
+      type(Gerg2008Pure), intent(out) :: pures(:)
+      type(Gerg2008Binary), intent(out) :: binaries(:, :)
+      type(Substances), intent(out) :: components
+
+      integer :: i, j
+      integer :: nc
+      integer :: ikpol, ikexp
+      real(pr) :: Tc(size(ids)), Pc(size(ids)), w(size(ids)), Vc(size(ids))
+
+      nc = size(ids)
+      call original_parameters()
+
+      Tc = [(T_c(ids(i)), i=1,nc)]
+      Pc = [(P_c(ids(i)), i=1,nc)]/1e5
+      w = [(acentric_factor(ids(i)), i=1,nc)]
+      Vc = [(1/rho_c(ids(i)), i=1,nc)]
+
+      components = Substances(Tc=Tc, Pc=Pc, w=w, Vc=Vc)
+
+      do i=1,nc
+         pures(i)%kpol = kpol(ids(i))
+         pures(i)%kexp = kexp(ids(i))
+         pures(i)%n = noik(ids(i), :)
+         pures(i)%d = doik(ids(i), :)
+         pures(i)%t = toik(ids(i), :)
+         pures(i)%c = coik(ids(i), kpol(ids(i))+1:kexp(ids(i))+kpol(ids(i)))
+      end do
+
+      do i=1,nc
+         do j=1,nc
+            binaries(i, j)%Bt = Bt(ids(i), ids(j))
+            binaries(i, j)%Gt = Gt(ids(i), ids(j))
+            binaries(i, j)%Bv = Bv(ids(i), ids(j))
+            binaries(i, j)%Gv = Gv(ids(i), ids(j))
+
+            ikpol = Kpolij(ids(i), ids(j))
+            ikexp = Kexpij(ids(i), ids(j))
+
+            binaries(i, j)%Kpolij = Kpolij(ids(i), ids(j))
+            binaries(i, j)%Kexpij = Kexpij(ids(i), ids(j))
+
+            binaries(i, j)%nij = nij(ids(i), ids(j), :ikexp+ikpol)
+            binaries(i, j)%dij = dij(ids(i), ids(j), :ikexp+ikpol)
+            binaries(i, j)%tij = tij(ids(i), ids(j), :ikexp+ikpol)
+            binaries(i, j)%ethaij = ethaij(ids(i), ids(j), ikpol+1:ikexp+ikpol)
+            binaries(i, j)%epsij = epsij(ids(i), ids(j), ikpol+1:ikexp+ikpol)
+            binaries(i, j)%betaij = betaij(ids(i), ids(j), ikpol+1:ikexp+ikpol)
+            binaries(i, j)%gammaij = gammaij(ids(i), ids(j), ikpol+1:ikexp+ikpol)
+            binaries(i, j)%Fij = Fij(ids(i), ids(j))
+         end do
+      end do
+
+   end subroutine get_original_parameters
+
+   subroutine original_parameters()
+      !! Parameter table of the original GERG 2008 model
       integer :: i, j, k
       R = 8.314472d0
 
@@ -1681,141 +1770,5 @@ contains
       th0i(21, 5) = 0.0d0
       th0i(21, 6) = 0.0d0
       th0i(21, 7) = 0.0d0
-   end subroutine get_params
-end module parameters
-
-program main
-   use yaeos, only: pr, CubicEoS, SoaveRedlichKwong, CriticalLine, critical_line, EquilibriumState, critical_point
-   use YAEOS__MODELS_AR_GERG2008, only: Gerg2008, GERG2008PURE
-   use parameters, only: noik, doik, toik, coik, kpol, kexp, T_c, P_c, acentric_factor, rho_c, &
-      Bv, Gv, Bt, Gt, &
-      Kpolij, Kexpij, nij, dij, tij, ethaij, epsij, betaij, gammaij, fij, &
-      get_params
-
-   implicit none
-   type(GERG2008PURE) :: pures(2)
-   type(Gerg2008) :: model
-   type(CubicEoS) :: cubic
-   type(CriticalLine) :: cl
-   type(EquilibriumState) :: cp
-
-   real(pr) :: Tc(2), Pc(2), w(2)
-   real(pr) :: n(2), v, t, n0(2)
-   real(pr) :: ar, arv, arv2
-   real(pr) :: art, art2, artv
-   real(pr) :: arvn(2), artn(2), arn(2), arn2(2,2)
-   real(pr) :: f1, f2, f3, f4, dx
-   real(pr) :: z0(2) = [1, 0]
-   real(pr) :: zi(2) = [0, 1]
-   integer :: i, j, ikpol, ikexp
-   integer :: comps(2) = [1, 4]
-
-   call get_params()
-   Tc = [T_c(comps(1)), T_c(comps(2))]
-   Pc = [P_c(comps(1)), P_c(comps(2))]/1e5
-   w = [acentric_factor(comps(1)), acentric_factor(comps(2))]
-
-   cubic = SoaveRedlichKwong(Tc, Pc, w)
-
-   model%components%Tc = Tc
-   model%components%Pc = Pc
-   model%components%w = w
-   model%components%vc =  1./[rho_c(comps(1)), rho_c(comps(2))]
-   model%srk = cubic
-
-   do i=1,2
-      pures(i)%kpol = kpol(comps(i))
-      pures(i)%kexp = kexp(comps(i))
-      pures(i)%n = noik(comps(i), :)
-      pures(i)%d = doik(comps(i), :)
-      pures(i)%t = toik(comps(i), :)
-      pures(i)%c = coik(comps(i), kpol(comps(i))+1:kexp(comps(i))+kpol(comps(i)))
-   end do
-
-   allocate(model%binaries(2,2))
-
-   do i=1,2
-      do j=i+1,2
-         model%binaries(i, j)%Bt = Bt(comps(i), comps(j))
-         model%binaries(i, j)%Gt = Gt(comps(i), comps(j))
-         model%binaries(i, j)%Bv = Bv(comps(i), comps(j))
-         model%binaries(i, j)%Gv = Gv(comps(i), comps(j))
-
-         ikpol = Kpolij(comps(i), comps(j))
-         ikexp = Kexpij(comps(i), comps(j))
-
-         model%binaries(i, j)%Kpolij = Kpolij(comps(i), comps(j))
-         model%binaries(i, j)%Kexpij = Kexpij(comps(i), comps(j))
-
-         model%binaries(i, j)%nij = nij(comps(i), comps(j), :ikexp+ikpol)
-         model%binaries(i, j)%dij = dij(comps(i), comps(j), :ikexp+ikpol)
-         model%binaries(i, j)%tij = tij(comps(i), comps(j), :ikexp+ikpol)
-         model%binaries(i, j)%ethaij = ethaij(comps(i), comps(j), ikpol+1:ikexp+ikpol)
-         model%binaries(i, j)%epsij = epsij(comps(i), comps(j), ikpol+1:ikexp+ikpol)
-         model%binaries(i, j)%betaij = betaij(comps(i), comps(j), ikpol+1:ikexp+ikpol)
-         model%binaries(i, j)%gammaij = gammaij(comps(i), comps(j), ikpol+1:ikexp+ikpol)
-         model%binaries%Fij = Fij(comps(i), comps(j))
-
-         model%binaries(j, i) = model%binaries(i, j)
-      end do
-   end do
-
-
-   model%pures = pures
-
-   n = [0.5, 0.5]
-
-   v = 1
-   T = 250
-
-   call cubic%residual_helmholtz(n, v, t, ar=ar, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   print *, "srk: ", ar, arv, arv2, arn, arn2
-   
-   call model%residual_helmholtz(n, v, t, ar=ar, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   print *, "greg: ", ar, arv, arv2, arn, arn2
-
-   dx = 0.01
-   
-   n = [0.5, 0.5] + [dx, 0._pr]
-   call model%residual_helmholtz(n, v, t, ar=f2, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   
-   n = [0.5, 0.5] - [dx, 0._pr]
-   call model%residual_helmholtz(n, v, t, ar=f1, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   print *, (f2 - f1)/(2*dx), (f2 - 2*ar + f1)/(dx**2)
-   
-   n = [0.5, 0.5] + [0._pr, dx]
-   call model%residual_helmholtz(n, v, t, ar=f2, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   
-   n = [0.5, 0.5] - [0._pr, dx]
-   call model%residual_helmholtz(n, v, t, ar=f1, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   print *, (f2 - f1)/(2*dx)
-
-   ! ==============================================================
-   ! second order
-   ! --------------------------------------------------------------
-   dx = 0.00001
-   n0 = [0.9, 0.5]
-   n = n0
-   call model%residual_helmholtz(n, v, t, ar=ar, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   n = n0 + [dx, dx]
-   call model%residual_helmholtz(n, v, t, ar=f1, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   n = n0 + [dx, -dx]
-   call model%residual_helmholtz(n, v, t, ar=f2, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   n = n0 + [-dx, dx]
-   call model%residual_helmholtz(n, v, t, ar=f3, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   n = n0 + [-dx, -dx]
-   call model%residual_helmholtz(n, v, t, ar=f4, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   print *, (f1 - f2 - f3 + f4)/(4*dx**2), arn2(1, 2)
-
-
-   call model%volume(n, 1.0_pr, T, f1, root_type="stable")
-   call cubic%volume(n, 1.0_pr, T, f2, root_type="stable")
-
-   cp = critical_point(model, z0, zi, 1, 0.01_pr, 1000)
-   print *, cp%iters
-   ! cl = critical_line(model, a0=0.999_pr, z0=z0, zi=zi, ns=1, S=0.9_pr, dS0=-0.01_pr)
-
-   ! do i=1,size(cl%a)
-   !    print *, cl%a(i), cl%T(i), cl%P(i)
-   ! end do
-end program main
+   end subroutine original_parameters
+end module yaeos__models_ar_multifluid_parameters_gerg2008
