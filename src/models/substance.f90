@@ -7,6 +7,7 @@ module yaeos__substance
     type :: Substances
         !! Set of pure components
         character(len=50), allocatable :: names(:) !! Composition names.
+        real(pr), allocatable :: vc(:) !! Critical Volume [L/mol]
         real(pr), allocatable :: tc(:) !! Critical Temperature [K]
         real(pr), allocatable :: pc(:) !! Critical Pressure [bar]
         real(pr), allocatable :: w(:) !! Acentric factor
