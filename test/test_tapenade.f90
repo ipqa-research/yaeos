@@ -1769,7 +1769,7 @@ program main
    T = 250
 
    call cubic%residual_helmholtz(n, v, t, ar=ar, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
-   print *, "srk: ", ar, arv, arv2, arn
+   print *, "srk: ", ar, arv, arv2, arn, arn2
    
    call model%residual_helmholtz(n, v, t, ar=ar, arv=arv, art=art, artv=artv, arv2=arv2, art2=art2, arn=arn, arvn=arvn, artn=artn, arn2=arn2)
    print *, "greg: ", ar, arv, arv2, arn, arn2
