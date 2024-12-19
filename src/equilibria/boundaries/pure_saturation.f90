@@ -42,21 +42,19 @@ contains
       type(PurePsat) :: pt
       ! ------------------------------------------------------------------------
 
-      real(pr), allocatable :: XS(:, :)
       real(pr) :: X(4) !! Variables [lnVx, lnVy, lnP, lnT]
-      real(pr) :: S0
       real(pr) :: z(size(model))
       real(pr) :: Vc
       integer :: i
       integer :: ns
 
       real(pr) :: Tc, Pc
-      real(pr) :: Vz, Vy, T, P
+      real(pr) :: Vx, Vy, T, P
 
       real(pr) :: dXdS(4), dS, S, dFdS(4)
-      real(pr) :: F(4), dF(4,4), dX(4)
-      integer :: points=2000
-      integer :: its, real_points, nc
+      real(pr) :: F(4), dF(4,4)
+      integer :: its, nc
+      integer :: points
 
       nc = size(model)
       Tc = model%components%Tc(component)
@@ -65,10 +63,13 @@ contains
       z = 0
       z(component) = 1
       call model%volume(z, P=Pc, T=Tc, V=Vc, root_type="vapor")
-      X = [log(Vc*0.99), log(Vc*1.1), log(Pc), log(Tc)]
+
+      Vx = Vc*0.99
+      Vy = Vc*1.1
+
+      X = [log(Vx), log(Vy), log(Pc), log(Tc)]
 
       ns = 1
-      ! S = X(ns)
       S = log(0.95)
       dS = -0.5
       allocate(pt%T(0), pt%P(0), pt%Vx(0), pt%Vy(0))
@@ -76,33 +77,38 @@ contains
       ! ========================================================================
       ! Trace the line using the continuation method.
       ! ------------------------------------------------------------------------
-      allocate(XS(points, 4))
-      do i=1,points
+      T = Tc
+      points = 0
+      do while(T > 50 .or. .not. isnan(T))
          call solve_point(model, component, nc, X, ns, S, F, dF, dFdS, its)
          dXdS = solve_system(dF, -dFdS)
          ns = maxloc(abs(dXdS(3:4)), dim=1) + 2
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
-         XS(i, :) = X
          X = X + dXdS*dS
          S = X(ns)
-         ! if (exp(X(4)) < 3) exit
-      end do
 
-      do i=points,1,-1
-         if (all(XS(i, :) == 0) .or. any(isnan(XS(i, :)))) cycle
-         real_points = i
-         Vz = exp(XS(i, 1))
-         Vy = exp(XS(i, 2))
-         P = exp(XS(i, 3))
-         T = exp(XS(i, 4))
+         Vx = exp(X(1))
+         Vy = exp(X(2))
+         P = exp(X(3))
+         T = exp(X(4))
 
-         pt%T = [pt%T, T]
-         call model%pressure(z, V=Vz, T=T, P=P)
-         pt%P = [pt%P, P]
-         pt%Vx = [pt%Vx, Vz]
-         pt%Vy = [pt%Vy, Vy]
+         if (.not. isnan(T)) then
+            pt%T = [pt%T, T]
+            pt%P = [pt%P, P]
+            pt%Vx = [pt%Vx, Vx]
+            pt%Vy = [pt%Vy, Vy]
+            points = points + 1
+         end if
       end do
+      
+      ! Save interpolators to obtain particular values. The interpolator needs
+      ! monothonic increasing values in x, so we need to reverse the arrays.
+
+      pt%P = pt%P(points:1:-1)
+      pt%T = pt%T(points:1:-1)
+      pt%Vx = pt%Vx(points:1:-1)
+      pt%Vy = pt%Vy(points:1:-1)
 
       call pt%interpolator_get_T%initialize(pt%P, pt%T, i)
       call pt%interpolator_get_P%initialize(pt%T, pt%P, i)
@@ -110,9 +116,9 @@ contains
 
    subroutine solve_point(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)
       !! # Solve point
-      !! 
+      !!
       !! Solve a saturation point for a pure component.
-      !! 
+      !!
       !! ## Description
       !! The set of equations to solve is:
       !!
@@ -136,28 +142,28 @@ contains
       !! \right\}
       !! \]
       !!
-      !! The vector of variables \(X\) is equal to 
+      !! The vector of variables \(X\) is equal to
       !! \([ \ln V_z, \ln V_y, \ln P, \ln T ]\).
-      class(ArModel), intent(in) :: model 
-         !! Thermodynamic model
-      integer, intent(in) :: ncomp 
-         !! Component index
-      integer, intent(in) :: nc 
-         !! Total number of components  
-      real(pr), intent(in out) :: X(4) 
-         !! Variables \([ln V_z, lnV_y, lnP, lnT]\)
-      integer, intent(in) :: ns 
-         !! Variable index to solve. If the 
-      real(pr), intent(in) :: S 
-         !! Variable value specified to solve
-      real(pr), intent(out) :: F(4) 
-         !! Function
-      real(pr), intent(out) :: dF(4, 4) 
-         !! Jacobian
-      real(pr), intent(out) :: dFdS(4) 
-         !! Derivative of the function with respect to S
-      integer, intent(out) :: its 
-         !! Number of iterations
+      class(ArModel), intent(in) :: model
+      !! Thermodynamic model
+      integer, intent(in) :: ncomp
+      !! Component index
+      integer, intent(in) :: nc
+      !! Total number of components
+      real(pr), intent(in out) :: X(4)
+      !! Variables \([ln V_z, lnV_y, lnP, lnT]\)
+      integer, intent(in) :: ns
+      !! Variable index to solve. If the
+      real(pr), intent(in) :: S
+      !! Variable value specified to solve
+      real(pr), intent(out) :: F(4)
+      !! Function
+      real(pr), intent(out) :: dF(4, 4)
+      !! Jacobian
+      real(pr), intent(out) :: dFdS(4)
+      !! Derivative of the function with respect to S
+      integer, intent(out) :: its
+      !! Number of iterations
 
       real(pr) :: z(nc)
       real(pr) :: lnfug_z(nc), lnfug_y(nc)
@@ -191,7 +197,6 @@ contains
       end do
 
    contains
-
       subroutine isofugacity(X, F, dF, dFdS)
          real(pr), intent(inout) :: X(4)
          real(pr), intent(out) :: F(4)
@@ -247,12 +252,36 @@ contains
    end subroutine solve_point
 
    real(pr) function get_T(pt, P) result(T)
+      !! # Get temperature
+      !!
+      !! Get the saturation temperature for a given pressure.
+      !!
+      !! ## Description
+      !! This function returns the saturation temperature for a given pressure.
+      !! The function uses an interpolator to get the required value.
+      !!
+      !! ## Examples
+      !! ```fortran
+      !! T = pt%get_T(P)
+      !! ```
       class(PurePsat), intent(in out) :: pt
       real(pr), intent(in) :: P
       call pt%interpolator_get_T%evaluate(P, T)
    end function get_T
 
    real(pr) function get_P(pt, T) result(P)
+      !! # Get pressure
+      !!
+      !! Get the saturation pressure for a given temperature.
+      !!
+      !! ## Description
+      !! This function returns the saturation pressure for a given temperature.
+      !! The function uses an interpolator to get the required value.
+      !!
+      !! ## Examples
+      !! ```fortran
+      !! P = pt%get_P(T)
+      !! ```
       class(PurePsat), intent(in out) :: pt
       real(pr), intent(in) :: T
       call pt%interpolator_get_P%evaluate(T, P)
