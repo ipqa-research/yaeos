@@ -16,9 +16,7 @@ module yaeos__tapenade_ar_api
       procedure(tapenade_ar_b), deferred :: ar_b
       procedure(tapenade_ar_d_b), deferred :: ar_d_b
       procedure(tapenade_ar_d_d), deferred :: ar_d_d
-      procedure(tapenade_v0), deferred :: v0
       procedure :: residual_helmholtz => residual_helmholtz
-      procedure :: get_v0 => get_v0
    end type
 
    abstract interface
@@ -73,13 +71,6 @@ module yaeos__tapenade_ar_api
          real(pr), intent(in) :: nd(:), vd, td
          real(pr), intent(out) :: arval, arvald0, arvald, arvaldd
       end subroutine
-
-      pure function tapenade_v0(model, n, p, t)
-         import pr, ArModelTapenade
-         class(ArModelTapenade), intent(in) :: model
-         real(pr), intent(in) :: n(:), p, t
-         real(pr) :: tapenade_v0
-      end function
    end interface
 
 contains
@@ -217,12 +208,4 @@ contains
          get_ArnX = nb
       end function
    end subroutine
-
-   function get_v0(self, n, p, t)
-      class(ArModelTapenade), intent(in) :: self
-      real(pr), intent(in) :: n(:), p, t
-      real(pr) :: get_v0
-
-      get_v0 = self%v0(n, p, t)
-   end function
 end module

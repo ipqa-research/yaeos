@@ -12,20 +12,25 @@ module yaeos__models
    !!   should provide.
    !! - **Cubic Equations of state**:
    !!    - `AlphaFunction` type
-   !!    - `CubicMixRule` type
    !!    - `CubicEos` type that extends `ArModel` to use a generic
    !!      two-parameter EoS. Implemented models that use this type can be
    !!      seen at [[yaeos__models_ar_cubic_implementations(module)]]
-   !!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that 
+   !!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that
    !!       defaults to classic vdW mixing rules.
    !!    - `MHV` (Modified Huron-Vidal) type: Michelsens first order modified
    !!       Huron-Vidal mixing rule.
+   !! - **GERG2008 Equation of State**:
+   !!    - GERG2008 multifluid equation of state
 
    ! Base model structure
    use yaeos__models_base, only: BaseModel
 
    ! Residual Helmholtz Models
    use yaeos__models_ar, only: ArModel, size
+
+   ! GERG2008
+   use yaeos__models_ar_gerg2008, only: &
+      Gerg2008, Gerg2008Binary, G2008Components, gerg_2008
 
    ! Cubic EoS models
    use yaeos__models_ar_genericcubic, only: &
@@ -47,4 +52,4 @@ module yaeos__models
    ! Implemented models
    use yaeos__models_ge_implementations
 
-end module
+end module yaeos__models
