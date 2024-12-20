@@ -44,13 +44,14 @@ program gpec
       Pc=sus%critical%critical_pressure%value/1e5, &
       w=sus%critical%acentric_factor%value &
       )
-   model = get_model_nrtl_mhv()
+   !model = get_model_nrtl_mhv()
+   model = get_modelgerg()
 
    ! ===========================================================================
    ! Calculate both saturation curves
    ! ---------------------------------------------------------------------------
-   psats(1) = pure_saturation_line(model, 1)
-   psats(2) = pure_saturation_line(model, 2)
+   psats(1) = pure_saturation_line(model, 1, 1._pr, 100._pr)
+   psats(2) = pure_saturation_line(model, 2, 1._pr, 100._pr)
 
    open(unit=1, file="gpec_Psat1.dat")
    do i=1,size(psats(1)%T)
@@ -108,9 +109,9 @@ program gpec
    ! Now with the global diagram information, calculate specific points
    ! ---------------------------------------------------------------------------
 
-   ! call plot_pts([(real(i,pr)/100, i=1,99,10)])
-   ! call plot_pxs([(real(i, pr), i=150,int(model%components%Tc(2)),20)])
-   ! call plot_txs([(real(i, pr), i=0,150,50)])
+   call plot_pts([(real(i,pr)/100, i=1,99,10)])
+   call plot_pxs([(real(i, pr), i=150,int(model%components%Tc(2)),20)])
+   call plot_txs([(real(i, pr), i=0,int(model%components%Pc(1)),50)])
 contains
 
    type(CubicEoS) function get_model_nrtl_mhv() result(model)
@@ -138,6 +139,12 @@ contains
       deallocate(model%mixrule)
       model%mixrule = mr
    end function get_model_nrtl_mhv
+
+   type(GERG2008) function get_modelgerg() result(model)
+      integer :: ids(2)
+      ids = [G2008Components%methane, G2008Components%carbon_dioxide]
+      model = gerg_2008(ids)
+   end function get_modelgerg
 
    subroutine plot_pts(zs)
       real(pr), intent(in) :: zs(:)
@@ -256,7 +263,7 @@ contains
       end do
       write(1, *)
       write(1, *)
-   end subroutine
+   end subroutine write_pt
 
    subroutine write_tx (tx)
       type(TXEnvel2), intent(in) :: tx
