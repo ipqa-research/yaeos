@@ -59,6 +59,7 @@ module yaeos__models_ar
       procedure :: entropy_residual_vt
       procedure :: Cv_residual_vt
       procedure :: Cp_residual_vt
+      procedure :: Psat_pure
    end type ArModel
 
    interface size
@@ -429,7 +430,7 @@ contains
       RT = R*T
 
       if (present(lnf) .and. .not. (&
-              present(dlnfdn) &
+         present(dlnfdn) &
          .or. present(dlnfdV) &
          .or. present(dlnfdT) &
          )) then
@@ -440,7 +441,7 @@ contains
          where (n /= 0)
             lnf = log(n/totn) + Arn/RT - log(V/(totn*RT))
          endwhere
-         
+
          if (present(P)) P = P_in
 
          return
@@ -471,7 +472,7 @@ contains
       end if
 
       if (present(dlnfdV)) then
-         dlnfdV = -dPdn_in/RT         
+         dlnfdV = -dPdn_in/RT
       end if
 
       if (present(dlnfdT)) then
@@ -605,4 +606,42 @@ contains
 
       Cp = Cv - T*dPdT**2/dPdV - totn*R
    end subroutine Cp_residual_vt
+
+   real(pr) function Psat_pure(eos, ncomp, T)
+      !! Calculation of saturation pressure of a pure component using the
+      !! secant method.
+      class(ArModel), intent(in) :: eos !! Model that will be used
+      integer, intent(in) :: ncomp
+      !! Number of component in the mixture from which the saturation pressure
+      !! will be calculated
+      real(pr), intent(in) :: T !! Temperature [K]
+
+      real(pr) :: P1, P2
+      real(pr) :: f1, f2
+
+      real(pr) :: n(size(eos))
+
+      n = 0
+      n(ncomp) = 1
+
+      P1 = 0.5
+      P2 = 1
+
+      do while(abs(diff(P2)) > 1e-5)
+         f1 = diff(P1)
+         f2 = diff(P2)
+         Psat_pure = (P1 * f2 - P2 * f1)/(f2 - f1)
+         P1 = P2
+         P2 = Psat_pure
+      end do
+   contains
+      real(pr) function diff(P)
+         real(pr), intent(in) :: P
+         real(pr) :: V_l, V_v
+         real(pr) :: phi_v(size(eos)), phi_l(size(eos))
+         call eos%lnphi_pt(n, P=P, T=T, V=V_v, lnPhi=phi_v, root_type="vapor")
+         call eos%lnphi_pt(n, P=P, T=T, V=V_l, lnPhi=phi_l, root_type="liquid")
+         diff = phi_v(ncomp) - phi_l(ncomp)
+      end function diff
+   end function Psat_pure
 end module yaeos__models_ar

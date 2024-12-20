@@ -4,8 +4,9 @@ Library to use EoS-based calculations. This main module imports all the
 relevant constants, procedures and objects to have better access to them.
 """
 
-__version__ = "2.1.0"
+__version__ = "2.3.0"
 
+import yaeos.constants as constants
 from yaeos.lib import yaeos_c
 from yaeos.models.excess_gibbs import NRTL, UNIFACVLE, UNIQUAC
 from yaeos.models.residual_helmholtz.cubic_eos import (
@@ -22,6 +23,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
 
 
 __all__ = [
+    "constants",
     "yaeos_c",
     "SoaveRedlichKwong",
     "PengRobinson76",

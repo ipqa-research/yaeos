@@ -30,7 +30,7 @@ MODULE autodiff_tapenade_pr76_demo
       procedure :: ar_b
       procedure :: ar_d_b
       procedure :: ar_d_d
-      procedure :: v0 => VOLUME_INITALIZER
+      procedure :: get_v0 => VOLUME_INITALIZER
    end type TPR76
 
 CONTAINS
@@ -1352,15 +1352,15 @@ CONTAINS
       &     arg11))*(r*t)
    end subroutine AR
 
-   PURE FUNCTION VOLUME_INITALIZER(model, n, p, t) RESULT (v0)
+   FUNCTION VOLUME_INITALIZER(self, n, p, t) RESULT (v0)
       IMPLICIT NONE
-      class(TPR76), INTENT(IN) :: model
+      class(TPR76), INTENT(IN) :: self
       REAL(pr), INTENT(IN) :: n(:)
       REAL(pr), INTENT(IN) :: p
       REAL(pr), INTENT(IN) :: t
       REAL(pr) :: v0
       INTRINSIC SUM
-      v0 = SUM(n*model%b)/SUM(model%b)
+      v0 = SUM(n*self%b)/SUM(self%b)
    end function VOLUME_INITALIZER
 
 end module autodiff_tapenade_pr76_demo
