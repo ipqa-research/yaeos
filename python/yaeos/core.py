@@ -978,6 +978,52 @@ class ArModel(ABC):
         """
         return yaeos_c.cp_residual_vt(self.id, moles, volume, temperature)
 
+    def pure_saturation_pressures(
+        self, component, stop_pressure=0.01, stop_temperature=100
+    ):
+        """Calculate pure component saturation pressures [bar].
+
+        Calculation starts from the critical point and goes down to the
+        stop pressure or stop temperature.
+
+        Parameters
+        ----------
+        component : int
+            Component index (starting from 1)
+        stop_pressure : float, optional
+            Stop pressure [bar], by default 0.01
+        stop_temperature : float, optional
+            Stop temperature [K], by default 100
+
+        Returns
+        -------
+        dict
+            Pure component saturation points dictionary with keys:
+                - T: Temperature [K]
+                - P: Pressure [bar]
+                - Vx: Liquid Phase Volume [L/mole]
+                - Vy: Vapor Phase Volume [L/mole]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+            tc = np.array([320.0, 375.0])
+            pc = np.array([45.0, 60.0])
+            w = np.array([0.0123, 0.045])
+
+            model = PengRobinson76(tc, pc, w)
+        """
+        P, T, Vx, Vy = yaeos_c.pure_saturation_line(
+            self.id, component, stop_pressure, stop_temperature
+        )
+
+        return {"T": T, "P": P, "Vx": Vx, "Vy": Vy}
+
     def flash_pt(
         self, z, pressure: float, temperature: float, k0=None
     ) -> dict:

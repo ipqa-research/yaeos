@@ -44,6 +44,7 @@ module yaeos_c
    ! Phase equilibria
    public :: flash, flash_grid
    public :: saturation_pressure, saturation_temperature
+   public :: pure_saturation_line
    public :: pt2_phase_envelope, px2_phase_envelope
    public :: critical_point, critical_line
    public :: stability_zpt, tm
@@ -706,6 +707,40 @@ contains
       end if
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
    end subroutine saturation_temperature
+
+   subroutine pure_saturation_line(id, comp_id, stop_P, stop_T, P, T, Vx, Vy)
+      use yaeos, only: fsat => pure_saturation_line, PurePsat, pr
+      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: comp_id
+      real(c_double), intent(in) :: stop_P
+      real(c_double), intent(in) :: stop_T
+      real(c_double), intent(out) :: P(800)
+      real(c_double), intent(out) :: T(800)
+      real(c_double), intent(out) :: Vx(800)
+      real(c_double), intent(out) :: Vy(800)
+
+      integer :: npoints
+      type(PurePsat) :: sat
+
+      real(8) :: nan
+
+      nan = 0
+      nan = nan/nan
+
+      T = nan
+      P = nan
+      Vx = nan
+      Vy = nan
+
+      sat = fsat(ar_models(id)%model, comp_id, stop_P, stop_T)
+
+      npoints = minval([size(sat%T), 800])
+
+      T(:npoints) = sat%T(:npoints)
+      P(:npoints) = sat%P(:npoints)
+      Vx(:npoints) = sat%Vx(:npoints)
+      Vy(:npoints) = sat%Vy(:npoints)
+   end subroutine
 
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &

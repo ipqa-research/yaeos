@@ -31,7 +31,7 @@ program main
    ! ==========================================================================
    ! Test the pure saturation line of propane
    ! -------------------------------------------------------------------------
-   pt = pure_saturation_line(model, 2)
+   pt = pure_saturation_line(model, 2, 0.001_pr, 100._pr)
    call assert(abs(pt%get_P(200._pr) - 0.2068) < 0.1_Pr, "Propane Psat at 140K")
    call assert(abs(pt%get_T(10._pr) - 300.08) < 0.1_Pr, "Propane Psat at 10 bar")
    
@@ -39,7 +39,7 @@ program main
    ! ==========================================================================
    ! Test the pure saturation line of methane
    ! -------------------------------------------------------------------------
-   pt = pure_saturation_line(model, 1)
+   pt = pure_saturation_line(model, 1, 1._pr, 100._pr)
    call assert(abs(pt%get_P(140._pr) - 6.45) < 0.1_Pr, "Methane Psat at 140K")
-   call assert(abs(pt%get_T(10._pr) - 148.970) < 0.1_Pr, "Propane Psat at 10 bar")
+   call assert(abs(pt%get_T(10._pr) - 148.970) < 0.1_Pr, "Methane Psat at 10 bar")
 end program main

@@ -35,8 +35,8 @@ program main
       w=sus%critical%acentric_factor%value &
       )
 
-   vp1 = pure_saturation_line(model, 1)
-   vp2 = pure_saturation_line(model, 2)
+   vp1 = pure_saturation_line(model, 1, 1._pr, 100._pr)
+   vp2 = pure_saturation_line(model, 2, 1._pr, 100._pr)
 
    P = 10._pr
    T = vp1%get_T(P)

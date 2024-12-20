@@ -22,7 +22,7 @@ module yaeos__equilibria_boundaries_pure_saturation
 
 contains
 
-   function pure_saturation_line(model, component) result(pt)
+   function pure_saturation_line(model, component, minP, minT) result(pt)
       !! # Pure saturation line
       !!
       !! Saturation pressures and temperatures for a pure component.
@@ -39,6 +39,8 @@ contains
       use stdlib_optval, only: optval
       class(ArModel), intent(in) :: model !! Thermodyanmic model
       integer, intent(in) :: component !! Component index to calculate the line
+      real(pr), intent(in) :: minP !! Minimum pressure [bar]
+      real(pr), intent(in) :: minT !! Minimum temperature [K]
       type(PurePsat) :: pt
       ! ------------------------------------------------------------------------
 
@@ -64,49 +66,56 @@ contains
       z(component) = 1
       call model%volume(z, P=Pc, T=Tc, V=Vc, root_type="vapor")
 
-      Vx = Vc*0.99
-      Vy = Vc*1.1
+      Vx = Vc*0.999
+      Vy = Vc*1.001
 
       X = [log(Vx), log(Vy), log(Pc), log(Tc)]
 
       ns = 1
-      S = log(0.95)
-      dS = -0.5
+      S = log(0.99)
+      dS = -0.15
       allocate(pt%T(0), pt%P(0), pt%Vx(0), pt%Vy(0))
 
       ! ========================================================================
       ! Trace the line using the continuation method.
       ! ------------------------------------------------------------------------
       T = Tc
+      P = Pc
       points = 0
-      do while(T > 50 .or. .not. isnan(T))
+      do while(T > minT .and. P > minP .and. .not. isnan(T))
          call solve_point(model, component, nc, X, ns, S, F, dF, dFdS, its)
          dXdS = solve_system(dF, -dFdS)
          ns = maxloc(abs(dXdS(3:4)), dim=1) + 2
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
-         X = X + dXdS*dS
-         S = X(ns)
+
+         do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
+            dS = dS*1.5
+         end do
 
          Vx = exp(X(1))
          Vy = exp(X(2))
-         P = exp(X(3))
-         T = exp(X(4))
+         P  = exp(X(3))
+         T  = exp(X(4))
 
-         if (.not. isnan(T)) then
+         if (isnan(T)) then
+            exit
+         else
             pt%T = [pt%T, T]
             pt%P = [pt%P, P]
             pt%Vx = [pt%Vx, Vx]
             pt%Vy = [pt%Vy, Vy]
             points = points + 1
          end if
+         
+         X = X + dXdS*dS
+         S = X(ns)
       end do
-      
+
       ! Save interpolators to obtain particular values. The interpolator needs
       ! monothonic increasing values in x, so we need to reverse the arrays.
-
-      pt%P = pt%P(points:1:-1)
-      pt%T = pt%T(points:1:-1)
+      pt%P  = pt%P(points:1:-1)
+      pt%T  = pt%T(points:1:-1)
       pt%Vx = pt%Vx(points:1:-1)
       pt%Vy = pt%Vy(points:1:-1)
 
@@ -144,6 +153,7 @@ contains
       !!
       !! The vector of variables \(X\) is equal to
       !! \([ \ln V_z, \ln V_y, \ln P, \ln T ]\).
+!
       class(ArModel), intent(in) :: model
       !! Thermodynamic model
       integer, intent(in) :: ncomp
@@ -178,7 +188,8 @@ contains
       real(pr) :: dX(4), B
       real(pr) :: Xnew(4)
 
-      integer :: i, j
+      integer :: i
+!
       i = ncomp
 
       dX = 1
@@ -188,9 +199,10 @@ contains
       B = model%get_v0(z, 1._pr, 150._pr)
 
       its = 0
-      do while((maxval(abs(dX)) > 1e-7 .or. maxval(abs(F)) > 1e-7) .and. j < 100 )
+      do while((maxval(abs(dX)) > 1e-7 .and. maxval(abs(F)) > 1e-7))
          its = its+1
          call isofugacity(X, F, dF, dFdS)
+         if (any(isnan(F))) exit
          dX = solve_system(dF, -F)
          Xnew = X + dX
          X = Xnew
