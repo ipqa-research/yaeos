@@ -19,7 +19,7 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78, rkpr, psrk
+   public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv
 
@@ -27,7 +27,7 @@ module yaeos_c
    public :: make_available_ar_models_list
    public :: make_available_ge_models_list
 
-   ! GeMoels
+   ! GeModels
    public :: nrtl
    public :: unifac_vle
    public :: uniquac
@@ -416,6 +416,25 @@ contains
       call extend_ar_models_list(id)
    end subroutine psrk
 
+   subroutine get_ac_b_del1_del2(id, ac, b, del1, del2, nc)
+      use yaeos, only: CubicEoS, size
+      integer(c_int), intent(in) :: id
+      integer, intent(in) :: nc
+      real(c_double), dimension(nc), intent(out) :: &
+         ac, b, del1, del2
+
+
+      associate(model => ar_models(id)%model)
+         select type(model)
+          class is(CubicEoS)
+            ac(:nc) = model%ac
+            b(:nc) = model%b
+            del1(:nc) = model%del1
+            del2(:nc) = model%del2
+         end select
+      end associate
+   end subroutine get_ac_b_del1_del2
+
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
@@ -740,7 +759,7 @@ contains
       P(:npoints) = sat%P(:npoints)
       Vx(:npoints) = sat%Vx(:npoints)
       Vy(:npoints) = sat%Vy(:npoints)
-   end subroutine
+   end subroutine pure_saturation_line
 
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
@@ -931,7 +950,7 @@ contains
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
          mintpd=min_tm, w=w_min, all_minima=all_mins &
-      )
+         )
 
       call ar_models(id)%model%lnphi_pt(n=z, P=T, T=T, root_type="stable", lnPhi=d_i)
 
