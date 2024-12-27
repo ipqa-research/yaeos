@@ -119,7 +119,7 @@ contains
 
       T = sum(model%components%Tc * z)
       P = sum(model%components%Pc * z)
-      call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
+      call model%volume(n=z, P=P, T=T, V=V, root_type="vapor")
 
       X0 = [a0, log([v, T, P])]
 
@@ -321,11 +321,17 @@ contains
       real(pr), intent(in) :: u(:) !! Eigen-vector
       real(pr) :: df_critical(4, 4) !! Jacobian of the critical point function
 
-      real(pr), parameter :: eps=1e-4_pr
+      real(pr) :: eps
 
       real(pr) :: dx(4), F1(4), F2(4)
 
       integer :: i
+
+      if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
+         eps = 1e-3_pr
+      else
+         eps = 1e-6_pr
+      end if
 
       df_critical = 0
       do i=1,4
