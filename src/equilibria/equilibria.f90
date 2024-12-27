@@ -21,8 +21,10 @@ module yaeos__equilibria
    ! Phase equilibria boundaries
    use yaeos__equilibria_boundaries_pure_saturation, only: &
       PurePsat, pure_saturation_line
+   
    use yaeos__equilibria_boundaries_phase_envelopes_pt, only: &
       PTEnvel2, pt_envelope_2ph, find_hpl
+   
    use yaeos__equilibria_boundaries_phase_envelopes_px, only: &
       PXEnvel2, px_envelope_2ph
    use yaeos__equilibria_boundaries_phase_envelopes_tx, only: &
@@ -30,5 +32,4 @@ module yaeos__equilibria
 
    ! Extra
    use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
-   implicit none
 end module yaeos__equilibria
