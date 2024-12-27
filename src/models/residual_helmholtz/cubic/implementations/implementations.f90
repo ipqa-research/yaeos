@@ -295,7 +295,7 @@ contains
       !!
       !! \[\delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6\]
       !! \[k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0)\]
-      use yaeos__models_ar_cubic_quadratic_mixing, only: QMR_RKPR
+      use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
       use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
       real(pr), intent(in) :: tc(:) !! Critical Temperature [K]
       real(pr), intent(in) :: pc(:) !! Critical Pressure [bar]
@@ -307,7 +307,7 @@ contains
       real(pr), optional, intent(in) :: k(:)
 
       type(AlphaRKPR) :: alpha
-      type(QMR_RKPR) :: mixrule
+      type(QMR) :: mixrule
       type(Substances) :: composition
 
       integer :: i, nc
@@ -339,9 +339,9 @@ contains
       Zc_eos = 1.168 * Zc
 
       if (present(k)) then
-         alpha%k = k
+            alpha%k = k
       else
-         alpha%k = (A1 * zc + A0)*w**2 + (B1*zc + B0)*w + (C1*Zc + C0)
+         alpha%k = (A1 * Zc_eos + A0)*w**2 + (B1*zc + B0)*w + (C1*Zc_eos + C0)
       end if
 
       if (present(kij)) then
@@ -358,9 +358,9 @@ contains
 
       model%components = composition
       if (present(delta_1)) then
-         model%del1 = delta_1
+            model%del1 = delta_1
       else
-         model%del1 = d1 + d2 * (d3 - zc) ** d4 + d5 * (d3 - zc) ** d6
+         model%del1 = d1 + d2 * (d3 - zc_eos) ** d4 + d5 * (d3 - zc_eos) ** d6
       end if
 
       model%del2 = (1._pr - model%del1)/(1._pr + model%del1)
@@ -380,6 +380,8 @@ contains
                Psat_i = model%Psat_pure(i, 0.7*Tc(i))
                diff = (w(i) - (-1 - log10(Psat_i/Pc(i))))
                alpha%k(i) = alpha%k(i) + 0.1*diff
+
+               deallocate(model%alpha)
                model%alpha = alpha
             end do
          end do
