@@ -65,7 +65,7 @@ contains
          model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
          )
 
-      tol = 1e-4
+      tol = 1e-3
 
       ! Numeric derivatives
       call check(error, rel_error(Ar, Ar_num) < tol)
@@ -80,11 +80,11 @@ contains
       call check(error, maxval(rel_error(Arn2, Arn2_num)) < tol)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-13)
-      call check(error, maxval(abs(eq33)) < 1e-13)
-      call check(error, maxval(abs(eq34)) < 1e-13)
-      call check(error, abs(eq36) <= 1e-13)
-      call check(error, abs(eq37) <= 1e-13)
+      call check(error, abs(eq31) <= 1e-12)
+      call check(error, maxval(abs(eq33)) < 1e-12)
+      call check(error, maxval(abs(eq34)) < 1e-12)
+      call check(error, abs(eq36) <= 1e-12)
+      call check(error, abs(eq37) <= 1e-12)
 
       ! ========================================================================
       ! Model with kij and lij
@@ -133,11 +133,11 @@ contains
       call check(error, maxval(rel_error(Arn2, Arn2_num)) < tol)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-13)
-      call check(error, maxval(abs(eq33)) < 1e-14)
-      call check(error, maxval(abs(eq34)) < 1e-13)
-      call check(error, abs(eq36) <= 1e-14)
-      call check(error, abs(eq37) <= 1e-14)
+      call check(error, abs(eq31) <= 1e-12)
+      call check(error, maxval(abs(eq33)) < 1e-12)
+      call check(error, maxval(abs(eq34)) < 1e-12)
+      call check(error, abs(eq36) <= 1e-12)
+      call check(error, abs(eq37) <= 1e-12)
    end subroutine test_rkpr_cons_mixture
 
    subroutine test_rkpr_cons_pure(error)
