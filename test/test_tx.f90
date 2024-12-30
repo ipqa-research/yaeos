@@ -18,12 +18,9 @@ program main
    type(Substance) :: sus(nc)
    type(PurePsat) :: vp1, vp2
 
-   integer :: i, tf_brute, tf_criti, tf_envel
+   integer :: i
 
-   open(newunit=tf_brute, file="test_tx_brute")
-   open(newunit=tf_criti, file="test_tx_criti")
-   open(newunit=tf_envel, file="test_tx_envel")
-
+   write(*, *) test_title("TX Envelope 2ph")
 
    forsus_dir = "build/dependencies/forsus/" // forsus_default_dir
    sus(1) = Substance("methane")
