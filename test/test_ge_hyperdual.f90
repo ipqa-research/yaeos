@@ -4,7 +4,7 @@ module nrtl_hd
    !! The NRTL model is represented by the equations:
    !!
    !! \[tau = A + B/T\]
-   !! \[G = exp(-alpha * tau)\]
+   !! \[G = exp(-C * tau)\]
    !! \[Ge = R * T * sum(n * sum(n * tau * G) / sum(n * G))\]
    use yaeos
    use yaeos__adiff_hyperdual_ge_api, only: GeModelAdiff
@@ -13,8 +13,7 @@ module nrtl_hd
 
    type, extends(GeModelAdiff) :: NRTLHD
       !! NRTL model with automatic differentiation.
-      real(pr), allocatable :: A(:,:), B(:,:)
-      real(pr) :: alpha
+      real(pr), allocatable :: A(:,:), B(:,:), C(:,:)
    contains
       procedure :: Ge => Ge
    end type NRTLHD
@@ -33,7 +32,7 @@ contains
       integer :: i, j
 
       tau = self%a(:, :) + self%b(:, :)/T
-      G = exp(-self%alpha * tau)
+      G = exp(-self%C * tau)
 
       ge = 0._pr
       do i=1,size(n)
@@ -52,22 +51,39 @@ program test
    type(NRTL) :: og
    type(NRTLHD) :: imp
 
-   real(pr) :: n(2), T
+   real(pr) :: n(3), T
 
    real(pr) :: Geog, Geimp
    real(pr) :: GeogT, GeimpT
    real(pr) :: GeogT2, GeimpT2
-   real(pr) :: Geogn(2), Geimpn(2)
-   real(pr) :: GeognT(2), GeimpNt(2)
-   real(pr) :: Geogn2(2,2), Geimpn2(2,2)
+   real(pr) :: Geogn(3), Geimpn(3)
+   real(pr) :: GeognT(3), GeimpNt(3)
+   real(pr) :: Geogn2(3,3), Geimpn2(3,3)
 
-   og = binary_NRTL_tape()
+   real(pr) :: A(3,3), B(3,3), C(3,3)
+
+   A = 0; B=0; C=0   
+
+   A(1, 2) = 0.1; A(1, 3) = 0.2
+   A(2, 1) = 0.3; A(2, 3) = 0.4
+   A(3, 1) = 0.5; A(3, 2) = 0.6
+
+   B(1, 2) = 300; B(1, 3) = 500
+   B(2, 1) = 700; B(2, 3) = 900
+   B(3, 1) = 1100; B(3, 2) = 1300
+
+   C(1, 2) = 0.7; C(1, 3) = 0.8; C(2, 3) = 1.0
+   C(2, 1) = 1.1; C(3, 1) = 1.2; C(3, 2) = 1.3
+
+   og%a = A
+   og%b = B
+   og%C = C
 
    imp%A = og%a
    imp%B = og%b
-   imp%alpha = og%C(1,2)
+   imp%C = og%C
 
-   n = [0.2, 0.8]
+   n = [0.2, 0.8, 0.1]
    T = 273
 
    write(*, *) test_title("NRTL model with automatic differentiation")
