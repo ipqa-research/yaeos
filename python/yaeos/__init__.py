@@ -4,7 +4,7 @@ Library to use EoS-based calculations. This main module imports all the
 relevant constants, procedures and objects to have better access to them.
 """
 
-__version__ = "2.3.0"
+import importlib.metadata
 
 import yaeos.constants as constants
 from yaeos.lib import yaeos_c
@@ -38,3 +38,6 @@ __all__ = [
     "MHV",
     "HV",
 ]
+
+
+__version__ = importlib.metadata.version("yaeos")
