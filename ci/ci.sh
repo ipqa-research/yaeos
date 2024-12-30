@@ -41,7 +41,7 @@ run_test() {
         echoerr "There are wrongly named files in the test directory"
 
     echo Running tests...
-    fpm test --flag "--coverage -g"
+    fpm test --flag "--coverage -g" || exit 1
 }
 
 run_coverage() {
