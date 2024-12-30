@@ -57,6 +57,18 @@ run_coverage() {
         --exclude "app"\
         --exclude "tools" \
         --jacoco coverage.xml
+    
+    gcovr \
+        --exclude "build" \
+        --exclude "test/test_runner.f90" \
+        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test" \
+        --exclude "src/adiff/hyperdual.f90" \
+        --exclude "example" \
+        --exclude "src/legacy/*" \
+        --exclude "src/models/excess_gibbs/nrtl.f90" \
+        --exclude "app"\
+        --exclude "tools"
 }
 
 python_wrappers(){

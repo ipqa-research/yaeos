@@ -198,15 +198,6 @@ contains
 
          df(nc + 1, :nc) = y
 
-         do i=1,nc
-            if (z(i) == 0) then
-               F(i) = 0
-               df(:, i) = 0
-               ! df(i, :) = 0
-               df(i, i) = 1
-            end if
-         end do
-
          df(nc + 2, :) = 0
          df(nc + 2, ns) = 1
 
