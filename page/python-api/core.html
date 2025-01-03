@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Module &mdash; yaeos 2.1.0 documentation</title>
+  <title>Core Module &mdash; yaeos 2.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=20623aea"></script>
+      <script src="_static/documentation_options.js?v=c3c8ae58"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -57,6 +57,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Core Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#yaeos.core.GeModel"><code class="docutils literal notranslate"><span class="pre">GeModel</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.GeModel.ln_gamma"><code class="docutils literal notranslate"><span class="pre">GeModel.ln_gamma()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.GeModel.excess_gibbs"><code class="docutils literal notranslate"><span class="pre">GeModel.excess_gibbs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.GeModel.excess_enthalpy"><code class="docutils literal notranslate"><span class="pre">GeModel.excess_enthalpy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.GeModel.excess_entropy"><code class="docutils literal notranslate"><span class="pre">GeModel.excess_entropy()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#yaeos.core.ArModel"><code class="docutils literal notranslate"><span class="pre">ArModel</span></code></a><ul>
@@ -69,11 +72,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.entropy_residual_vt"><code class="docutils literal notranslate"><span class="pre">ArModel.entropy_residual_vt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.cv_residual_vt"><code class="docutils literal notranslate"><span class="pre">ArModel.cv_residual_vt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.cp_residual_vt"><code class="docutils literal notranslate"><span class="pre">ArModel.cp_residual_vt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.pure_saturation_pressures"><code class="docutils literal notranslate"><span class="pre">ArModel.pure_saturation_pressures()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt_grid"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt_grid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_pressure()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_temperature"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_temperature()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_px"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_px()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_analysis"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_analysis()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_tm"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_tm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_point"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_point()</span></code></a></li>
@@ -123,8 +128,8 @@ the models’ thermoprops methods.</p>
 <p>Excess Gibbs (Ge) model abstract class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.GeModel.ln_gamma">
-<span class="sig-name descname"><span class="pre">ln_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#GeModel.ln_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.GeModel.ln_gamma" title="Link to this definition"></a></dt>
-<dd><p>Calculate activity coefficients.</p>
+<span class="sig-name descname"><span class="pre">ln_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#GeModel.ln_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.GeModel.ln_gamma" title="Link to this definition"></a></dt>
+<dd><p>Calculate natural logarithm of activity coefficients.</p>
 <p>Calculate <span class="math notranslate nohighlight">\(\ln \gamma_i(n,T)\)</span> vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -151,7 +156,138 @@ the models’ thermoprops methods.</p>
 
 <span class="n">nrtl</span> <span class="o">=</span> <span class="n">NRTL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
 
+<span class="c1"># Evaluating ln_gamma only</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nrtl</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">300.0</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">nrtl</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.GeModel.excess_gibbs">
+<span class="sig-name descname"><span class="pre">excess_gibbs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#GeModel.excess_gibbs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.GeModel.excess_gibbs" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess Gibbs energy [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dt2</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature second derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+<li><p><strong>dtn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate cross temperature and moles derivative, by default False</p></li>
+<li><p><strong>dn2</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles second derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess Gibbs energy or tuple with excess Gibbs energy and
+derivatives dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+
+<span class="c1"># Ethanol - water system</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="c1"># Evaluating excess Gibbs energy only</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">excess_gibbs</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],</span> <span class="mf">303.15</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">excess_gibbs</span><span class="p">(</span>
+        <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],</span>
+        <span class="mf">303.15</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt2</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dtn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn2</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.GeModel.excess_enthalpy">
+<span class="sig-name descname"><span class="pre">excess_enthalpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#GeModel.excess_enthalpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.GeModel.excess_enthalpy" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess enthalpy [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess enthalpy or tuple with excess enthalpy and derivatives
+dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+
+<span class="c1"># Ethanol - water system</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="c1"># Evaluating excess enthalpy only</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">excess_enthalpy</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">303.15</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">excess_enthalpy</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">303.15</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.GeModel.excess_entropy">
+<span class="sig-name descname"><span class="pre">excess_entropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#GeModel.excess_entropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.GeModel.excess_entropy" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess entropy [bar L / K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess entropy or tuple with excess entropy and derivatives
+dictionary if any derivative is asked [bar L / K]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+
+<span class="c1"># Ethanol - water system</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="c1"># Evaluating excess entropy only</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">excess_entropy</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">303.15</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">excess_entropy</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">303.15</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -613,6 +749,50 @@ w = np.array([0.0123, 0.045])   # acentric factors</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.pure_saturation_pressures">
+<span class="sig-name descname"><span class="pre">pure_saturation_pressures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.pure_saturation_pressures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.pure_saturation_pressures" title="Link to this definition"></a></dt>
+<dd><p>Calculate pure component saturation pressures [bar].</p>
+<p>Calculation starts from the critical point and goes down to the
+stop pressure or stop temperature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component</strong> (<em>int</em>) – Component index (starting from 1)</p></li>
+<li><p><strong>stop_pressure</strong> (<em>float</em><em>, </em><em>optional</em>) – Stop pressure [bar], by default 0.01</p></li>
+<li><p><strong>stop_temperature</strong> (<em>float</em><em>, </em><em>optional</em>) – Stop temperature [K], by default 100</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Pure component saturation points dictionary with keys:</dt><dd><ul class="simple">
+<li><p>T: Temperature [K]</p></li>
+<li><p>P: Pressure [bar]</p></li>
+<li><p>Vx: Liquid Phase Volume [L/mole]</p></li>
+<li><p>Vy: Vapor Phase Volume [L/mole]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.flash_pt">
 <span class="sig-name descname"><span class="pre">flash_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.flash_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.flash_pt" title="Link to this definition"></a></dt>
 <dd><p>Two-phase split with specification of temperature and pressure.</p>
@@ -915,11 +1095,37 @@ defaults to “bubble”. Options are
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.phase_envelope_px">
+<span class="sig-name descname"><span class="pre">phase_envelope_px</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_px"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_px" title="Link to this definition"></a></dt>
+<dd><p>Two phase envelope calculation (PX).</p>
+<p>Calculation of a phase envelope that starts at a given composition and
+its related to another composition with some proportion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>array_like</em>) – Initial global mole fractions</p></li>
+<li><p><strong>zi</strong> (<em>array_like</em>) – Final global mole fractions</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>optional</em>) – Kind of saturation point to start the envelope calculation,
+defaults to “bubble”. Options are
+- “bubble”
+- “dew”</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Envelope’s maximum points to calculate (P, X), by default 300</p></li>
+<li><p><strong>p0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial guess for pressure [bar] for the saturation point of kind:
+<cite>kind</cite>, by default 10.0</p></li>
+<li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of composition <cite>zi</cite>, by default 0.001</p></li>
+<li><p><strong>ds0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for a, by default 0.1</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.stability_analysis">
 <span class="sig-name descname"><span class="pre">stability_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.stability_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.stability_analysis" title="Link to this definition"></a></dt>
 <dd><p>Perform stability analysis.</p>
 <p>Find all the possible minima values that the <span class="math notranslate nohighlight">\(tm\)</span> function,
-defined by Michelsen and Møllerup.</p>
+defined by Michelsen and Mollerup.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -929,32 +1135,42 @@ defined by Michelsen and Møllerup.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
+<dd class="field-even"><p><ul>
+<li><p><em>dict</em> –</p>
+<dl class="simple">
 <dt>Stability analysis result dictionary with keys:</dt><dd><ul class="simple">
 <li><dl class="simple">
-<dt>w_min:</dt><dd><p>value of the test phase that minimizes
+<dt>w:</dt><dd><p>value of the test phase that minimizes
 the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>tm_min:</dt><dd><p>minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>all_mins_w:</dt><dd><p>all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the
-<span class="math notranslate nohighlight">\(tm\)</span> function</p>
+<dt>tm:</dt><dd><p>minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
 </dd>
 </dl>
 </li>
 </ul>
 </dd>
 </dl>
-</p>
+</li>
+<li><p><em>dict</em> – All found minimum values of the <span class="math notranslate nohighlight">\(tm\)</span> function and the
+corresponding test phase mole fractions.
+- w:</p>
+<blockquote>
+<div><p>all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the
+<span class="math notranslate nohighlight">\(tm\)</span> function</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>tm:</dt><dd><p>all values found minima of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -963,7 +1179,7 @@ the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
 <dt class="sig sig-object py" id="yaeos.core.ArModel.stability_tm">
 <span class="sig-name descname"><span class="pre">stability_tm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.stability_tm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.stability_tm" title="Link to this definition"></a></dt>
 <dd><p>Calculate the <span class="math notranslate nohighlight">\(tm\)</span> function.</p>
-<p>Calculate the <span class="math notranslate nohighlight">\(tm\)</span> function, defined by Michelsen and Møllerup.
+<p>Calculate the <span class="math notranslate nohighlight">\(tm\)</span> function, defined by Michelsen and Mollerup.
 If this value is negative, it means that the feed with composition <cite>z</cite>
 is unstable.</p>
 <dl class="field-list simple">
@@ -1015,7 +1231,7 @@ is unstable.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.critical_line">
-<span class="sig-name descname"><span class="pre">critical_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_line" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">critical_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_line" title="Link to this definition"></a></dt>
 <dd><p>Critical Line calculation.</p>
 <p>Calculate the critical line between two compositions</p>
 <dl class="field-list simple">
@@ -1025,7 +1241,8 @@ is unstable.</p>
 <li><p><strong>zi</strong> (<em>array_like</em>) – Final global mole fractions</p></li>
 <li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of composition <cite>i</cite></p></li>
 <li><p><strong>da0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for molar fraction of composition <cite>i</cite></p></li>
-<li><p><strong>max_poitns</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of points to calculate</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of points to calculate</p></li>
+<li><p><strong>stop_pressure</strong> (<em>float</em><em>, </em><em>optional</em>) – Stop when reaching this pressure value</p></li>
 </ul>
 </dd>
 </dl>

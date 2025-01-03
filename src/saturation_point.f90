@@ -6,13 +6,14 @@ module yaeos__m_s_sp
 
 contains
 
-   subroutine saturation_F(model, z, X, ns, S, F, dF)
+   subroutine saturation_F(model, z, X, ns, S, F, dF, dPdVz, dPdVy)
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: X(:)
       integer, intent(in) :: ns
       real(pr), intent(in) :: S
       real(pr), intent(out) :: F(:)
       real(pr), optional, intent(out) :: dF(:, :)
+      real(pr), intent(out) :: dPdVz, dPdVy
 
       ! Variables
       real(pr) :: T, Vz, Vy
@@ -22,14 +23,14 @@ contains
       real(pr) :: lnfug_z(size(model)), dlnfug_dn_z(size(model), size(model))
       real(pr) :: dlnfug_dT_z(size(model)), dlnfug_dV_z(size(model))
       real(pr) :: dlnfug_dP_z(size(model))
-      real(pr) :: Pz, dPdTz, dPdVz, dPdn_z(size(z))
+      real(pr) :: Pz, dPdTz, dPdn_z(size(z))
 
       ! incipient phase variables
       real(pr) :: y(size(z))
       real(pr) :: lnfug_y(size(model)), dlnfug_dn_y(size(model), size(model))
       real(pr) :: dlnfug_dT_y(size(model)), dlnfug_dV_y(size(model))
       real(pr) :: dlnfug_dP_y(size(model))
-      real(pr) :: Py, dPdTy, dPdVy, dPdn_y(size(z))
+      real(pr) :: Py, dPdTy, dPdn_y(size(z))
 
       real(pr) :: lnPspec
 
@@ -196,23 +197,28 @@ contains
       integer, intent(in) :: max_iterations
       integer, intent(out) :: its
 
-      integer :: innits
+      integer :: nc
 
       real(pr) :: F(size(X))
       real(pr) :: dF(size(X), size(X))
       real(pr) :: dFdS(size(X))
       real(pr) :: dx(size(X))
 
+      nc = size(X) - 2
 
-
-      its= 0
+      its = 0
+      dX = 1
       do while (its < max_iterations)
+         its = its + 1
          call saturation_TP(model=model, z=z, kind=kind, X=X, ns=ns, S=S, F=F, dF=dF, dFdS=dFdS)
 
          dX = solve_system(dF, -F)
+         do while (maxval(abs(dX)) > 1)
+            dX = dX / 2
+         end do
+
          X = X + dX
          if (all(abs(F) < tol)) exit
-         its = its + 1
       end do
 
    end subroutine solve_TP
@@ -227,6 +233,8 @@ contains
       real(pr), intent(in) :: tol
       integer, intent(in) :: max_iterations
       integer, intent(out) :: its
+
+      real(pr) :: dPdVz, dPdVy
       
       integer :: nc
       real(pr) :: F(size(X))
@@ -238,7 +246,7 @@ contains
 
       its = 0
       do while (its < max_iterations)
-         call saturation_F(model, z, X, ns, S, F, dF)
+         call saturation_F(model, z, X, ns, S, F, dF, dPdVz, dPdVy)
          if (all(abs(F) < tol)) exit
 
          dX = solve_system(dF, -F)

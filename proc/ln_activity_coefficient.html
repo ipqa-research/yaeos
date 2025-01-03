@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">9 statements</a>
+                 title=" 0.3% of total for procedures.">23 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,8 +118,13 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dgedn">dgedn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-ge~8">ge</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-ge~2">Ge</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-getn~2">GeTn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-gen~2">Gen</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-gen2~2">Gen2</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dn">dn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dt">dt</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-tt">tt</a>
         </div>
       </div>
     </div>
@@ -149,10 +154,16 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine ln_activity_coefficient(self, n, T, lngamma)  
+    <h2>public  subroutine ln_activity_coefficient(self, n, T, lngamma, dlngammadT, dlngammadn)  
 </h2>
     
 
+    <p>Calculate natural logarithm of activity coefficients.</p>
+<p>
+<script type="math/tex; mode=display">
+ \ln \gamma_i = \frac{1}{RT} \frac{\partial G^E}{\partial n_i}
+</script>
+</p>
 
     <h3>Type Bound</h3>
     <p><a href='../type/gemodel.html'>GeModel</a></p>
@@ -170,7 +181,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~16"></span>
+              <span class="anchor" id="variable-self~2"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -180,12 +191,12 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                
+                <p>Model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~41"></span>
+              <span class="anchor" id="variable-n~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -195,12 +206,12 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Moles vector</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~35"></span>
+              <span class="anchor" id="variable-t~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -210,7 +221,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -218,14 +229,48 @@
               <span class="anchor" id="variable-lngamma"></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>lngamma</strong>(:)</td>
             <td>
-                
+                <p>Natural logarithm of activity coefficients</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlngammadt"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadT</strong>(size(n))</td>
+            <td>
+                <p>
+<script type="math/tex">\frac{d\ln \gamma_i}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlngammadn"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadn</strong>(size(n),size(n))</td>
+            <td>
+                <p>
+<script type="math/tex">\frac{d\ln \gamma_i}{dn_j}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -248,7 +293,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dgedn"></span>
+              <span class="anchor" id="variable-ge~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -256,7 +301,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dgedn</strong>(size(n))</td>
+            <td><strong>Ge</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -265,7 +310,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~8"></span>
+              <span class="anchor" id="variable-getn~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -273,7 +318,92 @@
               
             </td>
             <td>::</td>
-            <td><strong>ge</strong></td>
+            <td><strong>GeTn</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gen~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gen</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gen2~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gen2</strong>(size(n),size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dn"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dn</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dt"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dt</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tt"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tt</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -306,14 +436,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2024 MPL
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-12-04 23:53 +0000             </p>
+ on 2025-01-03 14:30 +0000             </p>
           </div>
         </div>
         <br>

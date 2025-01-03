@@ -141,7 +141,228 @@
       </div>
 
     <div class="col-9" id='text'>
-      <p>Explain thermoprops of Ge models here</p>
+      <div class="toc">
+<ul>
+<li><a href="#gibbs-excess-models">Gibbs Excess Models</a><ul>
+<li><a href="#routines-and-methods">Routines and Methods</a><ul>
+<li><a href="#ln-gamma_i">\ln \gamma_i</a><ul>
+<li><a href="#ln-gamma_i-derivatives">\ln \gamma_i  derivatives</a></li>
+<li><a href="#example">Example</a></li>
+</ul>
+</li>
+<li><a href="#excess-enthalpy-he">Excess enthalpy  (H^E)</a><ul>
+<li><a href="#example_1">Example</a></li>
+</ul>
+</li>
+<li><a href="#excess-entropy-se">Excess entropy  (S^E)</a><ul>
+<li><a href="#example_2">Example</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="gibbs-excess-models">Gibbs Excess Models</h1>
+<p>Excess properties are properties of mixtures which quantify the non-ideal
+behavior of real mixtures. They are defined as the difference between the value
+of the property in a real mixture and the value that would exist in an ideal
+solution under the same conditions.</p>
+<p>
+<script type="math/tex; mode=display">
+    G^E = G - G^{I,S} = \Delta G_{mix}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+    H^E = H - H^{I,S} = \Delta H_{mix}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+    S^E = H - H^{I,S} = \Delta S_{mix}
+</script>
+</p>
+<p>Gibbs excess models are defined in terms of a mathematical expression that
+describes the excess Gibbs energy of a mixture as a function of the composition
+of the components in the mixture and temperature. Then, the other excess
+properties can be derived from the excess Gibbs energy derivatives.</p>
+<h2 id="routines-and-methods">Routines and Methods</h2>
+<h3 id="ln-gamma_i">
+<script type="math/tex"> \ln \gamma_i </script>
+</h3>
+<p>Activity coefficients are calculated from the excess Gibbs energy using the
+following expression:</p>
+<p>
+<script type="math/tex; mode=display">
+    \ln \gamma_i = \frac{\partial \left(\frac{G^E}{RT} \right)}{\partial n_i}
+</script>
+</p>
+<h4 id="ln-gamma_i-derivatives">
+<script type="math/tex"> \ln \gamma_i </script> derivatives</h4>
+<p>The derivatives of the activity coefficients with respect to the mole numbers:</p>
+<p>
+<script type="math/tex; mode=display">
+    \frac{\partial \ln \gamma_i}{\partial n_j} = \frac{\partial^2 \left(\frac{G^E}{RT} \right)}{\partial n_i \partial n_j}
+</script>
+</p>
+<p>The temperature derivative of the activity coefficients:</p>
+<p>
+<script type="math/tex; mode=display">
+    \frac{\partial \ln \gamma_i}{\partial T} = \frac{\partial^2 
+    \left(\frac{G^E}{RT} \right)}{\partial n_i \partial T} = 
+    \frac{1}{RT} \left(
+    \frac{\partial^2 G^E}{\partial n_i \partial T} - 
+    \frac{1}{T} \frac{\partial G^E}{\partial n_i} \right) 
+</script>
+</p>
+<p>You may notice that <code>yaeos</code> calculates the derivatives of the <script type="math/tex">\ln \gamma </script>.
+If for some reason you need the derivatives of the activity coefficients, you
+may find useful the following expressions:</p>
+<p>
+<script type="math/tex; mode=display">
+    \gamma_i = e^{\ln \gamma_i}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+    \frac{\partial \gamma_i}{\partial n_j} = \frac{\partial \ln \gamma_i}{\partial n_j} e^{\ln \gamma_i}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+    \frac{\partial \gamma_i}{\partial T} = 
+    \frac{\partial \ln \gamma_i}{\partial T} e^{\ln \gamma_i}
+</script>
+</p>
+<h4 id="example">Example</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">main</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+
+<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">dln_gamma_dT</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dln_gamma_dn</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.15_pr</span>
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">]</span>
+
+<span class="c">! ! Ethane [CH3]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="c">! ! Ethanol [CH3, CH2, OH]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c">! ! Methylamine [CH3-NH2]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">28</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c">! setup UNIFAC model</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
+<span class="c">! Calculate ln_gamma and its derivatives</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">,</span><span class="w"> </span><span class="n">dln_gamma_dT</span><span class="p">,</span><span class="w"> </span><span class="n">dln_gamma_dn</span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln_gamma = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dln_gamma_dT = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dln_gamma_dT</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dln_gamma_dn = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dln_gamma_dn</span>
+<span class="k">end program </span><span class="n">main</span>
+</code></pre></div>
+
+<h3 id="excess-enthalpy-he">Excess enthalpy <script type="math/tex"> (H^E) </script>
+</h3>
+<p>From the Gibbs-Helmholtz equation [1]:</p>
+<p>
+<script type="math/tex; mode=display">
+ \left(\frac{\partial \left(\frac{G^E}{T} \right)}{\partial T} 
+ \right)_P = \frac{-H^E}{T^2}
+</script>
+We can calculate the excess enthalpy from the excess Gibbs energy as:</p>
+<p>
+<script type="math/tex; mode=display">
+ H^E = G^E - T \frac{\partial G^E}{\partial T}
+</script>
+</p>
+<p>The derivatives of the excess enthalpy can be calculated as:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial H^E}{\partial T} =
+-T \frac{\partial^2 G^E}{\partial T^2}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial H^E}{\partial n_i} = \frac{\partial G^E}{\partial n_i}
+- T \frac{\partial^2 G^E}{\partial T \partial n_i}
+</script>
+</p>
+<h4 id="example_1">Example</h4>
+<p>To simplify the example, we will use the same code as the previous example,
+ommited here for brevity. The following code calculates the excess enthalpy and
+its derivatives.</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">H_E</span><span class="p">,</span><span class="w"> </span><span class="n">dH_E_dT</span><span class="p">,</span><span class="w"> </span><span class="n">dH_E_dn</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+
+<span class="c">! Calculate excess enthalpy and its derivatives</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_enthalpy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">HE</span><span class="p">,</span><span class="w"> </span><span class="n">dHE_dT</span><span class="p">,</span><span class="w"> </span><span class="n">dHE_dn</span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HE = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HE</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dHE_dT = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dHE_dT</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dHE_dn = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dHE_dn</span>
+</code></pre></div>
+
+<h3 id="excess-entropy-se">Excess entropy <script type="math/tex"> (S^E) </script>
+</h3>
+<p>Finally, excess entropy can be calculated from the excess Gibbs energy and
+excess enthalpy as:</p>
+<p>
+<script type="math/tex; mode=display">
+S^E = \frac{H^E - G^E}{T}
+</script>
+</p>
+<p>Replacing <script type="math/tex">H^E</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+S^E= \frac{G^E - T \frac{\partial G^E}{\partial T} - G^E}{T} = 
+-\frac{\partial G^E}{\partial T}
+</script>
+</p>
+<p>The derivatives of the excess entropy can be calculated as:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial S^E}{\partial T} = -\frac{\partial^2 G^E}{\partial T^2}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial S^E}{\partial n_i} = 
+-\frac{\partial^2 G^E}{\partial T \partial n_i}
+</script>
+</p>
+<h4 id="example_2">Example</h4>
+<p>To simplify the example, we will use the same code as the previous example,
+ommited here for brevity. The following code calculates the excess entropy and
+its derivatives.</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">SE</span><span class="p">,</span><span class="w"> </span><span class="n">dSE_dT</span><span class="p">,</span><span class="w"> </span><span class="n">dSE_dn</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+
+<span class="c">! Calculate excess entropy and its derivatives</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_entropy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">SE</span><span class="p">,</span><span class="w"> </span><span class="n">dSE_dT</span><span class="p">,</span><span class="w"> </span><span class="n">dSE_dn</span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;S_E = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">SE</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dSE_dT = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dSE_dT</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dSE_dn = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dSE_dn</span>
+</code></pre></div>
+
+<h3 id="references">References</h3>
+<p>[1] https://en.wikipedia.org/wiki/Gibbs%E2%80%93Helmholtz_equation</p>
     </div>
   </div>
       <hr>
@@ -152,14 +373,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2024 MPL
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-12-04 23:53 +0000             </p>
+ on 2025-01-03 14:30 +0000             </p>
           </div>
         </div>
         <br>

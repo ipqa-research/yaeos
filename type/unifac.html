@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 5.8% of total for derived types.</p>Including implementation: 272 statements,  7.7% of total for derived types.">17 statements</a>
+                 title="<p> 4.5% of total for derived types.</p>Including implementation: 312 statements,  6.8% of total for derived types.">17 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,18 +118,18 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/unifac.html#variable-components">components</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-components~2">components</a>
             <a class="list-group-item" href="../type/unifac.html#variable-group_area">group_area</a>
             <a class="list-group-item" href="../type/unifac.html#variable-group_volume">group_volume</a>
             <a class="list-group-item" href="../type/unifac.html#variable-groups_stew">groups_stew</a>
-            <a class="list-group-item" href="../type/unifac.html#variable-molecules~2">molecules</a>
-            <a class="list-group-item" href="../type/unifac.html#variable-ngroups">ngroups</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-molecules">molecules</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-ngroups~3">ngroups</a>
             <a class="list-group-item" href="../type/unifac.html#variable-nmolecules">nmolecules</a>
             <a class="list-group-item" href="../type/unifac.html#variable-psi_function">psi_function</a>
             <a class="list-group-item" href="../type/unifac.html#variable-qk">qk</a>
             <a class="list-group-item" href="../type/unifac.html#variable-thetas_ij">thetas_ij</a>
             <a class="list-group-item" href="../type/unifac.html#variable-vij">vij</a>
-            <a class="list-group-item" href="../type/unifac.html#variable-z~10">z</a>
+            <a class="list-group-item" href="../type/unifac.html#variable-z~12">z</a>
         </div>
       </div>
     </div>
@@ -158,7 +158,9 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/unifac.html#boundprocedure-ge_combinatorial">Ge_combinatorial</a>
             <a class="list-group-item" href="../type/unifac.html#boundprocedure-ge_residual">Ge_residual</a>
-            <a class="list-group-item" href="../type/unifac.html#boundprocedure-excess_gibbs">excess_gibbs</a>
+            <a class="list-group-item" href="../type/unifac.html#boundprocedure-excess_enthalpy">excess_enthalpy</a>
+            <a class="list-group-item" href="../type/unifac.html#boundprocedure-excess_entropy">excess_entropy</a>
+            <a class="list-group-item" href="../type/unifac.html#boundprocedure-excess_gibbs~4">excess_gibbs</a>
             <a class="list-group-item" href="../type/unifac.html#boundprocedure-ln_activity_coefficient">ln_activity_coefficient</a>
         </div>
       </div>
@@ -263,7 +265,7 @@ Engineering Chemistry Research, 42(1), 183–188.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-components"></span>
+              <span class="anchor" id="variable-components~2"></span>
               type(<a href='substances.html'>Substances</a>),
             </td>
               <td>public</td>
@@ -333,7 +335,7 @@ Engineering Chemistry Research, 42(1), 183–188.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-molecules~2"></span>
+              <span class="anchor" id="variable-molecules"></span>
               type(<a href='groups.html'>Groups</a>),
             </td>
               <td>public,</td>
@@ -350,7 +352,7 @@ Engineering Chemistry Research, 42(1), 183–188.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ngroups"></span>
+              <span class="anchor" id="variable-ngroups~3"></span>
               integer,
             </td>
               <td>public</td>
@@ -452,7 +454,7 @@ Engineering Chemistry Research, 42(1), 183–188.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~10"></span>
+              <span class="anchor" id="variable-z~12"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -797,7 +799,273 @@ Engineering Chemistry Research, 42(1), 183–188.
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-excess_gibbs"></span>
+      <span class="anchor" id="boundprocedure-excess_enthalpy"></span>
+      <h3>
+          procedure, public ::
+  <strong>excess_enthalpy</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/excess_enthalpy.html'>excess_enthalpy</a>(self, n, T, He, HeT, Hen)  
+</h3>
+    
+
+  <p>Calculate Excess enthalpy and its derivatives.</p><a href="../proc/excess_enthalpy.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='gemodel.html'>GeModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>He</strong></td>
+            <td>
+<p>Excess enthalpy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>HeT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^E}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hen</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^E}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-excess_entropy"></span>
+      <h3>
+          procedure, public ::
+  <strong>excess_entropy</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/excess_entropy.html'>excess_entropy</a>(self, n, T, Se, SeT, Sen)  
+</h3>
+    
+
+  <p>Calculate Excess entropy and its derivatives.</p><a href="../proc/excess_entropy.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='gemodel.html'>GeModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Se</strong></td>
+            <td>
+<p>Excess entropy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>SeT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^E}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Sen</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^E}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-excess_gibbs~4"></span>
       <h3>
           procedure, public ::
   <strong>excess_gibbs</strong>
@@ -807,11 +1075,11 @@ Engineering Chemistry Research, 42(1), 183–188.
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/excess_gibbs.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    public  subroutine <a href='../proc/excess_gibbs~3.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h3>
     
 
-  <p>Calculate the Gibbs excess energy of the UNIFAC model</p><a href="../proc/excess_gibbs.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Calculate the Gibbs excess energy of the UNIFAC model</p><a href="../proc/excess_gibbs~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -991,11 +1259,11 @@ Engineering Chemistry Research, 42(1), 183–188.
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(self, n, T, lngamma)  
+    public  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(self, n, T, lngamma, dlngammadT, dlngammadn)  
 </h3>
     
 
-  
+  <p>Calculate natural logarithm of activity coefficients.</p><a href="../proc/ln_activity_coefficient.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1020,7 +1288,7 @@ Engineering Chemistry Research, 42(1), 183–188.
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Model</p>
             </td>
         </tr>
         <tr>
@@ -1035,7 +1303,7 @@ Engineering Chemistry Research, 42(1), 183–188.
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Moles vector</p>
             </td>
         </tr>
         <tr>
@@ -1050,7 +1318,7 @@ Engineering Chemistry Research, 42(1), 183–188.
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-
+<p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -1058,14 +1326,48 @@ Engineering Chemistry Research, 42(1), 183–188.
               <span class="anchor" ></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>lngamma</strong>(:)</td>
             <td>
-
+<p>Natural logarithm of activity coefficients</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadT</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d\ln \gamma_i}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadn</strong>(size(n),size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d\ln \gamma_i}{dn_j}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -1091,14 +1393,14 @@ Engineering Chemistry Research, 42(1), 183–188.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2024 MPL
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-12-04 23:53 +0000             </p>
+ on 2025-01-03 14:30 +0000             </p>
           </div>
         </div>
         <br>

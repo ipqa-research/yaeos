@@ -43,6 +43,8 @@ module yaeos__equilibria_critical
       real(pr), allocatable :: P(:) !! Pressure [bar]
       real(pr), allocatable :: V(:) !! Volume [L/mol]
       real(pr), allocatable :: T(:) !! Temperature [K]
+      integer, allocatable :: ns(:) !! Specified variable
+      integer, allocatable :: iters(:) !! Iterations needed for this point
    end type CriticalLine
 
    type, private :: CPSpecs
@@ -117,7 +119,7 @@ contains
 
       T = sum(model%components%Tc * z)
       P = sum(model%components%Pc * z)
-      call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
+      call model%volume(n=z, P=P, T=T, V=V, root_type="vapor")
 
       X0 = [a0, log([v, T, P])]
 
@@ -129,6 +131,7 @@ contains
       ! ========================================================================
       ! Calculate the points
       ! ------------------------------------------------------------------------
+      allocate(critical_line%ns(0), critical_line%iters(0))
       XS = continuation(&
          f=foo, X0=X0, ns0=ns, S0=X0(ns), &
          dS0=dS0, max_points=npoints, solver_tol=1e-5_pr, &
@@ -191,6 +194,9 @@ contains
          real(pr), intent(in out) :: dS !! Step of specification in the method
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
+
+         critical_line%ns = [critical_line%ns, ns]
+         critical_line%iters = [critical_line%iters, iterations]
 
          ns = maxloc(abs(dXdS), dim=1)
          dS = dXdS(ns)*dS
@@ -285,7 +291,7 @@ contains
 
       real(pr) :: V, T, P
 
-      real(pr), parameter :: eps=1e-10_pr
+      real(pr), parameter :: eps=1e-5_pr
 
       V = exp(X(2))
       T = exp(X(3))
@@ -315,11 +321,17 @@ contains
       real(pr), intent(in) :: u(:) !! Eigen-vector
       real(pr) :: df_critical(4, 4) !! Jacobian of the critical point function
 
-      real(pr), parameter :: eps=1e-5_pr
+      real(pr) :: eps
 
       real(pr) :: dx(4), F1(4), F2(4)
 
       integer :: i
+
+      if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
+         eps = 1e-3_pr
+      else
+         eps = 1e-6_pr
+      end if
 
       df_critical = 0
       do i=1,4
@@ -374,7 +386,6 @@ contains
       real(pr) :: X(4)
       integer :: ns
       real(pr) :: F(4), df(4, 4), dX(4), u(size(z0))
-      real(pr) :: V, T, P
 
       real(pr) :: z(size(z0)), u_new(size(z0)), l
       integer :: i
@@ -414,8 +425,6 @@ contains
       if (present(V0)) then
          X(2) = log(V0)
       else
-         print *, exp(X(2))
-         print *, exp(X(3))
          call model%volume(n=z, P=exp(X(4)), T=exp(X(3)), V=X(2), root_type="stable")
 
          X(2) = log(X(2))
@@ -436,7 +445,7 @@ contains
             dX = dX/10
          end do
 
-         if (maxval(abs(F)) < 1e-5) exit
+         if (maxval(abs(F)) < 1e-6) exit
 
          X = X + dX
          l = lambda1(model, X, 0.0_pr, z0, zi, u, u_new)

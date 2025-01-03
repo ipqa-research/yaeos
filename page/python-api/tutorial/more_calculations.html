@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>More calculations &mdash; yaeos 2.1.0 documentation</title>
+  <title>More calculations &mdash; yaeos 2.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20623aea"></script>
+      <script src="../_static/documentation_options.js?v=c3c8ae58"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -67,7 +67,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#Calculation-of-critical-points">Calculation of critical points</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Stability-analysis">Stability analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Pure-components-saturation-lines">Pure components saturation lines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cubic_eos.html#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a></li>
 </ul>
@@ -282,10 +285,10 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="highlight"><pre>
 {&#39;x&#39;: array([0.02630095, 0.97369905]),
  &#39;y&#39;: array([0.5, 0.5]),
- &#39;Vx&#39;: 0.08695218910075529,
- &#39;Vy&#39;: 26.111737262933246,
+ &#39;Vx&#39;: 0.08695218910075515,
+ &#39;Vy&#39;: 26.11173726291736,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 0.7816128221169543,
+ &#39;P&#39;: 0.781612822117421,
  &#39;beta&#39;: 1.0}
 </pre></div></div>
 </div>
@@ -563,15 +566,6 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-   1.0000000000000000
-   364.64999999999992
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -579,9 +573,9 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;x&#39;: [array([0.5, 0.5])],
- &#39;Tc&#39;: 385.9303795748075,
- &#39;Pc&#39;: 68.20063426935891,
- &#39;Vc&#39;: 0.18481752004904956}
+ &#39;Tc&#39;: 385.93041053482506,
+ &#39;Pc&#39;: 68.20061554749196,
+ &#39;Vc&#39;: 0.1848177989735669}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -656,8 +650,8 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">CAS_from_any</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
 
 <span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
-<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="o">/</span><span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
-<span class="n">w</span>  <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
 
 <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
 
@@ -695,13 +689,13 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Envelope&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Psat</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;P [bar]&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;T [K]&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="n">Psat</span>
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -727,7 +721,7 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
-<span class="n">Ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">Psat</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">Psat</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">Psat</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">Psat</span><span class="p">,</span> <span class="n">Psat</span> <span class="o">-</span> <span class="mi">5</span><span class="p">]</span>
 
 <span class="k">for</span> <span class="n">P</span> <span class="ow">in</span> <span class="n">Ps</span><span class="p">:</span>
     <span class="n">tms</span> <span class="o">=</span> <span class="p">[]</span>
@@ -741,11 +735,13 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;tm&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pressure [bar]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">          Comparison of tm values at different pressures.</span>
-<span class="s2">          It is clear that above the saturation pressure the composition z is stable.</span>
-<span class="s2">          But, below the saturation pressure the composition z is unstable and another phase appears.</span>
-<span class="s2">          &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">          Comparison of tm values at different pressures.</span>
+<span class="sd">          It is clear that above the saturation pressure the composition z is stable.</span>
+<span class="sd">          But, below the saturation pressure the composition z is unstable and another phase appears.</span>
+<span class="sd">          &quot;&quot;&quot;</span>
+<span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -772,8 +768,8 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">CAS_from_any</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
 
 <span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
-<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="o">/</span><span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
-<span class="n">w</span>  <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
 
 <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
 
@@ -826,11 +822,14 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tms</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span>
-    <span class="n">tms</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">/</span><span class="mi">10</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)],</span>
-    <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">tms</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="mi">10</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)],</span>
+    <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+    <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test pahse&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test phase&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w_min</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w_min</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;New phase&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -852,8 +851,10 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stab_analysis</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_analysis</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
-<span class="n">stab_analysis</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">minima</span><span class="p">,</span> <span class="n">all_found_nimimas</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_analysis</span><span class="p">(</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span>
+<span class="p">)</span>
+<span class="n">minima</span>
 </pre></div>
 </div>
 </div>
@@ -863,26 +864,22 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;w_min&#39;: array([0.65460666, 0.13648048, 0.20891286]),
- &#39;tm_min&#39;: -0.15793334532739212,
- &#39;all_mins_w&#39;: array([[0.65460666, 0.13648048, 0.20891286],
-        [0.20000002, 0.2       , 0.59999998],
-        [0.19999997, 0.2       , 0.60000003]])}
+{&#39;w&#39;: array([0.65460666, 0.13648048, 0.20891286]), &#39;tm&#39;: -0.15793334532739212}
 </pre></div></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> method returns a dictionary with three different keys:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> method returns a a tuple of dictionaries with two keys:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">w_min</span></code>: The trial phase composition at the minimimum found value of <code class="docutils literal notranslate"><span class="pre">tm</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tm_min</span></code>: The miniumum value of <code class="docutils literal notranslate"><span class="pre">tm</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_mins_w</span></code>: All the trial phase composition that give a local minima. It will have each composition as a row, corresponding to each minimization intent. It is possible to see that in this case there is only one minima found different than that of the test phase.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w</span></code>: The trial phase composition at the minimimum found value of <code class="docutils literal notranslate"><span class="pre">tm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tm</span></code>: The miniumum value of <code class="docutils literal notranslate"><span class="pre">tm</span></code></p></li>
 </ul>
+<p>The first output of the tuple corresponds to the lower minima found, and the second one will a found minima for each initialization. Each initialization begins when starting from a pure component, so it will have the length of number of components.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Comparing the found w_min with the one obtained before by sweeping</span>
 <span class="c1"># the composition space</span>
-<span class="n">stab_analysis</span><span class="p">[</span><span class="s2">&quot;w_min&quot;</span><span class="p">],</span> <span class="n">w_min</span>
+<span class="n">minima</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">],</span> <span class="n">w_min</span>
 </pre></div>
 </div>
 </div>
@@ -896,6 +893,321 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
  [0.6546546546546547, 0.13613613613613612, 0.2092092092092092])
 </pre></div></div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">minima</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;w&#39;: array([0.65460666, 0.13648048, 0.20891286]), &#39;tm&#39;: -0.15793334532739212}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_found_nimimas</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;tm&#39;: array([1.04563762, 1.17188022, 1.17188022]),
+ &#39;w&#39;: array([[0.65460666, 0.13648048, 0.20891286],
+        [0.20000002, 0.2       , 0.59999998],
+        [0.19999997, 0.2       , 0.60000003]])}
+</pre></div></div>
+</div>
+<section id="Pure-components-saturation-lines">
+<h2>Pure components saturation lines<a class="headerlink" href="#Pure-components-saturation-lines" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">chemicals</span>
+
+<span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;methane&quot;</span><span class="p">,</span> <span class="s2">&quot;propane&quot;</span><span class="p">]</span>
+
+<span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">CAS_from_any</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+
+<span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">Pcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e5</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">chemicals</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PengRobinson78</span><span class="p">(</span><span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">,</span> <span class="n">ws</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">)):</span>
+    <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Vx</span><span class="p">,</span> <span class="n">Vy</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">yaeos_c</span><span class="o">.</span><span class="n">pure_saturation_line</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">Tcs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">Pcs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.0, 50.992)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_more_calculations_48_1.png" src="../_images/tutorial_more_calculations_48_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([230.12309631, 233.32226224, 236.62057994, 240.02250783,
+       243.53273126, 247.15617224, 250.89799903, 254.76363553,
+       258.75877019, 262.88936433, 267.16165959, 271.58218417,
+       274.6149057 , 277.71862483, 280.89549285, 284.14771903,
+       287.47757019, 290.8873698 , 294.37949677, 297.95638369,
+       301.62051458, 305.37442195, 309.22068323, 313.16191624,
+       317.20077387, 321.33993749, 325.5821093 , 329.93000313,
+       334.38633364, 337.41879892, 340.50145507, 343.63508965,
+       346.82048037, 350.05839243, 353.34957551, 356.6947605 ,
+       360.09465593, 363.54994396, 367.06127603, 367.08855835,
+       367.11584403, 367.14313308, 367.1704255 , 367.19772129,
+       367.22502044, 367.25232296, 367.27962885, 367.30693811,
+       367.33425073, 367.36156672, 367.38888609, 367.41620882,
+       367.44353492, 367.47086439, 367.49819723, 367.52553345,
+       367.55287303, 367.58021598, 367.60756231, 367.634912  ,
+       367.66226507, 367.68962151, 367.71698132, 367.7443445 ,
+       367.77171106, 367.79908099, 367.82645429, 367.85383097,
+       367.88121102, 367.90859445, 367.93598125, 367.96337142,
+       367.99076497, 368.01816189, 368.04556219, 368.07296587,
+       368.10037292, 368.12778335, 368.15519715, 368.18261433,
+       368.21003489, 368.23745882, 368.26488614, 368.29231683,
+       368.3197509 , 368.34718834, 368.37462917, 368.40207337,
+       368.42952096, 368.45697192, 368.48442626, 368.51188399,
+       368.53934509, 368.56680957, 368.59427744, 368.62174869,
+       368.64922331, 368.67670132, 368.70418271, 368.73166748,
+       368.75915564, 368.78664718, 368.8141421 , 368.8416404 ,
+       368.86914209, 368.89664716, 368.92415561, 368.95166745,
+       368.97918268, 369.00670129, 369.03422328, 369.06174866,
+       369.08927742, 369.11680957, 369.14434511, 369.17188403,
+       369.19942634, 369.22697203, 369.25452112, 369.28207359,
+       369.30962945, 369.33718869, 369.36475133, 369.39231735,
+       369.41988676, 369.44745956, 369.47503575, 369.50261533,
+       369.53019829, 369.55778465, 369.5853744 , 369.61296754,
+       369.64056407, 369.66816399, 369.6957673 , 369.72337401,
+       369.7509841 , 369.77859759, 369.80621447, 369.83383474,
+       369.86145841, 369.88908546,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan,
+                nan,          nan,          nan,          nan])
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 
 

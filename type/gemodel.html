@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.7% of total for derived types.</p>Including implementation: 14 statements,  0.4% of total for derived types.">5 statements</a>
+                 title="<p> 1.9% of total for derived types.</p>Including implementation: 56 statements,  1.2% of total for derived types.">7 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,7 +118,7 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/gemodel.html#variable-components">components</a>
+            <a class="list-group-item" href="../type/gemodel.html#variable-components~2">components</a>
         </div>
       </div>
     </div>
@@ -145,7 +145,9 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/gemodel.html#boundprocedure-excess_gibbs~3">excess_gibbs</a>
+            <a class="list-group-item" href="../type/gemodel.html#boundprocedure-excess_enthalpy">excess_enthalpy</a>
+            <a class="list-group-item" href="../type/gemodel.html#boundprocedure-excess_entropy">excess_entropy</a>
+            <a class="list-group-item" href="../type/gemodel.html#boundprocedure-excess_gibbs">excess_gibbs</a>
             <a class="list-group-item" href="../type/gemodel.html#boundprocedure-ln_activity_coefficient">ln_activity_coefficient</a>
         </div>
       </div>
@@ -179,7 +181,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-components"></span>
+              <span class="anchor" id="variable-components~2"></span>
               type(<a href='substances.html'>Substances</a>),
             </td>
               <td>public</td>
@@ -207,7 +209,273 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-excess_gibbs~3"></span>
+      <span class="anchor" id="boundprocedure-excess_enthalpy"></span>
+      <h3>
+          procedure, public ::
+  <strong>excess_enthalpy</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/excess_enthalpy.html'>excess_enthalpy</a>(self, n, T, He, HeT, Hen)  
+</h3>
+    
+
+  <p>Calculate Excess enthalpy and its derivatives.</p><a href="../proc/excess_enthalpy.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='gemodel.html'>GeModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>He</strong></td>
+            <td>
+<p>Excess enthalpy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>HeT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^E}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hen</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dH^E}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-excess_entropy"></span>
+      <h3>
+          procedure, public ::
+  <strong>excess_entropy</strong>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    public  subroutine <a href='../proc/excess_entropy.html'>excess_entropy</a>(self, n, T, Se, SeT, Sen)  
+</h3>
+    
+
+  <p>Calculate Excess entropy and its derivatives.</p><a href="../proc/excess_entropy.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='gemodel.html'>GeModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+<p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Se</strong></td>
+            <td>
+<p>Excess entropy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>SeT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^E}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Sen</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dS^E}{dn}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-excess_gibbs"></span>
       <h3>
           procedure(<a href='../interface/excess_gibbs.html'>excess_gibbs</a>), public, deferred ::
   <strong>excess_gibbs</strong>
@@ -217,10 +485,10 @@
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-     subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+     subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 <small>Prototype</small></h3>
 
-  <p>Excess Gibbs and derivs procedure</p>
+  <p>Calculate Excess Gibbs and its derivatives.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -273,7 +541,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>t</strong></td>
+            <td><strong>T</strong></td>
             <td>
                 <p>Temperature [K]</p>
             </td>
@@ -290,7 +558,7 @@
             <td>::</td>
             <td><strong>Ge</strong></td>
             <td>
-                <p>Excess Gibbs</p>
+                <p>Excess Gibbs free energy</p>
             </td>
         </tr>
         <tr>
@@ -339,7 +607,9 @@
             <td>::</td>
             <td><strong>Gen</strong>(size(n))</td>
             <td>
-                
+                <p>
+<script type="math/tex">\frac{dG^E}{dn}</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -354,7 +624,9 @@
             <td>::</td>
             <td><strong>GeTn</strong>(size(n))</td>
             <td>
-                
+                <p>
+<script type="math/tex">\frac{d^2G^E}{dTdn}</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -369,7 +641,9 @@
             <td>::</td>
             <td><strong>Gen2</strong>(size(n),size(n))</td>
             <td>
-                
+                <p>
+<script type="math/tex">\frac{d^2G^E}{dn^2}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -394,11 +668,11 @@
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    public  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(self, n, T, lngamma)  
+    public  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(self, n, T, lngamma, dlngammadT, dlngammadn)  
 </h3>
     
 
-  
+  <p>Calculate natural logarithm of activity coefficients.</p><a href="../proc/ln_activity_coefficient.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -423,7 +697,7 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Model</p>
             </td>
         </tr>
         <tr>
@@ -438,7 +712,7 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Moles vector</p>
             </td>
         </tr>
         <tr>
@@ -453,7 +727,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-
+<p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
@@ -461,14 +735,48 @@
               <span class="anchor" ></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>lngamma</strong>(:)</td>
             <td>
-
+<p>Natural logarithm of activity coefficients</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadT</strong>(size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d\ln \gamma_i}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadn</strong>(size(n),size(n))</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d\ln \gamma_i}{dn_j}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -494,14 +802,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2024 MPL
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-12-04 23:53 +0000             </p>
+ on 2025-01-03 14:30 +0000             </p>
           </div>
         </div>
         <br>

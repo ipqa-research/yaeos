@@ -24,12 +24,8 @@ module yaeos__models_ar_cubic_quadratic_mixing
       procedure :: aij => kij_constant !! Default attractive parameter combining rule
       procedure :: Dmix !! Attractive parameter mixing rule
       procedure :: Bmix !! Repulsive parameter mixing rule
-      procedure :: D1mix => D1mix_constant
+      procedure :: D1mix => RKPR_D1mix
    end type QMR
-   type, extends(QMR) :: QMR_RKPR
-   contains
-      procedure :: D1Mix => RKPR_D1mix
-   end type QMR_RKPR
 
    type, extends(QMR) :: QMRTD
       real(pr), allocatable :: k0(:, :)
@@ -147,24 +143,6 @@ contains
       call bmix_qmr(n, bi, self%l, b, dbi, dbij)
    end subroutine Bmix
 
-   subroutine D1mix_constant(self, n, d1i, D1, dD1i, dD1ij)
-      !! Constant \(\delta_1\) parameter.
-      !!
-      !! Most Cubic EoS keep a constant value for their \(\delta_1\) parameter.
-      !! This procedure assumes that all the components have the same \(delta_1\)
-      !! and takes the first value as the one of the mixture.
-      use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
-      class(QMR), intent(in) :: self !! Mixing rule
-      real(pr), intent(in) :: n(:) !! Moles vector
-      real(pr), intent(in) :: d1i(:) !! \(\delta_1\) parameter
-      real(pr), intent(out) :: D1 !! Mixture's \(\Delta_1\)
-      real(pr), intent(out) :: dD1i(:) !! \(\frac{dDelta_1}{dn_i} = 0\)
-      real(pr), intent(out) :: dD1ij(:, :) !! \(\frac{d^2Delta_1}{dn_{ij}} = 0\)
-      D1 = d1i(1)
-      dD1i = 0
-      dD1ij = 0
-   end subroutine D1mix_constant
-
    subroutine RKPR_D1mix(self, n, d1i, D1, dD1i, dD1ij)
       use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
       !! RKPR \(\delta_1\) parameter mixing rule.
@@ -177,7 +155,7 @@ contains
       !!     \Delta_1 = \sum_i^N n_i \delta_{1i}
       !! \]
       !!
-      class(QMR_RKPR), intent(in) :: self
+      class(QMR), intent(in) :: self
       real(pr), intent(in) :: n(:)
       real(pr), intent(in) :: d1i(:)
       real(pr), intent(out) :: D1
@@ -287,7 +265,7 @@ contains
 
       nc = size(a)
 
-      do i=1,size(a)-1
+      do i=1,size(a)
          aij_hd(i, i) = sqrt(a_hd(i) * a_hd(i))
          do j=i+1,size(a)
             aij_hd(i, j) = sqrt(a_hd(i) * a_hd(j)) * (1._pr - kij_hd(i, j))
@@ -295,8 +273,6 @@ contains
          end do
       end do
 
-      aij_hd(size(a), size(a)) = sqrt(a_hd(size(a)) * a_hd(size(a)))
-            
       aij = aij_hd%f0
       daijdt = aij_hd%f1
       daijdt2 = aij_hd%f12
