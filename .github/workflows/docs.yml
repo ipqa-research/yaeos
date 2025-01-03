@@ -6,18 +6,21 @@ jobs:
   documentation:
     runs-on: ubuntu-22.04
 
-    env:
-      FC: gfortran
-      GCC_V: 12
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Setup Fortran Compiler
+      uses: fortran-lang/setup-fortran@v1
+      id: setup-fortran
+      with:
+        compiler: "gcc"
+        version: 13
+
     - name: Install Dependencies Ubuntu
       run: |
         sudo apt-get update
-        sudo apt install -y gfortran-${GCC_V} python3-dev graphviz pandoc
+        sudo apt install -y python3-dev graphviz pandoc
         sudo pip install ford markdown
         pip install -r python/docs/requirements.txt
         pip install -r python/requirements-build.txt

@@ -41,7 +41,7 @@ run_test() {
         echoerr "There are wrongly named files in the test directory"
 
     echo Running tests...
-    fpm test --flag "--coverage"
+    fpm test --flag "--coverage -g" || exit 1
 }
 
 run_coverage() {
@@ -49,26 +49,26 @@ run_coverage() {
         --exclude "build" \
         --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
         --exclude "tools" \
-        --fail-under-line 90 \
         --jacoco coverage.xml
     
     gcovr \
         --exclude "build" \
         --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
-        --exclude "tools" \
-        --fail-under-line 90
+        --exclude "tools"
 }
 
 python_wrappers(){

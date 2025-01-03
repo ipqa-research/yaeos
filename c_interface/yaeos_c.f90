@@ -19,18 +19,22 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78, rkpr, psrk
+   public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv
 
    ! __del__
    public :: make_available_ar_models_list
    public :: make_available_ge_models_list
-   ! GeMoels
+
+   ! GeModels
    public :: nrtl
    public :: unifac_vle
    public :: uniquac
-   public :: ln_gamma
+   public :: ln_gamma_ge
+   public :: excess_gibbs_ge
+   public :: excess_enthalpy_ge
+   public :: excess_entropy_ge
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
@@ -40,7 +44,8 @@ module yaeos_c
    ! Phase equilibria
    public :: flash, flash_grid
    public :: saturation_pressure, saturation_temperature
-   public :: pt2_phase_envelope
+   public :: pure_saturation_line
+   public :: pt2_phase_envelope, px2_phase_envelope
    public :: critical_point, critical_line
    public :: stability_zpt, tm
 
@@ -70,6 +75,7 @@ contains
    ! ==========================================================================
    !  Ge Models
    ! --------------------------------------------------------------------------
+   ! NRTL
    subroutine nrtl(a, b, c, id)
       use yaeos, only: fNRTL => NRTL
       real(c_double), intent(in) :: a(:,:), b(:,:), c(:,:)
@@ -78,36 +84,7 @@ contains
       call extend_ge_models_list(id)
    end subroutine nrtl
 
-   subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
-      use yaeos, only: Groups
-      integer(c_int), intent(in) :: nc !! Number of components
-      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
-      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
-      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-      type(Groups), intent(out) :: molecules(nc)
-      integer :: i
-
-      do i=1,nc
-         molecules(i)%groups_ids = g_ids(i, :ngs(i))
-         molecules(i)%number_of_groups = g_v(i, :ngs(i))
-      end do
-   end subroutine setup_groups
-
-   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
-      use yaeos, only: UNIFAC, setup_unifac, Groups
-      integer(c_int), intent(out) :: id !! Saved model id
-      integer(c_int), intent(in) :: nc !! Number of components
-      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
-      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
-      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
-
-      type(Groups) :: molecules(nc)
-
-      call setup_groups(nc, ngs, g_ids, g_v, molecules)
-      ge_model = setup_unifac(molecules)
-      call extend_ge_models_list(id)
-   end subroutine unifac_vle
-
+   ! UNIQUAC
    subroutine uniquac(id, qs, rs, aij, bij, cij, dij, eij)
       use yaeos, only: setup_uniquac
       integer(c_int), intent(out) :: id
@@ -129,6 +106,37 @@ contains
       ge_model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
       call extend_ge_models_list(id)
    end subroutine uniquac
+
+   ! UNIFAC
+   subroutine unifac_vle(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_unifac, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_unifac(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_vle
+
+   subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
+      use yaeos, only: Groups
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+      type(Groups), intent(out) :: molecules(nc)
+      integer :: i
+
+      do i=1,nc
+         molecules(i)%groups_ids = g_ids(i, :ngs(i))
+         molecules(i)%number_of_groups = g_v(i, :ngs(i))
+      end do
+   end subroutine setup_groups
 
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
@@ -155,17 +163,88 @@ contains
       free_ge_model(id) = .true.
    end subroutine make_available_ge_models_list
 
-   subroutine ln_gamma(id, n, T, lngamma)
+   ! Ge Thermoprops
+   subroutine excess_gibbs_ge(id, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:)
+      !! Moles vector
       real(c_double), intent(in) :: T
-      real(c_double), intent(out) :: lngamma(size(n))
-      call ge_models(id)%model%ln_activity_coefficient(n, T, lngamma)
-   end subroutine ln_gamma
+      !! Temperature [K]
+      real(c_double), intent(out) :: Ge
+      !! Excess gibbs energy
+      real(c_double), optional, intent(inout) :: GeT
+      !! \(\frac{dG^E}{dT}\)
+      real(c_double), optional, intent(inout) :: GeT2
+      !! \(\frac{d^2G^E}{dT^2}\)
+      real(c_double), optional, intent(inout) :: Gen(size(n))
+      !! \(\frac{dG^E}{dn_i}\)
+      real(c_double), optional, intent(inout) :: GeTn(size(n))
+      !! \(\frac{d^2G^E}{dTdn_i}\)
+      real(c_double), optional, intent(inout) :: Gen2(size(n), size(n))
+      !! \(\frac{d^2G^E}{dn_idn_j}\)
 
-   ! =============================================================================
+      call ge_models(id)%model%excess_gibbs(&
+         n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+         )
+   end subroutine excess_gibbs_ge
+
+   subroutine ln_gamma_ge(id, n, T, lngamma, dlngamma_dt, dlngamma_dn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: lngamma(size(n))
+      !! Natural logarithm of activity coefficients
+      real(c_double), optional, intent(inout) :: dlngamma_dt(size(n))
+      !! \(\frac{d\ln \gamma_i}{dT}\)
+      real(c_double), optional, intent(inout) :: dlngamma_dn(size(n),size(n))
+      !! \(\frac{d\ln \gamma_i}{dn_j}\)
+
+      call ge_models(id)%model%ln_activity_coefficient(&
+         n, T, lngamma=lngamma, dlngammadT=dlngamma_dt, dlngammadn=dlngamma_dn&
+         )
+   end subroutine ln_gamma_ge
+
+   subroutine excess_enthalpy_ge(id, n, T, He, HeT, Hen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: He
+      !! Excess enthalpy
+      real(c_double), optional, intent(inout) :: HeT
+      !! \(\frac{dH^E}{dT}\)
+      real(c_double), optional, intent(inout) :: Hen(size(n))
+      !! \(\frac{dH^E}{dn}\)
+
+      call ge_models(id)%model%excess_enthalpy(&
+         n, T, He=He, HeT=HeT, Hen=Hen &
+         )
+   end subroutine excess_enthalpy_ge
+
+   subroutine excess_entropy_ge(id, n, T, Se, SeT, Sen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: Se
+      !! Excess entropy
+      real(c_double), optional, intent(inout) :: SeT
+      !! \(\frac{dS^E}{dT}\)
+      real(c_double), optional, intent(inout) :: Sen(size(n))
+      !! \(\frac{dS^E}{dn}\)
+
+      call ge_models(id)%model%excess_entropy(&
+         n, T, Se=Se, SeT=SeT, Sen=Sen &
+         )
+   end subroutine excess_entropy_ge
+
+   ! ==========================================================================
    !  Ar Models
-   ! -----------------------------------------------------------------------------
+   ! --------------------------------------------------------------------------
    subroutine extend_ar_models_list(id)
       !! Find the first available model container and allocate the model
       !! there. Then return the found id.
@@ -337,6 +416,25 @@ contains
       call extend_ar_models_list(id)
    end subroutine psrk
 
+   subroutine get_ac_b_del1_del2(id, ac, b, del1, del2, nc)
+      use yaeos, only: CubicEoS, size
+      integer(c_int), intent(in) :: id
+      integer, intent(in) :: nc
+      real(c_double), dimension(nc), intent(out) :: &
+         ac, b, del1, del2
+
+
+      associate(model => ar_models(id)%model)
+         select type(model)
+          class is(CubicEoS)
+            ac(:nc) = model%ac
+            b(:nc) = model%b
+            del1(:nc) = model%del1
+            del2(:nc) = model%del2
+         end select
+      end associate
+   end subroutine get_ac_b_del1_del2
+
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
@@ -477,14 +575,14 @@ contains
       crit = fcritical_point(&
          model=ar_models(id)%model, z0=z0, zi=zi, &
          S=S, spec=spec, max_iters=max_iters &
-      )
+         )
       call equilibria_state_to_arrays(crit, x, y, P, T, V, Vy, beta)
    end subroutine critical_point
 
    subroutine critical_line(&
-         id, a0, da0, &
-         z0, zi, max_points, &
-         as, Vs, Ts, Ps)
+      id, a0, da0, &
+      z0, zi, max_points, stop_pressure, &
+      as, Vs, Ts, Ps)
       use yaeos, only: EquilibriumState, CriticalLine, &
          fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
@@ -493,6 +591,7 @@ contains
       real(c_double), intent(in) :: a0
       real(c_double), intent(in) :: da0
       integer, intent(in) :: max_points
+      real(c_double), intent(in) :: stop_pressure
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
@@ -510,7 +609,7 @@ contains
       cl = fcritical_line(&
          model=ar_models(id)%model, a0=a0, &
          z0=z0, zi=zi, &
-         ns=spec_CP%a, S=a0, ds0=da0)
+         ns=spec_CP%a, S=a0, ds0=da0, maxp=stop_pressure, max_points=max_points)
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
@@ -628,10 +727,44 @@ contains
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
    end subroutine saturation_temperature
 
+   subroutine pure_saturation_line(id, comp_id, stop_P, stop_T, P, T, Vx, Vy)
+      use yaeos, only: fsat => pure_saturation_line, PurePsat, pr
+      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: comp_id
+      real(c_double), intent(in) :: stop_P
+      real(c_double), intent(in) :: stop_T
+      real(c_double), intent(out) :: P(800)
+      real(c_double), intent(out) :: T(800)
+      real(c_double), intent(out) :: Vx(800)
+      real(c_double), intent(out) :: Vy(800)
+
+      integer :: npoints
+      type(PurePsat) :: sat
+
+      real(8) :: nan
+
+      nan = 0
+      nan = nan/nan
+
+      T = nan
+      P = nan
+      Vx = nan
+      Vy = nan
+
+      sat = fsat(ar_models(id)%model, comp_id, stop_P, stop_T)
+
+      npoints = minval([size(sat%T), 800])
+
+      T(:npoints) = sat%T(:npoints)
+      P(:npoints) = sat%P(:npoints)
+      Vx(:npoints) = sat%Vx(:npoints)
+      Vy(:npoints) = sat%Vy(:npoints)
+   end subroutine pure_saturation_line
+
    subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
-         EquilibriumState, PTEnvel2
+         EquilibriumState, PTEnvel2, find_hpl
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       integer, intent(in) :: max_points
@@ -671,14 +804,16 @@ contains
       select case(kind)
        case("bubble")
          sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind)
+         env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("dew")
          sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("liquid-liquid")
-         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         ! sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         env = find_hpl(ar_models(id)%model, z, T, P)
       end select
 
 
-      env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
       i = size(env%points)
       Ts(:i) = env%points%T
       Ps(:i) = env%points%P
@@ -687,6 +822,62 @@ contains
       Tcs(:i) = env%cps%T
       Pcs(:i) = env%cps%P
    end subroutine pt2_phase_envelope
+
+   subroutine px2_phase_envelope(&
+      id, z0, zi, kind, max_points, T, P0, ds0, &
+      as, Ps, xs, ys, acs, pcs, a0, kinds)
+      use yaeos, only: &
+         saturation_pressure, saturation_temperature, px_envelope_2ph, &
+         EquilibriumState, PXEnvel2
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer, intent(in) :: max_points
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: ds0
+      real(c_double), intent(out) :: as(max_points)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: xs(max_points, size(z0))
+      real(c_double), intent(out) :: ys(max_points, size(z0))
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(out) :: acs(5), Pcs(5)
+      real(c_double), intent(in) :: P0
+      character(len=15), intent(out) :: kinds(max_points)
+
+      real(8) :: nan
+      type(EquilibriumState) :: sat
+      type(PXEnvel2) :: env
+
+      integer :: i, j
+
+      real(c_double) :: z(size(z0))
+
+      nan = makenan()
+      as = nan
+      Ps = nan
+      acs = nan
+      Pcs = nan
+
+      z = a0 * zi + (1-a0)*z0
+
+      sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
+      env = px_envelope_2ph(ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, first_point=sat, points=max_points, delta_0=ds0)
+
+      i = size(env%points)
+      as(:i) = env%alpha
+      Ps(:i) = env%points%P
+
+      do j=1,i
+         xs(j, :) = env%points(j)%x
+         ys(j, :) = env%points(j)%y
+      end do
+
+      i = size(env%cps)
+      acs(:i) = env%cps%alpha
+      Pcs(:i) = env%cps%P
+      kinds = env%points%kind
+   end subroutine px2_phase_envelope
 
    subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
       use yaeos, only: EquilibriumState, flash
@@ -710,7 +901,7 @@ contains
       nt = size(Ts)
 
       if (parallel) then
-         !$OMP  PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+         !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
          do i=1,np
             do j=1,nt
                T = Ts(j)
@@ -732,6 +923,7 @@ contains
                P = Ps(i)
                flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
                betas(i, j) = flash_result%beta
+               print *, i, j, flash_result%iters, flash_result%beta
 
                Vxs(i, j) = flash_result%Vx
                Vys(i, j) = flash_result%Vy
@@ -742,18 +934,31 @@ contains
       end if
    end subroutine flash_grid
 
-   subroutine stability_zpt(id, z, P, T, w_min, tm_val, all_mins)
-      use yaeos, only: min_tpd
+   subroutine stability_zpt(id, z, P, T, w_min, min_tm, tm_vals, all_mins)
+      use yaeos, only: min_tpd, tm
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:), P, T
       real(c_double), intent(out) :: w_min(size(z))
-      real(c_double), intent(out) :: tm_val
+      real(c_double), intent(out) :: min_tm
+      real(c_double), intent(out) :: tm_vals(size(z))
       real(c_double), intent(out) :: all_mins(size(z), size(z))
+
+      real(c_double) :: d_i(size(z))
+
+      integer :: i
 
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
-         mintpd=tm_val, w=w_min, all_minima=all_mins)
-   end subroutine
+         mintpd=min_tm, w=w_min, all_minima=all_mins &
+         )
+
+      call ar_models(id)%model%lnphi_pt(n=z, P=T, T=T, root_type="stable", lnPhi=d_i)
+
+      d_i = log(z) + d_i
+      do i=1,size(z)
+         tm_vals(i) = tm(ar_models(id)%model, z, all_mins(i, :), P, T, d=d_i)
+      end do
+   end subroutine stability_zpt
 
    subroutine tm(id, z, w, P, T, tm_value)
       use yaeos, only: ftm => tm
@@ -762,7 +967,7 @@ contains
       real(c_double), intent(out) :: tm_value
 
       tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
-   end subroutine
+   end subroutine tm
 
    ! ==========================================================================
    ! Auxiliar

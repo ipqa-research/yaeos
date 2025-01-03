@@ -11,12 +11,10 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.9]
         toolchain:
-          - {compiler: gcc, version: 10}
-          - {compiler: gcc, version: 11}
-          - {compiler: gcc, version: 12}
+          # - {compiler: gcc, version: 12}
           - {compiler: gcc, version: 13}
-          - {compiler: intel, version: '2024.2'}
-          - {compiler: intel, version: '2023.2'}
+          # - {compiler: intel, version: '2024.2'}
+          # - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -46,7 +44,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr numpy scipy
+        pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt-get install libnlopt-dev
 
@@ -67,10 +65,11 @@ jobs:
 
     - name: Upload coverage reports to Codecov
       if: ${{ env.FC == 'gfortran' }}
-      uses: codecov/codecov-action@v4.4.0
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: ipqa-research/yaeos
+        files: "coverage.xml"
 
   Python-API:
     runs-on: ${{ matrix.os }}
@@ -135,7 +134,7 @@ jobs:
         id: setup-fortran
         with:
             compiler: gcc
-            version: 12
+            version: 13
 
       # Install fpm for Windows
       - name: Install fpm

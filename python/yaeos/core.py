@@ -15,8 +15,10 @@ from yaeos.lib import yaeos_c
 class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
 
-    def ln_gamma(self, moles, temperature):
-        r"""Calculate activity coefficients.
+    def ln_gamma(
+        self, moles, temperature: float, dt: bool = False, dn: bool = False
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        r"""Calculate natural logarithm of activity coefficients.
 
         Calculate :math:`\ln \gamma_i(n,T)` vector.
 
@@ -47,9 +49,253 @@ class GeModel(ABC):
 
             nrtl = NRTL(a, b, c)
 
+            # Evaluating ln_gamma only
             print(nrtl.ln_gamma([5.0, 5.6], 300.0))
+
+            # Asking for derivatives
+
+            print(nrtl.ln_gamma([5.0, 5.6], 300.0, dt=True, dn=True))
         """
-        return yaeos_c.ln_gamma(self.id, moles, temperature)
+        nc = len(moles)
+
+        dt = np.empty(nc, order="F") if dt else None
+        dn = np.empty((nc, nc), order="F") if dn else None
+
+        res = yaeos_c.ln_gamma_ge(
+            self.id,
+            moles,
+            temperature,
+            dlngamma_dt=dt,
+            dlngamma_dn=dn,
+        )
+
+        if dt is None and dn is None:
+            ...
+        else:
+            res = (res, {"dt": dt, "dn": dn})
+        return res
+
+    def excess_gibbs(
+        self,
+        moles,
+        temperature: float,
+        dt: bool = False,
+        dt2: bool = False,
+        dn: bool = False,
+        dtn: bool = False,
+        dn2: bool = False,
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate excess Gibbs energy [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dt2 : bool, optional
+            Calculate temperature second derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+        dtn : bool, optional
+            Calculate cross temperature and moles derivative, by default False
+        dn2 : bool, optional
+            Calculate moles second derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            Excess Gibbs energy or tuple with excess Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess Gibbs energy only
+            print(model.excess_gibbs(model.excess_gibbs([0.5,0.5], 303.15))
+
+            # Asking for derivatives
+            print(
+                model.excess_gibbs(
+                    [0.5,0.5],
+                    303.15,
+                    dt=True,
+                    dt2=True,
+                    dn=True,
+                    dtn=True,
+                    dn2=True
+            )
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dt2 = np.empty(1, order="F") if dt2 else None
+        dn = np.empty(nc, order="F") if dn else None
+        dtn = np.empty(nc, order="F") if dtn else None
+        dn2 = np.empty((nc, nc), order="F") if dn2 else None
+
+        all_none = (
+            dt is None
+            and dt2 is None
+            and dn is None
+            and dtn is None
+            and dn2 is None
+        )
+
+        res = yaeos_c.excess_gibbs_ge(
+            self.id,
+            moles,
+            temperature,
+            get=dt,
+            get2=dt2,
+            gen=dn,
+            getn=dtn,
+            gen2=dn2,
+        )
+
+        if all_none:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else dt[0],
+                    "dt2": dt2 if dt2 is None else dt2[0],
+                    "dn": dn,
+                    "dtn": dtn,
+                    "dn2": dn2,
+                },
+            )
+
+        return res
+
+    def excess_enthalpy(
+        self, moles, temperature: float, dt: bool = False, dn: bool = False
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate excess enthalpy [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            Excess enthalpy or tuple with excess enthalpy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess enthalpy only
+            print(model.excess_enthalpy([0.5, 0.5], 303.15))
+
+            # Asking for derivatives
+            print(model.excess_enthalpy([0.5, 0.5], 303.15, dt=True, dn=True))
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.excess_enthalpy_ge(
+            self.id,
+            moles,
+            temperature,
+            het=dt,
+            hen=dn,
+        )
+
+        if dt is None and dn is None:
+            ...
+        else:
+            res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+
+        return res
+
+    def excess_entropy(
+        self, moles, temperature: float, dt: bool = False, dn: bool = False
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate excess entropy [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            Excess entropy or tuple with excess entropy and derivatives
+            dictionary if any derivative is asked [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess entropy only
+            print(model.excess_entropy([0.5, 0.5], 303.15))
+
+            # Asking for derivatives
+            print(model.excess_entropy([0.5, 0.5], 303.15, dt=True, dn=True))
+        """
+        nc = len(moles)
+
+        dt = np.empty(1, order="F") if dt else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.excess_entropy_ge(
+            self.id,
+            moles,
+            temperature,
+            set=dt,
+            sen=dn,
+        )
+
+        if dt is None and dn is None:
+            ...
+        else:
+            res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+
+        return res
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""
@@ -732,6 +978,52 @@ class ArModel(ABC):
         """
         return yaeos_c.cp_residual_vt(self.id, moles, volume, temperature)
 
+    def pure_saturation_pressures(
+        self, component, stop_pressure=0.01, stop_temperature=100
+    ):
+        """Calculate pure component saturation pressures [bar].
+
+        Calculation starts from the critical point and goes down to the
+        stop pressure or stop temperature.
+
+        Parameters
+        ----------
+        component : int
+            Component index (starting from 1)
+        stop_pressure : float, optional
+            Stop pressure [bar], by default 0.01
+        stop_temperature : float, optional
+            Stop temperature [K], by default 100
+
+        Returns
+        -------
+        dict
+            Pure component saturation points dictionary with keys:
+                - T: Temperature [K]
+                - P: Pressure [bar]
+                - Vx: Liquid Phase Volume [L/mole]
+                - Vy: Vapor Phase Volume [L/mole]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+            tc = np.array([320.0, 375.0])
+            pc = np.array([45.0, 60.0])
+            w = np.array([0.0123, 0.045])
+
+            model = PengRobinson76(tc, pc, w)
+        """
+        P, T, Vx, Vy = yaeos_c.pure_saturation_line(
+            self.id, component, stop_pressure, stop_temperature
+        )
+
+        return {"T": T, "P": P, "Vx": Vx, "Vy": Vy}
+
     def flash_pt(
         self, z, pressure: float, temperature: float, k0=None
     ) -> dict:
@@ -1082,11 +1374,73 @@ class ArModel(ABC):
 
         return res
 
+    def phase_envelope_px(
+        self,
+        z0,
+        zi,
+        temperature,
+        kind="bubble",
+        max_points=300,
+        p0=10.0,
+        a0=0.001,
+        ds0=0.1,
+    ):
+        """Two phase envelope calculation (PX).
+
+        Calculation of a phase envelope that starts at a given composition and
+        its related to another composition with some proportion.
+
+        Parameters
+        ----------
+        z0 : array_like
+            Initial global mole fractions
+        zi : array_like
+            Final global mole fractions
+        temperature : float
+            Temperature [K]
+        kind : str, optional
+            Kind of saturation point to start the envelope calculation,
+            defaults to "bubble". Options are
+            - "bubble"
+            - "dew"
+        max_points : int, optional
+            Envelope's maximum points to calculate (P, X), by default 300
+        p0 : float, optional
+            Initial guess for pressure [bar] for the saturation point of kind:
+            `kind`, by default 10.0
+        a0 : float, optional
+            Initial molar fraction of composition `zi`, by default 0.001
+        ds0 : float, optional
+            Step for a, by default 0.1
+        """
+
+        a, ps, xs, ys, acs, pcs, kinds = yaeos_c.px2_phase_envelope(
+            self.id,
+            z0=z0,
+            zi=zi,
+            kind=kind,
+            max_points=max_points,
+            p0=p0,
+            a0=a0,
+            t=temperature,
+            ds0=ds0,
+        )
+
+        return {
+            "a": a,
+            "P": ps,
+            "x": xs,
+            "y": ys,
+            "ac": acs,
+            "Pc": pcs,
+            "kind": kinds,
+        }
+
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
 
         Find all the possible minima values that the :math:`tm` function,
-        defined by Michelsen and Møllerup.
+        defined by Michelsen and Mollerup.
 
         Parameters
         ----------
@@ -1101,25 +1455,33 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-                - w_min: 
+                - w:
                     value of the test phase that minimizes
                     the :math:`tm` function
-                - tm_min: 
+                - tm:
                     minimum value of the :math:`tm` function
-                - all_mins_w: 
-                    all values of :math:`w` that minimize the 
-                    :math:`tm` function
+        dict
+            All found minimum values of the :math:`tm` function and the
+            corresponding test phase mole fractions.
+            - w:
+                all values of :math:`w` that minimize the
+                :math:`tm` function
+            - tm:
+                all values found minima of the :math:`tm` function
         """
-        (w_min, tm_min, all_mins_w) = yaeos_c.stability_zpt(
+        (w_min, tm_min, all_mins, all_mins_w) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
 
-        return {"w_min": w_min, "tm_min": tm_min, "all_mins_w": all_mins_w}
+        return {"w": w_min, "tm": tm_min}, {
+            "tm": all_mins,
+            "w": all_mins_w,
+        }
 
     def stability_tm(self, z, w, pressure, temperature):
         """Calculate the :math:`tm` function.
 
-        Calculate the :math:`tm` function, defined by Michelsen and Møllerup.
+        Calculate the :math:`tm` function, defined by Michelsen and Mollerup.
         If this value is negative, it means that the feed with composition `z`
         is unstable.
 
@@ -1128,7 +1490,7 @@ class ArModel(ABC):
         z : array_like
             Global mole fractions
         w : array_like
-            Test Phase mole fractions 
+            Test Phase mole fractions
         pressure : float
             Pressure [bar]
         temperature : float
@@ -1166,7 +1528,9 @@ class ArModel(ABC):
 
         return {"x": x, "Tc": t, "Pc": p, "Vc": v}
 
-    def critical_line(self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000):
+    def critical_line(
+        self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000, stop_pressure=2500
+    ):
         """Critical Line calculation.
 
         Calculate the critical line between two compositions
@@ -1181,11 +1545,19 @@ class ArModel(ABC):
             Initial molar fraction of composition `i`
         da0: float, optional
             Step for molar fraction of composition `i`
-        max_poitns: int, optional
+        max_points: int, optional
             Maximum number of points to calculate
+        stop_pressure: float, optional
+            Stop when reaching this pressure value
         """
         alphas, vs, ts, ps = yaeos_c.critical_line(
-            self.id, a0=a0, da0=da0, z0=z0, zi=zi, max_points=max_points
+            self.id,
+            a0=a0,
+            da0=da0,
+            z0=z0,
+            zi=zi,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
         )
 
         return {"a": alphas, "T": ts, "P": ps, "V": vs}

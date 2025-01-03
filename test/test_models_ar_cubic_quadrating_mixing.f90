@@ -20,10 +20,10 @@ contains
 
    subroutine test_QMR_RKPR(error)
       use yaeos__constants, only: pr
-      use yaeos__models_ar_cubic_quadratic_mixing, only: QMR_RKPR
+      use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
       type(error_type), allocatable, intent(out) :: error
 
-      type(QMR_RKPR) :: mixrule
+      type(QMR) :: mixrule
 
       integer, parameter :: n = 3
       real(pr) :: del1(3) = [0.2, 0.5, 0.6]
