@@ -1436,6 +1436,68 @@ class ArModel(ABC):
             "kind": kinds,
         }
 
+    def phase_envelope_tx(
+        self,
+        z0,
+        zi,
+        pressure,
+        kind="bubble",
+        max_points=300,
+        t0=150.0,
+        a0=0.001,
+        ds0=0.1,
+    ):
+        """Two phase envelope calculation (TX).
+
+        Calculation of a phase envelope that starts at a given composition and
+        its related to another composition with some proportion.
+
+        Parameters
+        ----------
+        z0 : array_like
+            Initial global mole fractions
+        zi : array_like
+            Final global mole fractions
+        pressure : float
+            Pressure [K]
+        kind : str, optional
+            Kind of saturation point to start the envelope calculation,
+            defaults to "bubble". Options are
+            - "bubble"
+            - "dew"
+        max_points : int, optional
+            Envelope's maximum points to calculate (P, X), by default 300
+        t0 : float, optional
+            Initial guess for temperature [K] for the saturation point of kind:
+            `kind`, by default 150.0
+        a0 : float, optional
+            Initial molar fraction of composition `zi`, by default 0.001
+        ds0 : float, optional
+            Step for a, by default 0.1
+        """
+
+        a, ts, xs, ys, acs, pcs, kinds = yaeos_c.tx2_phase_envelope(
+            self.id,
+            z0=z0,
+            zi=zi,
+            kind=kind,
+            max_points=max_points,
+            t0=t0,
+            a0=a0,
+            p=pressure,
+            ds0=ds0,
+        )
+
+        return {
+            "a": a,
+            "T": ts,
+            "x": xs,
+            "y": ys,
+            "ac": acs,
+            "Pc": pcs,
+            "kind": kinds,
+        }
+
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
 

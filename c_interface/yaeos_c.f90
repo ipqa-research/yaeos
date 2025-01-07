@@ -45,7 +45,7 @@ module yaeos_c
    public :: flash, flash_grid
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
-   public :: pt2_phase_envelope, px2_phase_envelope
+   public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
    public :: critical_point, critical_line
    public :: stability_zpt, tm
 
@@ -878,6 +878,65 @@ contains
       Pcs(:i) = env%cps%P
       kinds = env%points%kind
    end subroutine px2_phase_envelope
+
+   subroutine tx2_phase_envelope(&
+      id, z0, zi, kind, max_points, P, T0, ds0, &
+      as, ts, xs, ys, acs, tcs, a0, kinds)
+      use yaeos, only: &
+         saturation_pressure, saturation_temperature, tx_envelope_2ph, &
+         EquilibriumState, TXEnvel2
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer, intent(in) :: max_points
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: ds0
+      real(c_double), intent(out) :: as(max_points)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: xs(max_points, size(z0))
+      real(c_double), intent(out) :: ys(max_points, size(z0))
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(out) :: acs(5), Tcs(5)
+      character(len=15), intent(out) :: kinds(max_points)
+
+      real(8) :: nan
+      type(EquilibriumState) :: sat
+      type(TXEnvel2) :: env
+
+      integer :: i, j
+
+      real(c_double) :: z(size(z0))
+
+      nan = makenan()
+      as = nan
+      Ts = nan
+      acs = nan
+      Tcs = nan
+
+      z = a0 * zi + (1-a0)*z0
+
+      sat = saturation_temperature(&
+         ar_models(id)%model, z, P=P, kind=kind, T0=T0)
+      env = tx_envelope_2ph(&
+         ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
+         first_point=sat, points=max_points, delta_0=ds0)
+
+      i = size(env%points)
+      as(:i) = env%alpha
+      Ts(:i) = env%points%T
+
+      do j=1,i
+         xs(j, :) = env%points(j)%x
+         ys(j, :) = env%points(j)%y
+      end do
+
+      i = size(env%cps)
+      acs(:i) = env%cps%alpha
+      Tcs(:i) = env%cps%T
+      kinds = env%points%kind
+   end subroutine tx2_phase_envelope
 
    subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
       use yaeos, only: EquilibriumState, flash
