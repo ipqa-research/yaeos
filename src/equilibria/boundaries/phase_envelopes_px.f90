@@ -263,7 +263,7 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.01) then
+         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.05) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS = 0.01_pr
          else
@@ -281,9 +281,9 @@ contains
             ] &
             )
 
-         do while (maxval(abs(dXdS(:nc)*dS)) < 0.05)
-            dS = dS*1.1_pr
-         end do
+         ! do while (maxval(abs(dXdS(:nc)*dS)) < 0.01)
+         !    dS = dS*1.1_pr
+         ! end do
 
          call save_point(X, step_iters)
          call detect_critical(X, dXdS, ns, S, dS)
@@ -367,6 +367,7 @@ contains
          Xnew = X + dXdS*dS
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
+            
 
             select case(kind)
              case("dew")
@@ -386,6 +387,12 @@ contains
                CriticalPoint(P=exp(Xc(nc+1)), alpha=Xc(nc+2)) &
                ]
             X = Xc + dXdS*dS
+            
+            if (nc == 2) then
+               X = Xc
+               dS = 0
+            end if
+
          end if
       end subroutine detect_critical
    end function px_envelope_2ph
