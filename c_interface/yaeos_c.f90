@@ -761,7 +761,9 @@ contains
       Vy(:npoints) = sat%Vy(:npoints)
    end subroutine pure_saturation_line
 
-   subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
+   subroutine pt2_phase_envelope(&
+         id, z, kind, max_points, T0, P0, Ts, Ps, tcs, pcs, xs, ys, kinds &
+      )
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
          EquilibriumState, PTEnvel2, find_hpl
@@ -769,10 +771,13 @@ contains
       real(c_double), intent(in) :: z(:)
       integer, intent(in) :: max_points
       character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: T0, P0
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
       real(c_double), intent(out) :: Tcs(5), Pcs(5)
-      real(c_double), optional, intent(in) :: T0, P0
+      real(c_double), intent(out) :: xs(max_points, size(z))
+      real(c_double), intent(out) :: ys(max_points, size(z))
+      character(len=15), intent(out) :: kinds(max_points)
 
       real(8) :: nan
       type(EquilibriumState) :: sat
@@ -788,35 +793,31 @@ contains
       Ps = nan
       Tcs = nan
       Pcs = nan
+      kinds = "nan"
 
-      if (present(T0)) then
-         T = T0
-      else
-         T = 150
-      end if
-
-      if (present(P0)) then
-         P = P0
-      else
-         P = 1
-      end if
+      T = T0
+      P = P0
 
       select case(kind)
        case("bubble")
-         sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind)
+         sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
          env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("dew")
-         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind, T0=T0)
          env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("liquid-liquid")
-         ! sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
          env = find_hpl(ar_models(id)%model, z, T, P)
       end select
-
 
       i = size(env%points)
       Ts(:i) = env%points%T
       Ps(:i) = env%points%P
+      kinds(:i) = env%points%kind
+
+      do i=1,size(env%points)
+         xs(i, :) = env%points(i)%x
+         ys(i, :) = env%points(i)%y
+      end do
 
       i = size(env%cps)
       Tcs(:i) = env%cps%T
@@ -824,7 +825,7 @@ contains
    end subroutine pt2_phase_envelope
 
    subroutine px2_phase_envelope(&
-      id, z0, zi, kind, max_points, T, P0, ds0, &
+      id, z0, zi, kind, max_points, T, P0, ns0, ds0, &
       as, Ps, xs, ys, acs, pcs, a0, kinds)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, px_envelope_2ph, &
@@ -835,6 +836,7 @@ contains
       integer, intent(in) :: max_points
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: T
+      integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ps(max_points)
@@ -858,15 +860,21 @@ contains
       Ps = nan
       acs = nan
       Pcs = nan
+      kinds = "nan"
 
       z = a0 * zi + (1-a0)*z0
-
       sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
-      env = px_envelope_2ph(ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, first_point=sat, points=max_points, delta_0=ds0)
+
+      env = px_envelope_2ph(&
+         ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
+         first_point=sat, points=max_points, &
+         delta_0=ds0, specified_variable_0=ns0 &
+      )
 
       i = size(env%points)
       as(:i) = env%alpha
       Ps(:i) = env%points%P
+      kinds(:i) = env%points%kind
 
       do j=1,i
          xs(j, :) = env%points(j)%x
@@ -876,11 +884,10 @@ contains
       i = size(env%cps)
       acs(:i) = env%cps%alpha
       Pcs(:i) = env%cps%P
-      kinds = env%points%kind
    end subroutine px2_phase_envelope
 
    subroutine tx2_phase_envelope(&
-      id, z0, zi, kind, max_points, P, T0, ds0, &
+      id, z0, zi, kind, max_points, P, T0, ns0, ds0, &
       as, ts, xs, ys, acs, tcs, a0, kinds)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, tx_envelope_2ph, &
@@ -892,6 +899,7 @@ contains
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: P
       real(c_double), intent(in) :: T0
+      integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ts(max_points)
@@ -914,14 +922,17 @@ contains
       Ts = nan
       acs = nan
       Tcs = nan
+      kinds = "nan"
 
       z = a0 * zi + (1-a0)*z0
 
       sat = saturation_temperature(&
          ar_models(id)%model, z, P=P, kind=kind, T0=T0)
+      
       env = tx_envelope_2ph(&
          ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
-         first_point=sat, points=max_points, delta_0=ds0)
+         first_point=sat, points=max_points, &
+         delta_0=ds0, specified_variable_0=ns0)
 
       i = size(env%points)
       as(:i) = env%alpha
