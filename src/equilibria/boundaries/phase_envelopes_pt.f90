@@ -26,7 +26,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
       generic, public :: write (FORMATTED) => write
    end type PTEnvel2
 
-   real(pr), parameter :: near_critical_K = 0.03
+   real(pr), parameter :: near_critical_K = 0.1
 
    ! Saved volume values
    real(pr), private :: Vz
@@ -121,7 +121,7 @@ contains
       ! ------------------------------------------------------------------------
       XS = continuation(&
          foo, X, ns0=ns, S0=S0, &
-         dS0=dS0, max_points=max_points, solver_tol=1.e-7_pr, &
+         dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
          update_specification=update_spec, &
          solver=solver, stop=stop_conditions &
          )
@@ -230,7 +230,7 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < near_critical_K) then
+         if (maxval(abs(X(:nc))) < 0.1) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS=0.01_pr
          else
@@ -249,15 +249,21 @@ contains
 
          ! Avoid small steps on T or P
          do while(&
-            abs(dXdS(nc+1)*dS) < 0.1 &
-            .and. abs(dXdS(nc+2)*dS) < 0.05 &
-            .and. dS /= 0)
-            dS = dS * 1.1
+            abs(dXdS(nc+1)*dS) < 0.005 &
+            .and. abs(dXdS(nc+2)*dS) < 0.005 &
+            .and. dS /= 0 &
+            .and. .not. kind == "liquid-liquid")
+            dS = dS * 1.01
          end do
 
-         ! Dont make big steps in compositions
-         do while(maxval(abs(dXdS(:nc)*dS)) > 0.1 * maxval(abs(X(:nc))))
-            dS = 0.7*dS
+         if (kind == "liquid-liquid") then
+            do while(abs(dXdS(nc+2)*dS) > 0.01 .and. dS /= 0 )
+               dS = dS / 1.1
+            end do
+         end if
+
+         do while ( maxval(abs(X(:nc))) <= 0.5 .and. abs(dXdS(ns)*dS) > 0.05 )
+            dS = dS * 0.5
          end do
 
          if (present(maximum_pressure)) then
@@ -332,14 +338,12 @@ contains
          real(pr) :: Xold(size(X)) !! Old value of X
          real(pr) :: Xnew(size(X)) !! Value of the next initialization
 
-         integer :: inner
+         integer :: inner, ncomp
 
          Xold = X
 
          inner = 0
-         do while (&
-            maxval(abs(X(:nc))) < near_critical_K &
-            .and. inner < 5000)
+         do while (maxval(abs(X(:nc))) < near_critical_K  .and. inner < 5000)
             ! If near a critical point, jump over it
             inner = inner + 1
             S = S + dS
@@ -359,13 +363,16 @@ contains
             end select
 
             ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
-            a = -Xnew(ns)/(X(ns) - Xnew(ns))
+
+            ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
+            a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
             Xc = a * X + (1-a)*Xnew
 
             envelopes%cps = [&
                envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
                ]
-            X = Xc + dXdS*dS
+            X = Xc + dXdS*(dS*1.5)
+            S = X(ns)
          end if
       end subroutine detect_critical
    end function pt_envelope_2ph
@@ -414,7 +421,7 @@ contains
       end do
    end subroutine write_PTEnvel2
 
-   type(PTEnvel2) function find_hpl(model, z, T0, P0)
+   type(PTEnvel2) function find_hpl(model, z, T0, P0, max_points)
       !! # find_hpl
       !!
       !! ## Description
@@ -431,6 +438,7 @@ contains
       real(pr), intent(in) :: z(:) !! Mole fractions
       real(pr), intent(in) :: T0 !! Initial temperature [K]
       real(pr), intent(in) :: P0 !! Search pressure [bar]
+      integer, intent(in) :: max_points
 
       integer :: i
       real(pr) :: y(size(z))
@@ -480,7 +488,8 @@ contains
       fr%kind = "liquid-liquid"
       find_hpl = pt_envelope_2ph( &
          model, z, fr, &
-         specified_variable_0=nc+2, delta_0=-5.0_pr, iterations=1000)
+         specified_variable_0=nc+2, delta_0=-5.0_pr, &
+         iterations=1000, points=max_points)
    end function find_hpl
 
 end module yaeos__equilibria_boundaries_phase_envelopes_pt

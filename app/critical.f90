@@ -87,7 +87,7 @@ program main
       
       write(unit_pt_cp, *) a, env%cps
 
-      env = find_hpl(model, z, t0=500._pr, P0=1000._pr)
+      env = find_hpl(model, z, t0=500._pr, P0=1000._pr, max_points=100)
       do i=1,size(env%points)
          write(unit_pt_hpl, *) a, env%points(i)%T, env%points(i)%P
       end do

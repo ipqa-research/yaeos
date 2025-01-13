@@ -219,7 +219,7 @@ contains
          end do
          
          do while (abs(dX(nc+2)) > 1)
-            dX(nc+1) = dX(nc+2) / 2
+            dX(nc+2) = dX(nc+2) / 2
          end do
 
          X = X + dX

@@ -134,7 +134,7 @@ contains
       allocate(critical_line%ns(0), critical_line%iters(0))
       XS = continuation(&
          f=foo, X0=X0, ns0=ns, S0=X0(ns), &
-         dS0=dS0, max_points=npoints, solver_tol=1e-5_pr, &
+         dS0=dS0, max_points=npoints, solver_tol=1e-3_pr, &
          update_specification=update_specification &
          )
 
@@ -188,12 +188,18 @@ contains
       end subroutine foo
 
       subroutine update_specification(X, ns, S, dS, dXdS, iterations)
+         use yaeos__equilibria_stability, only: tm, min_tpd
          real(pr), intent(in out) :: X(:) !! Vector of variables \(X\)
          integer, intent(in out) :: ns !! Position of specified variable
          real(pr), intent(in out) :: S !! Specification variable value
          real(pr), intent(in out) :: dS !! Step of specification in the method
          real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
          integer, intent(in) :: iterations !! Iterations needed to converge point
+
+         integer :: i, nc, nscep
+         real(pr) :: z(size(z0)), w(size(z0)), mintm, minw(size(z0)), Vy, fcep(size(z0)+4), dfcep(size(z0)+4, size(z0)+4)
+         real(pr) :: xcep(size(z0)+4), dx(size(z0) + 4), Scep, tmval, di(size(z0))
+         nc = size(z0)
 
          critical_line%ns = [critical_line%ns, ns]
          critical_line%iters = [critical_line%iters, iterations]
@@ -203,6 +209,56 @@ contains
          dXdS = dXdS/dXdS(ns)
          if (exp(X(spec_CP%P)) > max_P) then
             dS = 0
+         end if
+
+         if (nc == 2) then
+
+            z = X(1)*zi + (1-X(1))*z0
+            mintm = 5
+            minw = 0
+
+            ! call model%lnphi_vt(n=z, V=exp(X(2)), T=exp(X(3)), lnPhi=di)
+            ! di = log(z) + di
+            
+            ! do i=1, 50
+            !    w = [real(i, pr), 50._pr-i]/50._pr
+            !    tmval = tm(model, z, w, exp(X(spec_CP%P)), exp(X(spec_CP%T)), d=di)
+
+            !    if (tmval < mintm) then
+            !       mintm = tmval
+            !       minw = w
+            !    end if
+            ! end do
+
+            call min_tpd(model, z, exp(X(spec_CP%P)), exp(X(spec_CP%T)), mintm, minw)
+
+            if (mintm < 0 .and. abs(mintm) > 1e-3) then
+               dx = 1
+               call model%volume(minw, exp(X(4)), exp(X(3)), V=Vy, root_type="stable")
+
+               xcep(:size(z0)) = minw
+               xcep(size(z0)+1) = log(Vy)
+               xcep(size(z0)+2) = X(spec_CP%V)
+               xcep(size(z0)+3) = X(spec_CP%T)
+               xcep(size(z0)+4) = X(spec_CP%a)
+               Scep = X(spec_CP%T)
+               nscep = spec_CP%T
+
+               do while(maxval(abs(dx)) > 1e-5 .or. maxval(abs(Fcep)) > 1e-5)
+                  fcep = F_cep2(model, Xcep, nscep, Scep, z0, zi, u)
+                  dfcep = df_cep(model, Xcep, nscep, Scep, z0, zi, u)
+                  
+                  dx = solve_system(dfcep, -fcep)
+
+                  do while(any((xcep(:nc) + dx(:nc) ) < 0))
+                     dx = dx/2
+                  end do
+
+                  xcep = xcep + dx
+               end do
+               print *, "CEP", xcep(:nc), exp(xcep(nc+1:))
+               dS = 0
+            end if
          end if
 
       end subroutine update_specification
@@ -342,6 +398,137 @@ contains
          df_critical(:, i) = (F2 - F1)/(2*eps)
       end do
    end function df_critical
+
+   function f_cep(model, X, ns, S, cp, df)
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: X(:) !! Vector of variables
+      integer, intent(in) :: ns !! Position of the specification variable
+      real(pr), intent(in) :: S !! Specification variable value
+      type(EquilibriumState), intent(in) :: cp !! Critical Point
+      real(pr) :: df(:, :)
+
+      real(pr) :: f_cep(size(x))
+
+      real(pr) :: T, P
+      real(Pr) :: Py, Vy, y(size(x)-1)
+
+      real(pr) :: lnf_cp(size(x)-1)
+
+      real(pr) :: ln_fy(size(x)-1), dlnfy_dn(size(x)-1, size(x)-1)
+      real(pr) :: dlnfy_dv(size(x)-1)
+      real(pr) :: dPydn(size(x)-1), dPydVy
+
+      integer :: i, nc
+
+      nc = size(x)-1
+
+      T = cp%T
+      P = cp%P
+      y = X(:nc)
+      Vy = exp(X(nc+1))
+
+      call model%lnfug_vt(n=cp%x, V=cp%Vx, T=T, lnf=lnf_cp)
+      call model%lnfug_vt(&
+         n=y, V=Vy, T=T, &
+         P=Py,  dPdV=dPydVy, dPdn=dPydn, &
+         lnf=lnf_cp, dlnfdn=dlnfy_dn, dlnfdv=dlnfy_dv)
+
+      f_cep(:nc) = lnf_cp - ln_fy
+      f_cep(nc+1) = log(Py) - log(P)
+
+      df = 0
+      do i=1,nc
+         df(i, :nc)  = dlnfy_dn(i, :nc)
+         df(i, nc+1) = dlnfy_dv(i) * Vy
+      end do
+
+      df(nc+1, :nc) = dPydn/Py
+      df(nc+1, nc+1) = Vy * dPydVy / Py
+   end function f_cep
+
+   function F_cep2(model, X, ns, S, z0, zi, u)
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: X(size(z0) + 4) !! Vector of variables
+      integer, intent(in) :: ns !! Position of the specification variable
+      real(pr), intent(in) :: S !! Specification variable value
+      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: u(:) !! Eigen-vector
+
+      real(pr) :: F_cep2(size(z0)+ 4)
+      real(pr) :: z(size(u))
+
+      real(pr) :: V, T, P
+      real(pr) :: Xcp(4)
+
+      real(pr) :: Vc, Pc, lnf_z(size(z0))
+      real(pr) :: y(size(z0)), Vy, Py, lnf_y(size(z0))
+
+      real(pr), parameter :: eps=1e-5_pr
+
+      integer :: nc
+
+      nc = size(z0)
+
+      y = X(:nc)
+      Vy = exp(X(nc+1))
+      Vc = exp(X(nc+2))
+      T = exp(X(nc+3))
+      z = X(nc+4) * zi + (1-X(nc+4)) * z0
+      
+      if(any(z < 0) ) return
+
+      call model%lnfug_vt(n=y, V=Vy, T=T, P=Py, lnf=lnf_y)
+      call model%lnfug_vt(n=z, V=Vc, T=T, P=Pc, lnf=lnf_z)
+      Xcp(1) = X(nc+4)
+      Xcp(2) = log(Vc)
+      Xcp(3) = log(T)
+      Xcp(4) = log(Pc)
+
+      F_cep2(1) = lambda1(model=model, X=Xcp, s=0.0_pr, z0=z0, zi=zi, u=u, P=Pc)
+      F_cep2(2) = (&
+           lambda1(model=model, X=Xcp, s= eps, zi=zi, z0=z0, u=u) &
+         - lambda1(model=model, X=Xcp, s=-eps, zi=zi, z0=z0, u=u))/(2*eps)
+      F_cep2(3) = log(Pc) - log(Py)
+      F_cep2(4:nc+3) = lnf_y - lnf_z
+      f_cep2(nc+4) = sum(y) - 1
+   end function F_cep2
+
+   function df_cep(model, X, ns, S, z0, zi, u)
+      !! # df_critical
+      !!
+      !! ## Description
+      !! Calculates the Jacobian of the critical point function `F_critical`.
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: X(size(z0)+4) !! Vector of variables
+      integer, intent(in) :: ns !! Position of the specification variable
+      real(pr), intent(in) :: S !! Specification variable value
+      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: u(:) !! Eigen-vector
+      real(pr) :: df_cep(size(z0)+4, size(z0)+4) !! Jacobian of the critical point function
+
+      real(pr) :: eps
+
+      real(pr) :: dx(size(z0)+4), F1(size(z0)+4), F2(size(z0)+4)
+
+      integer :: i
+
+      if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
+         eps = 1e-3_pr
+      else
+         eps = 1e-6_pr
+      end if
+
+      df_cep = 0
+      do i=1,size(df_cep, 1)
+         dx = 0
+         dx(i) = eps
+         F2 = F_cep2(model, X+dx, ns, S, z0, zi, u)
+         F1 = F_cep2(model, X-dx, ns, S, z0, zi, u)
+         df_cep(:, i) = (F2 - F1)/(2*eps)
+      end do
+   end function df_cep
 
    type(EquilibriumState) function critical_point(&
       model, z0, zi, spec, S, max_iters, u0, V0, T0, a0 &

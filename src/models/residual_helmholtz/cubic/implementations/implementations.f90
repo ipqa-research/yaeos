@@ -388,7 +388,8 @@ contains
       !! Refit the \(k\) parameter of the RKPR EoS to match the acentric
       !! factor
       use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
-      use yaeos__equilibria_boundaries_pure_saturation, only: PurePsat, pure_saturation_line
+      ! use yaeos__equilibria_boundaries_pure_saturation, only: &
+      !    PurePsat, pure_saturation_line
 
       type(CubicEoS), intent(in out) :: model !! The model to be refitted
       integer, intent(in) :: component !! Component index to refit
@@ -397,7 +398,7 @@ contains
 
       integer :: i
       type(AlphaRKPR) :: alpha
-      type(PurePsat) :: Psat
+      ! type(PurePsat) :: Psat
 
       associate(a => model%alpha)
          select type(a)
@@ -413,18 +414,18 @@ contains
       w = model%components%w(i)
 
       diff = 1
-      do while (abs(diff)/abs(w) > 1e-3)
+      do while (abs(diff)/abs(w) > 1e-5)
          Psat_i = model%Psat_pure(i, 0.7*Tc)
 
          if (Psat_i < 1e-10) then
             ! If the saturation pressure did not converge, calculate the
             ! whole line
-            Psat = pure_saturation_line(model, i, minp=1e-01_pr, minT=0.6*Tc)
-            Psat_i = Psat%get_P(0.7*Tc)
+            ! Psat = pure_saturation_line(model, i, minp=1e-01_pr, minT=0.6*Tc)
+            ! Psat_i = Psat%get_P(0.7*Tc)
 
-            ! If the saturation pressure still not converges, just give it
-            ! a value of 80% of the critical pressure.
-            ! TODO: This could be improved by using a better initial guess
+            ! ! If the saturation pressure still not converges, just give it
+            ! ! a value of 80% of the critical pressure.
+            ! ! TODO: This could be improved by using a better initial guess
             if (Psat_i < 1e-10) Psat_i = 0.8*Pc
          end if
 
@@ -435,8 +436,6 @@ contains
          model%alpha = alpha
          if (Psat_i < 1e-6) error stop
       end do
-
-      print *, alpha%k
    end subroutine refit_rkpr_k
 
    subroutine get_OMa_OMb(del1, OMa, OMb)

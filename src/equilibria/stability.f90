@@ -140,7 +140,7 @@ contains
          w = 1e-10
          w(i) = 1 - 1e-10
          dw = 100
-         do while(maxval(abs(dw)) > 1e-7)
+         do while(maxval(abs(dw)) > 1e-5)
             call model%lnphi_pt(w, P, T, root_type="stable", lnPhi=lnphi_w)
             dw = exp(di - lnphi_w) - w
             w = w + dw
