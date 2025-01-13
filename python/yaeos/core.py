@@ -1366,11 +1366,19 @@ class ArModel(ABC):
             plt.plot(env["Ts"], env["Ps"])
             plt.scatter(env["Tcs"], env["Pcs"])
         """
-        ts, ps, tcs, pcs = yaeos_c.pt2_phase_envelope(
+        ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
             self.id, z, kind=kind, t0=t0, p0=p0, max_points=max_points
         )
 
-        res = {"Ts": ts, "Ps": ps, "Tcs": tcs, "Pcs": pcs}
+        res = {
+            "Ts": ts,
+            "Ps": ps,
+            "Tcs": tcs,
+            "Pcs": pcs,
+            "x": xs,
+            "y": ys,
+            "kinds": kinds,
+        }
 
         return res
 
@@ -1383,6 +1391,7 @@ class ArModel(ABC):
         max_points=300,
         p0=10.0,
         a0=0.001,
+        ns0=None,
         ds0=0.1,
     ):
         """Two phase envelope calculation (PX).
@@ -1410,9 +1419,16 @@ class ArModel(ABC):
             `kind`, by default 10.0
         a0 : float, optional
             Initial molar fraction of composition `zi`, by default 0.001
+        ns0 : int, optional
+            Initial specified variable number, by default None.
+            The the first `n=len(z)` values correspond to the K-values, where
+            the last two values are the pressure and alpha.
         ds0 : float, optional
             Step for a, by default 0.1
         """
+
+        if ns0 is None:
+            ns0 = len(z0) + 2
 
         a, ps, xs, ys, acs, pcs, kinds = yaeos_c.px2_phase_envelope(
             self.id,
@@ -1423,6 +1439,7 @@ class ArModel(ABC):
             p0=p0,
             a0=a0,
             t=temperature,
+            ns0=ns0,
             ds0=ds0,
         )
 
@@ -1445,6 +1462,7 @@ class ArModel(ABC):
         max_points=300,
         t0=150.0,
         a0=0.001,
+        ns0=None,
         ds0=0.1,
     ):
         """Two phase envelope calculation (TX).
@@ -1472,10 +1490,16 @@ class ArModel(ABC):
             `kind`, by default 150.0
         a0 : float, optional
             Initial molar fraction of composition `zi`, by default 0.001
+        ns0 : int, optional
+            Initial specified variable number, by default None.
+            The the first `n=len(z)` values correspond to the K-values, where
+            the last two values are the temperature and alpha.
         ds0 : float, optional
             Step for a, by default 0.1
         """
 
+        if ns0 is None:
+            ns0 = len(z0) + 2
         a, ts, xs, ys, acs, pcs, kinds = yaeos_c.tx2_phase_envelope(
             self.id,
             z0=z0,
@@ -1485,6 +1509,7 @@ class ArModel(ABC):
             t0=t0,
             a0=a0,
             p=pressure,
+            ns0=ns0,
             ds0=ds0,
         )
 
