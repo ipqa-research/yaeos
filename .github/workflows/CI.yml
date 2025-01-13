@@ -46,7 +46,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt-get install libnlopt-dev
+        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
@@ -94,7 +94,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install libnlopt-dev pandoc
+        sudo apt-get install libnlopt-dev pandoc libblas-dev liblapack-dev
     
     - name: install tox
       run: |
