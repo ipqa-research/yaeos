@@ -26,6 +26,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
       generic, public :: write (FORMATTED) => write
    end type PTEnvel2
 
+   real(pr), parameter :: near_critical_K = 0.03
+
    ! Saved volume values
    real(pr), private :: Vz
    real(pr), private :: Vy
@@ -228,7 +230,7 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < 0.1_pr) then
+         if (maxval(abs(X(:nc))) < near_critical_K) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS=0.01_pr
          else
@@ -247,7 +249,7 @@ contains
 
          ! Avoid small steps on T or P
          do while(&
-            abs(dXdS(nc+1)*dS) < 0.05 &
+            abs(dXdS(nc+1)*dS) < 0.1 &
             .and. abs(dXdS(nc+2)*dS) < 0.05 &
             .and. dS /= 0)
             dS = dS * 1.1
@@ -336,7 +338,7 @@ contains
 
          inner = 0
          do while (&
-            maxval(abs(X(:nc))) < 0.07 &
+            maxval(abs(X(:nc))) < near_critical_K &
             .and. inner < 5000)
             ! If near a critical point, jump over it
             inner = inner + 1
