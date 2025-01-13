@@ -244,7 +244,7 @@ contains
       ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      do its=1, iters_first_step
+      do its=1, 5
          y = k*z
          where (.not. is_incipient)
             y = 0
@@ -269,6 +269,7 @@ contains
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
       ! ========================================================================
+      its = iters_first_step
       if (its >= iters_first_step) then
          block
             real(pr) :: X(size(n)+2), S
