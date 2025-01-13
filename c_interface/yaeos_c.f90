@@ -806,7 +806,7 @@ contains
          sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind, T0=T0)
          env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("liquid-liquid")
-         env = find_hpl(ar_models(id)%model, z, T, P)
+         env = find_hpl(ar_models(id)%model, z, T, P, max_points)
       end select
 
       i = size(env%points)
