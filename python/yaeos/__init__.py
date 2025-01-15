@@ -22,7 +22,6 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
 )
 from . import fitting
 
-
 __all__ = [
     "constants",
     "yaeos_c",
@@ -38,7 +37,6 @@ __all__ = [
     "UNIQUAC",
     "MHV",
     "HV",
-    "fitting",
 ]
 
 

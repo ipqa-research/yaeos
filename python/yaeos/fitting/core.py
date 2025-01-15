@@ -4,7 +4,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-from .solvers import solve_PT
+from yaeos.fitting.solvers import solve_PT
 
 
 class BinaryFitter:
