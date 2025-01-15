@@ -9,10 +9,7 @@ from yaeos.fitting.solvers import solve_PT
 
 class BinaryFitter:
 
-    def __init__(
-            self, model_setter,
-            model_setter_args,
-            data, verbose=False):
+    def __init__(self, model_setter, model_setter_args, data, verbose=False):
         self._get_model = model_setter
         self._get_model_args = model_setter_args
         self.data = data
@@ -77,16 +74,13 @@ class BinaryFitter:
                 nearest = np.argmin(distances)
                 err += distances[nearest] * w_crit
 
-        err = err/len(data)
+        err = err / len(data)
         if self.verbose:
             print(err)
         return err
 
     def fit(self, x0, bounds):
         sol = minimize(
-            self.objective_function,
-            x0=x0,
-            bounds=bounds,
-            method="Nelder-Mead"
+            self.objective_function, x0=x0, bounds=bounds, method="Nelder-Mead"
         )
         self._solution = sol

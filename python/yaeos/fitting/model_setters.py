@@ -8,8 +8,7 @@ import numpy as np
 
 
 def fit_kij_lij(x, args):
-    """Set the kij and/or lij parameter of the model.
-    """
+    """Set the kij and/or lij parameter of the model."""
     model = args[0]
     fit_kij, fit_lij = args[1:]
 

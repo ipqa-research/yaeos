@@ -2,17 +2,17 @@
 
 Module that contains different solvers for specific porpouses.
 """
+
 import numpy as np
 
 
 def binary_isofugacity_x1y1PT(X, P, T, model):
-    """Isofugacity evaluation at a given P and T
-    """
+    """Isofugacity evaluation at a given P and T"""
 
     y1, x1 = X
 
-    x = np.array([x1, 1-x1])
-    y = np.array([y1, 1-y1])
+    x = np.array([x1, 1 - x1])
+    y = np.array([y1, 1 - y1])
 
     lnphi_x = model.lnphi_pt(x, pressure=P, temperature=T, root="stable")
     lnphi_y = model.lnphi_pt(y, pressure=P, temperature=T, root="stable")
@@ -23,16 +23,13 @@ def binary_isofugacity_x1y1PT(X, P, T, model):
 
 
 def solve_PT(model, P, T):
-    """
-    """
+    """ """
     from scipy.optimize import root
+
     x10, y10 = find_init_binary_ll(model, P, T)
 
     X0 = [x10, y10]
-    sol = root(
-        binary_isofugacity_x1y1PT,
-        X0, (P, T, model)
-    )
+    sol = root(binary_isofugacity_x1y1PT, X0, (P, T, model))
     x1, y1 = sol.x
 
     return x1, y1
@@ -41,13 +38,21 @@ def solve_PT(model, P, T):
 def find_init_binary_ll(model, pressure, temperature):
     from scipy.signal import argrelmin, argrelmax
 
-    P, T, =  pressure, temperature
+    (
+        P,
+        T,
+    ) = (
+        pressure,
+        temperature,
+    )
 
-    zs = np.linspace(1e-15, 1-1e-15, 100)
+    zs = np.linspace(1e-15, 1 - 1e-15, 100)
 
     phis = np.array(
         [
-            model.lnphi_pt([z, 1-z], temperature=T, pressure=P, root="liquid")
+            model.lnphi_pt(
+                [z, 1 - z], temperature=T, pressure=P, root="liquid"
+            )
             for z in zs
         ]
     )
