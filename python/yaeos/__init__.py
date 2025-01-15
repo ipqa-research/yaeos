@@ -20,6 +20,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     RKPR,
     SoaveRedlichKwong,
 )
+from . import fitting
 
 
 __all__ = [
@@ -37,6 +38,7 @@ __all__ = [
     "UNIQUAC",
     "MHV",
     "HV",
+    "fitting",
 ]
 
 
