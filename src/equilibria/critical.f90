@@ -211,55 +211,55 @@ contains
             dS = 0
          end if
 
-         if (nc == 2) then
+         ! if (nc == 2) then
 
-            z = X(1)*zi + (1-X(1))*z0
-            mintm = 5
-            minw = 0
+         !    z = X(1)*zi + (1-X(1))*z0
+         !    mintm = 5
+         !    minw = 0
 
-            ! call model%lnphi_vt(n=z, V=exp(X(2)), T=exp(X(3)), lnPhi=di)
-            ! di = log(z) + di
-            
-            ! do i=1, 50
-            !    w = [real(i, pr), 50._pr-i]/50._pr
-            !    tmval = tm(model, z, w, exp(X(spec_CP%P)), exp(X(spec_CP%T)), d=di)
+         !    ! call model%lnphi_vt(n=z, V=exp(X(2)), T=exp(X(3)), lnPhi=di)
+         !    ! di = log(z) + di
+         !    
+         !    ! do i=1, 50
+         !    !    w = [real(i, pr), 50._pr-i]/50._pr
+         !    !    tmval = tm(model, z, w, exp(X(spec_CP%P)), exp(X(spec_CP%T)), d=di)
 
-            !    if (tmval < mintm) then
-            !       mintm = tmval
-            !       minw = w
-            !    end if
-            ! end do
+         !    !    if (tmval < mintm) then
+         !    !       mintm = tmval
+         !    !       minw = w
+         !    !    end if
+         !    ! end do
 
-            call min_tpd(model, z, exp(X(spec_CP%P)), exp(X(spec_CP%T)), mintm, minw)
+         !    call min_tpd(model, z, exp(X(spec_CP%P)), exp(X(spec_CP%T)), mintm, minw)
 
-            if (mintm < 0 .and. abs(mintm) > 1e-3) then
-               dx = 1
-               call model%volume(minw, exp(X(4)), exp(X(3)), V=Vy, root_type="stable")
+         !    if (mintm < 0 .and. abs(mintm) > 1e-3) then
+         !       dx = 1
+         !       call model%volume(minw, exp(X(4)), exp(X(3)), V=Vy, root_type="stable")
 
-               xcep(:size(z0)) = minw
-               xcep(size(z0)+1) = log(Vy)
-               xcep(size(z0)+2) = X(spec_CP%V)
-               xcep(size(z0)+3) = X(spec_CP%T)
-               xcep(size(z0)+4) = X(spec_CP%a)
-               Scep = X(spec_CP%T)
-               nscep = spec_CP%T
+         !       xcep(:size(z0)) = minw
+         !       xcep(size(z0)+1) = log(Vy)
+         !       xcep(size(z0)+2) = X(spec_CP%V)
+         !       xcep(size(z0)+3) = X(spec_CP%T)
+         !       xcep(size(z0)+4) = X(spec_CP%a)
+         !       Scep = X(spec_CP%T)
+         !       nscep = spec_CP%T
 
-               do while(maxval(abs(dx)) > 1e-5 .or. maxval(abs(Fcep)) > 1e-5)
-                  fcep = F_cep2(model, Xcep, nscep, Scep, z0, zi, u)
-                  dfcep = df_cep(model, Xcep, nscep, Scep, z0, zi, u)
-                  
-                  dx = solve_system(dfcep, -fcep)
+         !       do while(maxval(abs(dx)) > 1e-5 .or. maxval(abs(Fcep)) > 1e-5)
+         !          fcep = F_cep2(model, Xcep, nscep, Scep, z0, zi, u)
+         !          dfcep = df_cep(model, Xcep, nscep, Scep, z0, zi, u)
+         !          
+         !          dx = solve_system(dfcep, -fcep)
 
-                  do while(any((xcep(:nc) + dx(:nc) ) < 0))
-                     dx = dx/2
-                  end do
+         !          do while(any((xcep(:nc) + dx(:nc) ) < 0))
+         !             dx = dx/2
+         !          end do
 
-                  xcep = xcep + dx
-               end do
-               print *, "CEP", xcep(:nc), exp(xcep(nc+1:))
-               dS = 0
-            end if
-         end if
+         !          xcep = xcep + dx
+         !       end do
+         !       print *, "CEP", xcep(:nc), exp(xcep(nc+1:))
+         !       dS = 0
+         !    end if
+         ! end if
 
       end subroutine update_specification
    end function critical_line
