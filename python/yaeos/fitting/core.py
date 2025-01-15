@@ -17,16 +17,21 @@ class BinaryFitter:
 
         self.critical_points = len(data[data["kind"] == "critical"])
         self.bubble_points = len(data[data["kind"] == "bubble"])
+        self.dew_points = len(data[data["kind"] == "dew"])
+        self.ll_points = len(data[data["kind"] == "liquid-liquid"])
 
         self._critical_weight = (len(data) - self.critical_points) / len(data)
-        self._bubble_weigth = (len(data) - self.bubble_points) / len(data)
+        self._bubble_weight = (len(data) - self.bubble_points) / len(data)
+        self._dew_weight = (len(data) - self.dew_points) / len(data)
+        self._ll_weight = (len(data) - self.ll_points) / len(data)
 
     def objective_function(self, x_values):
         model = self._get_model(x_values, *self._get_model_args)
         data = self.data
 
         w_crit = self._critical_weight
-        w_bub = self._bubble_weigth
+        w_bub = self._bubble_weight
+        w_dew = self._dew_weight
 
         # ==============================================================
         # Calculate the critical line and remove the NaN values
@@ -52,12 +57,34 @@ class BinaryFitter:
                 sat = model.saturation_pressure(
                     x, kind="bubble", temperature=t, p0=p
                 )
-                err += (sat["P"] - p) ** 2 / p + (sat["y"][0] - y[0]) ** 2
+                err += (sat["P"] - p) ** 2 / p 
+
+                if not np.isnan(row["y1"]):
+                    err += (sat["y"][0] - y[0]) ** 2
                 err *= w_bub
 
-            if row["kind"] == "PT":
+            # =================================================================
+            # Dew points
+            # -----------------------------------------------------------------
+            
+            if row["kind"] == "dew":
+                sat = model.saturation_pressure(
+                    x, kind="dew", temperature=t, p0=p
+                )
+                err += (sat["P"] - p) ** 2 / p + (sat["y"][0] - y[0]) ** 2
+                err *= w_dew
+
+            if row["kind"] == "PT" or row["kind"] == "liquid-liquid":
                 x1, y1 = solve_PT(model, row["P"], row["T"])
-                err += (x1 - row["x1"]) ** 2 + (y1 - row["y1"]) ** 2
+
+                if np.isnan(x[0]):
+                    err += (y1 - y[0]) ** 2
+
+                elif np.isnan(y[0]):
+                    err += (x1 - x[0]) ** 2
+
+                else:
+                    err += (x1 - row["x1"]) ** 2 + (y1 - row["y1"]) ** 2
 
             # =================================================================
             # Critical point error is calculated by finding the nearest
@@ -79,8 +106,8 @@ class BinaryFitter:
             print(err)
         return err
 
-    def fit(self, x0, bounds):
+    def fit(self, x0, bounds, method="Nelder-Mead"):
         sol = minimize(
-            self.objective_function, x0=x0, bounds=bounds, method="Nelder-Mead"
+            self.objective_function, x0=x0, bounds=bounds, method=method
         )
         self._solution = sol
