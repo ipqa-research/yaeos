@@ -57,7 +57,7 @@ program main
    ! Now test the critical lines
    print *, "CL"
    call tim%timer_start()
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.1_pr, max_points=5000)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr, max_points=5000)
    call tim%timer_stop()
 
    ! if (WRITE_FILES) call write_cl

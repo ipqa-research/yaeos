@@ -554,12 +554,13 @@ contains
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
-   subroutine critical_point(id, z0, zi, spec, max_iters, x, T, P, V)
+   subroutine critical_point(id, z0, zi, spec, S, max_iters, x, T, P, V)
       use yaeos, only: EquilibriumState, fcritical_point => critical_point
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
       integer, intent(in) :: spec
+      real(c_double), intent(in) :: S
       integer, intent(in) :: max_iters
       real(c_double), intent(out) :: x(size(z0))
       real(c_double), intent(out) :: T
@@ -567,11 +568,9 @@ contains
       real(c_double), intent(out) :: V
 
       real(c_double) :: y(size(z0)), Vx, Vy, beta
-      real(c_double) :: S
 
       type(EquilibriumState) :: crit
 
-      S = 0
       crit = fcritical_point(&
          model=ar_models(id)%model, z0=z0, zi=zi, &
          S=S, spec=spec, max_iters=max_iters &
@@ -580,16 +579,18 @@ contains
    end subroutine critical_point
 
    subroutine critical_line(&
-      id, a0, da0, &
-      z0, zi, max_points, stop_pressure, &
+      id, ns, S, ds0, &
+      a0, z0, zi, max_points, stop_pressure, &
       as, Vs, Ts, Ps)
       use yaeos, only: EquilibriumState, CriticalLine, &
          fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: ns
+      real(c_double), intent(in) :: S
+      real(c_double), intent(in) :: dS0
+      real(c_double), intent(in) :: a0
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
-      real(c_double), intent(in) :: a0
-      real(c_double), intent(in) :: da0
       integer, intent(in) :: max_points
       real(c_double), intent(in) :: stop_pressure
       real(c_double), intent(out) :: as(max_points)
@@ -609,7 +610,7 @@ contains
       cl = fcritical_line(&
          model=ar_models(id)%model, a0=a0, &
          z0=z0, zi=zi, &
-         ns=spec_CP%a, S=a0, ds0=da0, maxp=stop_pressure, max_points=max_points)
+         ns0=ns, S0=S, ds0=ds0, maxp=stop_pressure, max_points=max_points)
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
