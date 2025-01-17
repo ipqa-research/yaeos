@@ -72,7 +72,7 @@ program main
       print *, "Running PT Envelope", i, size(env%points)
       call tim%timer_stop()
       ! if (WRITE_FILES) call write_env
-      write(i+10, *) env
+      ! write(i+10, *) env
 
       a_nearest = minloc(abs(cl%a - a), dim=1)
 

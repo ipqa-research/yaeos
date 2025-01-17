@@ -247,6 +247,10 @@ contains
             ] &
             )
 
+         if (ns <= nc) then
+            dS = sign(minval([maxdS, abs(dS)]), dS)
+         end if
+
          ! Avoid small steps on T or P
          do while(&
             abs(dXdS(nc+1)*dS) < 0.005 &
