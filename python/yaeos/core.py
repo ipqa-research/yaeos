@@ -1590,15 +1590,21 @@ class ArModel(ABC):
         """
         return yaeos_c.tm(id=self.id, z=z, w=w, p=pressure, t=temperature)
 
-    def critical_point(self, z, max_iters=100) -> dict:
+    def critical_point(self, z0, zi=[0, 0], ns=1, S=0, max_iters=100) -> dict:
         """Critical point calculation.
 
         Calculate the critical point of a mixture. At a given composition.
 
         Parameters
         ----------
-        z: array_like
-            Global mole fractions
+        z0: array_like
+            Mole fractions of original fluid
+        zi: array_like
+            Mole fractinos of other fluid
+        ns: int
+            Number of specification
+        S: float
+            Specification value
         max_iters: int, optional
 
         Returns
@@ -1610,13 +1616,21 @@ class ArModel(ABC):
                 - Vc: critical volume [L]
         """
         *x, t, p, v = yaeos_c.critical_point(
-            self.id, z0=z, zi=[0, 0], spec=1, max_iters=max_iters
+            self.id, z0=z0, zi=zi, spec=ns, s=S, max_iters=max_iters
         )
 
         return {"x": x, "Tc": t, "Pc": p, "Vc": v}
 
     def critical_line(
-        self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000, stop_pressure=2500
+        self,
+        z0,
+        zi,
+        ns=1,
+        S=1e-5,
+        ds0=1e-2,
+        a0=1e-5,
+        max_points=1000,
+        stop_pressure=2500,
     ):
         """Critical Line calculation.
 
@@ -1628,19 +1642,26 @@ class ArModel(ABC):
             Initial global mole fractions
         zi: array_like
             Final global mole fractions
+        ns: int, optional
+            Specified variable number, by default 1
+        S: float, optional
+            Specified value, by default 1e-5
+        ds0: float, optional
+            Step for molar fraction of composition `i`
         a0: float, optional
             Initial molar fraction of composition `i`
-        da0: float, optional
-            Step for molar fraction of composition `i`
         max_points: int, optional
             Maximum number of points to calculate
         stop_pressure: float, optional
             Stop when reaching this pressure value
         """
+
         alphas, vs, ts, ps = yaeos_c.critical_line(
             self.id,
+            ns=ns,
+            ds0=ds0,
             a0=a0,
-            da0=da0,
+            s=S,
             z0=z0,
             zi=zi,
             max_points=max_points,
