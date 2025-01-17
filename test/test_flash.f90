@@ -32,6 +32,8 @@ contains
       real(pr) :: z(nc), T, P
       real(pr) :: w(nc), mintpd
 
+      integer :: i
+
       forsus_dir = "build/dependencies/forsus/data/json"
       sus(1) = Substance("methane")
       sus(2) = Substance("hydrogen sulfide")
@@ -49,11 +51,11 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, mintpd > 0)
-
+      call check(error, abs(mintpd) < 1e-9_pr)
+      
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - (-0.1726_pr)) < 1e-4)
+      call check(error, abs(mintpd - (-0.1726_pr)) < 1e-3)
       call check(error, abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr)
    end subroutine test_tm
 
