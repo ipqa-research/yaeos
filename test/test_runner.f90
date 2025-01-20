@@ -2,6 +2,8 @@ program tester
     use, intrinsic :: iso_fortran_env, only: error_unit
     use testdrive, only: run_testsuite, new_testsuite, testsuite_type
 
+    use fortime, only: Timer
+
     use test_legacy, only: suite_legacy => collect_suite
     use test_cubic_alphas, only: suite_alphas => collect_suite
     use test_cubic_implementations, only: suite_implementations => collect_suite
@@ -39,6 +41,8 @@ program tester
     type(testsuite_type), allocatable :: testsuites(:)
     character(len=*), parameter :: fmt = '("#", *(1x, a))'
 
+    type(Timer) :: t
+
     stat = 0
 
     testsuites = [ &
@@ -72,11 +76,15 @@ program tester
         ]
         
 
+    call t%ctimer_start()
+    call t%dtimer_start()
     do is = 1, size(testsuites)
         write (error_unit, fmt) "Testing:", &
             style_bold // testsuites(is)%name // style_reset
         call run_testsuite(testsuites(is)%collect, error_unit, stat)
     end do
+    call t%ctimer_stop()
+    call t%dtimer_stop()
 
     if (stat > 0) then
         write (error_unit, '(i0, 1x, a)') stat, "test(s) failed!"
