@@ -8,6 +8,10 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
       continuation, continuation_solver, continuation_stopper
    implicit none
 
+   private
+
+   public :: PTEnvel2, pt_envelope_2ph, find_hpl
+
    type :: CriticalPoint
       !! Critical point
       real(pr) :: T !! Temperature [K]
