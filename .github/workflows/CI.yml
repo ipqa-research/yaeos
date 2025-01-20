@@ -13,8 +13,8 @@ jobs:
         toolchain:
           - {compiler: gcc, version: 10}
           - {compiler: gcc, version: 13}
-          # - {compiler: intel, version: '2024.2'}
-          # - {compiler: intel, version: '2023.2'}
+          - {compiler: intel, version: '2024.2'}
+          - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -154,9 +154,6 @@ jobs:
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
           CIBW_BEFORE_TEST: pip install pytest
           CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
-          FC: gfortran-13
-          FPM_FC: gfortran-13
-          FPM_CC: gcc-13
 
       - uses: actions/upload-artifact@v4
         with:
