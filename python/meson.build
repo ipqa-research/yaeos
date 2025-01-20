@@ -39,6 +39,7 @@ fpm = run_command(
     'install',
     '--profile',
     'release',
+    '--verbose',
     '--flag',
     fflags,
     '--c-flag',
