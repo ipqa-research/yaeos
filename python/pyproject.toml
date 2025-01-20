@@ -35,7 +35,17 @@ skip = ["*-manylinux_i686", "*-musllinux_*", "*-win32"]
 manylinux-x86_64-image = "manylinux2014"
 
 [tool.cibuildwheel.linux]
-before-all = "yum update && yum -y install lapack-devel gcc-gfortran && ln -sf /usr/bin/gfortran /usr/bin/gfortran-13"
+# before-all = "yum update && yum -y install lapack-devel gcc-gfortran && ln -sf /usr/bin/gfortran /usr/bin/gfortran-13"
+before-all = """
+  curl -O https://ftp.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.gz
+  tar -xzf gcc-13.1.0.tar.gz
+  cd gcc-13.1.0
+  ./configure --disable-multilib --enable-languages=c,c++,fortran
+  make -j$(nproc)
+  make install
+  ln -sf /usr/local/bin/gfortran /usr/bin/gfortran
+  gfortran --version
+"""
 
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"
