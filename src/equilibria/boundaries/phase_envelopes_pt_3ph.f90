@@ -21,7 +21,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt3
 
 contains
 
-   type(PTEnvel3) function phase_envelope_pt_3(&
+   type(PTEnvel3) function pt_envelope_3ph(&
       model, z, x0, y0, w0, beta0, P0, T0, ns0, dS0, &
       points &
       ) result(envelope)
@@ -97,7 +97,7 @@ contains
       envelope%P = P(:i)
       envelope%T = T(:i)
       envelope%beta = beta(:i)
-   end function phase_envelope_pt_3
+   end function pt_envelope_3ph
 
 
    subroutine get_values_from_X(z, Xvars, x, y, w, P, T, beta)
@@ -214,7 +214,6 @@ contains
          if (all(Xnew(idx) * Xold(idx) < 0)) then
             ! If two steps imply the crossing of a critical point, then
             ! make those two steps to avoid falling into it
-            print *, "CP"
             found_critical = .true.
             critical_set = idx
             Xnew = Xnew + dXdS*dS
@@ -225,7 +224,6 @@ contains
          a = critical_interpol(Xnew, Xold, critical_set)
          Xc = a * Xold + (1-a)*Xnew
 
-         print *, exp(Xc(2*nc+2)), exp(Xc(2*nc+1))
          ! Xnew = Xc
          ! do while(maxval(abs(Xnew(idx))) < 0.5)
          !    Xnew = Xnew + dXdS*dS
@@ -428,14 +426,12 @@ contains
       nc = (size(X) - 3)/2
 
       do while((maxval(abs(F)) > 1e-5 .or. maxval(abs(dX)) > 1e-5) .and. its < maxits)
-         
+
          its = its + 1
 
          call pt_F_three_phases(model, z, X, ns, S, F, dF)
-         
-         dX = solve_system(dF, -F)
 
-         print *, its, maxval(abs(dx)), maxloc(abs(dx)), any(isnan(F)), ns, exp(S)
+         dX = solve_system(dF, -F)
 
          do while((abs(dX(2*nc+1)/X(2*nc+1))) > 0.1)
             dX = dX/2

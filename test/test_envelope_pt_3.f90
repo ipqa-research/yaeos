@@ -1,6 +1,6 @@
 program main
    use yaeos
-   use yaeos__equilibria_boundaries_phase_envelopes_pt3, only: solve_point, PTEnvel3, phase_envelope_pt_3
+   use yaeos__equilibria_boundaries_phase_envelopes_pt3, only: solve_point, PTEnvel3, pt_envelope_3ph
    use fixtures_models, only: multicomponent_PR, asphaltenes_srk
    use testing_aux, only: assert, test_title
    implicit none
@@ -106,7 +106,7 @@ program main
    print * , "P:", exp(XX(2*nc+1))
    print * , "T:", exp(XX(2*nc+2))
 
-   env3 = phase_envelope_pt_3(&
+   env3 = pt_envelope_3ph(&
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
       P0=exp(XX(2*nc+1)), T0=exp(XX(2*nc+2)), ns0=ns, dS0=0.1_pr, points=10000)
 
