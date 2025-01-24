@@ -26,16 +26,11 @@ program main
    ! eos = asphaltenes_srk(z0, zi)
    eos = multicomponent_PR(z0, zi)
 
-
-
-
-   a = 0.7
+   a = 0.3
    z = a * zi + (1-a)*z0
-
 
    env = find_hpl(eos, z, t0=500._pr, p0=maxP, max_points=1000)
    write(1, *) env
-
 
    P = 0.01
    sat = saturation_temperature(eos, z, P, kind="dew", t0=500._pr)
@@ -43,8 +38,8 @@ program main
    cp = critical_point(eos, z0, zi=0*z0, spec=spec_CP%a, S=0._pr, max_iters=100)
    write(1, *) env
 
-   sat = saturation_pressure(eos, z, T=250._pr, kind="bubble", p0=0.01_pr)
-   fl = flash(eos, z=z, T=sat%T, P_spec=sat%P, iters=its)
+   sat = saturation_pressure(eos, z, T=200._pr, kind="bubble", p0=20._pr)
+   fl = flash(eos, z=z, T=sat%T+50, P_spec=sat%P, iters=its)
    env = pt_envelope_2ph(eos, z, sat, points=1000)
    write(1, *) env
 
@@ -55,7 +50,6 @@ program main
    w = sat%y
    x = sat%x
    y = fl%y
-   beta = 0.5
    
    lnP = log(sat%P)
    lnT = log(sat%T)
@@ -99,6 +93,7 @@ program main
    y = w * exp(XX(nc+1:2*nc))
    beta = XX(2*nc+3)
 
+   print *, "its:", its 
    print *, "w:", w
    print *, "x:", x
    print *, "y:", y
@@ -108,7 +103,7 @@ program main
 
    env3 = pt_envelope_3ph(&
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
-      P0=exp(XX(2*nc+1)), T0=exp(XX(2*nc+2)), ns0=ns, dS0=0.1_pr, points=10000)
+      P0=exp(XX(2*nc+1)), T0=exp(XX(2*nc+2)), ns0=ns, dS0=0.01_pr, points=1000)
 
   write(2, *) "ns S T P beta &
                x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 &

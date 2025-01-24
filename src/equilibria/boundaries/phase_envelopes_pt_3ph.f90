@@ -440,13 +440,12 @@ contains
             dX = dX/2
          end do
          
-         ! do while(abs(dX(2*nc+3)) > 0.1)
-         !    dX = dX/2
-         ! end do
+         do while(abs(dX(2*nc+3)) > 0.1)
+            dX = dX/2
+         end do
 
          X = X + dX
 
-         write(1, *) dX
       end do
    end subroutine solve_point
 end module yaeos__equilibria_boundaries_phase_envelopes_pt3
