@@ -214,11 +214,11 @@ contains
 
          dX = solve_system(dF, -F)
          
-         do while (abs(dX(nc+1)) > 1)
+         do while (abs(dX(nc+1)) > 0.1)
             dX(nc+1) = dX(nc+1) / 2
          end do
          
-         do while (abs(dX(nc+2)) > 1)
+         do while (abs(dX(nc+2)) > 0.1)
             dX(nc+2) = dX(nc+2) / 2
          end do
 

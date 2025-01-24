@@ -43,8 +43,8 @@ program main
    cp = critical_point(eos, z0, zi=0*z0, spec=spec_CP%a, S=0._pr, max_iters=100)
    write(1, *) env
 
-   sat = saturation_pressure(eos, z, T=200._pr, kind="bubble", p0=0.01_pr)
-   fl = flash(eos, z=z, T=sat%T+50, P_spec=sat%P, iters=its)
+   sat = saturation_pressure(eos, z, T=250._pr, kind="bubble", p0=0.01_pr)
+   fl = flash(eos, z=z, T=sat%T, P_spec=sat%P, iters=its)
    env = pt_envelope_2ph(eos, z, sat, points=1000)
    write(1, *) env
 
@@ -110,7 +110,10 @@ program main
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
       P0=exp(XX(2*nc+1)), T0=exp(XX(2*nc+2)), ns0=ns, dS0=0.1_pr, points=10000)
 
-  write(2, *) "ns S T P beta x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12 y13 y14 y15 y16 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16"
+  write(2, *) "ns S T P beta &
+               x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 &
+               y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12 y13 y14 y15 y16 &
+               w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16"
   do i=1,size(env3%beta)
      write(2, *) env3%ns(i), env3%S(i), env3%T(i), env3%P(i), env3%beta(i), env3%x(i, :), env3%y(i, :), env3%w(i, :)
   end do
