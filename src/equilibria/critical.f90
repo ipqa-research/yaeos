@@ -159,7 +159,7 @@ contains
             Si = X0(ns)
             its = 0
             real_its = 0
-            
+
             do while(&
                maxval(abs(dX)) > 1e-4 &
                .and. maxval(abs(F)) > 1e-5 &
@@ -192,7 +192,7 @@ contains
             if (any(isnan(X))) exit
             if (exp(X(spec_CP%P)) > max_P) exit
 
-            
+
             ! ==============================================================
             ! Save point
             ! --------------------------------------------------------------
@@ -223,7 +223,7 @@ contains
             X = X + dXdS*dS
          end do
       end block solve_points
-      
+
       critical_line%z0 = z0
       critical_line%zi = zi
    end function critical_line
@@ -363,54 +363,7 @@ contains
       end do
    end function df_critical
 
-   function f_cep(model, X, ns, S, cp, df)
-      class(ArModel), intent(in) :: model !! Equation of state model
-      real(pr), intent(in) :: X(:) !! Vector of variables
-      integer, intent(in) :: ns !! Position of the specification variable
-      real(pr), intent(in) :: S !! Specification variable value
-      type(EquilibriumState), intent(in) :: cp !! Critical Point
-      real(pr) :: df(:, :)
-
-      real(pr) :: f_cep(size(x))
-
-      real(pr) :: T, P
-      real(Pr) :: Py, Vy, y(size(x)-1)
-
-      real(pr) :: lnf_cp(size(x)-1)
-
-      real(pr) :: ln_fy(size(x)-1), dlnfy_dn(size(x)-1, size(x)-1)
-      real(pr) :: dlnfy_dv(size(x)-1)
-      real(pr) :: dPydn(size(x)-1), dPydVy
-
-      integer :: i, nc
-
-      nc = size(x)-1
-
-      T = cp%T
-      P = cp%P
-      y = X(:nc)
-      Vy = exp(X(nc+1))
-
-      call model%lnfug_vt(n=cp%x, V=cp%Vx, T=T, lnf=lnf_cp)
-      call model%lnfug_vt(&
-         n=y, V=Vy, T=T, &
-         P=Py,  dPdV=dPydVy, dPdn=dPydn, &
-         lnf=lnf_cp, dlnfdn=dlnfy_dn, dlnfdv=dlnfy_dv)
-
-      f_cep(:nc) = lnf_cp - ln_fy
-      f_cep(nc+1) = log(Py) - log(P)
-
-      df = 0
-      do i=1,nc
-         df(i, :nc)  = dlnfy_dn(i, :nc)
-         df(i, nc+1) = dlnfy_dv(i) * Vy
-      end do
-
-      df(nc+1, :nc) = dPydn/Py
-      df(nc+1, nc+1) = Vy * dPydVy / Py
-   end function f_cep
-
-   function F_cep2(model, X, ns, S, z0, zi, u)
+   function F_cep(model, X, ns, S, z0, zi, u)
       class(ArModel), intent(in) :: model !! Equation of state model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: X(size(z0) + 4) !! Vector of variables
@@ -419,7 +372,7 @@ contains
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
       real(pr), intent(in) :: u(:) !! Eigen-vector
 
-      real(pr) :: F_cep2(size(z0)+ 4)
+      real(pr) :: F_cep(size(z0)+ 4)
       real(pr) :: z(size(u))
 
       real(pr) :: V, T, P
@@ -449,14 +402,14 @@ contains
       Xcp(3) = log(T)
       Xcp(4) = log(Pc)
 
-      F_cep2(1) = lambda1(model=model, X=Xcp, s=0.0_pr, z0=z0, zi=zi, u=u, P=Pc)
-      F_cep2(2) = (&
+      F_cep(1) = lambda1(model=model, X=Xcp, s=0.0_pr, z0=z0, zi=zi, u=u, P=Pc)
+      F_cep(2) = (&
          lambda1(model=model, X=Xcp, s= eps, zi=zi, z0=z0, u=u) &
          - lambda1(model=model, X=Xcp, s=-eps, zi=zi, z0=z0, u=u))/(2*eps)
-      F_cep2(3) = log(Pc) - log(Py)
-      F_cep2(4:nc+3) = lnf_y - lnf_z
-      f_cep2(nc+4) = sum(y) - 1
-   end function F_cep2
+      F_cep(3) = log(Pc) - log(Py)
+      F_cep(4:nc+3) = lnf_y - lnf_z
+      F_cep(nc+4) = sum(y) - 1
+   end function F_cep
 
    function df_cep(model, X, ns, S, z0, zi, u)
       !! # df_critical
@@ -488,8 +441,8 @@ contains
       do i=1,size(df_cep, 1)
          dx = 0
          dx(i) = eps
-         F2 = F_cep2(model, X+dx, ns, S, z0, zi, u)
-         F1 = F_cep2(model, X-dx, ns, S, z0, zi, u)
+         F2 = F_cep(model, X+dx, ns, S, z0, zi, u)
+         F1 = F_cep(model, X-dx, ns, S, z0, zi, u)
          df_cep(:, i) = (F2 - F1)/(2*eps)
       end do
    end function df_cep
