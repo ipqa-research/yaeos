@@ -62,7 +62,7 @@ module yaeos__equilibria_critical
 contains
 
    type(CriticalLine) function critical_line(&
-      model, a0, z0, zi, ns, S, dS0, max_points, maxP, first_point &
+      model, a0, z0, zi, ns0, S0, dS0, max_points, maxP, first_point &
       )
       !! # critical_line
       !!
@@ -79,8 +79,8 @@ contains
       real(pr), intent(in) :: a0 !! Initial \(\alpha\) value
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
-      integer, intent(in) :: ns !! Position of the specification variable
-      real(pr), intent(in) :: S !! Specified value
+      integer, intent(in) :: ns0 !! Position of the specification variable
+      real(pr), intent(in) :: S0 !! Specified value
       real(pr), intent(in) :: dS0 !! Initial step size
       integer, optional, intent(in) :: max_points !! Maximum number of points
       real(pr), optional, intent(in) :: maxP !! Maximum pressure
@@ -90,18 +90,20 @@ contains
       real(pr) :: u(size(z0)) !! eigen-vector
       real(pr) :: u_new(size(z0)) !! eigen-vector
 
-      real(pr), allocatable :: XS(:, :) !! Full set of solved points
+      real(pr), allocatable :: XS_i(:), XS(:, :)!! Full set of solved points
+
+      integer :: ns
+      real(pr) :: S
 
       real(pr) :: X0(4), T, P, V, z(size(z0))
 
-      integer :: i, j, last_point, npoints
+      integer :: i, npoints
 
       real(pr) :: max_P
 
       ! ========================================================================
       ! Handle the input
       ! ------------------------------------------------------------------------
-
       if (present(max_points)) then
          npoints = max_points
       else
@@ -124,88 +126,106 @@ contains
       X0 = [a0, log([v, T, P])]
 
       if (present(first_point)) then
-         X0 = [first_point%x(2), log([first_point%Vx, first_point%T, first_point%P])]
+         X0 = [&
+            first_point%x(2), &
+            log([first_point%Vx, first_point%T, first_point%P])]
       end if
-      X0(ns) = S
+
+      X0(ns0) = S0
+      ns = ns0
 
       ! ========================================================================
       ! Calculate the points
       ! ------------------------------------------------------------------------
       allocate(critical_line%ns(0), critical_line%iters(0))
-      XS = continuation(&
-         f=foo, X0=X0, ns0=ns, S0=X0(ns), &
-         dS0=dS0, max_points=npoints, solver_tol=1e-5_pr, &
-         update_specification=update_specification &
-         )
+      allocate(critical_line%P(0), critical_line%T(0), critical_line%V(0), critical_line%a(0))
 
-      ! Find the last true converged point
-      last_point = 0
-      do i=1, size(XS, 1)
-         if (all(abs(XS(i, :)) < 0.001)) exit
-         last_point = i + 1
-      end do
+      solve_points: block
+         use yaeos__math, only: solve_system
+         use yaeos__math_continuation, only: full_newton
+         real(pr) :: X(4), dX(4), dS, F(4), dF(4,4), dFdS(4), dXdS(4)
+         real(pr) :: u_new(size(z0)), l1, Si
 
-      XS = XS(1:last_point-1, :)
+         integer :: its, real_its
+
+         X = X0
+         dS = dS0
+         S = X(ns)
+
+         do i=1,npoints
+            dX = 1
+            F = 10
+            X0 = X
+            Si = X0(ns)
+            its = 0
+            real_its = 0
+
+            do while(&
+               maxval(abs(dX)) > 1e-4 &
+               .and. maxval(abs(F)) > 1e-5 &
+               .and. real_its < 2000)
+
+               its = its + 1
+               real_its = real_its + 1
+
+               F = F_critical(model, X, ns, Si, z0, zi, u)
+               dF = df_critical(model, X, ns, Si, z0, zi, u)
+               l1 = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u, u_new=u_new)
+               dX = solve_system(dF, -F)
+               u = u_new
+
+               do while(abs(dX(1)/X(1)) > 0.1 .and. i < 5)
+                  dX = dX/2
+               end do
+
+               do while(abs(maxval(dX(:)/X(:))) > 0.1)
+                  dX = dX/2
+               end do
+
+               X = X + dX
+            end do
+
+            ! ==============================================================
+            ! Cases where the line must be stopped
+            ! --------------------------------------------------------------
+            if (real_its == 2000) exit
+            if (any(isnan(X))) exit
+            if (exp(X(spec_CP%P)) > max_P) exit
+
+
+            ! ==============================================================
+            ! Save point
+            ! --------------------------------------------------------------
+            critical_line%a = [critical_line%a, X(1)]
+            critical_line%V = [critical_line%V, exp(X(2))]
+            critical_line%T = [critical_line%T, exp(X(3))]
+            critical_line%P = [critical_line%P, exp(X(4))]
+            critical_line%ns = [critical_line%ns, ns]
+            critical_line%iters = [critical_line%iters, its]
+
+            ! ==============================================================
+            ! Determination of new specification
+            ! --------------------------------------------------------------
+            dFdS = [0, 0, 0, -1]
+            dXdS = solve_system(dF, -dFdS)
+            ns = maxloc(abs(dXdS), dim=1)
+            dS = dXdS(ns)*dS
+            dXdS = dXdS/dXdS(ns)
+
+            ! ==============================================================
+            ! Avoid big steps in pressure
+            ! --------------------------------------------------------------
+            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 10)
+            !    dS = dS * 0.99
+            ! end do
+
+            ! Next step
+            X = X + dXdS*dS
+         end do
+      end block solve_points
 
       critical_line%z0 = z0
       critical_line%zi = zi
-      critical_line%a =  XS(:, 1)
-      critical_line%V = exp(XS(:, 2))
-      critical_line%T = exp(XS(:, 3))
-
-      allocate(critical_line%P(size(critical_line%a)))
-      do i=1, size(critical_line%a)
-         z = critical_line%a(i)*zi + (1-critical_line%a(i))*z0
-
-         call model%pressure(&
-            n=z, V=critical_line%V(i), T=critical_line%T(i), &
-            P=critical_line%P(i))
-      end do
-
-   contains
-
-      subroutine foo(X, ns, S, F, dF, dFdS)
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: ns
-         real(pr), intent(in) :: S
-         real(pr), intent(out) :: F(:)
-         real(pr), intent(out) :: dF(:, :)
-         real(pr), intent(out) :: dFdS(:)
-         real(pr) :: l1
-
-         real(pr) :: z(size(u)), Xsol(3)
-
-         if (X(spec_CP%a) > 1) then
-            return
-         end if
-
-         F = F_critical(model, X, ns, S, z0, zi, u)
-         df = df_critical(model, X, ns, S, z0, zi, u)
-         l1 = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u, u_new=u_new)
-         u = u_new
-         dFdS = 0
-         dFdS(size(dFdS)) = -1
-      end subroutine foo
-
-      subroutine update_specification(X, ns, S, dS, dXdS, iterations)
-         real(pr), intent(in out) :: X(:) !! Vector of variables \(X\)
-         integer, intent(in out) :: ns !! Position of specified variable
-         real(pr), intent(in out) :: S !! Specification variable value
-         real(pr), intent(in out) :: dS !! Step of specification in the method
-         real(pr), intent(in out) ::  dXdS(:) !! \(\frac{dX}{dS}\)
-         integer, intent(in) :: iterations !! Iterations needed to converge point
-
-         critical_line%ns = [critical_line%ns, ns]
-         critical_line%iters = [critical_line%iters, iterations]
-
-         ns = maxloc(abs(dXdS), dim=1)
-         dS = dXdS(ns)*dS
-         dXdS = dXdS/dXdS(ns)
-         if (exp(X(spec_CP%P)) > max_P) then
-            dS = 0
-         end if
-
-      end subroutine update_specification
    end function critical_line
 
    real(pr) function lambda1(model, X, s, z0, zi, u, u_new, P)
@@ -297,7 +317,7 @@ contains
       T = exp(X(3))
       z = X(1) * zi + (1-X(1)) * z0
 
-      if(any(z < 0) ) return
+      ! if(any(z < 0) ) return
 
       F_critical(1) = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u, P=P)
       F_critical(2) = (&
@@ -342,6 +362,90 @@ contains
          df_critical(:, i) = (F2 - F1)/(2*eps)
       end do
    end function df_critical
+
+   function F_cep(model, X, ns, S, z0, zi, u)
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: X(size(z0) + 4) !! Vector of variables
+      integer, intent(in) :: ns !! Position of the specification variable
+      real(pr), intent(in) :: S !! Specification variable value
+      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: u(:) !! Eigen-vector
+
+      real(pr) :: F_cep(size(z0)+ 4)
+      real(pr) :: z(size(u))
+
+      real(pr) :: V, T, P
+      real(pr) :: Xcp(4)
+
+      real(pr) :: Vc, Pc, lnf_z(size(z0))
+      real(pr) :: y(size(z0)), Vy, Py, lnf_y(size(z0))
+
+      real(pr), parameter :: eps=1e-5_pr
+
+      integer :: nc
+
+      nc = size(z0)
+
+      y = X(:nc)
+      Vy = exp(X(nc+1))
+      Vc = exp(X(nc+2))
+      T = exp(X(nc+3))
+      z = X(nc+4) * zi + (1-X(nc+4)) * z0
+
+      if(any(z < 0) ) return
+
+      call model%lnfug_vt(n=y, V=Vy, T=T, P=Py, lnf=lnf_y)
+      call model%lnfug_vt(n=z, V=Vc, T=T, P=Pc, lnf=lnf_z)
+      Xcp(1) = X(nc+4)
+      Xcp(2) = log(Vc)
+      Xcp(3) = log(T)
+      Xcp(4) = log(Pc)
+
+      F_cep(1) = lambda1(model=model, X=Xcp, s=0.0_pr, z0=z0, zi=zi, u=u, P=Pc)
+      F_cep(2) = (&
+         lambda1(model=model, X=Xcp, s= eps, zi=zi, z0=z0, u=u) &
+         - lambda1(model=model, X=Xcp, s=-eps, zi=zi, z0=z0, u=u))/(2*eps)
+      F_cep(3) = log(Pc) - log(Py)
+      F_cep(4:nc+3) = lnf_y - lnf_z
+      F_cep(nc+4) = sum(y) - 1
+   end function F_cep
+
+   function df_cep(model, X, ns, S, z0, zi, u)
+      !! # df_critical
+      !!
+      !! ## Description
+      !! Calculates the Jacobian of the critical point function `F_critical`.
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: X(size(z0)+4) !! Vector of variables
+      integer, intent(in) :: ns !! Position of the specification variable
+      real(pr), intent(in) :: S !! Specification variable value
+      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: u(:) !! Eigen-vector
+      real(pr) :: df_cep(size(z0)+4, size(z0)+4) !! Jacobian of the critical point function
+
+      real(pr) :: eps
+
+      real(pr) :: dx(size(z0)+4), F1(size(z0)+4), F2(size(z0)+4)
+
+      integer :: i
+
+      if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
+         eps = 1e-3_pr
+      else
+         eps = 1e-6_pr
+      end if
+
+      df_cep = 0
+      do i=1,size(df_cep, 1)
+         dx = 0
+         dx(i) = eps
+         F2 = F_cep(model, X+dx, ns, S, z0, zi, u)
+         F1 = F_cep(model, X-dx, ns, S, z0, zi, u)
+         df_cep(:, i) = (F2 - F1)/(2*eps)
+      end do
+   end function df_cep
 
    type(EquilibriumState) function critical_point(&
       model, z0, zi, spec, S, max_iters, u0, V0, T0, a0 &

@@ -36,7 +36,7 @@ program phase_diagram
    sat = saturation_temperature(model, z, P=0.001_pr, kind="dew", T0=500._pr)
    env = pt_envelope_2ph(model, z, sat)
    write(1, *) env
-   env = find_hpl(model, z, T0=300._pr, p0=maxval(env%points%P))
+   env = find_hpl(model, z, T0=300._pr, p0=maxval(env%points%P), max_points=500)
    write(1, *) env
 
    ! w =[0.001, 0.999]

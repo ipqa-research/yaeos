@@ -17,19 +17,19 @@ module yaeos__equilibria
    ! Critical points
    use yaeos__equilibria_critical, only: &
       critical_line, CriticalLine, critical_point, spec_CP
+   
+   ! Extra
+   use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
 
    ! Phase equilibria boundaries
    use yaeos__equilibria_boundaries_pure_saturation, only: &
       PurePsat, pure_saturation_line
-   
-   use yaeos__equilibria_boundaries_phase_envelopes_pt, only: &
-      PTEnvel2, pt_envelope_2ph, find_hpl
-   
    use yaeos__equilibria_boundaries_phase_envelopes_px, only: &
       PXEnvel2, px_envelope_2ph
    use yaeos__equilibria_boundaries_phase_envelopes_tx, only: &
       TXEnvel2, tx_envelope_2ph
-
-   ! Extra
-   use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
+   use yaeos__equilibria_boundaries_phase_envelopes_pt, only: &
+      PTEnvel2, pt_envelope_2ph, find_hpl
+   use yaeos__equilibria_boundaries_phase_envelopes_pt3, only: &
+      PTEnvel3, pt_envelope_3ph
 end module yaeos__equilibria

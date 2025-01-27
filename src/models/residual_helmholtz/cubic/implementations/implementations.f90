@@ -17,6 +17,7 @@ module yaeos__models_ar_cubic_implementations
    public :: SoaveRedlichKwong
    public :: RKPR
    public :: PSRK
+   public :: refit_rkpr_k
 
 contains
 
@@ -339,7 +340,7 @@ contains
       Zc_eos = 1.168 * Zc
 
       if (present(k)) then
-            alpha%k = k
+         alpha%k = k
       else
          alpha%k = (A1 * Zc_eos + A0)*w**2 + (B1*zc + B0)*w + (C1*Zc_eos + C0)
       end if
@@ -358,7 +359,7 @@ contains
 
       model%components = composition
       if (present(delta_1)) then
-            model%del1 = delta_1
+         model%del1 = delta_1
       else
          model%del1 = d1 + d2 * (d3 - zc_eos) ** d4 + d5 * (d3 - zc_eos) ** d6
       end if
@@ -375,18 +376,67 @@ contains
 
       if (.not. present(k)) then
          do i=1,nc
-            diff = 1
-            do while (abs(diff) > 1e-6)
-               Psat_i = model%Psat_pure(i, 0.7*Tc(i))
-               diff = (w(i) - (-1 - log10(Psat_i/Pc(i))))
-               alpha%k(i) = alpha%k(i) + 0.1*diff
-
-               deallocate(model%alpha)
-               model%alpha = alpha
-            end do
+            call refit_rkpr_k(model, i)
          end do
       end if
    end function RKPR
+
+
+   subroutine refit_rkpr_k(model, component)
+      !! # refit_rkpr_k
+      !!
+      !! Refit the \(k\) parameter of the RKPR EoS to match the acentric
+      !! factor
+      use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
+      use yaeos__equilibria_boundaries_pure_saturation, only: &
+         PurePsat, pure_saturation_line
+
+      type(CubicEoS), intent(in out) :: model !! The model to be refitted
+      integer, intent(in) :: component !! Component index to refit
+
+      real(pr) :: Psat_i, diff, Tc, Pc, w
+
+      integer :: i
+      type(AlphaRKPR) :: alpha
+      type(PurePsat) :: Psat
+
+      associate(a => model%alpha)
+         select type(a)
+          type is (AlphaRKPR)
+            alpha = a
+         end select
+      end associate
+
+      i = component
+
+      Tc = model%components%tc(i)
+      Pc = model%components%pc(i)
+      w = model%components%w(i)
+
+      diff = 1
+      do while (abs(diff)/abs(w) > 1e-5)
+         Psat_i = model%Psat_pure(i, 0.7*Tc)
+
+         if (Psat_i < 1e-10) then
+            ! If the saturation pressure did not converge, calculate the
+            ! whole line
+            Psat = pure_saturation_line(model, i, minp=0.01*Pc, minT=0.6*Tc)
+            Psat_i = Psat%get_P(0.7*Tc)
+
+            ! If the saturation pressure still not converges, just give it
+            ! a value of 80% of the critical pressure.
+            ! TODO: This could be improved by using a better initial guess
+            if (Psat_i < 1e-10) Psat_i = 0.8*Pc
+         end if
+
+         diff = (w - (-1 - log10(Psat_i/Pc)))
+         alpha%k(i) = alpha%k(i) + 0.1*diff
+
+         deallocate(model%alpha)
+         model%alpha = alpha
+         if (Psat_i < 1e-6) error stop
+      end do
+   end subroutine refit_rkpr_k
 
    subroutine get_OMa_OMb(del1, OMa, OMb)
       real(pr), intent(in) :: del1(:)

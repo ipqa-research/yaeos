@@ -133,8 +133,8 @@ def test_envelope():
     z = [0.1, 0.9]
     envelope = model.phase_envelope_pt(z, t0=230.0, p0=5.0)
 
-    assert np.allclose(envelope["Tcs"][0], 532.9, atol=1.0)
-    assert np.allclose(envelope["Pcs"][0], 32.95, atol=0.2)
+    assert np.allclose(envelope["Tc"][0], 532.9, atol=1.0)
+    assert np.allclose(envelope["Pc"][0], 32.95, atol=0.2)
 
 
 def test_flash_pt():

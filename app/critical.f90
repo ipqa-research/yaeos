@@ -39,7 +39,7 @@ program main
 
    print *, "1stCL"
    a = real(1, pr)/100._pr
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.1_pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr)
    print *, size(cl%a)
    do i=1, size(cl%a)
       write(unit_cl, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
@@ -49,7 +49,7 @@ program main
 
    print *, "2ndCL"
    a = 1-epsilon(1._pr)
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=-0.01_pr)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=-0.01_pr)
    print *, size(cl%a)
    do i=1, size(cl%a)
       write(unit_cl, *) cl%a(i), cl%V(i), cl%T(i), cl%P(i)
@@ -87,7 +87,7 @@ program main
       
       write(unit_pt_cp, *) a, env%cps
 
-      env = find_hpl(model, z, t0=500._pr, P0=1000._pr)
+      env = find_hpl(model, z, t0=500._pr, P0=1000._pr, max_points=100)
       do i=1,size(env%points)
          write(unit_pt_hpl, *) a, env%points(i)%T, env%points(i)%P
       end do

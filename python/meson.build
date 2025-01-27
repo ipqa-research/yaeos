@@ -1,5 +1,5 @@
 project('yaeos', 'c',
-  version : '2.1.0',
+  version : '3.0.0',
   license: 'MPL',
   meson_version: '>=0.64.0',
   default_options : ['warning_level=2'],
@@ -39,6 +39,7 @@ fpm = run_command(
     'install',
     '--profile',
     'release',
+    '--verbose',
     '--flag',
     fflags,
     '--c-flag',
@@ -125,6 +126,14 @@ cubic_eos_sources = [
 ]
 py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos')
 
+#### fitting
+fitting = [
+  python_lib / 'fitting' / '__init__.py',
+  python_lib / 'fitting' / 'core.py',
+  python_lib / 'fitting' / 'model_setters.py',
+  python_lib / 'fitting' / 'solvers.py'
+]
+py.install_sources(fitting, subdir:python_lib / 'fitting')
 
 # =============================================================================
 # Extension fortran module

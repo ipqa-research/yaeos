@@ -45,7 +45,8 @@ module yaeos_c
    public :: flash, flash_grid
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
-   public :: pt2_phase_envelope, px2_phase_envelope
+   public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
+   public :: pt3_phase_envelope ! , px2_phase_envelope, tx2_phase_envelope
    public :: critical_point, critical_line
    public :: stability_zpt, tm
 
@@ -554,12 +555,13 @@ contains
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
-   subroutine critical_point(id, z0, zi, spec, max_iters, x, T, P, V)
+   subroutine critical_point(id, z0, zi, spec, S, max_iters, x, T, P, V)
       use yaeos, only: EquilibriumState, fcritical_point => critical_point
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
       integer, intent(in) :: spec
+      real(c_double), intent(in) :: S
       integer, intent(in) :: max_iters
       real(c_double), intent(out) :: x(size(z0))
       real(c_double), intent(out) :: T
@@ -567,11 +569,9 @@ contains
       real(c_double), intent(out) :: V
 
       real(c_double) :: y(size(z0)), Vx, Vy, beta
-      real(c_double) :: S
 
       type(EquilibriumState) :: crit
 
-      S = 0
       crit = fcritical_point(&
          model=ar_models(id)%model, z0=z0, zi=zi, &
          S=S, spec=spec, max_iters=max_iters &
@@ -580,16 +580,18 @@ contains
    end subroutine critical_point
 
    subroutine critical_line(&
-      id, a0, da0, &
-      z0, zi, max_points, stop_pressure, &
+      id, ns, S, ds0, &
+      a0, z0, zi, max_points, stop_pressure, &
       as, Vs, Ts, Ps)
       use yaeos, only: EquilibriumState, CriticalLine, &
          fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: ns
+      real(c_double), intent(in) :: S
+      real(c_double), intent(in) :: dS0
+      real(c_double), intent(in) :: a0
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
-      real(c_double), intent(in) :: a0
-      real(c_double), intent(in) :: da0
       integer, intent(in) :: max_points
       real(c_double), intent(in) :: stop_pressure
       real(c_double), intent(out) :: as(max_points)
@@ -609,7 +611,7 @@ contains
       cl = fcritical_line(&
          model=ar_models(id)%model, a0=a0, &
          z0=z0, zi=zi, &
-         ns=spec_CP%a, S=a0, ds0=da0, maxp=stop_pressure, max_points=max_points)
+         ns0=ns, S0=S, ds0=ds0, maxp=stop_pressure, max_points=max_points)
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
@@ -761,7 +763,12 @@ contains
       Vy(:npoints) = sat%Vy(:npoints)
    end subroutine pure_saturation_line
 
-   subroutine pt2_phase_envelope(id, z, kind, max_points, Ts, Ps, tcs, pcs, T0, P0)
+   ! ==========================================================================
+   ! Two-phase envelopes
+   ! --------------------------------------------------------------------------
+   subroutine pt2_phase_envelope(&
+      id, z, kind, max_points, T0, P0, Ts, Ps, tcs, pcs, xs, ys, kinds &
+      )
       use yaeos, only: &
          saturation_pressure, saturation_temperature, pt_envelope_2ph, &
          EquilibriumState, PTEnvel2, find_hpl
@@ -769,10 +776,13 @@ contains
       real(c_double), intent(in) :: z(:)
       integer, intent(in) :: max_points
       character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: T0, P0
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
-      real(c_double), intent(out) :: Tcs(5), Pcs(5)
-      real(c_double), optional, intent(in) :: T0, P0
+      real(c_double), intent(out) :: Tcs(max_points), Pcs(max_points)
+      real(c_double), intent(out) :: xs(max_points, size(z))
+      real(c_double), intent(out) :: ys(max_points, size(z))
+      character(len=15), intent(out) :: kinds(max_points)
 
       real(8) :: nan
       type(EquilibriumState) :: sat
@@ -788,35 +798,31 @@ contains
       Ps = nan
       Tcs = nan
       Pcs = nan
+      kinds = "nan"
 
-      if (present(T0)) then
-         T = T0
-      else
-         T = 150
-      end if
-
-      if (present(P0)) then
-         P = P0
-      else
-         P = 1
-      end if
+      T = T0
+      P = P0
 
       select case(kind)
        case("bubble")
-         sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind)
+         sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
          env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("dew")
-         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
+         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind, T0=T0)
          env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
        case("liquid-liquid")
-         ! sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind)
-         env = find_hpl(ar_models(id)%model, z, T, P)
+         env = find_hpl(ar_models(id)%model, z, T, P, max_points)
       end select
-
 
       i = size(env%points)
       Ts(:i) = env%points%T
       Ps(:i) = env%points%P
+      kinds(:i) = env%points%kind
+
+      do i=1,size(env%points)
+         xs(i, :) = env%points(i)%x
+         ys(i, :) = env%points(i)%y
+      end do
 
       i = size(env%cps)
       Tcs(:i) = env%cps%T
@@ -824,7 +830,7 @@ contains
    end subroutine pt2_phase_envelope
 
    subroutine px2_phase_envelope(&
-      id, z0, zi, kind, max_points, T, P0, ds0, &
+      id, z0, zi, kind, max_points, T, P0, ns0, ds0, &
       as, Ps, xs, ys, acs, pcs, a0, kinds)
       use yaeos, only: &
          saturation_pressure, saturation_temperature, px_envelope_2ph, &
@@ -835,6 +841,7 @@ contains
       integer, intent(in) :: max_points
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: T
+      integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ps(max_points)
@@ -858,15 +865,21 @@ contains
       Ps = nan
       acs = nan
       Pcs = nan
+      kinds = "nan"
 
       z = a0 * zi + (1-a0)*z0
-
       sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
-      env = px_envelope_2ph(ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, first_point=sat, points=max_points, delta_0=ds0)
+
+      env = px_envelope_2ph(&
+         ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
+         first_point=sat, points=max_points, &
+         delta_0=ds0, specified_variable_0=ns0 &
+         )
 
       i = size(env%points)
       as(:i) = env%alpha
       Ps(:i) = env%points%P
+      kinds(:i) = env%points%kind
 
       do j=1,i
          xs(j, :) = env%points(j)%x
@@ -876,8 +889,119 @@ contains
       i = size(env%cps)
       acs(:i) = env%cps%alpha
       Pcs(:i) = env%cps%P
-      kinds = env%points%kind
    end subroutine px2_phase_envelope
+
+   subroutine tx2_phase_envelope(&
+      id, z0, zi, kind, max_points, P, T0, ns0, ds0, &
+      as, ts, xs, ys, acs, tcs, a0, kinds)
+      use yaeos, only: &
+         saturation_pressure, saturation_temperature, tx_envelope_2ph, &
+         EquilibriumState, TXEnvel2
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer, intent(in) :: max_points
+      character(len=15), intent(in) :: kind
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: T0
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      real(c_double), intent(out) :: as(max_points)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: xs(max_points, size(z0))
+      real(c_double), intent(out) :: ys(max_points, size(z0))
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(out) :: acs(5), Tcs(5)
+      character(len=15), intent(out) :: kinds(max_points)
+
+      real(8) :: nan
+      type(EquilibriumState) :: sat
+      type(TXEnvel2) :: env
+
+      integer :: i, j
+
+      real(c_double) :: z(size(z0))
+
+      nan = makenan()
+      as = nan
+      Ts = nan
+      acs = nan
+      Tcs = nan
+      kinds = "nan"
+
+      z = a0 * zi + (1-a0)*z0
+
+      sat = saturation_temperature(&
+         ar_models(id)%model, z, P=P, kind=kind, T0=T0)
+
+      env = tx_envelope_2ph(&
+         ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
+         first_point=sat, points=max_points, &
+         delta_0=ds0, specified_variable_0=ns0)
+
+      i = size(env%points)
+      as(:i) = env%alpha
+      Ts(:i) = env%points%T
+
+      do j=1,i
+         xs(j, :) = env%points(j)%x
+         ys(j, :) = env%points(j)%y
+      end do
+
+      i = size(env%cps)
+      acs(:i) = env%cps%alpha
+      Tcs(:i) = env%cps%T
+      kinds = env%points%kind
+   end subroutine tx2_phase_envelope
+
+   subroutine pt3_phase_envelope(&
+      id, z, x0, y0, w0, p0, t0, beta0, ns0, dS0, max_points, &
+      x, y, w, P, T, beta &
+      )
+      use yaeos, only: PTEnvel3, pt_envelope_3ph
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: x0(:)
+      real(c_double), intent(in) :: y0(:)
+      real(c_double), intent(in) :: w0(:)
+      real(c_double), intent(in) :: p0
+      real(c_double), intent(in) :: t0
+      real(c_double), intent(in) :: beta0
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: dS0
+      integer(c_int), intent(in) :: max_points
+      real(c_double), intent(out) :: x(max_points, size(z))
+      real(c_double), intent(out) :: y(max_points, size(z))
+      real(c_double), intent(out) :: w(max_points, size(z))
+      real(c_double), intent(out) :: P(max_points)
+      real(c_double), intent(out) :: T(max_points)
+      real(c_double), intent(out) :: beta(max_points)
+
+      type(PTEnvel3) :: pt3
+      integer :: converged_points
+
+      x = makenan()
+      y = makenan()
+      w = makenan()
+      P = makenan()
+      T = makenan()
+      beta = makenan()
+
+
+      pt3 = pt_envelope_3ph(&
+         model=ar_models(id)%model, z=z, &
+         x0=x0, y0=y0, w0=w0, p0=p0, t0=t0, beta0=beta0, ns0=ns0, &
+         dS0=dS0, points=max_points &
+         )
+
+      converged_points = size(pt3%beta)
+      x(:converged_points, :) = pt3%x
+      y(:converged_points, :) = pt3%y
+      w(:converged_points, :) = pt3%w
+      P(:converged_points) = pt3%P
+      T(:converged_points) = pt3%T
+      beta(:converged_points) = pt3%beta
+   end subroutine pt3_phase_envelope
 
    subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
       use yaeos, only: EquilibriumState, flash

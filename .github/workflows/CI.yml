@@ -11,9 +11,9 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.9]
         toolchain:
-          # - {compiler: gcc, version: 12}
+          - {compiler: gcc, version: 10}
           - {compiler: gcc, version: 13}
-          # - {compiler: intel, version: '2024.2'}
+          - {compiler: intel, version: '2024.2'}
           # - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
@@ -46,7 +46,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt-get install libnlopt-dev
+        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
@@ -94,7 +94,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install libnlopt-dev pandoc
+        sudo apt-get install libnlopt-dev pandoc libblas-dev liblapack-dev
     
     - name: install tox
       run: |
@@ -127,14 +127,11 @@ jobs:
 
       # Used to host cibuildwheel
       - uses: actions/setup-python@v5
-
-      # Install gfortran on each OS
-      - name: Setup Fortran Compiler
-        uses: fortran-lang/setup-fortran@v1
-        id: setup-fortran
-        with:
-            compiler: gcc
-            version: 13
+      
+      - name: Install 
+        run: |
+          sudo apt install gfortran-14
+          sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
 
       # Install fpm for Windows
       - name: Install fpm

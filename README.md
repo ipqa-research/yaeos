@@ -5,7 +5,14 @@
 [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/ipqa-research/yaeos/graph/badge.svg?token=IDJYKV8XK6)](https://codecov.io/gh/ipqa-research/yaeos)
 
+
+
 <p align="center">
+
+<a target="_blank" href="https://colab.research.google.com/github/ipqa-research/yaeos/blob/main/notebooks/run_online.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a> <br>
+
 <img src="media/logo.png" width="50%"/>
 </p>
 

@@ -213,8 +213,13 @@ contains
          call saturation_TP(model=model, z=z, kind=kind, X=X, ns=ns, S=S, F=F, dF=dF, dFdS=dFdS)
 
          dX = solve_system(dF, -F)
-         do while (maxval(abs(dX)) > 1)
-            dX = dX / 2
+         
+         do while (abs(dX(nc+1)) > 0.1)
+            dX(nc+1) = dX(nc+1) / 2
+         end do
+         
+         do while (abs(dX(nc+2)) > 0.1)
+            dX(nc+2) = dX(nc+2) / 2
          end do
 
          X = X + dX

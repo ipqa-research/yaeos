@@ -1018,11 +1018,13 @@ class ArModel(ABC):
 
             model = PengRobinson76(tc, pc, w)
         """
-        P, T, Vx, Vy = yaeos_c.pure_saturation_line(
+        p, t, vx, vy = yaeos_c.pure_saturation_line(
             self.id, component, stop_pressure, stop_temperature
         )
 
-        return {"T": T, "P": P, "Vx": Vx, "Vy": Vy}
+        msk = ~np.isnan(t)
+
+        return {"T": t[msk], "P": p[msk], "Vx": vx[msk], "Vy": vy[msk]}
 
     def flash_pt(
         self, z, pressure: float, temperature: float, k0=None
@@ -1302,6 +1304,9 @@ class ArModel(ABC):
             "beta": beta,
         }
 
+    # ==============================================================
+    # Phase envelopes
+    # --------------------------------------------------------------
     def phase_envelope_pt(
         self,
         z,
@@ -1366,11 +1371,22 @@ class ArModel(ABC):
             plt.plot(env["Ts"], env["Ps"])
             plt.scatter(env["Tcs"], env["Pcs"])
         """
-        ts, ps, tcs, pcs = yaeos_c.pt2_phase_envelope(
+        ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
             self.id, z, kind=kind, t0=t0, p0=p0, max_points=max_points
         )
 
-        res = {"Ts": ts, "Ps": ps, "Tcs": tcs, "Pcs": pcs}
+        msk = ~np.isnan(ts)
+        msk_cp = ~np.isnan(tcs)
+
+        res = {
+            "T": ts[msk],
+            "P": ps[msk],
+            "Tc": tcs[msk_cp],
+            "Pc": pcs[msk_cp],
+            "x": xs[msk],
+            "y": ys[msk],
+            "kinds": kinds[msk],
+        }
 
         return res
 
@@ -1383,10 +1399,10 @@ class ArModel(ABC):
         max_points=300,
         p0=10.0,
         a0=0.001,
+        ns0=None,
         ds0=0.1,
     ):
         """Two phase envelope calculation (PX).
-
         Calculation of a phase envelope that starts at a given composition and
         its related to another composition with some proportion.
 
@@ -1410,9 +1426,16 @@ class ArModel(ABC):
             `kind`, by default 10.0
         a0 : float, optional
             Initial molar fraction of composition `zi`, by default 0.001
+        ns0 : int, optional
+            Initial specified variable number, by default None.
+            The the first `n=len(z)` values correspond to the K-values, where
+            the last two values are the pressure and alpha.
         ds0 : float, optional
             Step for a, by default 0.1
         """
+
+        if ns0 is None:
+            ns0 = len(z0) + 2
 
         a, ps, xs, ys, acs, pcs, kinds = yaeos_c.px2_phase_envelope(
             self.id,
@@ -1423,22 +1446,177 @@ class ArModel(ABC):
             p0=p0,
             a0=a0,
             t=temperature,
+            ns0=ns0,
             ds0=ds0,
         )
 
+        msk = ~np.isnan(ps)
+        msk_cp = ~np.isnan(pcs)
+
         return {
-            "a": a,
-            "P": ps,
-            "x": xs,
-            "y": ys,
-            "ac": acs,
-            "Pc": pcs,
-            "kind": kinds,
+            "a": a[msk],
+            "P": ps[msk],
+            "x": xs[msk],
+            "y": ys[msk],
+            "ac": acs[msk_cp],
+            "Pc": pcs[msk_cp],
+            "kind": kinds[msk],
         }
 
+    def phase_envelope_tx(
+        self,
+        z0,
+        zi,
+        pressure,
+        kind="bubble",
+        max_points=300,
+        t0=150.0,
+        a0=0.001,
+        ns0=None,
+        ds0=0.1,
+    ):
+        """Two phase envelope calculation (TX).
+        Calculation of a phase envelope that starts at a given composition and
+        its related to another composition with some proportion.
+
+        Parameters
+        ----------
+        z0 : array_like
+            Initial global mole fractions
+        zi : array_like
+            Final global mole fractions
+        pressure : float
+            Pressure [K]
+        kind : str, optional
+            Kind of saturation point to start the envelope calculation,
+            defaults to "bubble". Options are
+            - "bubble"
+            - "dew"
+        max_points : int, optional
+            Envelope's maximum points to calculate (P, X), by default 300
+        t0 : float, optional
+            Initial guess for temperature [K] for the saturation point of kind:
+            `kind`, by default 150.0
+        a0 : float, optional
+            Initial molar fraction of composition `zi`, by default 0.001
+        ns0 : int, optional
+            Initial specified variable number, by default None.
+            The the first `n=len(z)` values correspond to the K-values, where
+            the last two values are the temperature and alpha.
+        ds0 : float, optional
+            Step for a, by default 0.1
+        """
+
+        if ns0 is None:
+            ns0 = len(z0) + 2
+        a, ts, xs, ys, acs, pcs, kinds = yaeos_c.tx2_phase_envelope(
+            self.id,
+            z0=z0,
+            zi=zi,
+            kind=kind,
+            max_points=max_points,
+            t0=t0,
+            a0=a0,
+            p=pressure,
+            ns0=ns0,
+            ds0=ds0,
+        )
+
+        msk = ~np.isnan(ts)
+        msk_cp = ~np.isnan(pcs)
+
+        return {
+            "a": a[msk],
+            "T": ts[msk],
+            "x": xs[msk],
+            "y": ys[msk],
+            "ac": acs[msk_cp],
+            "Pc": pcs[msk_cp],
+            "kind": kinds[msk],
+        }
+
+    def phase_envelope_pt3(
+        self,
+        z,
+        x0,
+        y0,
+        w0,
+        beta0,
+        t0,
+        p0,
+        specified_variable=None,
+        first_step=None,
+        max_points=1000,
+    ):
+        """
+        Three-phase envelope tracing method.
+        Calculation of a three-phase envelope that starts with an estimated
+        compositions, pressure, temperature and phase fractions.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        x0 : array_like
+            Initial phase x mole fractions
+        y0 : array_like
+            Initial phase y mole fractions
+        w0 : array_like
+            Initial incipient phase w mole fractions
+        beta0 : float
+            Initial phase fraction between x and y
+        t0 : float
+            Initial temperature [K]
+        p0 : float
+            Initial pressure [bar]
+        specified_variable : int, optional
+            Initial specified variable number, by default 2*len(z)+2
+            (temperature).  The the first `n=(1,len(z))` values correspond to
+            the K-values between phase x and w, the next `n=(len(z)+1,
+            2*len(z))` are the K-values between phase y and w.  The last three
+            values are pressure, temperature and beta.
+        first_step : float, optional
+            Step for the specified variable, by default 0.1
+        max_points : int, optional
+            Maximum number of points to calculate, by default 1000
+        """
+
+        if specified_variable is None:
+            specified_variable = 2 * len(z) + 2
+
+        if first_step is None:
+            first_step = 0.1
+
+        x, y, w, p, t, beta = yaeos_c.pt3_phase_envelope(
+            self.id,
+            z=z,
+            x0=x0,
+            y0=y0,
+            w0=w0,
+            beta0=beta0,
+            t0=t0,
+            p0=p0,
+            max_points=max_points,
+            ns0=specified_variable,
+            ds0=first_step,
+        )
+
+        msk = ~np.isnan(t)
+
+        return {
+            "x": x[msk],
+            "y": y[msk],
+            "w": w[msk],
+            "P": p[msk],
+            "T": t[msk],
+            "beta": beta[msk],
+        }
+
+    # ==============================================================
+    # Stability analysis
+    # --------------------------------------------------------------
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
-
         Find all the possible minima values that the :math:`tm` function,
         defined by Michelsen and Mollerup.
 
@@ -1455,20 +1633,13 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-                - w:
-                    value of the test phase that minimizes
-                    the :math:`tm` function
-                - tm:
-                    minimum value of the :math:`tm` function
+            - w: value of the test phase that minimizes the :math:`tm` function.
+            - tm: minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
-            - w:
-                all values of :math:`w` that minimize the
-                :math:`tm` function
-            - tm:
-                all values found minima of the :math:`tm` function
-        """
+            - w: all values of :math:`w` that minimize the :math:`tm` function
+            - tm: all values found minima of the :math:`tm` function"""
         (w_min, tm_min, all_mins, all_mins_w) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
@@ -1503,15 +1674,24 @@ class ArModel(ABC):
         """
         return yaeos_c.tm(id=self.id, z=z, w=w, p=pressure, t=temperature)
 
-    def critical_point(self, z, max_iters=100) -> dict:
+    # ==============================================================
+    # Critical points and lines
+    # --------------------------------------------------------------
+    def critical_point(self, z0, zi=[0, 0], ns=1, s=0, max_iters=100) -> dict:
         """Critical point calculation.
 
         Calculate the critical point of a mixture. At a given composition.
 
         Parameters
         ----------
-        z: array_like
-            Global mole fractions
+        z0: array_like
+            Mole fractions of original fluid
+        zi: array_like
+            Mole fractinos of other fluid
+        ns: int
+            Number of specification
+        S: float
+            Specification value
         max_iters: int, optional
 
         Returns
@@ -1523,16 +1703,23 @@ class ArModel(ABC):
                 - Vc: critical volume [L]
         """
         *x, t, p, v = yaeos_c.critical_point(
-            self.id, z0=z, zi=[0, 0], spec=1, max_iters=max_iters
+            self.id, z0=z0, zi=zi, spec=ns, s=s, max_iters=max_iters
         )
 
         return {"x": x, "Tc": t, "Pc": p, "Vc": v}
 
     def critical_line(
-        self, z0, zi, a0=1e-5, da0=1e-2, max_points=1000, stop_pressure=2500
+        self,
+        z0,
+        zi,
+        ns=1,
+        s=1e-5,
+        ds0=1e-2,
+        a0=1e-5,
+        max_points=1000,
+        stop_pressure=2500,
     ):
         """Critical Line calculation.
-
         Calculate the critical line between two compositions
 
         Parameters
@@ -1541,26 +1728,35 @@ class ArModel(ABC):
             Initial global mole fractions
         zi: array_like
             Final global mole fractions
+        ns: int, optional
+            Specified variable number, by default 1
+        s: float, optional
+            Specified value, by default 1e-5
+        ds0: float, optional
+            Step for molar fraction of composition `i`
         a0: float, optional
             Initial molar fraction of composition `i`
-        da0: float, optional
-            Step for molar fraction of composition `i`
         max_points: int, optional
             Maximum number of points to calculate
         stop_pressure: float, optional
             Stop when reaching this pressure value
         """
+
         alphas, vs, ts, ps = yaeos_c.critical_line(
             self.id,
+            ns=ns,
+            ds0=ds0,
             a0=a0,
-            da0=da0,
+            s=s,
             z0=z0,
             zi=zi,
             max_points=max_points,
             stop_pressure=stop_pressure,
         )
 
-        return {"a": alphas, "T": ts, "P": ps, "V": vs}
+        msk = ~np.isnan(ts)
+
+        return {"a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk]}
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

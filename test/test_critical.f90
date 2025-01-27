@@ -37,7 +37,7 @@ program main
    ! Get the full phase envelope of the fluid
    print *, "Calculating PT envelope"
    call tim%timer_start()
-   sat = saturation_temperature(model, z, P=0.1_pr, kind="dew")
+   sat = saturation_temperature(model, z, P=0.00001_pr, kind="dew")
    env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
    call tim%timer_stop()
 
@@ -57,7 +57,7 @@ program main
    ! Now test the critical lines
    print *, "CL"
    call tim%timer_start()
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns=spec_CP%a, S=a, dS0=0.1_pr, max_points=5000)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr, max_points=5000)
    call tim%timer_stop()
 
    ! if (WRITE_FILES) call write_cl
@@ -67,18 +67,19 @@ program main
       a = cl%a(1) + da*i
       z = a*zi + (1-a)*z0
       call tim%timer_start()
-      sat = saturation_temperature(model, z, P=0.1_pr, kind="dew")
+      sat = saturation_temperature(model, z, P=0.0001_pr, kind="dew")
       env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=1.5_pr)
       print *, "Running PT Envelope", i, size(env%points)
       call tim%timer_stop()
       ! if (WRITE_FILES) call write_env
+      ! write(i+10, *) env
 
       a_nearest = minloc(abs(cl%a - a), dim=1)
 
       T = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%T(a_nearest), cl%T(a_nearest+1), a)
       P = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%P(a_nearest), cl%P(a_nearest+1), a)
 
-      if (maxval(([T, P] - [env%cps(1)%T, env%cps(1)%P])) > 10) then
+      if (maxval(([T, P] - [env%cps(1)%T, env%cps(1)%P]) / [T, P]) > 1e-2) then
          write(*, *) [T, P] 
          write(*, *) [env%cps(1)%T, env%cps(1)%P]
          error stop "Critical line failed"

@@ -173,11 +173,11 @@ contains
             - 2 * Ge * dL(i) * dL(j) / L**3 &
             - Gen2(i, j) / L &
             + Gen(i) * dL(j) / L**2 &
-            + Gen(j) * dL(i) / L**2 
-            !   Gen2(i, j)/L &
-            ! - dL(j) * Gen(i)/L**2 &
-            ! - (dL2(i,j) * Gen2(i,j)/L**2 &
-            ! + dL(i)*(Gen2(i,j)/L**2-Gen(i)/L * dL(j)/2))
+            + Gen(j) * dL(i) / L**2
+         !   Gen2(i, j)/L &
+         ! - dL(j) * Gen(i)/L**2 &
+         ! - (dL2(i,j) * Gen2(i,j)/L**2 &
+         ! + dL(i)*(Gen2(i,j)/L**2-Gen(i)/L * dL(j)/2))
       end do
 
       dDi = B*fdi + f*dBi

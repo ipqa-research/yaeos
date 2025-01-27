@@ -37,21 +37,15 @@ program gpec
    ! ===========================================================================
    ! Set up the model
    ! ---------------------------------------------------------------------------
-   sus(1) = Substance("methane")
-   sus(2) = Substance("propane")
-   model = PengRobinson76(&
-      Tc=sus%critical%critical_temperature%value, &
-      Pc=sus%critical%critical_pressure%value/1e5, &
-      w=sus%critical%acentric_factor%value &
-      )
-   !model = get_model_nrtl_mhv()
-   model = get_modelgerg()
+   model = get_model_cubic()
+   ! model = get_model_nrtl_mhv()
+   ! model = get_modelgerg()
 
    ! ===========================================================================
    ! Calculate both saturation curves
    ! ---------------------------------------------------------------------------
-   psats(1) = pure_saturation_line(model, 1, 1._pr, 100._pr)
-   psats(2) = pure_saturation_line(model, 2, 1._pr, 100._pr)
+   psats(1) = pure_saturation_line(model, 1, 1._pr, 150._pr)
+   psats(2) = pure_saturation_line(model, 2, 1._pr, 150._pr)
 
    open(unit=1, file="gpec_Psat1.dat")
    do i=1,size(psats(1)%T)
@@ -68,22 +62,26 @@ program gpec
    ! ===========================================================================
    ! Calculate the first critical line (2 -> 1)
    ! ---------------------------------------------------------------------------
-   cl21 = critical_line(model, a0=0.99_pr, z0=z0, zi=zi, ns=spec_CP%a, S=0.99_pr, dS0=-0.01_pr, maxP=HPLL_P)
+   print *, "Calculating critical line 2 -> 1"
+   cl21 = critical_line(model, a0=0.99_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=0.99_pr, dS0=-0.01_pr, maxP=HPLL_P, max_points=5000)
    open(unit=1, file="gpec_cl21.dat")
    call write_cl(cl21)
    close(1)
 
-   if (abs(cl21%P(size(cl21%a)) - model%components%Pc(1)) > 0.1_pr) then
+   if (abs(cl21%a(size(cl21%a))) > 1e-5_pr) then
       ! ========================================================================
       ! Calculate the second critical line (1 -> 2)
       ! ------------------------------------------------------------------------
-      cl12 = critical_line(model, a0=0.001_pr, z0=z0, zi=zi, ns=spec_CP%a, S=0.001_pr, dS0=0.001_pr)
+      print *, "Calculating critical line 1 -> 2"
+      cl12 = critical_line(model, a0=1.e-5_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=0.001_pr, dS0=1e-5_pr, max_points=5000)
       open(unit=1, file="gpec_cl12.dat")
       call write_cl(cl12)
       close(1)
    else
       diagram_type = 1
    end if
+
+   call exit
 
 
    if (diagram_type == 1) then
@@ -92,7 +90,7 @@ program gpec
          !TODO: Si inicializo con S=200 converge a otro lado, ver por qué pasa!
          ! Converge a critical point at high pressure
          cp = critical_point(model, z0, zi, S=log(HPLL_P), spec=spec_CP%P, max_iters=1000, a0=0.5_pr)
-         clll = critical_line(model, a0=cp%x(2), z0=z0, zi=zi, ns=spec_CP%P, S=log(cp%P), dS0=-0.01_pr)
+         clll = critical_line(model, a0=cp%x(2), z0=z0, zi=zi, ns0=spec_CP%P, S0=log(cp%P), dS0=-0.01_pr)
          open(unit=1, file="gpec_clll.dat")
          call write_cl(clll)
          close(1)
@@ -113,6 +111,21 @@ program gpec
    call plot_pxs([(real(i, pr), i=150,int(model%components%Tc(2)),20)])
    call plot_txs([(real(i, pr), i=0,int(model%components%Pc(1)),50)])
 contains
+
+   type(CubicEoS) function get_model_cubic() result(model)
+      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: kij(nc, nc)
+
+      tc = [304.21_pr, 675._pr]
+      pc = [73.83_pr, 16.8_pr]
+      w = [0.22362_pr, 0.61740_pr]
+      sus(1) = Substance("n-tridecane")
+      sus(2) = Substance("carbon dioxide")
+      kij(1, 2) = 0.075_pr
+      kij(2, 1) = 0.075_pr
+      model = PengRobinson76(tc, pc, w, kij)
+
+   end function get_model_cubic
 
    type(CubicEoS) function get_model_nrtl_mhv() result(model)
       type(MHV) :: mr

@@ -21,7 +21,6 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     SoaveRedlichKwong,
 )
 
-
 __all__ = [
     "constants",
     "yaeos_c",
