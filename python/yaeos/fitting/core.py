@@ -1,13 +1,15 @@
-"""
+"""Yaeos fitting core module.
 """
 
 import numpy as np
+
 from scipy.optimize import minimize
 
-from yaeos.fitting.solvers import solve_PT
+from yaeos.fitting.solvers import solve_pt
 
 
 class BinaryFitter:
+    """Binary Fitter."""
 
     def __init__(self, model_setter, model_setter_args, data, verbose=False):
         self._get_model = model_setter
@@ -17,6 +19,9 @@ class BinaryFitter:
         self.evaluations = {"fobj": [], "x": []}
 
     def objective_function(self, x_values):
+        """
+        Objective function to minimize when fitting interaction parameters.
+        """
         model = self._get_model(x_values, *self._get_model_args)
         data = self.data
 
@@ -61,7 +66,7 @@ class BinaryFitter:
                 error_i += (sat["P"] - p) ** 2 / p + (sat["y"][0] - y[0]) ** 2
 
             if row["kind"] == "PT" or row["kind"] == "liquid-liquid":
-                x1, y1 = solve_PT(model, row["P"], row["T"])
+                x1, y1 = solve_pt(model, row["P"], row["T"])
 
                 if np.isnan(x[0]):
                     error_i += (y1 - y[0]) ** 2
@@ -98,6 +103,7 @@ class BinaryFitter:
         return err
 
     def fit(self, x0, bounds, method="Nelder-Mead"):
+        """Fit the model to the data."""
         sol = minimize(
             self.objective_function, x0=x0, bounds=bounds, method=method
         )

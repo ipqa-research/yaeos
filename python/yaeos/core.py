@@ -1018,13 +1018,13 @@ class ArModel(ABC):
 
             model = PengRobinson76(tc, pc, w)
         """
-        P, T, Vx, Vy = yaeos_c.pure_saturation_line(
+        p, t, vx, vy = yaeos_c.pure_saturation_line(
             self.id, component, stop_pressure, stop_temperature
         )
 
-        msk = ~np.isnan(T)
+        msk = ~np.isnan(t)
 
-        return {"T": T[msk], "P": P[msk], "Vx": Vx[msk], "Vy": Vy[msk]}
+        return {"T": t[msk], "P": p[msk], "Vx": vx[msk], "Vy": vy[msk]}
 
     def flash_pt(
         self, z, pressure: float, temperature: float, k0=None
@@ -1403,7 +1403,6 @@ class ArModel(ABC):
         ds0=0.1,
     ):
         """Two phase envelope calculation (PX).
-
         Calculation of a phase envelope that starts at a given composition and
         its related to another composition with some proportion.
 
@@ -1477,7 +1476,6 @@ class ArModel(ABC):
         ds0=0.1,
     ):
         """Two phase envelope calculation (TX).
-
         Calculation of a phase envelope that starts at a given composition and
         its related to another composition with some proportion.
 
@@ -1548,11 +1546,10 @@ class ArModel(ABC):
         p0,
         specified_variable=None,
         first_step=None,
-        max_points=1000
+        max_points=1000,
     ):
         """
         Three-phase envelope tracing method.
-
         Calculation of a three-phase envelope that starts with an estimated
         compositions, pressure, temperature and phase fractions.
 
@@ -1574,7 +1571,7 @@ class ArModel(ABC):
             Initial pressure [bar]
         specified_variable : int, optional
             Initial specified variable number, by default 2*len(z)+2
-            (temperature).  The the first `n=(1,len(z))` values correspond to 
+            (temperature).  The the first `n=(1,len(z))` values correspond to
             the K-values between phase x and w, the next `n=(len(z)+1,
             2*len(z))` are the K-values between phase y and w.  The last three
             values are pressure, temperature and beta.
@@ -1590,7 +1587,7 @@ class ArModel(ABC):
         if first_step is None:
             first_step = 0.1
 
-        x, y, w, P, T, beta = yaeos_c.pt3_phase_envelope(
+        x, y, w, p, t, beta = yaeos_c.pt3_phase_envelope(
             self.id,
             z=z,
             x0=x0,
@@ -1604,14 +1601,14 @@ class ArModel(ABC):
             ds0=first_step,
         )
 
-        msk = ~np.isnan(T)
+        msk = ~np.isnan(t)
 
         return {
             "x": x[msk],
             "y": y[msk],
             "w": w[msk],
-            "P": P[msk],
-            "T": T[msk],
+            "P": p[msk],
+            "T": t[msk],
             "beta": beta[msk],
         }
 
@@ -1620,7 +1617,6 @@ class ArModel(ABC):
     # --------------------------------------------------------------
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
-
         Find all the possible minima values that the :math:`tm` function,
         defined by Michelsen and Mollerup.
 
@@ -1637,20 +1633,13 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-                - w:
-                    value of the test phase that minimizes
-                    the :math:`tm` function
-                - tm:
-                    minimum value of the :math:`tm` function
+            - w: value of the test phase that minimizes the :math:`tm` function.
+            - tm: minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
-            - w:
-                all values of :math:`w` that minimize the
-                :math:`tm` function
-            - tm:
-                all values found minima of the :math:`tm` function
-        """
+            - w: all values of :math:`w` that minimize the :math:`tm` function
+            - tm: all values found minima of the :math:`tm` function"""
         (w_min, tm_min, all_mins, all_mins_w) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
@@ -1688,7 +1677,7 @@ class ArModel(ABC):
     # ==============================================================
     # Critical points and lines
     # --------------------------------------------------------------
-    def critical_point(self, z0, zi=[0, 0], ns=1, S=0, max_iters=100) -> dict:
+    def critical_point(self, z0, zi=[0, 0], ns=1, s=0, max_iters=100) -> dict:
         """Critical point calculation.
 
         Calculate the critical point of a mixture. At a given composition.
@@ -1714,7 +1703,7 @@ class ArModel(ABC):
                 - Vc: critical volume [L]
         """
         *x, t, p, v = yaeos_c.critical_point(
-            self.id, z0=z0, zi=zi, spec=ns, s=S, max_iters=max_iters
+            self.id, z0=z0, zi=zi, spec=ns, s=s, max_iters=max_iters
         )
 
         return {"x": x, "Tc": t, "Pc": p, "Vc": v}
@@ -1724,14 +1713,13 @@ class ArModel(ABC):
         z0,
         zi,
         ns=1,
-        S=1e-5,
+        s=1e-5,
         ds0=1e-2,
         a0=1e-5,
         max_points=1000,
         stop_pressure=2500,
     ):
         """Critical Line calculation.
-
         Calculate the critical line between two compositions
 
         Parameters
@@ -1742,7 +1730,7 @@ class ArModel(ABC):
             Final global mole fractions
         ns: int, optional
             Specified variable number, by default 1
-        S: float, optional
+        s: float, optional
             Specified value, by default 1e-5
         ds0: float, optional
             Step for molar fraction of composition `i`
@@ -1759,7 +1747,7 @@ class ArModel(ABC):
             ns=ns,
             ds0=ds0,
             a0=a0,
-            s=S,
+            s=s,
             z0=z0,
             zi=zi,
             max_points=max_points,

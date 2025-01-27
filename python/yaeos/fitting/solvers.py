@@ -1,4 +1,4 @@
-"""Solvers
+"""Solvers.
 
 Module that contains different solvers for specific porpouses.
 """
@@ -6,41 +6,42 @@ Module that contains different solvers for specific porpouses.
 import numpy as np
 
 
-def binary_isofugacity_x1y1PT(X, P, T, model):
-    """Isofugacity evaluation at a given P and T"""
+def binary_isofugacity_x1y1pt(x, p, t, model):
+    """Isofugacity evaluation at a given P and T."""
 
-    y1, x1 = X
+    y1, x1 = x
 
     x = np.array([x1, 1 - x1])
     y = np.array([y1, 1 - y1])
 
-    lnphi_x = model.lnphi_pt(x, pressure=P, temperature=T, root="stable")
-    lnphi_y = model.lnphi_pt(y, pressure=P, temperature=T, root="stable")
+    lnphi_x = model.lnphi_pt(x, pressure=p, temperature=t, root="stable")
+    lnphi_y = model.lnphi_pt(y, pressure=p, temperature=t, root="stable")
 
     isofug = np.log(x) + lnphi_x - (np.log(y) + lnphi_y)
 
     return isofug
 
 
-def solve_PT(model, P, T):
-    """ """
+def solve_pt(model, p, t):
+    """Solve a point at a given P and T."""
     from scipy.optimize import root
 
-    x10, y10 = find_init_binary_ll(model, P, T)
+    x10, y10 = find_init_binary_ll(model, p, t)
 
-    X0 = [x10, y10]
-    sol = root(binary_isofugacity_x1y1PT, X0, (P, T, model))
+    x0 = [x10, y10]
+    sol = root(binary_isofugacity_x1y1pt, x0, (p, t, model))
     x1, y1 = sol.x
 
     return x1, y1
 
 
 def find_init_binary_ll(model, pressure, temperature):
+    """Find initial guess for a binary liquid-liquid system."""
     from scipy.signal import argrelmin, argrelmax
 
     (
-        P,
-        T,
+        p,
+        t,
     ) = (
         pressure,
         temperature,
@@ -51,16 +52,16 @@ def find_init_binary_ll(model, pressure, temperature):
     phis = np.array(
         [
             model.lnphi_pt(
-                [z, 1 - z], temperature=T, pressure=P, root="liquid"
+                [z, 1 - z], temperature=t, pressure=p, root="liquid"
             )
             for z in zs
         ]
     )
     phis = np.exp(phis)
-    fug_1 = zs * phis[:, 0] * P
+    fug_1 = zs * phis[:, 0] * p
 
-    argmin = argrelmin(zs * phis[:, 0] * P)[-1] + 1
-    argmax = argrelmax(zs * phis[:, 0] * P)[0] - 1
+    argmin = argrelmin(zs * phis[:, 0] * p)[-1] + 1
+    argmax = argrelmax(zs * phis[:, 0] * p)[0] - 1
 
     fug = np.mean([fug_1[argmin], fug_1[argmax]])
 

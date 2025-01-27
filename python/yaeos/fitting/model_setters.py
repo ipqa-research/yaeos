@@ -1,4 +1,4 @@
-"""Model Setters
+"""Model Setters.
 
 Compilation of functions that set a model's parameters to the values
 given in the input arguments.
