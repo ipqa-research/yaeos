@@ -6,8 +6,8 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cubic Equations of State &mdash; yaeos 2.3.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Cubic Equations of State &mdash; yaeos 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=c3c8ae58"></script>
+      <script src="../_static/documentation_options.js?v=acc74ff5"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,6 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="instantiate_model.html">Instantiate a model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="more_calculations.html#Stability-analysis">Stability analysis</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cubic Equations of State</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Quadratic-mixing-rule-(QMR)">Quadratic mixing rule (QMR)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#QMR-with-temperature-dependance-of-k_{ij}">QMR with temperature dependance of <span class="math notranslate nohighlight">\(k_{ij}\)</span></a></li>
@@ -74,6 +73,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fitting.html">Fitting</a></li>
 </ul>
 
         </div>
@@ -114,7 +116,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
 <span class="o">?</span>yaeos.models
 </pre></div>
@@ -128,8 +130,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span><span class="p">,</span> <span class="n">QMR</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span><span class="p">,</span> <span class="n">QMR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.6</span><span class="p">,</span> <span class="mf">369.8</span><span class="p">])</span>  <span class="c1"># critical temperatures [K]</span>
 <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">42.48</span><span class="p">])</span>  <span class="c1"># critical pressures [bar]</span>
@@ -162,7 +164,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="mf">150.0</span>
@@ -175,8 +177,8 @@
 <span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
@@ -211,7 +213,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">QMRTD</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">QMRTD</span><span class="p">,</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.6</span><span class="p">,</span> <span class="mf">369.8</span><span class="p">])</span>  <span class="c1"># critical temperatures [K]</span>
 <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">42.48</span><span class="p">])</span>  <span class="c1"># critical pressures [bar]</span>
@@ -259,9 +261,9 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 
 
 <span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij_tdep</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_kij_tdep</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij(T) and lij&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij_tdep</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_kij_tdep</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij(T) and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">350</span><span class="p">)</span>
@@ -296,8 +298,8 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">HV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">HV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.6</span><span class="p">,</span> <span class="mf">369.8</span><span class="p">])</span>  <span class="c1"># critical temperatures [K]</span>
 <span class="n">pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">42.48</span><span class="p">])</span>  <span class="c1"># critical pressures [bar]</span>
@@ -331,8 +333,8 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">MHV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">NRTL</span><span class="p">,</span> <span class="n">MHV</span><span class="p">,</span> <span class="n">PengRobinson76</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">mixing_rule</span> <span class="o">=</span> <span class="n">MHV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">nrtl</span><span class="p">,</span> <span class="n">q</span><span class="o">=-</span><span class="mf">0.53</span><span class="p">)</span>
 
@@ -362,7 +364,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="mf">150.0</span>
@@ -380,9 +382,9 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>

@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 2.3.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=c3c8ae58"></script>
+      <script src="../../../../../_static/documentation_options.js?v=acc74ff5"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -54,6 +54,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../models/init.html">Models</a></li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting.html">Fitting</a></li>
+</ul>
 
         </div>
       </div>
@@ -82,15 +85,15 @@
   <h1>Source code for yaeos.models.residual_helmholtz.cubic_eos.cubic_eos</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Cubic EoS implementations module.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
-<span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
-<span class="kn">from</span> <span class="nn">yaeos.models.groups</span> <span class="kn">import</span> <span class="n">groups_from_dicts</span>
-<span class="kn">from</span> <span class="nn">yaeos.models.residual_helmholtz.cubic_eos.mixing_rules</span> <span class="kn">import</span> <span class="n">CubicMixRule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaeos_c</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.models.groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">groups_from_dicts</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.models.residual_helmholtz.cubic_eos.mixing_rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">CubicMixRule</span>
 
 
 <div class="viewcode-block" id="CubicEoS">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS">[docs]</a>
-<span class="k">class</span> <span class="nc">CubicEoS</span><span class="p">(</span><span class="n">ArModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CubicEoS</span><span class="p">(</span><span class="n">ArModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Cubic equation of state base class.</span>
 
 <span class="sd">    Parameters</span>
@@ -114,7 +117,7 @@
 <span class="sd">        Acentric factors vector</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
         <span class="n">critical_pressures</span><span class="p">,</span>
@@ -128,7 +131,7 @@
 
 <div class="viewcode-block" id="CubicEoS.set_mixrule">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.set_mixrule">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">:</span> <span class="n">CubicMixRule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">:</span> <span class="n">CubicMixRule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the mixing rule for the EoS.</span>
 
 <span class="sd">        Parameters</span>
@@ -144,7 +147,7 @@
 
 <div class="viewcode-block" id="PengRobinson76">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76">[docs]</a>
-<span class="k">class</span> <span class="nc">PengRobinson76</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PengRobinson76</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Peng-Robinson 1976 cubic equation of state.</span>
 
 <span class="sd">    Parameters</span>
@@ -189,7 +192,7 @@
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PengRobinson76&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
         <span class="n">critical_pressures</span><span class="p">,</span>
@@ -211,7 +214,7 @@
 
 <div class="viewcode-block" id="PengRobinson78">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78">[docs]</a>
-<span class="k">class</span> <span class="nc">PengRobinson78</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PengRobinson78</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Peng-Robinson 1978 cubic equation of state.</span>
 
 <span class="sd">    Parameters</span>
@@ -256,7 +259,7 @@
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PengRobinson78&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
         <span class="n">critical_pressures</span><span class="p">,</span>
@@ -278,7 +281,7 @@
 
 <div class="viewcode-block" id="SoaveRedlichKwong">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong">[docs]</a>
-<span class="k">class</span> <span class="nc">SoaveRedlichKwong</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SoaveRedlichKwong</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Soave-Redlich-Kwong cubic equation of state.</span>
 
 <span class="sd">    Parameters</span>
@@ -323,7 +326,7 @@
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;SoaveReldichKwong&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
         <span class="n">critical_pressures</span><span class="p">,</span>
@@ -345,7 +348,7 @@
 
 <div class="viewcode-block" id="RKPR">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR">[docs]</a>
-<span class="k">class</span> <span class="nc">RKPR</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RKPR</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;RKPR cubic equation of state.</span>
 
 <span class="sd">    Parameters</span>
@@ -399,7 +402,7 @@
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RKPR&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
         <span class="n">critical_pressures</span><span class="p">,</span>
@@ -438,7 +441,7 @@
 
 <div class="viewcode-block" id="PSRK">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PSRK">[docs]</a>
-<span class="k">class</span> <span class="nc">PSRK</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PSRK</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Predictive-Soave-Redlich-Kwong cubic equation of state.</span>
 
 <span class="sd">    Parameters</span>
@@ -511,7 +514,7 @@
 <span class="sd">        &gt;&gt;&gt; [{15: 1}, {1: 1, 2: 1, 14: 1}]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
         <span class="n">critical_pressures</span><span class="p">,</span>

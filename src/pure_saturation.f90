@@ -1,6 +1,6 @@
 module yaeos__equilibria_boundaries_pure_saturation
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel, size
+   use yaeos__models_ar, only: ArModel, size
    use yaeos__math_linalg, only: solve_system
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper

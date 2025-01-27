@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>yaeos.fitting.core &mdash; yaeos 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">yaeos.fitting.core</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for yaeos.fitting.core</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Yaeos fitting core module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.fitting.solvers</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_pt</span>
+
+
+<div class="viewcode-block" id="BinaryFitter">
+<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BinaryFitter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Binary Fitter.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_setter</span><span class="p">,</span> <span class="n">model_setter_args</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_model</span> <span class="o">=</span> <span class="n">model_setter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_args</span> <span class="o">=</span> <span class="n">model_setter_args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fobj&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+<div class="viewcode-block" id="BinaryFitter.objective_function">
+<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.objective_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Objective function to minimize when fitting interaction parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_model_args</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="c1"># ==============================================================</span>
+        <span class="c1"># Calculate the critical line and remove the NaN values</span>
+        <span class="c1"># --------------------------------------------------------------</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span><span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">a0</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
+        <span class="n">msk</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span>
+        <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="n">msk</span><span class="p">]</span>
+        <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="n">msk</span><span class="p">]</span>
+        <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">][</span><span class="n">msk</span><span class="p">]</span>
+
+        <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;y1&quot;</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;y1&quot;</span><span class="p">]]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+            <span class="n">error_i</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># =================================================================</span>
+            <span class="c1"># Bubble point</span>
+            <span class="c1"># -----------------------------------------------------------------</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bubble&quot;</span><span class="p">:</span>
+                <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
+                <span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="p">(</span><span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">p</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;y1&quot;</span><span class="p">]):</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="p">((</span><span class="n">sat</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+
+            <span class="c1"># =================================================================</span>
+            <span class="c1"># Dew points</span>
+            <span class="c1"># -----------------------------------------------------------------</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;dew&quot;</span><span class="p">:</span>
+                <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
+                <span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="p">(</span><span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">p</span> <span class="o">+</span> <span class="p">(</span><span class="n">sat</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;PT&quot;</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;liquid-liquid&quot;</span><span class="p">:</span>
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">solve_pt</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+
+                <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;y1&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+
+            <span class="c1"># =================================================================</span>
+            <span class="c1"># Critical point error is calculated by finding the nearest</span>
+            <span class="c1"># critical point in the critical line to the given critical</span>
+            <span class="c1"># point in the data.</span>
+            <span class="c1"># -----------------------------------------------------------------</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span><span class="p">:</span>
+                <span class="n">cp</span> <span class="o">=</span> <span class="n">row</span>
+                <span class="n">distances</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+                    <span class="o">+</span> <span class="p">((</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="p">((</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">nearest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="n">distances</span><span class="p">[</span><span class="n">nearest</span><span class="p">]</span>
+
+            <span class="n">err</span> <span class="o">+=</span> <span class="n">error_i</span> <span class="o">*</span> <span class="n">w</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">err</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;fobj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span></div>
+
+
+<div class="viewcode-block" id="BinaryFitter.fit">
+<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model to the data.&quot;&quot;&quot;</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span> <span class="o">=</span> <span class="n">sol</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

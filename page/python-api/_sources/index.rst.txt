@@ -20,6 +20,10 @@
 
    models/init
 
+.. toctree::
+   :maxdepth: 5
+
+   fitting
 
 Indices and tables
 ==================

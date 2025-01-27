@@ -1,0 +1,972 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>pt_F_three_phases &ndash; yaeos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>pt_F_three_phases
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.9% of total for procedures.">78 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/phase_envelopes_pt_3ph.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_3ph.f90.html'>phase_envelopes_pt_3ph.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
+            <li class="breadcrumb-item active" aria-current="page">pt_F_three_phases</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+    })
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-kx~2">Kx</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-ky~2">Ky</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-p~8">P</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-t~8">T</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-vw">Vw</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-vx">Vx</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-vy~2">Vy</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-beta~5">beta</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dn_w">dlnphi_dn_w</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dn_x">dlnphi_dn_x</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dn_y~2">dlnphi_dn_y</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dp_w">dlnphi_dp_w</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dp_x">dlnphi_dp_x</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dp_y~2">dlnphi_dp_y</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dt_w">dlnphi_dt_w</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dt_x">dlnphi_dt_x</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dlnphi_dt_y~2">dlnphi_dt_y</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dwdkx">dwdKx</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dwdky">dwdKy</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dwdb">dwdb</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dxdkx">dxdKx</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dxdky">dxdKy</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dydkx">dydKx</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-dydky">dydKy</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-i~18">i</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-j~10">j</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-lnphi_w">lnphi_w</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-lnphi_x">lnphi_x</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-lnphi_y~2">lnphi_y</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-nc~11">nc</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-w~4">w</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-x~4">x</a>
+            <a class="list-group-item" href="../proc/pt_f_three_phases.html#variable-y~7">y</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  subroutine pt_F_three_phases(model, z, Xvars, ns, S, F, df)  
+</h2>
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+
+    <p>Function to solve at each point of a three phase envelope.</p>
+<p>The vector of variables X corresponds to:
+<script type="math/tex"> X = [lnKx_i, lnKy_i lnP, lnT, \beta] </script>
+</p>
+<p>While the equations are:</p>
+<p>
+<script type="math/tex"> F = [
+       lnKx_i - ln \phi_i(x, P, T) + ln \phi_i(w, P, T),
+       lnKy_i - ln \phi_i(y, P, T) + ln \phi_i(w, P, T),
+       \sum_{i=1}^N (w_i) - 1,
+       \sum_{i=1}^N (x_i - y_i),
+       X_{ns} - S
+] </script>
+</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-model~6"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xvars~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xvars</strong>(:)</td>
+            <td>
+                <p>Vector of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns~9"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ns</strong></td>
+            <td>
+                <p>Number of specification</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+                <p>Specification value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>F</strong>(size(Xvars))</td>
+            <td>
+                <p>Vector of functions valuated</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>df</strong>(size(Xvars),size(Xvars))</td>
+            <td>
+                <p>Jacobian matrix</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+
+
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kx~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Kx</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ky~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ky</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~8"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~8"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vw"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vw</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vx"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vx</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vy~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dn_w"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2, (Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dn_w</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dn_x"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2, (Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dn_x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dn_y~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2, (Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dn_y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dp_w"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dp_w</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dp_x"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dp_x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dp_y~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dp_y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dt_w"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dt_w</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dt_x"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dt_x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphi_dt_y~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>dlnphi_dt_y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dwdkx"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dwdKx</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dwdky"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dwdKy</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dwdb"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dwdb</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxdkx"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dxdKx</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxdky"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dxdKy</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dydkx"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dydKx</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dydky"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dydKy</strong>((Size(Xvars)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~18"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~10"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphi_w"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>lnphi_w</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphi_x"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>lnphi_x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphi_y~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>lnphi_y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~11"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~4"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>w</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~4"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~7"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension((Size(Xvars)-3)/2)
+            </td>
+            <td>::</td>
+            <td><strong>y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+
+    
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-01-27 15:10 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>

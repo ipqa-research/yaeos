@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Module &mdash; yaeos 2.3.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+  <title>Core Module &mdash; yaeos 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=c3c8ae58"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -79,6 +79,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_temperature"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_temperature()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_px"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_px()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_tx"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_tx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt3"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt3()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_analysis"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_analysis()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_tm"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_tm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_point"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_point()</span></code></a></li>
@@ -90,6 +92,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
 </ul>
 
         </div>
@@ -146,9 +151,9 @@ the models’ thermoprops methods.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">NRTL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">NRTL</span>
 
 <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
@@ -191,7 +196,7 @@ derivatives dictionary if any derivative is asked [bar L]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNIFACVLE</span>
 
 <span class="c1"># Ethanol - water system</span>
 <span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
@@ -238,7 +243,7 @@ dictionary if any derivative is asked [bar L]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNIFACVLE</span>
 
 <span class="c1"># Ethanol - water system</span>
 <span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
@@ -276,7 +281,7 @@ dictionary if any derivative is asked [bar L / K]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNIFACVLE</span>
 
 <span class="c1"># Ethanol - water system</span>
 <span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
@@ -326,9 +331,9 @@ derivative is asked</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -382,9 +387,9 @@ derivative is asked</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -435,9 +440,9 @@ derivative is asked [bar]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -484,9 +489,9 @@ derivative is asked [bar]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -528,9 +533,9 @@ dictionary if any derivative is asked [bar L]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -585,9 +590,9 @@ derivatives dictionary if any derivative is asked [bar L]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -640,9 +645,9 @@ dictionary if any derivative is asked [bar L]</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -730,9 +735,9 @@ w = np.array([0.0123, 0.045])   # acentric factors</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
@@ -779,9 +784,9 @@ stop pressure or stop temperature.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>
@@ -825,9 +830,9 @@ stop pressure or stop temperature.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
@@ -885,9 +890,9 @@ stop pressure or stop temperature.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
@@ -939,9 +944,9 @@ stop pressure or stop temperature.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
@@ -1006,9 +1011,9 @@ stop pressure or stop temperature.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
@@ -1069,11 +1074,11 @@ defaults to “bubble”. Options are
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
 <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">369.83</span><span class="p">,</span> <span class="mf">507.6</span><span class="p">])</span>       <span class="c1"># critical temperatures [K]</span>
 <span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">42.48</span><span class="p">,</span> <span class="mf">30.25</span><span class="p">])</span>        <span class="c1"># critical pressures [bar]</span>
@@ -1096,9 +1101,9 @@ defaults to “bubble”. Options are
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.phase_envelope_px">
-<span class="sig-name descname"><span class="pre">phase_envelope_px</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_px"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_px" title="Link to this definition"></a></dt>
-<dd><p>Two phase envelope calculation (PX).</p>
-<p>Calculation of a phase envelope that starts at a given composition and
+<span class="sig-name descname"><span class="pre">phase_envelope_px</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_px"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_px" title="Link to this definition"></a></dt>
+<dd><p>Two phase envelope calculation (PX).
+Calculation of a phase envelope that starts at a given composition and
 its related to another composition with some proportion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1114,7 +1119,67 @@ defaults to “bubble”. Options are
 <li><p><strong>p0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial guess for pressure [bar] for the saturation point of kind:
 <cite>kind</cite>, by default 10.0</p></li>
 <li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of composition <cite>zi</cite>, by default 0.001</p></li>
+<li><p><strong>ns0</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial specified variable number, by default None.
+The the first <cite>n=len(z)</cite> values correspond to the K-values, where
+the last two values are the pressure and alpha.</p></li>
 <li><p><strong>ds0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for a, by default 0.1</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.phase_envelope_tx">
+<span class="sig-name descname"><span class="pre">phase_envelope_tx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bubble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_tx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_tx" title="Link to this definition"></a></dt>
+<dd><p>Two phase envelope calculation (TX).
+Calculation of a phase envelope that starts at a given composition and
+its related to another composition with some proportion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>array_like</em>) – Initial global mole fractions</p></li>
+<li><p><strong>zi</strong> (<em>array_like</em>) – Final global mole fractions</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [K]</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>optional</em>) – Kind of saturation point to start the envelope calculation,
+defaults to “bubble”. Options are
+- “bubble”
+- “dew”</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Envelope’s maximum points to calculate (P, X), by default 300</p></li>
+<li><p><strong>t0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial guess for temperature [K] for the saturation point of kind:
+<cite>kind</cite>, by default 150.0</p></li>
+<li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of composition <cite>zi</cite>, by default 0.001</p></li>
+<li><p><strong>ns0</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial specified variable number, by default None.
+The the first <cite>n=len(z)</cite> values correspond to the K-values, where
+the last two values are the temperature and alpha.</p></li>
+<li><p><strong>ds0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for a, by default 0.1</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.phase_envelope_pt3">
+<span class="sig-name descname"><span class="pre">phase_envelope_pt3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specified_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_pt3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_pt3" title="Link to this definition"></a></dt>
+<dd><p>Three-phase envelope tracing method.
+Calculation of a three-phase envelope that starts with an estimated
+compositions, pressure, temperature and phase fractions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>x0</strong> (<em>array_like</em>) – Initial phase x mole fractions</p></li>
+<li><p><strong>y0</strong> (<em>array_like</em>) – Initial phase y mole fractions</p></li>
+<li><p><strong>w0</strong> (<em>array_like</em>) – Initial incipient phase w mole fractions</p></li>
+<li><p><strong>beta0</strong> (<em>float</em>) – Initial phase fraction between x and y</p></li>
+<li><p><strong>t0</strong> (<em>float</em>) – Initial temperature [K]</p></li>
+<li><p><strong>p0</strong> (<em>float</em>) – Initial pressure [bar]</p></li>
+<li><p><strong>specified_variable</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial specified variable number, by default 2*len(z)+2
+(temperature).  The the first <cite>n=(1,len(z))</cite> values correspond to
+the K-values between phase x and w, the next <cite>n=(len(z)+1,
+2*len(z))</cite> are the K-values between phase y and w.  The last three
+values are pressure, temperature and beta.</p></li>
+<li><p><strong>first_step</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for the specified variable, by default 0.1</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of points to calculate, by default 1000</p></li>
 </ul>
 </dd>
 </dl>
@@ -1123,8 +1188,8 @@ defaults to “bubble”. Options are
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.stability_analysis">
 <span class="sig-name descname"><span class="pre">stability_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.stability_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.stability_analysis" title="Link to this definition"></a></dt>
-<dd><p>Perform stability analysis.</p>
-<p>Find all the possible minima values that the <span class="math notranslate nohighlight">\(tm\)</span> function,
+<dd><p>Perform stability analysis.
+Find all the possible minima values that the <span class="math notranslate nohighlight">\(tm\)</span> function,
 defined by Michelsen and Mollerup.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1135,40 +1200,14 @@ defined by Michelsen and Mollerup.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul>
-<li><p><em>dict</em> –</p>
-<dl class="simple">
-<dt>Stability analysis result dictionary with keys:</dt><dd><ul class="simple">
-<li><dl class="simple">
-<dt>w:</dt><dd><p>value of the test phase that minimizes
-the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>tm:</dt><dd><p>minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-</li>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>dict</em> – Stability analysis result dictionary with keys:
+- w: value of the test phase that minimizes the <span class="math notranslate nohighlight">\(tm\)</span> function.
+- tm: minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function.</p></li>
 <li><p><em>dict</em> – All found minimum values of the <span class="math notranslate nohighlight">\(tm\)</span> function and the
 corresponding test phase mole fractions.
-- w:</p>
-<blockquote>
-<div><p>all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the
-<span class="math notranslate nohighlight">\(tm\)</span> function</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
-<dt>tm:</dt><dd><p>all values found minima of the <span class="math notranslate nohighlight">\(tm\)</span> function</p>
-</dd>
-</dl>
-</li>
-</ul>
-</li>
+- w: all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the <span class="math notranslate nohighlight">\(tm\)</span> function
+- tm: all values found minima of the <span class="math notranslate nohighlight">\(tm\)</span> function</p></li>
 </ul>
 </p>
 </dd>
@@ -1202,13 +1241,16 @@ is unstable.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.critical_point">
-<span class="sig-name descname"><span class="pre">critical_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">critical_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_point" title="Link to this definition"></a></dt>
 <dd><p>Critical point calculation.</p>
 <p>Calculate the critical point of a mixture. At a given composition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>z0</strong> (<em>array_like</em>) – Mole fractions of original fluid</p></li>
+<li><p><strong>zi</strong> (<em>array_like</em>) – Mole fractinos of other fluid</p></li>
+<li><p><strong>ns</strong> (<em>int</em>) – Number of specification</p></li>
+<li><p><strong>S</strong> (<em>float</em>) – Specification value</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
 </ul>
 </dd>
@@ -1231,16 +1273,18 @@ is unstable.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.critical_line">
-<span class="sig-name descname"><span class="pre">critical_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_line" title="Link to this definition"></a></dt>
-<dd><p>Critical Line calculation.</p>
-<p>Calculate the critical line between two compositions</p>
+<span class="sig-name descname"><span class="pre">critical_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.critical_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.critical_line" title="Link to this definition"></a></dt>
+<dd><p>Critical Line calculation.
+Calculate the critical line between two compositions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>z0</strong> (<em>array_like</em>) – Initial global mole fractions</p></li>
 <li><p><strong>zi</strong> (<em>array_like</em>) – Final global mole fractions</p></li>
+<li><p><strong>ns</strong> (<em>int</em><em>, </em><em>optional</em>) – Specified variable number, by default 1</p></li>
+<li><p><strong>s</strong> (<em>float</em><em>, </em><em>optional</em>) – Specified value, by default 1e-5</p></li>
+<li><p><strong>ds0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for molar fraction of composition <cite>i</cite></p></li>
 <li><p><strong>a0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of composition <cite>i</cite></p></li>
-<li><p><strong>da0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step for molar fraction of composition <cite>i</cite></p></li>
 <li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of points to calculate</p></li>
 <li><p><strong>stop_pressure</strong> (<em>float</em><em>, </em><em>optional</em>) – Stop when reaching this pressure value</p></li>
 </ul>

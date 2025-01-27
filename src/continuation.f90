@@ -143,7 +143,7 @@ contains
                fval, dF, dFdS, solver_tol &
                )
          end if
-         if (newton_its >= max_iters) exit
+         if (newton_its >= max_iters .or. dS == 0._pr .or. any(isnan(Fval)))  exit
 
          XS(i, :) = X
 
@@ -205,7 +205,7 @@ contains
       X0 = X
       newton: do iters = 1, max_iters
          ! Converged point
-         if (maxval(abs(dx)) < tol .or. maxval(abs(F)) < tol) exit newton
+         if (maxval(abs(dx/x)) < 1e-5_pr .or. maxval(abs(F)) < tol) exit newton
 
          call fun(X, ns, S, F, dF, dFdS)
 

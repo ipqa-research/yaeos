@@ -78,7 +78,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.5% of total for source files.">144 statements</a>
+                 title=" 1.4% of total for source files.">144 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -300,7 +300,7 @@
 <a id="ln-143" name="ln-143" href="#ln-143"></a><span class="w">               </span><span class="n">fval</span><span class="p">,</span><span class="w"> </span><span class="n">dF</span><span class="p">,</span><span class="w"> </span><span class="n">dFdS</span><span class="p">,</span><span class="w"> </span><span class="n">solver_tol</span><span class="w"> </span><span class="p">&amp;</span>
 <a id="ln-144" name="ln-144" href="#ln-144"></a><span class="w">               </span><span class="p">)</span>
 <a id="ln-145" name="ln-145" href="#ln-145"></a><span class="w">         </span><span class="k">end if</span>
-<a id="ln-146" name="ln-146" href="#ln-146"></a><span class="k">         if</span><span class="w"> </span><span class="p">(</span><span class="n">newton_its</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">max_iters</span><span class="p">)</span><span class="w"> </span><span class="k">exit</span>
+<a id="ln-146" name="ln-146" href="#ln-146"></a><span class="k">         if</span><span class="w"> </span><span class="p">(</span><span class="n">newton_its</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">max_iters</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">dS</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0._pr</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="nb">any</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">Fval</span><span class="p">)))</span><span class="w">  </span><span class="k">exit</span>
 <a id="ln-147" name="ln-147" href="#ln-147"></a>
 <a id="ln-148" name="ln-148" href="#ln-148"></a><span class="k">         </span><span class="n">XS</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span>
 <a id="ln-149" name="ln-149" href="#ln-149"></a>
@@ -362,7 +362,7 @@
 <a id="ln-205" name="ln-205" href="#ln-205"></a><span class="w">      </span><span class="n">X0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span>
 <a id="ln-206" name="ln-206" href="#ln-206"></a><span class="w">      </span><span class="n">newton</span><span class="p">:</span><span class="w"> </span><span class="k">do </span><span class="n">iters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span>
 <a id="ln-207" name="ln-207" href="#ln-207"></a><span class="w">         </span><span class="c">! Converged point</span>
-<a id="ln-208" name="ln-208" href="#ln-208"></a><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">tol</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">tol</span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">newton</span>
+<a id="ln-208" name="ln-208" href="#ln-208"></a><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="o">/</span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1e-5_pr</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">tol</span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">newton</span>
 <a id="ln-209" name="ln-209" href="#ln-209"></a>
 <a id="ln-210" name="ln-210" href="#ln-210"></a><span class="w">         </span><span class="k">call </span><span class="n">fun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="n">dF</span><span class="p">,</span><span class="w"> </span><span class="n">dFdS</span><span class="p">)</span>
 <a id="ln-211" name="ln-211" href="#ln-211"></a>
@@ -436,7 +436,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-03 17:26 +0000             </p>
+ on 2025-01-27 15:10 +0000             </p>
           </div>
         </div>
         <br>
