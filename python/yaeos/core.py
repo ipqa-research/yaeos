@@ -1022,7 +1022,9 @@ class ArModel(ABC):
             self.id, component, stop_pressure, stop_temperature
         )
 
-        return {"T": T, "P": P, "Vx": Vx, "Vy": Vy}
+        msk = ~np.isnan(T)
+
+        return {"T": T[msk], "P": P[msk], "Vx": Vx[msk], "Vy": Vy[msk]}
 
     def flash_pt(
         self, z, pressure: float, temperature: float, k0=None
@@ -1302,6 +1304,9 @@ class ArModel(ABC):
             "beta": beta,
         }
 
+    # ==============================================================
+    # Phase envelopes
+    # --------------------------------------------------------------
     def phase_envelope_pt(
         self,
         z,
@@ -1370,14 +1375,17 @@ class ArModel(ABC):
             self.id, z, kind=kind, t0=t0, p0=p0, max_points=max_points
         )
 
+        msk = ~np.isnan(ts)
+        msk_cp = ~np.isnan(tcs)
+
         res = {
-            "Ts": ts,
-            "Ps": ps,
-            "Tcs": tcs,
-            "Pcs": pcs,
-            "x": xs,
-            "y": ys,
-            "kinds": kinds,
+            "T": ts[msk],
+            "P": ps[msk],
+            "Tc": tcs[msk_cp],
+            "Pc": pcs[msk_cp],
+            "x": xs[msk],
+            "y": ys[msk],
+            "kinds": kinds[msk],
         }
 
         return res
@@ -1443,14 +1451,17 @@ class ArModel(ABC):
             ds0=ds0,
         )
 
+        msk = ~np.isnan(ps)
+        msk_cp = ~np.isnan(pcs)
+
         return {
-            "a": a,
-            "P": ps,
-            "x": xs,
-            "y": ys,
-            "ac": acs,
-            "Pc": pcs,
-            "kind": kinds,
+            "a": a[msk],
+            "P": ps[msk],
+            "x": xs[msk],
+            "y": ys[msk],
+            "ac": acs[msk_cp],
+            "Pc": pcs[msk_cp],
+            "kind": kinds[msk],
         }
 
     def phase_envelope_tx(
@@ -1513,16 +1524,100 @@ class ArModel(ABC):
             ds0=ds0,
         )
 
+        msk = ~np.isnan(ts)
+        msk_cp = ~np.isnan(pcs)
+
         return {
-            "a": a,
-            "T": ts,
-            "x": xs,
-            "y": ys,
-            "ac": acs,
-            "Pc": pcs,
-            "kind": kinds,
+            "a": a[msk],
+            "T": ts[msk],
+            "x": xs[msk],
+            "y": ys[msk],
+            "ac": acs[msk_cp],
+            "Pc": pcs[msk_cp],
+            "kind": kinds[msk],
         }
 
+    def phase_envelope_pt3(
+        self,
+        z,
+        x0,
+        y0,
+        w0,
+        beta0,
+        t0,
+        p0,
+        specified_variable=None,
+        first_step=None,
+        max_points=1000
+    ):
+        """
+        Three-phase envelope tracing method.
+
+        Calculation of a three-phase envelope that starts with an estimated
+        compositions, pressure, temperature and phase fractions.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        x0 : array_like
+            Initial phase x mole fractions
+        y0 : array_like
+            Initial phase y mole fractions
+        w0 : array_like
+            Initial incipient phase w mole fractions
+        beta0 : float
+            Initial phase fraction between x and y
+        t0 : float
+            Initial temperature [K]
+        p0 : float
+            Initial pressure [bar]
+        specified_variable : int, optional
+            Initial specified variable number, by default 2*len(z)+2
+            (temperature).  The the first `n=(1,len(z))` values correspond to 
+            the K-values between phase x and w, the next `n=(len(z)+1,
+            2*len(z))` are the K-values between phase y and w.  The last three
+            values are pressure, temperature and beta.
+        first_step : float, optional
+            Step for the specified variable, by default 0.1
+        max_points : int, optional
+            Maximum number of points to calculate, by default 1000
+        """
+
+        if specified_variable is None:
+            specified_variable = 2 * len(z) + 2
+
+        if first_step is None:
+            first_step = 0.1
+
+        x, y, w, P, T, beta = yaeos_c.pt3_phase_envelope(
+            self.id,
+            z=z,
+            x0=x0,
+            y0=y0,
+            w0=w0,
+            beta0=beta0,
+            t0=t0,
+            p0=p0,
+            max_points=max_points,
+            ns0=specified_variable,
+            ds0=first_step,
+        )
+
+        msk = ~np.isnan(T)
+
+        return {
+            "x": x[msk],
+            "y": y[msk],
+            "w": w[msk],
+            "P": P[msk],
+            "T": T[msk],
+            "beta": beta[msk],
+        }
+
+    # ==============================================================
+    # Stability analysis
+    # --------------------------------------------------------------
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
 
@@ -1590,6 +1685,9 @@ class ArModel(ABC):
         """
         return yaeos_c.tm(id=self.id, z=z, w=w, p=pressure, t=temperature)
 
+    # ==============================================================
+    # Critical points and lines
+    # --------------------------------------------------------------
     def critical_point(self, z0, zi=[0, 0], ns=1, S=0, max_iters=100) -> dict:
         """Critical point calculation.
 
@@ -1668,7 +1766,9 @@ class ArModel(ABC):
             stop_pressure=stop_pressure,
         )
 
-        return {"a": alphas, "T": ts, "P": ps, "V": vs}
+        msk = ~np.isnan(ts)
+
+        return {"a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk]}
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

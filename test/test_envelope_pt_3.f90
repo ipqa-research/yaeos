@@ -50,24 +50,13 @@ program main
    w = sat%y
    x = sat%x
    y = fl%y
-   
+
    lnP = log(sat%P)
    lnT = log(sat%T)
    lnkx = log(x/w)
    lnky = log(y/w)
    beta = fl%beta
 
-   ! bub_init: block
-   !    !! Correction for fluids that contain asphaltenes, asuming that the
-   !    !! asphaltenes are the last component of the composition vector.
-   !    real(pr) :: phi_w(nc), phi_y(nc)
-   !    y = 0
-   !    y(nc) = 1
-   !    call eos%lnphi_pt(y, sat%P, sat%T, root_type="liquid", lnphi=phi_y)
-   !    call eos%lnphi_pt(w, sat%P, sat%T, root_type="vapor", lnphi=phi_w)
-   !    lnKy = phi_w - phi_y
-   !    beta = z(nc)
-   ! end block bub_init
 
    print *, "flash"
    print *, fl%iters
@@ -93,7 +82,7 @@ program main
    y = w * exp(XX(nc+1:2*nc))
    beta = XX(2*nc+3)
 
-   print *, "its:", its 
+   print *, "its:", its
    print *, "w:", w
    print *, "x:", x
    print *, "y:", y
@@ -105,12 +94,30 @@ program main
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
       P0=exp(XX(2*nc+1)), T0=exp(XX(2*nc+2)), ns0=ns, dS0=0.01_pr, points=1000)
 
-  write(2, *) "ns S T P beta &
-               x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 &
-               y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12 y13 y14 y15 y16 &
-               w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16"
-  do i=1,size(env3%beta)
-     write(2, *) env3%ns(i), env3%S(i), env3%T(i), env3%P(i), env3%beta(i), env3%x(i, :), env3%y(i, :), env3%w(i, :)
-  end do
+   write(2, *) "ns S T P beta &
+      x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 &
+      y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12 y13 y14 y15 y16 &
+      w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16"
+   do i=1,size(env3%beta)
+      write(2, *) env3%ns(i), env3%S(i), env3%T(i), env3%P(i), env3%beta(i), env3%x(i, :), env3%y(i, :), env3%w(i, :)
+   end do
 
+contains
+
+   subroutine init_bub_with_asphaltenes(model, z, w, lnK, beta)
+      !! Correction for fluids that contain asphaltenes, asuming that the
+      !! asphaltenes are the last component of the composition vector.
+      class(ArModel), intent(in) :: model
+      real(pr), intent(in) :: z(:), w(:)
+      real(pr), intent(out) :: lnK(:)
+      real(pr), intent(out) :: beta
+      real(pr) :: phi_w(size(z)), phi_y(size(z))
+      
+      y = 0
+      y(nc) = 1
+      call eos%lnphi_pt(y, sat%P, sat%T, root_type="liquid", lnphi=phi_y)
+      call eos%lnphi_pt(w, sat%P, sat%T, root_type="vapor", lnphi=phi_w)
+      lnK = phi_w - phi_y
+      beta = z(nc)
+   end subroutine init_bub_with_asphaltenes
 end program main

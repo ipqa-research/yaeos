@@ -440,7 +440,7 @@ contains
             dX = dX/2
          end do
          
-         do while(abs(dX(2*nc+3)) > 0.1)
+         do while(abs(dX(2*nc+3)) > 0.01)
             dX = dX/2
          end do
 

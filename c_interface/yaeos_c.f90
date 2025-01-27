@@ -779,7 +779,7 @@ contains
       real(c_double), intent(in) :: T0, P0
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
-      real(c_double), intent(out) :: Tcs(5), Pcs(5)
+      real(c_double), intent(out) :: Tcs(max_points), Pcs(max_points)
       real(c_double), intent(out) :: xs(max_points, size(z))
       real(c_double), intent(out) :: ys(max_points, size(z))
       character(len=15), intent(out) :: kinds(max_points)
