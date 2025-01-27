@@ -58,13 +58,6 @@ program main
    ! Obtain the values of the point
    call get_values_from_X(z0, zi, XX, x, y, w, P, a, beta)
 
-   print "(A,2x,*(E15.4,x))", "x", x
-   print "(A,2x,*(E15.4,x))", "y", y
-   print "(A,2x,*(E15.4,x))", "w", w
-   print "(A,2x,E15.4)", "beta", beta
-   print "(A,2x,E15.4)", "P", P
-   print "(A,2x,E15.4)", "F", maxval(abs(F)) 
-
    call assert(its < 1000, "solve_point did not converge")
    call assert(abs(beta - 0.22) < 1e-2, "beta value")
    call assert(abs(P - 27.158429541826763) < 1e-2, "P value")
@@ -75,13 +68,7 @@ program main
       eos, z0=z0, zi=zi, T=sat%T, x0=x, y0=y, w0=w, beta0=beta, &
       P0=P, a0=a, ns0=ns, dS0=0.1_pr, points=1000)
 
-   print *, size(env3%alpha)
-   do i=1,size(env3%alpha)
-      write(1, *) env3%alpha(i), env3%P(i), env3%T, env3%beta(i)
-   end do
-
    i = size(env3%P)
-
    call assert(i > 10, "Number of points in the PT envelope")
    call assert(abs(env3%alpha(i) - 0.99) < 0.01, "Stop temperature of the PT envelope")
    call assert(abs(env3%P(i) - 2.58_pr) < 0.01, "Stop pressure of the PT envelope")
