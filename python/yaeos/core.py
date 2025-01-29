@@ -1233,8 +1233,7 @@ class ArModel(ABC):
         }
 
     def saturation_temperature(
-        self, z, pressure: float, kind: str = "bubble", t0: float = 0,
-        y0=None
+        self, z, pressure: float, kind: str = "bubble", t0: float = 0, y0=None
     ) -> dict:
         """Saturation temperature at specified pressure.
 

@@ -26,11 +26,21 @@ def solve_pt(model, p, t):
     """Solve a point at a given P and T."""
     from scipy.optimize import root
 
-    x10, y10 = find_init_binary_ll(model, p, t)
+    try:
+        x10, y10 = find_init_binary_ll(model, p, t)
+    except ValueError:
+        x10, y10 = 0.1, 0.9
 
-    x0 = [x10, y10]
-    sol = root(binary_isofugacity_x1y1pt, x0, (p, t, model))
-    x1, y1 = sol.x
+    mean = (x10 + y10) / 2
+
+    z = [mean, 1 - mean]
+    y0 = np.array([y10, 1 - y10])
+    x0 = np.array([x10, 1 - x10])
+
+    flash = model.flash_pt(z, pressure=p, temperature=t, k0=y0 / x0)
+
+    x1 = flash["x"][0]
+    y1 = flash["y"][0]
 
     return x1, y1
 
