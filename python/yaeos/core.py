@@ -1233,7 +1233,8 @@ class ArModel(ABC):
         }
 
     def saturation_temperature(
-        self, z, pressure: float, kind: str = "bubble", t0: float = 0
+        self, z, pressure: float, kind: str = "bubble", t0: float = 0,
+        y0=None
     ) -> dict:
         """Saturation temperature at specified pressure.
 
@@ -1248,6 +1249,11 @@ class ArModel(ABC):
                 - "bubble"
                 - "dew"
                 - "liquid-liquid"
+        t0: float, optional
+            Initial guess for temperature [K]
+        y0: array_like, optional
+            Initial guess for the incipient phase, by default None
+            (will use k_wilson correlation)
 
         Returns
         -------
@@ -1290,8 +1296,11 @@ class ArModel(ABC):
 
             print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))
         """
+        if y0 is None:
+            y0 = np.zeros_like(z)
+
         t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_temperature(
-            id=self.id, z=z, p=pressure, kind=kind, t0=t0
+            id=self.id, z=z, p=pressure, kind=kind, t0=t0, y0=y0
         )
 
         return {

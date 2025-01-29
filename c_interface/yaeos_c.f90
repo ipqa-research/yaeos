@@ -704,13 +704,17 @@ contains
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
 
-   subroutine saturation_temperature(id, z, P, kind, T0, T, x, y, Vx, Vy, beta)
-      use yaeos, only: EquilibriumState, fsaturation_temperature => saturation_temperature
+   subroutine saturation_temperature(id, z, P, kind, T0, y0, T, x, y, Vx, Vy, beta)
+      use yaeos, only: &
+         EquilibriumState, &
+         fsaturation_temperature => saturation_temperature, &
+         k_wilson
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: P
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: y0(size(z))
 
       real(c_double), intent(out) :: T
       real(c_double), intent(out) :: x(size(z))
@@ -721,11 +725,16 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (T0 == 0) then
+      if (T0 == 0 .and. all(y0 == 0)) then
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
-      else
+      else if (all(y0 == 0)) then
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
+      else if (T0 == 0) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0)
+      else
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0, T0=T0)
       end if
+
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
    end subroutine saturation_temperature
 

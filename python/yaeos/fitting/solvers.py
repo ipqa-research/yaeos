@@ -19,7 +19,7 @@ def binary_isofugacity_x1y1pt(x, p, t, model):
 
     isofug = np.log(x) + lnphi_x - (np.log(y) + lnphi_y)
 
-    return isofug
+    return isofug**2
 
 
 def solve_pt(model, p, t):
