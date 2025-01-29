@@ -17,9 +17,9 @@ updated a lot in the recent decades. There is a fairly direct guide on the
 [fortran-lang site](https://fortran-lang.org/learn/)
 
 ## Getting yaeos
-`yaeos`is a Fortran library intended to be used as a
-[`fpm`](fpm.fortran-lang.org) package, `fpm` can be easily easily obtained with
-the Python package manager `pip` with a simple:
+`yaeos` is a Fortran library intended to be used as a
+[`fpm`](fpm.fortran-lang.org) package (fpm: Fortran Package Manager), `fpm` can
+be easily easily obtained with the Python package manager `pip` with a simple:
 
 ```bash
 pip install --user fpm
@@ -33,8 +33,8 @@ fpm new your_project_name
 
 A new directory with the name of your project will be created. 
 
-You include `yaeos` in your  `fpm` project by adding it as a dependency on your
-`fpm.toml` file by adding this:
+You can include `yaeos` in your `fpm` project by adding it as a dependency on
+your `fpm.toml` file by adding this:
 
 ```toml
 [dependencies]
