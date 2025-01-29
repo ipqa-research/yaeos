@@ -32,4 +32,6 @@ module yaeos__equilibria
       PTEnvel2, pt_envelope_2ph, find_hpl
    use yaeos__equilibria_boundaries_phase_envelopes_pt3, only: &
       PTEnvel3, pt_envelope_3ph
+   use yaeos__equilibria_boundaries_phase_envelopes_px3, only: &
+      PXEnvel3, PX_envelope_3ph
 end module yaeos__equilibria
