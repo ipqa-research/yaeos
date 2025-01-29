@@ -63,10 +63,14 @@ class BinaryFitter:
                 sat = model.saturation_pressure(
                     x, kind="dew", temperature=t, p0=p
                 )
-                error_i += (sat["P"] - p) ** 2 / p + (sat["y"][0] - y[0]) ** 2
+
+                error_i += (sat["P"] - p) ** 2 / p
+
+                if not np.isnan(row["x1"]):
+                    error_i += ((sat["x"][0] - y[0]) / y[0]) ** 2
 
             if row["kind"] == "PT" or row["kind"] == "liquid-liquid":
-                x1, y1 = solve_pt(model, row["P"], row["T"])
+                x1, y1 = solve_pt(model, row["P"], row["T"], row["kind"])
 
                 if np.isnan(x[0]):
                     error_i += (y1 - y[0]) ** 2

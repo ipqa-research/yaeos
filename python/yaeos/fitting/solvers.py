@@ -22,12 +22,12 @@ def binary_isofugacity_x1y1pt(x, p, t, model):
     return isofug**2
 
 
-def solve_pt(model, p, t):
+def solve_pt(model, p, t, kind):
     """Solve a point at a given P and T."""
     from scipy.optimize import root
 
     try:
-        x10, y10 = find_init_binary_ll(model, p, t)
+        x10, y10 = find_init_binary_ll(model, p, t, kind)
     except ValueError:
         x10, y10 = 0.1, 0.9
 
@@ -45,7 +45,7 @@ def solve_pt(model, p, t):
     return x1, y1
 
 
-def find_init_binary_ll(model, pressure, temperature):
+def find_init_binary_ll(model, pressure, temperature, kind):
     """Find initial guess for a binary liquid-liquid system."""
     from scipy.signal import argrelmin, argrelmax
 
@@ -57,12 +57,17 @@ def find_init_binary_ll(model, pressure, temperature):
         temperature,
     )
 
+    if kind == "liquid-liquid":
+        root = "liquid"
+    else:
+        root = "stable"
+
     zs = np.linspace(1e-15, 1 - 1e-15, 100)
 
     phis = np.array(
         [
             model.lnphi_pt(
-                [z, 1 - z], temperature=t, pressure=p, root="liquid"
+                [z, 1 - z], temperature=t, pressure=p, root=root
             )
             for z in zs
         ]
