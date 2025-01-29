@@ -66,9 +66,7 @@ def find_init_binary_ll(model, pressure, temperature, kind):
 
     phis = np.array(
         [
-            model.lnphi_pt(
-                [z, 1 - z], temperature=t, pressure=p, root=root
-            )
+            model.lnphi_pt([z, 1 - z], temperature=t, pressure=p, root=root)
             for z in zs
         ]
     )

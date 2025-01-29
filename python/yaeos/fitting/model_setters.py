@@ -33,12 +33,19 @@ def fit_kij_lij(x, args):
 def fit_mhv_nrtl(x, args):
     """Fit the MHV mixing rule for Cubic EoS with NRTL GE."""
     from yaeos.models import NRTL, MHV
+
     a12, a21, b12, b21, alpha = x
 
     model = args[0]
     q = args[1]
 
-    a = [[0, a12,], [a21, 0]]
+    a = [
+        [
+            0,
+            a12,
+        ],
+        [a21, 0],
+    ]
     b = [[0, b12], [b21, 0]]
     c = [[0, alpha], [alpha, 0]]
 
@@ -51,11 +58,18 @@ def fit_mhv_nrtl(x, args):
 def fit_hv_nrtl(x, args):
     """Fit the HV mixing rule for Cubic EoS with NRTL GE."""
     from yaeos.models import NRTL, HV
+
     a12, a21, b12, b21, alpha = x
 
     model = args[0]
 
-    a = [[0, a12,], [a21, 0]]
+    a = [
+        [
+            0,
+            a12,
+        ],
+        [a21, 0],
+    ]
     b = [[0, b12], [b21, 0]]
     c = [[0, alpha], [alpha, 0]]
 
