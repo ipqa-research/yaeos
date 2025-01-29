@@ -24,7 +24,6 @@ def binary_isofugacity_x1y1pt(x, p, t, model):
 
 def solve_pt(model, p, t, kind):
     """Solve a point at a given P and T."""
-    from scipy.optimize import root
 
     try:
         x10, y10 = find_init_binary_ll(model, p, t, kind)
