@@ -28,7 +28,7 @@ class BinaryFitter:
         # ==============================================================
         # Calculate the critical line and remove the NaN values
         # --------------------------------------------------------------
-        cl = model.critical_line(z0=[0, 1], zi=[1, 0], a0=1e-2, S=1e-2)
+        cl = model.critical_line(z0=[0, 1], zi=[1, 0], a0=1e-2, s=1e-2)
         msk = ~np.isnan(cl["T"])
         cl["T"] = cl["T"][msk]
         cl["P"] = cl["P"][msk]
