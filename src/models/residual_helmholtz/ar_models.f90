@@ -203,18 +203,24 @@ contains
    end subroutine volume
 
    subroutine pressure(eos, n, V, T, P, dPdV, dPdT, dPdn)
-      !! Pressure calculation.
+      !! Calculate pressure.
       !!
       !! Calculate pressure using residual helmholtz models.
       !!
       !! # Examples
+      !!
       !! ```fortran
+      !! use yaeos
+      !! 
       !! class(ArModel), allocatable :: eos
+      !! 
       !! real(pr) :: n(2), t, v, p, dPdV, dPdT, dPdn(2)
-      !! eos = PengRobinson(Tc, Pc, w)
+      !! 
+      !! eos = PengRobinson76(Tc, Pc, w)
       !! n = [1.0_pr, 1.0_pr]
       !! t = 300.0_pr
       !! v = 1.0_pr
+      !! 
       !! call eos%pressure(n, V, T, P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
       !! ```
       class(ArModel), intent(in) :: eos !! Model
