@@ -7,10 +7,8 @@ given in the input arguments.
 import numpy as np
 
 
-def fit_kij_lij(x, args):
+def fit_kij_lij(x, model, fit_kij, fit_lij):
     """Set the kij and/or lij parameter of the model."""
-    model = args[0]
-    fit_kij, fit_lij = args[1:]
 
     mr = model.mixrule
 
