@@ -1,5 +1,4 @@
-"""Yaeos fitting core module.
-"""
+"""Yaeos fitting core module."""
 
 import numpy as np
 

@@ -1671,7 +1671,7 @@ class ArModel(ABC):
         """
 
         if specified_variable is None:
-            specified_variable = 2 * len(z) + 2
+            specified_variable = 2 * len(z0) + 2
 
         if first_step is None:
             first_step = 0.1

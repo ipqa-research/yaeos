@@ -1,4 +1,3 @@
-import pytest
 import yaeos
 import yaeos.fitting
 import yaeos.fitting.model_setters
@@ -21,4 +20,4 @@ def test_fit_co2_c6_pxy(data_co2_c6_pxy):
 
     problem.fit(x0, bounds=None)
 
-    assert (abs(problem.solution.x[0] - 0.11) < 1e-1)
+    assert abs(problem.solution.x[0] - 0.11) < 1e-1
