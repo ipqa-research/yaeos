@@ -8,3 +8,4 @@ Tutorial
    instantiate_model.ipynb
    more_calculations.ipynb
    cubic_eos.ipynb
+   fitting.ipynb

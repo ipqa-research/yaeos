@@ -1724,7 +1724,8 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-            - w: value of the test phase that minimizes the :math:`tm` function.
+            - w: value of the test phase that minimizes the :math:`tm`
+                 function.
             - tm: minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
