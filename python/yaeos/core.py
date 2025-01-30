@@ -1233,7 +1233,7 @@ class ArModel(ABC):
         }
 
     def saturation_temperature(
-        self, z, pressure: float, kind: str = "bubble", t0: float = 0
+        self, z, pressure: float, kind: str = "bubble", t0: float = 0, y0=None
     ) -> dict:
         """Saturation temperature at specified pressure.
 
@@ -1248,6 +1248,11 @@ class ArModel(ABC):
                 - "bubble"
                 - "dew"
                 - "liquid-liquid"
+        t0: float, optional
+            Initial guess for temperature [K]
+        y0: array_like, optional
+            Initial guess for the incipient phase, by default None
+            (will use k_wilson correlation)
 
         Returns
         -------
@@ -1290,8 +1295,11 @@ class ArModel(ABC):
 
             print(model.saturation_temperature(np.array([0.5, 0.5]), 12.99))
         """
+        if y0 is None:
+            y0 = np.zeros_like(z)
+
         t, x, y, volume_x, volume_y, beta = yaeos_c.saturation_temperature(
-            id=self.id, z=z, p=pressure, kind=kind, t0=t0
+            id=self.id, z=z, p=pressure, kind=kind, t0=t0, y0=y0
         )
 
         return {
@@ -1612,6 +1620,89 @@ class ArModel(ABC):
             "beta": beta[msk],
         }
 
+    def phase_envelope_px3(
+        self,
+        z0,
+        zi,
+        T,
+        x0,
+        y0,
+        w0,
+        beta0,
+        a0,
+        p0,
+        specified_variable=None,
+        first_step=None,
+        max_points=1000,
+    ):
+        """
+        Three-phase envelope tracing method.
+        Calculation of a three-phase envelope that starts with an estimated
+        compositions, pressure, temperature and phase fractions.
+
+        Parameters
+        ----------
+        z0 : array_like
+            Global mole fractions of the original fluid
+        zi : array_like
+            Global mole fractions of the other fluid
+        x0 : array_like
+            Initial phase x mole fractions
+        y0 : array_like
+            Initial phase y mole fractions
+        w0 : array_like
+            Initial incipient phase w mole fractions
+        beta0 : float
+            Initial phase fraction between x and y
+        a0 : float
+            Initial molar fraction of the other fluid
+        p0 : float
+            Initial pressure [bar]
+        specified_variable : int, optional
+            Initial specified variable number, by default 2*len(z)+2
+            (temperature).  The the first `n=(1,len(z))` values correspond to
+            the K-values between phase x and w, the next `n=(len(z)+1,
+            2*len(z))` are the K-values between phase y and w.  The last three
+            values are pressure, a and beta.
+        first_step : float, optional
+            Step for the specified variable, by default 0.1
+        max_points : int, optional
+            Maximum number of points to calculate, by default 1000
+        """
+
+        if specified_variable is None:
+            specified_variable = 2 * len(z0) + 2
+
+        if first_step is None:
+            first_step = 0.1
+
+        x, y, w, p, a, beta = yaeos_c.px3_phase_envelope(
+            id=self.id,
+            z0=z0,
+            zi=zi,
+            t=T,
+            x0=x0,
+            y0=y0,
+            w0=w0,
+            p0=p0,
+            a0=a0,
+            beta0=beta0,
+            ns0=specified_variable,
+            ds0=first_step,
+            max_points=max_points,
+        )
+
+        msk = ~np.isnan(a)
+
+        return {
+            "x": x[msk],
+            "y": y[msk],
+            "w": w[msk],
+            "P": p[msk],
+            "a": a[msk],
+            "beta": beta[msk],
+        }
+
     # ==============================================================
     # Stability analysis
     # --------------------------------------------------------------
@@ -1633,7 +1724,8 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-            - w: value of the test phase that minimizes the :math:`tm` function.
+            - w: value of the test phase that minimizes the :math:`tm`
+                 function.
             - tm: minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
