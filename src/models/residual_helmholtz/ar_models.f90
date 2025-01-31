@@ -128,7 +128,7 @@ contains
    subroutine volume(eos, n, P, T, V, root_type)
       !! Volume solver routine for residual Helmholtz models.
       !!
-      !! Solves volume roots using newton method. Given pressure and 
+      !! Solves volume roots using newton method. Given pressure and
       !! temperature.
       !!
       !! # Description
@@ -151,7 +151,7 @@ contains
       !! ```
       use yaeos__constants, only: pr, R
       use yaeos__math, only: newton
-      
+
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -224,7 +224,7 @@ contains
       !! n = [1.0_pr, 1.0_pr]
       !! T = 300.0_pr
       !! V = 1.0_pr
-      !! 
+      !!
       !! call eos%pressure(n, V, T, P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
       !! ```
       class(ArModel), intent(in) :: eos !! Model
@@ -259,22 +259,43 @@ contains
    end subroutine pressure
 
    subroutine lnphi_pt(eos, &
-      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn &
+      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, &
+      dPdV, dPdT, dPdn &
       )
-      !! Calculate logarithm of fugacity, given pressure and temperature.
+      !! Calculate natural logarithm of fugacity given pressure and temperature.
       !!
-      !! This routine will obtain the desired volume root at the specified
-      !! pressure and calculate fugacity at that point.
+      !! Calculate the natural logarithm of the fugacity coefficient and its
+      !! derivatives given pressure and temperature. This routine will obtain 
+      !! the desired volume root at the specified pressure and calculate 
+      !! fugacity at that point.The routine gives the possibility to calculate 
+      !! the pressure derivatives and volume.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%lnphi_pt(&
+      !!    n, V, T, lnPhi=lnPhi, &
+      !!    dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      !!    )
+      !! ```
       use iso_fortran_env, only: error_unit
+
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
-      character(len=*), intent(in) :: root_type !! Type of root desired ["liquid", "vapor", "stable"]
-      real(pr), intent(in) :: P    !! Pressure [bar]
-      real(pr), intent(in) :: T    !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Type of root desired ["liquid", "vapor", "stable"]
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
 
       real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(phi)\) vector
       real(pr), optional, intent(out) :: V !! Volume [L]
-      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! ln(phi) Temp derivative
+      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! ln(phi) Temperature derivative
       real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! ln(phi) Presssure derivative
       real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! ln(phi) compositional derivative
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
@@ -284,6 +305,7 @@ contains
       real(pr) :: V_in, P_in
 
       call eos%volume(n, P=P, T=T, V=V_in, root_type=root_type)
+
       call eos%lnphi_vt(&
          n, V=V_in, T=T, &
          P=P_in, lnPhi=lnPhi, &
@@ -306,8 +328,8 @@ contains
       )
       !! Calculate natural logarithm of fugacity coefficent.
       !!
-      !! Calculate the natural logarithm of the fugacity coefficient and its 
-      !! derivatives given volume and temperature. The routine gives the 
+      !! Calculate the natural logarithm of the fugacity coefficient and its
+      !! derivatives given volume and temperature. The routine gives the
       !! possibility to calculate the pressure and it's derivatives.
       !!
       !! # Examples
@@ -318,7 +340,7 @@ contains
       !! n = [1.0_pr, 1.0_pr]
       !! T = 300.0_pr
       !! V = 1.0_pr
-      !! 
+      !!
       !! call eos%lnphi_vt(&
       !!    n, V, T, lnPhi=lnPhi, &
       !!    dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
@@ -388,9 +410,11 @@ contains
       dPdn_in = RT/V - ArVn
 
       if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
+      
       if (present(dlnPhidP)) then
          dlnPhidP(:) = -dPdn_in(:)/dPdV_in/RT - 1._pr/P_in
       end if
+      
       if (present(dlnPhidT)) then
          dlnPhidT(:) = (ArTn(:) - Arn(:)/T)/RT + dPdn_in(:)*dPdT_in/dPdV_in/RT + 1._pr/T
       end if

@@ -161,7 +161,8 @@ end block volume
 ```
 
 ## Fugacity coefficients (V,T): \(\ln \phi_i (V,T)\)
-Fugacity coefficients specifing \(V\) and \(T\) are calculated as follows:
+Natural logarithm of fugacity coefficients specifing \(V\) and \(T\) are
+calculated as follows:
 
 $$
 \ln \hat{\phi}_i = \frac{1}{RT} \left( \frac{\partial A^r}{\partial n_i} \right)_{V,T} - \ln Z
@@ -222,4 +223,77 @@ end block lnphi_vt
 
 ```
 
+The subroutine `lnphi_vt` also allows to obtain the value of pressure and its
+derivatives at the specified volume and temperature. Since those values are
+needed to calculate the fugacity coefficients, you can take advantage of this
+feature to avoid calculating them twice.
+
+
+```fortran
+
+lnphi_vt_p: block
+    real(pr) :: T, V, lnPhi(2), P, dPdV, dPdT, dPdn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    call eos%lnphi_vt(&
+      n, V, T, lnPhi=lnPhi, P=P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+      )
+
+end block lnphi_vt_p
+```
+
 ## Fugacity coefficients (P,T): \(\ln \phi_i (P,T)\)
+
+There is no need for a direct way of calculating natural logarithm the fugacity
+coefficients specifing \(P\) and \(T\) since we can solve volume from those
+specifications and then calculate the fugacity coefficients using the \(\ln
+\phi_i (V,T)\) method. For that reason you can choose the root of the volume
+that you want to use to calculate the fugacity coefficients in the same way as
+the volume method.
+
+```fortran
+
+lnphi_pt: block
+    real(pr) :: T, P, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    P = 1.0_pr     ! Set volume to 1 bar
+
+    call eos%lnphi_pt(&
+      n, P, T, root_type="liquid", lnPhi=lnPhi, &
+      dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      )
+
+    call eos%lnphi_pt(&
+      n, P, T, root_type="vapor", lnPhi=lnPhi, &
+      dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      )
+    
+    call eos%lnphi_pt(&
+      n, P, T, root_type="stable", lnPhi=lnPhi, &
+      dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      )
+
+end block lnphi_pt
+```
+
+As in the \(\ln \phi_i (V,T)\) method you can take advantage and the retrieve
+the value of the calculated volume and the pressure derivatives.
+
+```fortran
+lnphi_pt_v: block
+    real(pr) :: T, P, V, lnPhi(2), dPdV, dPdT, dPdn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    P = 1.0_pr     ! Set volume to 1 bar
+
+    call eos%lnphi_pt(&
+      n, P, T, V=V, root_type="stable", lnPhi=lnPhi, &
+      dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+      )
+
+end block lnphi_pt_v
+
+```
