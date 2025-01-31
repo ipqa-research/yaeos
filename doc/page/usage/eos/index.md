@@ -55,17 +55,6 @@ $$
 A^r(n, V, T) = -\int_{\infty}^{V} \left(P - \frac{nRT}{V} \right) dV
 $$
 
-This summary is based on the emblematic book Thermodynamic Models: Fundamentals
-and Computational Aspects by Michael L. Michelsen and Jørgen M. Mollerup. This
-book is a must-read for anyone interested in the subject. To honor the masters
-of thermodynamics, we will use their notation, which is as follows:
-
-$$
-\frac{A^r(n, V, T)}{RT} = F
-$$
-
-\(F\) is the reduced residual Helmholtz free energy.
-
 We are ready to go now. We leave an example of how to instantiate a
 Peng-Robinson EOS model in the next code block if you want to start evaluating
 properties right away.
@@ -99,24 +88,26 @@ the previous code block (before the end program statement).
 # Thermodynamic properties
 ## Pressure: \(P(n, V, T)\)
 
+Pressure can be calculated from the residual Helmholtz free energy as follows:
+
 $$
-P = -RT \left(\frac{\partial F}{\partial V} \right)_{T,n} 
+P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n} 
 + \frac{nRT}{V}
 $$
 
 $$
 \left(\frac{\partial P}{\partial V} \right)_{T,n} = 
--RT \left(\frac{\partial^2 F}{\partial V^2} \right)_{T,n} - \frac{nRT}{V^2}
+-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n} - \frac{nRT}{V^2}
 $$
 
 $$
 \left(\frac{\partial P}{\partial T} \right)_{V,n} =
--RT \left(\frac{\partial^2 F}{\partial V \partial T} \right)_n + \frac{nR}{V}
+- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n + \frac{nR}{V}
 $$
 
 $$
 \left(\frac{\partial P}{\partial n_i} \right)_{V,T} =
--RT \left(\frac{\partial^2 F}{\partial V \partial n_i} \right)_T + \frac{RT}{V}
+-\left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T + \frac{RT}{V}
 $$
 
 ```fortran
@@ -138,3 +129,97 @@ end block pressure
 ```
 
 ## Volume: \(V(n, P, T)\)
+As you must know, given a temperature and pressure, the volume has not a unique
+solution. In the case of a cubic EOS, there are three possible solutions for
+the volume. For this reason, the volume is calculated iteratively. Provided
+\(n\), \(P\), and \(T\) we fix \(n\) and
+\(T\) and iterate over the volume until the pressure is the same as the
+input pressure.
+
+To learm how the initial guess for \(V\) is obtained, please refer to the book
+"Thermodynamic Models: Fundamentals and Computational Aspects" by Michael L.
+Michelsen and Jørgen M. Mollerup. Also, you will find how to calculate \(V\) derivatives in terms of \(P\) and \(T\) derivatives.
+
+```fortran
+volume: block
+    real(pr) :: T, P, V
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    P = 1.0_pr     ! Set pressure to 1 bar
+
+    ! Calculate different volume roots
+    call model%volume(n, P, T, V=V, root="liquid")
+    print *, "Liquid volume: ", V
+
+    call model%volume(n, P, T, V=V, root="vapor")
+    print *, "Vapor volume: ", V
+
+    call model%volume(n, P, T, V=V, root="stable")
+    print *, "Stable volume root: ", V
+
+end block volume
+```
+
+## Fugacity coefficients (V,T): \(\ln \phi_i (V,T)\)
+Fugacity coefficients specifing \(V\) and \(T\) are calculated as follows:
+
+$$
+\ln \hat{\phi}_i = \frac{1}{RT} \left( \frac{\partial A^r}{\partial n_i} \right)_{V,T} - \ln Z
+$$
+
+Remember that the compressibility factor \(Z\) is calculated as:
+
+$$
+Z = \frac{PV}{nRT}
+$$
+
+Next, the derivatives:
+
+$$
+\left(\frac{\partial \ln \hat{\phi_i}}{\partial T} \right)_{P,n} = 
+\frac{1}{RT} \left(\frac{\partial^2 A^r}{\partial T \partial n_i}\right)_V
+- \frac{1}{RT^2} \left(\frac{\partial A^r}{\partial n_i}\right)_{V,T}
++ \frac{1}{T} + \frac{1}{RT} \frac{\left(\frac{\partial P}{\partial n_i} 
+\right)_{V,T} \left(\frac{\partial P}{\partial T} \right)_{V,n}}{
+\left(\frac{\partial P}{\partial V}\right)_{T,n}}
+$$
+
+$$
+\left(\frac{\partial \ln \hat{\phi_i}}{\partial P} \right)_{T,n} = 
+ \frac{1}{RT} \frac{\left(\frac{\partial P}{\partial n_i} 
+\right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,n}} 
+- \frac{1}{P}
+$$
+
+$$
+\left(\frac{\partial \ln \hat{\phi_i}}{\partial n_j} \right)_{P,T} =
+\frac{1}{n_T} + \frac{1}{RT} 
+\left(\frac{\partial^2 A^r}{\partial n_i \partial n_j}
++ \frac{\left(\frac{\partial P}{\partial n_i} \right)_{V,T}
+\left(\frac{\partial P}{\partial n_j} \right)_{V,T}}
+{\left(\frac{\partial P}{\partial V} \right)_{T,n}}\right)
+$$
+
+With:
+
+$$
+n_T = \sum_i n_i
+$$
+
+```fortran
+lnphi_vt: block
+    real(pr) :: T, V, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    call eos%lnphi_vt(&
+      n, V, T, lnPhi=lnPhi, &
+      dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      )
+
+end block lnphi_vt
+
+```
+
+## Fugacity coefficients (P,T): \(\ln \phi_i (P,T)\)

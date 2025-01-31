@@ -126,24 +126,33 @@ contains
    end function size_ar_model
 
    subroutine volume(eos, n, P, T, V, root_type)
-      !! # Volume solver routine for residual Helmholtz models.
-      !! Solves volume roots using newton method. Given pressure and temperature.
+      !! Volume solver routine for residual Helmholtz models.
+      !!
+      !! Solves volume roots using newton method. Given pressure and 
+      !! temperature.
       !!
       !! # Description
       !! This subroutine solves the volume using a newton method. The variable
-      !! `root_type`
+      !! `root_type` is used to specify the desired root to solve. The options
+      !! are: `["liquid", "vapor", "stable"]`
       !!
       !! # Examples
       !!
       !! ```fortran
-      !! class(ArModel) :: eos
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
       !! call eos%volume(n, P, T, V, root_type="liquid")
       !! call eos%volume(n, P, T, V, root_type="vapor")
       !! call eos%volume(n, P, T, V, root_type="stable")
       !! ```
       use yaeos__constants, only: pr, R
       use yaeos__math, only: newton
-      class(ArModel), intent(in) :: eos
+      
+      class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
@@ -210,16 +219,11 @@ contains
       !! # Examples
       !!
       !! ```fortran
-      !! use yaeos
-      !! 
-      !! class(ArModel), allocatable :: eos
-      !! 
-      !! real(pr) :: n(2), t, v, p, dPdV, dPdT, dPdn(2)
-      !! 
       !! eos = PengRobinson76(Tc, Pc, w)
+      !!
       !! n = [1.0_pr, 1.0_pr]
-      !! t = 300.0_pr
-      !! v = 1.0_pr
+      !! T = 300.0_pr
+      !! V = 1.0_pr
       !! 
       !! call eos%pressure(n, V, T, P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
       !! ```
@@ -235,11 +239,8 @@ contains
       real(pr) :: totn
 
       real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(eos))
-      integer :: nc
-      logical :: dn
 
       totn = sum(n)
-      nc = size(n)
 
       if (present(dPdn)) then
          call eos%residual_helmholtz(&
@@ -303,7 +304,26 @@ contains
       dlnPhidP, dlnPhidT, dlnPhidn, &
       dPdV, dPdT, dPdn &
       )
-      !! Calculate fugacity coefficent given volume and temperature.
+      !! Calculate natural logarithm of fugacity coefficent.
+      !!
+      !! Calculate the natural logarithm of the fugacity coefficient and its 
+      !! derivatives given volume and temperature. The routine gives the 
+      !! possibility to calculate the pressure and it's derivatives.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !! 
+      !! call eos%lnphi_vt(&
+      !!    n, V, T, lnPhi=lnPhi, &
+      !!    dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      !!    )
+      !! ```
       class(ArModel) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       real(pr), intent(in) :: V !! Volume [L]
