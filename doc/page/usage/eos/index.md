@@ -209,7 +209,7 @@ $$
 
 ```fortran
 lnphi_vt: block
-    real(pr) :: T, V, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2)
+    real(pr) :: T, V, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2,2)
 
     T = 300.0_pr   ! Set temperature to 300 K
     V = 1.0_pr     ! Set volume to 1 liter
@@ -256,7 +256,7 @@ the volume method.
 ```fortran
 
 lnphi_pt: block
-    real(pr) :: T, P, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2)
+    real(pr) :: T, P, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2,2)
 
     T = 300.0_pr   ! Set temperature to 300 K
     P = 1.0_pr     ! Set volume to 1 bar
@@ -296,4 +296,24 @@ lnphi_pt_v: block
 
 end block lnphi_pt_v
 
+```
+
+## Fugacity (V,T): \(\ln \f_i (V,T)\)
+
+Alternative way of calculating fugacity directly from the residual Helmholtz
+free energy:
+
+```fortran
+fugacity_vt: block
+    real(pr) :: T, V, lnf(2), dlnfdV(2), dlnfdT(2), dlnfdn(2,2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    call eos%lnfug_vt(&
+      n, V, T, lnf, &
+      dlnfdV, dlnfdT, dlnfdn, &
+      )
+
+end block fugacity_vt
 ```

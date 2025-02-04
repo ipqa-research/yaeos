@@ -438,8 +438,26 @@ contains
       dlnfdV, dlnfdT, dlnfdn, &
       dPdV, dPdT, dPdn &
       )
-      use yaeos__math, only: derivative_dxk_dni
-      !! Calculate fugacity coefficent given volume and temperature.
+      !! Calculate natural logarithm of fugacity given volume and temperature.
+      !!
+      !! Calculate the natural logarithm of the fugacity and its derivatives.
+      !! The routine gives the possibility to calculate the pressure and it's
+      !! derivatives.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%lnfug_vt(&
+      !!    n, V, T, lnf=lnf, &
+      !!    dlnfdV=dlnfdV, dlnfdT=dlnfdT, dlnfdn=dlnfdn &
+      !!    )
+      !! ```
       class(ArModel) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       real(pr), intent(in) :: V !! Volume [L]
@@ -455,13 +473,6 @@ contains
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}{dn_i}\)
 
       real(pr) :: Ar, ArTV, ArV, ArV2
-
-      real(pr) :: lnPhi(size(n)) !! \(\ln(\phi_i)\) vector
-      real(pr) :: dlnPhidT(size(n)) !! \(ln(phi_i)\) Temp derivative
-      real(pr) :: dlnPhidP(size(n)) !! \(ln(phi_i)\) Presssure derivative
-      real(pr) :: dlnPhidn(size(n), size(n)) !! \(ln(phi_i)\) compositional derivative
-
-      real(pr) :: dxk_dni(size(n), size(n))
 
       real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
       real(pr) :: Arn2(size(n), size(n))
@@ -487,6 +498,8 @@ contains
          call eos%residual_helmholtz(n, v, t, Arn=Arn, ArV=ArV)
 
          P_in = totn*RT/V - ArV
+
+         lnf = 0.0_pr
 
          where (n /= 0)
             lnf = log(n/totn) + Arn/RT - log(V/(totn*RT))
@@ -516,6 +529,8 @@ contains
       dPdn_in = RT/V - ArVn
 
       if (present(lnf)) then
+         lnf = 0.0_pr
+
          where (n /= 0)
             lnf = log(n/totn) + Arn/RT - log(V/(totn*RT))
          endwhere
@@ -547,8 +562,8 @@ contains
       !! Calculate residual enthalpy given volume and temperature.
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(out) :: Hr !! Residual enthalpy [bar L]
       real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
       real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}}{dV}\)
@@ -558,10 +573,10 @@ contains
       real(pr) :: ArV2, ArT2, ArTV, ArVn(size(n)), ArTn(size(n))
 
       call eos%residual_helmholtz(&
-         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         n, V, T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
 
-      Hr = Ar - t*ArT - v*ArV
+      Hr = Ar - T*ArT - V*ArV
 
       if (present(HrT)) HrT = - t*ArT2 - v*ArTV
       if (present(HrV)) HrV = - t*ArTV - v*ArV2
