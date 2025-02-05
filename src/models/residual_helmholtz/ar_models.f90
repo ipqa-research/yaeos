@@ -674,41 +674,100 @@ contains
       if (present(SrN)) Srn = -ArTn
    end subroutine entropy_residual_vt
 
+   subroutine internal_energy_residual_vt(eos, n, V, T, Ur, UrV, UrT, Urn)
+      !! Calculate residual internal energy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%internal_energy_residual_vt(&
+      !!    n, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), optional, intent(out) :: Ur !! Internal energy [bar L]
+      real(pr), optional, intent(out) :: UrV !! \(\frac{dU^r}}{dV}\)
+      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
+      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
+
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArT2, ArTV, ArTn(size(n))
+
+      call eos%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
+         ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
+         )
+
+      if (present(Ur)) Ur = Ar - T*ArT
+      if (present(UrT)) UrT = -T*ArT2
+      if (present(UrV)) UrV = ArV - T*ArTV
+      if (present(Urn)) Urn = Arn - T*ArTn
+   end subroutine internal_energy_residual_vt
+
    subroutine Cv_residual_vt(eos, n, V, T, Cv)
-      !! Calculate residual heat capacity volume constant given v and t.
+      !! Calculate residual heat capacity volume constant given V and T.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%Cv_residual_vt(n, V, T, Cv=Cv)
+      !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
-      real(pr), intent(out) :: Cv !! heat capacity v constant [bar L / K]
+      real(pr), intent(out) :: Cv !! heat capacity V constant [bar L / K]
 
-      real(pr) :: Ar, ArT2
+      real(pr) :: ArT2
 
-      call eos%residual_helmholtz(n, V, T, Ar=Ar, ArT2=ArT2)
+      call eos%residual_helmholtz(n, V, T, ArT2=ArT2)
 
       Cv = -T*ArT2
    end subroutine Cv_residual_vt
 
    subroutine Cp_residual_vt(eos, n, V, T, Cp)
-      !! Calculate residual heat capacity pressure constant given v and t.
+      !! Calculate residual heat capacity pressure constant given V and T.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%Cp_residual_vt(n, V, T, Cp=Cp)
+      !! ```
       use yaeos__constants, only: R
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Cp !! heat capacity p constant [bar L / K]
+      real(pr), intent(out) :: Cp !! heat capacity P constant [bar L / K]
 
-      real(pr) :: Ar, ArT2, Cv, p, dPdT, dPdV, totn
+      real(pr) :: Cv, P, dPdT, dPdV, n_t
 
-      totn = sum(n)
-
-      call eos%residual_helmholtz(n, V, T, Ar=Ar, ArT2=ArT2)
+      n_t = sum(n)
 
       call Cv_residual_vt(eos, n, V, T, Cv)
-
       call pressure(eos, n, V, T, P, dPdV=dPdV, dPdT=dPdT)
 
-      Cp = Cv - T*dPdT**2/dPdV - totn*R
+      Cp = Cv - T * dPdT**2 / dPdV - n_t*R
    end subroutine Cp_residual_vt
 
    real(pr) function Psat_pure(eos, ncomp, T)

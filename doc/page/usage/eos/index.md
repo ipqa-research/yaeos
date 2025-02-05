@@ -491,3 +491,107 @@ residual_gibbs: block
 
 end block residual_gibbs
 ```
+
+## Residual internal energy (V,T): \(U^r(n,V,T)\)
+
+The residual internal energy is calculated as follows:
+
+$$
+U^r(n,V,T) = A^r(n,V,T) + T S^r(n,V,T)
+$$
+
+Therefore:
+
+$$
+U^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial U^r}{\partial T} \right)_{V,n} =
+- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+$$
+
+$$
+\left(\frac{\partial U^r}{\partial V} \right)_{T,n} =
+\left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+$$
+
+$$
+\left(\frac{\partial U^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
+$$
+
+```fortran
+residual_internal_energy: block
+    real(pr) :: T, V, Ur, UrV, UrT, Urn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual internal energy and its derivatives
+    call eos%internal_energyresidual(n, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn)
+
+    print *, "Residual internal energy: ", Ur
+    print *, "UrV: ", UrV
+    print *, "UrT: ", UrT
+    print *, "Urn: ", Urn
+
+end block residual_internal_energy
+```
+
+## Residual constant volume heat capacity (V,T): \(C_V^r(n,V,T)\)
+
+The residual constant volume heat capacity is calculated as follows:
+
+$$
+C_V^r(n,V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+$$
+
+```fortran
+residual_cv: block
+    real(pr) :: T, V, Cv
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual constant volume heat capacity
+    call eos%residual_cv(n, V, T, Cv=Cv)
+
+    print *, "Residual constant volume heat capacity: ", Cv
+
+end block residual_cv
+```
+
+## Residual constant pressure heat capacity (V,T): \(C_P^r(n,V,T)\)
+
+The residual constant pressure heat capacity is calculated as follows:
+
+$$
+C_P^r(n,V,T) = C_V^r(n,V,T) - T \frac{\left(\frac{\partial P}
+{\partial T} \right)^2_{V,n}}{\left(\frac{\partial P}
+{\partial V} \right)_{T,n}} - nR
+$$
+
+
+```fortran
+residual_cp: block
+    real(pr) :: T, V, Cp
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual constant pressure heat capacity
+    call eos%residual_cp(n, V, T, Cp=Cp)
+
+    print *, "Residual constant pressure heat capacity: ", Cp
+
+end block residual_cp
+```
+
+# References
+[1] 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+Fundamentals & computational aspects (2. ed). Tie-Line Publications.
