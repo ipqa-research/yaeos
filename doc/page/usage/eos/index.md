@@ -317,3 +317,177 @@ fugacity_vt: block
 
 end block fugacity_vt
 ```
+
+## Residual entropy (V,T): \(S^r(n,V,T)\)
+
+We start explaining the residual entropy because it is the easiest property to
+calculate. Also, helps us to understand how to calculate the next properties.
+
+The residual entropy is calculated as follows:
+
+$$
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial S^r}{\partial T} \right)_{V,n} =
+- \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+$$
+
+
+$$
+\left(\frac{\partial S^r}{\partial V} \right)_{T,n} =
+- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+$$
+
+$$
+\left(\frac{\partial S^r}{\partial n_i} \right)_{V,T} =
+- \left(\frac{\partial^2 A^r}{\partial n_i \partial T} \right)_V
+$$
+
+```fortran
+residual_entropy: block
+    real(pr) :: T, V, S, dSdV, dSdT, dSdn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual entropy and its derivatives
+    call eos%residual_entropy(n, V, T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn)
+
+    print *, "Residual entropy: ", Sr
+    print *, "SrV: ", SrV
+    print *, "SrT: ", SrT
+    print *, "Srn: ", Srn
+
+end block residual_entropy
+```
+
+## Residual enthalpy (V,T): \(H^r(n,V,T)\)
+
+The residual enthalpy is calculated as follows:
+
+$$
+H^r(n,V,T) = H^r(n,P,T) = A^r(n,V,T) + T S^r(n,V,T) + PV - nRT
+$$
+
+We know that pressure can be calculated as:
+
+$$
+P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n} + \frac{nRT}{V}
+$$
+
+Then, we can obtain:
+
+$$
+P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+$$
+PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+And we also know how to calculate residual entropy as:
+
+$$
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+Then, we can obtain the residual enthalpy as:
+
+$$
+H^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial H^r}{\partial T} \right)_{V,n} =
+- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+- V \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+$$
+
+$$
+\left(\frac{\partial H^r}{\partial V} \right)_{T,n} =
+- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+$$
+
+$$
+\left(\frac{\partial H^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
+- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+$$
+
+```fortran
+residual_enthalpy: block
+    real(pr) :: T, V, Hr, HrV, HrT, Hrn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual enthalpy and its derivatives
+    call eos%residual_enthalpy(n, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn)
+
+    print *, "Residual enthalpy: ", Hr
+    print *, "HrV: ", HrV
+    print *, "HrT: ", HrT
+    print *, "Hrn: ", Hrn
+
+end block residual_enthalpy
+```
+
+## Residual Gibbs free energy (V,T): \(G^r(n,V,T)\)
+
+The residual Gibbs free energy is calculated as follows:
+
+$$
+G^r(n,V,T) = A^r(n,V,T) + PV - nRT
+$$
+
+As with residual enthalpy we can easily deduce:
+
+$$
+G^r = A^r - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial G^r}{\partial T} \right)_{V,n} =
+\left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial^2 A^r}{\partial T \partial V} \right)_n
+$$
+
+$$
+\left(\frac{\partial G^r}{\partial V} \right)_{T,n} =
+- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+$$
+
+$$
+\left(\frac{\partial G^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+$$
+
+```fortran
+residual_gibbs: block
+    real(pr) :: T, V, Gr, GrV, GrT, Grn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual Gibbs free energy and its derivatives
+    call eos%residual_gibbs(n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn)
+
+    print *, "Residual Gibbs free energy: ", Gr
+    print *, "GrV: ", GrV
+    print *, "GrT: ", GrT
+    print *, "Grn: ", Grn
+
+end block residual_gibbs
+```

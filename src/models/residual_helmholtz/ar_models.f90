@@ -265,9 +265,9 @@ contains
       !! Calculate natural logarithm of fugacity given pressure and temperature.
       !!
       !! Calculate the natural logarithm of the fugacity coefficient and its
-      !! derivatives given pressure and temperature. This routine will obtain 
-      !! the desired volume root at the specified pressure and calculate 
-      !! fugacity at that point.The routine gives the possibility to calculate 
+      !! derivatives given pressure and temperature. This routine will obtain
+      !! the desired volume root at the specified pressure and calculate
+      !! fugacity at that point.The routine gives the possibility to calculate
       !! the pressure derivatives and volume.
       !!
       !! # Examples
@@ -410,11 +410,11 @@ contains
       dPdn_in = RT/V - ArVn
 
       if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
-      
+
       if (present(dlnPhidP)) then
          dlnPhidP(:) = -dPdn_in(:)/dPdV_in/RT - 1._pr/P_in
       end if
-      
+
       if (present(dlnPhidT)) then
          dlnPhidT(:) = (ArTn(:) - Arn(:)/T)/RT + dPdn_in(:)*dPdT_in/dPdV_in/RT + 1._pr/T
       end if
@@ -558,68 +558,108 @@ contains
       if (present(dPdn)) dPdn = dPdn_in
    end subroutine lnfug_vt
 
-   subroutine enthalpy_residual_vt(eos, n, V, T, Hr, HrT, HrV, Hrn)
+   subroutine enthalpy_residual_vt(eos, n, V, T, Hr, HrV, HrT, Hrn)
       !! Calculate residual enthalpy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%enthalpy_residual_vt(&
+      !!    n, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn &
+      !!    )
+      !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
-      real(pr), intent(out) :: Hr !! Residual enthalpy [bar L]
-      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
+      real(pr), optional, intent(out) :: Hr !! Residual enthalpy [bar L]
       real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}}{dV}\)
+      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
       real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
 
       real(pr) :: Ar, ArV, ArT, Arn(size(n))
       real(pr) :: ArV2, ArT2, ArTV, ArVn(size(n)), ArTn(size(n))
 
       call eos%residual_helmholtz(&
-         n, V, T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         n, V, T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
 
-      Hr = Ar - T*ArT - V*ArV
-
-      if (present(HrT)) HrT = - t*ArT2 - v*ArTV
-      if (present(HrV)) HrV = - t*ArTV - v*ArV2
-      if (present(HrN)) HrN(:) = Arn(:) - t*ArTn(:) - v*ArVn(:)
+      if (present(Hr)) Hr = Ar - T*ArT - V*ArV
+      if (present(HrT)) HrT = - T*ArT2 - V*ArTV
+      if (present(HrV)) HrV = - T*ArTV - V*ArV2
+      if (present(Hrn)) Hrn(:) = Arn(:) - T*ArTn(:) - V*ArVn(:)
    end subroutine enthalpy_residual_vt
 
-   subroutine gibbs_residual_VT(eos, n, V, T, Gr, GrT, GrV, Grn)
+   subroutine gibbs_residual_vt(eos, n, V, T, Gr, GrV, GrT, Grn)
       !! Calculate residual Gibbs energy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%gibbs_residual_vt(&
+      !!    n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn &
+      !!    )
+      !! ```
       use yaeos__constants, only: R
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Gr !! Gibbs energy [bar L]
-      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
+      real(pr), optional, intent(out) :: Gr !! Gibbs energy [bar L]
       real(pr), optional, intent(out) :: GrV !! \(\frac{dG^r}}{dV}\)
+      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
       real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
 
-      real(pr) :: Ar, ArV, ArT, Arn(size(n))
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArTV, ArV2, ArVn(size(n))
       real(pr) :: p, dPdV, dPdT, dPdn(size(n)), z, totn
 
-      totn = sum(n)
-      call pressure(eos, n, V, T, P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
-      z = P*V/(totn*R*T)
+      call eos%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, &
+         ArT=ArT, Arn=Arn, ArTV=ArTV, ArV2=ArV2, ArVn=ArVn &
+         )
 
-      call eos%residual_helmholtz(n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn)
+      if (present(Gr)) Gr = Ar - V*ArV
+      if (present(GrT)) GrT = ArT - V*ArTV
+      if (present(GrV)) GrV = -V*ArV2
+      if (present(Grn)) Grn(:) = Arn(:) - V*ArVn(:)
+   end subroutine gibbs_residual_vt
 
-      Gr = Ar + P*V - totn*R*T
-
-      if (present(GrT)) GrT = ArT + V*dPdT - totn*R
-      if (present(GrV)) GrV = ArV + V*dPdV + P
-      if (present(GrN)) GrN(:) = Arn(:) + V*dPdn(:) - R*T
-   end subroutine gibbs_residual_VT
-
-   subroutine entropy_residual_vt(eos, n, V, T, Sr, SrT, SrV, Srn)
+   subroutine entropy_residual_vt(eos, n, V, T, Sr, SrV, SrT, Srn)
       !! Calculate residual entropy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%entropy_residual_vt(&
+      !!    n, V, T, Sr=Sr, SrV=SrV, SrT=SrT, Srn=Srn &
+      !!    )
+      !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Sr !! Entropy [bar L / K]
-      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
+      real(pr), optional, intent(out) :: Sr !! Entropy [bar L / K]
       real(pr), optional, intent(out) :: SrV !! \(\frac{dS^r}}{dV}\)
+      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
       real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
 
       real(pr) :: Ar, ArT, ArT2, ArTV, ArTn(size(n))
@@ -628,11 +668,10 @@ contains
          n, v, t, Ar=Ar, ArT=ArT, ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
          )
 
-      Sr = - ArT
-
-      if (present(SrT)) SrT = - ArT2
-      if (present(SrV)) SrV = - ArTV
-      if (present(SrN)) SrN = - ArTn
+      if (present(Sr)) Sr = -ArT
+      if (present(SrT)) SrT = -ArT2
+      if (present(SrV)) SrV = -ArTV
+      if (present(SrN)) Srn = -ArTn
    end subroutine entropy_residual_vt
 
    subroutine Cv_residual_vt(eos, n, V, T, Cv)
