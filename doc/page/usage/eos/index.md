@@ -298,7 +298,7 @@ end block lnphi_pt_v
 
 ```
 
-## Fugacity (V,T): \(\ln \f_i (V,T)\)
+## Fugacity (V,T): \(\ln f_i (V,T)\)
 
 Alternative way of calculating fugacity directly from the residual Helmholtz
 free energy:
