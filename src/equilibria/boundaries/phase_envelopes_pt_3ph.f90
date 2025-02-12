@@ -6,6 +6,12 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt3
 
    implicit none
 
+   private
+
+   public :: PTEnvel3
+   public :: pt_envelope_3ph
+   public :: solve_point
+
    type :: PTEnvel3
       real(pr), allocatable :: beta(:) !! Mole fraction between phase x and phase y
       real(pr), allocatable :: x(:, :) !! Mole fraction of phase x
