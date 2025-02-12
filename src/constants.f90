@@ -5,7 +5,7 @@ module yaeos__constants
    implicit none
 
    integer, parameter :: pr = real64 !! Used precision
-   real(pr), parameter :: R = 0.08314462618_pr !! Ideal Gas constant
+   real(pr), parameter :: R = 0.08314462618_pr !! Ideal Gas constant [bar L / (mol K)]
    character(len=254) :: database_path = "database" !! Path to find database
    character(len=1) :: path_sep = "/" !! File separator (to preprocess on Win or Mac/linux)
 
