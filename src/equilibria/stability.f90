@@ -154,6 +154,11 @@ contains
       mintpd = mins(i)
       w = ws(i, :)
 
-      if(present(all_minima)) all_minima = ws
+      if(present(all_minima)) then 
+         do i=1,nc
+            all_minima(i, :nc) = ws(i, :)
+            all_minima(i, nc+1) = mins(i)
+         end do
+      end if
    end subroutine min_tpd
 end module yaeos__equilibria_stability

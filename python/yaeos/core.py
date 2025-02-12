@@ -144,13 +144,8 @@ class GeModel(ABC):
         dtn = np.empty(nc, order="F") if dtn else None
         dn2 = np.empty((nc, nc), order="F") if dn2 else None
 
-        all_none = (
-            dt is None
-            and dt2 is None
-            and dn is None
-            and dtn is None
-            and dn2 is None
-        )
+        possible_derivatives = [dt, dt2, dn, dtn]
+        all_none = all([d is None for d in possible_derivatives])
 
         res = yaeos_c.excess_gibbs_ge(
             self.id,
@@ -1411,6 +1406,7 @@ class ArModel(ABC):
         ds0=0.1,
     ):
         """Two phase envelope calculation (PX).
+
         Calculation of a phase envelope that starts at a given composition and
         its related to another composition with some proportion.
 
@@ -1441,7 +1437,6 @@ class ArModel(ABC):
         ds0 : float, optional
             Step for a, by default 0.1
         """
-
         if ns0 is None:
             ns0 = len(z0) + 2
 
@@ -1484,6 +1479,7 @@ class ArModel(ABC):
         ds0=0.1,
     ):
         """Two phase envelope calculation (TX).
+
         Calculation of a phase envelope that starts at a given composition and
         its related to another composition with some proportion.
 
@@ -1514,7 +1510,6 @@ class ArModel(ABC):
         ds0 : float, optional
             Step for a, by default 0.1
         """
-
         if ns0 is None:
             ns0 = len(z0) + 2
         a, ts, xs, ys, acs, pcs, kinds = yaeos_c.tx2_phase_envelope(
@@ -1558,6 +1553,7 @@ class ArModel(ABC):
     ):
         """
         Three-phase envelope tracing method.
+
         Calculation of a three-phase envelope that starts with an estimated
         compositions, pressure, temperature and phase fractions.
 
@@ -1588,7 +1584,6 @@ class ArModel(ABC):
         max_points : int, optional
             Maximum number of points to calculate, by default 1000
         """
-
         if specified_variable is None:
             specified_variable = 2 * len(z) + 2
 
@@ -1637,6 +1632,7 @@ class ArModel(ABC):
     ):
         """
         Three-phase envelope tracing method.
+
         Calculation of a three-phase envelope that starts with an estimated
         compositions, pressure, temperature and phase fractions.
 
@@ -1669,7 +1665,6 @@ class ArModel(ABC):
         max_points : int, optional
             Maximum number of points to calculate, by default 1000
         """
-
         if specified_variable is None:
             specified_variable = 2 * len(z0) + 2
 
@@ -1708,6 +1703,7 @@ class ArModel(ABC):
     # --------------------------------------------------------------
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
+
         Find all the possible minima values that the :math:`tm` function,
         defined by Michelsen and Mollerup.
 
@@ -1724,22 +1720,21 @@ class ArModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-            - w: value of the test phase that minimizes the :math:`tm`
-                 function.
+            - w: value of the test phase that minimizes the :math:`tm` function
             - tm: minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
             - w: all values of :math:`w` that minimize the :math:`tm` function
             - tm: all values found minima of the :math:`tm` function"""
-        (w_min, tm_min, all_mins, all_mins_w) = yaeos_c.stability_zpt(
+        (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
 
-        return {"w": w_min, "tm": tm_min}, {
-            "tm": all_mins,
-            "w": all_mins_w,
-        }
+        all_mins_w = all_mins[:, :len(z)]
+        all_mins = all_mins[:, -1]
+
+        return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
     def stability_tm(self, z, w, pressure, temperature):
         """Calculate the :math:`tm` function.
