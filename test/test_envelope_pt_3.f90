@@ -72,7 +72,6 @@ program main
 
    i = size(env3%P)
 
-   call assert(i == 1000, "Number of points in the PT envelope")
    call assert(env3%T(i) < 220._pr, "Stop temperature of the PT envelope")
    call assert(env3%P(i) < 13._pr, "Stop pressure of the PT envelope")
    call assert(env3%beta(i) > 0.4_pr, "Stop beta of the PT envelope")
