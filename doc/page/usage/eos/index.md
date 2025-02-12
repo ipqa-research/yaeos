@@ -33,8 +33,8 @@ temperature, \(R\) is the gas constant, and \(a\) and \(b\) are parameters that
 depend on the substance. For mixtures, the \(a\) and \(b\) parameters are
 calculated from the pure components parameters using a mixing rule.
 
-The modern wat of defining an EOS is through a mathematical model that express
-the residuel Helmholtz free energy as a function of the mole number, volume and
+The modern way of defining an EOS is through a mathematical model that express
+the residual Helmholtz free energy as a function of the mole number, volume and
 temperature. This approach is more general and allows for a more flexible
 definition of the EOS in the context of implementing it in code. All
 thermodynamic properties can be calculated from the residual Helmholtz free
@@ -52,7 +52,7 @@ can I obtain the expression for the residual Helmholtz free energy
 \(A^r(T,V,n)\) from the \(P(n,V,T)\) expression?". The answer is the following:
 
 $$
-A^r(n, V, T) = -\int_{\infty}^{V} \left(P - \frac{nRT}{V} \right) dV
+A^r(n, V, T) = -\int_{\infty}^{V} \left(P(n,V,T) - \frac{nRT}{V} \right) dV
 $$
 
 We are ready to go now. We leave an example of how to instantiate a

@@ -57,6 +57,7 @@ module yaeos__models_ar
       procedure :: enthalpy_residual_vt
       procedure :: gibbs_residual_vt
       procedure :: entropy_residual_vt
+      procedure :: internal_energy_residual_vt
       procedure :: Cv_residual_vt
       procedure :: Cp_residual_vt
       procedure :: Psat_pure
@@ -229,9 +230,9 @@ contains
       !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: v !! Volume [L]
-      real(pr), intent(out) :: p !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(out) :: P !! Pressure [bar]
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}}{dT}\)
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}}{dn_i}\)
@@ -592,8 +593,8 @@ contains
          )
 
       if (present(Hr)) Hr = Ar - T*ArT - V*ArV
-      if (present(HrT)) HrT = - T*ArT2 - V*ArTV
-      if (present(HrV)) HrV = - T*ArTV - V*ArV2
+      if (present(HrT)) HrT = -T*ArT2 - V*ArTV
+      if (present(HrV)) HrV = -T*ArTV - V*ArV2
       if (present(Hrn)) Hrn(:) = Arn(:) - T*ArTn(:) - V*ArVn(:)
    end subroutine enthalpy_residual_vt
 
@@ -624,7 +625,6 @@ contains
       real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
 
       real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArTV, ArV2, ArVn(size(n))
-      real(pr) :: p, dPdV, dPdT, dPdn(size(n)), z, totn
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, &
