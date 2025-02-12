@@ -12,11 +12,11 @@ module yaeos__equilibria_boundaries_phase_envelopes_px3
       real(pr), allocatable :: x(:, :) !! Mole fraction of phase x
       real(pr), allocatable :: y(:, :) !! Mole fraction of phase x
       real(pr), allocatable :: w(:, :) !! Mole fraction of phase x
-      real(pr) :: T
-      real(pr), allocatable :: P(:)
-      real(pr), allocatable :: alpha(:)
-      integer, allocatable :: ns(:)
-      real(pr), allocatable :: S(:)
+      real(pr) :: T !! Temperature [K]
+      real(pr), allocatable :: P(:) !! Pressure [bar]
+      real(pr), allocatable :: alpha(:) !! Mole fraction of other fluid
+      integer, allocatable :: ns(:) !! Specified variable to solve point `i`
+      real(pr), allocatable :: S(:) !! Specified value to solve point `i`
    end type PXEnvel3
 
    real(pr), parameter :: lnK_min = 2.0_pr
@@ -62,6 +62,7 @@ contains
       real(pr) :: a(points)
 
       integer :: its
+      integer :: max_its=500
 
       nc = size(z0)
       ns = ns0
@@ -77,9 +78,8 @@ contains
       allocate(envelope%S(0), envelope%ns(0))
       do i=1, points
 
-         call solve_point(model, z0, zi, T, ns, S, Xvars, F, dF, its, 1000)
-
-         if (any(isnan(F)) .or. any(isnan(Xvars)) .or. its >= 1000) exit
+         call solve_point(model, z0, zi, T, ns, S, Xvars, F, dF, its, max_its)
+         if (any(isnan(F)) .or. any(isnan(Xvars)) .or. its >= max_its .or. dS == 0) exit
 
          envelope%ns = [envelope%ns, ns]
          envelope%S = [envelope%S, S]
@@ -216,7 +216,8 @@ contains
             idx = second_set
          end select
 
-         do while(maxval(abs(Xnew(idx))) < 0.3)
+         do while(maxval(abs(Xnew(idx))) < 0.1)
+            dS = dS*2
             Xnew = Xnew + dXdS*dS
          end do
 
@@ -275,7 +276,7 @@ contains
       !! Function to solve at each point of a three phase envelope.
       !!
       !! The vector of variables X corresponds to:
-      !! \( X = [lnKx_i, lnKy_i lnP, lnT, \beta] \)
+      !! \( X = [lnKx_i, lnKy_i lnP, \alpha, \beta] \)
       !!
       !! While the equations are:
       !!
@@ -298,8 +299,8 @@ contains
       real(pr), intent(out) :: df(size(Xvars), size(Xvars)) !! Jacobian matrix
 
       ! Xvars variables
-      real(pr) :: Kx((Size(Xvars)-3)/2)
-      real(pr) :: Ky((Size(Xvars)-3)/2)
+      real(pr) :: Kx(size(z0))
+      real(pr) :: Ky(size(z0))
       real(pr) :: P
       real(pr) :: alpha
       real(pr) :: beta
@@ -308,32 +309,32 @@ contains
 
       ! Main phase 1 variables
       real(pr) :: Vx
-      real(pr), dimension((Size(Xvars)-3)/2) :: x, lnphi_x, dlnphi_dt_x, dlnphi_dp_x
-      real(pr), dimension((Size(Xvars)-3)/2, (Size(Xvars)-3)/2) :: dlnphi_dn_x
+      real(pr), dimension(size(z0)) :: x, lnphi_x, dlnphi_dt_x, dlnphi_dp_x
+      real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_x
 
       ! Main phase 2 variables
       real(pr) :: Vy
-      real(pr), dimension((Size(Xvars)-3)/2) :: y, lnphi_y, dlnphi_dt_y, dlnphi_dp_y
-      real(pr), dimension((Size(Xvars)-3)/2, (Size(Xvars)-3)/2) :: dlnphi_dn_y
+      real(pr), dimension(size(z0)) :: y, lnphi_y, dlnphi_dt_y, dlnphi_dp_y
+      real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_y
 
       ! Incipient phase variables
       real(pr) :: Vw
-      real(pr), dimension((Size(Xvars)-3)/2) :: w, lnphi_w, dlnphi_dt_w, dlnphi_dp_w
-      real(pr), dimension((Size(Xvars)-3)/2, (Size(Xvars)-3)/2) :: dlnphi_dn_w
+      real(pr), dimension(size(z0)) :: w, lnphi_w, dlnphi_dt_w, dlnphi_dp_w
+      real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_w
 
       ! Derivative of w wrt beta
-      real(pr) :: dwdb((Size(Xvars)-3)/2)
+      real(pr) :: dwdb(size(z0))
 
-      real(pr) :: dzda((size(Xvars)-3)/2)
+      real(pr) :: dzda(size(z0))
 
-      real(pr) :: dwda((size(Xvars)-3)/2)
+      real(pr) :: dwda(size(z0))
 
-      real(pr) :: dwdKx((Size(Xvars)-3)/2), dxdKx((Size(Xvars)-3)/2), dydKx((Size(Xvars)-3)/2)
-      real(pr) :: dwdKy((Size(Xvars)-3)/2), dxdKy((Size(Xvars)-3)/2), dydKy((Size(Xvars)-3)/2)
+      real(pr) :: dwdKx(size(z0)), dxdKx(size(z0)), dydKx(size(z0))
+      real(pr) :: dwdKy(size(z0)), dxdKy(size(z0)), dydKy(size(z0))
 
       integer :: i, j, nc
 
-      nc = (Size(Xvars)-3)/2
+      nc = size(z0)
 
       Kx = exp(Xvars(1:nc))
       Ky = exp(Xvars(nc + 1:2*nc))
@@ -342,11 +343,6 @@ contains
       beta = Xvars(2*nc + 3)
 
       call get_z(alpha, z_0=z0, z_inj=zi, z=z, dzda=dzda)
-
-      w = z/(beta*Ky + (1 - beta)*Kx)
-      x = w*Kx
-      y = w*Ky
-
 
       w = z/(beta*Ky + (1 - beta)*Kx)
       x = w*Kx
@@ -455,7 +451,7 @@ contains
       dX = 1
       nc = (size(X) - 3)/2
 
-      do while((maxval(abs(F)) > 1e-5 .or. maxval(abs(dX)) > 1e-5) .and. its < maxits)
+      do while((maxval(abs(F)) > 1e-5 .and. maxval(abs(dX/X)) > 1e-5) .and. its < maxits)
 
          its = its + 1
 
@@ -467,11 +463,11 @@ contains
             dX = dX/2
          end do
 
-         do while((abs(dX(2*nc+2)/X(2*nc+2))) > 0.1)
+         do while((abs(dX(2*nc+2))) > 0.1)
             dX = dX/2
          end do
 
-         do while(abs(dX(2*nc+3)) > 0.01)
+         do while(abs(dX(2*nc+3)/X(2*nc+3)) > 10)
             dX = dX/2
          end do
 

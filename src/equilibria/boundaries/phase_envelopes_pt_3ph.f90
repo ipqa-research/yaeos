@@ -147,6 +147,10 @@ contains
       dXdS = dXdS/dXdS(ns)
 
       dS = sign(minval([abs(dS), 0.1_pr]), dS)
+
+      do while(abs(dS/X(ns)) < 0.01)
+         dS = dS*2
+      end do
    end subroutine update_specification
 
    subroutine detect_critical(X, dXdS, ns, S, dS)
