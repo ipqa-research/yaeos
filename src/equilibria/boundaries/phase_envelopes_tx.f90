@@ -8,6 +8,11 @@ module yaeos__equilibria_boundaries_phase_envelopes_tx
    use yaeos__equilibria_boundaries_auxiliar, only: get_z
    implicit none
 
+   private
+
+   public :: TXEnvel2
+   public :: tx_envelope_2ph
+
    type :: CriticalPoint
       !! Critical point
       real(pr) :: alpha !! \(\alpha\)

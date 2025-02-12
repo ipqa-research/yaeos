@@ -8,6 +8,11 @@ module yaeos__equilibria_boundaries_phase_envelopes_px
    use yaeos__equilibria_boundaries_auxiliar, only: get_z
    implicit none
 
+   private
+
+   public :: PXEnvel2
+   public :: px_envelope_2ph
+
    type :: CriticalPoint
       !! Critical point
       real(pr) :: alpha !! \(\alpha\)
