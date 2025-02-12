@@ -12,6 +12,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_px3
    public :: PXEnvel3
    public :: px_envelope_3ph
    public :: solve_point
+   public :: get_values_from_X
 
    type :: PXEnvel3
       real(pr), allocatable :: beta(:) !! Mole fraction between phase x and phase y
