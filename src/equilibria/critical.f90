@@ -363,7 +363,7 @@ contains
       end do
    end function df_critical
 
-   function F_cep(model, X, ns, S, z0, zi, u)
+   function F_cep(model, X, ns, S, z0, zi, u, u_new)
       class(ArModel), intent(in) :: model !! Equation of state model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: X(size(z0) + 4) !! Vector of variables
@@ -371,6 +371,7 @@ contains
       real(pr), intent(in) :: S !! Specification variable value
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
       real(pr), intent(in) :: u(:) !! Eigen-vector
+      real(pr), optional, intent(out) :: u_new(:) !! updated
 
       real(pr) :: F_cep(size(z0)+ 4)
       real(pr) :: z(size(u))
@@ -402,7 +403,7 @@ contains
       Xcp(3) = log(T)
       Xcp(4) = log(Pc)
 
-      F_cep(1) = lambda1(model=model, X=Xcp, s=0.0_pr, z0=z0, zi=zi, u=u, P=Pc)
+      F_cep(1) = lambda1(model=model, X=Xcp, s=0.0_pr, z0=z0, zi=zi, u=u, P=Pc, u_new=u_new)
       F_cep(2) = (&
          lambda1(model=model, X=Xcp, s= eps, zi=zi, z0=z0, u=u) &
          - lambda1(model=model, X=Xcp, s=-eps, zi=zi, z0=z0, u=u))/(2*eps)
