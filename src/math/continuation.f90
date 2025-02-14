@@ -178,7 +178,7 @@ contains
       !! Subroutine to solve a point.
       !!
       !! Procedure that solves a point with the Newton-Raphson method.
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       use yaeos__math_linalg, only: solve_system
       procedure(continuation_function) :: fun !! Function to solve
       integer,  intent(out) :: iters !! Number of iterations needed
@@ -224,7 +224,7 @@ contains
    !    fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &
    !    )
    !    use minpack_module, only: lmdif1
-   !    use stdlib_optval, only: optval
+   !    use yaeos__auxiliar, only: optval
    !    use yaeos__math_linalg, only: solve_system
    !    procedure(continuation_function) :: fun !! Function to solve
    !    integer,  intent(out) :: iters !! Number of iterations needed

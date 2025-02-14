@@ -3,27 +3,47 @@ module yaeos__auxiliar
    implicit none
 
    interface optval
-      module procedure optval_integer, optval_real
+      module procedure optval_integer, optval_real, optval_character
    end interface optval
 
 contains
 
    integer function optval_integer(val, default)
       !! Set a value to a default if it is not defined
-      use stdlib_optval, only: std => optval
-      integer, optional, intent(in out) :: val
+      integer, optional, intent(in) :: val
       integer, intent(in) :: default
-      optval_integer = std(val, default)
+
+      if (present(val)) then
+         optval_integer = val
+      else
+         optval_integer = default
+      end if
    end function optval_integer
 
    real(pr) function optval_real(val, default)
       !! Set a value to a default if it is not defined
-      use stdlib_optval, only: std => optval
-      real(pr), optional, intent(in out) :: val
+      real(pr), optional, intent(in) :: val
       real(pr), intent(in) :: default
 
-      optval_real = std(val, default)
+      if (present(val)) then
+         optval_real = val
+      else
+         optval_real = default
+      end if
    end function optval_real
+
+   function optval_character(val, default)
+      !! Set a value to a default if it is not defined
+      character(len=*), optional, intent(in) :: val
+      character(len=*), intent(in) :: default
+      character(len=:), allocatable :: optval_character
+
+      if (present(val)) then
+         optval_character = val
+      else
+         optval_character = default
+      end if
+   end function optval_character
 
    subroutine sort(array, idx)
       use stdlib_sorting, only: std => sort

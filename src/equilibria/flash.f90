@@ -21,7 +21,7 @@ contains
       !! vapor-liquid separation predicted by the provided model (0<beta<1) and
       !! solves the equilibria and mass-balance equations with a fixed-point
       !! method.
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]

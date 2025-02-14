@@ -37,7 +37,7 @@ contains
       !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
       !! If the solution does not converge, it will use a full Newton method to
       !! solve the system of equations using the variables \(K_i\) and \(\ln P\).
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       use yaeos__m_s_sp, only: solve_TP
       class(ArModel), target, intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
@@ -176,7 +176,7 @@ contains
       !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
       !! If the solution does not converge, it will use a full Newton method to
       !! solve the system of equations using the variables \(K_i\) and \(\ln T\).
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       use yaeos__m_s_sp, only: solve_TP
       class(ArModel), target, intent(in) :: model
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]

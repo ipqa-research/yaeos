@@ -45,7 +45,7 @@ contains
       !! At chapter 3 page 94 of Michelsen and Møllerup's book a more complete
       !! explanation can be seen
       use iso_fortran_env, only: error_unit
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: eos
       real(pr), intent(in) ::  n(:) !! Mixture moles
       real(pr), intent(in) :: T !! Temperature [K]

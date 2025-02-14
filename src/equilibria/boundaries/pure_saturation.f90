@@ -36,7 +36,7 @@ contains
       !! to get the saturation temperature for a given pressure and vice versa.
       !!
       ! ========================================================================
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model !! Thermodyanmic model
       integer, intent(in) :: component !! Component index to calculate the line
       real(pr), intent(in) :: minP !! Minimum pressure [bar]

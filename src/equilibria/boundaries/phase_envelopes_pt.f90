@@ -50,7 +50,7 @@ contains
       !! an increment in it. The variable to specify can be changed by modifying
       !! `specified_variable_0` with the corresponding variable number.
       ! ========================================================================
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
       !! Thermodyanmic model
       real(pr), intent(in) :: z(:)
