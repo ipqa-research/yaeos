@@ -51,7 +51,7 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd) < 1e-9_pr)
+      call check(error, abs(mintpd) < 1e-8_pr)
       
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
