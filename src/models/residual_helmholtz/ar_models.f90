@@ -287,9 +287,9 @@ contains
       if(present(V)) V = V_in
 
       ! Check if the calculated pressure is the same as the input pressure.
-      if(abs(P_in - P) > 1e-2) then
-         write(error_unit, *) "WARN: possible bad root solving: ", P_in, P
-      end if
+      ! if(abs(P_in - P) > 1e-2) then
+      !    write(error_unit, *) "WARN: possible bad root solving: ", P_in, P
+      ! end if
    end subroutine lnphi_pt
 
    subroutine lnphi_vt(eos, &
