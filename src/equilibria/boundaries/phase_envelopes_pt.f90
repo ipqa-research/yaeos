@@ -468,7 +468,7 @@ contains
             call model%lnphi_pt(y, P, T, root_type="liquid", lnPhi=lnphi_y)
 
             ! Fugacity of the component ncomp
-            ! z * phi_i_mixture / phi_i_pure
+            ! eq = z * phi_i_mixture / phi_i_pure
             ! if eq > 1 then the fugacity in the mixture is above the pure,
             ! so the component is more stable on another phase
             diffs(ncomp) = log(z(ncomp)) + lnphi_z(ncomp) - log(y(ncomp)) - lnphi_y(ncomp)
