@@ -58,7 +58,6 @@ contains
 
       character(len=10) :: root
 
-      real(pr) ::  Ar, ArV, ArV2
 
       real(pr) :: totn
       real(pr) :: B !! Covolume
@@ -67,7 +66,7 @@ contains
 
       integer :: iter, maximum_iterations
 
-      maximum_iterations = optval(max_iters, 100)
+      maximum_iterations = optval(max_iters, 1000)
       root = optval(root_type, "stable")
 
       TOTN = sum(n)
@@ -77,77 +76,87 @@ contains
       ! Limits
       ZETMIN = 0._pr
       ZETMAX = 1._pr
-      ZETMAX = 1._pr - 0.01*T/(10000*B)  ! improvement for cases with heavy components
+      ZETMAX = 1._pr !- 0.01*T/(10000*B)  ! improvement for cases with heavy components
 
       if (present(V0)) then
          zeta = B/V0
       else
-      select case(root_type)
-       case("liquid")
-         ZETA = 0.5_pr
-         call solve_point(P, V, Pcalc, AT, iter)
-       case("vapor","stable")
-         ZETA = min(0.5_pr, B*P/(TOTN*R*T))
-         call solve_point(P, V, Pcalc, AT, iter)
-
-         if (root_type == "stable") then
-            ! Run first for vapor and then for liquid
-            VVAP = V
-            AVAP = AT
+         select case(root_type)
+          case("liquid")
             ZETA = 0.5_pr
-            ZETMAX = 1._pr
-            ZETMAX = 1.D0 - 0.01*T/(10000*B)  ! improvement for cases with heavy components
-            call solve_point(P, V, Pcalc, AT, iter)
-            if (AT .gt. AVAP) V = VVAP
-         end if
-       case default
-         write(error_unit, *) "ERROR [VCALC]: Wrong specification"
-         error stop 1
-      end select
+            call solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
+          case("vapor","stable")
+            ZETA = min(0.5_pr, B*P/(TOTN*R*T))
+            call solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
+
+            if (root_type == "stable") then
+               ! Run first for vapor and then for liquid
+               VVAP = V
+               AVAP = AT
+               ZETA = 0.5_pr
+               ZETMAX = 1._pr
+               ZETMAX = 1.D0 !- 0.01*T/(10000*B)  ! improvement for cases with heavy components
+               call solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
+               if (AT .gt. AVAP) V = VVAP
+            end if
+          case default
+            write(error_unit, *) "ERROR [VCALC]: Wrong specification"
+            error stop 1
+         end select
       end if
-   contains
-      subroutine solve_point(P, V, Pcalc, AT, iter)
-         real(pr), intent(in) :: P !! Objective pressure [bar]
-         real(pr), intent(out) :: V !! Obtained volume [L]
-         real(pr), intent(out) :: Pcalc !! Calculated pressure at V [bar]
-         real(pr), intent(out) :: AT !!
-         integer, intent(out) :: iter
-
-         real(pr) :: del, der
-
-         iter = 0
-         DEL = 1
-         pcalc = 2*p
-         do while(&
-            abs(DEL) > 1.e-10_pr &
-            .and. iter < maximum_iterations &
-         )
-            V = B/ZETA
-            iter = iter + 1
-            call eos%residual_helmholtz(n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
-
-            Pcalc = TOTN*R*T/V - ArV
-
-            if (Pcalc .gt. P) then
-               ZETMAX = ZETA
-            else
-               ZETMIN = ZETA
-            end if
-
-            ! AT is something close to Gr(P,T)
-            AT = (Ar + V*P)/(T*R) - TOTN*log(V)
-
-            DER = (ArV2*V**2 + TOTN*R*T)/B  ! this is dPdrho/B
-            DEL = -(Pcalc - P)/DER
-            ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
-
-            if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) then
-               ZETA = 0.5_pr*(ZETMAX + ZETMIN)
-            end if
-         end do
-
-         ! if (iter >= maximum_iterations) write(error_unit, *) &
-         !    "WARN: Volume solver exceeded maximum number of iterations"
-      end subroutine solve_point
    end subroutine volume_michelsen
-end module
+   
+   subroutine solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
+      class(ArModel), intent(in) :: eos
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: P !! Objective pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: V !! Obtained volume [L]
+      real(pr), intent(out) :: Pcalc !! Calculated pressure at V [bar]
+      real(pr), intent(in out) :: ZETA !!
+      real(pr), intent(inout) :: ZETMIN
+      real(pr), intent(inout) :: ZETMAX
+      real(pr), intent(out) :: AT !!
+      integer, intent(out) :: iter
+
+      real(pr) :: del, der, B
+      real(pr) :: totn
+      real(pr) ::  Ar, ArV, ArV2
+
+      iter = 0
+      DEL = 1
+      pcalc = 2*p
+      B = eos%get_v0(n, p, t)
+      totn = sum(n)
+      do while(&
+         abs(DEL) > 1.e-10_pr &
+      ! .and. iter < maximum_iterations &
+         )
+         V = B/ZETA
+         iter = iter + 1
+         call eos%residual_helmholtz(n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
+
+         Pcalc = TOTN*R*T/V - ArV
+
+         if (Pcalc .gt. P) then
+            ZETMAX = ZETA
+         else
+            ZETMIN = ZETA
+         end if
+
+         ! AT is something close to Gr(P,T)
+         AT = (Ar + V*P)/(T*R) - TOTN*log(V)
+
+         DER = (ArV2*V**2 + TOTN*R*T)/B  ! this is dPdrho/B
+         DEL = -(Pcalc - P)/DER
+         ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
+
+         if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) then
+            ZETA = 0.5_pr*(ZETMAX + ZETMIN)
+         end if
+      end do
+
+      ! if (iter >= maximum_iterations) write(error_unit, *) &
+      !    "WARN: Volume solver exceeded maximum number of iterations"
+   end subroutine solve_point
+end module yaeos__models_solvers
