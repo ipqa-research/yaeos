@@ -80,8 +80,8 @@ contains
 
       allocate(envelope%S(0), envelope%ns(0))
       do i=1, points
-         call solve_point(model, z, ns, S, Xvars, F, dF, its, 1000)
-         if (any(isnan(F)) .or. any(isnan(Xvars)) .or. its >= 1000) exit
+         call solve_point(model, z, ns, S, Xvars, F, dF, its, 500)
+         if (any(isnan(F)) .or. any(isnan(Xvars)) .or. its >= 500) exit
 
          envelope%ns = [envelope%ns, ns]
          envelope%S = [envelope%S, S]
@@ -104,7 +104,6 @@ contains
       envelope%T = T(:i)
       envelope%beta = beta(:i)
    end function pt_envelope_3ph
-
 
    subroutine get_values_from_X(z, Xvars, x, y, w, P, T, beta)
       real(pr), intent(in) :: z(:)
@@ -153,11 +152,6 @@ contains
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
-      dS = sign(minval([abs(dS), 0.1_pr]), dS)
-
-      do while(abs(dS/X(ns)) < 0.01)
-         dS = dS*2
-      end do
    end subroutine update_specification
 
    subroutine detect_critical(X, dXdS, ns, S, dS)
@@ -326,7 +320,7 @@ contains
 
       integer :: i, j, nc
 
-      nc = (Size(Xvars)-3)/2
+      nc = (size(Xvars)-3)/2
 
       Kx = exp(Xvars(1:nc))
       Ky = exp(Xvars(nc + 1:2*nc))
@@ -353,6 +347,7 @@ contains
 
 
       F = 0
+      df = 0
 
       F(1:nc) = Xvars(1:nc) + lnphi_x - lnphi_w
       F(nc + 1:2*nc) = Xvars(nc + 1:2*nc) + lnphi_y - lnphi_w
@@ -361,7 +356,6 @@ contains
       F(2*nc + 2) = sum(x - y)
       F(2*nc + 3) = Xvars(ns) - S
 
-      df = 0
       dwdb = z*(Kx - Ky)/((1 - beta)*Kx + beta*Ky)**2
 
       dwdKx = -z*(1 - beta)/(Ky*beta + (1 - beta)*Kx)**2
@@ -428,14 +422,15 @@ contains
       integer, intent(in) :: maxits
 
       real(pr) :: dX(size(X))
-      integer :: nc
+      integer :: nc, i
 
       its = 0
       F = 1
       dX = 1
       nc = (size(X) - 3)/2
 
-      do while((maxval(abs(F)) > 1e-5 .or. maxval(abs(dX)) > 1e-5) .and. its < maxits)
+
+      do while((maxval(abs(F)) > 1e-7 .and. its < maxits))
 
          its = its + 1
 
@@ -450,7 +445,7 @@ contains
          do while((abs(dX(2*nc+2)/X(2*nc+2))) > 0.1)
             dX = dX/2
          end do
-         
+
          do while(abs(dX(2*nc+3)) > 0.01)
             dX = dX/2
          end do
