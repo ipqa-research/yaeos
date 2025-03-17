@@ -40,7 +40,7 @@ class BinaryFitter:
         self._get_model_args = model_setter_args
         self.data = data
         self.verbose = verbose
-        self.evaluations = {"fobj": [], "x": []}
+        self.evaluations = {"fobj": [], "x": [], "cl": []}
 
     def objective_function(self, x_values):
         """
@@ -51,13 +51,27 @@ class BinaryFitter:
         x_values : array-like
             The interaction parameters to fit.
         """
+
+        def pressure_error(Pexp, Pmodel):
+            return (Pexp - Pmodel) ** 2 / Pexp
+
+        def composition_error(zexp, zmodel):
+            return (
+                np.abs(np.log(zmodel[0] / zexp[0]))
+                + np.abs(np.log(zmodel[1] / zexp[1])))
+
+        def temperature_error(Texp, Tmodel):
+            return (Texp - Tmodel)**2 / Texp
+
         model = self._get_model(x_values, *self._get_model_args)
         data = self.data
 
         # =====================================================================
         # Calculate the critical line starting from the heavy component
         # ---------------------------------------------------------------------
-        cl = model.critical_line(z0=[0, 1], zi=[1, 0], a0=1e-2, s=1e-2)
+        cl = model.critical_line(
+            z0=[0, 1], zi=[1, 0], a0=1e-2, s=1e-2, ds0=1e-3, max_points=5000
+            )
 
         err = 0
 
@@ -81,10 +95,7 @@ class BinaryFitter:
                 sat = model.saturation_pressure(
                     x, kind="bubble", temperature=t, p0=p
                 )
-                error_i += (sat["P"] - p) ** 2 / p
-
-                if not np.isnan(row["y1"]):
-                    error_i += ((sat["y"][0] - y[0]) / y[0]) ** 2
+                error_i += pressure_error(p, sat["P"])
 
             # =================================================================
             # Dew points
@@ -94,22 +105,21 @@ class BinaryFitter:
                     x, kind="dew", temperature=t, p0=p
                 )
 
-                error_i += (sat["P"] - p) ** 2 / p
-
-                if not np.isnan(row["x1"]):
-                    error_i += ((sat["x"][0] - y[0]) / y[0]) ** 2
+                error_i += pressure_error(p, sat["P"])
 
             if row["kind"] == "PT" or row["kind"] == "liquid-liquid":
                 x1, y1 = solve_pt(model, row["P"], row["T"], row["kind"])
 
                 if np.isnan(x[0]):
-                    error_i += (y1 - y[0]) ** 2
+                    error_i += composition_error(y, [y1, 1 - y1])
 
                 elif np.isnan(y[0]):
-                    error_i += (x1 - x[0]) ** 2
+                    error_i += composition_error(x, [x1, 1 - x1])
 
                 else:
-                    error_i += (x1 - row["x1"]) ** 2 + (y1 - row["y1"]) ** 2
+                    error_i += composition_error(
+                        x, [x1, 1 - x1]
+                    ) + composition_error(y, [y1, 1 - y1])
 
             # =================================================================
             # Critical point error is calculated by finding the nearest
@@ -124,8 +134,19 @@ class BinaryFitter:
                     + ((cp["x1"] - cl["a"]) ** 2)
                 )
                 nearest = np.argmin(distances)
-                error_i += distances[nearest]
+                t_cl, p_cl, x1 = (
+                    cl["T"][nearest],
+                    cl["P"][nearest],
+                    cl["a"][nearest],
+                )
+                error_i += temperature_error(cp["T"], t_cl)
+                error_i += pressure_error(cp["P"], p_cl)
+                error_i += composition_error(
+                    [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
+                )
 
+            if np.isnan(error_i):
+                error_i = row["P"]
             err += error_i * w
 
         # =====================================================================
@@ -135,6 +156,7 @@ class BinaryFitter:
 
         self.evaluations["fobj"].append(err)
         self.evaluations["x"].append(x_values)
+        self.evaluations["cl"].append(cl)
 
         if self.verbose:
             print(err, x_values)
