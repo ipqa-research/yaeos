@@ -56,12 +56,12 @@ class BinaryFitter:
             return (Pexp - Pmodel) ** 2 / Pexp
 
         def composition_error(zexp, zmodel):
-            return (
-                np.abs(np.log(zmodel[0] / zexp[0]))
-                + np.abs(np.log(zmodel[1] / zexp[1])))
+            return np.abs(np.log(zmodel[0] / zexp[0])) + np.abs(
+                np.log(zmodel[1] / zexp[1])
+            )
 
         def temperature_error(Texp, Tmodel):
-            return (Texp - Tmodel)**2 / Texp
+            return (Texp - Tmodel) ** 2 / Texp
 
         model = self._get_model(x_values, *self._get_model_args)
         data = self.data
@@ -71,7 +71,7 @@ class BinaryFitter:
         # ---------------------------------------------------------------------
         cl = model.critical_line(
             z0=[0, 1], zi=[1, 0], a0=1e-2, s=1e-2, ds0=1e-3, max_points=5000
-            )
+        )
 
         err = 0
 

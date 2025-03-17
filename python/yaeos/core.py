@@ -1731,7 +1731,7 @@ class ArModel(ABC):
             id=self.id, z=z, p=pressure, t=temperature
         )
 
-        all_mins_w = all_mins[:, :len(z)]
+        all_mins_w = all_mins[:, : len(z)]
         all_mins = all_mins[:, -1]
 
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
