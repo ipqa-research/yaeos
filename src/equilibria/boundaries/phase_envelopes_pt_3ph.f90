@@ -68,7 +68,7 @@ contains
       integer :: its, iterations(points)
       integer :: max_iterations
 
-      max_iterations = 50
+      max_iterations = 150
 
       nc = size(z)
       ns = ns0
@@ -464,7 +464,7 @@ contains
             dX = dX/2
          end do
 
-         do while(abs(dX(2*nc+3)) > 0.01)
+         do while(abs(dX(2*nc+3)) > 0.1)
             dX = dX/2
          end do
 
