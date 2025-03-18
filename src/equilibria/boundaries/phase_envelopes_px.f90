@@ -366,7 +366,6 @@ contains
          do while (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.05_pr)
             ! If near a critical point, jump over it
             if (nc == 2) then
-               dS = 0
                exit
             end if
 
