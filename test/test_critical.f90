@@ -78,7 +78,8 @@ program main
 
       T = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%T(a_nearest), cl%T(a_nearest+1), a)
       P = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%P(a_nearest), cl%P(a_nearest+1), a)
-
+      
+      print *, "Comparing", [T, P], [env%cps(1)%T, env%cps(1)%P]
       if (maxval(([T, P] - [env%cps(1)%T, env%cps(1)%P]) / [T, P]) > 1e-2) then
          write(*, *) [T, P] 
          write(*, *) [env%cps(1)%T, env%cps(1)%P]
