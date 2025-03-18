@@ -130,7 +130,6 @@ contains
       totn = sum(n)
       do while(&
          abs(DEL) > 1.e-10_pr .and. abs(Pcalc - P)/P > 1.e-7 &
-      ! .and. iter < maximum_iterations &
          )
          V = B/ZETA
          iter = iter + 1
@@ -146,8 +145,10 @@ contains
 
          ! AT is something close to Gr(P,T)
          AT = (Ar + V*P)/(T*R) - TOTN*log(V)
-
-         DER = (ArV2*V**2 + TOTN*R*T)/B  ! this is dPdrho/B
+         
+         ! this is dPdrho/B
+         DER = (ArV2*V**2 + TOTN*R*T)/B 
+         
          DEL = -(Pcalc - P)/DER
          ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
 
@@ -155,8 +156,5 @@ contains
             ZETA = 0.5_pr*(ZETMAX + ZETMIN)
          end if
       end do
-
-      ! if (iter >= maximum_iterations) write(error_unit, *) &
-      !    "WARN: Volume solver exceeded maximum number of iterations"
    end subroutine solve_point
 end module yaeos__models_solvers
