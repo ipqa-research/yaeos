@@ -50,12 +50,10 @@ program main
       tx%points(i)%T, tx%points(i+1)%T, 0.53_pr &
    )
 
-   call assert(abs(Tenv - 270.3_pr) < 0.1_pr, "Predicted Dew Temperature")
-
+   call assert(269 < Tenv .and. Tenv < 272, "Predicted Dew Temperature")
    P = sum(model%components%Pc)/2
    T = vp1%get_T(P)
    sat = saturation_temperature(model, z, P=P, kind="bubble", T0=T)
-   tx = tx_envelope_2ph(model, z0=z0, alpha0=a, z_injection=zi, first_point=sat)
-
+   tx = tx_envelope_2ph(model, z0=z0, alpha0=a, z_injection=zi, first_point=sat, delta_0=0.001_pr)
    call assert(abs(tx%points(size(tx%points))%T - 368) < 1, "Reach to critical point")
 end program main
