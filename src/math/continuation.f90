@@ -204,17 +204,20 @@ contains
       F = 500
       X0 = X
       newton: do iters = 1, max_iters
+         call fun(X, ns, S, F, dF, dFdS)
+         dX = solve_system(dF, -F)
+
          ! Converged point
          if (maxval(abs(dx/x)) < 1e-5_pr .or. maxval(abs(F)) < tol) exit newton
-
-         call fun(X, ns, S, F, dF, dFdS)
-
-         dX = solve_system(dF, -F)
 
          ! Fix the step
          do while(maxval(abs(dx)) > 0.1)
             dX = dX/2
          end do
+
+         if (iters == 10 .and. point > 1) then
+            dX = X0 - 0.9*dXdS*dS - X
+         end if
 
          X = X + dX
       end do newton
