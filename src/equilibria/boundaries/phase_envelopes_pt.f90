@@ -335,6 +335,7 @@ contains
          !! is the new initialization point of the method and \(a\) is the
          !! parameter to interpolate the values. This subroutine finds the
          !! value of  \(a\) to obtain \(X_c\).
+         use yaeos__equilibria_critical, only: critical_point, spec_CP
          real(pr), intent(in out) :: X(:) !! Vector of variables
          real(pr), intent(in out) :: dXdS(:) !! Variation of variables wrt S
          integer, intent(in out) :: ns !! Number of specified variable
@@ -342,6 +343,8 @@ contains
          real(pr), intent(in out) :: dS !! Step in specification
          real(pr) :: Xc(nc+2) !! Value at (near) critical point
          real(pr) :: a !! Parameter for interpolation
+
+         type(EquilibriumState) :: cp
 
          real(pr) :: Xold(size(X)) !! Old value of X
          real(pr) :: Xnew(size(X)) !! Value of the next initialization
@@ -358,7 +361,7 @@ contains
             X = X + dXdS*dS
          end do
 
-         Xnew = X + dXdS*dS
+         Xnew = X + 2*dXdS*dS
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
             select case(kind)
@@ -370,16 +373,23 @@ contains
                kind = "liquid-liquid"
             end select
 
+            cp = critical_point(&
+               model, z, z, spec=spec_CP%a, S=0._pr, &
+               max_iters=20, T0=exp(X(nc+1)), P0=exp(X(nc+2)) &
+            )
+            
             ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
-
             ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
             a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
             Xc = a * X + (1-a)*Xnew
 
+            Xc(nc+1) = log(cp%T)
+            Xc(nc+2) = log(cp%P)
+
             envelopes%cps = [&
                envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
                ]
-            X = Xc + dXdS*(dS*1.5)
+            X = Xc + dXdS * dS*0.5
             S = X(ns)
          end if
       end subroutine detect_critical
