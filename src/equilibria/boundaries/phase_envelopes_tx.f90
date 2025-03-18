@@ -269,7 +269,7 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy)/maxval([Vz,Vy]) < 0.01) then
+         if (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy)/maxval([Vz,Vy]) < 0.1) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS = 0.01_pr
          else
@@ -291,8 +291,10 @@ contains
             dS = dS*1.1_pr
          end do
 
-         call save_point(X, step_iters)
-         call detect_critical(X, dXdS, ns, S, dS)
+         if (step_iters < max_iterations) then
+            call save_point(X, step_iters)
+            call detect_critical(X, dXdS, ns, S, dS)
+         end if
       end subroutine update_spec
 
       subroutine save_point(X, iters)
@@ -363,9 +365,8 @@ contains
 
          Xold = X
 
-         do while (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy) < 0.01_pr)
+         do while (maxval(abs(X(:nc))) < 0.1_pr .and. abs(Vz - Vy)/max(Vz, Vy) < 0.1_pr)
             ! If near a critical point, jump over it
-            if (nc == 2) exit
             S = S + dS
             X = X + dXdS*dS
          end do
@@ -374,6 +375,8 @@ contains
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
 
+            if (nc == 2) dS=0
+            
             select case(kind)
              case("dew")
                kind = "bubble"
@@ -384,8 +387,8 @@ contains
             end select
 
             ! 0 = a*X(ns) + (1-a)*Xnew(ns) Interpolation equation to get X(ns) = 0
-            a = -Xnew(ns)/(X(ns) - Xnew(ns))
-            Xc = a * X + (1-a)*Xnew
+            a = -Xnew(ns)/(Xold(ns) - Xnew(ns))
+            Xc = a * Xold + (1-a)*Xnew
 
             envelopes%cps = [&
                envelopes%cps, &
