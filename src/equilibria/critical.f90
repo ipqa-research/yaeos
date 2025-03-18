@@ -449,7 +449,7 @@ contains
    end function df_cep
 
    type(EquilibriumState) function critical_point(&
-      model, z0, zi, spec, S, max_iters, u0, V0, T0, a0 &
+      model, z0, zi, spec, S, max_iters, u0, V0, T0, a0, P0 &
       )
       !! # critical_point
       !!
@@ -486,6 +486,7 @@ contains
       real(pr), optional, intent(in) :: V0 !! Initial volume [L/mol].
       real(pr), optional, intent(in) :: T0 !! Initial temperature [K].
       real(pr), optional, intent(in) :: a0 !! Initial \(\alpha\) value
+      real(pr), optional, intent(in) :: P0 !! Initial Pressure [bar]
       real(pr), optional, intent(in) :: u0(:) !! Initial eigen-vector
 
       real(pr) :: X(4)
@@ -522,6 +523,8 @@ contains
 
       if (ns == spec_CP%P) then
          X(4) = S
+      else if (present(P0)) then
+         X(4) = log(P0)
       else
          X(4) = log(sum(model%components%Pc * z))
       end if
