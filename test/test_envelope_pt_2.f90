@@ -25,7 +25,6 @@ program main
 
    env = pt_envelope_2ph(eos, z, sat)
    cp = critical_point(eos, z0, zi=0*z0, spec=spec_CP%a, S=0._pr, max_iters=100)
-
    call assert(abs(env%cps(1)%T - Tc)/Tc < 1e-1, "Critical Temperature")
    call assert(abs(env%cps(1)%P - Pc)/pc < 1e-1, "Critical Pressure")
 end program
