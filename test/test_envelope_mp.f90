@@ -3,16 +3,19 @@ program main
    use yaeos__equilibria_boundaries_phase_envelopes_mp, only: pt_F_NP
    implicit none
    integer, parameter :: nc = 15, np=3
+   integer, parameter :: psize = np*nc + np + 2
 
    real(pr) :: z(nc)
 
-   real(pr) :: P, T, X(nc*np + np + 2), betas(np)
-   real(pr) :: dF(nc*np + np + 2, nc*np + np + 2), F(nc*np + np + 2)
+   real(pr) :: P, T, X(psize), betas(np)
+   real(pr) :: dF(psize, psize), F(psize)
 
    real(pr) :: x_l(np, nc), w(nc)
 
    integer :: ns
    real(pr) :: S
+
+   integer :: i, lb, ub
 
    type(CubicEoS) :: model
 
@@ -20,18 +23,22 @@ program main
 
    x_l(1, :) = z
    x_l(2, :) = [2.26748304e-02, 8.77274788e-03, 8.56790518e-01, 7.53110308e-02, 2.25791412e-02, 1.83124730e-03, 6.75557205e-03, 1.46973097e-03, 2.15197976e-03, 1.51272521e-03, 1.15635706e-04, 8.60487017e-11, 8.01982281e-12, 3.48403955e-05, 3.09839163e-21]
-   x_l(3, :) = 1e-5
-   x_l(3, nc) = 1- sum(x_l(3, 1:nc-1))
+   x_l(3, :) = 1e-10
+   x_l(3, nc) = 1 - 1e-10*(nc-1)
 
-   betas = [0.8, 0.2, 0.1]
+
+   betas = [10.0, 0.0001, 0.5]
+   betas = betas/sum(betas)
 
    w = [1.00840444e-02, 9.76751155e-03, 6.35587304e-01, 1.11530262e-01, 5.50813917e-02, 6.27551663e-03, 2.67981694e-02, 8.36513089e-03, 1.37645767e-02, 1.51732534e-02, 3.84679648e-02, 1.63919981e-04, 5.56318734e-05, 6.88853217e-02, 8.30156039e-10]
 
-   X(1:nc) = log(x_l(1, :)/w)
-   X(nc+1:2*nc) = log(x_l(2, :)/w)
-   X(2*nc+1:3*nc) = log(x_l(3, :)/w)
 
-   X(3*nc+1:np*nc+np) = log(betas)
+   do i=1, np
+      lb = (i-1)*nc + 1
+      ub = i*nc
+      X(lb:ub) = log(x_l(i, :)/w)
+   end do
+   X(3*nc+1:np*nc+np) = betas
 
    P = 75
    T = 260
@@ -39,7 +46,11 @@ program main
    X(nc*np + np + 1) = log(T)
    X(nc*np + np + 2) = log(P)
 
+   ns = 1
+   S = X(ns)
    call pt_F_NP(model, z, np, x, ns, S, F, dF)
+
+   call numdiff
 
 contains
 
@@ -69,4 +80,37 @@ contains
       get_model = PengRobinson78(Tc, Pc, w, kij=kij)
    end function get_model
 
+   subroutine numdiff
+      real(pr) :: dfnum(psize, psize), F1(psize), F2(psize)
+      real(pr) :: tmp(psize, psize)
+      real(pr) :: XdX(psize)
+      real(pr) :: eps = 1e-6, dx
+      character(len=*), parameter :: fmt="(*(E10.2,2x))"
+
+      integer :: i, j, loc(2)
+
+      XdX = X
+      print "(*(I10,2x))", (i, i=1, psize)
+      do i=1,nc*np+np + 2
+         XdX = X
+         dX = XdX(i) * eps
+         XdX(i) = XdX(i) + dX
+
+         call pt_F_NP(model, z, np, XdX, ns, S, F1, tmp)
+         XdX(i) = XdX(i) - 2*dx
+         call pt_F_NP(model, z, np, XdX, ns, S, F2, tmp)
+         dfnum(:, i) = (F1 - F2)/(2*dX)
+
+         print *, i
+         print fmt, df(:, i)
+         print fmt, dfnum(:, i)
+         write(1, *) dfnum(:, i)
+         print *, ""
+
+         if (i > nc*np) print *, "=============================================="
+      end do
+
+      loc = maxloc(abs(df - dfnum))
+      print *, maxval(abs((df - dfnum))), maxloc(abs(df - dfnum)), df(loc(1), loc(2)), dfnum(loc(1), loc(2))
+   end subroutine numdiff
 end program main
