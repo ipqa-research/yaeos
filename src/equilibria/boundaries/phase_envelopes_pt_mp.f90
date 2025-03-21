@@ -43,13 +43,13 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 contains
 
    type(PTEnvelMP) function pt_envelope(&
-      model, z, np, x0, w0, betas0, P0, T0, ns0, dS0, points&
+      model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, points&
       )
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:)
       integer, intent(in) :: np
-      real(pr), intent(in) :: x0(np, size(z))
+      real(pr), intent(in) :: x_l0(np, size(z))
       real(pr), intent(in) :: w0(size(z))
       real(pr), intent(in) :: betas0(np)
       real(pr), intent(in) :: P0
@@ -70,17 +70,18 @@ contains
       integer :: nc
 
       integer :: its
-      integer :: max_iterations = 100
+      integer :: max_iterations = 1000
       integer :: number_of_points
 
 
       real(pr) :: x_l(np, size(z)), w(size(z)), betas(np), P, T
 
-
       integer :: i, lb, ub
 
       integer :: ns
       real(pr) :: dS, S
+
+      real(pr) :: X0(size(X))
 
       nc = size(z)
 
@@ -89,7 +90,7 @@ contains
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
-         X(lb:ub) = log(x0(i, :)/w0)
+         X(lb:ub) = log(x_l0(i, :)/w0)
       end do
 
       X(np*nc + 1:np*nc + np) = betas0
@@ -102,19 +103,30 @@ contains
 
       allocate(env_points(0))
       do i=1,number_of_points
-         call solve_point(model, z, np, X, ns, S, F, dF, max_iterations, its)
+         X0 = X
+         call solve_point(model, z, np, X, ns, S, dXdS, i, F, dF, its, max_iterations)
+
+         if (i < 1 .and. its > max_iterations) then
+            X = X0 - 0.5 * dXdS * dS
+            S = X(ns)
+            call solve_point(model, z, np, X, ns, S, dXdS, i, F, dF, its, max_iterations)
+         end if
+
          if (any(isnan(F)) .or. its > max_iterations) exit
 
          call get_values_from_X(X, np, z, x_l, w, betas, P, T)
+
          point = MPPoint(np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w)
          env_points = [env_points, point]
-         call update_specification(its, X, dF, dXdS, ns, dS)
+
+         call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
+         call detect_critical(nc, np, X, dXdS, ns, dS, S)
 
          dX = dXdS * dS
          X = X + dX
          S = X(ns)
       end do
-      
+
       call move_alloc(env_points, pt_envelope%points)
    end function pt_envelope
 
@@ -310,7 +322,7 @@ contains
       df(nc * np + np + 2, ns) = 1
    end subroutine pt_F_NP
 
-   subroutine solve_point(model, z, np, x, ns, S, F, dF, max_iterations, iters)
+   subroutine solve_point(model, z, np, X, ns, S, dXdS, point, F, dF, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
@@ -319,15 +331,18 @@ contains
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
+      real(pr), intent(in) :: dXdS(size(X))
+      integer, intent(in) :: point !! Number of point being calculated
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
       integer, intent(in) :: max_iterations
       integer, intent(out) :: iters
 
 
+      real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
 
-
+      X0 = X
 
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, x, ns, S, F, dF)
@@ -340,38 +355,75 @@ contains
          end do
 
          if (maxval(abs(F)) < 1e-7_pr) exit
+
          X = X + dX
       end do
 
 
    end subroutine solve_point
 
-   subroutine update_specification(its, X, dF, dXdS, ns, dS)
+   subroutine update_specification(its, nc, np, X, dF, dXdS, ns, dS)
       integer, intent(in) :: its
+      integer, intent(in) :: nc
+      integer, intent(in) :: np
       real(pr), intent(in out) :: X(:)
       real(pr), intent(in out) :: dF(:, :)
       real(pr), intent(in out) :: dXdS(:)
       integer, intent(in out) :: ns
       real(pr), intent(in out) :: dS
 
-      integer :: nc
       real(pr) :: dFdS(size(X))
+
+      integer :: i, lb, ub
 
       dFdS = 0
       dFdS(size(X)) = -1
 
       dXdS = solve_system(dF, -dFdS)
+
       ns = maxloc(abs(dXdS), dim=1)
+
+      do i=1,np
+         lb = (i-1)*nc + 1
+         ub = i*nc
+
+         if (maxval(abs(X(lb:ub))) < 0.05) then
+            ns = lb + maxloc(abs(X(lb:ub)), dim=1)
+            exit
+         end if
+      end do
+
 
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
       dS = dS * 3._pr/its
 
-      do while(abs(dS) < 1e-5)
-         dS = 2*dS
-      end do
+      ! do while(abs(dS) < 1e-5)
+      !    dS = 2*dS
+      ! end do
    end subroutine update_specification
+
+   subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)
+      integer, intent(in) :: nc
+      integer, intent(in) :: np
+      real(pr), intent(in out) :: X(:)
+      real(pr), intent(in out) :: dXdS(:)
+      integer, intent(in out) :: ns
+      real(pr), intent(in out) :: dS
+      real(pr), intent(in out) :: S
+
+      integer :: i, lb, ub
+
+      do i=1,np
+         lb = (i-1)*nc + 1
+         ub = i*nc
+
+         do while(maxval(abs(X(lb:ub))) < 0.01)
+            X = X + 0.1 * dXdS * dS
+         end do
+      end do
+   end subroutine detect_critical
 
    subroutine get_values_from_X(X, np, z, x_l, w, betas, P, T)
       real(pr), intent(in) :: X(:)
@@ -388,17 +440,21 @@ contains
 
       nc = size(z)
 
+      betas = X(np*nc + 1:np*nc + np)
+      P = exp(X(np*nc + np + 1))
+      T = exp(X(np*nc + np + 2))
+
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
          x_l(i, :) = exp(X(lb:ub))
       end do
 
-      betas = X(np*nc + 1:np*nc + np)
-      P = exp(X(np*nc + np + 1))
-      T = exp(X(np*nc + np + 2))
-
       w = z/matmul(betas, x_l)
+
+      do i=1,np
+         x_l(i, :) = x_l(i, :)*w
+      end do
    end subroutine get_values_from_X
 
    subroutine write_envelope_PT_MP(env, unit)
@@ -423,5 +479,5 @@ contains
          x_l = env%points(i)%x_l
          write(unit, "(*(E15.5,2x))") P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
       end do
-   end subroutine
+   end subroutine write_envelope_PT_MP
 end module yaeos__equilibria_boundaries_phase_envelopes_mp

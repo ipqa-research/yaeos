@@ -1,4 +1,8 @@
 program main
+   !! Test for multi-phase envelope calculation
+   !! In this test we calculate two phase envelope from a previously known
+   !! double saturation point.
+   use testing_aux, only: assert, test_title
    use yaeos
    use yaeos__equilibria_boundaries_phase_envelopes_mp, only: pt_F_NP, solve_point, pt_envelope, PTEnvelMP
    implicit none
@@ -23,77 +27,50 @@ program main
    type(CubicEoS) :: model
    type(PTEnvelMP) :: env
 
+
+   print *, test_title("Multi-phase envelope test")
+
    model = get_model()
 
+   ! Build composition for three main phases and incipient one
    x_l(1, :) = z
    x_l(2, :) = [2.26748304e-02, 8.77274788e-03, 8.56790518e-01, 7.53110308e-02, 2.25791412e-02, 1.83124730e-03, 6.75557205e-03, 1.46973097e-03, 2.15197976e-03, 1.51272521e-03, 1.15635706e-04, 8.60487017e-11, 8.01982281e-12, 3.48403955e-05, 3.09839163e-21]
    x_l(3, :) = 1e-10
    x_l(3, nc) = 1 - 1e-10*(nc-1)
+   w = [1.00840444e-02, 9.76751155e-03, 6.35587304e-01, 1.11530262e-01, 5.50813917e-02, 6.27551663e-03, 2.67981694e-02, 8.36513089e-03, 1.37645767e-02, 1.51732534e-02, 3.84679648e-02, 1.63919981e-04, 5.56318734e-05, 6.88853217e-02, 8.30156039e-10]
 
-
+   ! Initial guess for betas
    betas = [0.98, 0.01, 0.]
    betas = betas/sum(betas)
 
-   w = [1.00840444e-02, 9.76751155e-03, 6.35587304e-01, 1.11530262e-01, 5.50813917e-02, 6.27551663e-03, 2.67981694e-02, 8.36513089e-03, 1.37645767e-02, 1.51732534e-02, 3.84679648e-02, 1.63919981e-04, 5.56318734e-05, 6.88853217e-02, 8.30156039e-10]
-   
+
+   ! Build variables vector
    do i=1, np
       lb = (i-1)*nc + 1
       ub = i*nc
       X(lb:ub) = log(x_l(i, :)/w)
    end do
    X(3*nc+1:np*nc+np) = betas
-
    P = 70
    T = 260
-
    X(nc*np + np + 2) = log(T)
    X(nc*np + np + 1) = log(P)
 
+   ! Select specification variable
    ns = nc*np + np + 1
    S = X(ns)
-   call pt_F_NP(model, z, np, x, ns, S, F, dF)
-
-   ! call numdiff
-
-   call solve_point(model, z, np, X, ns, S, F, dF, 150, iters)
-   print *, F
-   print *, maxval(abs(F))
-   print *, iters
 
    betas = X(3*nc+1:np*nc+np)
 
-   K(1, :) = exp(X(1:nc))
-   K(2, :) = exp(X(nc+1:2*nc))
-   K(3, :) = exp(X(2*nc+1:3*nc))
-   w = z/matmul(betas, K)
-   print *, w
-   print *, betas
-   print *, exp(X(psize-1)), exp(X(psize))
-   
-   P = exp(X(psize-1))
-   T = exp(X(psize))
-
-   do i=1,np
-      x_l(i, :) = K(i, :) * w
-   end do
-   
-
-
    betas = [betas(1), 0._pr, betas(3)]
    env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.01_pr)
-   call env%write(1)
-  
-   write(1, *)
-   write(1, *)
 
-   tmp = w
-   w = x_l(2, :)
-   x_l(2, :) = tmp
-   
-   betas = [betas(1), 0._pr, betas(3)]
+   call assert(maxval(abs(env%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
+   call assert(abs(env%points(1)%P - 108.015 )< 1e-2, "First point P")
+   call assert(abs(env%points(1)%T - 261.828 )< 1e-2, "First point T")
 
-   env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.001_pr)
-   call env%write(1)
+   i = size(env%points)
+   call assert(abs(env%points(i)%P) < 1, "End at low pressure")
 
 contains
 
@@ -122,30 +99,4 @@ contains
 
       get_model = PengRobinson76(Tc, Pc, w, kij=kij)
    end function get_model
-
-   subroutine numdiff
-      real(pr) :: dfnum(psize, psize), F1(psize), F2(psize)
-      real(pr) :: tmp(psize, psize)
-      real(pr) :: XdX(psize)
-      real(pr) :: eps = 1e-6, dx
-      character(len=*), parameter :: fmt="(*(E10.2,2x))"
-
-      integer :: i, j, loc(2)
-
-      XdX = X
-      print "(*(I10,2x))", (i, i=1, psize)
-      do i=1,nc*np+np + 2
-         XdX = X
-         dX = XdX(i) * eps
-         XdX(i) = XdX(i) + dX
-
-         call pt_F_NP(model, z, np, XdX, ns, S, F1, tmp)
-         XdX(i) = XdX(i) - 2*dx
-         call pt_F_NP(model, z, np, XdX, ns, S, F2, tmp)
-         dfnum(:, i) = (F1 - F2)/(2*dX)
-      end do
-
-      loc = maxloc(abs(df - dfnum))
-      print *, maxval(abs((df - dfnum))), maxloc(abs(df - dfnum)), df(loc(1), loc(2)), dfnum(loc(1), loc(2))
-   end subroutine numdiff
 end program main

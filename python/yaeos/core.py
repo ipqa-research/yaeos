@@ -9,6 +9,8 @@ from typing import Union
 
 import numpy as np
 
+import pandas as pd
+
 from yaeos.lib import yaeos_c
 
 
@@ -1697,6 +1699,45 @@ class ArModel(ABC):
             "a": a[msk],
             "beta": beta[msk],
         }
+
+    def phase_envelope_pt_mp(
+        self, z, x_l0, w0, betas0, p0, t0, ns0, ds0, max_points=1000
+    ):
+        """Multi-phase envelope."""
+
+        number_of_phases = x_l0.shape[0]
+        nc = len(z)
+
+        x_ls, ws, betas, ps, ts = yaeos_c.pt_mp_phase_envelope(
+            id=self.id,
+            np=number_of_phases,
+            z=z,
+            x_l0=x_l0,
+            w0=w0,
+            betas0=betas0,
+            t0=t0,
+            p0=p0,
+            ns0=ns0,
+            ds0=ds0,
+            max_points=max_points,
+        )
+
+        msk = ~np.isnan(ts)
+
+        df = pd.DataFrame()
+
+        df["T"] = ts[msk]
+        df["P"] = ps[msk]
+
+        for i in range(nc):
+            for j in range(number_of_phases):
+                df[f"x_{i+1}^{j+1}"] = x_ls[msk, j, i]
+            df[f"w_{i+1}"] = ws[msk, i]
+
+        for i in range(number_of_phases):
+            df[f"beta^{i+1}"] = betas[msk, i]
+
+        return df
 
     # ==============================================================
     # Stability analysis

@@ -376,8 +376,8 @@ contains
             cp = critical_point(&
                model, z, z, spec=spec_CP%a, S=0._pr, &
                max_iters=20, T0=exp(X(nc+1)), P0=exp(X(nc+2)) &
-            )
-            
+               )
+
             ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
             a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
