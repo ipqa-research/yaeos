@@ -10,24 +10,113 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 
    public :: PTEnvelMP
    public :: pt_F_NP
-   ! public :: pt_envelope
-   ! public :: solve_point
-   ! public :: get_values_from_X
+   public :: solve_point
+   public :: pt_envelope
+   public :: get_values_from_X
 
    type :: PTEnvelMP
-      integer :: NP !! Number of phases, besides the incipient phase
-      integer :: nc !! Number of components
-      integer, allocatable :: its(:) !! Number of needed iterations
-      real(pr), allocatable :: beta(:, :) !! Phases mole fractions
-      real(pr), allocatable :: P(:) !! Pressures [bar]
-      real(pr), allocatable :: T(:) !! Temperatures [K]
-      integer, allocatable :: ns(:) !! Number of specified variable
-      real(pr), allocatable :: S(:) !! Value of specification
+      type(MPPoint), allocatable :: points(:)
+      ! integer :: NP !! Number of phases, besides the incipient phase
+      ! integer :: nc !! Number of components
+      ! integer, allocatable :: its(:) !! Number of needed iterations
+      ! real(pr), allocatable :: beta(:, :) !! Phases mole fractions
+      ! real(pr), allocatable :: P(:) !! Pressures [bar]
+      ! real(pr), allocatable :: T(:) !! Temperatures [K]
+      ! integer, allocatable :: ns(:) !! Number of specified variable
+      ! real(pr), allocatable :: S(:) !! Value of specification
+      ! real(pr), allocatable :: x_l(:, : ,:) !! Mole fractions of the main phases
+      ! real(pr), allocatable :: w(:, :) !! Mole fractions of the incipient phase
+   contains
+      procedure :: write => write_envelope_PT_MP
    end type PTEnvelMP
 
-   real(pr), parameter :: lnK_min = 2.0_pr
+   type :: MPPoint
+      integer :: np
+      integer :: nc
+      real(pr), allocatable :: betas(:)
+      real(pr) :: P
+      real(pr) :: T
+      real(pr), allocatable :: x_l(:, :)
+      real(pr), allocatable :: w(:)
+   end type MPPoint
 
 contains
+
+   type(PTEnvelMP) function pt_envelope(&
+      model, z, np, x0, w0, betas0, P0, T0, ns0, dS0, points&
+      )
+      use yaeos__auxiliar, only: optval
+      class(ArModel), intent(in) :: model
+      real(pr), intent(in) :: z(:)
+      integer, intent(in) :: np
+      real(pr), intent(in) :: x0(np, size(z))
+      real(pr), intent(in) :: w0(size(z))
+      real(pr), intent(in) :: betas0(np)
+      real(pr), intent(in) :: P0
+      real(pr), intent(in) :: T0
+      integer, intent(in) :: ns0
+      real(pr), intent(in) :: dS0
+      integer, optional, intent(in) :: points
+
+      type(MPPoint), allocatable :: env_points(:)
+      type(MPPoint) :: point
+
+      real(pr) :: F(size(z) * np + np + 2)
+      real(pr) :: dF(size(z) * np + np + 2, size(z) * np + np + 2)
+      real(pr) :: dFdS(size(z) * np + np + 2)
+      real(pr) :: dXdS(size(z) * np + np + 2)
+      real(pr) :: X(size(z) * np + np + 2), dX(size(z) * np + np + 2)
+
+      integer :: nc
+
+      integer :: its
+      integer :: max_iterations = 100
+      integer :: number_of_points
+
+
+      real(pr) :: x_l(np, size(z)), w(size(z)), betas(np), P, T
+
+
+      integer :: i, lb, ub
+
+      integer :: ns
+      real(pr) :: dS, S
+
+      nc = size(z)
+
+      number_of_points = optval(points, 1000)
+
+      do i=1,np
+         lb = (i-1)*nc + 1
+         ub = i*nc
+         X(lb:ub) = log(x0(i, :)/w0)
+      end do
+
+      X(np*nc + 1:np*nc + np) = betas0
+      X(np*nc + np + 2) = log(T0)
+      X(np*nc + np + 1) = log(P0)
+
+      ns = ns0
+      S = X(ns)
+      dS = dS0
+
+      allocate(env_points(0))
+      do i=1,number_of_points
+         call solve_point(model, z, np, X, ns, S, F, dF, max_iterations, its)
+         if (any(isnan(F)) .or. its > max_iterations) exit
+
+         call get_values_from_X(X, np, z, x_l, w, betas, P, T)
+         point = MPPoint(np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w)
+         env_points = [env_points, point]
+         call update_specification(its, X, dF, dXdS, ns, dS)
+
+         dX = dXdS * dS
+         X = X + dX
+         S = X(ns)
+      end do
+      
+      call move_alloc(env_points, pt_envelope%points)
+   end function pt_envelope
 
    subroutine pt_F_NP(model, z, np, x, ns, S, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
@@ -100,34 +189,6 @@ contains
       end do
 
       w = z/denom
-
-      ! autodiff:block
-      !    use hyperdual_mod
-      !    type(hyperdual) :: hd_w(size(z)), hd_denom, lnKs(np, size(z)), hd_betas(np)
-      !    type(hyperdual) :: hd_xl(np, size(z))
-
-      !    do i=1,nc
-
-
-      !       do l=1,np
-      !          hd_betas = betas
-      !          lnKs = log(K)
-      !          lnKs(l, i)%f1 = 1
-
-      !          hd_denom = 0._pr
-      !          do j=1,np
-      !             hd_denom = hd_denom + sum(hd_betas(l) * exp(lnKs(l, :)))
-      !          end do
-      !          hd_w = z/hd_denom
-
-      !          hd_xl(l, :) = exp(lnKs(l, :)) * hd_w
-
-
-      !          dwdlnK(l, :, i) = hd_w%f1
-      !       end do
-      !    end do
-
-      ! end block autodiff
 
       ! ========================================================================
       ! Calculation of fugacities coeficients and their derivatives
@@ -248,4 +309,119 @@ contains
 
       df(nc * np + np + 2, ns) = 1
    end subroutine pt_F_NP
+
+   subroutine solve_point(model, z, np, x, ns, S, F, dF, max_iterations, iters)
+      use iso_fortran_env, only: error_unit
+      use yaeos__math, only: solve_system
+      class(ArModel), intent(in) :: model
+      real(pr), intent(in) :: z(:)
+      integer, intent(in) :: np !! Number of main phases
+      real(pr), intent(in out)  :: X(:) !! Vector of variables
+      integer, intent(in)  :: ns !! Number of specification
+      real(pr), intent(in)  :: S !! Specification value
+      real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
+      real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
+      integer, intent(in) :: max_iterations
+      integer, intent(out) :: iters
+
+
+      real(pr) :: dX(size(X))
+
+
+
+      do iters=1,max_iterations
+         call pt_F_NP(model, z, np, x, ns, S, F, dF)
+
+         dX = solve_system(dF, -F)
+         ! print *, maxval(abs(F)), maxval(abs(dX)), exp(X(size(X)-1:))
+
+         do while(maxval(abs(dX)) > 5)
+            dX = dX/2
+         end do
+
+         if (maxval(abs(F)) < 1e-7_pr) exit
+         X = X + dX
+      end do
+
+
+   end subroutine solve_point
+
+   subroutine update_specification(its, X, dF, dXdS, ns, dS)
+      integer, intent(in) :: its
+      real(pr), intent(in out) :: X(:)
+      real(pr), intent(in out) :: dF(:, :)
+      real(pr), intent(in out) :: dXdS(:)
+      integer, intent(in out) :: ns
+      real(pr), intent(in out) :: dS
+
+      integer :: nc
+      real(pr) :: dFdS(size(X))
+
+      dFdS = 0
+      dFdS(size(X)) = -1
+
+      dXdS = solve_system(dF, -dFdS)
+      ns = maxloc(abs(dXdS), dim=1)
+
+      dS = dXdS(ns)*dS
+      dXdS = dXdS/dXdS(ns)
+
+      dS = dS * 3._pr/its
+
+      do while(abs(dS) < 1e-5)
+         dS = 2*dS
+      end do
+   end subroutine update_specification
+
+   subroutine get_values_from_X(X, np, z, x_l, w, betas, P, T)
+      real(pr), intent(in) :: X(:)
+      integer, intent(in) :: np
+      real(pr), intent(in) :: z(:)
+      real(pr), intent(out) :: x_l(np, size(z))
+      real(pr), intent(out) :: w(size(z))
+      real(pr), intent(out) :: betas(np)
+      real(pr), intent(out) :: P
+      real(pr), intent(out) :: T
+
+      integer :: nc
+      integer :: i, lb, ub
+
+      nc = size(z)
+
+      do i=1,np
+         lb = (i-1)*nc + 1
+         ub = i*nc
+         x_l(i, :) = exp(X(lb:ub))
+      end do
+
+      betas = X(np*nc + 1:np*nc + np)
+      P = exp(X(np*nc + np + 1))
+      T = exp(X(np*nc + np + 2))
+
+      w = z/matmul(betas, x_l)
+   end subroutine get_values_from_X
+
+   subroutine write_envelope_PT_MP(env, unit)
+      class(PTEnvelMP), intent(in) :: env
+      integer, intent(in) :: unit
+
+      integer :: i, j
+      integer :: np, nc
+      real(pr) :: P, T
+      real(pr), allocatable :: betas(:)
+      real(pr), allocatable :: w(:)
+      real(pr), allocatable :: x_l(:, :)
+
+      np = size(env%points)
+      nc = size(env%points(1)%w)
+
+      do i=1,np
+         P = env%points(i)%P
+         T = env%points(i)%T
+         betas = env%points(i)%betas
+         w = env%points(i)%w
+         x_l = env%points(i)%x_l
+         write(unit, "(*(E15.5,2x))") P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
+      end do
+   end subroutine
 end module yaeos__equilibria_boundaries_phase_envelopes_mp

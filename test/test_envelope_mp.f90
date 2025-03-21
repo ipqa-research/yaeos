@@ -1,6 +1,6 @@
 program main
    use yaeos
-   use yaeos__equilibria_boundaries_phase_envelopes_mp, only: pt_F_NP
+   use yaeos__equilibria_boundaries_phase_envelopes_mp, only: pt_F_NP, solve_point, pt_envelope, PTEnvelMP
    implicit none
    integer, parameter :: nc = 15, np=3
    integer, parameter :: psize = np*nc + np + 2
@@ -10,14 +10,18 @@ program main
    real(pr) :: P, T, X(psize), betas(np)
    real(pr) :: dF(psize, psize), F(psize)
 
-   real(pr) :: x_l(np, nc), w(nc)
+   real(pr) :: x_l(np, nc), w(nc), tmp(nc)
+   real(pr) :: K(np, nc)
 
    integer :: ns
    real(pr) :: S
 
    integer :: i, lb, ub
 
+   integer :: iters
+
    type(CubicEoS) :: model
+   type(PTEnvelMP) :: env
 
    model = get_model()
 
@@ -27,12 +31,11 @@ program main
    x_l(3, nc) = 1 - 1e-10*(nc-1)
 
 
-   betas = [10.0, 0.0001, 0.5]
+   betas = [0.98, 0.01, 0.]
    betas = betas/sum(betas)
 
    w = [1.00840444e-02, 9.76751155e-03, 6.35587304e-01, 1.11530262e-01, 5.50813917e-02, 6.27551663e-03, 2.67981694e-02, 8.36513089e-03, 1.37645767e-02, 1.51732534e-02, 3.84679648e-02, 1.63919981e-04, 5.56318734e-05, 6.88853217e-02, 8.30156039e-10]
-
-
+   
    do i=1, np
       lb = (i-1)*nc + 1
       ub = i*nc
@@ -40,17 +43,57 @@ program main
    end do
    X(3*nc+1:np*nc+np) = betas
 
-   P = 75
+   P = 70
    T = 260
 
-   X(nc*np + np + 1) = log(T)
-   X(nc*np + np + 2) = log(P)
+   X(nc*np + np + 2) = log(T)
+   X(nc*np + np + 1) = log(P)
 
-   ns = 1
+   ns = nc*np + np + 1
    S = X(ns)
    call pt_F_NP(model, z, np, x, ns, S, F, dF)
 
-   call numdiff
+   ! call numdiff
+
+   call solve_point(model, z, np, X, ns, S, F, dF, 150, iters)
+   print *, F
+   print *, maxval(abs(F))
+   print *, iters
+
+   betas = X(3*nc+1:np*nc+np)
+
+   K(1, :) = exp(X(1:nc))
+   K(2, :) = exp(X(nc+1:2*nc))
+   K(3, :) = exp(X(2*nc+1:3*nc))
+   w = z/matmul(betas, K)
+   print *, w
+   print *, betas
+   print *, exp(X(psize-1)), exp(X(psize))
+   
+   P = exp(X(psize-1))
+   T = exp(X(psize))
+
+   do i=1,np
+      x_l(i, :) = K(i, :) * w
+   end do
+   
+
+
+   betas = [betas(1), 0._pr, betas(3)]
+   env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.01_pr)
+   call env%write(1)
+  
+   write(1, *)
+   write(1, *)
+
+   tmp = w
+   w = x_l(2, :)
+   x_l(2, :) = tmp
+   
+   betas = [betas(1), 0._pr, betas(3)]
+
+   env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.001_pr)
+   call env%write(1)
 
 contains
 
@@ -77,7 +120,7 @@ contains
       kij(14, :) = [0.08, 0.1, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
       kij(15, :) = [0.08, 0.1, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0., 0., 0., 0., 0.]
 
-      get_model = PengRobinson78(Tc, Pc, w, kij=kij)
+      get_model = PengRobinson76(Tc, Pc, w, kij=kij)
    end function get_model
 
    subroutine numdiff
@@ -100,14 +143,6 @@ contains
          XdX(i) = XdX(i) - 2*dx
          call pt_F_NP(model, z, np, XdX, ns, S, F2, tmp)
          dfnum(:, i) = (F1 - F2)/(2*dX)
-
-         print *, i
-         print fmt, df(:, i)
-         print fmt, dfnum(:, i)
-         write(1, *) dfnum(:, i)
-         print *, ""
-
-         if (i > nc*np) print *, "=============================================="
       end do
 
       loc = maxloc(abs(df - dfnum))
