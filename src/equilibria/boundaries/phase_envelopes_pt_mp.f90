@@ -1,4 +1,8 @@
 module yaeos__equilibria_boundaries_phase_envelopes_mp
+   !! Multiphase PT envelope calculation module.
+   !!
+   !! This module contains the functions to calculate the PT envelope of a
+   !! mixture with multiple phases.
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__models_ar, only: ArModel
@@ -15,29 +19,21 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    public :: get_values_from_X
 
    type :: PTEnvelMP
-      type(MPPoint), allocatable :: points(:)
-      ! integer :: NP !! Number of phases, besides the incipient phase
-      ! integer :: nc !! Number of components
-      ! integer, allocatable :: its(:) !! Number of needed iterations
-      ! real(pr), allocatable :: beta(:, :) !! Phases mole fractions
-      ! real(pr), allocatable :: P(:) !! Pressures [bar]
-      ! real(pr), allocatable :: T(:) !! Temperatures [K]
-      ! integer, allocatable :: ns(:) !! Number of specified variable
-      ! real(pr), allocatable :: S(:) !! Value of specification
-      ! real(pr), allocatable :: x_l(:, : ,:) !! Mole fractions of the main phases
-      ! real(pr), allocatable :: w(:, :) !! Mole fractions of the incipient phase
+      !! Multiphase PT envelope.
+      type(MPPoint), allocatable :: points(:) !! Array of converged points.
    contains
       procedure :: write => write_envelope_PT_MP
    end type PTEnvelMP
 
    type :: MPPoint
-      integer :: np
-      integer :: nc
-      real(pr), allocatable :: betas(:)
-      real(pr) :: P
-      real(pr) :: T
-      real(pr), allocatable :: x_l(:, :)
-      real(pr), allocatable :: w(:)
+      !! Multiphase equilibria point.
+      integer :: np !! Number of phases
+      integer :: nc !! Number of components
+      real(pr), allocatable :: betas(:) !! Fractions of the main phases.
+      real(pr) :: P !! Pressure [bar]
+      real(pr) :: T !! Temperature [K]
+      real(pr), allocatable :: x_l(:, :) !! Mole fractions of the main phases.
+      real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
    end type MPPoint
 
 contains
@@ -63,7 +59,6 @@ contains
 
       real(pr) :: F(size(z) * np + np + 2)
       real(pr) :: dF(size(z) * np + np + 2, size(z) * np + np + 2)
-      real(pr) :: dFdS(size(z) * np + np + 2)
       real(pr) :: dXdS(size(z) * np + np + 2)
       real(pr) :: X(size(z) * np + np + 2), dX(size(z) * np + np + 2)
 
@@ -106,22 +101,30 @@ contains
          X0 = X
          call solve_point(model, z, np, X, ns, S, dXdS, i, F, dF, its, max_iterations)
 
+         ! The point might not converge, in this case we try again with an
+         ! initial guess closer to the previous (converged) point.
          if (i < 1 .and. its > max_iterations) then
             X = X0 - 0.5 * dXdS * dS
             S = X(ns)
             call solve_point(model, z, np, X, ns, S, dXdS, i, F, dF, its, max_iterations)
          end if
 
+         ! If the point did not converge, stop the calculation
          if (any(isnan(F)) .or. its > max_iterations) exit
 
+         ! Save the information of the converged point
          call get_values_from_X(X, np, z, x_l, w, betas, P, T)
-
          point = MPPoint(np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w)
          env_points = [env_points, point]
 
+         ! Update the specification for the next point.
          call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
+
+         ! Check if the system is close to a critical point, and try to jump
+         ! over it.
          call detect_critical(nc, np, X, dXdS, ns, dS, S)
 
+         ! Next point estimation.
          dX = dXdS * dS
          X = X + dX
          S = X(ns)
@@ -134,13 +137,13 @@ contains
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      integer, intent(in) :: np !! Number of main phases
-      real(pr), intent(in)  :: X(:) !! Vector of variables
-      integer, intent(in)  :: ns !! Number of specification
-      real(pr), intent(in)  :: S !! Specification value
-      real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
-      real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
+      real(pr), intent(in) :: z(:) !! Mixture global composition.
+      integer, intent(in) :: np !! Number of main phases.
+      real(pr), intent(in)  :: X(:) !! Vector of variables.
+      integer, intent(in)  :: ns !! Number of specification.
+      real(pr), intent(in)  :: S !! Specification value.
+      real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated.
+      real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix.
 
       ! X variables
       real(pr) :: K(np, size(z))
@@ -363,18 +366,49 @@ contains
    end subroutine solve_point
 
    subroutine update_specification(its, nc, np, X, dF, dXdS, ns, dS)
+      !! # update_specification
+      !! Change the specified variable for the next step.
+      !!
+      !! # Description
+      !! Using the information of a converged point and the Jacobian matrix of
+      !! the function. It is possible to determine the sensitivity of the
+      !! variables with respect to the specification. This information is used
+      !! to update the specification for the next point. Choosing the variable
+      !! with the highest sensitivity.
+      !! This can be done by solving the system of equations:
+      !!
+      !! \[
+      !! J \frac{dX}{dS} + \frac{dF}{dS} = 0
+      !! \]
+      !!
+      !! for the \( \frac{dX}{dS} \) vector. The variable with the highest value
+      !! of \( \frac{dX}{dS} \) is chosen as the new specification.
+      !!
+      !! # References
+      !!
       integer, intent(in) :: its
+      !! Iterations to solve the current point.
       integer, intent(in) :: nc
+      !! Number of components in the mixture.
       integer, intent(in) :: np
+      !! Number of main phases.
       real(pr), intent(in out) :: X(:)
+      !! Vector of variables.
       real(pr), intent(in out) :: dF(:, :)
+      !! Jacobian matrix.
       real(pr), intent(in out) :: dXdS(:)
+      !! Sensitivity of the variables wrt the specification.
       integer, intent(in out) :: ns
+      !! Number of the specified variable.
       real(pr), intent(in out) :: dS
+      !! Step size of the specification for the next point.
 
       real(pr) :: dFdS(size(X))
+      !! Sensitivity of the functions wrt the specification.
 
-      integer :: i, lb, ub
+      integer :: i
+      integer :: lb !! Lower bound of each phase
+      integer :: ub !! Upper bound of each phase
 
       dFdS = 0
       dFdS(size(X)) = -1
@@ -383,6 +417,11 @@ contains
 
       ns = maxloc(abs(dXdS), dim=1)
 
+      ! ========================================================================
+      ! For each phase, check if the mole fractions are too low.
+      ! this can be related to criticality and it is useful to force the
+      ! specification of compositions.
+      ! ------------------------------------------------------------------------
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
@@ -397,21 +436,38 @@ contains
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
+      ! We adapt the step size to the number of iterations, the desired number
+      ! of iterations for each point is around 3.
       dS = dS * 3._pr/its
-
-      ! do while(abs(dS) < 1e-5)
-      !    dS = 2*dS
-      ! end do
    end subroutine update_specification
 
    subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)
+      !! # detect_critical
+      !! Detect if the system is close to a critical point.
+      !!
+      !! # Description
+      !! When the system is close to a critical point, the \(\ln K_i^l\) values
+      !! are close to zero, since the composition of the incipient phase and the
+      !! \(l\) phase are similar (equal in the critical point). This can be used
+      !! to detect if the system is close to a critical point and force a jump
+      !! above it.
+      !!
+      !! # References
+      !!
       integer, intent(in) :: nc
+      !! Number of components in the mixture.
       integer, intent(in) :: np
+      !! Number of main phases.
       real(pr), intent(in out) :: X(:)
+      !! Vector of variables.
       real(pr), intent(in out) :: dXdS(:)
+      !! Sensitivity of the variables wrt the specification.
       integer, intent(in out) :: ns
+      !! Number of the specified variable.
       real(pr), intent(in out) :: dS
+      !! Step size of the specification for the next point.
       real(pr), intent(in out) :: S
+      !! Specification value.
 
       integer :: i, lb, ub
 
@@ -426,17 +482,22 @@ contains
    end subroutine detect_critical
 
    subroutine get_values_from_X(X, np, z, x_l, w, betas, P, T)
-      real(pr), intent(in) :: X(:)
-      integer, intent(in) :: np
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(out) :: x_l(np, size(z))
-      real(pr), intent(out) :: w(size(z))
-      real(pr), intent(out) :: betas(np)
-      real(pr), intent(out) :: P
-      real(pr), intent(out) :: T
+      !! # get_values_from_X
+      !! Extract the values of the variables from the vector X.
+      !!
+      real(pr), intent(in) :: X(:) !! Vector of variables.
+      integer, intent(in) :: np !! Number of main phases.
+      real(pr), intent(in) :: z(:) !! Mixture composition.
+      real(pr), intent(out) :: x_l(np, size(z)) !! Mole fractions of the main phases.
+      real(pr), intent(out) :: w(size(z)) !! Mole fractions of the incipient phase.
+      real(pr), intent(out) :: betas(np) !! Fractions of the main phases.
+      real(pr), intent(out) :: P !! Pressure [bar].
+      real(pr), intent(out) :: T !! Temperature [K].
 
-      integer :: nc
-      integer :: i, lb, ub
+      integer :: nc !! Number of components.
+      integer :: i !! Loop index.
+      integer :: lb !! Lower bound of each phase.
+      integer :: ub !! Upper bound of each phase.
 
       nc = size(z)
 
@@ -444,14 +505,18 @@ contains
       P = exp(X(np*nc + np + 1))
       T = exp(X(np*nc + np + 2))
 
+      ! Extract the K values from the vector of variables
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
          x_l(i, :) = exp(X(lb:ub))
       end do
 
+      ! Calculate the mole fractions of the incipient phase
       w = z/matmul(betas, x_l)
 
+      ! Calculate the mole fractions of the main phases with the previously
+      ! calculated K values
       do i=1,np
          x_l(i, :) = x_l(i, :)*w
       end do
