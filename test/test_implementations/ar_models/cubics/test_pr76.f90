@@ -641,8 +641,6 @@ contains
       ! =======================================================================
       ! Critical point check
       ! -----------------------------------------------------------------------
-      print *, "Critical point: ", envelope%cps(1)%T, envelope%cps(1)%P
-      print *, envelope
       call check(error, abs(envelope%cps(1)%T - 532.9_pr) < 1)
       call check(error, abs(envelope%cps(1)%P - 32.95_pr) < 0.2)
       ! =======================================================================
