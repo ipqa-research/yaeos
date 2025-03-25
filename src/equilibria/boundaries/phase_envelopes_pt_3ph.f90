@@ -167,7 +167,7 @@ contains
 
       dS = dS * 3._pr/its
 
-      do while(abs(dS) < 1e-5)
+      do while(abs(dS/X(ns)) < 5e-2)
          dS = 2*dS
       end do
    end subroutine update_specification
@@ -243,6 +243,7 @@ contains
       end do
 
       if (found_critical) then
+         print *, "CP", found_critical
          a = critical_interpol(Xnew, Xold, critical_set)
          Xc = a * Xold + (1-a)*Xnew
 
