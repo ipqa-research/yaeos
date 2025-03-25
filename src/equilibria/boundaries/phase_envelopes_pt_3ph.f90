@@ -243,7 +243,6 @@ contains
       end do
 
       if (found_critical) then
-         print *, "CP", found_critical
          a = critical_interpol(Xnew, Xold, critical_set)
          Xc = a * Xold + (1-a)*Xnew
 
