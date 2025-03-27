@@ -18,6 +18,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    public :: pt_envelope
    public :: get_values_from_X
 
+   real(pr), public :: beta_w = 0
+
    type :: PTEnvelMP
       !! Multiphase PT envelope.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
@@ -197,7 +199,7 @@ contains
       T = exp(X(np*nc + np + 2))
 
       denom = 0
-      denom = matmul(betas, K)
+      denom = matmul(betas, K) + beta_w
       denomdlnK = 0
       do i=1,nc
          denomdlnK(:, i, i) = betas(:)*K(:, i)
@@ -236,9 +238,8 @@ contains
          F(lb:ub) = X(lb:ub) + lnphi_l(l, :) - lnphi_w
          F(nc * np + l) = sum(x_l(l, :) - w)
       end do
-      F(nc * np + np + 1) = sum(betas) - 1
+      F(nc * np + np + 1) = sum(betas) + beta_w - 1
       F(nc * np + np + 2) = X(ns) - S
-
       ! ========================================================================
       ! Derivatives and Jacobian Matrix of the whole system
       ! ------------------------------------------------------------------------
