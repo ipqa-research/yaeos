@@ -17,9 +17,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    public :: solve_point
    public :: pt_envelope
    public :: get_values_from_X
-
-   real(pr), public :: beta_w = 0
-
+   
    type :: PTEnvelMP
       !! Multiphase PT envelope.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
@@ -31,6 +29,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
       !! Multiphase equilibria point.
       integer :: np !! Number of phases
       integer :: nc !! Number of components
+      real(pr) :: beta_w !! Fraction of the reference (incipient) phase.
       real(pr), allocatable :: betas(:) !! Fractions of the main phases.
       real(pr) :: P !! Pressure [bar]
       real(pr) :: T !! Temperature [K]
@@ -41,7 +40,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 contains
 
    type(PTEnvelMP) function pt_envelope(&
-      model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, points&
+      model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points &
       )
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
@@ -54,6 +53,8 @@ contains
       real(pr), intent(in) :: T0
       integer, intent(in) :: ns0
       real(pr), intent(in) :: dS0
+      real(pr), intent(in) :: beta_w
+         !! Fraction of the reference (incipient) phase.
       integer, optional, intent(in) :: points
 
       type(MPPoint), allocatable :: env_points(:)
@@ -101,14 +102,14 @@ contains
       allocate(env_points(0))
       do i=1,number_of_points
          X0 = X
-         call solve_point(model, z, np, X, ns, S, dXdS, i, F, dF, its, max_iterations)
+         call solve_point(model, z, np, beta_w, X, ns, S, dXdS, i, F, dF, its, max_iterations)
 
          ! The point might not converge, in this case we try again with an
          ! initial guess closer to the previous (converged) point.
          if (i < 1 .and. its > max_iterations) then
             X = X0 - 0.5 * dXdS * dS
             S = X(ns)
-            call solve_point(model, z, np, X, ns, S, dXdS, i, F, dF, its, max_iterations)
+            call solve_point(model, z, np, beta_w, X, ns, S, dXdS, i, F, dF, its, max_iterations)
          end if
 
          ! If the point did not converge, stop the calculation
@@ -116,7 +117,9 @@ contains
 
          ! Save the information of the converged point
          call get_values_from_X(X, np, z, x_l, w, betas, P, T)
-         point = MPPoint(np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w)
+         point = MPPoint(&
+            np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w&
+         )
          env_points = [env_points, point]
 
          ! Update the specification for the next point.
@@ -135,12 +138,13 @@ contains
       call move_alloc(env_points, pt_envelope%points)
    end function pt_envelope
 
-   subroutine pt_F_NP(model, z, np, x, ns, S, F, dF)
+   subroutine pt_F_NP(model, z, np, beta_w, X, ns, S, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases.
+      real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
       real(pr), intent(in)  :: X(:) !! Vector of variables.
       integer, intent(in)  :: ns !! Number of specification.
       real(pr), intent(in)  :: S !! Specification value.
@@ -326,12 +330,13 @@ contains
       df(nc * np + np + 2, ns) = 1
    end subroutine pt_F_NP
 
-   subroutine solve_point(model, z, np, X, ns, S, dXdS, point, F, dF, iters, max_iterations)
+   subroutine solve_point(model, z, np, beta_w, X, ns, S, dXdS, point, F, dF, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:)
       integer, intent(in) :: np !! Number of main phases
+      real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
@@ -349,10 +354,9 @@ contains
       X0 = X
 
       do iters=1,max_iterations
-         call pt_F_NP(model, z, np, x, ns, S, F, dF)
+         call pt_F_NP(model, z, np, beta_w, x, ns, S, F, dF)
 
          dX = solve_system(dF, -F)
-         ! print *, maxval(abs(F)), maxval(abs(dX)), exp(X(size(X)-1:))
 
          do while(maxval(abs(dX)) > 5)
             dX = dX/2
