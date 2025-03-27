@@ -154,20 +154,35 @@ contains
 
       integer :: nc
       real(pr) :: dFdS(size(X))
+      
+      integer :: first_set((size(X)-3)/2), second_set((size(X)-3)/2), idx((size(X)-3)/2)
+      integer :: i
+
+      nc = (size(X)-3)/2
+      first_set  = [(i, i=1, nc)]
+      second_set = [(i, i=nc+1, 2*nc)]
 
       dFdS = 0
       dFdS(size(X)) = -1
-      nc = (size(X) - 3)/2
+      dXdS = solve_system(dF, -dFdS)
+      
+      if (all(abs(X(first_set)) < 0.1)) then
+         ns = maxloc(abs(dXdS(first_set)), dim=1)
+      else if (all(abs(X(second_set)) < 0.1)) then
+         ns = maxloc(abs(dXdS(second_set)), dim=1) + nc
+      else
+         ns = maxloc(abs(dXdS), dim=1)
+      end if
 
-      ns = maxloc(abs(dXdS), dim=1)
 
+      dXdS = solve_system(dF, -dFdS)
+      
       dXdS = solve_system(dF, -dFdS)
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
-
       dS = dS * 3._pr/its
 
-      do while(abs(dS/X(ns)) < 5e-2)
+      do while(abs(dS/X(ns)) < 1e-2)
          dS = 2*dS
       end do
    end subroutine update_specification
