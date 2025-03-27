@@ -17,7 +17,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    public :: solve_point
    public :: pt_envelope
    public :: get_values_from_X
-   
+
    type :: PTEnvelMP
       !! Multiphase PT envelope.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
@@ -35,6 +35,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
       real(pr) :: T !! Temperature [K]
       real(pr), allocatable :: x_l(:, :) !! Mole fractions of the main phases.
       real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
+      integer :: iters !! Number of iterations needed to converge the point.
+      integer :: ns !! Number of the specified variable.
    end type MPPoint
 
 contains
@@ -54,7 +56,7 @@ contains
       integer, intent(in) :: ns0
       real(pr), intent(in) :: dS0
       real(pr), intent(in) :: beta_w
-         !! Fraction of the reference (incipient) phase.
+      !! Fraction of the reference (incipient) phase.
       integer, optional, intent(in) :: points
 
       type(MPPoint), allocatable :: env_points(:)
@@ -74,12 +76,16 @@ contains
 
       real(pr) :: x_l(np, size(z)), w(size(z)), betas(np), P, T
 
-      integer :: i, lb, ub
+      integer :: i !! Point calculation index
+      integer :: lb !! Lower bound, index of the first component of a phase
+      integer :: ub !! Upper bound, index of the last component of a phase
+      integer :: inner !! Number of times a failed point is retried to converge
 
-      integer :: ns
-      real(pr) :: dS, S
+      integer :: ns !! Number of the specified variable
+      real(pr) :: dS !! Step size of the specification for the next point
+      real(pr) :: S !! Specified value
 
-      real(pr) :: X0(size(X))
+      real(pr) :: X0(size(X)) !! Initial guess for the point
 
       nc = size(z)
 
@@ -92,8 +98,8 @@ contains
       end do
 
       X(np*nc + 1:np*nc + np) = betas0
-      X(np*nc + np + 2) = log(T0)
       X(np*nc + np + 1) = log(P0)
+      X(np*nc + np + 2) = log(T0)
 
       ns = ns0
       S = X(ns)
@@ -102,15 +108,23 @@ contains
       allocate(env_points(0))
       do i=1,number_of_points
          X0 = X
-         call solve_point(model, z, np, beta_w, X, ns, S, dXdS, i, F, dF, its, max_iterations)
+         call solve_point(&
+            model, z, np, beta_w, X, ns, S, dXdS, &
+            F, dF, its, max_iterations &
+            )
 
          ! The point might not converge, in this case we try again with an
          ! initial guess closer to the previous (converged) point.
-         if (i < 1 .and. its > max_iterations) then
-            X = X0 - 0.5 * dXdS * dS
+         inner = 0
+         do while(i > 1 .and. its >= max_iterations .and. inner < 10)
+            inner = inner + 1
+            X = X0 - (1 - real(inner, pr) / 10._pr) * dX
             S = X(ns)
-            call solve_point(model, z, np, beta_w, X, ns, S, dXdS, i, F, dF, its, max_iterations)
-         end if
+            call solve_point(&
+               model, z, np, beta_w, X, ns, S, dXdS, &
+               F, dF, its, max_iterations&
+               )
+         end do
 
          ! If the point did not converge, stop the calculation
          if (any(isnan(F)) .or. its > max_iterations) exit
@@ -118,8 +132,9 @@ contains
          ! Save the information of the converged point
          call get_values_from_X(X, np, z, x_l, w, betas, P, T)
          point = MPPoint(&
-            np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w&
-         )
+            np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
+            iters=its, ns=ns &
+            )
          env_points = [env_points, point]
 
          ! Update the specification for the next point.
@@ -135,6 +150,7 @@ contains
          S = X(ns)
       end do
 
+      ! This moves the locally saved points to the output variable.
       call move_alloc(env_points, pt_envelope%points)
    end function pt_envelope
 
@@ -276,7 +292,9 @@ contains
                   idx_1 = i + (phase-1)*nc
                   idx_2 = j + (l-1)*nc
 
-                  df(idx_1, idx_2) = dlnphi_dn_l(phase, i, j) * dx_l_dlnK(phase, l, j) - dlnphi_dn_w(i, j) * dwdlnK(l, j)
+                  df(idx_1, idx_2) = &
+                     dlnphi_dn_l(phase, i, j) * dx_l_dlnK(phase, l, j) &
+                     - dlnphi_dn_w(i, j) * dwdlnK(l, j)
 
                   if (i == j .and. phase == l) then
                      df(idx_1, idx_2) = df(idx_1, idx_2) + 1
@@ -330,7 +348,7 @@ contains
       df(nc * np + np + 2, ns) = 1
    end subroutine pt_F_NP
 
-   subroutine solve_point(model, z, np, beta_w, X, ns, S, dXdS, point, F, dF, iters, max_iterations)
+   subroutine solve_point(model, z, np, beta_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
@@ -341,24 +359,40 @@ contains
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
       real(pr), intent(in) :: dXdS(size(X))
-      integer, intent(in) :: point !! Number of point being calculated
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
       integer, intent(in) :: max_iterations
       integer, intent(out) :: iters
 
 
+      integer :: iT
+      integer :: iP
+      integer :: nc
+
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
+
+      nc = size(z)
+      iP = np*nc + np + 1
+      iT = np*nc + np + 2
 
       X0 = X
 
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, beta_w, x, ns, S, F, dF)
 
+         if (any(isnan(F))) then
+            X = X - 0.9 * dX
+            cycle
+         end if
+
          dX = solve_system(dF, -F)
 
-         do while(maxval(abs(dX)) > 5)
+         do while(abs(dX(iT)) > 1)
+            dX = dX/2
+         end do
+
+         do while(abs(dX(iP)) > 1)
             dX = dX/2
          end do
 
@@ -366,8 +400,6 @@ contains
 
          X = X + dX
       end do
-
-
    end subroutine solve_point
 
    subroutine update_specification(its, nc, np, X, dF, dXdS, ns, dS)
@@ -431,8 +463,8 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         if (maxval(abs(X(lb:ub))) < 0.05) then
-            ns = lb + maxloc(abs(X(lb:ub)), dim=1)
+         if (maxval(abs(X(lb:ub))) < 0.3) then
+            ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
             exit
          end if
       end do
@@ -480,9 +512,10 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.01)
-            X = X + 0.1 * dXdS * dS
+         do while(maxval(abs(X(lb:ub))) < 0.1)
+            X = X + dXdS * dS
          end do
+
       end do
    end subroutine detect_critical
 

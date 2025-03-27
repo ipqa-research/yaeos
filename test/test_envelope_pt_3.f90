@@ -68,7 +68,7 @@ program main
    ! Calculate the PT envelope using the converged point as the initial point
    env3 = pt_envelope_3ph(&
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
-      P0=P, T0=T, ns0=ns, dS0=0.0001_pr, points=300)
+      P0=P, T0=T, ns0=ns, dS0=1e-5_pr, points=300)
 
    i = size(env3%P)
 

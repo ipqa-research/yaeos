@@ -49,7 +49,7 @@ program main
    betas = [0.98, 0.00, 0.0]
    P = 70
    T = 260
-   env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.01_pr, beta_w=0.0_pr)
+   env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
 
    call assert(maxval(abs(env%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(env%points(1)%P - 108.015 )< 1e-2, "First point P")

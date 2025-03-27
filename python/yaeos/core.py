@@ -1701,14 +1701,14 @@ class ArModel(ABC):
         }
 
     def phase_envelope_pt_mp(
-        self, z, x_l0, w0, betas0, p0, t0, ns0, ds0, max_points=1000
+        self, z, x_l0, w0, betas0, p0, t0, ns0, ds0, beta_w=0, max_points=1000
     ):
         """Multi-phase envelope."""
 
         number_of_phases = x_l0.shape[0]
         nc = len(z)
 
-        x_ls, ws, betas, ps, ts = yaeos_c.pt_mp_phase_envelope(
+        x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
             id=self.id,
             np=number_of_phases,
             z=z,
@@ -1719,6 +1719,7 @@ class ArModel(ABC):
             p0=p0,
             ns0=ns0,
             ds0=ds0,
+            beta_w=beta_w,
             max_points=max_points,
         )
 
@@ -1728,6 +1729,8 @@ class ArModel(ABC):
 
         df["T"] = ts[msk]
         df["P"] = ps[msk]
+        df["iters"] = iters[msk]
+        df["ns"] = ns[msk]
 
         for i in range(nc):
             for j in range(number_of_phases):
