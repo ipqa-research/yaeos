@@ -68,11 +68,18 @@ program main
    ! Calculate the PT envelope using the converged point as the initial point
    env3 = pt_envelope_3ph(&
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
-      P0=P, T0=T, ns0=ns, dS0=1e-6_pr, points=900)
+      P0=P, T0=T, ns0=ns, dS0=1e-5_pr, points=900 &
+      )
 
    i = size(env3%P)
 
    print *, i, env3%P(i), env3%T(i), env3%beta(i)
+
+   do ns=1,size(env3%T)
+      write(1, *) env3%T(ns), env3%P(ns), env3%beta(ns)
+   end do
+
+
    call assert(env3%T(i) < 220._pr, "Stop temperature of the PT envelope")
    call assert(env3%P(i) < 13._pr, "Stop pressure of the PT envelope")
    call assert(env3%beta(i) > 0.4_pr, "Stop beta of the PT envelope")
