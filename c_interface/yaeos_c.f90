@@ -47,7 +47,7 @@ module yaeos_c
    public :: pure_saturation_line
    public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
    public :: pt3_phase_envelope, px3_phase_envelope !, tx3_phase_envelope
-   public :: pt_mp_phase_envelope
+   public :: pt_mp_phase_envelope, px_mp_phase_envelope
    public :: critical_point, critical_line
    public :: stability_zpt, tm
 
@@ -1170,6 +1170,65 @@ contains
          ns = pt_mp%points(i)%ns
       end do
    end subroutine pt_mp_phase_envelope
+   
+   subroutine px_mp_phase_envelope(&
+      id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, beta_w, max_points, &
+      x_ls, ws, betas, Ps, alphas, iters, ns &
+      )
+      use yaeos, only: PXEnvelMP, px_envelope
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer(c_int), intent(in) :: np
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: x_l0(np, size(z0))
+      real(c_double), intent(in) :: w0(size(z0))
+      real(c_double), intent(in) :: betas0(np)
+      real(c_double), intent(in) :: P0
+      real(c_double), intent(in) :: alpha0
+      real(c_double), intent(in) :: beta_w
+
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
+
+      real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
+      real(c_double), intent(out) :: ws(max_points, size(z0))
+      real(c_double), intent(out) :: betas(max_points, np)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: alphas(max_points)
+
+      integer(c_int), intent(out) :: iters(max_points)
+      integer(c_int), intent(out) :: ns(max_points)
+
+      integer :: i, j
+
+      type(PXEnvelMP) :: px_mp
+
+      x_ls = makenan()
+      ws = makenan()
+      betas = makenan()
+      Ps = makenan()
+      alphas = makenan()
+
+      px_mp = px_envelope(&
+         model=ar_models(id)%model, np=np, z0=z0, zi=zi, T=T, x_l0=x_l0, &
+         w0=w0, betas0=betas0, P0=P0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points &
+         )
+
+      do i=1,size(px_mp%points)
+         do j=1,np
+            x_ls(i, j, :) = px_mp%points(i)%x_l(j, :)
+         end do
+         ws(i, :) = px_mp%points(i)%w
+         betas(i, :) = px_mp%points(i)%betas
+         Ps(i) = px_mp%points(i)%P
+         alphas(i) = px_mp%alpha(i)
+         iters = px_mp%points(i)%iters
+         ns = px_mp%points(i)%ns
+      end do
+   end subroutine px_mp_phase_envelope
 
    subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
       use yaeos, only: EquilibriumState, flash
