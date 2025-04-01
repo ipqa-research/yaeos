@@ -1,5 +1,5 @@
 project('yaeos', 'c',
-  version : '3.0.0',
+  version : '3.1.0',
   license: 'MPL',
   meson_version: '>=0.64.0',
   default_options : ['warning_level=2'],
@@ -30,8 +30,8 @@ incdir_f2py = run_command(py,
 
 
 # fpm
-fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
-cflags = '-fPIC'
+fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp -ftrampoline-impl=heap'
+cflags = '-g -fPIC -ftrampoline-impl=heap'
 fpm_build_dir = meson_path / 'fpm_build'
 
 fpm = run_command(
@@ -149,3 +149,4 @@ py.extension_module(module_name,
   subdir: python_lib / 'lib',
   install : true,
 )
+#LDFLAGS=-Wl,-rpath=.,-z,noexecstack
