@@ -3,6 +3,7 @@ program main
    !! In this test we calculate two phase envelope from a previously known
    !! double saturation point.
    use testing_aux, only: assert, test_title
+   use yaeos__constants, only: pr
    use yaeos
    implicit none
    integer, parameter :: nc = 15, np=3
@@ -65,7 +66,9 @@ program main
 
    ns = 3*nc+2
    ! Find an initial point by solving a known 4ph point
-   call pt%solve_point(model, z, np=np, beta_w=0.0_pr, X=X, ns=ns, S=S, dXdS=dXdS, F=F, dF=dF, iters=iters, max_iterations=100)
+   call pt%solve_point(&
+      model, z, np=np, beta_w=0.0_pr, X=X, ns=ns, S=S, dXdS=dXdS, &
+      F=F, dF=dF, iters=iters, max_iterations=100)
    P = exp(X(3*nc+np+1))
    T = exp(X(3*nc+np+2))
    betas = X(3*nc+1:3*nc+np)
@@ -73,7 +76,9 @@ program main
    ! alpha
    X(3*nc + np + 2) = 0.0
    ns = size(X)
-   px = px_envelope(model, z0, zi, np, T=T, x_l0=x_l, w0=w, betas0=betas, p0=P, alpha0=0.0_pr, ns0=psize, dS0=1e-10_pr, beta_w=0.0_pr, points=20)
+   px = px_envelope(&
+      model, z0, zi, np, T=T, x_l0=x_l, w0=w, betas0=betas, p0=P, alpha0=0.0_pr,&
+      ns0=psize, dS0=1e-10_pr, beta_w=0.0_pr, points=20)
    call assert(maxval(abs(px%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(px%points(1)%P - 108.015 )< 1e-2, "First point P")
    call assert(abs(px%points(1)%T - 261.828 )< 1e-2, "First point T")
