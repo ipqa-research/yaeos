@@ -36,6 +36,10 @@ module yaeos__models_ar
    use yaeos__models_base, only: BaseModel
    implicit none
 
+   private
+
+   public :: ArModel, size, volume
+
    type, abstract, extends(BaseModel) :: ArModel
       !! Abstract residual Helmholtz model.
       !!

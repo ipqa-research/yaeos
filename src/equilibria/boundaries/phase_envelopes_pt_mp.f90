@@ -14,15 +14,15 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 
    public :: PTEnvelMP
    public :: pt_F_NP
-   public :: solve_point
    public :: pt_envelope
-   public :: get_values_from_X
 
    type :: PTEnvelMP
       !! Multiphase PT envelope.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
    contains
       procedure :: write => write_envelope_PT_MP
+      procedure, nopass :: solve_point
+      procedure, nopass :: get_values_from_X
    end type PTEnvelMP
 
    type :: MPPoint
@@ -106,6 +106,8 @@ contains
       dS = dS0
 
       allocate(env_points(0))
+      F = 1
+      its = 0
       do i=1,number_of_points
          X0 = X
          call solve_point(&
@@ -386,11 +388,11 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do while(abs(dX(iT)) > 1)
+         do while(abs(dX(iT)) > 0.1)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 1)
+         do while(abs(dX(iP)) > 0.1)
             dX = dX/2
          end do
 
@@ -445,6 +447,12 @@ contains
       integer :: lb !! Lower bound of each phase
       integer :: ub !! Upper bound of each phase
 
+      integer :: iT
+      integer :: iP
+
+      iT = size(X)
+      iP = size(X) - 1
+
       dFdS = 0
       dFdS(size(X)) = -1
 
@@ -474,6 +482,14 @@ contains
       ! We adapt the step size to the number of iterations, the desired number
       ! of iterations for each point is around 3.
       dS = dS * 3._pr/its
+
+      do while(&
+         abs(dXdS(iT) * dS) > 0.05_pr &
+         .or. abs(dXdS(iP) * dS) > 0.05_pr&
+         )
+         dS = dS/2
+      end do
+
    end subroutine update_specification
 
    subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)

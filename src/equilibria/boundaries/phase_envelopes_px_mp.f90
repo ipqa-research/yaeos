@@ -15,9 +15,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
 
    public :: PXEnvelMP
    public :: px_F_NP
-   public :: solve_point
    public :: px_envelope
-   public :: get_values_from_X
 
    type :: PXEnvelMP
       !! Multiphase PT envelope.
@@ -27,6 +25,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
       real(pr), allocatable :: zi(:)
    contains
       procedure :: write => write_envelope_Px_MP
+      procedure, nopass :: solve_point
+      procedure, nopass :: get_values_from_X
    end type PXEnvelMP
 
    type :: MPPoint

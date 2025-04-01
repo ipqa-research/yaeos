@@ -5,7 +5,7 @@ program main
    use testing_aux, only: assert, test_title
    use yaeos
    use yaeos__equilibria_boundaries_phase_envelopes_mp, only: &
-      pt_F_NP, solve_point, pt_envelope, PTEnvelMP
+      pt_F_NP, pt_envelope, PTEnvelMP
    implicit none
    integer, parameter :: nc = 15, np=3
    integer, parameter :: psize = np*nc + np + 2
@@ -50,6 +50,8 @@ program main
    P = 70
    T = 260
    env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
+
+   call env%write(1)
 
    call assert(maxval(abs(env%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(env%points(1)%P - 108.015 )< 1e-2, "First point P")
