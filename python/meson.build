@@ -1,5 +1,5 @@
 project('yaeos', 'c',
-  version : '3.0.0',
+  version : '3.1.0',
   license: 'MPL',
   meson_version: '>=0.64.0',
   default_options : ['warning_level=2'],
@@ -31,8 +31,26 @@ incdir_f2py = run_command(py,
 
 # fpm
 fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
-cflags = '-fPIC'
+cflags = '-g -fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
+
+## GLIBC patches
+# from glibc >= 2.41 executable stack is not an option, so we force heap
+# allocation
+cc = meson.get_compiler('c')
+
+glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
+glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
+
+message('glibc major version: ' + glibc_major)
+message('glibc minor version: ' + glibc_minor)
+
+glibc_version = glibc_major + '.' + glibc_minor
+
+if glibc_version.version_compare('>=2.41')
+  fflags = fflags + ' -ftrampoline-impl=heap'
+  cflags = cflags + ' -ftrampoline-impl=heap'
+endif
 
 fpm = run_command(
     'fpm',
@@ -149,3 +167,4 @@ py.extension_module(module_name,
   subdir: python_lib / 'lib',
   install : true,
 )
+#LDFLAGS=-Wl,-rpath=.,-z,noexecstack

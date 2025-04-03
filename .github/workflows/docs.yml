@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   documentation:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -15,16 +15,16 @@ jobs:
       id: setup-fortran
       with:
         compiler: "gcc"
-        version: 13
+        version: 14
 
     - name: Install Dependencies Ubuntu
       run: |
         sudo apt-get update
-        sudo apt install -y python3-dev graphviz pandoc
+        sudo apt install -y python3-dev graphviz pandoc libblas-dev liblapack-dev
         sudo pip install ford markdown
         pip install -r python/docs/requirements.txt
         pip install -r python/requirements-build.txt
-        pip install python/
+        pip install -v python/
 
     - name: Build Developer Documentation
       run: |

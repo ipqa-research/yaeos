@@ -66,8 +66,8 @@ contains
       z(component) = 1
       call model%volume(z, P=Pc, T=Tc, V=Vc, root_type="vapor")
 
-      Vx = Vc*0.999
-      Vy = Vc*1.001
+      Vx = Vc*0.995
+      Vy = Vc*1.005
 
       X = [log(Vx), log(Vy), log(Pc), log(Tc)]
 

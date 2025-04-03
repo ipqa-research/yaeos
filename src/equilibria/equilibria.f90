@@ -17,7 +17,7 @@ module yaeos__equilibria
    ! Critical points
    use yaeos__equilibria_critical, only: &
       critical_line, CriticalLine, critical_point, spec_CP
-   
+
    ! Extra
    use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
 
@@ -34,4 +34,8 @@ module yaeos__equilibria
       PTEnvel3, pt_envelope_3ph
    use yaeos__equilibria_boundaries_phase_envelopes_px3, only: &
       PXEnvel3, PX_envelope_3ph
+   use yaeos__equilibria_boundaries_phase_envelopes_mp, only: &
+      PTEnvelMP, pt_envelope
+   use yaeos__equilibria_boundaries_phase_envelopes_mp_px, only: &
+      PXEnvelMP, px_envelope
 end module yaeos__equilibria

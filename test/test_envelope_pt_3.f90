@@ -59,7 +59,7 @@ program main
 
    ! Obtain the values of the point
    call get_values_from_X(z, XX, x, y, w, P, T, beta)
-   
+
    call assert(its < 1000, "solve_point convergence")
    call assert(abs(beta - 0.22) < 1e-2, "beta value")
    call assert(abs(P - 27.158429541826763) < 1e-2, "P value")
@@ -68,7 +68,8 @@ program main
    ! Calculate the PT envelope using the converged point as the initial point
    env3 = pt_envelope_3ph(&
       eos, z=z, x0=x, y0=y, w0=w, beta0=beta, &
-      P0=P, T0=T, ns0=ns, dS0=0.01_pr, points=1200)
+      P0=P, T0=T, ns0=ns, dS0=1e-5_pr, points=900 &
+      )
 
    i = size(env3%P)
 
@@ -85,7 +86,7 @@ contains
       real(pr), intent(out) :: lnK(:)
       real(pr), intent(out) :: beta
       real(pr) :: phi_w(size(z)), phi_y(size(z))
-      
+
       y = 0
       y(nc) = 1
       call eos%lnphi_pt(y, sat%P, sat%T, root_type="liquid", lnphi=phi_y)
