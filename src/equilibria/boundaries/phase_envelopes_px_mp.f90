@@ -76,7 +76,7 @@ contains
       integer :: nc
 
       integer :: its
-      integer :: max_iterations = 1000
+      integer :: max_iterations = 100
       integer :: number_of_points
 
 
@@ -112,6 +112,10 @@ contains
       dS = dS0
 
       allocate(env_points(0), alphas(0))
+      call solve_point(&
+         model, z0, zi, np, T, beta_w, X, ns, S, dXdS, &
+         F, dF, its, 1000 &
+         )
       do i=1,number_of_points
          X0 = X
          call solve_point(&
@@ -128,7 +132,7 @@ contains
             S = X(ns)
             call solve_point(&
                model, z0, zi, np, T, beta_w, X, ns, S, dXdS, &
-               F, dF, its, max_iterations&
+               F, dF, its, 5&
                )
          end do
 
@@ -284,7 +288,7 @@ contains
          dwdb(l, :) = -z * K(l, :)/denom**2
          dwdlnK(l, :) = -K(l, :) * betas(l)*z/denom**2
       end do
-      
+
       do l=1,np
          do phase=1,np
             dx_l_dlnK(phase, l, :) = dwdlnK(l, :) * K(phase, :)
@@ -293,8 +297,6 @@ contains
             end if
          end do
       end do
-
-
 
       do l=1,np
          ! Derivatives of the isofugacity equations
@@ -329,16 +331,13 @@ contains
                   - dlnphi_dn_w(i, :)*dwdb(l, :))
             end do
          end do
-
-         ! wrt P, alpha
-         do phase=1,np
-            do i=1,nc
-               lb = (phase-1)*nc + i
-               df(lb, nc*np+np+1) = P*(dlnphi_dp_l(phase, i) - dlnphi_dp_w(i))
-               df(lb, nc*np+np+2) = sum(&
-                  dwda * K(phase, :) * dlnphi_dn_l(phase, i, :) - dwda*dlnphi_dn_w(i, :) &
+         ! disofug wrt P, alpha
+         do i=1,nc
+            lb = (l-1)*nc + i
+            df(lb, nc*np+np+1) = P*(dlnphi_dp_l(l, i) - dlnphi_dp_w(i))
+            df(lb, nc*np+np+2) = sum(&
+               dwda * K(l, :) * dlnphi_dn_l(l, i, :) - dwda*dlnphi_dn_w(i, :) &
                )
-            end do
          end do
 
          ! Derivatives of the sum of mole fractions
@@ -356,12 +355,14 @@ contains
          do j=1,np
             lb = nc*np + j
             df(lb,np*nc+l) = sum(K(j, :) * dwdb(l, :) - dwdb(l, :))
-            df(nc*np+l, nc*np+np+2) = sum(K(j, :) * dwda - dwda)
          end do
+         df(nc*np+l, nc*np+np+2) = sum(K(l, :) * dwda - dwda)
 
          ! Derivatives of sum(beta) + beta_w == 1
          df(nc * np + np + 1, np*nc + l) = 1
       end do
+
+
 
       df(nc * np + np + 2, ns) = 1
    end subroutine px_F_NP
@@ -408,15 +409,7 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do while(abs(dX(ia)) > 0.01)
-            dX = dX/2
-         end do
-
-         do while(abs(dX(iP)) > 1)
-            dX = dX/2
-         end do
-
-         if (maxval(abs(F)) < 1e-7_pr) exit
+         if (maxval(abs(F)) < 1e-9_pr) exit
 
          X = X + dX
       end do
@@ -488,8 +481,7 @@ contains
             exit
          end if
       end do
-
-      dS = dXdS(ns)*dS
+      dS = dXdS(ns) * dS
       dXdS = dXdS/dXdS(ns)
 
       ! We adapt the step size to the number of iterations, the desired number
@@ -531,7 +523,7 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.1)
+         do while(maxval(abs(X(lb:ub))) < 0.3)
             X = X + dXdS * dS
          end do
 

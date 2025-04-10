@@ -70,7 +70,7 @@ contains
       integer :: nc
 
       integer :: its
-      integer :: max_iterations = 1000
+      integer :: max_iterations = 50
       integer :: number_of_points
 
 
@@ -108,6 +108,11 @@ contains
       allocate(env_points(0))
       F = 1
       its = 0
+      X0 = X
+      call solve_point(&
+         model, z, np, beta_w, X, ns, S, dXdS, &
+         F, dF, its, 1000 &
+         )
       do i=1,number_of_points
          X0 = X
          call solve_point(&
@@ -260,6 +265,8 @@ contains
       end do
       F(nc * np + np + 1) = sum(betas) + beta_w - 1
       F(nc * np + np + 2) = X(ns) - S
+
+
       ! ========================================================================
       ! Derivatives and Jacobian Matrix of the whole system
       ! ------------------------------------------------------------------------
@@ -316,12 +323,10 @@ contains
          end do
 
          ! wrt T,p
-         do phase=1,np
-            do i=1,nc
-               lb = (phase-1)*nc + i
-               df(lb, nc*np+np+1) = P*(dlnphi_dp_l(phase, i) - dlnphi_dp_w(i))
-               df(lb, nc*np+np+2) = T*(dlnphi_dt_l(phase, i) - dlnphi_dt_w(i))
-            end do
+         do i=1,nc
+            lb = (l-1)*nc + i
+            df(lb, nc*np+np+1) = P*(dlnphi_dp_l(l, i) - dlnphi_dp_w(i))
+            df(lb, nc*np+np+2) = T*(dlnphi_dt_l(l, i) - dlnphi_dt_w(i))
          end do
 
          ! Derivatives of the sum of mole fractions
@@ -482,6 +487,10 @@ contains
       ! We adapt the step size to the number of iterations, the desired number
       ! of iterations for each point is around 3.
       dS = dS * 3._pr/its
+
+      ! do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
+      !    dS = dS*2
+      ! end do
 
       do while(&
          abs(dXdS(iT) * dS) > 0.05_pr &

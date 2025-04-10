@@ -74,11 +74,14 @@ program main
    betas = X(3*nc+1:3*nc+np)
 
    ! alpha
-   X(3*nc + np + 2) = 0.0
+   X(3*nc + np + 2) = 0.01
    ns = size(X)
+
+   ! call numdiff
+
    px = px_envelope(&
       model, z0, zi, np, T=T, x_l0=x_l, w0=w, betas0=betas, p0=P, alpha0=0.0_pr,&
-      ns0=psize, dS0=1e-10_pr, beta_w=0.0_pr, points=20)
+      ns0=psize, dS0=1e-2_pr, beta_w=0.0_pr, points=200)
    call assert(maxval(abs(px%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(px%points(1)%P - 108.015 )< 1e-2, "First point P")
    call assert(abs(px%points(1)%T - 261.828 )< 1e-2, "First point T")
@@ -88,6 +91,43 @@ program main
    call px%write(69)
 
 contains
+   subroutine numdiff
+      use yaeos__equilibria_boundaries_phase_envelopes_mp_px, only: px_F_NP
+      real(pr) :: dfnum(psize, psize), F1(psize), F2(psize)
+      real(pr) :: tmp(psize, psize)
+      real(pr) :: XdX(psize)
+      real(pr) :: eps = 1e-5, dx
+      character(len=*), parameter :: fmt="(*(E10.2,2x))"
+
+      integer :: i, j, loc(2)
+
+      call px_F_NP(model, z0, zi, np, T, 0.0_pr, X, ns, S, F, dF)
+
+      XdX = X
+      print "(*(I10,2x))", (i, i=1, psize)
+      do i=1,nc*np+np + 2
+         XdX = X
+         dX = XdX(i) * eps
+         XdX(i) = XdX(i) + dX
+
+         call px_F_NP(model, z0, zi, np, T, 0.0_pr, Xdx, ns, S, F1, tmp)
+         XdX(i) = XdX(i) - 2*dx
+         call px_F_NP(model, z0, zi, np, T, 0.0_pr, Xdx, ns, S, F2, tmp)
+         dfnum(:, i) = (F1 - F2)/(2*dX)
+
+         print *, i
+         print fmt, df(:, i)
+         print fmt, dfnum(:, i)
+         write(1, *) dfnum(:, i)
+         print *, ""
+
+         if (i > nc*np) print *, "=============================================="
+      end do
+
+      loc = maxloc(abs(df - dfnum))
+      print *, maxval(abs((df - dfnum))), maxloc(abs(df - dfnum)), df(loc(1), loc(2)), dfnum(loc(1), loc(2))
+
+   end subroutine numdiff
 
    type(CubicEoS) function get_model()
       real(pr) :: tc(15), pc(15), w(15), kij(15, 15)

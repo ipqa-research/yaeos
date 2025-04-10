@@ -1158,7 +1158,8 @@ class ArModel(ABC):
         return flash
 
     def saturation_pressure(
-        self, z, temperature: float, kind: str = "bubble", p0: float = 0
+        self, z, temperature: float,
+        kind: str = "bubble", p0: float = 0, y0=None
     ) -> dict:
         """Saturation pressure at specified temperature.
 
@@ -1173,6 +1174,11 @@ class ArModel(ABC):
                 - "bubble"
                 - "dew"
                 - "liquid-liquid"
+        p0: float, optional
+            Initial guess for pressure [bar]
+        y0: array_like, optional
+            Initial guess for the incipient phase, by default None
+            (will use k_wilson correlation)
 
         Returns
         -------
@@ -1215,8 +1221,12 @@ class ArModel(ABC):
 
             print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))
         """
+
+        if y0 is None:
+            y0 = np.zeros_like(z)
+
         p, x, y, volume_x, volume_y, beta = yaeos_c.saturation_pressure(
-            id=self.id, z=z, t=temperature, kind=kind, p0=p0
+            id=self.id, z=z, t=temperature, kind=kind, p0=p0, y0=y0
         )
 
         return {
@@ -1740,7 +1750,7 @@ class ArModel(ABC):
         for i in range(number_of_phases):
             df[f"beta^{i+1}"] = betas[msk, i]
 
-        return df
+        return df, {"x_l": x_ls[msk], "w": ws[msk], "beta": betas[msk]}
 
     def phase_envelope_px_mp(
         self, z0, zi, t, x_l0, w0, betas0, p0, ns0, ds0, alpha0=0,
@@ -1785,7 +1795,7 @@ class ArModel(ABC):
         for i in range(number_of_phases):
             df[f"beta^{i+1}"] = betas[msk, i]
 
-        return df
+        return df, {"x_l": x_ls[msk], "w": ws[msk], "beta": betas[msk]}
 
     # ==============================================================
     # Stability analysis

@@ -731,13 +731,14 @@ contains
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
 
-   subroutine saturation_pressure(id, z, T, kind, P0, P, x, y, Vx, Vy, beta)
+   subroutine saturation_pressure(id, z, T, kind, P0, y0, P, x, y, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fsaturation_pressure => saturation_pressure
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: P0
+      real(c_double), intent(in) :: y0(size(z))
 
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: x(size(z))
@@ -748,10 +749,14 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (P0 == 0) then
+      if (P0 == 0 .and. all(y0 == 0)) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
-      else
+      elseif (P0 /= 0) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0)
+      elseif (all(y0 /= 0)) then
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, y0=y0)
+      else
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0, y0=y0)
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
@@ -1166,8 +1171,8 @@ contains
          betas(i, :) = pt_mp%points(i)%betas
          Ps(i) = pt_mp%points(i)%P
          Ts(i) = pt_mp%points(i)%T
-         iters = pt_mp%points(i)%iters
-         ns = pt_mp%points(i)%ns
+         iters(i) = pt_mp%points(i)%iters
+         ns(i) = pt_mp%points(i)%ns
       end do
    end subroutine pt_mp_phase_envelope
    
