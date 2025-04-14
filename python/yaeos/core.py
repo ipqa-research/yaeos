@@ -5,6 +5,9 @@ the models' thermoprops methods.
 """
 
 from abc import ABC
+
+from intersect import intersection
+
 from typing import Union
 
 import numpy as np
@@ -1158,8 +1161,12 @@ class ArModel(ABC):
         return flash
 
     def saturation_pressure(
-        self, z, temperature: float,
-        kind: str = "bubble", p0: float = 0, y0=None
+        self,
+        z,
+        temperature: float,
+        kind: str = "bubble",
+        p0: float = 0,
+        y0=None,
     ) -> dict:
         """Saturation pressure at specified temperature.
 
@@ -1711,10 +1718,22 @@ class ArModel(ABC):
         }
 
     def phase_envelope_pt_mp(
-        self, z, x_l0, w0, betas0, p0, t0, ns0, ds0, beta_w=0, max_points=1000
+        self,
+        z,
+        x_l0,
+        w0,
+        betas0,
+        p0,
+        t0,
+        ns0,
+        ds0,
+        beta_w=0,
+        max_points=1000,
+        stop_pressure=1000,
     ):
         """Multi-phase envelope."""
 
+        x_l0 = np.array(x_l0)
         number_of_phases = x_l0.shape[0]
         nc = len(z)
 
@@ -1731,6 +1750,7 @@ class ArModel(ABC):
             ds0=ds0,
             beta_w=beta_w,
             max_points=max_points,
+            stop_pressure=stop_pressure,
         )
 
         msk = ~np.isnan(ts)
@@ -1753,8 +1773,19 @@ class ArModel(ABC):
         return df, {"x_l": x_ls[msk], "w": ws[msk], "beta": betas[msk]}
 
     def phase_envelope_px_mp(
-        self, z0, zi, t, x_l0, w0, betas0, p0, ns0, ds0, alpha0=0,
-        beta_w=0, max_points=1000
+        self,
+        z0,
+        zi,
+        t,
+        x_l0,
+        w0,
+        betas0,
+        p0,
+        ns0,
+        ds0,
+        alpha0=0,
+        beta_w=0,
+        max_points=1000,
     ):
         """Multi-phase envelope."""
 
@@ -1797,9 +1828,190 @@ class ArModel(ABC):
 
         return df, {"x_l": x_ls[msk], "w": ws[msk], "beta": betas[msk]}
 
-    # ==============================================================
+    def isopleth(
+        self,
+        z,
+        dew_start=(500, 0.01),
+        bubble_start=(200, 10),
+        max_points=1000,
+        delta_dew_2ph=0.01,
+        delta_bub_2ph=0.01,
+        delta_dsp_3ph=0.01,
+        stop_pressure=2500,
+    ):
+
+        dew_point = self.saturation_temperature(
+            z, pressure=dew_start[1], kind="dew", t0=dew_start[0]
+        )
+        bub_point = self.saturation_pressure(
+            z, temperature=bubble_start[0], kind="bubble", p0=bubble_start[1]
+        )
+
+        dew_line_df, dew_line_raw = self.phase_envelope_pt_mp(
+            z=z,
+            x_l0=[z],
+            w0=dew_point["x"],
+            betas0=[1],
+            p0=dew_point["P"],
+            t0=dew_point["T"],
+            ns0=len(z) + 2,
+            ds0=delta_dew_2ph,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
+        )
+
+        bub_line_df, bub_line_raw = self.phase_envelope_pt_mp(
+            z=z,
+            x_l0=[z],
+            w0=bub_point["y"],
+            betas0=[1],
+            p0=bub_point["P"],
+            t0=bub_point["T"],
+            ns0=len(z) + 2,
+            ds0=delta_bub_2ph,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
+        )
+
+        dsps = intersection(
+            dew_line_df["T"].values,
+            dew_line_df["P"].values,
+            bub_line_df["T"].values,
+            bub_line_df["P"].values,
+        )
+
+        # Order the DSPs wrt temperature
+        idx = dsps[0].argsort()
+        dsps = (dsps[0][idx], dsps[1][idx])
+
+        dew_locs = []
+        bub_locs = []
+
+        three_phase_envs = []
+        stable_lines = {"3ph": [], "2ph": []}
+
+        dew_line_stable_df = dew_line_df.copy()
+        bub_line_stable_df = bub_line_df.copy()
+
+        if 0 < len(dsps[0]) <= 2:
+            for temperature, pressure in zip(dsps[0], dsps[1]):
+                bub_loc = np.argmin(
+                    np.abs(bub_line_df["T"] - temperature)
+                    + np.abs(bub_line_df["P"] - pressure)
+                )
+                dew_loc = np.argmin(
+                    np.abs(dew_line_df["T"] - temperature)
+                    + np.abs(dew_line_df["P"] - pressure)
+                )
+
+                dew_locs.append(dew_loc)
+                bub_locs.append(bub_loc)
+
+                w_bub = bub_line_raw["w"][bub_loc]
+                w_dew = dew_line_raw["w"][dew_loc]
+
+                env1, _ = self.phase_envelope_pt_mp(
+                    z,
+                    x_l0=np.array([z, w_bub]),
+                    w0=w_dew,
+                    betas0=[1, 0],
+                    t0=temperature,
+                    p0=pressure,
+                    ns0=2 * len(z) + 2,
+                    ds0=delta_dsp_3ph,
+                    max_points=300,
+                    stop_pressure=stop_pressure,
+                )
+
+                env2, _ = self.phase_envelope_pt_mp(
+                    z,
+                    x_l0=np.array([z, w_dew]),
+                    w0=w_bub,
+                    betas0=[1, 0],
+                    t0=temperature,
+                    p0=pressure,
+                    ns0=2 * len(z) + 2,
+                    ds0=1e-3,
+                    max_points=300,
+                    stop_pressure=stop_pressure,
+                )
+
+                three_phase_envs.append((env1, env2))
+            if len(dew_locs) == 2:
+                msk = np.array([False] * len(dew_line_df))
+                msk[:dew_locs[1] + 1] = True
+                msk[dew_locs[0]:] = True
+                dew_line_stable_df *= np.nan
+                dew_line_stable_df[msk] = dew_line_df[msk]
+
+                msk = np.array([False] * len(bub_line_df))
+                msk[bub_locs[0]:bub_locs[1] + 1] = True
+                bub_line_stable_df *= np.nan
+                bub_line_stable_df[msk] = bub_line_df[msk]
+
+        elif len(dsps[0]) == 0:
+            bub_line_stable_df *= np.nan
+
+            k0 = dew_line_raw["w"][0, :] / z
+            flash = self.flash_pt(
+                z,
+                pressure=bub_line_df.iloc[0]["P"],
+                temperature=bub_line_df.iloc[0]["T"],
+                k0=k0,
+            )
+
+            x_l0 = [z, flash["y"]]
+            w0 = bub_line_raw["w"][0, :]
+            betas = [1 - flash["beta"], flash["beta"]]
+
+            bubble_isolated, _ = self.phase_envelope_pt_mp(
+                z=z,
+                x_l0=x_l0,
+                w0=w0,
+                betas0=betas,
+                p0=flash["P"],
+                t0=flash["T"],
+                ns0=2 * len(z) + 4,
+                ds0=delta_bub_2ph,
+                max_points=max_points,
+            )
+
+            x_l0 = [z, bub_line_raw["w"][0, :]]
+            w0 = flash["y"]
+            idx = np.argmax(w0)
+
+            flash = self.flash_pt(z, flash["P"], flash["T"])
+            betas = [1 - flash["beta"], flash["beta"]]
+
+            dew_isolated, _ = self.phase_envelope_pt_mp(
+                z=z,
+                x_l0=x_l0,
+                w0=w0,
+                betas0=betas,
+                p0=flash["P"] - 5,
+                t0=flash["T"] + 5,
+                ns0=2 * len(z) + 3,
+                ds0=delta_bub_2ph,
+                max_points=max_points,
+            )
+
+            three_phase_envs.append((bubble_isolated, dew_isolated))
+
+        stable_lines["2ph"] = {
+                "dew": dew_line_stable_df,
+                "bub": bub_line_stable_df
+            }
+
+        return {
+            "2ph": (dew_line_df, bub_line_df),
+            "DSP": dsps,
+            "3ph": three_phase_envs,
+            "2ph_stable": stable_lines["2ph"],
+        }
+
+    # =========================================================================
     # Stability analysis
-    # --------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def stability_analysis(self, z, pressure, temperature):
         """Perform stability analysis.
 

@@ -42,39 +42,105 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 contains
 
    type(PTEnvelMP) function pt_envelope(&
-      model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points &
+      model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points, &
+      max_pressure &
       )
+      !! # pt_envelope
+      !! Calculation of a multiphase PT envelope.
+      !!
+      !! # Description
+      !! Calculates a PT envelope is calculated using the continuation method.
+      !! The envelope is calculated by solving the system of equations for each
+      !! point of the envelope. The system of equations is solved using the
+      !! Newton-Raphson method.
+      !!
+      !! This function requires the system specification conditions, which are
+      !! the fluid composition (\z\), the number of phases that are not 
+      !! incipient; defined as \(np\), proper intialization values, the 
+      !!variables that end with `0`
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  A basic code example
+      !! ```
+      !!
+      !! # References
+      !!
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      integer, intent(in) :: np
-      real(pr), intent(in) :: x_l0(np, size(z))
-      real(pr), intent(in) :: w0(size(z))
-      real(pr), intent(in) :: betas0(np)
-      real(pr), intent(in) :: P0
-      real(pr), intent(in) :: T0
-      integer, intent(in) :: ns0
+      real(pr), intent(in) :: z(:) !! Mixture global composition.
+      integer, intent(in) :: np !! Number of main phases.
+      real(pr), intent(in) :: x_l0(np, size(z)) 
+         !! Initial guess for the mole fractions of each phase. arranged as
+         !! an array of size `(np, nc)`, where nc is the number of components 
+         !! and `np` the number of main phases. Each row correspond to the 
+         !! composition of each main phaase.
+      real(pr), intent(in) :: w0(size(z)) 
+         !! Initial guess for the mole fractions of the 
+         !! reference/incipient phase.
+      real(pr), intent(in) :: betas0(np) 
+         !! Initial guess for the fractions of the main phases. arranged as
+         !! an array of size `(np)`, where `np` is the number of main phases.
+      real(pr), intent(in) :: P0 !! Initial guess for the pressure [bar].
+      real(pr), intent(in) :: T0 !! Initial guess for the temperature [K].
+      integer, intent(in) :: ns0 
+         !! Number of the specified variable.
+         !! The variable to be specified. This is the variable that will be
+         !! used to calculate the first point of the envelope. The variable
+         !! can be any of the variables in the vector X, but it is recommended
+         !! to use the temperature or pressure. The variables are aranged as
+         !! follows:
+         !!
+         !! - `X(1:nc*np) = ln(K_i^l)`: \(\frac{x_i^l}{w_i}\)
+         !! - `X(nc*np+1:nc*np+np) = \beta_i^l`: Fraction of each main phase.
+         !! - `X(nc*np+np+1) = ln(P)`: Pressure [bar].
+         !! - `X(nc*np+np+2) = ln(T)`: Temperature [K].
       real(pr), intent(in) :: dS0
+         !! Step size of the specification for the next point.
+         !! This is the step size that will be used to calculate the next point.
+         !! Inside the algorithm this value is modified to adapt the step size
+         !! to facilitate the convergence of each point. 
       real(pr), intent(in) :: beta_w
-      !! Fraction of the reference (incipient) phase.
+         !! Fraction of the reference (incipient) phase.
       integer, optional, intent(in) :: points
+         !! Number of points to calculate.
+      real(pr), optional, intent(in) :: max_pressure 
+         !! Maximum pressure [bar] to calculate.
+         !! If the pressure of the point is greater than this value, the
+         !! calculation is stopped.
+         !! This is useful to avoid calculating envelopes that go to infinite
+         !! values of pressure.
 
-      type(MPPoint), allocatable :: env_points(:)
-      type(MPPoint) :: point
+      type(MPPoint), allocatable :: env_points(:) !! Array of converged points.
+      type(MPPoint) :: point !! Converged point.
+      real(pr) :: max_P !! Maximum pressure [bar] to calculate.
 
-      real(pr) :: F(size(z) * np + np + 2)
+      real(pr) :: F(size(z) * np + np + 2) !! Vector of functions valuated.
       real(pr) :: dF(size(z) * np + np + 2, size(z) * np + np + 2)
-      real(pr) :: dXdS(size(z) * np + np + 2)
-      real(pr) :: X(size(z) * np + np + 2), dX(size(z) * np + np + 2)
+         !! Jacobian matrix.
+      real(pr) :: dXdS(size(z) * np + np + 2) 
+         !! Sensitivity of the variables wrt the specification.
+      real(pr) :: X(size(z) * np + np + 2) 
+         !! Vector of variables.
+      real(pr) :: dX(size(z) * np + np + 2) 
+         !! Step for next point estimation.
 
-      integer :: nc
+      integer :: nc !! Number of components.
 
-      integer :: its
-      integer :: max_iterations = 50
-      integer :: number_of_points
+      integer :: its 
+         !! Number of iterations to solve the current point.
+      integer :: max_iterations = 10 
+         !! Maximum number of iterations to solve the point.
+      integer :: number_of_points 
+         !! Number of points to calculate.
 
 
-      real(pr) :: x_l(np, size(z)), w(size(z)), betas(np), P, T
+      real(pr) :: x_l(np, size(z)) !! Mole fractions of the main phases.
+      real(pr) :: w(size(z)) !! Mole fractions of the incipient phase.
+      real(pr) :: betas(np) !! Fractions of the main phases.
+      real(pr) :: P !! Pressure [bar].
+      real(pr) :: T !! Temperature [K].
 
       integer :: i !! Point calculation index
       integer :: lb !! Lower bound, index of the first component of a phase
@@ -90,6 +156,7 @@ contains
       nc = size(z)
 
       number_of_points = optval(points, 1000)
+      max_P = optval(max_pressure, 2000._pr)
 
       do i=1,np
          lb = (i-1)*nc + 1
@@ -133,11 +200,18 @@ contains
                )
          end do
 
-         ! If the point did not converge, stop the calculation
-         if (any(isnan(F)) .or. its > max_iterations) exit
-
-         ! Save the information of the converged point
+         ! Convert the values of the vector of variables into human-friendly
+         ! variables.
          call get_values_from_X(X, np, z, x_l, w, betas, P, T)
+         
+         ! If the point did not converge, stop the calculation
+         if (&
+            any(isnan(F)) .or. its > max_iterations &
+            .or. exp(X(nc*np+np+1)) < 1e-5 &
+            .or. P > max_P &
+         ) exit
+
+         ! Attach the new point to the envelope.
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
             iters=its, ns=ns &
@@ -377,17 +451,22 @@ contains
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
 
+      logical :: can_solve
+
       nc = size(z)
       iP = np*nc + np + 1
       iT = np*nc + np + 2
 
       X0 = X
 
+      can_solve = .true.
+
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, beta_w, x, ns, S, F, dF)
 
-         if (any(isnan(F))) then
+         if (any(isnan(F)) .and. can_solve) then
             X = X - 0.9 * dX
+            can_solve = .false.
             cycle
          end if
 
@@ -401,7 +480,7 @@ contains
             dX = dX/2
          end do
 
-         if (maxval(abs(F)) < 1e-7_pr) exit
+         if (maxval(abs(F)) < 1e-8_pr) exit
 
          X = X + dX
       end do
@@ -488,9 +567,9 @@ contains
       ! of iterations for each point is around 3.
       dS = dS * 3._pr/its
 
-      ! do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
-      !    dS = dS*2
-      ! end do
+      do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
+         dS = dS*2
+      end do
 
       do while(&
          abs(dXdS(iT) * dS) > 0.05_pr &

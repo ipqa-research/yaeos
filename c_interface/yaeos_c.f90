@@ -1121,7 +1121,8 @@ contains
    end subroutine px3_phase_envelope
 
    subroutine pt_mp_phase_envelope(&
-      id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, beta_w, max_points, &
+      id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
+      beta_w, max_points, stop_pressure, &
       x_ls, ws, betas, Ps, Ts, iters, ns &
       )
       use yaeos, only: PTEnvelMP, pt_envelope
@@ -1134,6 +1135,7 @@ contains
       real(c_double), intent(in) :: P0
       real(c_double), intent(in) :: T0
       real(c_double), intent(in) :: beta_w
+      real(c_double), intent(in) :: stop_pressure
 
       integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
@@ -1160,7 +1162,8 @@ contains
 
       pt_mp = pt_envelope(&
          model=ar_models(id)%model, np=np, z=z, x_l0=x_l0, w0=w0, betas0=betas0, &
-         P0=P0, T0=T0, ns0=ns0, ds0=ds0, beta_w=beta_w, points=max_points &
+         P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points, max_pressure=stop_pressure &
          )
 
       do i=1,size(pt_mp%points)
@@ -1175,7 +1178,7 @@ contains
          ns(i) = pt_mp%points(i)%ns
       end do
    end subroutine pt_mp_phase_envelope
-   
+
    subroutine px_mp_phase_envelope(&
       id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, beta_w, max_points, &
       x_ls, ws, betas, Ps, alphas, iters, ns &
