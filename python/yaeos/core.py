@@ -1831,6 +1831,7 @@ class ArModel(ABC):
     def isopleth(
         self,
         z,
+        three_phase=True,
         dew_start=(500, 0.01),
         bubble_start=(200, 10),
         max_points=1000,
@@ -1890,124 +1891,129 @@ class ArModel(ABC):
         three_phase_envs = []
         stable_lines = {"3ph": [], "2ph": []}
 
-        dew_line_stable_df = dew_line_df.copy()
-        bub_line_stable_df = bub_line_df.copy()
+        if three_phase:
+            dew_line_stable_df = dew_line_df.copy()
+            bub_line_stable_df = bub_line_df.copy()
 
-        if 0 < len(dsps[0]) <= 2:
-            for temperature, pressure in zip(dsps[0], dsps[1]):
-                bub_loc = np.argmin(
-                    np.abs(bub_line_df["T"] - temperature)
-                    + np.abs(bub_line_df["P"] - pressure)
-                )
-                dew_loc = np.argmin(
-                    np.abs(dew_line_df["T"] - temperature)
-                    + np.abs(dew_line_df["P"] - pressure)
-                )
+            if 0 < len(dsps[0]) <= 2:
+                for temperature, pressure in zip(dsps[0], dsps[1]):
+                    bub_loc = np.argmin(
+                        np.abs(bub_line_df["T"] - temperature)
+                        + np.abs(bub_line_df["P"] - pressure)
+                    )
+                    dew_loc = np.argmin(
+                        np.abs(dew_line_df["T"] - temperature)
+                        + np.abs(dew_line_df["P"] - pressure)
+                    )
 
-                dew_locs.append(dew_loc)
-                bub_locs.append(bub_loc)
+                    dew_locs.append(dew_loc)
+                    bub_locs.append(bub_loc)
 
-                w_bub = bub_line_raw["w"][bub_loc]
-                w_dew = dew_line_raw["w"][dew_loc]
+                    w_bub = bub_line_raw["w"][bub_loc]
+                    w_dew = dew_line_raw["w"][dew_loc]
 
-                env1, _ = self.phase_envelope_pt_mp(
-                    z,
-                    x_l0=np.array([z, w_bub]),
-                    w0=w_dew,
-                    betas0=[1, 0],
-                    t0=temperature,
-                    p0=pressure,
-                    ns0=2 * len(z) + 2,
-                    ds0=delta_dsp_3ph,
-                    max_points=300,
-                    stop_pressure=stop_pressure,
-                )
+                    env1, _ = self.phase_envelope_pt_mp(
+                        z,
+                        x_l0=np.array([z, w_bub]),
+                        w0=w_dew,
+                        betas0=[1, 0],
+                        t0=temperature,
+                        p0=pressure,
+                        ns0=2 * len(z) + 2,
+                        ds0=delta_dsp_3ph,
+                        max_points=300,
+                        stop_pressure=stop_pressure,
+                    )
 
-                env2, _ = self.phase_envelope_pt_mp(
-                    z,
-                    x_l0=np.array([z, w_dew]),
-                    w0=w_bub,
-                    betas0=[1, 0],
-                    t0=temperature,
-                    p0=pressure,
-                    ns0=2 * len(z) + 2,
-                    ds0=1e-3,
-                    max_points=300,
-                    stop_pressure=stop_pressure,
-                )
+                    env2, _ = self.phase_envelope_pt_mp(
+                        z,
+                        x_l0=np.array([z, w_dew]),
+                        w0=w_bub,
+                        betas0=[1, 0],
+                        t0=temperature,
+                        p0=pressure,
+                        ns0=2 * len(z) + 2,
+                        ds0=1e-3,
+                        max_points=300,
+                        stop_pressure=stop_pressure,
+                    )
 
-                three_phase_envs.append((env1, env2))
-            if len(dew_locs) == 2:
-                msk = np.array([False] * len(dew_line_df))
-                msk[:dew_locs[1] + 1] = True
-                msk[dew_locs[0]:] = True
-                dew_line_stable_df *= np.nan
-                dew_line_stable_df[msk] = dew_line_df[msk]
+                    three_phase_envs.append((env1, env2))
+                if len(dew_locs) == 2:
+                    msk = np.array([False] * len(dew_line_df))
+                    msk[: dew_locs[1] + 1] = True
+                    msk[dew_locs[0] :] = True
+                    dew_line_stable_df *= np.nan
+                    dew_line_stable_df[msk] = dew_line_df[msk]
 
-                msk = np.array([False] * len(bub_line_df))
-                msk[bub_locs[0]:bub_locs[1] + 1] = True
+                    msk = np.array([False] * len(bub_line_df))
+                    msk[bub_locs[0] : bub_locs[1] + 1] = True
+                    bub_line_stable_df *= np.nan
+                    bub_line_stable_df[msk] = bub_line_df[msk]
+
+            elif len(dsps[0]) == 0:
                 bub_line_stable_df *= np.nan
-                bub_line_stable_df[msk] = bub_line_df[msk]
 
-        elif len(dsps[0]) == 0:
-            bub_line_stable_df *= np.nan
+                k0 = dew_line_raw["w"][0, :] / z
+                flash = self.flash_pt(
+                    z,
+                    pressure=bub_line_df.iloc[0]["P"],
+                    temperature=bub_line_df.iloc[0]["T"],
+                    k0=k0,
+                )
 
-            k0 = dew_line_raw["w"][0, :] / z
-            flash = self.flash_pt(
-                z,
-                pressure=bub_line_df.iloc[0]["P"],
-                temperature=bub_line_df.iloc[0]["T"],
-                k0=k0,
-            )
+                x_l0 = [z, flash["y"]]
+                w0 = bub_line_raw["w"][0, :]
+                betas = [1 - flash["beta"], flash["beta"]]
 
-            x_l0 = [z, flash["y"]]
-            w0 = bub_line_raw["w"][0, :]
-            betas = [1 - flash["beta"], flash["beta"]]
+                bubble_isolated, _ = self.phase_envelope_pt_mp(
+                    z=z,
+                    x_l0=x_l0,
+                    w0=w0,
+                    betas0=betas,
+                    p0=flash["P"],
+                    t0=flash["T"],
+                    ns0=2 * len(z) + 4,
+                    ds0=delta_bub_2ph,
+                    max_points=max_points,
+                )
 
-            bubble_isolated, _ = self.phase_envelope_pt_mp(
-                z=z,
-                x_l0=x_l0,
-                w0=w0,
-                betas0=betas,
-                p0=flash["P"],
-                t0=flash["T"],
-                ns0=2 * len(z) + 4,
-                ds0=delta_bub_2ph,
-                max_points=max_points,
-            )
+                x_l0 = [z, bub_line_raw["w"][0, :]]
+                w0 = flash["y"]
+                idx = np.argmax(w0)
 
-            x_l0 = [z, bub_line_raw["w"][0, :]]
-            w0 = flash["y"]
-            idx = np.argmax(w0)
+                flash = self.flash_pt(z, flash["P"], flash["T"])
+                betas = [1 - flash["beta"], flash["beta"]]
 
-            flash = self.flash_pt(z, flash["P"], flash["T"])
-            betas = [1 - flash["beta"], flash["beta"]]
+                dew_isolated, _ = self.phase_envelope_pt_mp(
+                    z=z,
+                    x_l0=x_l0,
+                    w0=w0,
+                    betas0=betas,
+                    p0=flash["P"] - 5,
+                    t0=flash["T"] + 5,
+                    ns0=2 * len(z) + 3,
+                    ds0=delta_bub_2ph,
+                    max_points=max_points,
+                )
 
-            dew_isolated, _ = self.phase_envelope_pt_mp(
-                z=z,
-                x_l0=x_l0,
-                w0=w0,
-                betas0=betas,
-                p0=flash["P"] - 5,
-                t0=flash["T"] + 5,
-                ns0=2 * len(z) + 3,
-                ds0=delta_bub_2ph,
-                max_points=max_points,
-            )
+                three_phase_envs.append((bubble_isolated, dew_isolated))
 
-            three_phase_envs.append((bubble_isolated, dew_isolated))
-
-        stable_lines["2ph"] = {
+            stable_lines["2ph"] = {
                 "dew": dew_line_stable_df,
-                "bub": bub_line_stable_df
+                "bub": bub_line_stable_df,
             }
 
-        return {
-            "2ph": (dew_line_df, bub_line_df),
-            "DSP": dsps,
-            "3ph": three_phase_envs,
-            "2ph_stable": stable_lines["2ph"],
-        }
+            return {
+                "2ph": (dew_line_df, bub_line_df),
+                "DSP": dsps,
+                "3ph": three_phase_envs,
+                "2ph_stable": stable_lines["2ph"],
+            }
+        else:
+            return {
+                "2ph": {"dew": dew_line_df, "bub": bub_line_df},
+            }
 
     # =========================================================================
     # Stability analysis
