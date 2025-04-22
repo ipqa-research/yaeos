@@ -63,7 +63,10 @@ program gpec
    ! Calculate the first critical line (2 -> 1)
    ! ---------------------------------------------------------------------------
    print *, "Calculating critical line 2 -> 1"
-   cl21 = critical_line(model, a0=0.99_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=0.99_pr, dS0=-0.01_pr, maxP=HPLL_P, max_points=5000)
+   cl21 = critical_line(&
+      model, a0=0.99_pr, z0=z0, zi=zi, &
+      ns0=spec_CP%a, S0=0.99_pr, dS0=-0.01_pr, &
+      maxP=HPLL_P, max_points=5000, stability_analysis=.true.)
    open(unit=1, file="gpec_cl21.dat")
    call write_cl(cl21)
    close(1)
@@ -73,7 +76,9 @@ program gpec
       ! Calculate the second critical line (1 -> 2)
       ! ------------------------------------------------------------------------
       print *, "Calculating critical line 1 -> 2"
-      cl12 = critical_line(model, a0=1.e-5_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=0.001_pr, dS0=1e-5_pr, max_points=5000)
+      cl12 = critical_line(&
+          model, a0=1.e-5_pr, z0=z0, zi=zi, &
+          ns0=spec_CP%a, S0=1.e-5_pr, dS0=1e-4_pr, max_points=5000, stability_analysis=.true.)
       open(unit=1, file="gpec_cl12.dat")
       call write_cl(cl12)
       close(1)
