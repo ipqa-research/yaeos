@@ -5,6 +5,16 @@ module yaeos__equilibria_critical
 
    implicit none
 
+   private
+
+   public :: critical_line
+   public :: critical_point
+   public :: CriticalLine
+   public :: spec_CP
+   public :: lambda1
+   public :: F_critical
+   public :: df_critical
+
    type :: CriticalLine
       !! # CriticalLine
       !!
@@ -62,7 +72,8 @@ module yaeos__equilibria_critical
 contains
 
    type(CriticalLine) function critical_line(&
-      model, a0, z0, zi, ns0, S0, dS0, max_points, maxP, first_point &
+      model, a0, z0, zi, ns0, S0, dS0, max_points, maxP, first_point, &
+      stability_analysis &
       )
       !! # critical_line
       !!
@@ -85,6 +96,7 @@ contains
       integer, optional, intent(in) :: max_points !! Maximum number of points
       real(pr), optional, intent(in) :: maxP !! Maximum pressure
       type(EquilibriumState), optional, intent(in) :: first_point
+      logical, optional :: stability_analysis
 
 
       real(pr) :: u(size(z0)) !! eigen-vector
@@ -95,11 +107,15 @@ contains
       integer :: ns
       real(pr) :: S
 
-      real(pr) :: X0(4), T, P, V, z(size(z0))
+      real(pr) :: X0(4), T, P, V, a, z(size(z0))
 
       integer :: i, npoints
 
       real(pr) :: max_P
+      real(pr) :: y_cep(size(z0))
+      real(pr) :: V_cep
+      logical :: stab_anal
+      logical :: found_cep
 
       ! ========================================================================
       ! Handle the input
@@ -114,6 +130,12 @@ contains
          max_P = maxP
       else
          max_P = 2500
+      end if
+
+      if (.not. present(stability_analysis)) then
+         stab_anal = .false.
+      else
+         stab_anal = stability_analysis
       end if
 
       u = (z0 + zi)/sum(z0 + zi)
@@ -212,6 +234,18 @@ contains
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
 
+            if (stab_anal) then
+               ! ==============================================================
+               ! Stability analysis
+               ! --------------------------------------------------------------
+               found_cep = .false.
+               y_cep = 0
+               V_cep = 0
+               call stability_check(model, z0, zi, exp(X(4)), exp(X(2)), exp(X(3)), X(1), found_cep, y_cep, V_cep)
+               if (found_cep) then
+                  exit solve_points
+               end if
+            end if
             ! ==============================================================
             ! Avoid big steps in pressure
             ! --------------------------------------------------------------
@@ -227,6 +261,55 @@ contains
       critical_line%z0 = z0
       critical_line%zi = zi
    end function critical_line
+
+   subroutine stability_check(model, z0, zi, Pc, Vc, Tc, a, unstable, y_other, V_other)
+      !! # stability_check
+      !!
+      !! ## Description
+      !! Check the stability of a point in the critical line. The stability is
+      !! determined by `tpd` analysis.
+      use yaeos__equilibria_stability, only: min_tpd
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: Pc !! Pressure [bar]
+      real(pr), intent(in) :: Vc !! Volume [L/mol]
+      real(pr), intent(in) :: Tc !! Temperature [K]
+      real(pr), intent(in) :: a !! Molar fraction of the second fluid
+      logical, intent(out) :: unstable !! Stability of the point)
+      real(pr), intent(out) :: V_other !! Volume [L/mol]
+      real(pr), intent(out) :: y_other(:) !! Molar fractions of the second fluid
+
+      real(pr) :: z(2)
+      real(pr) :: y(2)
+      real(pr) :: fug_z(2), fug_y(2)
+      integer :: istab
+      real(pr) :: tpd
+
+      z = a*zi + (1-a)*z0
+      call model%lnfug_vt(n=z, V=Vc, T=Tc, lnf=fug_z)
+
+      unstable = .false.
+
+      ! TODO #optimization: Make an adaptative step of this
+      do istab=1,100
+         y(1) = real(istab, pr)/100
+         y(2) = 1 - y(1)
+
+         call model%volume(n=y, P=Pc, T=Tc, V=V_other, root_type="stable")
+         call model%lnfug_vt(n=y, V=V_other, T=Tc, lnf=fug_y)
+
+         tpd = sum(y * (fug_y - fug_z))
+
+         if (tpd < -1e-5 ) then
+            unstable = .true.
+            y_other = y
+            print *, y_other
+            return
+         end if
+      end do
+   end subroutine stability_check
+
 
    real(pr) function lambda1(model, X, s, z0, zi, u, u_new, P)
       !! # lambda1
@@ -347,11 +430,13 @@ contains
 
       integer :: i
 
-      if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
-         eps = 1e-3_pr
-      else
-         eps = 1e-6_pr
-      end if
+      ! if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
+      !    eps = 1e-3_pr
+      ! else
+      !    eps = 1e-6_pr
+      ! end if
+      
+      eps = 1e-6
 
       df_critical = 0
       do i=1,4
@@ -551,6 +636,10 @@ contains
 
          do while(maxval(abs(dX)) > 1e-1)
             dX = dX/10
+         end do
+
+         do while((X(1) + dX(1) > 1 .or. X(1) + dX(1) < 0) .and. size(z0) == 2)
+            dX = dX/2
          end do
 
          if (maxval(abs(F)) < 1e-6) exit
