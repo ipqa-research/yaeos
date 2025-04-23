@@ -14,8 +14,6 @@ module yaeos__equilibria_critical
    public :: lambda1
    public :: F_critical
    public :: df_critical
-   public :: f_cep
-   public :: df_cep
 
    type :: CriticalLine
       !! # CriticalLine
