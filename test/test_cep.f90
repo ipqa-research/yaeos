@@ -26,7 +26,7 @@ program main
 
    X = [0.5_pr, 0.5_pr, log(cp%Vx), log(0.1_pr), log(250._pr), 0.5_pr]
 
-   f = f_cep(model, X, ns, s, z0, zi, u)
-   df = df_cep(model, X, ns, s, z0, zi, u)
+   f = f_cep(model, nc, X, z0, zi, u)
+   df = df_cep(model, nc, X, z0, zi, u)
 
 end program

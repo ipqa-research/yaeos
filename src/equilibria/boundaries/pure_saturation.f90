@@ -153,7 +153,7 @@ contains
       !!
       !! The vector of variables \(X\) is equal to
       !! \([ \ln V_z, \ln V_y, \ln P, \ln T ]\).
-!
+
       class(ArModel), intent(in) :: model
       !! Thermodynamic model
       integer, intent(in) :: ncomp
@@ -189,7 +189,7 @@ contains
       real(pr) :: Xnew(4)
 
       integer :: i
-!
+
       i = ncomp
 
       dX = 1

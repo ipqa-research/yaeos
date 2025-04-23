@@ -10,4 +10,5 @@ module yaeos__constants
    character(len=1) :: path_sep = "/" !! File separator (to preprocess on Win or Mac/linux)
 
    real(pr), parameter :: NOT_IMPLEMENTED = huge(R)
+   logical :: dn2
 end module

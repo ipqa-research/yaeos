@@ -14,6 +14,8 @@ module yaeos__equilibria_critical
    public :: lambda1
    public :: F_critical
    public :: df_critical
+   public :: f_cep
+   public :: df_cep
 
    type :: CriticalLine
       !! # CriticalLine
@@ -55,6 +57,7 @@ module yaeos__equilibria_critical
       real(pr), allocatable :: T(:) !! Temperature [K]
       integer, allocatable :: ns(:) !! Specified variable
       integer, allocatable :: iters(:) !! Iterations needed for this point
+      type(EquilibriumState) :: CEP !! Critical End Point
    end type CriticalLine
 
    type, private :: CPSpecs
@@ -112,6 +115,7 @@ contains
       integer :: i, npoints
 
       real(pr) :: max_P
+
       real(pr) :: y_cep(size(z0))
       real(pr) :: V_cep
       logical :: stab_anal
@@ -145,7 +149,7 @@ contains
       P = sum(model%components%Pc * z)
       call model%volume(n=z, P=P, T=T, V=V, root_type="vapor")
 
-      X0 = [a0, log([v, T, P])]
+      X0 = [set_a(a0), log([v, T, P])]
 
       if (present(first_point)) then
          X0 = [&
@@ -153,7 +157,11 @@ contains
             log([first_point%Vx, first_point%T, first_point%P])]
       end if
 
-      X0(ns0) = S0
+      if (ns0 == spec_CP%a) then
+         X0(ns0) = set_a(S0)
+      else
+         X0(ns0) = S0
+      end if
       ns = ns0
 
       ! ========================================================================
@@ -183,9 +191,9 @@ contains
             real_its = 0
 
             do while(&
-               maxval(abs(dX)) > 1e-4 &
-               .and. maxval(abs(F)) > 1e-5 &
-               .and. real_its < 2000)
+               ! maxval(abs(dX)) > 1e-5 &
+                maxval(abs(F)) > 1e-5 &
+               .and. real_its < 100)
 
                its = its + 1
                real_its = real_its + 1
@@ -196,11 +204,11 @@ contains
                dX = solve_system(dF, -F)
                u = u_new
 
-               do while(abs(dX(1)/X(1)) > 0.1 .and. i < 5)
-                  dX = dX/2
-               end do
+               ! do while(abs(dX(1)/X(1)) > 0.1 .and. i < 5)
+               !    dX = dX/2
+               ! end do
 
-               do while(abs(maxval(dX(:)/X(:))) > 0.1)
+               do while(abs(maxval(dX(:)/X(:))) > 0.01)
                   dX = dX/2
                end do
 
@@ -210,7 +218,7 @@ contains
             ! ==============================================================
             ! Cases where the line must be stopped
             ! --------------------------------------------------------------
-            if (real_its == 2000) exit
+            if (real_its == 100) exit
             if (any(isnan(X))) exit
             if (exp(X(spec_CP%P)) > max_P) exit
 
@@ -218,10 +226,15 @@ contains
             ! ==============================================================
             ! Save point
             ! --------------------------------------------------------------
-            critical_line%a = [critical_line%a, X(1)]
-            critical_line%V = [critical_line%V, exp(X(2))]
-            critical_line%T = [critical_line%T, exp(X(3))]
-            critical_line%P = [critical_line%P, exp(X(4))]
+
+            a = get_a(X(1))
+            V = exp(X(2))
+            T = exp(X(3))
+            P = exp(X(4))
+            critical_line%a = [critical_line%a, a]
+            critical_line%V = [critical_line%V, V]
+            critical_line%T = [critical_line%T, T]
+            critical_line%P = [critical_line%P, P]
             critical_line%ns = [critical_line%ns, ns]
             critical_line%iters = [critical_line%iters, its]
 
@@ -234,33 +247,77 @@ contains
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
 
+            ! ==============================================================
+            ! Stability analysis
+            ! --------------------------------------------------------------
             if (stab_anal) then
-               ! ==============================================================
-               ! Stability analysis
-               ! --------------------------------------------------------------
-               found_cep = .false.
-               y_cep = 0
-               V_cep = 0
-               call stability_check(model, z0, zi, exp(X(4)), exp(X(2)), exp(X(3)), X(1), found_cep, y_cep, V_cep)
-               if (found_cep) then
-                  exit solve_points
-               end if
+               call look_for_cep(model, z0, zi, P, V, T, a, u, found_cep, critical_line%CEP)
+               if (found_cep) exit solve_points
             end if
             ! ==============================================================
             ! Avoid big steps in pressure
             ! --------------------------------------------------------------
-            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 10)
-            !    dS = dS * 0.99
-            ! end do
+            do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 20)
+               dS = dS * 0.9
+            end do
 
             ! Next step
-            X = X + dXdS*dS
+            X = X + dXdS*dS*0.5
          end do
       end block solve_points
 
       critical_line%z0 = z0
       critical_line%zi = zi
    end function critical_line
+
+   subroutine look_for_cep(model, z0, zi, Pc, Vc, Tc, a, u, found, CEP)
+      use yaeos__math, only: solve_system
+      class(ArModel), intent(in) :: model !! Equation of state model
+      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: Pc !! Pressure [bar]
+      real(pr), intent(in) :: Vc !! Volume [L/mol]
+      real(pr), intent(in) :: Tc !! Temperature [K]
+      real(pr), intent(in) :: a !! Molar fraction of the second fluid
+      logical, intent(out) :: found !! Found a Critical End Point
+      real(pr), intent(in) :: u(:) !! Eigen-vector
+      type(EquilibriumState), intent(out) :: CEP !! Critical End Point
+
+      real(pr) :: y_cep(size(z0)), V_cep
+      real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
+
+      found = .false.
+      y_cep = 0
+      V_cep = 0
+
+      call stability_check(model, z0, zi, Pc, Vc, Tc, a, found, y_cep, V_cep)
+
+      if (found) then
+         Fcep = 1
+         Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(a)]
+         do while(maxval(abs(Fcep)) > 1e-5)
+            Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
+            dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
+            dXcep = solve_system(dFcep, -Fcep)
+
+            do while(abs(dXcep(2+4)) > 0.01)
+               dXcep(2+4) = dXcep(2+4)/2
+            end do
+            Xcep = Xcep + dXcep
+         end do
+
+         CEP%y = exp(Xcep(:2))
+         CEP%Vy = exp(Xcep(3))
+         CEP%Vx =  exp(Xcep(4))
+         CEP%T = exp(Xcep(5))
+
+         call model%pressure(n=CEP%y, V=CEP%Vy, T=CEP%T, P=CEP%P)
+         CEP%x = zi * get_a(Xcep(6)) + (1-get_a(Xcep(6))) * z0
+         CEP%kind = "CEP"
+         CEP%beta = 0
+      end if
+
+   end subroutine look_for_cep
 
    subroutine stability_check(model, z0, zi, Pc, Vc, Tc, a, unstable, y_other, V_other)
       !! # stability_check
@@ -283,33 +340,50 @@ contains
       real(pr) :: z(2)
       real(pr) :: y(2)
       real(pr) :: fug_z(2), fug_y(2)
-      integer :: istab
+      integer :: istab, istab0
       real(pr) :: tpd
+
+      logical :: first, possible
+
+      if (size(z0) /= 2) then
+         error stop "Stability check only for binary mixtures"
+      end if
 
       z = a*zi + (1-a)*z0
       call model%lnfug_vt(n=z, V=Vc, T=Tc, lnf=fug_z)
 
       unstable = .false.
+      first = .true.
+
+      istab0 = 1
 
       ! TODO #optimization: Make an adaptative step of this
-      do istab=1,100
-         y(1) = real(istab, pr)/100
-         y(2) = 1 - y(1)
+      possible = .false.
+      do while (istab0 < 2)
+         do istab=istab0,99,2
+            y(1) = real(istab, pr)/100
+            y(2) = 1 - y(1)
 
-         call model%volume(n=y, P=Pc, T=Tc, V=V_other, root_type="stable")
-         call model%lnfug_vt(n=y, V=V_other, T=Tc, lnf=fug_y)
+            call model%volume(n=y, P=Pc, T=Tc, V=V_other, root_type="stable")
+            call model%lnfug_vt(n=y, V=V_other, T=Tc, lnf=fug_y)
 
-         tpd = sum(y * (fug_y - fug_z))
+            tpd = sum(y * (fug_y - fug_z))
 
-         if (tpd < -1e-5 ) then
-            unstable = .true.
-            y_other = y
-            print *, y_other
-            return
-         end if
+            if (tpd < -1e-5 ) then
+               unstable = .true.
+               y_other = y
+               return
+            end if
+
+            if (abs(tpd) < 0.1) then
+               possible = .true.
+            end if
+         end do
+         istab0 = istab0 + 1
+         if (.not. possible) return
       end do
-   end subroutine stability_check
 
+   end subroutine stability_check
 
    real(pr) function lambda1(model, X, s, z0, zi, u, u_new, P)
       !! # lambda1
@@ -343,9 +417,13 @@ contains
       integer :: i, j, nc
       real(pr) :: M(size(z0), size(z0)), z(size(z0)), Pin
 
+      real(pr) :: a
+
       nc = size(z0)
 
-      z = X(1) * zi + (1-X(1))*z0
+      a = get_a(X(1))
+
+      z = a * zi + (1-a)*z0
       n = z + s * u * sqrt(z)
       V = exp(X(2))
       T = exp(X(3))
@@ -392,13 +470,15 @@ contains
       real(pr) :: F_critical(4)
       real(pr) :: z(size(u))
 
-      real(pr) :: V, T, P
+      real(pr) :: a, V, T, P
 
       real(pr), parameter :: eps=1e-5_pr
 
+      a = get_a(X(1))
       V = exp(X(2))
       T = exp(X(3))
-      z = X(1) * zi + (1-X(1)) * z0
+      z = a * zi + (1-a) * z0
+
 
       ! if(any(z < 0) ) return
 
@@ -435,7 +515,7 @@ contains
       ! else
       !    eps = 1e-6_pr
       ! end if
-      
+
       eps = 1e-6
 
       df_critical = 0
@@ -448,36 +528,39 @@ contains
       end do
    end function df_critical
 
-   function F_cep(model, X, ns, S, z0, zi, u, u_new)
+   function F_cep(model, nc, X, z0, zi, u, u_new)
       class(ArModel), intent(in) :: model !! Equation of state model
-      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
-      real(pr), intent(in) :: X(size(z0) + 4) !! Vector of variables
-      integer, intent(in) :: ns !! Position of the specification variable
-      real(pr), intent(in) :: S !! Specification variable value
-      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
-      real(pr), intent(in) :: u(:) !! Eigen-vector
-      real(pr), optional, intent(out) :: u_new(:) !! updated
+      real(pr), intent(in) :: z0(nc) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: X(nc + 4) !! Vector of variables
+      real(pr), intent(in) :: zi(nc) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: u(nc) !! Eigen-vector
+      real(pr), optional, intent(out) :: u_new(nc) !! updated
 
-      real(pr) :: F_cep(size(z0)+ 4)
-      real(pr) :: z(size(u))
+      real(pr) :: F_cep(nc+4)
+      real(pr) :: z(nc)
 
       real(pr) :: V, T, P
-      real(pr) :: Xcp(4)
+      real(pr) :: Xcp(nc+4)
 
-      real(pr) :: Vc, Pc, lnf_z(size(z0))
-      real(pr) :: y(size(z0)), Vy, Py, lnf_y(size(z0))
+      real(pr) :: Vc, Pc, lnf_z(nc)
+      real(pr) :: y(nc)
+      real(pr) :: Vy, Py
+      real(pr) :: lnf_y(nc)
 
       real(pr), parameter :: eps=1e-5_pr
 
-      integer :: nc
+      real(pr) :: a
 
-      nc = size(z0)
+      integer, intent(in) :: nc
 
-      y = X(:nc)
+      ! nc = size(z0)
+
+      y = exp(X(:nc))
       Vy = exp(X(nc+1))
       Vc = exp(X(nc+2))
       T = exp(X(nc+3))
-      z = X(nc+4) * zi + (1-X(nc+4)) * z0
+      a = get_a(X(nc+4))
+      z = a * zi + (1-a) * z0
 
       if(any(z < 0) ) return
 
@@ -497,27 +580,30 @@ contains
       F_cep(nc+4) = sum(y) - 1
    end function F_cep
 
-   function df_cep(model, X, ns, S, z0, zi, u)
+   function df_cep(model, nc, X, z0, zi, u)
       !! # df_critical
       !!
       !! ## Description
       !! Calculates the Jacobian of the critical point function `F_critical`.
       class(ArModel), intent(in) :: model !! Equation of state model
-      real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
-      real(pr), intent(in) :: X(size(z0)+4) !! Vector of variables
-      integer, intent(in) :: ns !! Position of the specification variable
-      real(pr), intent(in) :: S !! Specification variable value
-      real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
-      real(pr), intent(in) :: u(:) !! Eigen-vector
-      real(pr) :: df_cep(size(z0)+4, size(z0)+4) !! Jacobian of the critical point function
+      integer, intent(in) :: nc
+      real(pr), intent(in) :: z0(nc) !! Molar fractions of the first fluid
+      real(pr), intent(in) :: X(nc+4) !! Vector of variables
+      real(pr), intent(in) :: zi(nc) !! Molar fractions of the second fluid
+      real(pr), intent(in) :: u(nc) !! Eigen-vector
+      real(pr) :: df_cep(nc+4, nc+4) !! Jacobian of the critical point function
 
       real(pr) :: eps
 
-      real(pr) :: dx(size(z0)+4), F1(size(z0)+4), F2(size(z0)+4)
+      real(pr) :: dx(nc+4), F1(nc+4), F2(nc+4)
+
+      real(pr) :: a
 
       integer :: i
 
-      if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
+      a = get_a(X(1))
+
+      if (any(a*zi + (1-a)*z0 > 0.99)) then
          eps = 1e-3_pr
       else
          eps = 1e-6_pr
@@ -527,8 +613,8 @@ contains
       do i=1,size(df_cep, 1)
          dx = 0
          dx(i) = eps
-         F2 = F_cep(model, X+dx, ns, S, z0, zi, u)
-         F1 = F_cep(model, X-dx, ns, S, z0, zi, u)
+         F2 = F_cep(model, nc, X+dx, z0, zi, u)
+         F1 = F_cep(model, nc, X-dx, z0, zi, u)
          df_cep(:, i) = (F2 - F1)/(2*eps)
       end do
    end function df_cep
@@ -578,21 +664,24 @@ contains
       integer :: ns
       real(pr) :: F(4), df(4, 4), dX(4), u(size(z0))
 
-      real(pr) :: z(size(z0)), u_new(size(z0)), l
+      real(pr) :: z(size(z0)), u_new(size(z0)), l, a
+      real(pr) :: Sin
       integer :: i
+
 
       ! ========================================================================
       ! Handle the input
       ! ------------------------------------------------------------------------
       if (present(a0)) then
-         X(1) = a0
+         X(1) = set_a(a0)
       else if (spec == spec_CP%a) then
-         X(1) = S
+         X(1) = set_a(S)
       else
-         X(1) = 0.5_pr
+         X(1) = log(0.5_pr)
       end if
 
-      z = X(1)*zi + (1-X(1))*z0
+      a = get_a(X(1))
+      z = a*zi + (1-a)*z0
 
       if (present(u0)) then
          u = u0
@@ -624,25 +713,31 @@ contains
       end if
 
       ns = spec
-      X(ns) = S
+      if (ns == spec_CP%a) then
+         Sin = set_a(S)
+         X(ns) = Sin
+      else
+         Sin = S
+         X(ns) = Sin
+      end if
 
       ! ========================================================================
       ! Solve the system of equations
       ! ------------------------------------------------------------------------
       do i=1,max_iters
-         F = F_critical(model, X, ns, S, z0, zi, u)
-         df = df_critical(model, X, ns, S, z0, zi, u)
+         F = F_critical(model, X, ns, Sin, z0, zi, u)
+         df = df_critical(model, X, ns, Sin, z0, zi, u)
          dX = solve_system(A=df, b=-F)
 
          do while(maxval(abs(dX)) > 1e-1)
             dX = dX/10
          end do
 
-         do while((X(1) + dX(1) > 1 .or. X(1) + dX(1) < 0) .and. size(z0) == 2)
+         do while((get_a(X(1) + dX(1)) > 1 .or. get_a(X(1) + dX(1)) < 0) .and. size(z0) == 2)
             dX = dX/2
          end do
 
-         if (maxval(abs(F)) < 1e-6) exit
+         if (maxval(abs(F)) < 1e-8) exit
 
          X = X + dX
          l = lambda1(model, X, 0.0_pr, z0, zi, u, u_new)
@@ -651,7 +746,8 @@ contains
          critical_point%iters = i
       end do
 
-      z = X(1)*zi + (1-X(1))*z0
+      a = get_a(X(1))
+      z = a*zi + (1-a)*z0
       critical_point%x = z
       critical_point%y = z
       critical_point%beta = 0
@@ -662,4 +758,14 @@ contains
       critical_point%kind = "critical"
 
    end function critical_point
+
+   real(pr) function get_a(X)
+      real(pr), intent(in) :: X
+      get_a = X**2
+   end function get_a
+
+   real(pr) function set_a(a)
+      real(pr), intent(in) :: a
+      set_a = sqrt(a)
+   end function set_a
 end module yaeos__equilibria_critical

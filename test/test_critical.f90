@@ -40,6 +40,7 @@ program main
    sat = saturation_temperature(model, z, P=0.00001_pr, kind="dew")
    env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
    call tim%timer_stop()
+   write(1, *) env
 
    ! Calculate the critical point
    T = sum(model%components%Tc * z)
@@ -50,6 +51,7 @@ program main
    crit = critical_point(model, z0, zi, S=a, spec=spec_CP%a, max_iters=300, a0=a)
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
+      print *, "Critical point", [crit%T, crit%P], [env%cps(1)%T, env%cps(1)%P]
       error stop "Critical point failed"
    end if
    write(*, *) test_ok("Critical point")

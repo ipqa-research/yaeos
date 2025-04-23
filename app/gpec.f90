@@ -37,15 +37,15 @@ program gpec
    ! ===========================================================================
    ! Set up the model
    ! ---------------------------------------------------------------------------
-   model = get_model_cubic()
-   ! model = get_model_nrtl_mhv()
+   ! model = get_model_cubic()
+   model = get_model_nrtl_mhv()
    ! model = get_modelgerg()
+   ! model = get_model_psrk()
 
    ! ===========================================================================
    ! Calculate both saturation curves
    ! ---------------------------------------------------------------------------
-   psats(1) = pure_saturation_line(model, 1, 1._pr, 150._pr)
-   psats(2) = pure_saturation_line(model, 2, 1._pr, 150._pr)
+   psats(1) = pure_saturation_line(model, 1, 1._pr, 200._pr)
 
    open(unit=1, file="gpec_Psat1.dat")
    do i=1,size(psats(1)%T)
@@ -53,6 +53,7 @@ program gpec
    end do
    close(1)
 
+   psats(2) = pure_saturation_line(model, 2, 1._pr, 200._pr)
    open(unit=1, file="gpec_Psat2.dat")
    do i=1,size(psats(2)%T)
       write(1, *) psats(2)%T(i), psats(2)%P(i), psats(2)%Vx(i), psats(2)%Vy(i)
@@ -64,8 +65,8 @@ program gpec
    ! ---------------------------------------------------------------------------
    print *, "Calculating critical line 2 -> 1"
    cl21 = critical_line(&
-      model, a0=0.99_pr, z0=z0, zi=zi, &
-      ns0=spec_CP%a, S0=0.99_pr, dS0=-0.01_pr, &
+      model, a0=0.999_pr, z0=z0, zi=zi, &
+      ns0=spec_CP%a, S0=0.999_pr, dS0=-0.1_pr, &
       maxP=HPLL_P, max_points=5000, stability_analysis=.true.)
    open(unit=1, file="gpec_cl21.dat")
    call write_cl(cl21)
@@ -77,8 +78,8 @@ program gpec
       ! ------------------------------------------------------------------------
       print *, "Calculating critical line 1 -> 2"
       cl12 = critical_line(&
-          model, a0=1.e-5_pr, z0=z0, zi=zi, &
-          ns0=spec_CP%a, S0=1.e-5_pr, dS0=1e-4_pr, max_points=5000, stability_analysis=.true.)
+         model, a0=1.e-5_pr, z0=z0, zi=zi, &
+         ns0=spec_CP%a, S0=1.e-3_pr, dS0=1e-2_pr, max_points=5000, stability_analysis=.true.)
       open(unit=1, file="gpec_cl12.dat")
       call write_cl(cl12)
       close(1)
@@ -94,7 +95,7 @@ program gpec
          ! Search for LLV
          !TODO: Si inicializo con S=200 converge a otro lado, ver por qué pasa!
          ! Converge a critical point at high pressure
-         cp = critical_point(model, z0, zi, S=log(HPLL_P), spec=spec_CP%P, max_iters=1000, a0=0.5_pr)
+         cp = critical_point(model, z0, zi, S=log(HPLL_P), spec=spec_CP%P, max_iters=100, a0=0.5_pr)
          clll = critical_line(model, a0=cp%x(2), z0=z0, zi=zi, ns0=spec_CP%P, S0=log(cp%P), dS0=-0.01_pr)
          open(unit=1, file="gpec_clll.dat")
          call write_cl(clll)
@@ -160,9 +161,26 @@ contains
 
    type(GERG2008) function get_modelgerg() result(model)
       integer :: ids(2)
-      ids = [G2008Components%methane, G2008Components%carbon_dioxide]
+      ! ids = [G2008Components%methane, G2008Components%carbon_dioxide]
+      ids = [G2008Components%nitrogen, G2008Components%ethane]
       model = gerg_2008(ids)
    end function get_modelgerg
+
+   type(CubicEoS) function get_model_psrk() result(model)
+      real(pr) :: tc(nc), pc(nc), w(nc)
+      type(Groups) :: molecules(2)
+      molecules(1)%groups_ids = [117]
+      molecules(1)%number_of_groups = [1]
+
+      molecules(2)%groups_ids = [2, 3]
+      molecules(2)%number_of_groups = [10, 2]
+
+      tc = [304.21_pr, 727.0_pr]
+      pc = [73.83_pr, 25.6_pr]
+      w = [0.223621_pr, 0.427556_pr]
+
+      model = PSRK(tc, pc, w, molecules)
+   end function get_model_psrk
 
    subroutine plot_pts(zs)
       real(pr), intent(in) :: zs(:)
