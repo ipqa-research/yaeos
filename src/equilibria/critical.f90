@@ -271,6 +271,7 @@ contains
             ! --------------------------------------------------------------
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
+            ns = maxloc(abs(dXdS), dim=1)
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
 
