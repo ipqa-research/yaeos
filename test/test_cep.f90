@@ -45,8 +45,10 @@ program main
    call model%volume(z, P, T, aux, root_type="liquid")
    cp%Vx = aux
 
-   cp = critical_point(model, z0, zi, spec=spec_CP%P, S=log(cp%P), t0=T, a0=a, v0=cp%VX, max_iters=200)
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=4, S0=log(cp%P), ds0=-0.1_pr, first_point=cp, stability_analysis=.true., max_points=3000)
+   cp = critical_point(model, z0, zi, spec=spec_CP%P, S=log(cp%P), &
+      t0=T, a0=a, v0=cp%VX, max_iters=200)
+   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=4, S0=log(cp%P), &
+      ds0=-0.1_pr, first_point=cp, stability_analysis=.true., max_points=3000)
 
    call assert(abs(cl%CEP%T - 134.79) < 0.1, "Critical end point T")
    call assert(abs(cl%CEP%P - 1.21e-2) < 0.01, "Critical end point P")
