@@ -16,7 +16,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    !!
    !! # References
    !!
-   use yaeos__constants, only: pr, R, dn2
+   use yaeos__constants, only: pr, R, solving_volume
    use yaeos__models_ar_genericcubic, only: CubicMixRule
    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
    use yaeos__models_ge, only: GeModel
@@ -307,8 +307,7 @@ contains
       q = self%q
       bi = self%bi
 
-      dn2 = .true.
-      if (dn2) then
+      if (.not. solving_volume) then
          call self%ge%excess_gibbs( &
             n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
             )
@@ -325,7 +324,7 @@ contains
          dlogBi_nbi(i) = logB_nbi(i) + sum(n*dBi(i))/B - 1
       end do
 
-      if (dn2) then
+      if (.not. solving_volume) then
          do i = 1, nc
             do j = 1, nc
                !TODO: Need to figure out this derivative

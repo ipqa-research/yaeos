@@ -21,7 +21,7 @@ module yaeos__models_solvers
    !!
    !! # References
    !!
-   use yaeos__constants, only: pr, R, dn2
+   use yaeos__constants, only: pr, R, solving_volume
    use yaeos__models_ar, only: ArModel
    implicit none
 
@@ -134,9 +134,9 @@ contains
          V = B/ZETA
          iter = iter + 1
 
-         dn2 = .false.
+         solving_volume = .true.
          call eos%residual_helmholtz(n, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
-         dn2 = .true.
+         solving_volume = .false.
 
          Pcalc = TOTN*R*T/V - ArV
 

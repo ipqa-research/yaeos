@@ -18,7 +18,7 @@ module yaeos__models_ar_cubic_mixing_base
    !! ```
    !!
    !! # References
-   use yaeos__constants, only: pr
+   use yaeos__constants, only: pr, solving_volume
    implicit none
 contains
 
@@ -61,6 +61,8 @@ contains
 
       B = B/totn
 
+      if (solving_volume) return
+
       do i = 1, nc
          dBi(i) = (2*aux(i) - B)/totn
          do j = 1, i
@@ -94,6 +96,8 @@ contains
       totn = sum(n)
 
       D1 = sum(n * d1i)/totn
+
+      if (solving_volume) return
 
       do i = 1, nc
          dD1i(i) = (d1i(i) - D1)/totn
@@ -129,6 +133,8 @@ contains
       h = log((d1+1)**2 / 2)
 
       L = f/g * h
+
+      if (solving_volume) return
 
       df = dd1i
       dg = 2*(d1 + 1)*dd1i
