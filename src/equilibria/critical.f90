@@ -284,7 +284,7 @@ contains
             ! end do
 
             ! Next step
-            X = X + dXdS*dS*0.1
+            X = X + dXdS*dS
          end do
       end block solve_points
 
