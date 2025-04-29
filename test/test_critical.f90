@@ -10,7 +10,7 @@ program main
 
    integer, parameter :: nc=12
    integer :: a_nearest
-   integer :: npt=6
+   integer :: npt=3
 
    type(CubicEoS) :: model
    type(EquilibriumState) :: sat, crit
@@ -40,7 +40,6 @@ program main
    sat = saturation_temperature(model, z, P=0.00001_pr, kind="dew")
    env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
    call tim%timer_stop()
-   write(1, *) env
 
    ! Calculate the critical point
    T = sum(model%components%Tc * z)
@@ -48,10 +47,14 @@ program main
    call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
    ! Solve a critical point
-   crit = critical_point(model, z0, zi, S=a, spec=spec_CP%a, max_iters=300, a0=a)
+   print *, "Solving CP"
+   crit = critical_point(&
+      model, z0=z0, zi=zi, S=a, spec=spec_CP%a, max_iters=500, &
+      a0=a, P0=200._pr, t0=700._pr &
+      )
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
-      print *, "Critical point", [crit%T, crit%P], [env%cps(1)%T, env%cps(1)%P]
+      print *, "Critical point", crit%iters, [crit%T, crit%P], [env%cps(1)%T, env%cps(1)%P]
       error stop "Critical point failed"
    end if
    write(*, *) test_ok("Critical point")
@@ -59,22 +62,24 @@ program main
    ! Now test the critical lines
    print *, "CL"
    call tim%timer_start()
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr, max_points=5000)
+   cl = critical_line(&
+      model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr, &
+      max_points=5000, first_point=crit)
    call tim%timer_stop()
 
    ! if (WRITE_FILES) call write_cl
 
    da = (cl%a(size(cl%a)) - cl%a(1))/(npt+1)
+   print *, cl%a(1), cl%a(size(cl%a))
    do i=1,npt
       a = cl%a(1) + da*i
       z = a*zi + (1-a)*z0
       call tim%timer_start()
       sat = saturation_temperature(model, z, P=0.0001_pr, kind="dew")
-      env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=1.5_pr)
+      env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=0.1_pr)
       print *, "Running PT Envelope", i, size(env%points)
       call tim%timer_stop()
       ! if (WRITE_FILES) call write_env
-      ! write(i+10, *) env
 
       a_nearest = minloc(abs(cl%a - a), dim=1)
 

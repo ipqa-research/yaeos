@@ -48,7 +48,7 @@ module yaeos_c
    public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
    public :: pt3_phase_envelope, px3_phase_envelope !, tx3_phase_envelope
    public :: pt_mp_phase_envelope, px_mp_phase_envelope
-   public :: critical_point, critical_line
+   public :: critical_point, critical_line, find_llcl
    public :: stability_zpt, tm
 
    type :: ArModelContainer
@@ -633,8 +633,8 @@ contains
 
    subroutine critical_line(&
       id, ns, S, ds0, &
-      a0, z0, zi, max_points, stop_pressure, &
-      as, Vs, Ts, Ps)
+      a0, v0, t0, p0, z0, zi, stability_analysis, max_points, stop_pressure, &
+      as, Vs, Ts, Ps, CEP_x, CEP_y, CEP_P, CEP_Vx, CEP_Vy, CEP_T)
       use yaeos, only: EquilibriumState, CriticalLine, &
          fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
@@ -642,14 +642,24 @@ contains
       real(c_double), intent(in) :: S
       real(c_double), intent(in) :: dS0
       real(c_double), intent(in) :: a0
+      real(c_double), intent(in) :: v0
+      real(c_double), intent(in) :: t0
+      real(c_double), intent(in) :: p0
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
+      logical, intent(in) :: stability_analysis
       integer, intent(in) :: max_points
       real(c_double), intent(in) :: stop_pressure
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
       real(c_double), intent(out) :: Vs(max_points)
+      real(c_double), intent(out) :: CEP_x(size(z0))
+      real(c_double), intent(out) :: CEP_y(size(z0))
+      real(c_double), intent(out) :: CEP_P
+      real(c_double), intent(out) :: CEP_Vx
+      real(c_double), intent(out) :: CEP_Vy
+      real(c_double), intent(out) :: CEP_T
 
       type(CriticalLine) :: cl
 
@@ -660,10 +670,63 @@ contains
       Ps = makenan()
       Vs = makenan()
 
-      cl = fcritical_line(&
-         model=ar_models(id)%model, a0=a0, &
-         z0=z0, zi=zi, &
-         ns0=ns, S0=S, ds0=ds0, maxp=stop_pressure, max_points=max_points)
+      if (v0 == 0 .and. t0 == 0 .and. p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      elseif (t0 == 0 .and. p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      elseif (v0==0 .and. p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            t0=t0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (t0 == 0 .and. v0==0)  then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (t0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (v0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            t0=t0, p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, t0=t0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, t0=t0, p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+
+      end if
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
@@ -671,7 +734,42 @@ contains
          Ps(i) = cl%P(i)
          Vs(i) = cl%V(i)
       end do
+
+      if (allocated(cl%CEP%y)) then
+         CEP_x = cl%CEP%x
+         CEP_y = cl%CEP%y
+         CEP_P = cl%CEP%P
+         CEP_Vx = cl%CEP%Vx
+         CEP_Vy = cl%CEP%Vy
+         CEP_T = cl%CEP%T
+      else
+         ! If the critical line is not defined, set the CEP values to NaN
+         CEP_x = makenan()
+         CEP_y = makenan()
+         CEP_P = makenan()
+         CEP_Vx = makenan()
+         CEP_Vy = makenan()
+         CEP_T = makenan()
+      end if
    end subroutine critical_line
+
+   subroutine find_llcl(id, z0, zi, P, Tstart, a, T, V)
+      use yaeos__equilibria, only: ffind_llcl => find_llcl
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      real(c_double), intent(in) :: Tstart
+      real(c_double), intent(in) :: P
+      real(c_double), intent(out) :: a
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: V
+
+      T = Tstart
+      call ffind_llcl(&
+         model=ar_models(id)%model, z0=z0, zi=zi, &
+         P=P, a=a, T=T, V=V &
+         )
+   end subroutine find_llcl
 
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState

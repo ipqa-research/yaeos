@@ -37,8 +37,8 @@ program gpec
    ! ===========================================================================
    ! Set up the model
    ! ---------------------------------------------------------------------------
-   ! model = get_model_cubic()
-   model = get_model_nrtl_mhv()
+   model = get_model_cubic()
+   ! model = get_model_nrtl_mhv()
    ! model = get_modelgerg()
    ! model = get_model_psrk()
 
@@ -87,7 +87,7 @@ program gpec
       diagram_type = 1
    end if
 
-   call exit
+   ! call exit
 
 
    if (diagram_type == 1) then
