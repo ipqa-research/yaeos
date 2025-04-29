@@ -61,6 +61,7 @@ module yaeos__models_ar
       procedure :: enthalpy_residual_vt
       procedure :: gibbs_residual_vt
       procedure :: entropy_residual_vt
+      procedure :: internal_energy_residual_vt
       procedure :: Cv_residual_vt
       procedure :: Cp_residual_vt
       procedure :: Psat_pure
@@ -130,24 +131,33 @@ contains
    end function size_ar_model
 
    subroutine volume(eos, n, P, T, V, root_type)
-      !! # Volume solver routine for residual Helmholtz models.
-      !! Solves volume roots using newton method. Given pressure and temperature.
+      !! Volume solver routine for residual Helmholtz models.
+      !!
+      !! Solves volume roots using newton method. Given pressure and
+      !! temperature.
       !!
       !! # Description
       !! This subroutine solves the volume using a newton method. The variable
-      !! `root_type`
+      !! `root_type` is used to specify the desired root to solve. The options
+      !! are: `["liquid", "vapor", "stable"]`
       !!
       !! # Examples
       !!
       !! ```fortran
-      !! class(ArModel) :: eos
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
       !! call eos%volume(n, P, T, V, root_type="liquid")
       !! call eos%volume(n, P, T, V, root_type="vapor")
       !! call eos%volume(n, P, T, V, root_type="stable")
       !! ```
       use yaeos__constants, only: pr, R
       use yaeos__math, only: newton
-      class(ArModel), intent(in) :: eos
+
+      class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
@@ -207,25 +217,26 @@ contains
    end subroutine volume
 
    subroutine pressure(eos, n, V, T, P, dPdV, dPdT, dPdn)
-      !! Pressure calculation.
+      !! Calculate pressure.
       !!
       !! Calculate pressure using residual helmholtz models.
       !!
       !! # Examples
+      !!
       !! ```fortran
-      !! class(ArModel), allocatable :: eos
-      !! real(pr) :: n(2), t, v, p, dPdV, dPdT, dPdn(2)
-      !! eos = PengRobinson(Tc, Pc, w)
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
       !! n = [1.0_pr, 1.0_pr]
-      !! t = 300.0_pr
-      !! v = 1.0_pr
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
       !! call eos%pressure(n, V, T, P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
       !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: v !! Volume [L]
-      real(pr), intent(out) :: p !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(out) :: P !! Pressure [bar]
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}}{dT}\)
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}}{dn_i}\)
@@ -233,11 +244,8 @@ contains
       real(pr) :: totn
 
       real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(eos))
-      integer :: nc
-      logical :: dn
 
       totn = sum(n)
-      nc = size(n)
 
       if (present(dPdn)) then
          call eos%residual_helmholtz(&
@@ -256,22 +264,43 @@ contains
    end subroutine pressure
 
    subroutine lnphi_pt(eos, &
-      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn &
+      n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, &
+      dPdV, dPdT, dPdn &
       )
-      !! Calculate logarithm of fugacity, given pressure and temperature.
+      !! Calculate natural logarithm of fugacity given pressure and temperature.
       !!
-      !! This routine will obtain the desired volume root at the specified
-      !! pressure and calculate fugacity at that point.
+      !! Calculate the natural logarithm of the fugacity coefficient and its
+      !! derivatives given pressure and temperature. This routine will obtain
+      !! the desired volume root at the specified pressure and calculate
+      !! fugacity at that point.The routine gives the possibility to calculate
+      !! the pressure derivatives and volume.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%lnphi_pt(&
+      !!    n, V, T, lnPhi=lnPhi, &
+      !!    dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      !!    )
+      !! ```
       use iso_fortran_env, only: error_unit
+
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
-      character(len=*), intent(in) :: root_type !! Type of root desired ["liquid", "vapor", "stable"]
-      real(pr), intent(in) :: P    !! Pressure [bar]
-      real(pr), intent(in) :: T    !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Type of root desired ["liquid", "vapor", "stable"]
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
 
       real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(phi)\) vector
       real(pr), optional, intent(out) :: V !! Volume [L]
-      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! ln(phi) Temp derivative
+      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! ln(phi) Temperature derivative
       real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! ln(phi) Presssure derivative
       real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! ln(phi) compositional derivative
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
@@ -281,6 +310,7 @@ contains
       real(pr) :: V_in, P_in
 
       call eos%volume(n, P=P, T=T, V=V_in, root_type=root_type)
+
       call eos%lnphi_vt(&
          n, V=V_in, T=T, &
          P=P_in, lnPhi=lnPhi, &
@@ -301,7 +331,26 @@ contains
       dlnPhidP, dlnPhidT, dlnPhidn, &
       dPdV, dPdT, dPdn &
       )
-      !! Calculate fugacity coefficent given volume and temperature.
+      !! Calculate natural logarithm of fugacity coefficent.
+      !!
+      !! Calculate the natural logarithm of the fugacity coefficient and its
+      !! derivatives given volume and temperature. The routine gives the
+      !! possibility to calculate the pressure and it's derivatives.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%lnphi_vt(&
+      !!    n, V, T, lnPhi=lnPhi, &
+      !!    dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
+      !!    )
+      !! ```
       class(ArModel) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       real(pr), intent(in) :: V !! Volume [L]
@@ -366,9 +415,11 @@ contains
       dPdn_in = RT/V - ArVn
 
       if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
+
       if (present(dlnPhidP)) then
          dlnPhidP(:) = -dPdn_in(:)/dPdV_in/RT - 1._pr/P_in
       end if
+
       if (present(dlnPhidT)) then
          dlnPhidT(:) = (ArTn(:) - Arn(:)/T)/RT + dPdn_in(:)*dPdT_in/dPdV_in/RT + 1._pr/T
       end if
@@ -392,8 +443,26 @@ contains
       dlnfdV, dlnfdT, dlnfdn, &
       dPdV, dPdT, dPdn &
       )
-      use yaeos__math, only: derivative_dxk_dni
-      !! Calculate fugacity coefficent given volume and temperature.
+      !! Calculate natural logarithm of fugacity given volume and temperature.
+      !!
+      !! Calculate the natural logarithm of the fugacity and its derivatives.
+      !! The routine gives the possibility to calculate the pressure and it's
+      !! derivatives.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%lnfug_vt(&
+      !!    n, V, T, lnf=lnf, &
+      !!    dlnfdV=dlnfdV, dlnfdT=dlnfdT, dlnfdn=dlnfdn &
+      !!    )
+      !! ```
       class(ArModel) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Mixture mole numbers
       real(pr), intent(in) :: V !! Volume [L]
@@ -409,13 +478,6 @@ contains
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}{dn_i}\)
 
       real(pr) :: Ar, ArTV, ArV, ArV2
-
-      real(pr) :: lnPhi(size(n)) !! \(\ln(\phi_i)\) vector
-      real(pr) :: dlnPhidT(size(n)) !! \(ln(phi_i)\) Temp derivative
-      real(pr) :: dlnPhidP(size(n)) !! \(ln(phi_i)\) Presssure derivative
-      real(pr) :: dlnPhidn(size(n), size(n)) !! \(ln(phi_i)\) compositional derivative
-
-      real(pr) :: dxk_dni(size(n), size(n))
 
       real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
       real(pr) :: Arn2(size(n), size(n))
@@ -441,6 +503,8 @@ contains
          call eos%residual_helmholtz(n, v, t, Arn=Arn, ArV=ArV)
 
          P_in = totn*RT/V - ArV
+
+         lnf = 0.0_pr
 
          where (n /= 0)
             lnf = log(n/totn) + Arn/RT - log(V/(totn*RT))
@@ -470,6 +534,8 @@ contains
       dPdn_in = RT/V - ArVn
 
       if (present(lnf)) then
+         lnf = 0.0_pr
+
          where (n /= 0)
             lnf = log(n/totn) + Arn/RT - log(V/(totn*RT))
          endwhere
@@ -497,68 +563,107 @@ contains
       if (present(dPdn)) dPdn = dPdn_in
    end subroutine lnfug_vt
 
-   subroutine enthalpy_residual_vt(eos, n, V, T, Hr, HrT, HrV, Hrn)
+   subroutine enthalpy_residual_vt(eos, n, V, T, Hr, HrV, HrT, Hrn)
       !! Calculate residual enthalpy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%enthalpy_residual_vt(&
+      !!    n, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn &
+      !!    )
+      !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: v !! Volume [L]
-      real(pr), intent(out) :: Hr !! Residual enthalpy [bar L]
-      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), optional, intent(out) :: Hr !! Residual enthalpy [bar L]
       real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}}{dV}\)
+      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
       real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
 
       real(pr) :: Ar, ArV, ArT, Arn(size(n))
       real(pr) :: ArV2, ArT2, ArTV, ArVn(size(n)), ArTn(size(n))
 
       call eos%residual_helmholtz(&
-         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
+         n, V, T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
 
-      Hr = Ar - t*ArT - v*ArV
-
-      if (present(HrT)) HrT = - t*ArT2 - v*ArTV
-      if (present(HrV)) HrV = - t*ArTV - v*ArV2
-      if (present(HrN)) HrN(:) = Arn(:) - t*ArTn(:) - v*ArVn(:)
+      if (present(Hr)) Hr = Ar - T*ArT - V*ArV
+      if (present(HrT)) HrT = -T*ArT2 - V*ArTV
+      if (present(HrV)) HrV = -T*ArTV - V*ArV2
+      if (present(Hrn)) Hrn(:) = Arn(:) - T*ArTn(:) - V*ArVn(:)
    end subroutine enthalpy_residual_vt
 
-   subroutine gibbs_residual_VT(eos, n, V, T, Gr, GrT, GrV, Grn)
+   subroutine gibbs_residual_vt(eos, n, V, T, Gr, GrV, GrT, Grn)
       !! Calculate residual Gibbs energy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%gibbs_residual_vt(&
+      !!    n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn &
+      !!    )
+      !! ```
       use yaeos__constants, only: R
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Gr !! Gibbs energy [bar L]
-      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
+      real(pr), optional, intent(out) :: Gr !! Gibbs energy [bar L]
       real(pr), optional, intent(out) :: GrV !! \(\frac{dG^r}}{dV}\)
+      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
       real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
 
-      real(pr) :: Ar, ArV, ArT, Arn(size(n))
-      real(pr) :: p, dPdV, dPdT, dPdn(size(n)), z, totn
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArTV, ArV2, ArVn(size(n))
 
-      totn = sum(n)
-      call pressure(eos, n, V, T, P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
-      z = P*V/(totn*R*T)
+      call eos%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, &
+         ArT=ArT, Arn=Arn, ArTV=ArTV, ArV2=ArV2, ArVn=ArVn &
+         )
 
-      call eos%residual_helmholtz(n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn)
+      if (present(Gr)) Gr = Ar - V*ArV
+      if (present(GrT)) GrT = ArT - V*ArTV
+      if (present(GrV)) GrV = -V*ArV2
+      if (present(Grn)) Grn(:) = Arn(:) - V*ArVn(:)
+   end subroutine gibbs_residual_vt
 
-      Gr = Ar + P*V - totn*R*T
-
-      if (present(GrT)) GrT = ArT + V*dPdT - totn*R
-      if (present(GrV)) GrV = ArV + V*dPdV + P
-      if (present(GrN)) GrN(:) = Arn(:) + V*dPdn(:) - R*T
-   end subroutine gibbs_residual_VT
-
-   subroutine entropy_residual_vt(eos, n, V, T, Sr, SrT, SrV, Srn)
+   subroutine entropy_residual_vt(eos, n, V, T, Sr, SrV, SrT, Srn)
       !! Calculate residual entropy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%entropy_residual_vt(&
+      !!    n, V, T, Sr=Sr, SrV=SrV, SrT=SrT, Srn=Srn &
+      !!    )
+      !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Sr !! Entropy [bar L / K]
-      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
+      real(pr), optional, intent(out) :: Sr !! Entropy [bar L / K]
       real(pr), optional, intent(out) :: SrV !! \(\frac{dS^r}}{dV}\)
+      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
       real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
 
       real(pr) :: Ar, ArT, ArT2, ArTV, ArTn(size(n))
@@ -567,48 +672,106 @@ contains
          n, v, t, Ar=Ar, ArT=ArT, ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
          )
 
-      Sr = - ArT
-
-      if (present(SrT)) SrT = - ArT2
-      if (present(SrV)) SrV = - ArTV
-      if (present(SrN)) SrN = - ArTn
+      if (present(Sr)) Sr = -ArT
+      if (present(SrT)) SrT = -ArT2
+      if (present(SrV)) SrV = -ArTV
+      if (present(SrN)) Srn = -ArTn
    end subroutine entropy_residual_vt
 
+   subroutine internal_energy_residual_vt(eos, n, V, T, Ur, UrV, UrT, Urn)
+      !! Calculate residual internal energy given volume and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%internal_energy_residual_vt(&
+      !!    n, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), optional, intent(out) :: Ur !! Internal energy [bar L]
+      real(pr), optional, intent(out) :: UrV !! \(\frac{dU^r}}{dV}\)
+      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
+      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
+
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArT2, ArTV, ArTn(size(n))
+
+      call eos%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
+         ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
+         )
+
+      if (present(Ur)) Ur = Ar - T*ArT
+      if (present(UrT)) UrT = -T*ArT2
+      if (present(UrV)) UrV = ArV - T*ArTV
+      if (present(Urn)) Urn = Arn - T*ArTn
+   end subroutine internal_energy_residual_vt
+
    subroutine Cv_residual_vt(eos, n, V, T, Cv)
-      !! Calculate residual heat capacity volume constant given v and t.
+      !! Calculate residual heat capacity volume constant given V and T.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%Cv_residual_vt(n, V, T, Cv=Cv)
+      !! ```
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
-      real(pr), intent(out) :: Cv !! heat capacity v constant [bar L / K]
+      real(pr), intent(out) :: Cv !! heat capacity V constant [bar L / K]
 
-      real(pr) :: Ar, ArT2
+      real(pr) :: ArT2
 
-      call eos%residual_helmholtz(n, V, T, Ar=Ar, ArT2=ArT2)
+      call eos%residual_helmholtz(n, V, T, ArT2=ArT2)
 
       Cv = -T*ArT2
    end subroutine Cv_residual_vt
 
    subroutine Cp_residual_vt(eos, n, V, T, Cp)
-      !! Calculate residual heat capacity pressure constant given v and t.
+      !! Calculate residual heat capacity pressure constant given V and T.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! V = 1.0_pr
+      !!
+      !! call eos%Cp_residual_vt(n, V, T, Cp=Cp)
+      !! ```
       use yaeos__constants, only: R
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: Cp !! heat capacity p constant [bar L / K]
+      real(pr), intent(out) :: Cp !! heat capacity P constant [bar L / K]
 
-      real(pr) :: Ar, ArT2, Cv, p, dPdT, dPdV, totn
+      real(pr) :: Cv, P, dPdT, dPdV, n_t
 
-      totn = sum(n)
-
-      call eos%residual_helmholtz(n, V, T, Ar=Ar, ArT2=ArT2)
+      n_t = sum(n)
 
       call Cv_residual_vt(eos, n, V, T, Cv)
-
       call pressure(eos, n, V, T, P, dPdV=dPdV, dPdT=dPdT)
 
-      Cp = Cv - T*dPdT**2/dPdV - totn*R
+      Cp = Cv - T * dPdT**2 / dPdV - n_t*R
    end subroutine Cp_residual_vt
 
    real(pr) function Psat_pure(eos, ncomp, T)
