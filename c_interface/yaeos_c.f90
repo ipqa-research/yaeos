@@ -766,8 +766,8 @@ contains
 
       T = Tstart
       call ffind_llcl(&
-         model=ar_models(id)%model, z0=z0, zi=zi, &
-         P=P, a=a, T=T, V=V &
+         model=ar_models(id)%model, z0=z0, zi=zi, P=P, &
+         a=a, T=T, V=V &
          )
    end subroutine find_llcl
 
