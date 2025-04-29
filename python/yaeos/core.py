@@ -2120,6 +2120,10 @@ class ArModel(ABC):
         s=1e-5,
         ds0=1e-2,
         a0=1e-5,
+        v0=0,
+        t0=0,
+        p0=0,
+        stability_analysis=False,
         max_points=1000,
         stop_pressure=2500,
     ):
@@ -2140,18 +2144,28 @@ class ArModel(ABC):
             Step for molar fraction of composition `i`
         a0: float, optional
             Initial molar fraction of composition `i`
+        v0: float, optional
+            Initial guess for volume [L/mol]
+        t0: float, optional
+            Initial guess for temperature [K]
+        p0: float, optional
+            Initial guess for pressure [bar]
         max_points: int, optional
             Maximum number of points to calculate
         stop_pressure: float, optional
             Stop when reaching this pressure value
         """
 
-        alphas, vs, ts, ps = yaeos_c.critical_line(
+        alphas, vs, ts, ps, *cep = yaeos_c.critical_line(
             self.id,
             ns=ns,
             ds0=ds0,
             a0=a0,
+            v0=v0,
+            t0=t0,
+            p0=p0,
             s=s,
+            stability_analysis=stability_analysis,
             z0=z0,
             zi=zi,
             max_points=max_points,
@@ -2160,7 +2174,37 @@ class ArModel(ABC):
 
         msk = ~np.isnan(ts)
 
-        return {"a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk]}
+        if stability_analysis:
+            return {
+                "a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk],
+                }, {
+                    "x": cep[0], "y": cep[1], "P": cep[2],
+                    "Vx": cep[3], "Vy": cep[4], "T": cep[5]}
+        else:
+            return {
+                "a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk],
+                }
+
+    def critical_line_liquid_liquid(
+            self, z0=[1, 0], zi=[1, 0], pressure=2000, t0=500):
+        """Find the start of the Liquid-Liquid critical line of a binary.
+        
+        Parameters
+        ----------
+        z0: array_like
+            Initial global mole fractions
+        zi: array_like
+            Final global mole fractions
+        pressure: float
+            Pressure [bar]
+        t0: float
+            Initial guess for temperature [K]
+        """
+
+        a, T, V = yaeos_c.find_llcl(
+            self.id, z0=z0, zi=zi, p=pressure, tstart=t0)
+
+        return a, T, V
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""
