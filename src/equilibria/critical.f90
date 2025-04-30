@@ -410,11 +410,24 @@ contains
    real(pr) function lambda1(model, X, s, z0, zi, u, u_new, P)
       !! # lambda1
       !!
-      !! Calculation of the first restriction of a critical point
+      !! Calculation of the first restriction of a critical point.
       !!
       !! \[
-      !!  \lambda_1(s) = \frac{d^2tpd}{ds^2} = 0
+      !!  \lambda_1(s=0, \mathbf{n}, V, T) = \frac{d^2tpd}{ds^2} = 0
       !! \]
+      !!
+      !! \(\lambda_1\) is the smallest eigen-value for the matrix:
+      !!
+      !! \[
+      !! M_{ij} = \sqrt{z_i z_j} \frac{d \ln f_i}{dn_j}(\mathbf{n}, V, T)
+      !! \]
+      !!
+      !! Where
+      !! \[
+      !! \mathbf{n} = \mathbf{z} + s \mathbf{u} \sqrt{\mathbf{z}}
+      !! \]
+      !! And \( \mathbf{u} \) should be the eigen-vector corresponding to the
+      !! smallest eigen-value when \(s = 0\)
       use yaeos__math_linalg, only: eigen
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
@@ -481,6 +494,15 @@ contains
       !!   X_{ns} - S
       !! \end{bmatrix} = 0
       !! \]
+      !!
+      !! The vector of varibles is
+      !!
+      !! \[
+      !! X = [\alpha, \ln V, \ln T, \ln P]
+      !! \]
+      !!
+      !! Including internally the extra equation:
+      !! \[ \mathbf{z} = \alpha \mathbf{z_i} + (1-\alpha) \mathbf{z_0} \]
       class(ArModel), intent(in) :: model !! Equation of state model
       real(pr), intent(in) :: X(4) !! Vector of variables
       integer, intent(in) :: ns !! Position of the specification variable
