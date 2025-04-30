@@ -484,7 +484,7 @@ contains
       !! ## Description
       !! Function that should be equal to zero at a critical point is found.
       !! The second criticality condition is calculated as a numerical
-      !! derivative with `eps=1e-10`.
+      !! derivative with `eps=1e-4`.
       !!
       !! \[
       !! F = \begin{bmatrix}
