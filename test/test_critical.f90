@@ -3,7 +3,7 @@ program main
    use yaeos
    use yaeos__math, only: interpol
    use fortime, only: Timer
-   use testing_aux, only: test_ok, test_title
+   use testing_aux, only: test_ok, test_title, assert
    implicit none
    
    logical :: WRITE_FILES=.false.
@@ -49,9 +49,8 @@ program main
    ! Solve a critical point
    print *, "Solving CP"
    crit = critical_point(&
-      model, z0=z0, zi=zi, S=a, spec=spec_CP%a, max_iters=500, &
-      a0=a, P0=200._pr, t0=700._pr &
-      )
+      model, z0=z0, zi=zi, S=a, spec=spec_CP%a, max_iters=5000, &
+      a0=a)
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
       print *, "Critical point", crit%iters, [crit%T, crit%P], [env%cps(1)%T, env%cps(1)%P]
@@ -60,14 +59,16 @@ program main
    write(*, *) test_ok("Critical point")
 
    ! Now test the critical lines
-   print *, "CL"
    call tim%timer_start()
    cl = critical_line(&
-      model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr, &
+      model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.01_pr, &
       max_points=5000, first_point=crit)
    call tim%timer_stop()
 
-   ! if (WRITE_FILES) call write_cl
+   call assert(cl%P(size(cl%a)) > 2000.0_pr, "Critical line pressure")
+
+   ! if (WRITE_FILES) 
+   ! call write_cl
 
    da = (cl%a(size(cl%a)) - cl%a(1))/(npt+1)
    print *, cl%a(1), cl%a(size(cl%a))
@@ -85,7 +86,7 @@ program main
 
       T = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%T(a_nearest), cl%T(a_nearest+1), a)
       P = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%P(a_nearest), cl%P(a_nearest+1), a)
-      
+
       print *, "Comparing", [T, P], [env%cps(1)%T, env%cps(1)%P]
       if (maxval(([T, P] - [env%cps(1)%T, env%cps(1)%P]) / [T, P]) > 1e-2) then
          write(*, *) [T, P] 
