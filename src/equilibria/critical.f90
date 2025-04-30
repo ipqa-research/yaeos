@@ -474,7 +474,10 @@ contains
       call eigen(A=M, eigenvalues=lambda, eigenvectors=vectors)
 
       lambda1 = lambda(minloc(abs(lambda), dim=1))
-      if (present(u_new)) u_new = vectors(:, minloc(abs(lambda), dim=1))
+      if (present(u_new)) then
+         u_new = vectors(:, minloc(abs(lambda), dim=1))
+         u_new = u_new/sqrt(sum(u_new**2))
+      end if
       if (present(P)) P = Pin
    end function lambda1
 
