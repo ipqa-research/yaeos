@@ -129,9 +129,11 @@ contains
    ! end subroutine
 
    ! subroutine write_env
-   !    integer :: i
-   !    do i=1,size(env%points)
-   !       write(1, *) a, env%points(i)%T, env%points(i)%P
+   !    integer :: j
+   !    write(1, *)
+   !    write(1, *)
+   !    do j=1,size(env%points)
+   !       write(1, *) a, env%points(j)%T, env%points(j)%P
    !    end do
    !    write(1, *)
    !    write(1, *)
