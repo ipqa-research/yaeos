@@ -72,7 +72,7 @@ contains
       X = [log(Vx), log(Vy), log(Pc), log(Tc)]
 
       ns = 1
-      S = log(0.99)
+      S = log(0.95)
       dS = -0.15
       allocate(pt%T(0), pt%P(0), pt%Vx(0), pt%Vy(0))
 
@@ -89,9 +89,10 @@ contains
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
 
-         do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
-            dS = dS*1.5
-         end do
+         ! do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
+         !    dS = dS*1.5
+         ! end do
+         ds = sign(max(dS, 0.01_pr), dS)
 
          Vx = exp(X(1))
          Vy = exp(X(2))
@@ -202,6 +203,7 @@ contains
       do while((maxval(abs(dX)) > 1e-7 .and. maxval(abs(F)) > 1e-7))
          its = its+1
          call isofugacity(X, F, dF, dFdS)
+
          if (any(isnan(F))) exit
          dX = solve_system(dF, -F)
          Xnew = X + dX
