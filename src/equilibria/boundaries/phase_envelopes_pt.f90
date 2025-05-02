@@ -349,6 +349,8 @@ contains
          real(pr) :: Xold(size(X)) !! Old value of X
          real(pr) :: Xnew(size(X)) !! Value of the next initialization
 
+         real(pr) :: V
+
          integer :: inner, ncomp
 
          Xold = X
@@ -374,15 +376,18 @@ contains
                kind = "liquid-liquid"
             end select
 
-            cp = critical_point(&
-               model, z, z, spec=spec_CP%a, S=0._pr, &
-               max_iters=500, T0=exp(X(nc+1)), P0=exp(X(nc+2)) &
-               )
+
 
             ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
             a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
             Xc = a * X + (1-a)*Xnew
+            
+            call model%volume(z, P=exp(Xc(nc+2)), T=exp(Xc(nc+1)), V=V, root_type="liquid")
+            cp = critical_point(&
+               model, z, z, spec=spec_CP%a, S=0._pr, &
+               max_iters=5000, T0=exp(Xc(nc+1)), P0=exp(Xc(nc+2)), V0=V &
+               )
 
             Xc(nc+1) = log(cp%T)
             Xc(nc+2) = log(cp%P)
