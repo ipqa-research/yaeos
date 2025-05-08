@@ -55,8 +55,8 @@ contains
       !! Newton-Raphson method.
       !!
       !! This function requires the system specification conditions, which are
-      !! the fluid composition (\z\), the number of phases that are not 
-      !! incipient; defined as \(np\), proper intialization values, the 
+      !! the fluid composition (\z\), the number of phases that are not
+      !! incipient; defined as \(np\), proper intialization values, the
       !!variables that end with `0`
       !!
       !! # Examples
@@ -71,46 +71,46 @@ contains
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases.
-      real(pr), intent(in) :: x_l0(np, size(z)) 
-         !! Initial guess for the mole fractions of each phase. arranged as
-         !! an array of size `(np, nc)`, where nc is the number of components 
-         !! and `np` the number of main phases. Each row correspond to the 
-         !! composition of each main phaase.
-      real(pr), intent(in) :: w0(size(z)) 
-         !! Initial guess for the mole fractions of the 
-         !! reference/incipient phase.
-      real(pr), intent(in) :: betas0(np) 
-         !! Initial guess for the fractions of the main phases. arranged as
-         !! an array of size `(np)`, where `np` is the number of main phases.
+      real(pr), intent(in) :: x_l0(np, size(z))
+      !! Initial guess for the mole fractions of each phase. arranged as
+      !! an array of size `(np, nc)`, where nc is the number of components
+      !! and `np` the number of main phases. Each row correspond to the
+      !! composition of each main phaase.
+      real(pr), intent(in) :: w0(size(z))
+      !! Initial guess for the mole fractions of the
+      !! reference/incipient phase.
+      real(pr), intent(in) :: betas0(np)
+      !! Initial guess for the fractions of the main phases. arranged as
+      !! an array of size `(np)`, where `np` is the number of main phases.
       real(pr), intent(in) :: P0 !! Initial guess for the pressure [bar].
       real(pr), intent(in) :: T0 !! Initial guess for the temperature [K].
-      integer, intent(in) :: ns0 
-         !! Number of the specified variable.
-         !! The variable to be specified. This is the variable that will be
-         !! used to calculate the first point of the envelope. The variable
-         !! can be any of the variables in the vector X, but it is recommended
-         !! to use the temperature or pressure. The variables are aranged as
-         !! follows:
-         !!
-         !! - `X(1:nc*np) = ln(K_i^l)`: \(\frac{x_i^l}{w_i}\)
-         !! - `X(nc*np+1:nc*np+np) = \beta_i^l`: Fraction of each main phase.
-         !! - `X(nc*np+np+1) = ln(P)`: Pressure [bar].
-         !! - `X(nc*np+np+2) = ln(T)`: Temperature [K].
+      integer, intent(in) :: ns0
+      !! Number of the specified variable.
+      !! The variable to be specified. This is the variable that will be
+      !! used to calculate the first point of the envelope. The variable
+      !! can be any of the variables in the vector X, but it is recommended
+      !! to use the temperature or pressure. The variables are aranged as
+      !! follows:
+      !!
+      !! - `X(1:nc*np) = ln(K_i^l)`: \(\frac{x_i^l}{w_i}\)
+      !! - `X(nc*np+1:nc*np+np) = \beta_i^l`: Fraction of each main phase.
+      !! - `X(nc*np+np+1) = ln(P)`: Pressure [bar].
+      !! - `X(nc*np+np+2) = ln(T)`: Temperature [K].
       real(pr), intent(in) :: dS0
-         !! Step size of the specification for the next point.
-         !! This is the step size that will be used to calculate the next point.
-         !! Inside the algorithm this value is modified to adapt the step size
-         !! to facilitate the convergence of each point. 
+      !! Step size of the specification for the next point.
+      !! This is the step size that will be used to calculate the next point.
+      !! Inside the algorithm this value is modified to adapt the step size
+      !! to facilitate the convergence of each point.
       real(pr), intent(in) :: beta_w
-         !! Fraction of the reference (incipient) phase.
+      !! Fraction of the reference (incipient) phase.
       integer, optional, intent(in) :: points
-         !! Number of points to calculate.
-      real(pr), optional, intent(in) :: max_pressure 
-         !! Maximum pressure [bar] to calculate.
-         !! If the pressure of the point is greater than this value, the
-         !! calculation is stopped.
-         !! This is useful to avoid calculating envelopes that go to infinite
-         !! values of pressure.
+      !! Number of points to calculate.
+      real(pr), optional, intent(in) :: max_pressure
+      !! Maximum pressure [bar] to calculate.
+      !! If the pressure of the point is greater than this value, the
+      !! calculation is stopped.
+      !! This is useful to avoid calculating envelopes that go to infinite
+      !! values of pressure.
 
       type(MPPoint), allocatable :: env_points(:) !! Array of converged points.
       type(MPPoint) :: point !! Converged point.
@@ -118,22 +118,22 @@ contains
 
       real(pr) :: F(size(z) * np + np + 2) !! Vector of functions valuated.
       real(pr) :: dF(size(z) * np + np + 2, size(z) * np + np + 2)
-         !! Jacobian matrix.
-      real(pr) :: dXdS(size(z) * np + np + 2) 
-         !! Sensitivity of the variables wrt the specification.
-      real(pr) :: X(size(z) * np + np + 2) 
-         !! Vector of variables.
-      real(pr) :: dX(size(z) * np + np + 2) 
-         !! Step for next point estimation.
+      !! Jacobian matrix.
+      real(pr) :: dXdS(size(z) * np + np + 2)
+      !! Sensitivity of the variables wrt the specification.
+      real(pr) :: X(size(z) * np + np + 2)
+      !! Vector of variables.
+      real(pr) :: dX(size(z) * np + np + 2)
+      !! Step for next point estimation.
 
       integer :: nc !! Number of components.
 
-      integer :: its 
-         !! Number of iterations to solve the current point.
-      integer :: max_iterations = 10 
-         !! Maximum number of iterations to solve the point.
-      integer :: number_of_points 
-         !! Number of points to calculate.
+      integer :: its
+      !! Number of iterations to solve the current point.
+      integer :: max_iterations = 10
+      !! Maximum number of iterations to solve the point.
+      integer :: number_of_points
+      !! Number of points to calculate.
 
 
       real(pr) :: x_l(np, size(z)) !! Mole fractions of the main phases.
@@ -143,6 +143,7 @@ contains
       real(pr) :: T !! Temperature [K].
 
       integer :: i !! Point calculation index
+      integer :: iT !! Index of the temperature variable.
       integer :: lb !! Lower bound, index of the first component of a phase
       integer :: ub !! Upper bound, index of the last component of a phase
       integer :: inner !! Number of times a failed point is retried to converge
@@ -154,6 +155,7 @@ contains
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
       nc = size(z)
+      iT = np*nc + np + 2
 
       number_of_points = optval(points, 1000)
       max_P = optval(max_pressure, 2000._pr)
@@ -203,13 +205,13 @@ contains
          ! Convert the values of the vector of variables into human-friendly
          ! variables.
          call get_values_from_X(X, np, z, x_l, w, betas, P, T)
-         
+
          ! If the point did not converge, stop the calculation
          if (&
             any(isnan(F)) .or. its > max_iterations &
             .or. exp(X(nc*np+np+1)) < 1e-5 &
             .or. P > max_P &
-         ) exit
+            ) exit
 
          ! Attach the new point to the envelope.
          point = MPPoint(&
@@ -227,6 +229,11 @@ contains
 
          ! Next point estimation.
          dX = dXdS * dS
+
+         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
+            dX = dX/2
+         end do
+         
          X = X + dX
          S = X(ns)
       end do
@@ -444,8 +451,10 @@ contains
       integer, intent(out) :: iters
 
 
+      integer :: i
       integer :: iT
       integer :: iP
+      integer :: iBetas(np)
       integer :: nc
 
       real(pr) :: X0(size(X))
@@ -460,6 +469,8 @@ contains
       X0 = X
 
       can_solve = .true.
+
+      iBetas = [(i, i=np*nc+1, np*nc+np)]
 
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, beta_w, x, ns, S, F, dF)
@@ -479,6 +490,12 @@ contains
          do while(abs(dX(iP)) > 0.1)
             dX = dX/2
          end do
+
+         if (.not. any(X(iBetas) == 0)) then
+            do while(maxval(abs(dX(iBetas)/X(iBetas))) > 0.5)
+               dX = dX/2
+            end do
+         end if
 
          if (maxval(abs(F)) < 1e-8_pr) exit
 
@@ -533,9 +550,13 @@ contains
 
       integer :: iT
       integer :: iP
+      integer :: iBetas(np)
 
-      iT = size(X)
+      real(pr) :: dT, dP
+
+      iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = size(X) - 1
+      iT = size(X)
 
       dFdS = 0
       dFdS(size(X)) = -1
@@ -563,19 +584,26 @@ contains
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
-      ! We adapt the step size to the number of iterations, the desired number
-      ! of iterations for each point is around 3.
-      dS = dS * 3._pr/its
+      do while(maxval(abs(dXdS(:nc*np)*dS)) > 0.1_pr)
+         dS = dS/2
+      end do
+
+      do while(minval(abs(dXdS(:nc*np)*dS)) < 1e-5_pr)
+         dS = dS*1.1
+      end do
 
       do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
          dS = dS*2
       end do
 
       do while(&
-         abs(dXdS(iT) * dS) > 0.05_pr &
-         .or. abs(dXdS(iP) * dS) > 0.05_pr&
+         dT > 7._pr &
+         .or. dP > 7._pr &
+         ! .or. maxval(abs(dXdS(iBetas) * dS)/X(iBetas)) > 0.1_pr &
          )
-         dS = dS/2
+         dS = dS * 0.75
+         dT = abs(exp(X(iT))  - exp(X(it) + dXdS(iT)*dS))
+         dP = abs(exp(X(iP))  - exp(X(it) + dXdS(iP)*dS))
       end do
 
    end subroutine update_specification
@@ -614,7 +642,7 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.1)
+         do while(maxval(abs(X(lb:ub))) < 0.01)
             X = X + dXdS * dS
          end do
 

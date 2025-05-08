@@ -7,6 +7,7 @@ relevant constants, procedures and objects to have better access to them.
 import importlib.metadata
 
 import yaeos.constants as constants
+import yaeos.envelopes as envelopes
 from yaeos.lib import yaeos_c
 from yaeos.models.excess_gibbs import NRTL, UNIFACVLE, UNIQUAC
 from yaeos.models.residual_helmholtz.cubic_eos import (
@@ -22,6 +23,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
 )
 
 __all__ = [
+    "envelopes",
     "constants",
     "yaeos_c",
     "SoaveRedlichKwong",
