@@ -32,6 +32,7 @@ program tester
     use test_psrk_parameters, only: suite_psrk_parameters => collect_suite
     use test_tape_nrtl, only: suite_nrtl => collect_suite
     use test_uniquac, only: suite_uniquac => collect_suite
+    use test_dortmund, only: suite_dortmund => collect_suite
 
     use stdlib_ansi, only: style_bold, fg_color_green, fg_color_red, operator(//), style_reset
 
@@ -69,6 +70,7 @@ program tester
         ! ---------------------------------------------------------------------
         new_testsuite("UNIFAC", suite_unifac), &
         new_testsuite("PSRK", suite_psrk_ge), &
+        new_testsuite("Dortmund", suite_dortmund), &
         new_testsuite("UNIFACParameters", suite_unifac_parameters), &
         new_testsuite("PSRKParameters", suite_psrk_parameters), &
         new_testsuite("NRTL", suite_nrtl), &
