@@ -497,7 +497,7 @@ contains
             end do
          end if
 
-         if (maxval(abs(F)) < 1e-8_pr) exit
+         if (maxval(abs(F)) < 1e-6_pr) exit
 
          X = X + dX
       end do
