@@ -5,10 +5,9 @@ the models' thermoprops methods.
 """
 
 from abc import ABC
+from typing import Union
 
 from intersect import intersection
-
-from typing import Union
 
 import numpy as np
 
@@ -2176,19 +2175,31 @@ class ArModel(ABC):
 
         if stability_analysis:
             return {
-                "a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk],
-                }, {
-                    "x": cep[0], "y": cep[1], "P": cep[2],
-                    "Vx": cep[3], "Vy": cep[4], "T": cep[5]}
+                "a": alphas[msk],
+                "T": ts[msk],
+                "P": ps[msk],
+                "V": vs[msk],
+            }, {
+                "x": cep[0],
+                "y": cep[1],
+                "P": cep[2],
+                "Vx": cep[3],
+                "Vy": cep[4],
+                "T": cep[5],
+            }
         else:
             return {
-                "a": alphas[msk], "T": ts[msk], "P": ps[msk], "V": vs[msk],
-                }
+                "a": alphas[msk],
+                "T": ts[msk],
+                "P": ps[msk],
+                "V": vs[msk],
+            }
 
     def critical_line_liquid_liquid(
-            self, z0=[1, 0], zi=[1, 0], pressure=2000, t0=500):
+        self, z0=[1, 0], zi=[1, 0], pressure=2000, t0=500
+    ):
         """Find the start of the Liquid-Liquid critical line of a binary.
-        
+
         Parameters
         ----------
         z0: array_like
@@ -2202,7 +2213,8 @@ class ArModel(ABC):
         """
 
         a, T, V = yaeos_c.find_llcl(
-            self.id, z0=z0, zi=zi, p=pressure, tstart=t0)
+            self.id, z0=z0, zi=zi, p=pressure, tstart=t0
+        )
 
         return a, T, V
 

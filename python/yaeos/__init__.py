@@ -8,7 +8,7 @@ import importlib.metadata
 
 import yaeos.constants as constants
 from yaeos.lib import yaeos_c
-from yaeos.models.excess_gibbs import NRTL, UNIFACVLE, UNIQUAC
+from yaeos.models.excess_gibbs import NRTL, UNIFACDortmund, UNIFACVLE, UNIQUAC
 from yaeos.models.residual_helmholtz.cubic_eos import (
     HV,
     MHV,
@@ -32,6 +32,7 @@ __all__ = [
     "QMR",
     "QMRTD",
     "NRTL",
+    "UNIFACDortmund",
     "UNIFACVLE",
     "UNIQUAC",
     "MHV",
