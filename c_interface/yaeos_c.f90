@@ -899,10 +899,10 @@ contains
       integer(c_int), intent(in) :: comp_id
       real(c_double), intent(in) :: stop_P
       real(c_double), intent(in) :: stop_T
-      real(c_double), intent(out) :: P(800)
-      real(c_double), intent(out) :: T(800)
-      real(c_double), intent(out) :: Vx(800)
-      real(c_double), intent(out) :: Vy(800)
+      real(c_double), intent(out) :: P(10000)
+      real(c_double), intent(out) :: T(10000)
+      real(c_double), intent(out) :: Vx(10000)
+      real(c_double), intent(out) :: Vy(10000)
 
       integer :: npoints
       type(PurePsat) :: sat
@@ -917,9 +917,9 @@ contains
       Vx = nan
       Vy = nan
 
-      sat = fsat(ar_models(id)%model, comp_id, stop_P, stop_T)
+      sat = fsat(ar_models(id)%model, component=comp_id, minP=stop_P, minT=stop_T)
 
-      npoints = minval([size(sat%T), 800])
+      npoints = minval([size(sat%T), size(T)])
 
       T(:npoints) = sat%T(:npoints)
       P(:npoints) = sat%P(:npoints)

@@ -89,9 +89,10 @@ contains
          dS = dXdS(ns)*dS
          dXdS = dXdS/dXdS(ns)
 
-         ! do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
-         !    dS = dS*1.5
-         ! end do
+         do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
+            dS = dS*1.5
+         end do
+         
          ds = sign(max(dS, 0.01_pr), dS)
 
          Vx = exp(X(1))
