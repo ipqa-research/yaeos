@@ -144,6 +144,7 @@ contains
 
       integer :: i !! Point calculation index
       integer :: iT !! Index of the temperature variable.
+      integer :: iP !! Index of the pressure variable.
       integer :: lb !! Lower bound, index of the first component of a phase
       integer :: ub !! Upper bound, index of the last component of a phase
       integer :: inner !! Number of times a failed point is retried to converge
@@ -155,6 +156,7 @@ contains
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
       nc = size(z)
+      iP = np*nc + np + 1
       iT = np*nc + np + 2
 
       number_of_points = optval(points, 1000)
@@ -231,6 +233,10 @@ contains
          dX = dXdS * dS
 
          do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
+            dX = dX/2
+         end do
+         
+         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
             dX = dX/2
          end do
          
@@ -574,8 +580,11 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         if (maxval(abs(X(lb:ub))) < 0.3) then
+         if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
+            dS = dXdS(ns) * dS
+            dXdS = dXdS/dXdS(ns)
+            dS = sign(min(0.01_pr, abs(dS)), dS)
             exit
          end if
       end do
@@ -593,18 +602,21 @@ contains
       end do
 
       do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
-         dS = dS*2
+         dS = dS*1.1
       end do
 
-      do while(&
-         dT > 7._pr &
-         .or. dP > 7._pr &
-         ! .or. maxval(abs(dXdS(iBetas) * dS)/X(iBetas)) > 0.1_pr &
-         )
-         dS = dS * 0.75
-         dT = abs(exp(X(iT))  - exp(X(it) + dXdS(iT)*dS))
-         dP = abs(exp(X(iP))  - exp(X(it) + dXdS(iP)*dS))
-      end do
+
+      !dT = abs(exp(X(iT))  - exp(X(it) + dXdS(iT)*dS))
+      !dP = abs(exp(X(iP))  - exp(X(it) + dXdS(iP)*dS))
+      !do while(&
+      !   dT > 7._pr &
+      !   .or. dP > 7._pr &
+      !   .or. maxval(abs(dXdS(iBetas) * dS)/X(iBetas)) > 0.1_pr &
+      !   )
+      !   dS = dS * 0.75
+      !   dT = abs(exp(X(iT))  - exp(X(it) + dXdS(iT)*dS))
+      !   dP = abs(exp(X(iP))  - exp(X(it) + dXdS(iP)*dS))
+      !end do
 
    end subroutine update_specification
 
