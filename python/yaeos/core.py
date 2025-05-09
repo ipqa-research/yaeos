@@ -12,8 +12,6 @@ from typing import Union
 
 import numpy as np
 
-import pandas as pd
-
 from yaeos.lib import yaeos_c
 
 from yaeos.envelopes import PTEnvelope, PXEnvelope
@@ -1338,6 +1336,7 @@ class ArModel(ABC):
         max_points: int = 300,
         t0: float = 150.0,
         p0: float = 1.0,
+        stop_pressure: float = 2500,
     ) -> dict:
         """Two phase envelope calculation (PT).
 
@@ -1358,15 +1357,13 @@ class ArModel(ABC):
         p0 : float, optional
             Initial guess for pressure [bar] for the saturation point of kind:
             `kind`, by default 1.0
+        stop_pressure : float, optional
+            Stop on pressures above stop_pressure [bar], by default 2500.0
 
         Returns
         -------
-        dict
-            Envelope calculation result dictionary with keys:
-                - Ts: temperatures [K]
-                - Ps: pressures [bar]
-                - Tcs: critical temperatures [K]
-                - Pcs: critical pressures [bar]
+        PTEnvelope
+            PTEnvelope object with the phase envelope information.
 
         Example
         -------
@@ -1392,12 +1389,52 @@ class ArModel(ABC):
                 p0=1.0
             )
 
-            plt.plot(env["Ts"], env["Ps"])
-            plt.scatter(env["Tcs"], env["Pcs"])
+            plt.plot(env["T"], env["P"])
+            plt.scatter(env["Tc"], env["Pc"])
         """
+
+        if kind == "bubble":
+            sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
+            w0 = sat["y"]
+            ns0 = len(z) + 3
+        elif kind == "dew":
+            sat = self.saturation_temperature(z, p0, kind=kind, t0=t0)
+            w0 = sat["x"]
+            ns0 = len(z) + 2
         ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
             self.id, z, kind=kind, t0=t0, p0=p0, max_points=max_points
         )
+
+        x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
+            id=self.id,
+            np=1,
+            z=z,
+            x_l0=[z],
+            w0=w0,
+            betas0=[1],
+            t0=t0,
+            p0=p0,
+            ns0=ns0,
+            ds0=0.001,
+            beta_w=0,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
+        )
+
+        envelope = PTEnvelope(
+            global_composition=z,
+            main_phases_compositions=x_ls,
+            reference_phase_compositions=ws,
+            main_phases_molar_fractions=betas,
+            pressures=ps,
+            temperatures=ts,
+            iterations=iters,
+            specified_variable=ns,
+        )
+
+        return envelope
+
+
 
         msk = ~np.isnan(ts)
         msk_cp = ~np.isnan(tcs)
@@ -1571,6 +1608,7 @@ class ArModel(ABC):
         specified_variable=None,
         first_step=None,
         max_points=1000,
+        stop_pressure=2500,
     ):
         """
         Three-phase envelope tracing method.
@@ -1604,26 +1642,46 @@ class ArModel(ABC):
             Step for the specified variable, by default 0.1
         max_points : int, optional
             Maximum number of points to calculate, by default 1000
+        stop_pressure : float, optional
+            Stop at pressure above stop_pressure [bar], default 2500
         """
+
+        np = 2
         if specified_variable is None:
-            specified_variable = 2 * len(z) + 2
+            specified_variable = 2 * len(z) + np + 2
 
         if first_step is None:
             first_step = 0.1
 
-        x, y, w, p, t, beta = yaeos_c.pt3_phase_envelope(
-            self.id,
+        x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
+            id=self.id,
+            np=np,
             z=z,
-            x0=x0,
-            y0=y0,
+            x_l0=[x0, y0],
             w0=w0,
-            beta0=beta0,
+            betas0=[1-beta0, beta0],
             t0=t0,
             p0=p0,
-            max_points=max_points,
             ns0=specified_variable,
             ds0=first_step,
+            beta_w=0,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
         )
+
+        envelope = PTEnvelope(
+            global_composition=z,
+            main_phases_compositions=x_ls,
+            reference_phase_compositions=ws,
+            main_phases_molar_fractions=betas,
+            pressures=ps,
+            temperatures=ts,
+            iterations=iters,
+            specified_variable=ns,
+        )
+
+        return envelope
+
 
         msk = ~np.isnan(t)
 

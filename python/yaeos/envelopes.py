@@ -4,6 +4,10 @@ This module contains the classes that wrapp the data structures used to
 represent different kinds of phase envelopes.
 """
 
+from IPython.display import display
+
+import matplotlib.pyplot as plt
+
 import numpy as np
 
 import pandas as pd
@@ -100,6 +104,10 @@ class PTEnvelope:
             )
         elif key == "T":
             return self.temperatures
+        elif key == "Tc":
+            return np.array([self.temperatures[i] for i in self.cp])
+        elif key == "Pc":
+            return np.array([self.temperatures[i] for i in self.cp])
         elif key == "P":
             return self.pressures
         elif key == "z":
@@ -109,8 +117,17 @@ class PTEnvelope:
         elif key == "w":
             return self.reference_phase_compositions
 
+    def plot(self):
+        plt.plot(self.temperatures, self.pressures)
+        plt.xlabel("Temperature (K)")
+        plt.ylabel("Pressure [bar]")
+        plt.title("PT Envelope")
+        for cp in self.cp:
+            plt.scatter(self.temperatures[cp], self.pressures[cp], color="black")
+
     def __repr__(self):
-        return self.df.__repr__()
+        display(self.df)
+        return ""
 
     def __mul__(self, other):
         return PTEnvelope(
