@@ -103,6 +103,7 @@ python_sources = [
     python_lib / '__init__.py',
     python_lib / 'core.py',
     python_lib / 'constants.py',
+    python_lib / 'envelopes.py',
 ]
 py.install_sources(python_sources, subdir:python_lib)
 
