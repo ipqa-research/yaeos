@@ -16,7 +16,7 @@ import pandas as pd
 
 from yaeos.lib import yaeos_c
 
-from yaeos.envelopes import PTEnvelope
+from yaeos.envelopes import PTEnvelope, PXEnvelope
 
 
 class GeModel(ABC):
@@ -1785,7 +1785,6 @@ class ArModel(ABC):
         """Multi-phase envelope."""
 
         number_of_phases = x_l0.shape[0]
-        nc = len(z0)
 
         x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
             id=self.id,
@@ -1804,24 +1803,18 @@ class ArModel(ABC):
             max_points=max_points,
         )
 
-        msk = ~np.isnan(alphas)
-
-        df = pd.DataFrame()
-
-        df["alphas"] = alphas[msk]
-        df["P"] = ps[msk]
-        df["iters"] = iters[msk]
-        df["ns"] = ns[msk]
-
-        for i in range(nc):
-            for j in range(number_of_phases):
-                df[f"x_{i+1}^{j+1}"] = x_ls[msk, j, i]
-            df[f"w_{i+1}"] = ws[msk, i]
-
-        for i in range(number_of_phases):
-            df[f"beta^{i+1}"] = betas[msk, i]
-
-        return df, {"x_l": x_ls[msk], "w": ws[msk], "beta": betas[msk]}
+        return PXEnvelope(
+            temperature=t,
+            global_composition_0=z0,
+            global_composition_i=zi,
+            main_phases_compositions=x_ls,
+            reference_phase_compositions=ws,
+            main_phases_molar_fractions=betas,
+            pressures=ps,
+            alphas=alphas,
+            iterations=iters,
+            specified_variable=ns,
+        )
 
     def isopleth(
         self,
