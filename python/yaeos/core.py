@@ -1896,7 +1896,7 @@ class ArModel(ABC):
             bub_line["P"],
         )
 
-        if liq:
+        if liq_line:
             dsps_dl = intersection(
                 dew_line["T"],
                 dew_line["P"],
@@ -1917,7 +1917,7 @@ class ArModel(ABC):
                 "bl": [dsps_bl, bub_line, liq_line]
             }
         else:
-            dsps_set = [dsps_db]
+            dsps_set = {"db": [dsps_db, dew_line, bub_line]}
 
         dew_locs = []
         bub_locs = []
