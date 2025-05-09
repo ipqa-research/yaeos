@@ -1019,7 +1019,7 @@ class ArModel(ABC):
             model = PengRobinson76(tc, pc, w)
         """
         p, t, vx, vy = yaeos_c.pure_saturation_line(
-            self.id, component, stop_pressure, stop_temperature
+            self.id, component, stop_p=stop_pressure, stop_t=stop_temperature
         )
 
         msk = ~np.isnan(t)
