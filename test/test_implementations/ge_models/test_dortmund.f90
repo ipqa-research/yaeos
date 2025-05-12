@@ -1,30 +1,21 @@
-module test_dortmund
+program main
    use yaeos, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose, rel_error
+   use testing_aux, only: assert, test_title
    implicit none
 
+   call test_dortmund_cons_mix()
+   call test_dortmund_cons_pure()
+   call test_against_caleb_thermo()
+
 contains
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("Test dortmund consistency mixture", test_dortmund_cons_mix), &
-         new_unittest("Test dortmund consistency pure", test_dortmund_cons_pure), &
-         new_unittest("Test dortmund against Caleb Bell's Thermo lib", test_against_caleb_thermo) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_dortmund_cons_mix(error)
+   subroutine test_dortmund_cons_mix()
       use yaeos, only: pr, R
       use yaeos, only: Groups, setup_dortmund, UNIFAC
       use yaeos__consistency_gemodel, only: ge_consistency
       use yaeos__consistency_gemodel, only: numeric_ge_derivatives
       use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
       use yaeos__models_ge_group_contribution_dortmund_parameters, only: DortmundParameters
-
-      type(error_type), allocatable, intent(out) :: error
 
       type(UNIFAC) :: model
 
@@ -43,6 +34,8 @@ contains
       real(pr) :: eq58, eq59(size(n)), eq60(size(n),size(n)), eq61(size(n))
 
       integer :: i, j
+
+      print *, test_title("Dortmund model mixture consistency test")
 
       T = 303.15
       n = [400.0, 100.0, 300.0, 200.0]
@@ -81,15 +74,14 @@ contains
       call numeric_ge_derivatives(model, n, T, dn, dt, Ge=Ge_n, Gen2=Gen2_n)
 
       ! Derivatives checks
-      call check(error, abs(Ge - Ge_n) < 1e-10)
-      call check(error, abs(GeT - GeT_n) < 1e-4)
-      call check(error, allclose(Gen, Gen_n, 1e-4_pr))
-      call check(error, abs(GeT2 - GeT2_n) < 1e-4_pr)
-      call check(error, allclose(GeTn, GeTn_n, 1e-3_pr))
-      call check(error, allclose(Gen2(1,:), Gen2_n(1,:), 1e-1_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_n(2,:), 1e-1_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_n(3,:), 1e-1_pr))
-
+      call assert(abs(Ge - Ge_n) < 1e-10, "Ge numeric")
+      call assert(abs(GeT - GeT_n) < 1e-4, "GeT numeric")
+      call assert(allclose(Gen, Gen_n, 1e-4_pr), "Gen numeric")
+      call assert(abs(GeT2 - GeT2_n) < 1e-4_pr, "GeT2 numeric")
+      call assert(allclose(GeTn, GeTn_n, 1e-3_pr), "GeTn numeric")
+      call assert(allclose(Gen2(1,:), Gen2_n(1,:), 1e-1_pr), "Gen2 numeric")
+      call assert(allclose(Gen2(2,:), Gen2_n(2,:), 1e-1_pr), "Gen2 numeric")
+      call assert(allclose(Gen2(3,:), Gen2_n(3,:), 1e-1_pr), "Gen2 numeric")
 
       ! ========================================================================
       ! Consistency tests
@@ -100,31 +92,29 @@ contains
       call ge_consistency(model, n, t, eq61=eq61)
 
       ! Eq 58
-      call check(error, abs(eq58) < 1e-10_pr)
+      call assert(abs(eq58) < 1e-10_pr, "Consistency Eq 58")
 
       ! Eq 59
       do i=1,size(n)
-         call check(error, abs(eq59(i)) < 1e-10_pr)
+         call assert(abs(eq59(i)) < 1e-10_pr, "Consistency Eq 59")
       end do
 
       ! Eq 60
       do i=1,size(n)
          do j=1,size(n)
-            call check(error, abs(eq60(i, j)) < 1e-10_pr)
+            call assert(abs(eq60(i, j)) < 1e-10_pr, "Consistency Eq 60")
          end do
       end do
 
       ! Eq 61
       do i=1,size(n)
-         call check(error, abs(eq61(i)) < 1e-10_pr)
+         call assert(abs(eq61(i)) < 1e-10_pr, "Consistency Eq 61")
       end do
    end subroutine test_dortmund_cons_mix
 
-   subroutine test_dortmund_cons_pure(error)
+   subroutine test_dortmund_cons_pure()
       use yaeos, only: pr
       use yaeos, only: Groups, UNIFAC, setup_dortmund
-
-      type(error_type), allocatable, intent(out) :: error
 
       type(UNIFAC) :: model
       type(Groups) :: molecules(1)
@@ -133,6 +123,8 @@ contains
       real(pr) :: T, n(1)
 
       integer :: i, j
+
+      print *, test_title("Dortmund model pure consistency test")
 
       T = 303.15
       n = [400.0]
@@ -148,29 +140,27 @@ contains
       call model%ln_activity_coefficient(n, T, ln_gammas)
 
       ! All must be zero for a pure compounds
-      call check(error, abs(Ge) < 1e-10_pr)
-      call check(error, abs(GeT) < 1e-10_pr)
-      call check(error, abs(GeT2) < 1e-10_pr)
+      call assert(abs(Ge) < 1e-10_pr, "Ge = 0")
+      call assert(abs(GeT) < 1e-10_pr, "GeT = 0")
+      call assert(abs(GeT2) < 1e-10_pr, "GeT2 = 0")
 
       do i=1,size(n)
-         call check(error, abs(Gen(i)) < 1e-10_pr)
-         call check(error, abs(GeTn(i)) < 1e-10_pr)
-         call check(error, abs(ln_gammas(i)) < 1e-10_pr)
+         call assert(abs(Gen(i)) < 1e-10_pr, "Gen = 0")
+         call assert(abs(GeTn(i)) < 1e-10_pr, "GeTn = 0")
+         call assert(abs(ln_gammas(i)) < 1e-10_pr, "ln_gammas = 0")
       end do
 
       do i=1,size(n)
          do j=1,size(n)
-            call check(error, abs(Gen2(i, j)) < 1e-10_pr)
+            call assert(abs(Gen2(i, j)) < 1e-10_pr, "Gen2 = 0")
          end do
       end do
    end subroutine test_dortmund_cons_pure
 
-   subroutine test_against_caleb_thermo(error)
+   subroutine test_against_caleb_thermo()
       ! https://github.com/CalebBell/thermo
       use yaeos, only: pr, R
       use yaeos, only: Groups, setup_dortmund, UNIFAC
-
-      type(error_type), allocatable, intent(out) :: error
 
       type(UNIFAC) :: model
 
@@ -183,6 +173,8 @@ contains
       real(pr) :: ln_gammas(nc)
 
       real(pr) :: n(nc), T, n_t
+
+      print *, test_title("Dortmund test against Caleb Bell's thermo")
 
       T = 303.15_pr
       n = [2.0_pr, 5.0_pr, 3.0_pr]
@@ -219,125 +211,125 @@ contains
       ! ------------------------------------------------------------------------
       ! Ge
       ! print *, Ge/n_t
-      call check(error, abs(Ge / n_t - (14.432048256607143_pr)) <= 1e-5)
+      call assert(abs(Ge / n_t - (14.432048256607143_pr)) <= 1e-5, "Ge/n_t")
 
       ! ln_gammas
       ! print *, Gen/R/T, ln_gammas
-      call check(error, allclose(Gen / R / T, [0.727831865699655_pr, 0.49653097358793297_pr, 0.595827311587003_pr], 1e-5_pr))
-      call check(error, allclose(ln_gammas, [0.727831865699655_pr, 0.49653097358793297_pr, 0.595827311587003_pr], 1e-5_pr))
+      call assert(allclose(Gen / R / T, [0.727831865699655_pr, 0.49653097358793297_pr, 0.595827311587003_pr], 1e-5_pr), "Gen/R/T")
+      call assert(allclose(ln_gammas, [0.727831865699655_pr, 0.49653097358793297_pr, 0.595827311587003_pr], 1e-5_pr), "ln_gammas")
 
       ! Gen2
       ! print *, Gen2(1,:)
       ! print *, Gen2(2,:)
       ! print *, Gen2(3,:)
-      call check(error, allclose(Gen2(1,:), [-27.396545333109035_pr, 22.045031798841627_pr, -18.47735610933041_pr] / n_t, 1e-5_pr))
-      call check(error, allclose(Gen2(2,:), [22.04503179884173_pr, -22.7202581288098_pr, 23.170409015455117_pr] / n_t, 1e-5_pr))
-      call check(error, allclose(Gen2(3,:), [-18.47735610933015_pr, 23.17040901545502_pr, -26.299110952871235_pr] / n_t, 1e-5_pr))
+      call assert(allclose(Gen2(1,:), [-27.396545333109035_pr, 22.045031798841627_pr, -18.47735610933041_pr] / n_t, 1e-5_pr), "Gen2(1,:)")
+      call assert(allclose(Gen2(2,:), [22.04503179884173_pr, -22.7202581288098_pr, 23.170409015455117_pr] / n_t, 1e-5_pr), "Gen2(1,:)")
+      call assert(allclose(Gen2(3,:), [-18.47735610933015_pr, 23.17040901545502_pr, -26.299110952871235_pr] / n_t, 1e-5_pr), "Gen2(1,:)")
 
       ! GeT
       ! print *, GeT/n_t
-      call check(error, abs(GeT / n_t - 0.019210544360072263_pr) < 1e-5)
+      call assert(abs(GeT / n_t - 0.019210544360072263_pr) < 1e-5, "GeT/n_t")
 
       ! GeT2
       ! print *, GeT2 / n_t
-      call check(error, abs(GeT2 / n_t - (-0.000614035558615488_pr)) < 1e-5)
+      call assert(abs(GeT2 / n_t - (-0.000614035558615488_pr)) < 1e-5, "GeT2/n_t")
 
       ! GeTn
       ! print *, GeTn
-      call check(error, allclose(GeTn, [0.023995407535622692_pr, 0.028259971730944012_pr, 0.0009382566249192064_pr], 1e-5_pr))
+      call assert(allclose(GeTn, [0.023995407535622692_pr, 0.028259971730944012_pr, 0.0009382566249192064_pr], 1e-5_pr), "GeTn")
 
       ! ========================================================================
       ! Test individual calls
       ! ------------------------------------------------------------------------
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
-      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
-      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
-      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+      call assert(abs(Ge - Ge_i) <= 1e-10, "Individual calls 1")
+      call assert(abs(GeT - GeT_i) <= 1e-10, "Individual calls 2")
+      call assert(abs(GeT2 - GeT2_i) <= 1e-10, "Individual calls 3")
+      call assert(allclose(Gen, Gen_i, 1e-10_pr), "Individual calls 4")
+      call assert(allclose(GeTn, GeTn_i, 1e-10_pr), "Individual calls 5")
 
-      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+      call assert(allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr), "Individual calls 6")
+      call assert(allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr), "Individual calls 7")
+      call assert(allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr), "Individual calls 8")
 
       ! ========================================================================
       ! Test pair calls
       ! ------------------------------------------------------------------------
       ! Ge
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT=GeT_i)
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
+      call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 1")
+      call assert(abs(GeT - GeT_i) <= 1e-10, "pair calls 2")
 
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT2=GeT2_i)
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 3")
+      call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 4")
 
       call model%excess_gibbs(n, T, Ge=Ge_i, Gen=Gen_i)
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 5")
+      call assert(allclose(Gen, Gen_i, 1e-10_pr), "pair calls 6")
 
       call model%excess_gibbs(n, T, Ge=Ge_i, GeTn=GeTn_i)
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+      call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 7")
+      call assert(allclose(GeTn, GeTn_i, 1e-10_pr), "pair calls 8")
 
       call model%excess_gibbs(n, T, Ge=Ge_i, Gen2=Gen2_i)
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+      call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 9")
+      call assert(allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr), "pair calls 10")
+      call assert(allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr), "pair calls 11")
+      call assert(allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr), "pair calls 12")
 
       ! Ge_T
       call model%excess_gibbs(n, T, GeT=GeT_i, GeT2=GeT2_i)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
-      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      call assert(abs(GeT - GeT_i) <= 1e-10, "pair calls 14")
+      call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 15")
 
       call model%excess_gibbs(n, T, GeT=GeT_i, Gen=Gen_i)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
-      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      call assert(abs(GeT - GeT_i) <= 1e-10, "pair calls 16")
+      call assert(allclose(Gen, Gen_i, 1e-10_pr), "pair calls 17")
 
       call model%excess_gibbs(n, T, GeT=GeT_i, GeTn=GeTn_i)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
-      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+      call assert(abs(GeT - GeT_i) <= 1e-10, "pair calls 18")
+      call assert(allclose(GeTn, GeTn_i, 1e-10_pr), "pair calls 19")
 
       call model%excess_gibbs(n, T, GeT=GeT_i, Gen2=Gen2_i)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
-      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+      call assert(abs(GeT - GeT_i) <= 1e-10, "pair calls 20")
+      call assert(allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr), "pair calls 21")
+      call assert(allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr), "pair calls 22")
+      call assert(allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr), "pair calls 23")
 
       ! Ge_T2
       call model%excess_gibbs(n, T, GeT2=GeT2_i, Gen=Gen_i)
-      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
-      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 24")
+      call assert(allclose(Gen, Gen_i, 1e-10_pr), "pair calls 25")
 
       call model%excess_gibbs(n, T, GeT2=GeT2_i, GeTn=GeTn_i)
-      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
-      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+      call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 26")
+      call assert(allclose(GeTn, GeTn_i, 1e-10_pr), "pair calls 27")
 
       call model%excess_gibbs(n, T, GeT2=GeT2_i, Gen2=Gen2_i)
-      call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
-      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+      call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 28")
+      call assert(allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr), "pair calls 29")
+      call assert(allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr), "pair calls 30")
+      call assert(allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr), "pair calls 31")
 
       ! Gen_i
       call model%excess_gibbs(n, T, Gen=Gen_i, GeTn=GeTn_i)
-      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
-      call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
+      call assert(allclose(Gen, Gen_i, 1e-10_pr), "pair calls 32")
+      call assert(allclose(GeTn, GeTn_i, 1e-10_pr), "pair calls 33")
 
       call model%excess_gibbs(n, T, Gen=Gen_i, Gen2=Gen2_i)
-      call check(error, allclose(Gen, Gen_i, 1e-10_pr))
-      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+      call assert(allclose(Gen, Gen_i, 1e-10_pr), "pair calls 34")
+      call assert(allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr), "pair calls 35")
+      call assert(allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr), "pair calls 36")
+      call assert(allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr), "pair calls 37")
 
       ! ========================================================================
       ! Just one triplet call test
       ! ------------------------------------------------------------------------
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT=GeT_i, Gen2=Gen2_i)
-      call check(error, abs(Ge - Ge_i) <= 1e-10)
-      call check(error, abs(GeT - GeT_i) <= 1e-10)
-      call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr))
-      call check(error, allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr))
+      call assert(abs(Ge - Ge_i) <= 1e-10, "triplet calls 1")
+      call assert(abs(GeT - GeT_i) <= 1e-10, "triplet calls 2")
+      call assert(allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr), "triplet calls 3")
+      call assert(allclose(Gen2(2,:), Gen2_i(2,:), 1e-10_pr), "triplet calls 4")
+      call assert(allclose(Gen2(3,:), Gen2_i(3,:), 1e-10_pr), "triplet calls 5")
    end subroutine test_against_caleb_thermo
-end module test_dortmund
+end program main
