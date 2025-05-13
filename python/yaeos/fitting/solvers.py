@@ -8,7 +8,6 @@ import numpy as np
 
 def binary_isofugacity_x1y1pt(x, p, t, model):
     """Isofugacity evaluation at a given P and T."""
-
     y1, x1 = x
 
     x = np.array([x1, 1 - x1])
@@ -24,7 +23,6 @@ def binary_isofugacity_x1y1pt(x, p, t, model):
 
 def solve_pt(model, p, t, kind):
     """Solve a point at a given P and T."""
-
     try:
         x10, y10 = find_init_binary_ll(model, p, t, kind)
     except ValueError:

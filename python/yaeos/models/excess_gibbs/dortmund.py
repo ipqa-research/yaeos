@@ -22,7 +22,7 @@ class UNIFACDortmund(GeModel):
     -------
     .. code-block:: python
 
-        from yaeos import UNIFACVLE
+        from yaeos import UNIFACDortmund
 
         # Groups for water and ethanol
         water = {16: 1}
@@ -30,7 +30,7 @@ class UNIFACDortmund(GeModel):
 
         groups = [water, ethanol]
 
-        model = UNIFAVLE(groups)
+        model = UNIFACDortmund(groups)
 
         model.ln_gamma([0.5, 0.5], 298.15)
     """

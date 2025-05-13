@@ -4,7 +4,7 @@ import numpy as np
 
 import pytest
 
-from yaeos import NRTL, UNIFACVLE, UNIQUAC
+from yaeos import NRTL, UNIFACDortmund, UNIFACVLE, UNIQUAC
 
 
 data_path = (
@@ -56,6 +56,9 @@ def test_same_as_fortran():
     groups = [{1: 2, 2: 4}, {1: 1, 2: 1, 14: 1}, {9: 5, 11: 1}]
 
     unifac = UNIFACVLE(groups)
+
+    # UNIFAC Dortmund
+    unifac_dortmund = UNIFACDortmund(groups)
 
     # UNIQUAC
     aij = np.array(
@@ -109,6 +112,7 @@ def test_same_as_fortran():
     models = {
         "NRTL": nrtl,
         "UNIFAC": unifac,
+        "Dortmund": unifac_dortmund,
         "UNIQUAC": uniquac,
     }
 

@@ -1227,7 +1227,6 @@ class ArModel(ABC):
 
             print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))
         """
-
         if y0 is None:
             y0 = np.zeros_like(z)
 
@@ -1325,9 +1324,9 @@ class ArModel(ABC):
             "beta": beta,
         }
 
-    # ==============================================================
+    # =========================================================================
     # Phase envelopes
-    # --------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def phase_envelope_pt(
         self,
         z,
@@ -1731,7 +1730,6 @@ class ArModel(ABC):
         stop_pressure=1000,
     ):
         """Multi-phase envelope."""
-
         x_l0 = np.array(x_l0)
         number_of_phases = x_l0.shape[0]
         nc = len(z)
@@ -1787,7 +1785,6 @@ class ArModel(ABC):
         max_points=1000,
     ):
         """Multi-phase envelope."""
-
         number_of_phases = x_l0.shape[0]
         nc = len(z0)
 
@@ -2042,7 +2039,8 @@ class ArModel(ABC):
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
             - w: all values of :math:`w` that minimize the :math:`tm` function
-            - tm: all values found minima of the :math:`tm` function"""
+            - tm: all values found minima of the :math:`tm` function
+        """
         (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
@@ -2077,9 +2075,9 @@ class ArModel(ABC):
         """
         return yaeos_c.tm(id=self.id, z=z, w=w, p=pressure, t=temperature)
 
-    # ==============================================================
+    # =========================================================================
     # Critical points and lines
-    # --------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def critical_point(self, z0, zi=[0, 0], ns=1, s=0, max_iters=100) -> dict:
         """Critical point calculation.
 
@@ -2127,6 +2125,7 @@ class ArModel(ABC):
         stop_pressure=2500,
     ):
         """Critical Line calculation.
+
         Calculate the critical line between two compositions
 
         Parameters
@@ -2154,7 +2153,6 @@ class ArModel(ABC):
         stop_pressure: float, optional
             Stop when reaching this pressure value
         """
-
         alphas, vs, ts, ps, *cep = yaeos_c.critical_line(
             self.id,
             ns=ns,
@@ -2211,12 +2209,11 @@ class ArModel(ABC):
         t0: float
             Initial guess for temperature [K]
         """
-
-        a, T, V = yaeos_c.find_llcl(
+        a, t, v = yaeos_c.find_llcl(
             self.id, z0=z0, zi=zi, p=pressure, tstart=t0
         )
 
-        return a, T, V
+        return a, t, v
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""
