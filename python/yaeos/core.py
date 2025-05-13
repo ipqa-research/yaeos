@@ -1397,13 +1397,20 @@ class ArModel(ABC):
             sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
             w0 = sat["y"]
             ns0 = len(z) + 3
+            t0 = sat["T"]
         elif kind == "dew":
             sat = self.saturation_temperature(z, p0, kind=kind, t0=t0)
             w0 = sat["x"]
             ns0 = len(z) + 2
-        ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
-            self.id, z, kind=kind, t0=t0, p0=p0, max_points=max_points
-        )
+            p0 = sat["P"]
+        elif kind == "liquid-liquid":
+            ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
+                self.id, z, kind=kind, t0=t0, p0=p0, max_points=2
+            )
+            w0 = ys[0, :]
+            ns0 = len(z) + 2
+            t0 = ts[0]
+            p0 = ps[0]
 
         x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
             id=self.id,

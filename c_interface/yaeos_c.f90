@@ -61,10 +61,7 @@ module yaeos_c
       class(GeModel), allocatable :: model
    end type GeModelContainer
 
-   ! type, extends(ArModel) :: CArModel
-   !    procedure(abs_c_residual_helmholtz), nopass, pointer :: Ar
-   !    procedure :: residual_helmholtz => c_residual_helmholtz
-   ! end type CArModel
+   
 
    class(ArModel), allocatable :: ar_model !! Singleton to hold temporal ArModels
    class(GeModel), allocatable :: ge_model !! Singleton to hold temporal GeModels
@@ -77,53 +74,8 @@ module yaeos_c
    class(ArModelContainer), allocatable :: ar_models(:)
    class(GeModelContainer), allocatable :: ge_models(:)
 
-   abstract interface
-      subroutine abs_c_residual_helmholtz(&
-         n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
-         ) bind(C)
-         import c_double
-         real(c_double), intent(in) :: n(:) !! Moles vector
-         real(c_double), intent(in) :: v !! Volume [L]
-         real(c_double), intent(in) :: t !! Temperature [K]
-         real(c_double), optional, intent(out) :: Ar !! Residual Helmoltz energy
-         real(c_double), optional, intent(out) :: ArV !! \(\frac{dAr}{dV}\)
-         real(c_double), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
-         real(c_double), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
-         real(c_double), optional, intent(out) :: ArTV !! \(\frac{d^2Ar}{dTV}\)
-         real(c_double), optional, intent(out) :: ArV2 !! \(\frac{d^2Ar}{dV^2}\)
-         real(c_double), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
-         real(c_double), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
-         real(c_double), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
-         real(c_double), optional, intent(out) :: Arn2(size(n), size(n))!! \(\frac{d^2Ar}{dn_{ij}}\)
-      end subroutine abs_c_residual_helmholtz
-   end interface
-
-
+   
 contains
-
-   ! subroutine c_residual_helmholtz(&
-   !    self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
-   !    )
-   !    use yaeos__constants, only: pr
-   !    class(CArModel), intent(in) :: self !! ArModel
-   !    real(pr), intent(in) :: n(:) !! Moles vector
-   !    real(pr), intent(in) :: v !! Volume [L]
-   !    real(pr), intent(in) :: t !! Temperature [K]
-   !    real(pr), optional, intent(out) :: Ar !! Residual Helmoltz energy
-   !    real(pr), optional, intent(out) :: ArV !! \(\frac{dAr}{dV}\)
-   !    real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
-   !    real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
-   !    real(pr), optional, intent(out) :: ArTV !! \(\frac{d^2Ar}{dTV}\)
-   !    real(pr), optional, intent(out) :: ArV2 !! \(\frac{d^2Ar}{dV^2}\)
-   !    real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
-   !    real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
-   !    real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
-   !    real(pr), optional, intent(out) :: Arn2(size(n), size(n))!! \(\frac{d^2Ar}{dn_{ij}}\)
-
-   !    call self%Ar(n=n, V=V, T=T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
-   !       ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-   !       )
-   ! end subroutine c_residual_helmholtz
 
    ! ==========================================================================
    !  Ge Models
