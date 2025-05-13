@@ -1931,7 +1931,7 @@ class ArModel(ABC):
             z, kind="liquid-liquid", t0=500, p0=2000, max_points=2
         )
 
-        if len(liq["T"] > 0):
+        if len(liq["T"]) > 0:
             liq_line = self.phase_envelope_pt_mp(
                 z=z,
                 x_l0=[z],
