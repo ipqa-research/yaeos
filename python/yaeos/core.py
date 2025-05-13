@@ -1935,7 +1935,7 @@ class ArModel(ABC):
             liq_line = self.phase_envelope_pt_mp(
                 z=z,
                 x_l0=[z],
-                w0=liq["y"][0],
+                w0=liq.reference_phase_compositions[0],
                 betas0=[1],
                 p0=liq["P"][0],
                 t0=liq["T"][0],
