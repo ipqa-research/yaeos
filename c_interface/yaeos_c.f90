@@ -43,6 +43,7 @@ module yaeos_c
 
    ! Phase equilibria
    public :: flash, flash_grid
+   public :: flash_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
    public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
@@ -50,6 +51,7 @@ module yaeos_c
    public :: pt_mp_phase_envelope, px_mp_phase_envelope
    public :: critical_point, critical_line, find_llcl
    public :: stability_zpt, tm
+   public :: stability_zt_ge
 
    type :: ArModelContainer
       !! Container type for ArModels

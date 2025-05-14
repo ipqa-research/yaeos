@@ -321,7 +321,7 @@ class GeModel(ABC):
             corresponding test phase mole fractions.
             - w: all values of :math:`w` that minimize the :math:`tm` function
             - tm: all values found minima of the :math:`tm` function"""
-        (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
+        (w_min, tm_min, all_mins) = yaeos_c.stability_zt_ge(
             id=self.id, z=z, t=temperature
         )
 
@@ -330,8 +330,8 @@ class GeModel(ABC):
 
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
-    def flash_pt(
-        self, z, pressure: float, temperature: float, k0=None
+    def flash_t(
+        self, z, temperature: float, k0=None
     ) -> dict:
         """Two-phase split with specification of temperature and pressure.
 
@@ -387,8 +387,9 @@ class GeModel(ABC):
         if k0 is None:
             mintpd, _ = self.stability_analysis(z, temperature)
             k0 = mintpd["w"]/np.array(z)
-        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
-            self.id, z, p=pressure, t=temperature, k0=k0
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash_ge(
+            self.id, z, t=temperature, k0=k0
         )
 
         flash_result = {
@@ -396,7 +397,6 @@ class GeModel(ABC):
             "y": y,
             "Vx": volume_x,
             "Vy": volume_y,
-            "P": pressure,
             "T": temperature,
             "beta": beta,
         }
