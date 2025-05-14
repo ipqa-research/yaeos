@@ -77,6 +77,13 @@ contains
          else
             K = k_wilson(model, t, p)
          end if
+
+      class is (GeModel)
+         if (present(K0)) then
+            K = K0
+         else
+            error stop "Flash: GeModel requires K0 to initialize"
+         end if 
       end select
 
 

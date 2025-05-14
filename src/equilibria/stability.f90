@@ -97,9 +97,9 @@ contains
             di = d
          end if
 
-         class is (GeModel)
+       class is (GeModel)
          call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
-         
+
          if (.not. present(d)) then
             call model%ln_activity_coefficient(z, T=T, lngamma=lnPhi_z)
             di = log(z) + lnphi_z
@@ -152,21 +152,26 @@ contains
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
+      mins = 10
       do i=1,nc
          w = 1e-10
          w(i) = 1 - 1e-10
          dw = 100
-         do while(maxval(abs(dw)) > 1e-8)
-            
+         do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4)
             select type (model)
              class is (ArModel)
                call model%lnphi_pt(w, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_w)
              class is (GeModel)
                call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
             end select
-            
+
             dw = exp(di - lnphi_w) - w
+            do while(any(dw + w < 0) .or. maxval(abs(dw)) > 0.01)
+               dw = dw/2
+            end do
+
             w = w + dw
+            mins(i) = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
          end do
          w = w/sum(w)
          mins(i) = tm(model, z, w, P, T, d=di)
