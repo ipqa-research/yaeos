@@ -30,7 +30,7 @@ module yaeos__equilibria_stability
    !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
    !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
    use yaeos__constants, only: pr, r
-   use yaeos__models_ar, only: ArModel
+   use yaeos__models, only: BaseModel, ArModel, GeModel
    implicit none
 
 contains
@@ -83,19 +83,30 @@ contains
       real(pr) :: di(size(z)), vz, vw
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
 
-      call model%lnphi_pt(&
-         w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
-         )
-
-      if (.not. present(d)) then
+      select type (model)
+       class is (ArModel)
          call model%lnphi_pt(&
-            z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
+            w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
             )
-         di = log(z) + lnphi_z
-      else
-         di = d
-      end if
+         if (.not. present(d)) then
+            call model%lnphi_pt(&
+               z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
+               )
+            di = log(z) + lnphi_z
+         else
+            di = d
+         end if
 
+         class is (GeModel)
+         call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
+         
+         if (.not. present(d)) then
+            call model%ln_activity_coefficient(z, T=T, lngamma=lnPhi_z)
+            di = log(z) + lnphi_z
+         else
+            di = d
+         end if
+      end select
 
       ! tpd = sum(w * (log(w) + lnphi_w - di))
       tm = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
@@ -154,7 +165,7 @@ contains
       mintpd = mins(i)
       w = ws(i, :)
 
-      if(present(all_minima)) then 
+      if(present(all_minima)) then
          do i=1,nc
             all_minima(i, :nc) = ws(i, :)
             all_minima(i, nc+1) = mins(i)

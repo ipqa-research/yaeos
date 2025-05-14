@@ -1,6 +1,6 @@
 module yaeos__equilibria_flash
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel
+   use yaeos__models, only: BaseModel, ArModel, GeModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    use yaeos__equilibria_auxiliar, only: k_wilson
@@ -22,7 +22,7 @@ contains
       !! solves the equilibria and mass-balance equations with a fixed-point
       !! method.
       use yaeos__auxiliar, only: optval
-      class(ArModel), intent(in) :: model !! Thermodynamic model
+      class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
@@ -99,15 +99,25 @@ contains
          x = y/K
 
          ! Calculate fugacities for each kind of specification
-         select case (spec)
-          case("TV")
-            ! find Vy,Vx (vV and vL) from V balance and P equality equations
-            call pressure_equality_V_beta_xy(model, T, V, beta, x, y, Vx, Vy, P)
-            call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
-            call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
-          case("TP")
-            call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
-            call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
+
+         select type (model)
+          class is (GeModel)
+            if (present(v_spec) .or. present(p_spec)) then
+               error stop "Flash: GeModel can only spec T"
+            end if
+            call model%ln_activity_coefficient(y, T, lngamma=lnfug_y)
+            call model%ln_activity_coefficient(x, T, lngamma=lnfug_x)
+          class is (ArModel)
+            select case (spec)
+             case("TV")
+               ! find Vy,Vx (vV and vL) from V balance and P equality equations
+               call pressure_equality_V_beta_xy(model, T, V, beta, x, y, Vx, Vy, P)
+               call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
+               call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
+             case("TP")
+               call model%lnphi_pt(y, P, T, V=Vy, root_type="stable", lnPhi=lnfug_y)
+               call model%lnphi_pt(x, P, T, V=Vx, root_type="liquid", lnPhi=lnfug_x)
+            end select
          end select
 
          dKold = dK

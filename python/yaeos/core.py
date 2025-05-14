@@ -297,6 +297,112 @@ class GeModel(ABC):
 
         return res
 
+    def stability_analysis(self, z, temperature):
+        """Perform stability analysis.
+
+        Find all the possible minima values that the :math:`tm` function,
+        defined by Michelsen and Mollerup.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        dict
+            Stability analysis result dictionary with keys:
+            - w: value of the test phase that minimizes the :math:`tm` function
+            - tm: minimum value of the :math:`tm` function.
+        dict
+            All found minimum values of the :math:`tm` function and the
+            corresponding test phase mole fractions.
+            - w: all values of :math:`w` that minimize the :math:`tm` function
+            - tm: all values found minima of the :math:`tm` function"""
+        (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
+            id=self.id, z=z, t=temperature
+        )
+
+        all_mins_w = all_mins[:, : len(z)]
+        all_mins = all_mins[:, -1]
+
+        return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
+
+    def flash_pt(
+        self, z, pressure: float, temperature: float, k0=None
+    ) -> dict:
+        """Two-phase split with specification of temperature and pressure.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - T: temperature [K]
+                - beta: light phase fraction
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])       # critical temperatures [K]
+            pc = np.array([42.48, 30.25])        # critical pressures [bar]
+            w = np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Flash calculation
+            # will print:
+            # {
+            #   'x': array([0.3008742, 0.6991258]),
+            #   'y': array([0.85437317, 0.14562683]),
+            #   'Vx': 0.12742569165483714,
+            #   'Vy': 3.218831515959867,
+            #   'P': 8.0,
+            #   'T': 350.0,
+            #   'beta': 0.35975821044266726
+            # }
+
+            print(model.flash_pt([0.5, 0.5], 8.0, 350.0))
+        """
+        if k0 is None:
+            mintpd, _ = self.stability_analysis(z, temperature)
+            k0 = mintpd["w"]/np.array(z)
+        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
+            self.id, z, p=pressure, t=temperature, k0=k0
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "P": pressure,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""
         yaeos_c.make_available_ge_models_list(self.id)
