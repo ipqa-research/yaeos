@@ -49,31 +49,36 @@ contains
       ! ========================================================================
       ! Starting steps
       ! ------------------------------------------------------------------------
-      if (present(V_spec) .and. present(P_spec)) then
-         write (*, *) "ERROR: Can't specify pressure and volume in Flash"
-         return
-      else if (present(p_spec)) then
-         spec = "TP"
-         p = p_spec
-      else if (present(v_spec)) then
-         spec = "TV"
-         v = v_spec
-      end if
 
-      if (spec == 'TV') then
-         Vx = 0.0
-         if (.not. present(k0)) then
-            ! the EoS one-phase pressure will be used to estimate Wilson K factors
-            call model%pressure(z, v_spec, t, p=p)
-            if (P < 0) P = 1.0
+      select type (model)
+       class is (ArModel)
+         if (present(V_spec) .and. present(P_spec)) then
+            write (*, *) "ERROR: Can't specify pressure and volume in Flash"
+            return
+         else if (present(p_spec)) then
+            spec = "TP"
+            p = p_spec
+         else if (present(v_spec)) then
+            spec = "TV"
+            v = v_spec
          end if
-      end if
 
-      if (present(K0)) then
-         K = K0
-      else
-         K = k_wilson(model, t, p)
-      end if
+         if (spec == 'TV') then
+            Vx = 0.0
+            if (.not. present(k0)) then
+               ! the EoS one-phase pressure will be used to estimate Wilson K factors
+               call model%pressure(z, v_spec, t, p=p)
+               if (P < 0) P = 1.0
+            end if
+         end if
+
+         if (present(K0)) then
+            K = K0
+         else
+            K = k_wilson(model, t, p)
+         end if
+      end select
+
 
       ! Get K values that assure that beta is between 0 and 1
       call betato01(z, K)

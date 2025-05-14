@@ -72,7 +72,7 @@ contains
       !! 1. Thermodynamic Models: Fundamental and Computational Aspects, Michael L.
       !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
       !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
-      class(ArModel), intent(in) :: model !! Thermodynamic model
+      class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: w(:) !! Test-phase mole numbers vector
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -117,7 +117,7 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
-      class(ArModel), target :: model !! Thermodynamic model
+      class(BaseModel), target :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
@@ -140,7 +140,12 @@ contains
       dx = 0.001_pr
 
       ! Calculate feed di
-      call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
+      select type (model)
+       class is (ArModel)
+         call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
+       class is (GeModel)
+         call model%ln_activity_coefficient(z, T=T, lngamma=lnPhi_z)
+      end select
       di = log(z) + lnphi_z
 
       ! ==============================================================
@@ -152,7 +157,14 @@ contains
          w(i) = 1 - 1e-10
          dw = 100
          do while(maxval(abs(dw)) > 1e-8)
-            call model%lnphi_pt(w, P, T, root_type="stable", lnPhi=lnphi_w)
+            
+            select type (model)
+             class is (ArModel)
+               call model%lnphi_pt(w, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_w)
+             class is (GeModel)
+               call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
+            end select
+            
             dw = exp(di - lnphi_w) - w
             w = w + dw
          end do
