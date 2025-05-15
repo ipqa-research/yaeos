@@ -125,6 +125,7 @@ excess_gibbs_sources = [
   python_lib / 'models' / 'excess_gibbs' / '__init__.py',
   python_lib / 'models' / 'excess_gibbs' / 'nrtl.py',
   python_lib / 'models' / 'excess_gibbs' / 'unifac.py',
+  python_lib / 'models' / 'excess_gibbs' / 'psrk_unifac.py',
   python_lib / 'models' / 'excess_gibbs' / 'dortmund.py',
   python_lib / 'models' / 'excess_gibbs' / 'uniquac.py',
 ]

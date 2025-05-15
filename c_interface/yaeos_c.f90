@@ -30,6 +30,7 @@ module yaeos_c
    ! GeModels
    public :: nrtl
    public :: unifac_vle
+   public :: unifac_psrk
    public :: uniquac
    public :: unifac_dortmund
    public :: ln_gamma_ge
@@ -192,6 +193,22 @@ contains
       ge_model = setup_dortmund(molecules)
       call extend_ge_models_list(id)
    end subroutine unifac_dortmund
+
+   ! PSRK
+   subroutine unifac_psrk(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_psrk, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_psrk(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_psrk
 
    subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
       use yaeos, only: Groups
