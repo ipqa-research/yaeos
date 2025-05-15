@@ -1177,6 +1177,82 @@ class ArModel(ABC):
         }
 
         return flash_result
+    
+    def flash_vt(
+        self, z, volume: float, temperature: float, k0=None
+    ) -> dict:
+        """Two-phase split with specification of temperature and volume.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])       # critical temperatures [K]
+            pc = np.array([42.48, 30.25])        # critical pressures [bar]
+            w = np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Flash calculation
+            # will print:
+            # {
+            #   'x': array([0.3008742, 0.6991258]),
+            #   'y': array([0.85437317, 0.14562683]),
+            #   'Vx': 0.12742569165483714,
+            #   'Vy': 3.218831515959867,
+            #   'P': 8.0,
+            #   'T': 350.0,
+            #   'beta': 0.35975821044266726
+            # }
+
+            print(model.flash_vt([0.5, 0.5], 8.0, 350.0))
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+        
+        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash_vt(
+            self.id, z,v=volume, t=temperature, k0=k0
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "P": pressure,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
 
     def flash_pt_grid(
         self, z, pressures, temperatures, parallel=False
