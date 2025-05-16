@@ -14,7 +14,7 @@ import numpy as np
 
 from yaeos.lib import yaeos_c
 
-from yaeos.envelopes import PTEnvelope, PXEnvelope
+from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
 
 
 class GeModel(ABC):
@@ -1924,7 +1924,38 @@ class ArModel(ABC):
         beta_w=0,
         max_points=1000,
     ):
-        """Multi-phase envelope."""
+        """Multi-phase PX envelope.
+
+        Calculate a phase envelope with a preselected ammount of phases.
+
+        Parameters
+        ----------
+        z0: float, array_like
+            Original Fluid.
+        zi: float, array_like
+            Other fluid.
+        t: float
+            Temperature [K]
+        x_l0: float, matrix [number of phases, number of components]
+            A matrix where each row is the composition of a main phase.
+            Guess for first point.
+        w0: flot, array_like
+            Composition of the reference (ussually incipient) phase.
+            Guess for first point
+        betas0: float, array_like
+            Molar fraction of each main phase. Guess for first point
+        p0: float
+            Pressure guess for first point [bar]
+        ns0: int
+            Initial variable to specifiy.
+            From 1 to `(number_of_phases*number_of_components)` corresponds to
+            each composition.
+            From `number_of_phases*number_of_components` to
+            `number_of_phases*number_of_components + number_of_phases`
+            corresponds to each beta value of the main phases.
+            The last two posibilities are the pressure and molar relation
+            between the two fluids, respectively.
+        """
 
         number_of_phases = x_l0.shape[0]
 
@@ -1953,6 +1984,55 @@ class ArModel(ABC):
             reference_phase_compositions=ws,
             main_phases_molar_fractions=betas,
             pressures=ps,
+            alphas=alphas,
+            iterations=iters,
+            specified_variable=ns,
+        )
+
+    def phase_envelope_tx_mp(
+        self,
+        z0,
+        zi,
+        p,
+        x_l0,
+        w0,
+        betas0,
+        t0,
+        ns0,
+        ds0,
+        alpha0=0,
+        beta_w=0,
+        max_points=1000,
+    ):
+        """Multi-phase envelope."""
+
+        number_of_phases = x_l0.shape[0]
+
+        x_ls, ws, betas, ts, alphas, iters, ns = yaeos_c.tx_mp_phase_envelope(
+            id=self.id,
+            np=number_of_phases,
+            z0=z0,
+            zi=zi,
+            x_l0=x_l0,
+            w0=w0,
+            betas0=betas0,
+            p=p,
+            alpha0=alpha0,
+            t0=t0,
+            ns0=ns0,
+            ds0=ds0,
+            beta_w=beta_w,
+            max_points=max_points,
+        )
+
+        return TXEnvelope(
+            pressure=p,
+            global_composition_0=z0,
+            global_composition_i=zi,
+            main_phases_compositions=x_ls,
+            reference_phase_compositions=ws,
+            main_phases_molar_fractions=betas,
+            temperatures=ts,
             alphas=alphas,
             iterations=iters,
             specified_variable=ns,
