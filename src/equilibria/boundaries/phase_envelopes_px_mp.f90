@@ -161,7 +161,7 @@ contains
          end do
 
          ! If the point did not converge, stop the calculation
-         if (any(isnan(F)) .or. its > max_iterations) exit
+         if (any(isnan(F)) .or. its > max_iterations .or. dS==0._pr) exit
 
          ! Save the information of the converged point
          call get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, P, alpha)
@@ -210,16 +210,6 @@ contains
       !! \end{bmatrix}
       !! \]
       ! ------------------------------------------------------------------------
-      do l=1,np
-         ! Select the limits of the function
-         lb = (l-1)*nc + 1
-         ub = l*nc
-
-         F(lb:ub) = X(lb:ub) + lnphi_l(l, :) - lnphi_w
-         F(nc * np + l) = sum(x_l(l, :) - w)
-      end do
-      F(nc * np + np + 1) = sum(betas) + beta_w - 1
-      F(nc * np + np + 2) = X(ns) - S
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z0(:) !! First mixture composition.
@@ -584,8 +574,12 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.3)
+         do while(maxval(abs(X(lb:ub))) < 0.01)
             X = X + dXdS * dS
+            if (nc == 2) then
+               dS=0
+               exit
+            end if
          end do
 
       end do
