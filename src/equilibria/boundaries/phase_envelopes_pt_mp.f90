@@ -45,7 +45,7 @@ contains
       model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points, &
       max_pressure &
       )
-      !! # pt_envelope
+      !! # `pt_envelope`
       !! Calculation of a multiphase PT envelope.
       !!
       !! # Description
@@ -57,16 +57,9 @@ contains
       !! This function requires the system specification conditions, which are
       !! the fluid composition (\z\), the number of phases that are not
       !! incipient; defined as \(np\), proper intialization values, the
-      !!variables that end with `0`
-      !!
-      !! # Examples
-      !!
-      !! ```fortran
-      !!  A basic code example
-      !! ```
-      !!
-      !! # References
-      !!
+      !! variables that end with `0` are the initial guess; the mole fraction
+      !! of the reference phase `beta_w` which when it is equal to 0 means that
+      !! we are calculating a phase boundary.
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
       real(pr), intent(in) :: z(:) !! Mixture global composition.
@@ -251,7 +244,7 @@ contains
    subroutine pt_F_NP(model, z, np, beta_w, X, ns, S, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases.
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
@@ -443,8 +436,8 @@ contains
    subroutine solve_point(model, z, np, beta_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
+      class(ArModel), intent(in) :: model !! Model to use.
+      real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
       real(pr), intent(in out)  :: X(:) !! Vector of variables
@@ -453,8 +446,10 @@ contains
       real(pr), intent(in) :: dXdS(size(X))
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
-      integer, intent(in) :: max_iterations
-      integer, intent(out) :: iters
+      integer, intent(in) :: max_iterations 
+      !! Maximum number of iterations to solve the point
+      integer, intent(out) :: iters 
+      !! Number of iterations to solve the current point
 
 
       integer :: i

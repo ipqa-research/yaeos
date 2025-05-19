@@ -10,13 +10,9 @@ handles how the \(D\) and \(B\) parameters in the CubicEoS are calculated.
 Quadratic mixing rules are the ussually most used mixing rules for cubic 
 equations of state.
 
-\[
-    nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
-\]
+\[ nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij}) \]
 
-\[
-    D = \sum_i \sum_j n_i n_j a_{ij}
-\]
+\[ D = \sum_i \sum_j n_i n_j a_{ij} \]
 
 QMR are handled by the [[QMR]] derived type. Which can be used like:
 

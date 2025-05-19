@@ -395,7 +395,7 @@ contains
             envelopes%cps = [&
                envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
                ]
-            X = Xc + dXdS * dS!*0.5
+            X = Xc + dXdS * dS
             S = X(ns)
          end if
       end subroutine detect_critical
