@@ -330,9 +330,7 @@ class GeModel(ABC):
 
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
-    def flash_t(
-        self, z, temperature: float, k0=None
-    ) -> dict:
+    def flash_t(self, z, temperature: float, k0=None) -> dict:
         """Two-phase split with specification of temperature and pressure.
 
         Parameters
@@ -357,10 +355,10 @@ class GeModel(ABC):
         """
         if k0 is None:
             mintpd, _ = self.stability_analysis(z, temperature)
-            k0 = mintpd["w"]/np.array(z)
+            k0 = mintpd["w"] / np.array(z)
 
-        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash_ge(
-            self.id, z, t=temperature, k0=k0
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_ge(self.id, z, t=temperature, k0=k0)
         )
 
         flash_result = {
@@ -1518,8 +1516,6 @@ class ArModel(ABC):
 
         return envelope
 
-
-
         msk = ~np.isnan(ts)
         msk_cp = ~np.isnan(tcs)
 
@@ -1582,31 +1578,35 @@ class ArModel(ABC):
         if ns0 is None:
             ns0 = len(z0) + 2
 
-        a, ps, xs, ys, acs, pcs, kinds = yaeos_c.px2_phase_envelope(
-            self.id,
-            z0=z0,
-            zi=zi,
-            kind=kind,
-            max_points=max_points,
-            p0=p0,
-            a0=a0,
-            t=temperature,
-            ns0=ns0,
-            ds0=ds0,
+        zi = np.array(zi)
+        z0 = np.array(z0)
+
+        z = a0 * zi + (1 - a0) * z0
+        sat = self.saturation_pressure(
+            z, temperature=temperature, kind=kind, p0=p0
         )
 
-        msk = ~np.isnan(ps)
-        msk_cp = ~np.isnan(pcs)
+        if kind == "dew":
+            w0 = sat["x"]
+        else:
+            w0 = sat["y"]
+        p0 = sat["P"]
 
-        return {
-            "a": a[msk],
-            "P": ps[msk],
-            "x": xs[msk],
-            "y": ys[msk],
-            "ac": acs[msk_cp],
-            "Pc": pcs[msk_cp],
-            "kind": kinds[msk],
-        }
+        envelope = self.phase_envelope_px_mp(
+            z0,
+            zi,
+            temperature,
+            x_l0=[z],
+            w0=w0,
+            betas0=[1],
+            p0=p0,
+            alpha0=a0,
+            ns0=ns0,
+            ds0=ds0,
+            max_points=max_points,
+        )
+
+        return envelope
 
     def phase_envelope_tx(
         self,
@@ -1743,7 +1743,7 @@ class ArModel(ABC):
             z=z,
             x_l0=[x0, y0],
             w0=w0,
-            betas0=[1-beta0, beta0],
+            betas0=[1 - beta0, beta0],
             t0=t0,
             p0=p0,
             ns0=specified_variable,
@@ -1765,18 +1765,6 @@ class ArModel(ABC):
         )
 
         return envelope
-
-
-        msk = ~np.isnan(t)
-
-        return {
-            "x": x[msk],
-            "y": y[msk],
-            "w": w[msk],
-            "P": p[msk],
-            "T": t[msk],
-            "beta": beta[msk],
-        }
 
     def phase_envelope_px3(
         self,
@@ -1957,6 +1945,7 @@ class ArModel(ABC):
             between the two fluids, respectively.
         """
 
+        x_l0 = np.array(x_l0, order="F")
         number_of_phases = x_l0.shape[0]
 
         x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
@@ -2129,7 +2118,7 @@ class ArModel(ABC):
             dsps_set = {
                 "dl": [dsps_dl, dew_line, liq_line],
                 "db": [dsps_db, dew_line, bub_line],
-                "bl": [dsps_bl, bub_line, liq_line]
+                "bl": [dsps_bl, bub_line, liq_line],
             }
         else:
             dsps_set = {"db": [dsps_db, dew_line, bub_line]}
@@ -2182,7 +2171,7 @@ class ArModel(ABC):
                             ns0=2 * len(z) + 2,
                             ds0=delta_dsp_3ph,
                             max_points=1000,
-                            stop_pressure=max([pressure*2, stop_pressure]),
+                            stop_pressure=max([pressure * 2, stop_pressure]),
                         )
 
                         env2 = self.phase_envelope_pt_mp(
@@ -2195,21 +2184,21 @@ class ArModel(ABC):
                             ns0=2 * len(z) + 2,
                             ds0=delta_dsp_3ph,
                             max_points=1000,
-                            stop_pressure=max([pressure*2, stop_pressure]),
+                            stop_pressure=max([pressure * 2, stop_pressure]),
                         )
 
                         three_phase_envs.append((env1, env2))
                     # if len(dew_locs) == 2:
-                        # msk = np.array([False] * len(dew_line))
-                        # msk[: dew_locs[1] + 1] = True
-                        # msk[dew_locs[0] :] = True
-                        # dew_line_stable *= np.nan
-                        # dew_line_stable[msk] = dew_line[msk]
+                    # msk = np.array([False] * len(dew_line))
+                    # msk[: dew_locs[1] + 1] = True
+                    # msk[dew_locs[0] :] = True
+                    # dew_line_stable *= np.nan
+                    # dew_line_stable[msk] = dew_line[msk]
 
-                        # msk = np.array([False] * len(bub_line))
-                        # msk[bub_locs[0] : bub_locs[1] + 1] = True
-                        # bub_line_stable *= np.nan
-                        # bub_line_stable[msk] = bub_line[msk]
+                    # msk = np.array([False] * len(bub_line))
+                    # msk[bub_locs[0] : bub_locs[1] + 1] = True
+                    # bub_line_stable *= np.nan
+                    # bub_line_stable[msk] = bub_line[msk]
 
                 elif len(dsps[0]) == 0:
                     bub_line_stable *= np.nan

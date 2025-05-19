@@ -105,9 +105,9 @@ class PTEnvelope:
         elif key == "T":
             return self.temperatures
         elif key == "Tc":
-            return np.array([self.temperatures[i] for i in self.cp])
+            return self.temperatures[self.cp]
         elif key == "Pc":
-            return np.array([self.temperatures[i] for i in self.cp])
+            return self.pressures[self.cp]
         elif key == "P":
             return self.pressures
         elif key == "z":
@@ -123,7 +123,9 @@ class PTEnvelope:
         plt.ylabel("Pressure [bar]")
         plt.title("PT Envelope")
         for cp in self.cp:
-            plt.scatter(self.temperatures[cp], self.pressures[cp], color="black")
+            plt.scatter(
+                self.temperatures[cp], self.pressures[cp], color="black"
+            )
 
     def __repr__(self):
         display(self.df)
