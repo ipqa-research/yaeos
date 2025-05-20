@@ -214,7 +214,7 @@ contains
 
             do while(&
                (maxval(abs(dX)) > 1e-5 &
-              .or. maxval(abs(F)) > 1e-5) &
+               .or. maxval(abs(F)) > 1e-5) &
                .and. real_its < 500)
 
                its = its + 1
@@ -284,6 +284,21 @@ contains
             ! end do
 
             ! Next step
+
+            ! Dont go to negative P
+            z = a * zi  + (1-a)*z0
+            call model%pressure(z, V, T, P)
+            do while (&
+               exp(X(4) + dXdS(4)*dS) < 0 &
+               .or. P < 0 &
+               )
+               dS = dS/2
+               V = exp(X(2) + dXdS(2)*dS)
+               T = exp(X(3) + dXdS(3)*dS)
+               call model%pressure(z, V, T, P)
+               print *, P
+            end do
+
             X = X + dXdS*dS
          end do
       end block solve_points
@@ -360,8 +375,8 @@ contains
       real(pr), intent(out) :: y_other(:) !! Molar fractions of the second fluid
 
       real(pr) :: z(2)
-      real(pr) :: y(2)
-      real(pr) :: fug_z(2), fug_y(2)
+      real(pr) :: y(2), dy
+      real(pr) :: fug_z(2), fug_y(2), P
       integer :: istab, istab0
       real(pr) :: tpd
 
@@ -381,28 +396,29 @@ contains
 
       ! TODO #optimization: Make an adaptative step of this
       possible = .false.
-      do while (istab0 < 2)
-         do istab=istab0,99,2
-            y(1) = real(istab, pr)/100
-            y(2) = 1 - y(1)
+      istab0 = 0
 
-            call model%volume(n=y, P=Pc, T=Tc, V=V_other, root_type="stable")
-            call model%lnfug_vt(n=y, V=V_other, T=Tc, lnf=fug_y)
+      y(1) = 0
+      y(2) = 1
 
-            tpd = sum(y * (fug_y - fug_z))
+      dy = 0.01_pr
+      ! do while (istab0 < 2)
+      !    istab = istab0
 
-            if (tpd < -1e-2 ) then
-               unstable = .true.
-               y_other = y
-               return
-            end if
+      do while(y(1) < 1-dy)
+         y(1) = y(1) + dy
+         y(2) = 1 - y(1)
 
-            if (abs(tpd) < 0.1) then
-               possible = .true.
-            end if
-         end do
-         istab0 = istab0 + 1
-         if (.not. possible) return
+         call model%volume(n=y, P=Pc, T=Tc, V=V_other, root_type="stable")
+         call model%lnfug_vt(n=y, V=V_other, T=Tc, lnf=fug_y, P=P)
+
+         tpd = sum(y * (fug_y - fug_z))
+         if (tpd < -1e-2 ) then
+            ! TODO: This should be finding the mimima
+            unstable = .true.
+            y_other = y
+            return
+         end if
       end do
 
    end subroutine stability_check
@@ -522,7 +538,7 @@ contains
       real(pr) :: a, V, T, P
 
       real(pr), parameter :: eps=1e-4_pr
-      
+
       integer :: i
       real(pr) :: eps_df, F1(4), F2(4), dx(4)
 
@@ -571,7 +587,7 @@ contains
       a = get_a(X(1))
 
       if (size(zi) == 2) then
-         eps = 1e-8
+         eps = 1e-10
       else
          if (any(a*zi + (1-a)*z0 > 0.99)) then
             eps = 1e-3_pr

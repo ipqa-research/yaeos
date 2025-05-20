@@ -129,7 +129,7 @@ contains
       B = eos%get_v0(n, p, t)
       totn = sum(n)
       do while(&
-         abs(DEL) > 1.e-10_pr .and. abs(Pcalc - P)/P > 1.e-10 &
+         abs(DEL) > 1.e-10_pr .or. abs(Pcalc - P)/P > 1.e-6 &
          )
          V = B/ZETA
          iter = iter + 1
