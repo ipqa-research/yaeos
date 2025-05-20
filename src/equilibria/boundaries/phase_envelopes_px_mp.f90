@@ -576,7 +576,7 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.01)
+         do while(maxval(abs(X(lb:ub))) < 0.05)
             X = X + dXdS * dS
             if (nc == 2) then
                dS=0
@@ -619,6 +619,7 @@ contains
       alpha = X(np*nc + np + 2)
       call get_z(alpha, z0, zi, z)
       P = exp(X(np*nc + np + 1))
+
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
