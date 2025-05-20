@@ -29,6 +29,12 @@ the DDBST web page:
 
 ## Combinatorial term derivatives
 
+Combinatorial term has two parameters \(z\) and \(d\) that could be modified.
+The \(z\) parameter is always set to 10, and the \(d\) parameter is set to 1
+for the Classic Liquid-Vapor UNIFAC model and the PSRK-UNIFAC model, and 3/4
+for the Dortmund-UNIFAC model. Both could be changed (they are attributes of
+the UNIFAC objects).
+
 Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
 The subroutine uses the Flory-Huggins and Staverman-Guggenheim
 combinatory terms as follows:
@@ -37,23 +43,23 @@ combinatory terms as follows:
 
 $$
    G^{E,FH} =
-   RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i
-   - n \, \text{ln} \, \sum_j^{NC} n_j r_j
+   RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i^d
+   - n \, \text{ln} \, \sum_j^{NC} n_j r_j^d
    + n \, \text{ln} \, n \right)
 $$
 
 $$
    \frac{dG^{E,FH}}{dn_i} =
-   RT \left(\text{ln} \, r_i - \text{ln} \, \sum_j^{NC} n_j r_j
-   + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle
-   \sum_j^{NC} n_j r_j} \right)
+   RT \left(\text{ln} \, r_i^d - \text{ln} \, \sum_j^{NC} n_j r_j^d
+   + \text{ln} \, n + 1 - \frac{n r_i^d}{\displaystyle
+   \sum_j^{NC} n_j r_j^d} \right)
 $$
 
 $$
    \frac{d^2G^{E,FH}}{dn_i dn_j} =
-   RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l}
-   + \frac{1}{n} + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC}
-   n_l r_l \right)^2} \right)
+   RT \left(- \frac{r_i^d + r_j^d}{\displaystyle \sum_l^{NC} n_l r_l^d}
+   + \frac{1}{n} + \frac{n r_i^d r_j^d}{\displaystyle \left(\sum_l^{NC}
+   n_l r_l^d \right)^2} \right)
 $$
 
 ### Staverman-Guggenheim
