@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fitting &mdash; yaeos 3.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+  <title>Fitting &mdash; yaeos 3.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/documentation_options.js?v=dd1205ac"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,9 +61,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.BinaryFitter"><code class="docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.objective_function"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.objective_function()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.fit"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.solution"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.solution</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.fit_kij_lij"><code class="docutils literal notranslate"><span class="pre">fit_kij_lij()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.solve_pt"><code class="docutils literal notranslate"><span class="pre">solve_pt()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -101,25 +103,79 @@ parameters to experimental data.</p>
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BinaryFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_setter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_setter_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Binary Fitter.</p>
+<p>BinaryFitter class.</p>
+<p>This class is used to fit binary interaction parameters to experimental
+data. The objective function is defined as the sum of the squared errors
+between the experimental data and the model predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_setter</strong> (<em>callable</em>) – A function that returns a model object. The function should take the
+optimization parameters as the first argument and any other arguments
+as the following arguments.</p></li>
+<li><p><strong>model_setter_args</strong> (<em>tuple</em>) – A tuple with the arguments to pass to the model_setter function.</p></li>
+<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – A DataFrame with the experimental data.
+The DataFrame should have the following columns:
+- kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
+critical)
+- x1: float, the mole fraction of component 1
+- y1: float, the mole fraction of component 1
+- T: float, the temperature in K
+- P: float, the pressure in bar</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, print the objective function value and the optimization</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.objective_function">
 <span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.objective_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.objective_function" title="Link to this definition"></a></dt>
 <dd><p>Objective function to minimize when fitting interaction parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_values</strong> (<em>array-like</em>) – The interaction parameters to fit.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Nelder-Mead'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.fit" title="Link to this definition"></a></dt>
 <dd><p>Fit the model to the data.</p>
+<p>Fit the model to the data using the objective function defined in
+the objective_function method. The optimization is performed using
+the scipy.optimize.minimize function.
+The optimization result is stored in the <cite>.solution</cite> property. Which</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>array-like</em>) – Initial guess for the fitting parameters.</p></li>
+<li><p><strong>bounds</strong> (<em>array-like</em>) – Bounds for the fitting parameters.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The optimization method to use. Default is ‘Nelder-Mead’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.solution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solution</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.solution" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.fitting.fit_kij_lij">
-<span class="sig-name descname"><span class="pre">fit_kij_lij</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/model_setters.html#fit_kij_lij"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.fit_kij_lij" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit_kij_lij</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_kij</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_lij</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/model_setters.html#fit_kij_lij"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.fit_kij_lij" title="Link to this definition"></a></dt>
 <dd><p>Set the kij and/or lij parameter of the model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="yaeos.fitting.solve_pt">
+<span class="sig-name descname"><span class="pre">solve_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/solvers.html#solve_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.solve_pt" title="Link to this definition"></a></dt>
+<dd><p>Solve a point at a given P and T.</p>
 </dd></dl>
 
 </section>

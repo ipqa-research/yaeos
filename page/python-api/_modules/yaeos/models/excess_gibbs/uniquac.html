@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.excess_gibbs.uniquac &mdash; yaeos 3.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+  <title>yaeos.models.excess_gibbs.uniquac &mdash; yaeos 3.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../../_static/documentation_options.js?v=dd1205ac"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -85,15 +85,15 @@
   <h1>Source code for yaeos.models.excess_gibbs.uniquac</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;UNIQUAC (UNIversal QUAsiChemical) Excess Gibbs free energy model.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaeos_c</span>
+<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">GeModel</span>
+<span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
 
 
 <div class="viewcode-block" id="UNIQUAC">
 <a class="viewcode-back" href="../../../../models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">UNIQUAC</span><span class="p">(</span><span class="n">GeModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">UNIQUAC</span><span class="p">(</span><span class="n">GeModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;UNIQUAC (UNIversal QUAsiChemical) Excess Gibbs free energy model.</span>
 
 <span class="sd">    Please refer to the `yaeos` user documentation for an in-depth look at the</span>
@@ -166,7 +166,7 @@
 <span class="sd">        gammas = np.exp(model.ln_gamma(n, t)) # [8.856, 0.860, 1.425]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">aij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eij</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span>

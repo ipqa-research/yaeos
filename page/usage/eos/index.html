@@ -12,14 +12,29 @@
 
     <title>Equations of State &ndash; yaeos</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../../../css/pygments.css" rel="stylesheet">
-    <link href="../../../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
-      <link  href="../../../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../../../css/pygments.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -141,7 +156,596 @@
       </div>
 
     <div class="col-9" id='text'>
-      <p><code>yaeos</code> is a library based on Equation-of-State calculations.</p>
+      <div class="toc">
+<ul>
+<li><a href="#equations-of-state">Equations of State</a></li>
+<li><a href="#thermodynamic-properties">Thermodynamic properties</a><ul>
+<li><a href="#pressure-pn-v-t">Pressure: P(n, V, T)</a></li>
+<li><a href="#volume-vn-p-t">Volume: V(n, P, T)</a></li>
+<li><a href="#fugacity-coefficients-vt-ln-phi_i-vt">Fugacity coefficients (V,T): \ln \phi_i (V,T)</a></li>
+<li><a href="#fugacity-coefficients-pt-ln-phi_i-pt">Fugacity coefficients (P,T): \ln \phi_i (P,T)</a></li>
+<li><a href="#fugacity-vt-ln-f_i-vt">Fugacity (V,T): \ln f_i (V,T)</a></li>
+<li><a href="#residual-entropy-vt-srnvt">Residual entropy (V,T): S^r(n,V,T)</a></li>
+<li><a href="#residual-enthalpy-vt-hrnvt">Residual enthalpy (V,T): H^r(n,V,T)</a></li>
+<li><a href="#residual-gibbs-free-energy-vt-grnvt">Residual Gibbs free energy (V,T): G^r(n,V,T)</a></li>
+<li><a href="#residual-internal-energy-vt-urnvt">Residual internal energy (V,T): U^r(n,V,T)</a></li>
+<li><a href="#residual-constant-volume-heat-capacity-vt-c_vrnvt">Residual constant volume heat capacity (V,T): C_V^r(n,V,T)</a></li>
+<li><a href="#residual-constant-pressure-heat-capacity-vt-c_prnvt">Residual constant pressure heat capacity (V,T): C_P^r(n,V,T)</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<h1 id="equations-of-state">Equations of State</h1>
+<p><code>yaeos</code> is a library based on Equation-of-State calculations. An Equation of
+State (EOS) is a mathematical model that describes the relationship between
+thermodynamic properties of a system, typically pressure (P), volume (V), and
+temperature (T). These equations are fundamental in physics, chemistry, and
+engineering, especially in thermodynamics and fluid mechanics.</p>
+<p>EOS models are used to predict phase behavior, thermodynamic properties, and
+equilibrium conditions of gases, liquids, solids, and mixtures. They are widely
+applied in areas such as chemical engineering, petroleum engineering, and
+material science. From the ideal gas law, to cubic equations of state and SAFT,
+to more complex models, EOS are essential tools for the study and design of
+processes.</p>
+<p>The classic way of defining an EOS is though a mathematical equation that
+express the pressure as a function of the volume and temperature. For example,
+the Van der Waals EOS is defined as:</p>
+<p>
+<script type="math/tex; mode=display">
+P = \frac{RT}{v - b} - \frac{a}{v^2}
+</script>
+</p>
+<p>Where <script type="math/tex">P</script> is the pressure, <script type="math/tex">v</script> is the molar volume, <script type="math/tex">T</script> is the
+temperature, <script type="math/tex">R</script> is the gas constant, and <script type="math/tex">a</script> and <script type="math/tex">b</script> are parameters that
+depend on the substance. For mixtures, the <script type="math/tex">a</script> and <script type="math/tex">b</script> parameters are
+calculated from the pure components parameters using a mixing rule.</p>
+<p>The modern way of defining an EOS is through a mathematical model that express
+the residual Helmholtz free energy as a function of the mole number, volume and
+temperature. This approach is more general and allows for a more flexible
+definition of the EOS in the context of implementing it in code. All
+thermodynamic properties can be calculated from the residual Helmholtz free
+energy and its derivatives. <code>yaeos</code> is based on this approach.</p>
+<p>This section of the documentation will guide you through the thermodynamic
+properties that can be calculated with yaeos using Helmholtz free energy
+models. Additionally, this page serves as a summary of how all these properties
+can be derived from the Helmholtz free energy and its derivatives.</p>
+<p>First of all, you might be used to the classic <script type="math/tex">P(n,V,T)</script> way of defining an
+EOS. This is normal since it is the most common way of explaining them in
+undergraduate thermodynamics courses. So, a very reasonable question is: &ldquo;how
+can I obtain the expression for the residual Helmholtz free energy
+<script type="math/tex">A^r(T,V,n)</script> from the <script type="math/tex">P(n,V,T)</script> expression?&rdquo;. The answer is the following:</p>
+<p>
+<script type="math/tex; mode=display">
+A^r(n, V, T) = -\int_{\infty}^{V} \left(P(n,V,T) - \frac{nRT}{V} \right) dV
+</script>
+</p>
+<p>We are ready to go now. We leave an example of how to instantiate a
+Peng-Robinson EOS model in the next code block if you want to start evaluating
+properties right away.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">main</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span>
+
+<span class="w">   </span><span class="c">! We will instantiate a Peng-Robinson EOS model with two components</span>
+
+<span class="w">   </span><span class="c">! Set the variable `model` as a generic `ArModel`</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+
+<span class="w">   </span><span class="c">! Set the variables that we&#39;re going to use as variable length arrays</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">tc</span><span class="p">(:),</span><span class="w"> </span><span class="n">pc</span><span class="p">(:),</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
+
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]</span><span class="w">    </span><span class="c">! Number of moles of each component [mol]</span>
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">190</span><span class="p">,</span><span class="w"> </span><span class="mi">310</span><span class="p">]</span><span class="w">   </span><span class="c">! Critical temperatures [K]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">]</span><span class="w">     </span><span class="c">! Critical pressures [bar]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.03</span><span class="p">]</span><span class="w"> </span><span class="c">! Acentric factors [-]</span>
+
+<span class="w">   </span><span class="c">! Now we set our model as the PengRobinson76 equation of state.</span>
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="k">end program </span><span class="n">main</span>
+</code></pre></div>
+
+<p>The examples provided for each property must be treated as a continuation of
+the previous code block (before the end program statement).</p>
+<h1 id="thermodynamic-properties">Thermodynamic properties</h1>
+<h2 id="pressure-pn-v-t">Pressure: <script type="math/tex">P(n, V, T)</script>
+</h2>
+<p>Pressure can be calculated from the residual Helmholtz free energy as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n} 
++ \frac{nRT}{V}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial P}{\partial V} \right)_{T,n} = 
+-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n} - \frac{nRT}{V^2}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial P}{\partial T} \right)_{V,n} =
+- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n + \frac{nR}{V}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial P}{\partial n_i} \right)_{V,T} =
+-\left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T + \frac{RT}{V}
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">pressure</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="w">     </span><span class="c">! Set volume to 0.1 L</span>
+
+<span class="w">    </span><span class="c">! Calculate pressure and its derivatives</span>
+<span class="w">    </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="o">=</span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="o">=</span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="o">=</span><span class="n">dPdn</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Pressure: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">P</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dPdV: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dPdT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dPdn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span>
+
+<span class="k">end block </span><span class="n">pressure</span>
+</code></pre></div>
+
+<h2 id="volume-vn-p-t">Volume: <script type="math/tex">V(n, P, T)</script>
+</h2>
+<p>As you must know, given a temperature and pressure, the volume has not a unique
+solution. In the case of a cubic EOS, there are three possible solutions for
+the volume. For this reason, the volume is calculated iteratively. Provided
+<script type="math/tex">n</script>, <script type="math/tex">P</script>, and <script type="math/tex">T</script> we fix <script type="math/tex">n</script> and
+<script type="math/tex">T</script> and iterate over the volume until the pressure is the same as the
+input pressure.</p>
+<p>To learm how the initial guess for <script type="math/tex">V</script> is obtained, please refer to the book
+&ldquo;Thermodynamic Models: Fundamentals and Computational Aspects&rdquo; by Michael L.
+Michelsen and Jørgen M. Mollerup. Also, you will find how to calculate <script type="math/tex">V</script> derivatives in terms of <script type="math/tex">P</script> and <script type="math/tex">T</script> derivatives.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">volume</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">V</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set pressure to 1 bar</span>
+
+<span class="w">    </span><span class="c">! Calculate different volume roots</span>
+<span class="w">    </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Liquid volume: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">V</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Vapor volume: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">V</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Stable volume root: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">V</span>
+
+<span class="k">end block </span><span class="n">volume</span>
+</code></pre></div>
+
+<h2 id="fugacity-coefficients-vt-ln-phi_i-vt">Fugacity coefficients (V,T): <script type="math/tex">\ln \phi_i (V,T)</script>
+</h2>
+<p>Natural logarithm of fugacity coefficients specifing <script type="math/tex">V</script> and <script type="math/tex">T</script> are
+calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+\ln \hat{\phi}_i = \frac{1}{RT} \left( \frac{\partial A^r}{\partial n_i} \right)_{V,T} - \ln Z
+</script>
+</p>
+<p>Remember that the compressibility factor <script type="math/tex">Z</script> is calculated as:</p>
+<p>
+<script type="math/tex; mode=display">
+Z = \frac{PV}{nRT}
+</script>
+</p>
+<p>Next, the derivatives:</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial \ln \hat{\phi_i}}{\partial T} \right)_{P,n} = 
+\frac{1}{RT} \left(\frac{\partial^2 A^r}{\partial T \partial n_i}\right)_V
+- \frac{1}{RT^2} \left(\frac{\partial A^r}{\partial n_i}\right)_{V,T}
++ \frac{1}{T} + \frac{1}{RT} \frac{\left(\frac{\partial P}{\partial n_i} 
+\right)_{V,T} \left(\frac{\partial P}{\partial T} \right)_{V,n}}{
+\left(\frac{\partial P}{\partial V}\right)_{T,n}}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial \ln \hat{\phi_i}}{\partial P} \right)_{T,n} = 
+ \frac{1}{RT} \frac{\left(\frac{\partial P}{\partial n_i} 
+\right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,n}} 
+- \frac{1}{P}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial \ln \hat{\phi_i}}{\partial n_j} \right)_{P,T} =
+\frac{1}{n_T} + \frac{1}{RT} 
+\left(\frac{\partial^2 A^r}{\partial n_i \partial n_j}
++ \frac{\left(\frac{\partial P}{\partial n_i} \right)_{V,T}
+\left(\frac{\partial P}{\partial n_j} \right)_{V,T}}
+{\left(\frac{\partial P}{\partial V} \right)_{T,n}}\right)
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+n_T = \sum_i n_i
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">lnphi_vt</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnPhidP</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnPhidT</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnPhidn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnphi_vt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnPhi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">dlnPhidP</span><span class="o">=</span><span class="n">dlnPhidP</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidT</span><span class="o">=</span><span class="n">dlnPhidT</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidn</span><span class="o">=</span><span class="n">dlnPhidn</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="k">end block </span><span class="n">lnphi_vt</span>
+</code></pre></div>
+
+<p>The subroutine <code>lnphi_vt</code> also allows to obtain the value of pressure and its
+derivatives at the specified volume and temperature. Since those values are
+needed to calculate the fugacity coefficients, you can take advantage of this
+feature to avoid calculating them twice.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">lnphi_vt_p</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnphi_vt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnPhi</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="o">=</span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="o">=</span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="o">=</span><span class="n">dPdn</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="k">end block </span><span class="n">lnphi_vt_p</span>
+</code></pre></div>
+
+<h2 id="fugacity-coefficients-pt-ln-phi_i-pt">Fugacity coefficients (P,T): <script type="math/tex">\ln \phi_i (P,T)</script>
+</h2>
+<p>There is no need for a direct way of calculating natural logarithm the fugacity
+coefficients specifing <script type="math/tex">P</script> and <script type="math/tex">T</script> since we can solve volume from those
+specifications and then calculate the fugacity coefficients using the <script type="math/tex">\ln
+\phi_i (V,T)</script> method. For that reason you can choose the root of the volume
+that you want to use to calculate the fugacity coefficients in the same way as
+the volume method.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">lnphi_pt</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnPhidP</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnPhidT</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnPhidn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 bar</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnPhi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">dlnPhidP</span><span class="o">=</span><span class="n">dlnPhidP</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidT</span><span class="o">=</span><span class="n">dlnPhidT</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidn</span><span class="o">=</span><span class="n">dlnPhidn</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnPhi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">dlnPhidP</span><span class="o">=</span><span class="n">dlnPhidP</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidT</span><span class="o">=</span><span class="n">dlnPhidT</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidn</span><span class="o">=</span><span class="n">dlnPhidn</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnPhi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">dlnPhidP</span><span class="o">=</span><span class="n">dlnPhidP</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidT</span><span class="o">=</span><span class="n">dlnPhidT</span><span class="p">,</span><span class="w"> </span><span class="n">dlnPhidn</span><span class="o">=</span><span class="n">dlnPhidn</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="k">end block </span><span class="n">lnphi_pt</span>
+</code></pre></div>
+
+<p>As in the <script type="math/tex">\ln \phi_i (V,T)</script> method you can take advantage and the retrieve
+the value of the calculated volume and the pressure derivatives.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">lnphi_pt_v</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 bar</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnPhi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">dPdV</span><span class="o">=</span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="o">=</span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="o">=</span><span class="n">dPdn</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="k">end block </span><span class="n">lnphi_pt_v</span>
+</code></pre></div>
+
+<h2 id="fugacity-vt-ln-f_i-vt">Fugacity (V,T): <script type="math/tex">\ln f_i (V,T)</script>
+</h2>
+<p>Alternative way of calculating fugacity directly from the residual Helmholtz
+free energy:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">fugacity_vt</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">lnf</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnfdV</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnfdT</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">dlnfdn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">lnfug_vt</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">lnf</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">dlnfdV</span><span class="p">,</span><span class="w"> </span><span class="n">dlnfdT</span><span class="p">,</span><span class="w"> </span><span class="n">dlnfdn</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="k">end block </span><span class="n">fugacity_vt</span>
+</code></pre></div>
+
+<h2 id="residual-entropy-vt-srnvt">Residual entropy (V,T): <script type="math/tex">S^r(n,V,T)</script>
+</h2>
+<p>We start explaining the residual entropy because it is the easiest property to
+calculate. Also, helps us to understand how to calculate the next properties.</p>
+<p>The residual entropy is calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+</script>
+</p>
+<p>And its derivatives:</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial S^r}{\partial T} \right)_{V,n} =
+- \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial S^r}{\partial V} \right)_{T,n} =
+- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial S^r}{\partial n_i} \right)_{V,T} =
+- \left(\frac{\partial^2 A^r}{\partial n_i \partial T} \right)_V
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">residual_entropy</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">dSdV</span><span class="p">,</span><span class="w"> </span><span class="n">dSdT</span><span class="p">,</span><span class="w"> </span><span class="n">dSdn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="c">! Calculate residual entropy and its derivatives</span>
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">residual_entropy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Sr</span><span class="o">=</span><span class="n">Sr</span><span class="p">,</span><span class="w"> </span><span class="n">SrT</span><span class="o">=</span><span class="n">SrT</span><span class="p">,</span><span class="w"> </span><span class="n">SrV</span><span class="o">=</span><span class="n">SrV</span><span class="p">,</span><span class="w"> </span><span class="n">Srn</span><span class="o">=</span><span class="n">Srn</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Residual entropy: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Sr</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SrV: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">SrV</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SrT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">SrT</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Srn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Srn</span>
+
+<span class="k">end block </span><span class="n">residual_entropy</span>
+</code></pre></div>
+
+<h2 id="residual-enthalpy-vt-hrnvt">Residual enthalpy (V,T): <script type="math/tex">H^r(n,V,T)</script>
+</h2>
+<p>The residual enthalpy is calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+H^r(n,V,T) = H^r(n,P,T) = A^r(n,V,T) + T S^r(n,V,T) + PV - nRT
+</script>
+</p>
+<p>We know that pressure can be calculated as:</p>
+<p>
+<script type="math/tex; mode=display">
+P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n} + \frac{nRT}{V}
+</script>
+</p>
+<p>Then, we can obtain:</p>
+<p>
+<script type="math/tex; mode=display">
+P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+</script>
+</p>
+<p>And we also know how to calculate residual entropy as:</p>
+<p>
+<script type="math/tex; mode=display">
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+</script>
+</p>
+<p>Then, we can obtain the residual enthalpy as:</p>
+<p>
+<script type="math/tex; mode=display">
+H^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+</script>
+</p>
+<p>And its derivatives:</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial H^r}{\partial T} \right)_{V,n} =
+- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+- V \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial H^r}{\partial V} \right)_{T,n} =
+- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial H^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
+- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">residual_enthalpy</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Hr</span><span class="p">,</span><span class="w"> </span><span class="n">HrV</span><span class="p">,</span><span class="w"> </span><span class="n">HrT</span><span class="p">,</span><span class="w"> </span><span class="n">Hrn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="c">! Calculate residual enthalpy and its derivatives</span>
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">residual_enthalpy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Hr</span><span class="o">=</span><span class="n">Hr</span><span class="p">,</span><span class="w"> </span><span class="n">HrV</span><span class="o">=</span><span class="n">HrV</span><span class="p">,</span><span class="w"> </span><span class="n">HrT</span><span class="o">=</span><span class="n">HrT</span><span class="p">,</span><span class="w"> </span><span class="n">Hrn</span><span class="o">=</span><span class="n">Hrn</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Residual enthalpy: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Hr</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HrV: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HrV</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HrT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HrT</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Hrn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Hrn</span>
+
+<span class="k">end block </span><span class="n">residual_enthalpy</span>
+</code></pre></div>
+
+<h2 id="residual-gibbs-free-energy-vt-grnvt">Residual Gibbs free energy (V,T): <script type="math/tex">G^r(n,V,T)</script>
+</h2>
+<p>The residual Gibbs free energy is calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+G^r(n,V,T) = A^r(n,V,T) + PV - nRT
+</script>
+</p>
+<p>As with residual enthalpy we can easily deduce:</p>
+<p>
+<script type="math/tex; mode=display">
+G^r = A^r - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+</script>
+</p>
+<p>And its derivatives:</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial G^r}{\partial T} \right)_{V,n} =
+\left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial^2 A^r}{\partial T \partial V} \right)_n
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial G^r}{\partial V} \right)_{T,n} =
+- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial G^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">residual_gibbs</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Gr</span><span class="p">,</span><span class="w"> </span><span class="n">GrV</span><span class="p">,</span><span class="w"> </span><span class="n">GrT</span><span class="p">,</span><span class="w"> </span><span class="n">Grn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="c">! Calculate residual Gibbs free energy and its derivatives</span>
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">residual_gibbs</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Gr</span><span class="o">=</span><span class="n">Gr</span><span class="p">,</span><span class="w"> </span><span class="n">GrV</span><span class="o">=</span><span class="n">GrV</span><span class="p">,</span><span class="w"> </span><span class="n">GrT</span><span class="o">=</span><span class="n">GrT</span><span class="p">,</span><span class="w"> </span><span class="n">Grn</span><span class="o">=</span><span class="n">Grn</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Residual Gibbs free energy: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Gr</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GrV: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GrV</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GrT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GrT</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Grn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Grn</span>
+
+<span class="k">end block </span><span class="n">residual_gibbs</span>
+</code></pre></div>
+
+<h2 id="residual-internal-energy-vt-urnvt">Residual internal energy (V,T): <script type="math/tex">U^r(n,V,T)</script>
+</h2>
+<p>The residual internal energy is calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+U^r(n,V,T) = A^r(n,V,T) + T S^r(n,V,T)
+</script>
+</p>
+<p>Therefore:</p>
+<p>
+<script type="math/tex; mode=display">
+U^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+</script>
+</p>
+<p>And its derivatives:</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial U^r}{\partial T} \right)_{V,n} =
+- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial U^r}{\partial V} \right)_{T,n} =
+\left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\left(\frac{\partial U^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">residual_internal_energy</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Ur</span><span class="p">,</span><span class="w"> </span><span class="n">UrV</span><span class="p">,</span><span class="w"> </span><span class="n">UrT</span><span class="p">,</span><span class="w"> </span><span class="n">Urn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="c">! Calculate residual internal energy and its derivatives</span>
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">internal_energyresidual</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ur</span><span class="o">=</span><span class="n">Ur</span><span class="p">,</span><span class="w"> </span><span class="n">UrV</span><span class="o">=</span><span class="n">UrV</span><span class="p">,</span><span class="w"> </span><span class="n">UrT</span><span class="o">=</span><span class="n">UrT</span><span class="p">,</span><span class="w"> </span><span class="n">Urn</span><span class="o">=</span><span class="n">Urn</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Residual internal energy: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ur</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UrV: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">UrV</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UrT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">UrT</span>
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Urn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Urn</span>
+
+<span class="k">end block </span><span class="n">residual_internal_energy</span>
+</code></pre></div>
+
+<h2 id="residual-constant-volume-heat-capacity-vt-c_vrnvt">Residual constant volume heat capacity (V,T): <script type="math/tex">C_V^r(n,V,T)</script>
+</h2>
+<p>The residual constant volume heat capacity is calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+C_V^r(n,V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">residual_cv</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Cv</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="c">! Calculate residual constant volume heat capacity</span>
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">residual_cv</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Cv</span><span class="o">=</span><span class="n">Cv</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Residual constant volume heat capacity: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Cv</span>
+
+<span class="k">end block </span><span class="n">residual_cv</span>
+</code></pre></div>
+
+<h2 id="residual-constant-pressure-heat-capacity-vt-c_prnvt">Residual constant pressure heat capacity (V,T): <script type="math/tex">C_P^r(n,V,T)</script>
+</h2>
+<p>The residual constant pressure heat capacity is calculated as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+C_P^r(n,V,T) = C_V^r(n,V,T) - T \frac{\left(\frac{\partial P}
+{\partial T} \right)^2_{V,n}}{\left(\frac{\partial P}
+{\partial V} \right)_{T,n}} - nR
+</script>
+</p>
+<div class="codehilite"><pre><span></span><code><span class="n">residual_cp</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Cp</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w">     </span><span class="c">! Set volume to 1 liter</span>
+
+<span class="w">    </span><span class="c">! Calculate residual constant pressure heat capacity</span>
+<span class="w">    </span><span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">residual_cp</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Cp</span><span class="o">=</span><span class="n">Cp</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Residual constant pressure heat capacity: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Cp</span>
+
+<span class="k">end block </span><span class="n">residual_cp</span>
+</code></pre></div>
+
+<h1 id="references">References</h1>
+<p>[1] 1. Michelsen, M. L., &amp; Mollerup, J. M. (2007). Thermodynamic models:
+Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</p>
     </div>
   </div>
       <hr>
@@ -159,33 +763,11 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-27 15:10 +0000             </p>
+ on 2025-05-20 15:04 +0000             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../../../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../../../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../../../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

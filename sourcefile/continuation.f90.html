@@ -12,14 +12,29 @@
 
     <title>continuation.f90 &ndash; yaeos</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -78,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.4% of total for source files.">144 statements</a>
+                 title=" 1.2% of total for source files.">147 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -97,9 +112,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -335,7 +352,7 @@
 <a id="ln-178" name="ln-178" href="#ln-178"></a><span class="w">      </span><span class="c">!! Subroutine to solve a point.</span>
 <a id="ln-179" name="ln-179" href="#ln-179"></a><span class="w">      </span><span class="c">!!</span>
 <a id="ln-180" name="ln-180" href="#ln-180"></a><span class="w">      </span><span class="c">!! Procedure that solves a point with the Newton-Raphson method.</span>
-<a id="ln-181" name="ln-181" href="#ln-181"></a><span class="w">      </span><span class="k">use </span><span class="n">stdlib_optval</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">optval</span>
+<a id="ln-181" name="ln-181" href="#ln-181"></a><span class="w">      </span><span class="k">use </span><span class="n">yaeos__auxiliar</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">optval</span>
 <a id="ln-182" name="ln-182" href="#ln-182"></a><span class="w">      </span><span class="k">use </span><span class="n">yaeos__math_linalg</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">solve_system</span>
 <a id="ln-183" name="ln-183" href="#ln-183"></a><span class="w">      </span><span class="k">procedure</span><span class="p">(</span><span class="n">continuation_function</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">fun</span><span class="w"> </span><span class="c">!! Function to solve</span>
 <a id="ln-184" name="ln-184" href="#ln-184"></a><span class="w">      </span><span class="kt">integer</span><span class="p">,</span><span class="w">  </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iters</span><span class="w"> </span><span class="c">!! Number of iterations needed</span>
@@ -361,60 +378,63 @@
 <a id="ln-204" name="ln-204" href="#ln-204"></a><span class="w">      </span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span>
 <a id="ln-205" name="ln-205" href="#ln-205"></a><span class="w">      </span><span class="n">X0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span>
 <a id="ln-206" name="ln-206" href="#ln-206"></a><span class="w">      </span><span class="n">newton</span><span class="p">:</span><span class="w"> </span><span class="k">do </span><span class="n">iters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span>
-<a id="ln-207" name="ln-207" href="#ln-207"></a><span class="w">         </span><span class="c">! Converged point</span>
-<a id="ln-208" name="ln-208" href="#ln-208"></a><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="o">/</span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1e-5_pr</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">tol</span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">newton</span>
+<a id="ln-207" name="ln-207" href="#ln-207"></a><span class="w">         </span><span class="k">call </span><span class="n">fun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="n">dF</span><span class="p">,</span><span class="w"> </span><span class="n">dFdS</span><span class="p">)</span>
+<a id="ln-208" name="ln-208" href="#ln-208"></a><span class="w">         </span><span class="n">dX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solve_system</span><span class="p">(</span><span class="n">dF</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">F</span><span class="p">)</span>
 <a id="ln-209" name="ln-209" href="#ln-209"></a>
-<a id="ln-210" name="ln-210" href="#ln-210"></a><span class="w">         </span><span class="k">call </span><span class="n">fun</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="n">dF</span><span class="p">,</span><span class="w"> </span><span class="n">dFdS</span><span class="p">)</span>
-<a id="ln-211" name="ln-211" href="#ln-211"></a>
-<a id="ln-212" name="ln-212" href="#ln-212"></a><span class="w">         </span><span class="n">dX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solve_system</span><span class="p">(</span><span class="n">dF</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">F</span><span class="p">)</span>
-<a id="ln-213" name="ln-213" href="#ln-213"></a>
-<a id="ln-214" name="ln-214" href="#ln-214"></a><span class="w">         </span><span class="c">! Fix the step</span>
-<a id="ln-215" name="ln-215" href="#ln-215"></a><span class="w">         </span><span class="k">do while</span><span class="p">(</span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span>
-<a id="ln-216" name="ln-216" href="#ln-216"></a><span class="w">            </span><span class="n">dX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dX</span><span class="o">/</span><span class="mi">2</span>
-<a id="ln-217" name="ln-217" href="#ln-217"></a><span class="w">         </span><span class="k">end do</span>
-<a id="ln-218" name="ln-218" href="#ln-218"></a>
-<a id="ln-219" name="ln-219" href="#ln-219"></a><span class="k">         </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dX</span>
-<a id="ln-220" name="ln-220" href="#ln-220"></a><span class="w">      </span><span class="k">end do </span><span class="n">newton</span>
-<a id="ln-221" name="ln-221" href="#ln-221"></a><span class="w">   </span><span class="k">end subroutine </span><span class="n">full_newton</span>
-<a id="ln-222" name="ln-222" href="#ln-222"></a>
-<a id="ln-223" name="ln-223" href="#ln-223"></a><span class="w">   </span><span class="c">! subroutine levenberg_marquardt(&amp;</span>
-<a id="ln-224" name="ln-224" href="#ln-224"></a><span class="w">   </span><span class="c">!    fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &amp;</span>
-<a id="ln-225" name="ln-225" href="#ln-225"></a><span class="w">   </span><span class="c">!    )</span>
-<a id="ln-226" name="ln-226" href="#ln-226"></a><span class="w">   </span><span class="c">!    use minpack_module, only: lmdif1</span>
-<a id="ln-227" name="ln-227" href="#ln-227"></a><span class="w">   </span><span class="c">!    use stdlib_optval, only: optval</span>
-<a id="ln-228" name="ln-228" href="#ln-228"></a><span class="w">   </span><span class="c">!    use yaeos__math_linalg, only: solve_system</span>
-<a id="ln-229" name="ln-229" href="#ln-229"></a><span class="w">   </span><span class="c">!    procedure(continuation_function) :: fun !! Function to solve</span>
-<a id="ln-230" name="ln-230" href="#ln-230"></a><span class="w">   </span><span class="c">!    integer,  intent(out) :: iters !! Number of iterations needed</span>
-<a id="ln-231" name="ln-231" href="#ln-231"></a><span class="w">   </span><span class="c">!    real(pr), intent(in out) :: X(:)  !! Variables vector</span>
-<a id="ln-232" name="ln-232" href="#ln-232"></a><span class="w">   </span><span class="c">!    integer, intent(in) :: ns</span>
-<a id="ln-233" name="ln-233" href="#ln-233"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: S</span>
-<a id="ln-234" name="ln-234" href="#ln-234"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: dS</span>
-<a id="ln-235" name="ln-235" href="#ln-235"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: dXdS(:)</span>
-<a id="ln-236" name="ln-236" href="#ln-236"></a><span class="w">   </span><span class="c">!    integer, intent(in) :: point</span>
-<a id="ln-237" name="ln-237" href="#ln-237"></a><span class="w">   </span><span class="c">!    integer, intent(in) :: max_iters !! Maximum iterations</span>
-<a id="ln-238" name="ln-238" href="#ln-238"></a><span class="w">   </span><span class="c">!    real(pr), intent(out) :: F(:) !! Function values at solved point</span>
-<a id="ln-239" name="ln-239" href="#ln-239"></a><span class="w">   </span><span class="c">!    real(pr), intent(out) :: df(:, :) !! Jacobian values</span>
-<a id="ln-240" name="ln-240" href="#ln-240"></a><span class="w">   </span><span class="c">!    real(pr), intent(out) :: dfds(:) !! dFdS</span>
-<a id="ln-241" name="ln-241" href="#ln-241"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: tol</span>
-<a id="ln-242" name="ln-242" href="#ln-242"></a>
-<a id="ln-243" name="ln-243" href="#ln-243"></a><span class="w">   </span><span class="c">!    integer :: m, n, info, iwa(size(x))</span>
-<a id="ln-244" name="ln-244" href="#ln-244"></a><span class="w">   </span><span class="c">!    integer :: lwa</span>
-<a id="ln-245" name="ln-245" href="#ln-245"></a><span class="w">   </span><span class="c">!    real(pr) :: wa(size(F) * size(x) + 5*size(x) + size(f))</span>
-<a id="ln-246" name="ln-246" href="#ln-246"></a>
-<a id="ln-247" name="ln-247" href="#ln-247"></a><span class="w">   </span><span class="c">!    m = size(F)</span>
-<a id="ln-248" name="ln-248" href="#ln-248"></a><span class="w">   </span><span class="c">!    n = size(x)</span>
-<a id="ln-249" name="ln-249" href="#ln-249"></a><span class="w">   </span><span class="c">!    lwa = size(F) * size(x)+5*size(x)+size(f)</span>
-<a id="ln-250" name="ln-250" href="#ln-250"></a><span class="w">   </span><span class="c">!    call lmdif1(fcn, m, n, x, F, tol, Info, Iwa, Wa, Lwa)</span>
-<a id="ln-251" name="ln-251" href="#ln-251"></a><span class="w">   </span><span class="c">!    contains</span>
-<a id="ln-252" name="ln-252" href="#ln-252"></a><span class="w">   </span><span class="c">!    subroutine fcn(m, n, xx, fvec, iflag)</span>
-<a id="ln-253" name="ln-253" href="#ln-253"></a><span class="w">   </span><span class="c">!       integer, intent(in) :: m, n</span>
-<a id="ln-254" name="ln-254" href="#ln-254"></a><span class="w">   </span><span class="c">!       real(pr), intent(in) :: xx(n)</span>
-<a id="ln-255" name="ln-255" href="#ln-255"></a><span class="w">   </span><span class="c">!       real(pr), intent(out) :: fvec(m)</span>
-<a id="ln-256" name="ln-256" href="#ln-256"></a><span class="w">   </span><span class="c">!       integer, intent(in out) :: iflag</span>
-<a id="ln-257" name="ln-257" href="#ln-257"></a><span class="w">   </span><span class="c">!       call fun(xx, ns, S, fvec, dF, dFdS)</span>
-<a id="ln-258" name="ln-258" href="#ln-258"></a><span class="w">   </span><span class="c">!    end subroutine</span>
-<a id="ln-259" name="ln-259" href="#ln-259"></a><span class="w">   </span><span class="c">! end subroutine</span>
-<a id="ln-260" name="ln-260" href="#ln-260"></a><span class="k">end module </span><span class="n">yaeos__math_continuation</span>
+<a id="ln-210" name="ln-210" href="#ln-210"></a><span class="w">         </span><span class="c">! Converged point</span>
+<a id="ln-211" name="ln-211" href="#ln-211"></a><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="o">/</span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1e-5_pr</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">tol</span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">newton</span>
+<a id="ln-212" name="ln-212" href="#ln-212"></a>
+<a id="ln-213" name="ln-213" href="#ln-213"></a><span class="w">         </span><span class="c">! Fix the step</span>
+<a id="ln-214" name="ln-214" href="#ln-214"></a><span class="w">         </span><span class="k">do while</span><span class="p">(</span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span>
+<a id="ln-215" name="ln-215" href="#ln-215"></a><span class="w">            </span><span class="n">dX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dX</span><span class="o">/</span><span class="mi">2</span>
+<a id="ln-216" name="ln-216" href="#ln-216"></a><span class="w">         </span><span class="k">end do</span>
+<a id="ln-217" name="ln-217" href="#ln-217"></a>
+<a id="ln-218" name="ln-218" href="#ln-218"></a><span class="k">         if</span><span class="w"> </span><span class="p">(</span><span class="n">iters</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<a id="ln-219" name="ln-219" href="#ln-219"></a><span class="k">            </span><span class="n">dX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.9</span><span class="o">*</span><span class="n">dXdS</span><span class="o">*</span><span class="n">dS</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">X</span>
+<a id="ln-220" name="ln-220" href="#ln-220"></a><span class="w">         </span><span class="k">end if</span>
+<a id="ln-221" name="ln-221" href="#ln-221"></a>
+<a id="ln-222" name="ln-222" href="#ln-222"></a><span class="k">         </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dX</span>
+<a id="ln-223" name="ln-223" href="#ln-223"></a><span class="w">      </span><span class="k">end do </span><span class="n">newton</span>
+<a id="ln-224" name="ln-224" href="#ln-224"></a><span class="w">   </span><span class="k">end subroutine </span><span class="n">full_newton</span>
+<a id="ln-225" name="ln-225" href="#ln-225"></a>
+<a id="ln-226" name="ln-226" href="#ln-226"></a><span class="w">   </span><span class="c">! subroutine levenberg_marquardt(&amp;</span>
+<a id="ln-227" name="ln-227" href="#ln-227"></a><span class="w">   </span><span class="c">!    fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &amp;</span>
+<a id="ln-228" name="ln-228" href="#ln-228"></a><span class="w">   </span><span class="c">!    )</span>
+<a id="ln-229" name="ln-229" href="#ln-229"></a><span class="w">   </span><span class="c">!    use minpack_module, only: lmdif1</span>
+<a id="ln-230" name="ln-230" href="#ln-230"></a><span class="w">   </span><span class="c">!    use yaeos__auxiliar, only: optval</span>
+<a id="ln-231" name="ln-231" href="#ln-231"></a><span class="w">   </span><span class="c">!    use yaeos__math_linalg, only: solve_system</span>
+<a id="ln-232" name="ln-232" href="#ln-232"></a><span class="w">   </span><span class="c">!    procedure(continuation_function) :: fun !! Function to solve</span>
+<a id="ln-233" name="ln-233" href="#ln-233"></a><span class="w">   </span><span class="c">!    integer,  intent(out) :: iters !! Number of iterations needed</span>
+<a id="ln-234" name="ln-234" href="#ln-234"></a><span class="w">   </span><span class="c">!    real(pr), intent(in out) :: X(:)  !! Variables vector</span>
+<a id="ln-235" name="ln-235" href="#ln-235"></a><span class="w">   </span><span class="c">!    integer, intent(in) :: ns</span>
+<a id="ln-236" name="ln-236" href="#ln-236"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: S</span>
+<a id="ln-237" name="ln-237" href="#ln-237"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: dS</span>
+<a id="ln-238" name="ln-238" href="#ln-238"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: dXdS(:)</span>
+<a id="ln-239" name="ln-239" href="#ln-239"></a><span class="w">   </span><span class="c">!    integer, intent(in) :: point</span>
+<a id="ln-240" name="ln-240" href="#ln-240"></a><span class="w">   </span><span class="c">!    integer, intent(in) :: max_iters !! Maximum iterations</span>
+<a id="ln-241" name="ln-241" href="#ln-241"></a><span class="w">   </span><span class="c">!    real(pr), intent(out) :: F(:) !! Function values at solved point</span>
+<a id="ln-242" name="ln-242" href="#ln-242"></a><span class="w">   </span><span class="c">!    real(pr), intent(out) :: df(:, :) !! Jacobian values</span>
+<a id="ln-243" name="ln-243" href="#ln-243"></a><span class="w">   </span><span class="c">!    real(pr), intent(out) :: dfds(:) !! dFdS</span>
+<a id="ln-244" name="ln-244" href="#ln-244"></a><span class="w">   </span><span class="c">!    real(pr), intent(in) :: tol</span>
+<a id="ln-245" name="ln-245" href="#ln-245"></a>
+<a id="ln-246" name="ln-246" href="#ln-246"></a><span class="w">   </span><span class="c">!    integer :: m, n, info, iwa(size(x))</span>
+<a id="ln-247" name="ln-247" href="#ln-247"></a><span class="w">   </span><span class="c">!    integer :: lwa</span>
+<a id="ln-248" name="ln-248" href="#ln-248"></a><span class="w">   </span><span class="c">!    real(pr) :: wa(size(F) * size(x) + 5*size(x) + size(f))</span>
+<a id="ln-249" name="ln-249" href="#ln-249"></a>
+<a id="ln-250" name="ln-250" href="#ln-250"></a><span class="w">   </span><span class="c">!    m = size(F)</span>
+<a id="ln-251" name="ln-251" href="#ln-251"></a><span class="w">   </span><span class="c">!    n = size(x)</span>
+<a id="ln-252" name="ln-252" href="#ln-252"></a><span class="w">   </span><span class="c">!    lwa = size(F) * size(x)+5*size(x)+size(f)</span>
+<a id="ln-253" name="ln-253" href="#ln-253"></a><span class="w">   </span><span class="c">!    call lmdif1(fcn, m, n, x, F, tol, Info, Iwa, Wa, Lwa)</span>
+<a id="ln-254" name="ln-254" href="#ln-254"></a><span class="w">   </span><span class="c">!    contains</span>
+<a id="ln-255" name="ln-255" href="#ln-255"></a><span class="w">   </span><span class="c">!    subroutine fcn(m, n, xx, fvec, iflag)</span>
+<a id="ln-256" name="ln-256" href="#ln-256"></a><span class="w">   </span><span class="c">!       integer, intent(in) :: m, n</span>
+<a id="ln-257" name="ln-257" href="#ln-257"></a><span class="w">   </span><span class="c">!       real(pr), intent(in) :: xx(n)</span>
+<a id="ln-258" name="ln-258" href="#ln-258"></a><span class="w">   </span><span class="c">!       real(pr), intent(out) :: fvec(m)</span>
+<a id="ln-259" name="ln-259" href="#ln-259"></a><span class="w">   </span><span class="c">!       integer, intent(in out) :: iflag</span>
+<a id="ln-260" name="ln-260" href="#ln-260"></a><span class="w">   </span><span class="c">!       call fun(xx, ns, S, fvec, dF, dFdS)</span>
+<a id="ln-261" name="ln-261" href="#ln-261"></a><span class="w">   </span><span class="c">!    end subroutine</span>
+<a id="ln-262" name="ln-262" href="#ln-262"></a><span class="w">   </span><span class="c">! end subroutine</span>
+<a id="ln-263" name="ln-263" href="#ln-263"></a><span class="k">end module </span><span class="n">yaeos__math_continuation</span>
 </pre></div>
 
       </section>
@@ -436,33 +456,11 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-27 15:10 +0000             </p>
+ on 2025-05-20 15:04 +0000             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

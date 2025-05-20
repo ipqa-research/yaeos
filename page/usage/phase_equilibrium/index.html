@@ -12,14 +12,29 @@
 
     <title>Phase Equilibrium &ndash; yaeos</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../../../css/pygments.css" rel="stylesheet">
-    <link href="../../../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
-      <link  href="../../../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../../../css/pygments.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -151,7 +166,10 @@ equilibria point.</p>
 <ul>
 <li><a href="#flash-calculations">Flash calculations</a></li>
 <li><a href="#saturation-points">Saturation points</a><ul>
-<li><a href="#phase-envelopes">Phase envelopes</a></li>
+<li><a href="#phase-envelopes">Phase envelopes</a><ul>
+<li><a href="#isopleths">Isopleths</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -181,6 +199,45 @@ modelling of processes.</p>
 <span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">v_spec</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">k0</span><span class="p">)</span>
 </code></pre></div>
 
+<p>It is also possible to make flash calculations with <script type="math/tex">G^E</script> models. In that
+case, it is important to ignore the <code>v_spec</code> and <code>p_spec</code> arguments, and provide
+an initial guess for <script type="math/tex">K</script>-values. A good way of estimating initial 
+values is by using the <code>mintpd</code> subroutine. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+<span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">T</span>
+<span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">fr</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+
+
+<span class="c">! Define the groups of the three molecules</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c">! Temperature</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">250</span>
+
+<span class="c">! Moles</span>
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">]</span>
+
+<span class="c">! setup UNIFAC model</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
+<span class="c">! Find the composition that provides the mininum tpd</span>
+<span class="k">call </span><span class="n">min_tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="mf">1._pr</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span><span class="o">=</span><span class="n">mintpd</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+
+<span class="c">! Calculate the phase-split flash</span>
+<span class="n">fr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">w</span><span class="o">/</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+</code></pre></div>
+
 <h1 id="saturation-points">Saturation points</h1>
 <p>Single saturation point calculations are included with the procedures
 <a href="../../../proc/saturation_pressure.html">saturation_pressure</a> and <a href="../../../proc/saturation_temperature.html">saturation_temperature</a>. Both procedures solve
@@ -191,7 +248,9 @@ f(T \lor P) = \sum ln K_i - 1 = 0
 </script>
 </p>
 <p>With a newton procedure with respect to the desired variable (either <script type="math/tex">P</script> or
-<script type="math/tex">T</script>.</p>
+<script type="math/tex">T</script>, and updating the values of <script type="math/tex">\ln K_i</script> at each point with 
+<script type="math/tex">\frac{\ln \phi_i^y}{\ln \phi_i^z}</script>
+</p>
 <div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">EquilibriaState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sat_point</span>
 
 <span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
@@ -207,7 +266,37 @@ When the interest is in calculating a whole phase diagram instead of a single
 point, or the point is hard to converge. It is better to use a robust
 mathematical algorithm that eases the calcuation providing an easy-to-converge
 point and using its information to initialize a next one and continue along the
-whole phase-boundary. This can be done with the procedure <a href="../../../proc/pt_envelope_2ph.html">pt_envelope_2ph</a></p>
+whole phase-boundary.</p>
+<p>In <code>yaeos</code> all kind of phase envelopes are calculated using the numerical 
+continuation method. This method is extremely useful to calculate lines that
+can be defined as a undertemined system <script type="math/tex">F(\vec{X})=0</script>, which has one degree
+of freedom left. This degree of freedom can be used to define an extra equation</p>
+<p>
+<script type="math/tex; mode=display">
+    X_{ns} - S = 0
+</script>
+</p>
+<p>Where <code>ns</code> is the index of some specified variable from <script type="math/tex">\vec{X}</script>, and <script type="math/tex">S</script>
+is some specified value. Now the system <script type="math/tex">F(\vec{X}, S) = 0</script> has no degree
+of freedom left and can be solved by traditional methods like Newton-Raphson.</p>
+<p>When one point is solved, it is possible to determine how the vector of
+variables change with respect to the specified variable by solving the following
+system of equations:</p>
+<p>
+<script type="math/tex; mode=display">
+J \frac{\vec{\partial X}}{\partial S} + \frac{\partial F}{\partial S} = 0
+</script>
+</p>
+<p>Knowing the sensitivities vector, <script type="math/tex">\frac{\vec{\partial X}}{\partial S}</script> we
+can select the next variable to specify by selecting the one that has the
+highest absolute value of <script type="math/tex">\frac{\partial X_i}{\partial S}</script>. And a good 
+extrapolation to calculate the next point can be obtained with</p>
+<p>
+<script type="math/tex; mode=display">
+X_{i+1} = X_{i} + \frac{\vec{\partial X}}{\partial S} \Delta S
+</script>
+</p>
+<h3 id="isopleths">Isopleths</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">PTEnvel2</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">env</span>
 
 <span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="mi">15</span><span class="mf">0._pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
@@ -232,33 +321,11 @@ whole phase-boundary. This can be done with the procedure <a href="../../../proc
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-27 15:10 +0000             </p>
+ on 2025-05-20 15:04 +0000             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../../../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../../../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../../../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

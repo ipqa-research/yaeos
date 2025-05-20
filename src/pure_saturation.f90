@@ -36,7 +36,7 @@ contains
       !! to get the saturation temperature for a given pressure and vice versa.
       !!
       ! ========================================================================
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model !! Thermodyanmic model
       integer, intent(in) :: component !! Component index to calculate the line
       real(pr), intent(in) :: minP !! Minimum pressure [bar]
@@ -66,13 +66,13 @@ contains
       z(component) = 1
       call model%volume(z, P=Pc, T=Tc, V=Vc, root_type="vapor")
 
-      Vx = Vc*0.999
-      Vy = Vc*1.001
+      Vx = Vc*0.995
+      Vy = Vc*1.005
 
       X = [log(Vx), log(Vy), log(Pc), log(Tc)]
 
       ns = 1
-      S = log(0.99)
+      S = log(0.95)
       dS = -0.15
       allocate(pt%T(0), pt%P(0), pt%Vx(0), pt%Vy(0))
 
@@ -92,6 +92,8 @@ contains
          do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
             dS = dS*1.5
          end do
+         
+         ds = sign(max(dS, 0.01_pr), dS)
 
          Vx = exp(X(1))
          Vy = exp(X(2))
@@ -153,7 +155,7 @@ contains
       !!
       !! The vector of variables \(X\) is equal to
       !! \([ \ln V_z, \ln V_y, \ln P, \ln T ]\).
-!
+
       class(ArModel), intent(in) :: model
       !! Thermodynamic model
       integer, intent(in) :: ncomp
@@ -189,7 +191,7 @@ contains
       real(pr) :: Xnew(4)
 
       integer :: i
-!
+
       i = ncomp
 
       dX = 1
@@ -202,6 +204,7 @@ contains
       do while((maxval(abs(dX)) > 1e-7 .and. maxval(abs(F)) > 1e-7))
          its = its+1
          call isofugacity(X, F, dF, dFdS)
+
          if (any(isnan(F))) exit
          dX = solve_system(dF, -F)
          Xnew = X + dX

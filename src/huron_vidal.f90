@@ -16,7 +16,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    !!
    !! # References
    !!
-   use yaeos__constants, only: pr, R
+   use yaeos__constants, only: pr, R, solving_volume
    use yaeos__models_ar_genericcubic, only: CubicMixRule
    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
    use yaeos__models_ge, only: GeModel
@@ -307,9 +307,15 @@ contains
       q = self%q
       bi = self%bi
 
-      call self%ge%excess_gibbs( &
-         n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
-         )
+      if (.not. solving_volume) then
+         call self%ge%excess_gibbs( &
+            n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+            )
+      else
+         call self%ge%excess_gibbs( &
+            n, T, Ge=Ge &
+            )
+      end if
       call self%Bmix(n, bi, B, dBi, dBij)
       logb_nbi = log(B/(totn*bi))
       dot_n_logB_nbi = dot_product(n, logB_nbi)
@@ -318,48 +324,50 @@ contains
          dlogBi_nbi(i) = logB_nbi(i) + sum(n*dBi(i))/B - 1
       end do
 
-      do i = 1, nc
-         do j = 1, nc
-            !TODO: Need to figure out this derivative
-            d2logBi_nbi(i, j) = dlogBi_nbi(j) &
-               + (sum(n*dBij(i, j)) + dBi(i))/B &
-               - totn*dBi(i)*dBi(j)/B**2
-         end do
-      end do
-
-      autodiff: block
-         !! Autodiff injection until we can decipher this derivative
-         use hyperdual_mod
-         type(hyperdual) :: hB
-         type(hyperdual) :: hdot_ln_B_nbi
-         type(hyperdual) :: hn(nc)
-
-         integer :: ii, jj
-         hn = n
-
+      if (.not. solving_volume) then
          do i = 1, nc
-            do j = i, nc
-               hn = n
-               hn(i)%f1 = 1
-               hn(j)%f2 = 1
-
-               hB = 0._pr
-               do ii=1,nc
-                  do jj=1,nc
-                     hB = hB &
-                        + (hn(ii)*hn(jj)) &
-                        * 0.5_pr * (bi(ii) + bi(jj)) * (1._pr - self%l(ii, jj))
-                  end do
-               end do
-               hB = hB/sum(hn)
-
-               hdot_ln_B_nbi = sum(hn*log(hB/(sum(hn)*bi)))
-
-               d2logBi_nbi(i, j) = hdot_ln_B_nbi%f12
-               d2logBi_nbi(j, i) = hdot_ln_B_nbi%f12
+            do j = 1, nc
+               !TODO: Need to figure out this derivative
+               d2logBi_nbi(i, j) = dlogBi_nbi(j) &
+                  + (sum(n*dBij(i, j)) + dBi(i))/B &
+                  - totn*dBi(i)*dBi(j)/B**2
             end do
          end do
-      end block autodiff
+
+         autodiff: block
+            !! Autodiff injection until we can decipher this derivative
+            use hyperdual_mod
+            type(hyperdual) :: hB
+            type(hyperdual) :: hdot_ln_B_nbi
+            type(hyperdual) :: hn(nc)
+
+            integer :: ii, jj
+            hn = n
+
+            do i = 1, nc
+               do j = i, nc
+                  hn = n
+                  hn(i)%f1 = 1
+                  hn(j)%f2 = 1
+
+                  hB = 0._pr
+                  do ii=1,nc
+                     do jj=1,nc
+                        hB = hB &
+                           + (hn(ii)*hn(jj)) &
+                           * 0.5_pr * (bi(ii) + bi(jj)) * (1._pr - self%l(ii, jj))
+                     end do
+                  end do
+                  hB = hB/sum(hn)
+
+                  hdot_ln_B_nbi = sum(hn*log(hB/(sum(hn)*bi)))
+
+                  d2logBi_nbi(i, j) = hdot_ln_B_nbi%f12
+                  d2logBi_nbi(j, i) = hdot_ln_B_nbi%f12
+               end do
+            end do
+         end block autodiff
+      end if
 
       f = sum(n*ai/bi) + (Ge + R*T*dot_n_logB_nbi)/q
       fdt = sum(n*daidt/bi) + (GeT + R*dot_n_logB_nbi)/q

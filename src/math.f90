@@ -140,16 +140,6 @@ contains
       end do
    end function derivative_d2xk_dnidnj
 
-   ! subroutine eigen(A, values, vectors, stat)
-   !    use stdlib_linalg, only: eigh, linalg_state_type
-   !    real(pr), intent(in) :: A(:,:)
-   !    real(pr), intent(out) :: values(:)
-   !    real(pr), optional, intent(out) :: vectors(:,:)
-   !    integer, intent(out) :: stat
-   !    
-   !    call eigh(A=A, lambda=values, vectors=vectors)
-   ! end subroutine
-
    subroutine newton_1d(f, x, tol, max_iters)
       procedure(f_1d) :: f
       real(pr), intent(in out) :: x

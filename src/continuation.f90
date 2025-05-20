@@ -178,7 +178,7 @@ contains
       !! Subroutine to solve a point.
       !!
       !! Procedure that solves a point with the Newton-Raphson method.
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       use yaeos__math_linalg, only: solve_system
       procedure(continuation_function) :: fun !! Function to solve
       integer,  intent(out) :: iters !! Number of iterations needed
@@ -204,17 +204,20 @@ contains
       F = 500
       X0 = X
       newton: do iters = 1, max_iters
+         call fun(X, ns, S, F, dF, dFdS)
+         dX = solve_system(dF, -F)
+
          ! Converged point
          if (maxval(abs(dx/x)) < 1e-5_pr .or. maxval(abs(F)) < tol) exit newton
-
-         call fun(X, ns, S, F, dF, dFdS)
-
-         dX = solve_system(dF, -F)
 
          ! Fix the step
          do while(maxval(abs(dx)) > 0.1)
             dX = dX/2
          end do
+
+         if (iters == 10 .and. point > 1) then
+            dX = X0 - 0.9*dXdS*dS - X
+         end if
 
          X = X + dX
       end do newton
@@ -224,7 +227,7 @@ contains
    !    fun, iters, X, ns, S, dS, dXdS, point, max_iters, F, dF, dFdS, tol &
    !    )
    !    use minpack_module, only: lmdif1
-   !    use stdlib_optval, only: optval
+   !    use yaeos__auxiliar, only: optval
    !    use yaeos__math_linalg, only: solve_system
    !    procedure(continuation_function) :: fun !! Function to solve
    !    integer,  intent(out) :: iters !! Number of iterations needed

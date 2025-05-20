@@ -6,15 +6,23 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt3
 
    implicit none
 
+   private
+
+   public :: PTEnvel3
+   public :: pt_envelope_3ph
+   public :: solve_point
+   public :: get_values_from_X
+
    type :: PTEnvel3
+      integer, allocatable :: its(:) !! Number of needed iterations
       real(pr), allocatable :: beta(:) !! Mole fraction between phase x and phase y
       real(pr), allocatable :: x(:, :) !! Mole fraction of phase x
       real(pr), allocatable :: y(:, :) !! Mole fraction of phase x
       real(pr), allocatable :: w(:, :) !! Mole fraction of phase x
-      real(pr), allocatable :: P(:)
-      real(pr), allocatable :: T(:)
-      integer, allocatable :: ns(:)
-      real(pr), allocatable :: S(:)
+      real(pr), allocatable :: P(:) !! Pressures [bar]
+      real(pr), allocatable :: T(:) !! Temperatures [K]
+      integer, allocatable :: ns(:) !! Number of specified variable
+      real(pr), allocatable :: S(:) !! Value of specification
    end type PTEnvel3
 
    real(pr), parameter :: lnK_min = 2.0_pr
@@ -50,36 +58,47 @@ contains
       real(pr) :: dS !! Specified value step for next point extrapolation
       real(pr) :: dXdS(size(z)*2 + 3)
 
-      real(pr) :: x(points, size(z))
-      real(pr) :: y(points, size(z))
-      real(pr) :: w(points, size(z))
+      real(pr) :: x(points, size(z)), xi(size(z))
+      real(pr) :: y(points, size(z)), yi(size(z))
+      real(pr) :: w(points, size(z)), wi(size(z))
       real(pr) :: beta(points)
       real(pr) :: P(points)
       real(pr) :: T(points)
 
-      integer :: its
+      integer :: its, iterations(points)
+      integer :: max_iterations
+
+      max_iterations = 150
 
       nc = size(z)
       ns = ns0
       dS = dS0
 
-      kx = x0/w0
-      ky = y0/w0
+      Kx = x0/w0
+      Ky = y0/w0
 
-
-      Xvars = [log(kx), log(ky), log(P0), log(T0), beta0]
+      Xvars = [log(Kx), log(Ky), log(P0), log(T0), beta0]
       S = Xvars(ns)
 
-
       allocate(envelope%S(0), envelope%ns(0))
+
+      ! Let the first point use more iterations
+      call solve_point(model, z, ns, S, Xvars, F, dF, its, 1000)
+
       do i=1, points
-         call solve_point(model, z, ns, S, Xvars, F, dF, its, 1000)
-         if (any(isnan(F)) .or. any(isnan(Xvars)) .or. its >= 1000) exit
+         call solve_point(model, z, ns, S, Xvars, F, dF, its, max_iterations)
+         if (any(isnan(F)) .or. any(isnan(Xvars)) .or. its >= max_iterations) exit
 
          envelope%ns = [envelope%ns, ns]
          envelope%S = [envelope%S, S]
 
-         call get_values_from_X(z, Xvars, x(i, :), y(i, :), w(i, :), P(i), T(i), beta(i))
+         ! Set the values from the X vector.
+         call get_values_from_X(z, Xvars, xi, yi, wi, P(i), T(i), beta(i))
+         x(i, :) = xi
+         y(i, :) = yi
+         w(i, :) = wi
+
+         iterations(i) = its
          call update_specification(its, Xvars, dF, dXdS, ns, dS)
          call detect_critical(Xvars, dXdS, ns, S, dS)
 
@@ -96,8 +115,8 @@ contains
       envelope%P = P(:i)
       envelope%T = T(:i)
       envelope%beta = beta(:i)
+      envelope%its = iterations(:i)
    end function pt_envelope_3ph
-
 
    subroutine get_values_from_X(z, Xvars, x, y, w, P, T, beta)
       real(pr), intent(in) :: z(:)
@@ -135,18 +154,37 @@ contains
 
       integer :: nc
       real(pr) :: dFdS(size(X))
+      
+      integer :: first_set((size(X)-3)/2), second_set((size(X)-3)/2), idx((size(X)-3)/2)
+      integer :: i
+
+      nc = (size(X)-3)/2
+      first_set  = [(i, i=1, nc)]
+      second_set = [(i, i=nc+1, 2*nc)]
 
       dFdS = 0
       dFdS(size(X)) = -1
-      nc = (size(X) - 3)/2
+      dXdS = solve_system(dF, -dFdS)
+      
+      if (all(abs(X(first_set)) < 0.4)) then
+         ns = maxloc(abs(dXdS(first_set)), dim=1)
+      else if (all(abs(X(second_set)) < 0.4)) then
+         ns = maxloc(abs(dXdS(second_set)), dim=1) + nc
+      else
+         ns = maxloc(abs(dXdS), dim=1)
+      end if
 
-      ns = maxloc(abs(dXdS), dim=1)
 
+      dXdS = solve_system(dF, -dFdS)
+      
       dXdS = solve_system(dF, -dFdS)
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
+      dS = dS * 3._pr/its
 
-      dS = sign(minval([abs(dS), 0.1_pr]), dS)
+      do while(abs(dS/X(ns)) < 1e-1)
+         dS = 2*dS
+      end do
    end subroutine update_specification
 
    subroutine detect_critical(X, dXdS, ns, S, dS)
@@ -206,7 +244,7 @@ contains
             idx = second_set
          end select
 
-         do while(maxval(abs(Xnew(idx))) < 0.3)
+         do while(maxval(abs(Xnew(idx))) < 0.4)
             Xnew = Xnew + dXdS*dS
          end do
 
@@ -315,7 +353,7 @@ contains
 
       integer :: i, j, nc
 
-      nc = (Size(Xvars)-3)/2
+      nc = (size(Xvars)-3)/2
 
       Kx = exp(Xvars(1:nc))
       Ky = exp(Xvars(nc + 1:2*nc))
@@ -342,6 +380,7 @@ contains
 
 
       F = 0
+      df = 0
 
       F(1:nc) = Xvars(1:nc) + lnphi_x - lnphi_w
       F(nc + 1:2*nc) = Xvars(nc + 1:2*nc) + lnphi_y - lnphi_w
@@ -350,7 +389,6 @@ contains
       F(2*nc + 2) = sum(x - y)
       F(2*nc + 3) = Xvars(ns) - S
 
-      df = 0
       dwdb = z*(Kx - Ky)/((1 - beta)*Kx + beta*Ky)**2
 
       dwdKx = -z*(1 - beta)/(Ky*beta + (1 - beta)*Kx)**2
@@ -417,14 +455,15 @@ contains
       integer, intent(in) :: maxits
 
       real(pr) :: dX(size(X))
-      integer :: nc
+      integer :: nc, i
 
       its = 0
       F = 1
       dX = 1
       nc = (size(X) - 3)/2
 
-      do while((maxval(abs(F)) > 1e-5 .or. maxval(abs(dX)) > 1e-5) .and. its < maxits)
+
+      do while((maxval(abs(F)) > 1e-10 .and. its < maxits))
 
          its = its + 1
 
@@ -432,17 +471,10 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do while((abs(dX(2*nc+1)/X(2*nc+1))) > 0.1)
+         do while(abs(dX(2*nc+1)) > 1 .or. abs(dX(2*nc+2)) > 1)
             dX = dX/2
          end do
 
-         do while((abs(dX(2*nc+2)/X(2*nc+2))) > 0.1)
-            dX = dX/2
-         end do
-         
-         do while(abs(dX(2*nc+3)) > 0.01)
-            dX = dX/2
-         end do
 
          X = X + dX
 

@@ -12,14 +12,29 @@
 
     <title>residual_helmholtz &ndash; yaeos</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -78,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.5% of total for procedures.">140 statements</a>
+                 title=" 1.3% of total for procedures.">140 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -99,9 +114,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -118,11 +135,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-any_deriv">any_deriv</a>
+            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-any_deriv~2">any_deriv</a>
             <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_ar">d_Ar</a>
-            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_n~2">d_n</a>
-            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_t~2">d_t</a>
-            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_v">d_v</a>
+            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_n~3">d_n</a>
+            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_t~3">d_t</a>
+            <a class="list-group-item" href="../proc/residual_helmholtz.html#variable-d_v~2">d_v</a>
         </div>
       </div>
     </div>
@@ -153,7 +170,7 @@
             <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_dardv2">get_dardv2</a>
             <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_dardvn">get_dardvn</a>
             <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-get_dardvt">get_dardvt</a>
-            <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-reset_vars">reset_vars</a>
+            <a class="list-group-item" href="../proc/residual_helmholtz.html#proc-reset_vars~3">reset_vars</a>
         </div>
       </div>
     </div>
@@ -193,7 +210,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~2"></span>
+              <span class="anchor" id="variable-self~36"></span>
               class(<a href='../type/armodeladiff.html'>ArModelAdiff</a>),
             </td>
 <td>intent(in)</td>
@@ -208,7 +225,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~4"></span>
+              <span class="anchor" id="variable-n~62"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -223,7 +240,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~2"></span>
+              <span class="anchor" id="variable-v~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -238,7 +255,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~4"></span>
+              <span class="anchor" id="variable-t~23"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -253,7 +270,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~2"></span>
+              <span class="anchor" id="variable-ar~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -268,7 +285,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv"></span>
+              <span class="anchor" id="variable-arv~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -283,7 +300,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art"></span>
+              <span class="anchor" id="variable-art~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -298,7 +315,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv"></span>
+              <span class="anchor" id="variable-artv~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -313,7 +330,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2"></span>
+              <span class="anchor" id="variable-arv2~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -328,7 +345,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art2"></span>
+              <span class="anchor" id="variable-art2~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -343,7 +360,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn"></span>
+              <span class="anchor" id="variable-arn~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -358,7 +375,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn"></span>
+              <span class="anchor" id="variable-arvn~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -373,7 +390,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn"></span>
+              <span class="anchor" id="variable-artn~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -388,7 +405,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2"></span>
+              <span class="anchor" id="variable-arn2~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -421,7 +438,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-any_deriv"></span>
+              <span class="anchor" id="variable-any_deriv~2"></span>
               logical,
             </td>
               <td>public</td>
@@ -455,7 +472,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_n~2"></span>
+              <span class="anchor" id="variable-d_n~3"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
               <td>public</td>
@@ -472,7 +489,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_t~2"></span>
+              <span class="anchor" id="variable-d_t~3"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
               <td>public</td>
@@ -489,7 +506,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_v"></span>
+              <span class="anchor" id="variable-d_v~2"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
               <td>public</td>
@@ -636,7 +653,7 @@
   </div>
 
       <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-reset_vars"></span> <h3> subroutine <a href='residual_helmholtz.html#proc-reset_vars'>reset_vars</a>()  
+    <div class="card-header codesum"><span class="anchor" id="proc-reset_vars~3"></span> <h3> subroutine <a href='residual_helmholtz.html#proc-reset_vars~3'>reset_vars</a>()  
 </h3></div>
     <div class="card-body">
           
@@ -670,33 +687,11 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-27 15:10 +0000             </p>
+ on 2025-05-20 15:04 +0000             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

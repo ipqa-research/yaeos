@@ -12,14 +12,29 @@
 
     <title>Cubics &ndash; yaeos</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../../../../css/pygments.css" rel="stylesheet">
-    <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../../../../css/local.css" rel="stylesheet">
-      <link  href="../../../../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../../../../css/pygments.css" rel="stylesheet">
     <script src="../../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -142,95 +157,78 @@
       </div>
 
     <div class="col-9" id='text'>
-      <p>All our Cubic Equations of State are implemented based on the generic Cubic
-Equation:</p>
+      <div class="toc">
+<ul>
+<li><a href="#soaveredlichkwong">SoaveRedlichKwong</a></li>
+<li><a href="#pengrobinson76">PengRobinson76</a></li>
+<li><a href="#pengrobinson78">PengRobinson78</a></li>
+<li><a href="#rkpr">RKPR</a></li>
+<li><a href="#psrk">PSRK</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<p>Our Cubic Equations of State are implemented based on the generic Cubic
+Equation [1]:</p>
 <p>
 <script type="math/tex; mode=display">
     P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V + \delta_1 b)(V - \delta_2 b)}
 </script>
 </p>
+<p>Cubic equation of state allows to include the <script type="math/tex">k_{ij}</script> and <script type="math/tex">l_{ij}</script>
+matrices. 
+Using by default Classic Van der Waals mixing rules.
+For more information about mixing rules look at <a href="mixing.md">Mixing Rules</a>.
+Moreover, cubic equations of state allows to modify their default 
+<script type="math/tex">\alpha</script> function, look at <a href="alpha.md">Alpha functions</a>.</p>
 <h2 id="soaveredlichkwong">SoaveRedlichKwong</h2>
-<p><a href="../../../../proc/soaveredlichkwong.html">SoaveRedlichKwong</a></p>
-<p>Using the critical constants setup the parameters to use the 
-SoaveRedlichKwong Equation of State</p>
-<ul>
-<li>
-<script type="math/tex; mode=display">\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2</script>
-</li>
-<li>
-<script type="math/tex; mode=display">k = 0.48 + 1.574 \omega - 0.175 \omega^2 </script>
-</li>
-<li>
-<script type="math/tex; mode=display">a_c = 0.427480  R^2 * T_c^2/P_c</script>
-</li>
-<li>
-<script type="math/tex; mode=display">b = 0.086640  R T_c/P_c</script>
-</li>
-<li>
-<script type="math/tex; mode=display">\delta_1 = 1</script>
-</li>
-<li>
-<script type="math/tex; mode=display">\delta_2 = 0</script>
-</li>
-</ul>
-<p>There is also the optional posibility to include the k_{ij} and l_{ij}
-matrices. Using by default Classic Van der Waals mixing rules. For more information
-about mixing rules look at <a href="mixing.md">Mixing Rules</a></p>
+<p>Fortran definition: <a href="../../../../proc/soaveredlichkwong.html">SoaveRedlichKwong</a>. The SoaveRedlichKwong EoS uses the
+following <script type="math/tex">\alpha</script> function and its respective correlation for <script type="math/tex">k</script>.</p>
+<p>
+<script type="math/tex; mode=display"> \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 </script>
+<script type="math/tex; mode=display"> k = 0.48 + 1.574 \omega - 0.175 \omega^2  </script>
+<script type="math/tex; mode=display"> a_c = 0.427480  \frac{R^2 T_c^2}{P_c} </script>
+<script type="math/tex; mode=display"> b = 0.086640  \frac{R T_c}{P_c} </script>
+<script type="math/tex; mode=display"> \delta_1 = 1 </script>
+<script type="math/tex; mode=display"> \delta_2 = 0 </script>
+</p>
 <h2 id="pengrobinson76">PengRobinson76</h2>
-<p><a href="../../../../proc/pengrobinson76.html">PengRobinson76</a></p>
-<ul>
-<li>
-<script type="math/tex; mode=display">\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2</script>
-</li>
-<li>
-<script type="math/tex; mode=display">k = 0.37464 + 1.54226 * \omega - 0.26993 \omega^2 </script>
-</li>
-<li>
-<script type="math/tex; mode=display">a_c = 0.45723553  R^2 T_c^2 / P_c</script>
-</li>
-<li>
-<script type="math/tex; mode=display">b = 0.07779607r  R T_c/P_c</script>
-</li>
-<li>
-<script type="math/tex; mode=display">\delta_1 = 1 + \sqrt{2}</script>
-</li>
-<li>
-<script type="math/tex; mode=display">\delta_2 = 1 - \sqrt{2}</script>
-</li>
-</ul>
+<p>Fortran definition: <a href="../../../../proc/pengrobinson76.html">PengRobinson76</a>. The Peng-Robinson EoS uses
+the following <script type="math/tex">\alpha</script> function and correlation for k.</p>
+<p>
+<script type="math/tex; mode=display"> \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 </script>
+<script type="math/tex; mode=display"> k = 0.37464 + 1.54226 \omega - 0.26993 \omega^2 </script>
+<script type="math/tex; mode=display"> a_c = 0.45723553  \frac{R^2 T_c^2}{P_c} </script>
+<script type="math/tex; mode=display"> b = 0.07779607 \frac{R T_c}{P_c} </script>
+<script type="math/tex; mode=display"> \delta_1 = 1 + \sqrt{2} </script>
+<script type="math/tex; mode=display"> \delta_2 = 1 - \sqrt{2} </script>
+</p>
 <h2 id="pengrobinson78">PengRobinson78</h2>
-<p><a href="../../../../proc/pengrobinson78.html">PengRobinson78</a></p>
-<ul>
-<li>
-<script type="math/tex; mode=display">\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2</script>
-</li>
-<li>
-<script type="math/tex; mode=display">k = 0.37464 + 1.54226 \omega - 0.26992 \omega^2  \text{ where } \omega <=0.491</script>
-</li>
-<li>
-<script type="math/tex; mode=display">k = 0.37464 + 1.48503 \omega - 0.16442 \omega^2  + 0.016666 \omega^3 \text{ where } \omega > 0.491</script>
-</li>
-<li>
-<script type="math/tex; mode=display">a_c = 0.45723553  R^2 T_c^2 / P_c</script>
-</li>
-<li>
-<script type="math/tex; mode=display">b = 0.07779607r  R T_c/P_c</script>
-</li>
-<li>
-<script type="math/tex; mode=display">\delta_1 = 1 + \sqrt{2}</script>
-</li>
-<li>
-<script type="math/tex; mode=display">\delta_2 = 1 - \sqrt{2}</script>
-</li>
-</ul>
+<p>Fortran definition: <a href="../../../../proc/pengrobinson78.html">PengRobinson78</a>. The Peng-Robinson 78 EoS is an
+improved version of the original PengRobinson equation for heavier components. 
+This equation ensures a monotonically increasing <script type="math/tex">k</script> as the values of 
+<script type="math/tex">\omega</script> increasises.
+It uses the following <script type="math/tex">\alpha</script> function and correlation for k.</p>
+<p>
+<script type="math/tex; mode=display"> \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 </script>
+<script type="math/tex; mode=display">
+k =
+\begin{cases} 
+0.37464 + 1.54226 \omega - 0.26992 \omega^2 & \text{if} \quad \omega \leq 0.491 \\
+0.37464 + 1.48503 \omega - 0.16442 \omega^2 + 0.016666 \omega^3 & \text{if} \quad \omega > 0.491
+\end{cases}
+</script>
+<script type="math/tex; mode=display"> a_c = 0.45723553  \frac{R^2 T_c^2}{P_c} </script>
+<script type="math/tex; mode=display"> b = 0.07779607  \frac{R T_c}{P_c} </script>
+<script type="math/tex; mode=display"> \delta_1 = 1 + \sqrt{2} </script>
+<script type="math/tex; mode=display"> \delta_2 = 1 - \sqrt{2} </script>
+</p>
 <h2 id="rkpr">RKPR</h2>
 <p><a href="../../../../proc/rkpr.html">RKPR</a></p>
-<p>The RKPR EoS extends the classical formulation of Cubic Equations of State by
-freeing the parameter <script type="math/tex">\delta_1</script> and setting 
-<script type="math/tex">\delta_2 = \frac{1+\delta_1}{1-\delta_1}</script>.
-This extra degree provides extra ways of implementing the equation in
-comparison of other Cubic EoS (like PR and SRK) which are limited to
-definition of their critical constants.</p>
+<p>The RKPR EoS [2] extends the classical formulation of Cubic Equations of State by
+freeing the parameter <script type="math/tex">\delta_1</script> and setting <script type="math/tex">\delta_2 =
+\frac{1+\delta_1}{1-\delta_1}</script> [1]. This extra degree provides extra ways of
+implementing the equation in comparison of other Cubic EoS (like PR and SRK)
+which are limited to definition of their critical constants.</p>
 <p>Besides that extra parameter, the RKRR includes another <script type="math/tex">\alpha</script>
 function:</p>
 <p>
@@ -238,14 +236,37 @@ function:</p>
  \alpha(T_r) = \left(\frac{3}{2+T_r}\right)^k
 </script>
 </p>
-<p>In this implementation we take the simplest form which correlates
-the extra parameter to the critical compressibility factor <script type="math/tex">Z_c</script> and
-the <script type="math/tex">k</script> parameter of the <script type="math/tex">\alpha</script> function to <script type="math/tex">Z_c</script> and <script type="math/tex">\omega</script>:</p>
+<p>These two extra parameters can be provided as arguments. But, if they are
+not provided they will be calculated by the following correlations:</p>
 <p>
-<script type="math/tex; mode=display">\delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6</script>
-<script type="math/tex; mode=display">k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0)</script>
+<script type="math/tex; mode=display"> \delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6 </script>
+<script type="math/tex; mode=display"> k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0) </script>
 </p>
+<p>In this implementation, the <script type="math/tex">k</script> constants (if not provided) will also 
+be readjusted to assure that <script type="math/tex">\omega = -log_{10}\left(P_r^{sat}\right) - 1</script> 
+at <script type="math/tex">T_r = 0.7</script>.</p>
 <p>It is also possible to include the parameters as optional arguments.</p>
+<h2 id="psrk">PSRK</h2>
+<p><a href="../../../../proc/psrk.html">PSRK</a></p>
+<p>The PSRK EoS [3,4] (Predictive Soave-Redlich-Kwong) is a Soave-Redlich-Kwong
+cubic equation of state that uses the <a href="../../../../type/mhv.html">MHV</a> mixrule and the
+<a href="../../../../type/alphamathiascopeman.html">AlphaMathiasCopeman</a> <script type="math/tex">\alpha</script> function. With the MHV mixrule, a Gibbs
+excess energy model is required, in the case of PSRK, the PSRK-UNIFAC model is
+used.</p>
+<h1 id="references">References</h1>
+<p>[1] Michelsen, M. L., &amp; Mollerup, J. M. (2007). Thermodynamic models:
+Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</p>
+<p>[2] M. Cismondi, J. Mollerup, Development and application of a three-parameter 
+RK–PR equation of state, Fluid Phase Equilibria 232 (2005) 74–89.
+https://doi.org/10.1016/j.fluid.2005.03.020.</p>
+<p>[3] Holderbaum, T., &amp; Gmehling, J. (1991). PSRK: A Group Contribution Equation
+of State Based on UNIFAC. Fluid Phase Equilibria, 70(2-3), 251-265.
+https://doi.org/10.1016/0378-3812(91)85038-V</p>
+<p>[4] Horstmann, S., Jabłoniec, A., Krafczyk, J., Fischer, K., &amp; Gmehling, J.
+(2005). PSRK group contribution equation of state: Comprehensive revision and
+extension IV, including critical constants and α-function parameters for 1000
+components. Fluid Phase Equilibria, 227(2), 157-164.
+https://doi.org/10.1016/j.fluid.2004.11.002</p>
     </div>
   </div>
       <hr>
@@ -263,33 +284,11 @@ the <script type="math/tex">k</script> parameter of the <script type="math/tex">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-27 15:10 +0000             </p>
+ on 2025-05-20 15:04 +0000             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../../../../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../../../../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../../../../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

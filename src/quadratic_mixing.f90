@@ -1,6 +1,6 @@
 module yaeos__models_ar_cubic_quadratic_mixing
    !! Quadratic Mixing Rules for Cubic EoS.
-   use yaeos__constants, only: pr
+   use yaeos__constants, only: pr, solving_volume
    use yaeos__substance, only: substances
    use yaeos__models_ar_genericcubic, only: CubicMixRule
    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
@@ -101,6 +101,10 @@ contains
       D = 0
       dDdT = 0
       dDdT2 = 0
+
+      if (solving_volume) then
+         D = dot_product(n, matmul(n, aij))
+      else
       do i = 1, nc
          aux = 0
          aux2 = 0
@@ -122,6 +126,7 @@ contains
          dDdT = dDdT + n(i)*dDidT(i) * 0.5_pr
          dDdT2 = dDdT2 + n(i)*aux2
       end do
+      end if
    end subroutine Dmix
 
    subroutine Bmix(self, n, bi, B, dBi, dBij)
