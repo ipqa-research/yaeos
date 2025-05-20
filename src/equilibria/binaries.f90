@@ -64,7 +64,7 @@ contains
                lambdas(i) = 1 - dlnphidn(1, 2)
             end do
          else
-            do while (lambdas(i) > 0)
+            do while (lambdas(i) < 0)
                T = T + 1
                call model%lnphi_pt(z, P=P, T=T, V=V, lnPhi=lnPhi, dlnphidn=&
                      dlnphidn, root_type="liquid")

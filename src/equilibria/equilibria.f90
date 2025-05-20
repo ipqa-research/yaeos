@@ -41,4 +41,6 @@ module yaeos__equilibria
       PTEnvelMP, pt_envelope
    use yaeos__equilibria_boundaries_phase_envelopes_mp_px, only: &
       PXEnvelMP, px_envelope
+   use yaeos__equilibria_boundaries_phase_envelopes_mp_tx, only: &
+      TXEnvelMP, tx_envelope
 end module yaeos__equilibria

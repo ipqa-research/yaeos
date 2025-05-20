@@ -45,13 +45,15 @@ module yaeos_c
 
    ! Phase equilibria
    public :: flash, flash_grid
+   public :: flash_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
    public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
    public :: pt3_phase_envelope, px3_phase_envelope !, tx3_phase_envelope
-   public :: pt_mp_phase_envelope, px_mp_phase_envelope
+   public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
    public :: critical_point, critical_line, find_llcl
    public :: stability_zpt, tm
+   public :: stability_zt_ge
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -63,10 +65,7 @@ module yaeos_c
       class(GeModel), allocatable :: model
    end type GeModelContainer
 
-   ! type, extends(ArModel) :: CArModel
-   !    procedure(abs_c_residual_helmholtz), nopass, pointer :: Ar
-   !    procedure :: residual_helmholtz => c_residual_helmholtz
-   ! end type CArModel
+
 
    class(ArModel), allocatable :: ar_model !! Singleton to hold temporal ArModels
    class(GeModel), allocatable :: ge_model !! Singleton to hold temporal GeModels
@@ -79,53 +78,8 @@ module yaeos_c
    class(ArModelContainer), allocatable :: ar_models(:)
    class(GeModelContainer), allocatable :: ge_models(:)
 
-   abstract interface
-      subroutine abs_c_residual_helmholtz(&
-         n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
-         ) bind(C)
-         import c_double
-         real(c_double), intent(in) :: n(:) !! Moles vector
-         real(c_double), intent(in) :: v !! Volume [L]
-         real(c_double), intent(in) :: t !! Temperature [K]
-         real(c_double), optional, intent(out) :: Ar !! Residual Helmoltz energy
-         real(c_double), optional, intent(out) :: ArV !! \(\frac{dAr}{dV}\)
-         real(c_double), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
-         real(c_double), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
-         real(c_double), optional, intent(out) :: ArTV !! \(\frac{d^2Ar}{dTV}\)
-         real(c_double), optional, intent(out) :: ArV2 !! \(\frac{d^2Ar}{dV^2}\)
-         real(c_double), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
-         real(c_double), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
-         real(c_double), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
-         real(c_double), optional, intent(out) :: Arn2(size(n), size(n))!! \(\frac{d^2Ar}{dn_{ij}}\)
-      end subroutine abs_c_residual_helmholtz
-   end interface
-
 
 contains
-
-   ! subroutine c_residual_helmholtz(&
-   !    self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
-   !    )
-   !    use yaeos__constants, only: pr
-   !    class(CArModel), intent(in) :: self !! ArModel
-   !    real(pr), intent(in) :: n(:) !! Moles vector
-   !    real(pr), intent(in) :: v !! Volume [L]
-   !    real(pr), intent(in) :: t !! Temperature [K]
-   !    real(pr), optional, intent(out) :: Ar !! Residual Helmoltz energy
-   !    real(pr), optional, intent(out) :: ArV !! \(\frac{dAr}{dV}\)
-   !    real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
-   !    real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
-   !    real(pr), optional, intent(out) :: ArTV !! \(\frac{d^2Ar}{dTV}\)
-   !    real(pr), optional, intent(out) :: ArV2 !! \(\frac{d^2Ar}{dV^2}\)
-   !    real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
-   !    real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
-   !    real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
-   !    real(pr), optional, intent(out) :: Arn2(size(n), size(n))!! \(\frac{d^2Ar}{dn_{ij}}\)
-
-   !    call self%Ar(n=n, V=V, T=T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
-   !       ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-   !       )
-   ! end subroutine c_residual_helmholtz
 
    ! ==========================================================================
    !  Ge Models
@@ -825,6 +779,51 @@ contains
       beta = eq_state%beta
    end subroutine equilibria_state_to_arrays
 
+   subroutine stability_zpt(id, z, P, T, w_min, min_tm, all_mins)
+      use yaeos, only: min_tpd, tm
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), P, T
+      real(c_double), intent(out) :: w_min(size(z))
+      real(c_double), intent(out) :: min_tm
+      real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
+
+      real(c_double) :: d_i(size(z))
+
+      integer :: i
+
+      call min_tpd(&
+         ar_models(id)%model, z=z, P=P, T=T, &
+         mintpd=min_tm, w=w_min, all_minima=all_mins &
+         )
+   end subroutine stability_zpt
+
+   subroutine stability_zt_ge(id, z, T, w_min, min_tm, all_mins)
+      use yaeos, only: min_tpd, tm, pr
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), T
+      real(c_double), intent(out) :: w_min(size(z))
+      real(c_double), intent(out) :: min_tm
+      real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
+
+      real(c_double) :: d_i(size(z))
+
+      integer :: i
+
+      call min_tpd(&
+         ge_models(id)%model, z=z, P=1._pr, T=T, &
+         mintpd=min_tm, w=w_min, all_minima=all_mins &
+         )
+   end subroutine stability_zt_ge
+
+   subroutine tm(id, z, w, P, T, tm_value)
+      use yaeos, only: ftm => tm
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), w(size(z)), P, T
+      real(c_double), intent(out) :: tm_value
+
+      tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
+   end subroutine tm
+
    subroutine flash(id, z, T, P, x, y, k0, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fflash => flash
       integer(c_int), intent(in) :: id
@@ -862,6 +861,97 @@ contains
 
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
+
+   subroutine flash_ge(id, z, T, x, y, k0, Pout, Tout, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState, fflash => flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: k0(size(z))
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Pout
+      real(c_double), intent(out) :: Tout
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: beta
+
+      type(EquilibriumState) :: result
+      integer :: iters
+
+      if (all(k0 == 0)) then
+         result = fflash(ge_models(id)%model, z, t, iters=iters)
+      else
+         result = fflash(ge_models(id)%model, z, t, k0=k0, iters=iters)
+      end if
+
+      if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
+         Tout = T
+         x = z
+         y = z
+         beta = -1
+         Vx = 1
+         Vy = 1
+         return
+      end if
+
+      call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
+   end subroutine flash_ge
+
+   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
+      use yaeos, only: EquilibriumState, flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: Ts(:)
+      real(c_double), intent(in) :: Ps(:)
+      real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
+      real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
+      logical, intent(in) :: parallel
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: flash_result
+
+      real(8) :: T, P
+
+      integer :: i, j, nt, np, iter
+
+      model = ar_models(id)%model
+      np = size(Ps)
+      nt = size(Ts)
+
+      if (parallel) then
+         !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+         !$OMP END PARALLEL DO
+      else
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+               print *, i, j, flash_result%iters, flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+      end if
+   end subroutine flash_grid
 
    subroutine saturation_pressure(id, z, T, kind, P0, y0, P, x, y, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fsaturation_pressure => saturation_pressure
@@ -933,10 +1023,10 @@ contains
       integer(c_int), intent(in) :: comp_id
       real(c_double), intent(in) :: stop_P
       real(c_double), intent(in) :: stop_T
-      real(c_double), intent(out) :: P(800)
-      real(c_double), intent(out) :: T(800)
-      real(c_double), intent(out) :: Vx(800)
-      real(c_double), intent(out) :: Vy(800)
+      real(c_double), intent(out) :: P(10000)
+      real(c_double), intent(out) :: T(10000)
+      real(c_double), intent(out) :: Vx(10000)
+      real(c_double), intent(out) :: Vy(10000)
 
       integer :: npoints
       type(PurePsat) :: sat
@@ -951,9 +1041,9 @@ contains
       Vx = nan
       Vy = nan
 
-      sat = fsat(ar_models(id)%model, comp_id, stop_P, stop_T)
+      sat = fsat(ar_models(id)%model, component=comp_id, minP=stop_P, minT=stop_T)
 
-      npoints = minval([size(sat%T), 800])
+      npoints = minval([size(sat%T), size(T)])
 
       T(:npoints) = sat%T(:npoints)
       P(:npoints) = sat%P(:npoints)
@@ -1370,87 +1460,64 @@ contains
       end do
    end subroutine px_mp_phase_envelope
 
-   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
-      use yaeos, only: EquilibriumState, flash
+   subroutine tx_mp_phase_envelope(&
+      id, z0, zi, np, P, x_l0, w0, betas0, T0, alpha0, ns0, ds0, beta_w, max_points, &
+      x_ls, ws, betas, Ps, alphas, iters, ns &
+      )
+      use yaeos, only: TXEnvelMP, tx_envelope
       integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:)
-      real(c_double), intent(in) :: Ts(:)
-      real(c_double), intent(in) :: Ps(:)
-      real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
-      real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
-      logical, intent(in) :: parallel
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer(c_int), intent(in) :: np
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: x_l0(np, size(z0))
+      real(c_double), intent(in) :: w0(size(z0))
+      real(c_double), intent(in) :: betas0(np)
+      real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: alpha0
+      real(c_double), intent(in) :: beta_w
 
-      class(ArModel), allocatable :: model
-      type(EquilibriumState) :: flash_result
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
 
-      real(8) :: T, P
+      real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
+      real(c_double), intent(out) :: ws(max_points, size(z0))
+      real(c_double), intent(out) :: betas(max_points, np)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: alphas(max_points)
 
-      integer :: i, j, nt, np, iter
+      integer(c_int), intent(out) :: iters(max_points)
+      integer(c_int), intent(out) :: ns(max_points)
 
-      model = ar_models(id)%model
-      np = size(Ps)
-      nt = size(Ts)
+      integer :: i, j
 
-      if (parallel) then
-         !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
-         do i=1,np
-            do j=1,nt
-               T = Ts(j)
-               P = Ps(i)
-               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
-               betas(i, j) = flash_result%beta
+      type(TXEnvelMP) :: tx_mp
 
-               Vxs(i, j) = flash_result%Vx
-               Vys(i, j) = flash_result%Vy
-               xs(i, j, :) = flash_result%x
-               ys(i, j, :) = flash_result%y
-            end do
-         end do
-         !$OMP END PARALLEL DO
-      else
-         do i=1,np
-            do j=1,nt
-               T = Ts(j)
-               P = Ps(i)
-               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
-               betas(i, j) = flash_result%beta
-               print *, i, j, flash_result%iters, flash_result%beta
+      x_ls = makenan()
+      ws = makenan()
+      betas = makenan()
+      Ps = makenan()
+      alphas = makenan()
 
-               Vxs(i, j) = flash_result%Vx
-               Vys(i, j) = flash_result%Vy
-               xs(i, j, :) = flash_result%x
-               ys(i, j, :) = flash_result%y
-            end do
-         end do
-      end if
-   end subroutine flash_grid
-
-   subroutine stability_zpt(id, z, P, T, w_min, min_tm, all_mins)
-      use yaeos, only: min_tpd, tm
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:), P, T
-      real(c_double), intent(out) :: w_min(size(z))
-      real(c_double), intent(out) :: min_tm
-      real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
-
-      real(c_double) :: d_i(size(z))
-
-      integer :: i
-
-      call min_tpd(&
-         ar_models(id)%model, z=z, P=P, T=T, &
-         mintpd=min_tm, w=w_min, all_minima=all_mins &
+      tx_mp = tx_envelope(&
+         model=ar_models(id)%model, np=np, z0=z0, zi=zi, P=P, x_l0=x_l0, &
+         w0=w0, betas0=betas0, T0=T0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points &
          )
-   end subroutine stability_zpt
 
-   subroutine tm(id, z, w, P, T, tm_value)
-      use yaeos, only: ftm => tm
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:), w(size(z)), P, T
-      real(c_double), intent(out) :: tm_value
-
-      tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
-   end subroutine tm
+      do i=1,size(tx_mp%points)
+         do j=1,np
+            x_ls(i, j, :) = tx_mp%points(i)%x_l(j, :)
+         end do
+         ws(i, :) = tx_mp%points(i)%w
+         betas(i, :) = tx_mp%points(i)%betas
+         Ps(i) = tx_mp%points(i)%P
+         alphas(i) = tx_mp%alpha(i)
+         iters = tx_mp%points(i)%iters
+         ns = tx_mp%points(i)%ns
+      end do
+   end subroutine tx_mp_phase_envelope
 
    ! ==========================================================================
    ! Auxiliar

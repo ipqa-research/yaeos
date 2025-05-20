@@ -18,11 +18,11 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
    public :: px_envelope
 
    type :: PXEnvelMP
-      !! Multiphase PT envelope.
+      !! Multiphase PX envelope.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
-      real(pr), allocatable :: alpha(:)
-      real(pr), allocatable :: z0(:)
-      real(pr), allocatable :: zi(:)
+      real(pr), allocatable :: alpha(:) !! Molar relation between two mixtures.
+      real(pr), allocatable :: z0(:) !! Original mixture mole fractions.
+      real(pr), allocatable :: zi(:) !! Other mixture mole fractions
    contains
       procedure :: write => write_envelope_Px_MP
       procedure, nopass :: solve_point
@@ -47,22 +47,46 @@ contains
    type(PXEnvelMP) function px_envelope(&
       model, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, dS0, beta_w, points &
       )
+      !! # `px_envelope`
+      !! Calculation of a multiphase Px envelope.
+      !!
+      !! # Description
+      !! Calculates a phase envelope at costant temperature, using a numerical
+      !! continuation method. 
       use yaeos__auxiliar, only: optval
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
-      integer, intent(in) :: np
-      real(pr), intent(in) :: T
-      real(pr), intent(in) :: x_l0(np, size(z0))
-      real(pr), intent(in) :: w0(size(z0))
-      real(pr), intent(in) :: betas0(np)
-      real(pr), intent(in) :: P0
-      real(pr), intent(in) :: alpha0
+      class(ArModel), intent(in) :: model !! Model to use.
+      real(pr), intent(in) :: z0(:) !! Original fluid composition.
+      real(pr), intent(in) :: zi(:) !! Other fluid compostion.
+      integer, intent(in) :: np  
+         !! Number of phases, without including the reference phaes
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: x_l0(np, size(z0)) 
+         !! Initial guess for composition of phases.
+      real(pr), intent(in) :: w0(size(z0))   
+         !! Initial guess for composition of reference phase.
+      real(pr), intent(in) :: betas0(np) 
+         !! Mole fractions of each phase. Excluding the reference phase.
+      real(pr), intent(in) :: P0 !! Initial guess for pressure [bar]
+      real(pr), intent(in) :: alpha0 
+         !! Initial guess for relation between two fluids \(\alpha\)
       integer, intent(in) :: ns0
+         !! First specified variable.
+         !!
+         !! The first `nc*np` values correspond to
+         !! the different \(\ln K_i^l\), which are sorted like 
+         !! \([\ln K_1^1, \ln K_2^1, \dots \ln K_1^2, \dots, ln K_{nc}^{np}]\).
+         !!
+         !! From `nc*np+1` to `nc*np + np`, the different \(\beta^l\) values.
+         !!
+         !! `nc*np+np+1` and `cp*np+np+2` are \(P\) and \(\alpha\), 
+         !! respectively.
       real(pr), intent(in) :: dS0
+         !! First step to extrapolate for next point calculation. After that
+         !! It will use an adaptive algorithm.
       real(pr), intent(in) :: beta_w
-      !! Fraction of the reference (incipient) phase.
+         !! Fraction of the reference (incipient) phase.
       integer, optional, intent(in) :: points
+         !! Maximum number of points to calculate.
 
       type(MPPoint), allocatable :: env_points(:)
       real(pr), allocatable :: alphas(:)
@@ -137,7 +161,7 @@ contains
          end do
 
          ! If the point did not converge, stop the calculation
-         if (any(isnan(F)) .or. its > max_iterations) exit
+         if (any(isnan(F)) .or. its > max_iterations .or. dS==0._pr) exit
 
          ! Save the information of the converged point
          call get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, P, alpha)
@@ -167,13 +191,31 @@ contains
    end function px_envelope
 
    subroutine px_F_NP(model, z0, zi, np, T, beta_w, X, ns, S, F, dF)
-      !! Function to solve at each point of a multi-phase envelope.
+      !! # `px_F_NP`
+      !! System of equations to solve a multiphase-point at constant 
+      !! temperature.
+      !!
+      !! # Description
+      !! A multiphase equilibria point between `np+1` phases and `nc` 
+      !! components, where the `np+1` phase is a phase taken as reference for
+      !! the calculation of equilibria rations 
+      !! \(K_i^l = \frac{\mathbf{x}_i^l}{\mathbf{w}_i}\), 
+      !! can be defined by the system of equations:
+      !!
+      !! \[
+      !! \begin{bmatrix}
+      !! \ln K_i^{l} + \ln \phi_i^{l}(\mathbf{x}^l, P, T) - \ln \phi_i^{l}(\mathbf{w}, P, T) \\
+      !! \sum_i{\mathbf{x}^l_i - \mathbf{w}_i}
+      !! \sum^l{\beta^l} + \beta^{np+1} - 1
+      !! \end{bmatrix}
+      !! \]
+      ! ------------------------------------------------------------------------
       use iso_fortran_env, only: error_unit
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
+      class(ArModel), intent(in) :: model !! Model to use.
+      real(pr), intent(in) :: z0(:) !! First mixture composition.
+      real(pr), intent(in) :: zi(:) !! Second mixture composition.
       integer, intent(in) :: np !! Number of main phases.
-      real(pr), intent(in) :: T
+      real(pr), intent(in) :: T !! Temperature [K].
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
       real(pr), intent(in)  :: X(:) !! Vector of variables.
       integer, intent(in)  :: ns !! Number of specification.
@@ -368,22 +410,31 @@ contains
    end subroutine px_F_NP
 
    subroutine solve_point(model, z0, zi, np, T, beta_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
+      !! # `solve_point`
+      !! Solve the system of equations for a multiphase point.
+      !!
+      !! # Description
+      !! Solves the point of a multiphase system using the Newton-Raphson 
+      !! method. The system of equations is defined in [[px_F_NP(procedure)]]
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
+      class(ArModel), intent(in) :: model !! Model to use.
+      real(pr), intent(in) :: z0(:) !! First mixture composition.
+      real(pr), intent(in) :: zi(:) !! Second mixture composition.
       integer, intent(in) :: np !! Number of main phases
-      real(pr), intent(in) :: T
+      real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
-      real(pr), intent(in) :: dXdS(size(X))
+      real(pr), intent(in) :: dXdS(size(X)) 
+         !! Sensitivity of the variables wrt the specification
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
-      integer, intent(in) :: max_iterations
-      integer, intent(out) :: iters
+      integer, intent(in) :: max_iterations 
+         !! Maximum number of iterations to solve the point
+      integer, intent(out) :: iters 
+         !! Number of iterations needed to converge the point
 
 
       integer :: ia
@@ -523,8 +574,12 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.3)
+         do while(maxval(abs(X(lb:ub))) < 0.01)
             X = X + dXdS * dS
+            if (nc == 2) then
+               dS=0
+               exit
+            end if
          end do
 
       end do

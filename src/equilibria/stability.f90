@@ -30,7 +30,7 @@ module yaeos__equilibria_stability
    !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
    !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
    use yaeos__constants, only: pr, r
-   use yaeos__models_ar, only: ArModel
+   use yaeos__models, only: BaseModel, ArModel, GeModel
    implicit none
 
 contains
@@ -72,7 +72,7 @@ contains
       !! 1. Thermodynamic Models: Fundamental and Computational Aspects, Michael L.
       !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
       !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
-      class(ArModel), intent(in) :: model !! Thermodynamic model
+      class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: w(:) !! Test-phase mole numbers vector
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -83,19 +83,30 @@ contains
       real(pr) :: di(size(z)), vz, vw
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
 
-      call model%lnphi_pt(&
-         w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
-         )
-
-      if (.not. present(d)) then
+      select type (model)
+       class is (ArModel)
          call model%lnphi_pt(&
-            z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
+            w, T=T, P=P, V=Vw, root_type="stable", lnPhi=lnPhi_w &
             )
-         di = log(z) + lnphi_z
-      else
-         di = d
-      end if
+         if (.not. present(d)) then
+            call model%lnphi_pt(&
+               z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnPhi_z&
+               )
+            di = log(z) + lnphi_z
+         else
+            di = d
+         end if
 
+       class is (GeModel)
+         call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
+
+         if (.not. present(d)) then
+            call model%ln_activity_coefficient(z, T=T, lngamma=lnPhi_z)
+            di = log(z) + lnphi_z
+         else
+            di = d
+         end if
+      end select
 
       ! tpd = sum(w * (log(w) + lnphi_w - di))
       tm = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
@@ -106,7 +117,7 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
-      class(ArModel), target :: model !! Thermodynamic model
+      class(BaseModel), target :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
@@ -129,21 +140,38 @@ contains
       dx = 0.001_pr
 
       ! Calculate feed di
-      call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
+      select type (model)
+       class is (ArModel)
+         call model%lnphi_pt(z, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_z)
+       class is (GeModel)
+         call model%ln_activity_coefficient(z, T=T, lngamma=lnPhi_z)
+      end select
       di = log(z) + lnphi_z
 
       ! ==============================================================
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
+      mins = 10
       do i=1,nc
          w = 1e-10
          w(i) = 1 - 1e-10
          dw = 100
-         do while(maxval(abs(dw)) > 1e-8)
-            call model%lnphi_pt(w, P, T, root_type="stable", lnPhi=lnphi_w)
+         do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4)
+            select type (model)
+             class is (ArModel)
+               call model%lnphi_pt(w, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_w)
+             class is (GeModel)
+               call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
+            end select
+
             dw = exp(di - lnphi_w) - w
+            do while(any(dw + w < 0) .or. maxval(abs(dw)) > 0.01)
+               dw = dw/2
+            end do
+
             w = w + dw
+            mins(i) = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
          end do
          w = w/sum(w)
          mins(i) = tm(model, z, w, P, T, d=di)
@@ -154,7 +182,7 @@ contains
       mintpd = mins(i)
       w = ws(i, :)
 
-      if(present(all_minima)) then 
+      if(present(all_minima)) then
          do i=1,nc
             all_minima(i, :nc) = ws(i, :)
             all_minima(i, nc+1) = mins(i)

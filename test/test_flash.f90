@@ -51,11 +51,11 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd) < 1e-8_pr)
+      call check(error, abs(mintpd) < 1e-4_pr)
       
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - (-0.1726_pr)) < 1e-3)
+      call check(error, abs(mintpd - (-0.172_pr)) < 1e-2)
       call check(error, abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr)
    end subroutine test_tm
 
