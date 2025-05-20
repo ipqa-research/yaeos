@@ -5,10 +5,9 @@ the models' thermoprops methods.
 """
 
 from abc import ABC
+from typing import Union
 
 from intersect import intersection
-
-from typing import Union
 
 import numpy as np
 
@@ -1303,7 +1302,6 @@ class ArModel(ABC):
 
             print(model.saturation_pressure(np.array([0.5, 0.5]), 350.0))
         """
-
         if y0 is None:
             y0 = np.zeros_like(z)
 
@@ -1401,9 +1399,9 @@ class ArModel(ABC):
             "beta": beta,
         }
 
-    # ==============================================================
+    # =========================================================================
     # Phase envelopes
-    # --------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def phase_envelope_pt(
         self,
         z,
@@ -1863,9 +1861,9 @@ class ArModel(ABC):
         max_points=1000,
         stop_pressure=1000,
     ):
-        """Multi-phase PT envelope."""
+        """Multi-phase envelope."""
+        x_l0 = np.array(x_l0)
 
-        x_l0 = np.array(x_l0, order="F")
         number_of_phases = x_l0.shape[0]
 
         x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
@@ -1944,8 +1942,8 @@ class ArModel(ABC):
             The last two posibilities are the pressure and molar relation
             between the two fluids, respectively.
         """
-
         x_l0 = np.array(x_l0, order="F")
+
         number_of_phases = x_l0.shape[0]
 
         x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
@@ -2293,7 +2291,8 @@ class ArModel(ABC):
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
             - w: all values of :math:`w` that minimize the :math:`tm` function
-            - tm: all values found minima of the :math:`tm` function"""
+            - tm: all values found minima of the :math:`tm` function
+        """
         (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
@@ -2328,9 +2327,9 @@ class ArModel(ABC):
         """
         return yaeos_c.tm(id=self.id, z=z, w=w, p=pressure, t=temperature)
 
-    # ==============================================================
+    # =========================================================================
     # Critical points and lines
-    # --------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def critical_point(self, z0, zi=[0, 0], ns=1, s=0, max_iters=100) -> dict:
         """Critical point calculation.
 
@@ -2378,6 +2377,7 @@ class ArModel(ABC):
         stop_pressure=2500,
     ):
         """Critical Line calculation.
+
         Calculate the critical line between two compositions
 
         Parameters
@@ -2405,7 +2405,6 @@ class ArModel(ABC):
         stop_pressure: float, optional
             Stop when reaching this pressure value
         """
-
         alphas, vs, ts, ps, *cep = yaeos_c.critical_line(
             self.id,
             ns=ns,
@@ -2462,12 +2461,11 @@ class ArModel(ABC):
         t0: float
             Initial guess for temperature [K]
         """
-
-        a, T, V = yaeos_c.find_llcl(
+        a, t, v = yaeos_c.find_llcl(
             self.id, z0=z0, zi=zi, p=pressure, tstart=t0
         )
 
-        return a, T, V
+        return a, t, v
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

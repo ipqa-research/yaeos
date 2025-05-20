@@ -9,7 +9,6 @@ import numpy as np
 
 def fit_kij_lij(x, model, fit_kij, fit_lij):
     """Set the kij and/or lij parameter of the model."""
-
     mr = model.mixrule
 
     if fit_kij and fit_lij:

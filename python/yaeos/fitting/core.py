@@ -25,8 +25,8 @@ class BinaryFitter:
     data : pandas.DataFrame
         A DataFrame with the experimental data.
         The DataFrame should have the following columns:
-        - kind: str, the kind of data point
-                (bubble, dew, liquid-liquid, PT, critical)
+        - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
+        critical)
         - x1: float, the mole fraction of component 1
         - y1: float, the mole fraction of component 1
         - T: float, the temperature in K
