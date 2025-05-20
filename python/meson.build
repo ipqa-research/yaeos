@@ -104,6 +104,7 @@ python_sources = [
     python_lib / 'core.py',
     python_lib / 'constants.py',
     python_lib / 'envelopes.py',
+    python_lib / 'gpec.py',
 ]
 py.install_sources(python_sources, subdir:python_lib)
 
