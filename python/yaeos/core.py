@@ -1568,13 +1568,14 @@ class ArModel(ABC):
             Initial molar fraction of composition `zi`, by default 0.001
         ns0 : int, optional
             Initial specified variable number, by default None.
-            The the first `n=len(z)` values correspond to the K-values, where
+            The the first `n=len(z)` values correspond to the K-values,
+            `len(z)+1` is the main phase molar fraction (ussually one) and
             the last two values are the pressure and alpha.
         ds0 : float, optional
             Step for the first specified variable, by default 0.01
         """
         if ns0 is None:
-            ns0 = len(z0) + 2
+            ns0 = len(z0) + 3
 
         zi = np.array(zi)
         z0 = np.array(z0)
