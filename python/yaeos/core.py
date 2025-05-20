@@ -1535,11 +1535,11 @@ class ArModel(ABC):
         zi,
         temperature,
         kind="bubble",
-        max_points=300,
+        max_points=500,
         p0=10.0,
-        a0=0.001,
+        a0=1e-2,
         ns0=None,
-        ds0=0.1,
+        ds0=1e-5,
     ):
         """Two phase envelope calculation (PX).
 
@@ -1574,7 +1574,7 @@ class ArModel(ABC):
             Step for a, by default 0.1
         """
         if ns0 is None:
-            ns0 = len(z0) + 2
+            ns0 = len(z0) + 3
 
         zi = np.array(zi)
         z0 = np.array(z0)
