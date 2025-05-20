@@ -96,6 +96,7 @@ contains
       real(pr) :: dF(size(z0) * np + np + 2, size(z0) * np + np + 2)
       real(pr) :: dXdS(size(z0) * np + np + 2)
       real(pr) :: X(size(z0) * np + np + 2), dX(size(z0) * np + np + 2)
+      real(pr) :: z(size(z0))
 
       integer :: nc
 
@@ -114,10 +115,13 @@ contains
       integer :: ns !! Number of the specified variable
       real(pr) :: dS !! Step size of the specification for the next point
       real(pr) :: S !! Specified value
-
+      
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
+      integer :: ia
+
       nc = size(z0)
+      ia = nc*np+np+2
 
       number_of_points = optval(points, 1000)
 
@@ -181,6 +185,15 @@ contains
 
          ! Next point estimation.
          dX = dXdS * dS
+
+         alpha = X(ia) + dXdS(ia)*dS
+         z = alpha * zi + (1- alpha) * z0
+         do while(any(z > 1) .or. any(z < 0))
+            dS = dS/2
+            alpha = X(ia) + dXdS(ia)*dS
+            z = alpha * zi + (1- alpha) * z0
+         end do
+
          X = X + dX
          S = X(ns)
       end do
@@ -462,6 +475,10 @@ contains
 
          if (maxval(abs(F)) < 1e-9_pr) exit
 
+         do while(abs( exp(X(iP))  - exp(X(iP) + dX(iP))) > 10)
+            dX = dX*0.9
+         end do
+
          X = X + dX
       end do
    end subroutine solve_point
@@ -574,12 +591,12 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.01)
-            X = X + dXdS * dS
+         do while(maxval(abs(X(lb:ub))) < 0.3)
             if (nc == 2) then
                dS=0
                exit
             end if
+            X = X + dXdS * dS
          end do
 
       end do
@@ -614,9 +631,9 @@ contains
       ! ========================================================================
       ! Extract variables from the vector X
       ! ------------------------------------------------------------------------
+      alpha = X(np*nc + np + 2)
       call get_z(alpha, z0, zi, z)
       P = exp(X(np*nc + np + 1))
-      alpha = X(np*nc + np + 2)
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
