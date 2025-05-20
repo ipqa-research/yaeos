@@ -177,8 +177,9 @@ contains
 
       bubble = saturation_pressure(model, z, T=270._pr, kind="bubble", p0=10._pr)
       envelope = px_envelope_2ph(&
-         model, z0=z, first_point=bubble, alpha0=0.0_pr, z_injection=z_inj&
+         model, z0=z, first_point=bubble, alpha0=0.0_pr, z_injection=z_inj, delta_0=0.001_pr&
          )
+
       call check(error, size(envelope%cps) == 1)
    end subroutine test_px2_envelope
 

@@ -30,7 +30,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
       generic, public :: write (FORMATTED) => write
    end type PTEnvel2
 
-   real(pr), parameter :: near_critical_K = 0.1
+   real(pr), parameter :: near_critical_K = 0.01
 
    ! Saved volume values
    real(pr), private :: Vz
@@ -50,7 +50,7 @@ contains
       !! an increment in it. The variable to specify can be changed by modifying
       !! `specified_variable_0` with the corresponding variable number.
       ! ========================================================================
-      use stdlib_optval, only: optval
+      use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
       !! Thermodyanmic model
       real(pr), intent(in) :: z(:)
@@ -234,7 +234,7 @@ contains
          ! - Update dS wrt specification units
          ! - Set step
          ! ---------------------------------------------------------------------
-         if (maxval(abs(X(:nc))) < 0.1) then
+         if (maxval(abs(X(:nc))) < near_critical_K) then
             ns = maxloc(abs(dXdS(:nc)), dim=1)
             maxdS=0.01_pr
          else
@@ -270,7 +270,7 @@ contains
             end do
          end if
 
-         do while ( maxval(abs(X(:nc))) <= 0.5 .and. abs(dXdS(ns)*dS) > 0.05 )
+         do while ( maxval(abs(X(:nc))) <= near_critical_K .and. abs(dXdS(ns)*dS) > 0.1 )
             dS = dS * 0.5
          end do
 
@@ -335,6 +335,7 @@ contains
          !! is the new initialization point of the method and \(a\) is the
          !! parameter to interpolate the values. This subroutine finds the
          !! value of  \(a\) to obtain \(X_c\).
+         use yaeos__equilibria_critical, only: critical_point, spec_CP
          real(pr), intent(in out) :: X(:) !! Vector of variables
          real(pr), intent(in out) :: dXdS(:) !! Variation of variables wrt S
          integer, intent(in out) :: ns !! Number of specified variable
@@ -343,8 +344,12 @@ contains
          real(pr) :: Xc(nc+2) !! Value at (near) critical point
          real(pr) :: a !! Parameter for interpolation
 
+         type(EquilibriumState) :: cp
+
          real(pr) :: Xold(size(X)) !! Old value of X
          real(pr) :: Xnew(size(X)) !! Value of the next initialization
+
+         real(pr) :: V
 
          integer :: inner, ncomp
 
@@ -356,9 +361,10 @@ contains
             inner = inner + 1
             S = S + dS
             X = X + dXdS*dS
+            print "(*(E15.4,x))", X(:nc)
          end do
 
-         Xnew = X + dXdS*dS
+         Xnew = X + 3*dXdS*dS
 
          if (all(Xold(:nc) * (Xnew(:nc)) < 0)) then
             select case(kind)
@@ -370,16 +376,26 @@ contains
                kind = "liquid-liquid"
             end select
 
-            ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
 
+
+            ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
             a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
             Xc = a * X + (1-a)*Xnew
+            
+            call model%volume(z, P=exp(Xc(nc+2)), T=exp(Xc(nc+1)), V=V, root_type="liquid")
+            cp = critical_point(&
+               model, z, z, spec=spec_CP%a, S=0._pr, &
+               max_iters=5000, T0=exp(Xc(nc+1)), P0=exp(Xc(nc+2)), V0=V &
+               )
+
+            Xc(nc+1) = log(cp%T)
+            Xc(nc+2) = log(cp%P)
 
             envelopes%cps = [&
                envelopes%cps, CriticalPoint(T=exp(Xc(nc+1)), P=exp(Xc(nc+2))) &
                ]
-            X = Xc + dXdS*(dS*1.5)
+            X = Xc + dXdS * dS
             S = X(ns)
          end if
       end subroutine detect_critical
@@ -468,7 +484,7 @@ contains
             call model%lnphi_pt(y, P, T, root_type="liquid", lnPhi=lnphi_y)
 
             ! Fugacity of the component ncomp
-            ! z * phi_i_mixture / phi_i_pure
+            ! eq = z * phi_i_mixture / phi_i_pure
             ! if eq > 1 then the fugacity in the mixture is above the pure,
             ! so the component is more stable on another phase
             diffs(ncomp) = log(z(ncomp)) + lnphi_z(ncomp) - log(y(ncomp)) - lnphi_y(ncomp)

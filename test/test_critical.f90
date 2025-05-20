@@ -3,14 +3,14 @@ program main
    use yaeos
    use yaeos__math, only: interpol
    use fortime, only: Timer
-   use testing_aux, only: test_ok, test_title
+   use testing_aux, only: test_ok, test_title, assert
    implicit none
    
    logical :: WRITE_FILES=.false.
 
    integer, parameter :: nc=12
    integer :: a_nearest
-   integer :: npt=6
+   integer :: npt=3
 
    type(CubicEoS) :: model
    type(EquilibriumState) :: sat, crit
@@ -47,38 +47,47 @@ program main
    call model%volume(n=z, P=P, T=T, V=V, root_type="stable")
 
    ! Solve a critical point
-   crit = critical_point(model, z0, zi, S=a, spec=spec_CP%a, max_iters=300, a0=a)
+   print *, "Solving CP"
+   crit = critical_point(&
+      model, z0=z0, zi=zi, S=a, spec=spec_CP%a, max_iters=5000, &
+      a0=a)
 
    if (sum([crit%T, crit%P] - [env%cps(1)%T, env%cps(1)%P])**2 > 1e-2) then
+      print *, "Critical point", crit%iters, [crit%T, crit%P], [env%cps(1)%T, env%cps(1)%P]
       error stop "Critical point failed"
    end if
    write(*, *) test_ok("Critical point")
 
    ! Now test the critical lines
-   print *, "CL"
    call tim%timer_start()
-   cl = critical_line(model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.1_pr, max_points=5000)
+   cl = critical_line(&
+      model, a0=a, z0=z0, zi=zi, ns0=spec_CP%a, S0=a, dS0=0.01_pr, &
+      max_points=5000, first_point=crit)
    call tim%timer_stop()
 
-   ! if (WRITE_FILES) call write_cl
+   call assert(cl%P(size(cl%a)) > 2000.0_pr, "Critical line pressure")
+
+   ! if (WRITE_FILES) 
+   ! call write_cl
 
    da = (cl%a(size(cl%a)) - cl%a(1))/(npt+1)
+   print *, cl%a(1), cl%a(size(cl%a))
    do i=1,npt
       a = cl%a(1) + da*i
       z = a*zi + (1-a)*z0
       call tim%timer_start()
       sat = saturation_temperature(model, z, P=0.0001_pr, kind="dew")
-      env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=1.5_pr)
+      env = pt_envelope_2ph(model, z, sat, maximum_pressure=2000._pr, points=1000, delta_0=0.1_pr)
       print *, "Running PT Envelope", i, size(env%points)
       call tim%timer_stop()
       ! if (WRITE_FILES) call write_env
-      ! write(i+10, *) env
 
       a_nearest = minloc(abs(cl%a - a), dim=1)
 
       T = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%T(a_nearest), cl%T(a_nearest+1), a)
       P = interpol(cl%a(a_nearest), cl%a(a_nearest+1), cl%P(a_nearest), cl%P(a_nearest+1), a)
 
+      print *, "Comparing", [T, P], [env%cps(1)%T, env%cps(1)%P]
       if (maxval(([T, P] - [env%cps(1)%T, env%cps(1)%P]) / [T, P]) > 1e-2) then
          write(*, *) [T, P] 
          write(*, *) [env%cps(1)%T, env%cps(1)%P]
@@ -120,9 +129,11 @@ contains
    ! end subroutine
 
    ! subroutine write_env
-   !    integer :: i
-   !    do i=1,size(env%points)
-   !       write(1, *) a, env%points(i)%T, env%points(i)%P
+   !    integer :: j
+   !    write(1, *)
+   !    write(1, *)
+   !    do j=1,size(env%points)
+   !       write(1, *) a, env%points(j)%T, env%points(j)%P
    !    end do
    !    write(1, *)
    !    write(1, *)

@@ -30,7 +30,9 @@ module yaeos_c
    ! GeModels
    public :: nrtl
    public :: unifac_vle
+   public :: unifac_psrk
    public :: uniquac
+   public :: unifac_dortmund
    public :: ln_gamma_ge
    public :: excess_gibbs_ge
    public :: excess_enthalpy_ge
@@ -43,12 +45,15 @@ module yaeos_c
 
    ! Phase equilibria
    public :: flash, flash_grid
+   public :: flash_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
    public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
-   public :: pt3_phase_envelope ! , px2_phase_envelope, tx2_phase_envelope
-   public :: critical_point, critical_line
+   public :: pt3_phase_envelope, px3_phase_envelope !, tx3_phase_envelope
+   public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
+   public :: critical_point, critical_line, find_llcl
    public :: stability_zpt, tm
+   public :: stability_zt_ge
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -60,6 +65,8 @@ module yaeos_c
       class(GeModel), allocatable :: model
    end type GeModelContainer
 
+
+
    class(ArModel), allocatable :: ar_model !! Singleton to hold temporal ArModels
    class(GeModel), allocatable :: ge_model !! Singleton to hold temporal GeModels
 
@@ -70,6 +77,7 @@ module yaeos_c
 
    class(ArModelContainer), allocatable :: ar_models(:)
    class(GeModelContainer), allocatable :: ge_models(:)
+
 
 contains
 
@@ -123,6 +131,38 @@ contains
       ge_model = setup_unifac(molecules)
       call extend_ge_models_list(id)
    end subroutine unifac_vle
+
+   ! Dortmund
+   subroutine unifac_dortmund(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_dortmund, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_dortmund(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_dortmund
+
+   ! PSRK
+   subroutine unifac_psrk(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_psrk, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_psrk(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_psrk
 
    subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
       use yaeos, only: Groups
@@ -581,8 +621,8 @@ contains
 
    subroutine critical_line(&
       id, ns, S, ds0, &
-      a0, z0, zi, max_points, stop_pressure, &
-      as, Vs, Ts, Ps)
+      a0, v0, t0, p0, z0, zi, stability_analysis, max_points, stop_pressure, &
+      as, Vs, Ts, Ps, CEP_x, CEP_y, CEP_P, CEP_Vx, CEP_Vy, CEP_T)
       use yaeos, only: EquilibriumState, CriticalLine, &
          fcritical_line => critical_line, spec_CP
       integer(c_int), intent(in) :: id
@@ -590,14 +630,24 @@ contains
       real(c_double), intent(in) :: S
       real(c_double), intent(in) :: dS0
       real(c_double), intent(in) :: a0
+      real(c_double), intent(in) :: v0
+      real(c_double), intent(in) :: t0
+      real(c_double), intent(in) :: p0
       real(c_double), intent(in) :: z0(:)
       real(c_double), intent(in) :: zi(:)
+      logical, intent(in) :: stability_analysis
       integer, intent(in) :: max_points
       real(c_double), intent(in) :: stop_pressure
       real(c_double), intent(out) :: as(max_points)
       real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: Ps(max_points)
       real(c_double), intent(out) :: Vs(max_points)
+      real(c_double), intent(out) :: CEP_x(size(z0))
+      real(c_double), intent(out) :: CEP_y(size(z0))
+      real(c_double), intent(out) :: CEP_P
+      real(c_double), intent(out) :: CEP_Vx
+      real(c_double), intent(out) :: CEP_Vy
+      real(c_double), intent(out) :: CEP_T
 
       type(CriticalLine) :: cl
 
@@ -608,10 +658,63 @@ contains
       Ps = makenan()
       Vs = makenan()
 
-      cl = fcritical_line(&
-         model=ar_models(id)%model, a0=a0, &
-         z0=z0, zi=zi, &
-         ns0=ns, S0=S, ds0=ds0, maxp=stop_pressure, max_points=max_points)
+      if (v0 == 0 .and. t0 == 0 .and. p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      elseif (t0 == 0 .and. p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      elseif (v0==0 .and. p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            t0=t0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (t0 == 0 .and. v0==0)  then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (t0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (v0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            t0=t0, p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else if (p0 == 0) then
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, t0=t0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+      else
+         cl = fcritical_line(&
+            model=ar_models(id)%model, a0=a0, &
+            z0=z0, zi=zi, &
+            ns0=ns, S0=S, ds0=ds0, &
+            v0=v0, t0=t0, p0=p0, &
+            stability_analysis=stability_analysis, maxp=stop_pressure, max_points=max_points)
+
+      end if
 
       do i=1,size(cl%a)
          as(i) = cl%a(i)
@@ -619,7 +722,42 @@ contains
          Ps(i) = cl%P(i)
          Vs(i) = cl%V(i)
       end do
+
+      if (allocated(cl%CEP%y)) then
+         CEP_x = cl%CEP%x
+         CEP_y = cl%CEP%y
+         CEP_P = cl%CEP%P
+         CEP_Vx = cl%CEP%Vx
+         CEP_Vy = cl%CEP%Vy
+         CEP_T = cl%CEP%T
+      else
+         ! If the critical line is not defined, set the CEP values to NaN
+         CEP_x = makenan()
+         CEP_y = makenan()
+         CEP_P = makenan()
+         CEP_Vx = makenan()
+         CEP_Vy = makenan()
+         CEP_T = makenan()
+      end if
    end subroutine critical_line
+
+   subroutine find_llcl(id, z0, zi, P, Tstart, a, T, V)
+      use yaeos__equilibria, only: ffind_llcl => find_llcl
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      real(c_double), intent(in) :: Tstart
+      real(c_double), intent(in) :: P
+      real(c_double), intent(out) :: a
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: V
+
+      T = Tstart
+      call ffind_llcl(&
+         model=ar_models(id)%model, z0=z0, zi=zi, P=P, &
+         a=a, T=T, V=V &
+         )
+   end subroutine find_llcl
 
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
@@ -640,6 +778,51 @@ contains
       Vy = eq_state%Vy
       beta = eq_state%beta
    end subroutine equilibria_state_to_arrays
+
+   subroutine stability_zpt(id, z, P, T, w_min, min_tm, all_mins)
+      use yaeos, only: min_tpd, tm
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), P, T
+      real(c_double), intent(out) :: w_min(size(z))
+      real(c_double), intent(out) :: min_tm
+      real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
+
+      real(c_double) :: d_i(size(z))
+
+      integer :: i
+
+      call min_tpd(&
+         ar_models(id)%model, z=z, P=P, T=T, &
+         mintpd=min_tm, w=w_min, all_minima=all_mins &
+         )
+   end subroutine stability_zpt
+
+   subroutine stability_zt_ge(id, z, T, w_min, min_tm, all_mins)
+      use yaeos, only: min_tpd, tm, pr
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), T
+      real(c_double), intent(out) :: w_min(size(z))
+      real(c_double), intent(out) :: min_tm
+      real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
+
+      real(c_double) :: d_i(size(z))
+
+      integer :: i
+
+      call min_tpd(&
+         ge_models(id)%model, z=z, P=1._pr, T=T, &
+         mintpd=min_tm, w=w_min, all_minima=all_mins &
+         )
+   end subroutine stability_zt_ge
+
+   subroutine tm(id, z, w, P, T, tm_value)
+      use yaeos, only: ftm => tm
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:), w(size(z)), P, T
+      real(c_double), intent(out) :: tm_value
+
+      tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
+   end subroutine tm
 
    subroutine flash(id, z, T, P, x, y, k0, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fflash => flash
@@ -679,13 +862,105 @@ contains
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
 
-   subroutine saturation_pressure(id, z, T, kind, P0, P, x, y, Vx, Vy, beta)
+   subroutine flash_ge(id, z, T, x, y, k0, Pout, Tout, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState, fflash => flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: k0(size(z))
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Pout
+      real(c_double), intent(out) :: Tout
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: beta
+
+      type(EquilibriumState) :: result
+      integer :: iters
+
+      if (all(k0 == 0)) then
+         result = fflash(ge_models(id)%model, z, t, iters=iters)
+      else
+         result = fflash(ge_models(id)%model, z, t, k0=k0, iters=iters)
+      end if
+
+      if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
+         Tout = T
+         x = z
+         y = z
+         beta = -1
+         Vx = 1
+         Vy = 1
+         return
+      end if
+
+      call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
+   end subroutine flash_ge
+
+   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
+      use yaeos, only: EquilibriumState, flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: Ts(:)
+      real(c_double), intent(in) :: Ps(:)
+      real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
+      real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
+      logical, intent(in) :: parallel
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: flash_result
+
+      real(8) :: T, P
+
+      integer :: i, j, nt, np, iter
+
+      model = ar_models(id)%model
+      np = size(Ps)
+      nt = size(Ts)
+
+      if (parallel) then
+         !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+         !$OMP END PARALLEL DO
+      else
+         do i=1,np
+            do j=1,nt
+               T = Ts(j)
+               P = Ps(i)
+               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
+               betas(i, j) = flash_result%beta
+               print *, i, j, flash_result%iters, flash_result%beta
+
+               Vxs(i, j) = flash_result%Vx
+               Vys(i, j) = flash_result%Vy
+               xs(i, j, :) = flash_result%x
+               ys(i, j, :) = flash_result%y
+            end do
+         end do
+      end if
+   end subroutine flash_grid
+
+   subroutine saturation_pressure(id, z, T, kind, P0, y0, P, x, y, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fsaturation_pressure => saturation_pressure
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: T
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: P0
+      real(c_double), intent(in) :: y0(size(z))
 
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: x(size(z))
@@ -696,21 +971,29 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (P0 == 0) then
+      if (P0 == 0 .and. all(y0 == 0)) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
-      else
+      elseif (P0 /= 0) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0)
+      elseif (all(y0 /= 0)) then
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, y0=y0)
+      else
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0, y0=y0)
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
 
-   subroutine saturation_temperature(id, z, P, kind, T0, T, x, y, Vx, Vy, beta)
-      use yaeos, only: EquilibriumState, fsaturation_temperature => saturation_temperature
+   subroutine saturation_temperature(id, z, P, kind, T0, y0, T, x, y, Vx, Vy, beta)
+      use yaeos, only: &
+         EquilibriumState, &
+         fsaturation_temperature => saturation_temperature, &
+         k_wilson
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: P
       character(len=15), intent(in) :: kind
       real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: y0(size(z))
 
       real(c_double), intent(out) :: T
       real(c_double), intent(out) :: x(size(z))
@@ -721,11 +1004,16 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (T0 == 0) then
+      if (T0 == 0 .and. all(y0 == 0)) then
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
-      else
+      else if (all(y0 == 0)) then
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
+      else if (T0 == 0) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0)
+      else
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0, T0=T0)
       end if
+
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
    end subroutine saturation_temperature
 
@@ -735,10 +1023,10 @@ contains
       integer(c_int), intent(in) :: comp_id
       real(c_double), intent(in) :: stop_P
       real(c_double), intent(in) :: stop_T
-      real(c_double), intent(out) :: P(800)
-      real(c_double), intent(out) :: T(800)
-      real(c_double), intent(out) :: Vx(800)
-      real(c_double), intent(out) :: Vy(800)
+      real(c_double), intent(out) :: P(10000)
+      real(c_double), intent(out) :: T(10000)
+      real(c_double), intent(out) :: Vx(10000)
+      real(c_double), intent(out) :: Vy(10000)
 
       integer :: npoints
       type(PurePsat) :: sat
@@ -753,9 +1041,9 @@ contains
       Vx = nan
       Vy = nan
 
-      sat = fsat(ar_models(id)%model, comp_id, stop_P, stop_T)
+      sat = fsat(ar_models(id)%model, component=comp_id, minP=stop_P, minT=stop_T)
 
-      npoints = minval([size(sat%T), 800])
+      npoints = minval([size(sat%T), size(T)])
 
       T(:npoints) = sat%T(:npoints)
       P(:npoints) = sat%P(:npoints)
@@ -955,10 +1243,10 @@ contains
    end subroutine tx2_phase_envelope
 
    subroutine pt3_phase_envelope(&
-      id, z, x0, y0, w0, p0, t0, beta0, ns0, dS0, max_points, &
-      x, y, w, P, T, beta &
+      id, z, x0, y0, w0, p0, t0, beta0, ns0, ds0, max_points, &
+      x, y, w, p, t, beta &
       )
-      use yaeos, only: PTEnvel3, pt_envelope_3ph
+      use yaeos, only: ptenvel3, pt_envelope_3ph
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: z(:)
       real(c_double), intent(in) :: x0(:)
@@ -968,130 +1256,268 @@ contains
       real(c_double), intent(in) :: t0
       real(c_double), intent(in) :: beta0
       integer(c_int), intent(in) :: ns0
-      real(c_double), intent(in) :: dS0
+      real(c_double), intent(in) :: ds0
       integer(c_int), intent(in) :: max_points
       real(c_double), intent(out) :: x(max_points, size(z))
       real(c_double), intent(out) :: y(max_points, size(z))
       real(c_double), intent(out) :: w(max_points, size(z))
-      real(c_double), intent(out) :: P(max_points)
-      real(c_double), intent(out) :: T(max_points)
+      real(c_double), intent(out) :: p(max_points)
+      real(c_double), intent(out) :: t(max_points)
       real(c_double), intent(out) :: beta(max_points)
 
-      type(PTEnvel3) :: pt3
+      type(ptenvel3) :: pt3
       integer :: converged_points
 
       x = makenan()
       y = makenan()
       w = makenan()
-      P = makenan()
-      T = makenan()
+      p = makenan()
+      t = makenan()
       beta = makenan()
 
 
       pt3 = pt_envelope_3ph(&
          model=ar_models(id)%model, z=z, &
          x0=x0, y0=y0, w0=w0, p0=p0, t0=t0, beta0=beta0, ns0=ns0, &
-         dS0=dS0, points=max_points &
+         ds0=ds0, points=max_points &
          )
 
       converged_points = size(pt3%beta)
       x(:converged_points, :) = pt3%x
       y(:converged_points, :) = pt3%y
       w(:converged_points, :) = pt3%w
-      P(:converged_points) = pt3%P
-      T(:converged_points) = pt3%T
+      p(:converged_points) = pt3%p
+      t(:converged_points) = pt3%t
       beta(:converged_points) = pt3%beta
    end subroutine pt3_phase_envelope
 
-   subroutine flash_grid(id, z, Ts, Ps, xs, ys, Vxs, Vys, betas, parallel)
-      use yaeos, only: EquilibriumState, flash
+   subroutine px3_phase_envelope(&
+      id, z0, zi, T, x0, y0, w0, p0, a0, beta0, ns0, ds0, max_points, &
+      x, y, w, p, a, beta &
+      )
+      use yaeos, only: PXenvel3, PX_envelope_3ph
       integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:)
-      real(c_double), intent(in) :: Ts(:)
-      real(c_double), intent(in) :: Ps(:)
-      real(c_double), dimension(size(Ps), size(Ts), size(z)), intent(out) :: xs, ys
-      real(c_double), dimension(size(Ps), size(Ts)), intent(out) :: Vxs, Vys, betas
-      logical, intent(in) :: parallel
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: x0(:)
+      real(c_double), intent(in) :: y0(:)
+      real(c_double), intent(in) :: w0(:)
+      real(c_double), intent(in) :: p0
+      real(c_double), intent(in) :: a0
+      real(c_double), intent(in) :: beta0
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
+      real(c_double), intent(out) :: x(max_points, size(z0))
+      real(c_double), intent(out) :: y(max_points, size(z0))
+      real(c_double), intent(out) :: w(max_points, size(z0))
+      real(c_double), intent(out) :: p(max_points)
+      real(c_double), intent(out) :: a(max_points)
+      real(c_double), intent(out) :: beta(max_points)
 
-      class(ArModel), allocatable :: model
-      type(EquilibriumState) :: flash_result
+      type(pxenvel3) :: px3
+      integer :: converged_points
 
-      real(8) :: T, P
+      x = makenan()
+      y = makenan()
+      w = makenan()
+      p = makenan()
+      a = makenan()
+      beta = makenan()
 
-      integer :: i, j, nt, np, iter
-
-      model = ar_models(id)%model
-      np = size(Ps)
-      nt = size(Ts)
-
-      if (parallel) then
-         !$OMP PARALLEL DO PRIVATE(i, j, t, p, flash_result) SHARED(model, z, ts, ps, betas, Vxs, Vys, xs, ys)
-         do i=1,np
-            do j=1,nt
-               T = Ts(j)
-               P = Ps(i)
-               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
-               betas(i, j) = flash_result%beta
-
-               Vxs(i, j) = flash_result%Vx
-               Vys(i, j) = flash_result%Vy
-               xs(i, j, :) = flash_result%x
-               ys(i, j, :) = flash_result%y
-            end do
-         end do
-         !$OMP END PARALLEL DO
-      else
-         do i=1,np
-            do j=1,nt
-               T = Ts(j)
-               P = Ps(i)
-               flash_result = flash(model, z, T=T, P_spec=P, iters=iter)
-               betas(i, j) = flash_result%beta
-               print *, i, j, flash_result%iters, flash_result%beta
-
-               Vxs(i, j) = flash_result%Vx
-               Vys(i, j) = flash_result%Vy
-               xs(i, j, :) = flash_result%x
-               ys(i, j, :) = flash_result%y
-            end do
-         end do
-      end if
-   end subroutine flash_grid
-
-   subroutine stability_zpt(id, z, P, T, w_min, min_tm, tm_vals, all_mins)
-      use yaeos, only: min_tpd, tm
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:), P, T
-      real(c_double), intent(out) :: w_min(size(z))
-      real(c_double), intent(out) :: min_tm
-      real(c_double), intent(out) :: tm_vals(size(z))
-      real(c_double), intent(out) :: all_mins(size(z), size(z))
-
-      real(c_double) :: d_i(size(z))
-
-      integer :: i
-
-      call min_tpd(&
-         ar_models(id)%model, z=z, P=P, T=T, &
-         mintpd=min_tm, w=w_min, all_minima=all_mins &
+      px3 = px_envelope_3ph(&
+         model=ar_models(id)%model, z0=z0, zi=zi, T=T, &
+         x0=x0, y0=y0, w0=w0, p0=p0, a0=a0, beta0=beta0, ns0=ns0, &
+         ds0=ds0, points=max_points &
          )
 
-      call ar_models(id)%model%lnphi_pt(n=z, P=T, T=T, root_type="stable", lnPhi=d_i)
+      converged_points = size(px3%alpha)
 
-      d_i = log(z) + d_i
-      do i=1,size(z)
-         tm_vals(i) = tm(ar_models(id)%model, z, all_mins(i, :), P, T, d=d_i)
-      end do
-   end subroutine stability_zpt
+      x(:converged_points, :) = px3%x
+      y(:converged_points, :) = px3%y
+      w(:converged_points, :) = px3%w
+      p(:converged_points) = px3%p
+      a(:converged_points) = px3%alpha
+      beta(:converged_points) = px3%beta
+   end subroutine px3_phase_envelope
 
-   subroutine tm(id, z, w, P, T, tm_value)
-      use yaeos, only: ftm => tm
+   subroutine pt_mp_phase_envelope(&
+      id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
+      beta_w, max_points, stop_pressure, &
+      x_ls, ws, betas, Ps, Ts, iters, ns &
+      )
+      use yaeos, only: PTEnvelMP, pt_envelope
       integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:), w(size(z)), P, T
-      real(c_double), intent(out) :: tm_value
+      real(c_double), intent(in) :: z(:)
+      integer(c_int), intent(in) :: np
+      real(c_double), intent(in) :: x_l0(np, size(z))
+      real(c_double), intent(in) :: w0(size(z))
+      real(c_double), intent(in) :: betas0(np)
+      real(c_double), intent(in) :: P0
+      real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: beta_w
+      real(c_double), intent(in) :: stop_pressure
 
-      tm_value = ftm(model=ar_models(id)%model, z=z, w=w, P=P, T=T)
-   end subroutine tm
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
+
+      real(c_double), intent(out) :: x_ls(max_points, np, size(z))
+      real(c_double), intent(out) :: ws(max_points, size(z))
+      real(c_double), intent(out) :: betas(max_points, np)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: Ts(max_points)
+
+      integer(c_int), intent(out) :: iters(max_points)
+      integer(c_int), intent(out) :: ns(max_points)
+
+      integer :: i, j
+
+      type(PTEnvelMP) :: pt_mp
+
+      x_ls = makenan()
+      ws = makenan()
+      betas = makenan()
+      Ps = makenan()
+      Ts = makenan()
+
+      pt_mp = pt_envelope(&
+         model=ar_models(id)%model, np=np, z=z, x_l0=x_l0, w0=w0, betas0=betas0, &
+         P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points, max_pressure=stop_pressure &
+         )
+
+      do i=1,size(pt_mp%points)
+         do j=1,np
+            x_ls(i, j, :) = pt_mp%points(i)%x_l(j, :)
+         end do
+         ws(i, :) = pt_mp%points(i)%w
+         betas(i, :) = pt_mp%points(i)%betas
+         Ps(i) = pt_mp%points(i)%P
+         Ts(i) = pt_mp%points(i)%T
+         iters(i) = pt_mp%points(i)%iters
+         ns(i) = pt_mp%points(i)%ns
+      end do
+   end subroutine pt_mp_phase_envelope
+
+   subroutine px_mp_phase_envelope(&
+      id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, beta_w, max_points, &
+      x_ls, ws, betas, Ps, alphas, iters, ns &
+      )
+      use yaeos, only: PXEnvelMP, px_envelope
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer(c_int), intent(in) :: np
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: x_l0(np, size(z0))
+      real(c_double), intent(in) :: w0(size(z0))
+      real(c_double), intent(in) :: betas0(np)
+      real(c_double), intent(in) :: P0
+      real(c_double), intent(in) :: alpha0
+      real(c_double), intent(in) :: beta_w
+
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
+
+      real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
+      real(c_double), intent(out) :: ws(max_points, size(z0))
+      real(c_double), intent(out) :: betas(max_points, np)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: alphas(max_points)
+
+      integer(c_int), intent(out) :: iters(max_points)
+      integer(c_int), intent(out) :: ns(max_points)
+
+      integer :: i, j
+
+      type(PXEnvelMP) :: px_mp
+
+      x_ls = makenan()
+      ws = makenan()
+      betas = makenan()
+      Ps = makenan()
+      alphas = makenan()
+
+      px_mp = px_envelope(&
+         model=ar_models(id)%model, np=np, z0=z0, zi=zi, T=T, x_l0=x_l0, &
+         w0=w0, betas0=betas0, P0=P0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points &
+         )
+
+      do i=1,size(px_mp%points)
+         do j=1,np
+            x_ls(i, j, :) = px_mp%points(i)%x_l(j, :)
+         end do
+         ws(i, :) = px_mp%points(i)%w
+         betas(i, :) = px_mp%points(i)%betas
+         Ps(i) = px_mp%points(i)%P
+         alphas(i) = px_mp%alpha(i)
+         iters = px_mp%points(i)%iters
+         ns = px_mp%points(i)%ns
+      end do
+   end subroutine px_mp_phase_envelope
+
+   subroutine tx_mp_phase_envelope(&
+      id, z0, zi, np, P, x_l0, w0, betas0, T0, alpha0, ns0, ds0, beta_w, max_points, &
+      x_ls, ws, betas, Ps, alphas, iters, ns &
+      )
+      use yaeos, only: TXEnvelMP, tx_envelope
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer(c_int), intent(in) :: np
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: x_l0(np, size(z0))
+      real(c_double), intent(in) :: w0(size(z0))
+      real(c_double), intent(in) :: betas0(np)
+      real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: alpha0
+      real(c_double), intent(in) :: beta_w
+
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
+
+      real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
+      real(c_double), intent(out) :: ws(max_points, size(z0))
+      real(c_double), intent(out) :: betas(max_points, np)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: alphas(max_points)
+
+      integer(c_int), intent(out) :: iters(max_points)
+      integer(c_int), intent(out) :: ns(max_points)
+
+      integer :: i, j
+
+      type(TXEnvelMP) :: tx_mp
+
+      x_ls = makenan()
+      ws = makenan()
+      betas = makenan()
+      Ps = makenan()
+      alphas = makenan()
+
+      tx_mp = tx_envelope(&
+         model=ar_models(id)%model, np=np, z0=z0, zi=zi, P=P, x_l0=x_l0, &
+         w0=w0, betas0=betas0, T0=T0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points &
+         )
+
+      do i=1,size(tx_mp%points)
+         do j=1,np
+            x_ls(i, j, :) = tx_mp%points(i)%x_l(j, :)
+         end do
+         ws(i, :) = tx_mp%points(i)%w
+         betas(i, :) = tx_mp%points(i)%betas
+         Ps(i) = tx_mp%points(i)%P
+         alphas(i) = tx_mp%alpha(i)
+         iters = tx_mp%points(i)%iters
+         ns = tx_mp%points(i)%ns
+      end do
+   end subroutine tx_mp_phase_envelope
 
    ! ==========================================================================
    ! Auxiliar

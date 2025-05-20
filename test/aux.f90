@@ -1,27 +1,30 @@
 module testing_aux
    implicit none
 
+   character(len=*), parameter :: red_start = char(27) // "[31m"
+   character(len=*), parameter :: green_start = char(27) // "[32m"
+   character(len=*), parameter :: underline_start = char(27) // "[4m"
+
+   character(len=*), parameter :: style_reset = char(27) // "[0m"
+
 contains
 
    function test_title(str)
-      use stdlib_ansi, only: style_underline, style_reset, operator(//)
       character(*), intent(in) :: str
       character(100) :: test_title
-      test_title = style_underline // "TESTING: " // str // style_reset
+      test_title = underline_start // "TESTING: " // str // style_reset
    end function
 
    function test_ok(str)
-      use stdlib_ansi, only: fg_color_green, style_reset, operator(//)
       character(*), intent(in) :: str
       character(100) :: test_ok
-      test_ok = fg_color_green // "OK: " // str // style_reset
+      test_ok = green_start // "OK: " // str // style_reset
    end function
    
    function test_notok(str)
-      use stdlib_ansi, only: fg_color_red, style_reset, operator(//)
       character(*), intent(in) :: str
       character(100) :: test_notok
-      test_notok = fg_color_red // "ERROR: " // str // style_reset
+      test_notok = red_start // "ERROR: " // str // style_reset
    end function
 
    subroutine assert(expr, test_name)

@@ -183,24 +183,22 @@ contains
       real(pr), optional, intent(out) :: dpsi_dt2(:, :)
       !! \(\frac{d^2 \psi}{dT^2}\)
 
-      integer :: i, j
       integer :: ngroups
 
-      real(pr) :: Aij
-      real(pr) :: Eij
+      real(pr) :: Eij(size(self%Aij, 1), size(self%Aij, 2))
 
       ngroups = size(systems_groups%groups_ids)
 
-      do concurrent(i=1:ngroups, j=1:ngroups)
-         Aij = self%Aij(i, j)
-         Eij = exp(-Aij / T)
-         if (present(psi)) &
-            psi(i, j) = Eij
-         if (present(dpsi_dt)) &
-            dpsi_dt(i, j) = Aij * Eij / T**2
-         if (present(dpsi_dt2)) &
-            dpsi_dt2(i, j) = Aij * (Aij - 2_pr*T) * Eij / T**4
-      end do
+      Eij = exp(-self%Aij / T)
+      
+      if (present(psi)) &
+         psi = Eij
+      
+      if (present(dpsi_dt)) &
+         dpsi_dt = self%Aij * Eij / T**2
+      
+      if (present(dpsi_dt2)) &
+         dpsi_dt2 = self%Aij * (self%Aij - 2_pr*T) * Eij / T**4
    end subroutine UNIFAC_temperature_dependence
 
    subroutine Quadratic_temperature_dependence(&
