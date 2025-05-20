@@ -1537,9 +1537,9 @@ class ArModel(ABC):
         kind="bubble",
         max_points=500,
         p0=10.0,
-        a0=0.01,
+        a0=1e-2,
         ns0=None,
-        ds0=0.01,
+        ds0=1e-5,
     ):
         """Two phase envelope calculation (PX).
 
