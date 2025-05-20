@@ -449,6 +449,8 @@ contains
       ia = np*nc + np + 2
 
       X0 = X
+      F = 1
+      dX = 1
 
       do iters=1,max_iterations
          call px_F_NP(model=model, z0=z0, zi=zi, np=np, T=T, beta_w=beta_w, X=X, ns=ns, S=S, F=F, dF=dF)
@@ -614,9 +616,9 @@ contains
       ! ========================================================================
       ! Extract variables from the vector X
       ! ------------------------------------------------------------------------
+      alpha = X(np*nc + np + 2)
       call get_z(alpha, z0, zi, z)
       P = exp(X(np*nc + np + 1))
-      alpha = X(np*nc + np + 2)
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc

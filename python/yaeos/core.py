@@ -1535,11 +1535,11 @@ class ArModel(ABC):
         zi,
         temperature,
         kind="bubble",
-        max_points=300,
+        max_points=500,
         p0=10.0,
-        a0=0.001,
+        a0=0.01,
         ns0=None,
-        ds0=0.1,
+        ds0=0.01,
     ):
         """Two phase envelope calculation (PX).
 
@@ -1560,7 +1560,7 @@ class ArModel(ABC):
             - "bubble"
             - "dew"
         max_points : int, optional
-            Envelope's maximum points to calculate (P, X), by default 300
+            Envelope's maximum points to calculate, by default 500
         p0 : float, optional
             Initial guess for pressure [bar] for the saturation point of kind:
             `kind`, by default 10.0
@@ -1571,7 +1571,7 @@ class ArModel(ABC):
             The the first `n=len(z)` values correspond to the K-values, where
             the last two values are the pressure and alpha.
         ds0 : float, optional
-            Step for a, by default 0.1
+            Step for the first specified variable, by default 0.01
         """
         if ns0 is None:
             ns0 = len(z0) + 2
