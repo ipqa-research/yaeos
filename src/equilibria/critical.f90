@@ -284,21 +284,7 @@ contains
             ! end do
 
             ! Next step
-
-            ! Dont go to negative P
             z = a * zi  + (1-a)*z0
-            call model%pressure(z, V, T, P)
-            do while (&
-               exp(X(4) + dXdS(4)*dS) < 0 &
-               .or. P < 0 &
-               )
-               dS = dS/2
-               V = exp(X(2) + dXdS(2)*dS)
-               T = exp(X(3) + dXdS(3)*dS)
-               call model%pressure(z, V, T, P)
-               print *, P
-            end do
-
             X = X + dXdS*dS
          end do
       end block solve_points
