@@ -15,6 +15,8 @@ from yaeos.lib import yaeos_c
 
 from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
 
+from yaeos.constants import root_kinds
+
 
 class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
@@ -1537,6 +1539,7 @@ class ArModel(ABC):
         kind="bubble",
         max_points=500,
         p0=10.0,
+        w0=None,
         a0=1e-2,
         ns0=None,
         ds0=1e-5,
@@ -1580,15 +1583,23 @@ class ArModel(ABC):
         zi = np.array(zi)
         z0 = np.array(z0)
 
+        if w0 is None:
+            w0 = np.zeros_like(z0)
+
         z = a0 * zi + (1 - a0) * z0
         sat = self.saturation_pressure(
-            z, temperature=temperature, kind=kind, p0=p0
+            z, temperature=temperature, kind=kind, p0=p0, y0=w0
         )
 
         if kind == "dew":
             w0 = sat["x"]
+            kind_x = ["vapor"]
+            kind_w = "liquid"
         else:
             w0 = sat["y"]
+            kind_x = ["liquid"]
+            kind_w = "vapor"
+
         p0 = sat["P"]
 
         envelope = self.phase_envelope_px_mp(
@@ -1603,6 +1614,8 @@ class ArModel(ABC):
             ns0=ns0,
             ds0=ds0,
             max_points=max_points,
+            kinds_x=kind_x,
+            kind_w=kind_w,
         )
 
         return envelope
@@ -1910,6 +1923,8 @@ class ArModel(ABC):
         alpha0=0,
         beta_w=0,
         max_points=1000,
+        kinds_x=None,
+        kind_w=None,
     ):
         """Multi-phase PX envelope.
 
@@ -1942,10 +1957,30 @@ class ArModel(ABC):
             corresponds to each beta value of the main phases.
             The last two posibilities are the pressure and molar relation
             between the two fluids, respectively.
+        kinds_x: list(str), optional
+            List of kinds of main phases, defaults to stable. options are:
+            - "stable"
+            - "liquid"
+            - "vapor"
+        kinds_w: list(str), optional
+            Kind of reference phase, defaults to stable. options are:
+            - "stable"
+            - "liquid"
+            - "vapor"
         """
         x_l0 = np.array(x_l0, order="F")
 
         number_of_phases = x_l0.shape[0]
+
+        if kinds_x:
+            kinds_x = [root_kinds[kind] for kind in kinds_x]
+        else:
+            kinds_x = [root_kinds["stable"] for _ in range(number_of_phases)]
+
+        if kind_w:
+            kind_w = root_kinds[kind_w]
+        else:
+            kind_w = root_kinds["stable"]
 
         x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
             id=self.id,
@@ -1961,6 +1996,8 @@ class ArModel(ABC):
             ns0=ns0,
             ds0=ds0,
             beta_w=beta_w,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
             max_points=max_points,
         )
 

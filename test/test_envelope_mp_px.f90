@@ -98,10 +98,14 @@ contains
       real(pr) :: XdX(psize)
       real(pr) :: eps = 1e-5, dx
       character(len=*), parameter :: fmt="(*(E10.2,2x))"
+      character(len=50) :: kind_w
+      character(len=50) :: kinds_x(np)
 
       integer :: i, j, loc(2)
 
-      call px_F_NP(model, z0, zi, np, T, 0.0_pr, X, ns, S, F, dF)
+      kind_w = "stable"
+      kinds_x = "stable"
+      call px_F_NP(model, z0, zi, np, T, 0.0_pr, kinds_x, kind_w, X, ns, S, F, dF)
 
       XdX = X
       print "(*(I10,2x))", (i, i=1, psize)
@@ -110,9 +114,9 @@ contains
          dX = XdX(i) * eps
          XdX(i) = XdX(i) + dX
 
-         call px_F_NP(model, z0, zi, np, T, 0.0_pr, Xdx, ns, S, F1, tmp)
+         call px_F_NP(model, z0, zi, np, T, 0.0_pr, kinds_x, kind_w, Xdx, ns, S, F1, tmp)
          XdX(i) = XdX(i) - 2*dx
-         call px_F_NP(model, z0, zi, np, T, 0.0_pr, Xdx, ns, S, F2, tmp)
+         call px_F_NP(model, z0, zi, np, T, 0.0_pr, kinds_x, kind_w, Xdx, ns, S, F2, tmp)
          dfnum(:, i) = (F1 - F2)/(2*dX)
 
          print *, i

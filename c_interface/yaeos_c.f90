@@ -971,14 +971,14 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (P0 == 0 .and. all(y0 == 0)) then
-         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      if (P0 /= 0 .and. all(y0 /= 0)) then
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0, y0=y0)
       elseif (P0 /= 0) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0)
       elseif (all(y0 /= 0)) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, y0=y0)
       else
-         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0, y0=y0)
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
@@ -1402,7 +1402,8 @@ contains
    end subroutine pt_mp_phase_envelope
 
    subroutine px_mp_phase_envelope(&
-      id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, beta_w, max_points, &
+      id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, &
+      beta_w, kinds_x, kind_w, max_points, &
       x_ls, ws, betas, Ps, alphas, iters, ns &
       )
       use yaeos, only: PXEnvelMP, px_envelope
@@ -1420,6 +1421,8 @@ contains
 
       integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
       integer(c_int), intent(in) :: max_points
 
       real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
@@ -1431,6 +1434,8 @@ contains
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
 
+      character(len=14) :: x_kinds(np), w_kind
+
       integer :: i, j
 
       type(PXEnvelMP) :: px_mp
@@ -1441,10 +1446,13 @@ contains
       Ps = makenan()
       alphas = makenan()
 
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
       px_mp = px_envelope(&
          model=ar_models(id)%model, np=np, z0=z0, zi=zi, T=T, x_l0=x_l0, &
          w0=w0, betas0=betas0, P0=P0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
-         beta_w=beta_w, points=max_points &
+         beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, points=max_points &
          )
 
       do i=1,size(px_mp%points)
@@ -1527,4 +1535,21 @@ contains
       makenan = 0
       makenan = makenan/makenan
    end function makenan
+
+   elemental subroutine convert_kind(numeric, string)
+      use yaeos, only: root_kinds
+      integer(c_int), intent(in) :: numeric
+      character(len=14), intent(out) :: string
+
+      select case(numeric)
+       case (root_kinds%liquid)
+         string = "liquid"
+       case (root_kinds%vapor)
+         string = "vapor"
+       case (root_kinds%stable)
+         string = "stable"
+       case default
+         string = "unknown"
+      end select
+   end subroutine convert_kind
 end module yaeos_c

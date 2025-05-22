@@ -102,3 +102,40 @@ class GPEC:
             plt.plot(self._cl12["T"], self.cl12["P"], color="black")
         if self._cl_ll:
             plt.plot(self._cl_ll["T"], self._cl_ll["P"], color="black")
+
+    def plot_pxy(self, temperature, a0=1e-5):
+        """Plot a Pxy phase diagram
+        """
+        psat_1, psat_2 = self._pures
+
+        px_12 = px_21 = px_iso = None
+
+        if temperature < psat_1["T"][-1]:
+            # Below saturation temperature of light component
+            loc = np.argmin(abs(psat_1["T"] - temperature))
+            t0, p0 = psat_1["T"][loc], psat_1["P"][loc]
+            print(t0, p0)
+            px_12 = self._model.phase_envelope_px(
+                self._z0, self._zi, temperature=temperature, kind="bubble",
+                p0=p0, a0=a0
+            )
+
+        print(px_12)
+
+        if px_12["a"][-1] < 1e-4:
+            # Below saturation temperature of light component
+            loc = np.argmin(abs(psat_1["T"] - temperature))
+            t0, p0 = psat_2["T"][loc], psat_2["P"][loc]
+            print(t0, p0)
+            px_21 = self._model.phase_envelope_px(
+                self._z0, self._zi, temperature=temperature, kind="bubble",
+                p0=p0, a0=a0
+            )
+
+        print(px_21)
+        pxs = [px_12, px_21, px_iso]
+
+        for px in pxs:
+            if px:
+                plt.plot(px.main_phases_compositions[:, 0, 0], px["P"])
+                plt.plot(px.reference_phase_compositions[:, 0], px["P"])
