@@ -22,14 +22,17 @@ class GPEC:
             step_21=1e-2,
             step_12=1e-5,
             ):
-        self._z0 = [0, 1]
-        self._zi = [1, 0]
+        self._z0 = np.array([0, 1])
+        self._zi = np.array([1, 0])
         self._model = model
 
+        # Calculate the pure saturation pressures of each component and 
+        # save it as an internal variable
         psats = [model.pure_saturation_pressures(i) for i in [1, 2]]
-
         self._pures = psats
 
+        # Calculate the critical line starting from the almost pure second
+        # component.
         diff = 1e-3
         cl, cep = model.critical_line(
             z0=self._z0,
@@ -46,6 +49,10 @@ class GPEC:
         self._cl21 = cl
         self._cep21 = cep
 
+        # Check if the critical line did not reach to the pure first component.
+        # if not, calculate the critical line starting from the almost pure
+        # first component. It is important to make small steps because this
+        # kind of line can be pretty short.
         if (
             not np.isnan(cep["T"])
             or (
@@ -99,9 +106,12 @@ class GPEC:
 
         plt.plot(self._cl21["T"], self._cl21["P"], color="black")
         if self._cl12:
-            plt.plot(self._cl12["T"], self.cl12["P"], color="black")
+            plt.plot(self._cl12["T"], self._cl12["P"], color="black")
         if self._cl_ll:
             plt.plot(self._cl_ll["T"], self._cl_ll["P"], color="black")
+
+        plt.xlabel("Temperature (K)")
+        plt.ylabel("Pressure (bar)")
 
     def plot_pxy(self, temperature, a0=1e-5):
         """Plot a Pxy phase diagram
@@ -110,32 +120,72 @@ class GPEC:
 
         px_12 = px_21 = px_iso = None
 
-        if temperature < psat_1["T"][-1]:
-            # Below saturation temperature of light component
-            loc = np.argmin(abs(psat_1["T"] - temperature))
-            t0, p0 = psat_1["T"][loc], psat_1["P"][loc]
-            print(t0, p0)
-            px_12 = self._model.phase_envelope_px(
-                self._z0, self._zi, temperature=temperature, kind="bubble",
-                p0=p0, a0=a0
-            )
+        # Below saturation temperature of light component
+        loc = np.argmin(abs(psat_2["T"] - temperature))
+        p0 = psat_2["P"][loc]
+        px_21 = self._model.phase_envelope_px(
+            self._z0, self._zi, temperature=temperature, kind="bubble",
+            p0=p0, a0=a0, ds0=1e-5
+        )
 
-        print(px_12)
-
-        if px_12["a"][-1] < 1e-4:
-            # Below saturation temperature of light component
-            loc = np.argmin(abs(psat_1["T"] - temperature))
-            t0, p0 = psat_2["T"][loc], psat_2["P"][loc]
-            print(t0, p0)
-            px_21 = self._model.phase_envelope_px(
-                self._z0, self._zi, temperature=temperature, kind="bubble",
-                p0=p0, a0=a0
-            )
-
-        print(px_21)
         pxs = [px_12, px_21, px_iso]
 
         for px in pxs:
             if px:
                 plt.plot(px.main_phases_compositions[:, 0, 0], px["P"])
                 plt.plot(px.reference_phase_compositions[:, 0], px["P"])
+
+        plt.xlabel(r"$x_1$, $y_1$")
+        plt.ylabel("Pressure (bar)")
+
+        return pxs
+
+    def plot_txy(self, pressure, a0=1e-5):
+        """Plot a Txy phase diagram
+        """
+        psat_1, psat_2 = self._pures
+
+        tx_12 = tx_21 = tx_ll = None
+
+        # Below saturation temperature of light component
+        loc = np.argmin(abs(psat_2["P"] - pressure))
+        t0 = psat_2["T"][loc]
+
+        tx_21 = self._model.phase_envelope_tx(
+            self._z0, self._zi, pressure=pressure, kind="bubble",
+            t0=t0, a0=a0, ds0=1e-5
+        )
+
+        if self._cl_ll:
+            loc = np.argmin(abs(self._cl_ll["P"] - pressure))
+            t0, p = self._cl_ll["T"][loc], self._cl_ll["P"][loc]
+            if abs(p - pressure) < 1 or pressure > psat_1["P"][-1]:
+
+                a = self._cl_ll["a"][loc]
+                z = a * self._zi + (1 - a) * self._z0
+                x_l0 = [z.copy()]
+
+                x_l0[0][0] += 1e-5
+                x_l0[0][1] -= 1e-5
+                w0 = z.copy()
+                w0[0] -= 1e-5
+                w0[1] += 1e-5
+
+                tx_ll = self._model.phase_envelope_tx_mp(
+                    z0=self._z0, zi=self._zi, p=pressure,
+                    kinds_x=["liquid"], kind_w="liquid", 
+                    x_l0=x_l0, w0=w0, betas0=[1], t0=t0, alpha0=a + 1e-5,
+                    ns0=len(z)+3, ds0=1e-4, max_points=1000,
+                )
+
+        txs = [tx_12, tx_21, tx_ll]
+
+        for tx in txs:
+            if tx:
+                plt.plot(tx.main_phases_compositions[:, 0, 0], tx["T"])
+                plt.plot(tx.reference_phase_compositions[:, 0], tx["T"])
+
+        plt.xlabel(r"$x_1$, $y_1$")
+        plt.ylabel("Temperature (K)")
+
+        return txs
