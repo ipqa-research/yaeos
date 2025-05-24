@@ -463,8 +463,8 @@ contains
       integer, intent(in) :: np !! Number of main phases
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
-      character(len=50), intent(in) :: x_kinds(np)
-      character(len=50), intent(in) :: w_kind
+      character(len=14), intent(in) :: x_kinds(np)
+      character(len=14), intent(in) :: w_kind
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
