@@ -1469,8 +1469,8 @@ contains
    end subroutine px_mp_phase_envelope
 
    subroutine tx_mp_phase_envelope(&
-      id, z0, zi, np, P, x_l0, w0, betas0, T0, alpha0, ns0, ds0, beta_w, max_points, &
-      x_ls, ws, betas, Ps, alphas, iters, ns &
+      id, z0, zi, np, P, beta_w, kinds_x, kind_w, x_l0, w0, betas0, T0, alpha0, ns0, ds0, max_points, &
+      x_ls, ws, betas, Ts, alphas, iters, ns &
       )
       use yaeos, only: TXEnvelMP, tx_envelope
       integer(c_int), intent(in) :: id
@@ -1478,12 +1478,14 @@ contains
       real(c_double), intent(in) :: zi(:)
       integer(c_int), intent(in) :: np
       real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: beta_w
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
       real(c_double), intent(in) :: x_l0(np, size(z0))
       real(c_double), intent(in) :: w0(size(z0))
       real(c_double), intent(in) :: betas0(np)
       real(c_double), intent(in) :: T0
       real(c_double), intent(in) :: alpha0
-      real(c_double), intent(in) :: beta_w
 
       integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
@@ -1492,7 +1494,7 @@ contains
       real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
       real(c_double), intent(out) :: ws(max_points, size(z0))
       real(c_double), intent(out) :: betas(max_points, np)
-      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: Ts(max_points)
       real(c_double), intent(out) :: alphas(max_points)
 
       integer(c_int), intent(out) :: iters(max_points)
@@ -1501,15 +1503,20 @@ contains
       integer :: i, j
 
       type(TXEnvelMP) :: tx_mp
+      character(len=14) :: x_kinds(np), w_kind
 
       x_ls = makenan()
       ws = makenan()
       betas = makenan()
-      Ps = makenan()
+      Ts = makenan()
       alphas = makenan()
 
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
       tx_mp = tx_envelope(&
-         model=ar_models(id)%model, np=np, z0=z0, zi=zi, P=P, x_l0=x_l0, &
+         model=ar_models(id)%model, kinds_x=x_kinds, kind_w=w_kind, &
+         np=np, z0=z0, zi=zi, P=P, x_l0=x_l0, &
          w0=w0, betas0=betas0, T0=T0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
          beta_w=beta_w, points=max_points &
          )
@@ -1520,7 +1527,7 @@ contains
          end do
          ws(i, :) = tx_mp%points(i)%w
          betas(i, :) = tx_mp%points(i)%betas
-         Ps(i) = tx_mp%points(i)%P
+         Ts(i) = tx_mp%points(i)%T
          alphas(i) = tx_mp%alpha(i)
          iters = tx_mp%points(i)%iters
          ns = tx_mp%points(i)%ns
