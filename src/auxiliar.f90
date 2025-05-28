@@ -1,57 +1,24 @@
-module yaeos__auxiliar
-   use yaeos__constants, only: pr
+module yaeos__equilibria_boundaries_auxiliar
+   !! Equilibria boundaries auxiliar module
+   !! This module contains the auxiliar functions and subroutines
+   !! used in the phase-boundaries calculations.
+   use yaeos__constants, only: R, pr
    implicit none
-
-   interface optval
-      module procedure optval_integer, optval_real, optval_character
-   end interface optval
-
 contains
+   subroutine get_z(alpha, z_0, z_inj, z, dzda)
+      !! Calculate the fluid composition based on an amount of addition
+      !! of second fluid.
+      !!
+      !! The injection can be considered as two kinds of injection:
+      !! - Displacement: \( z = \alpha z_i + (1-\alpha) z_0 \)
+      !! - Addition:  \( z = \frac{\alpha z_i + (1-\alpha) z_0}{\sum_{i=1}^N \alpha z_i + (1-\alpha) z_0} \)
+      real(pr), intent(in)  :: alpha !! Addition percentaje \( \alpha \)
+      real(pr), intent(in) :: z_inj(:)
+      real(pr), intent(in) :: z_0(:)
+      real(pr), intent(out) :: z(size(z_0)) !! New composition
+      real(pr), optional, intent(out) :: dzda(size(z_0)) !! Derivative wrt \(\alpha\)
 
-   integer function optval_integer(val, default)
-      !! Set a value to a default if it is not defined
-      integer, optional, intent(in) :: val
-      integer, intent(in) :: default
-
-      if (present(val)) then
-         optval_integer = val
-      else
-         optval_integer = default
-      end if
-   end function optval_integer
-
-   real(pr) function optval_real(val, default)
-      !! Set a value to a default if it is not defined
-      real(pr), optional, intent(in) :: val
-      real(pr), intent(in) :: default
-
-      if (present(val)) then
-         optval_real = val
-      else
-         optval_real = default
-      end if
-   end function optval_real
-
-   function optval_character(val, default)
-      !! Set a value to a default if it is not defined
-      character(len=*), optional, intent(in) :: val
-      character(len=*), intent(in) :: default
-      character(len=:), allocatable :: optval_character
-
-      if (present(val)) then
-         optval_character = val
-      else
-         optval_character = default
-      end if
-   end function optval_character
-
-   subroutine sort(array, idx)
-      use stdlib_sorting, only: std => sort
-      !! Sort an array and return the indexes
-      real(pr), intent(in out) :: array(:)
-      integer, optional, intent(out) :: idx(:)
-
-      call std(array)
-
-   end subroutine sort
-end module yaeos__auxiliar
+      z = z_inj * alpha + (1.0_pr - alpha)*z_0
+      if (present(dzda)) dzda = z_inj - z_0
+   end subroutine get_z
+end module yaeos__equilibria_boundaries_auxiliar
