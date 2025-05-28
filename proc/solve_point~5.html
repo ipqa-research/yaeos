@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">37 statements</a>
+                 title=" 0.4% of total for procedures.">42 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_tx_mp.f90"> Source File</a>
+              <a href="../src/phase_envelopes_px_mp.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_tx_mp.f90.html'>phase_envelopes_tx_mp.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_mp.f90.html'>phase_envelopes_px_mp.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_px.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_px</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,11 +135,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~5.html#variable-x0~5">X0</a>
-            <a class="list-group-item" href="../proc/solve_point~5.html#variable-dx~9">dX</a>
-            <a class="list-group-item" href="../proc/solve_point~5.html#variable-it~4">iT</a>
-            <a class="list-group-item" href="../proc/solve_point~5.html#variable-ia">ia</a>
-            <a class="list-group-item" href="../proc/solve_point~5.html#variable-nc~47">nc</a>
+            <a class="list-group-item" href="../proc/solve_point~5.html#variable-x0~2">X0</a>
+            <a class="list-group-item" href="../proc/solve_point~5.html#variable-dx~7">dX</a>
+            <a class="list-group-item" href="../proc/solve_point~5.html#variable-ip">iP</a>
+            <a class="list-group-item" href="../proc/solve_point~5.html#variable-ia~2">ia</a>
+            <a class="list-group-item" href="../proc/solve_point~5.html#variable-nc~40">nc</a>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine solve_point(model, z0, zi, np, P, beta_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
+    <h2>private  subroutine solve_point(model, z0, zi, np, T, beta_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -186,9 +186,14 @@
     </div>
 
 
+    <h1 id="solve_point"><code>solve_point</code></h1>
+<p>Solve the system of equations for a multiphase point.</p>
+<h1 id="description">Description</h1>
+<p>Solves the point of a multiphase system using the Newton-Raphson 
+method. The system of equations is defined in <a href="../proc/px_f_np.html">px_F_NP</a></p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/txenvelmp.html'>TXEnvelMP</a></p>
+    <p><a href='../type/pxenvelmp.html'>PXEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -203,7 +208,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~32"></span>
+              <span class="anchor" id="variable-model~26"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -213,12 +218,12 @@
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Model to use.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~18"></span>
+              <span class="anchor" id="variable-z0~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -228,12 +233,12 @@
             <td>::</td>
             <td><strong>z0</strong>(:)</td>
             <td>
-                
+                <p>First mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~18"></span>
+              <span class="anchor" id="variable-zi~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -243,12 +248,12 @@
             <td>::</td>
             <td><strong>zi</strong>(:)</td>
             <td>
-                
+                <p>Second mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~12"></span>
+              <span class="anchor" id="variable-np~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -263,7 +268,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~41"></span>
+              <span class="anchor" id="variable-t~32"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -271,14 +276,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~8"></span>
+              <span class="anchor" id="variable-beta_w~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -293,7 +298,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~22"></span>
+              <span class="anchor" id="variable-x~14"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -308,7 +313,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~27"></span>
+              <span class="anchor" id="variable-ns~18"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -323,7 +328,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~21"></span>
+              <span class="anchor" id="variable-s~15"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -338,7 +343,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~12"></span>
+              <span class="anchor" id="variable-dxds~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -348,12 +353,12 @@
             <td>::</td>
             <td><strong>dXdS</strong>(size(X))</td>
             <td>
-                
+                <p>Sensitivity of the variables wrt the specification</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~13"></span>
+              <span class="anchor" id="variable-f~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -368,7 +373,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~8"></span>
+              <span class="anchor" id="variable-df~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -383,7 +388,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~6"></span>
+              <span class="anchor" id="variable-iters~2"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -393,12 +398,12 @@
             <td>::</td>
             <td><strong>iters</strong></td>
             <td>
-                
+                <p>Number of iterations needed to converge the point</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iterations~6"></span>
+              <span class="anchor" id="variable-max_iterations~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -408,7 +413,7 @@
             <td>::</td>
             <td><strong>max_iterations</strong></td>
             <td>
-                
+                <p>Maximum number of iterations to solve the point</p>
             </td>
         </tr>
     </tbody>
@@ -431,7 +436,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x0~5"></span>
+              <span class="anchor" id="variable-x0~2"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -448,7 +453,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~9"></span>
+              <span class="anchor" id="variable-dx~7"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -465,7 +470,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-it~4"></span>
+              <span class="anchor" id="variable-ip"></span>
               integer,
             </td>
               <td>private</td>
@@ -473,7 +478,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>iT</strong></td>
+            <td><strong>iP</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -482,7 +487,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ia"></span>
+              <span class="anchor" id="variable-ia~2"></span>
               integer,
             </td>
               <td>private</td>
@@ -499,7 +504,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~47"></span>
+              <span class="anchor" id="variable-nc~40"></span>
               integer,
             </td>
               <td>private</td>
@@ -547,7 +552,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 12:58 +0000             </p>
+ on 2025-05-28 13:01 +0000             </p>
           </div>
         </div>
         <br>

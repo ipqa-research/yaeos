@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">26 statements</a>
+                 title=" 0.7% of total for procedures.">81 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_pt_3ph.f90"> Source File</a>
+              <a href="../src/pure_saturation.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_3ph.f90.html'>phase_envelopes_pt_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/pure_saturation.f90.html'>pure_saturation.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_pure_saturation.html'>yaeos__equilibria_boundaries_pure_saturation</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,9 +135,26 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dx~6">dX</a>
-            <a class="list-group-item" href="../proc/solve_point~4.html#variable-i~37">i</a>
-            <a class="list-group-item" href="../proc/solve_point~4.html#variable-nc~35">nc</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-b~5">B</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-py">Py</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-pz">Pz</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-t~26">T</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-vy~5">Vy</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-vz">Vz</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-xnew~5">Xnew</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dpdty">dPdTy</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dpdtz">dPdTz</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dpdvy">dPdVy</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dpdvz">dPdVz</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dx~5">dX</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dlnfdt_y">dlnfdt_y</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dlnfdt_z">dlnfdt_z</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dlnfdv_y">dlnfdv_y</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-dlnfdv_z">dlnfdv_z</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-i~58">i</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-lnfug_y">lnfug_y</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-lnfug_z">lnfug_z</a>
+            <a class="list-group-item" href="../proc/solve_point~4.html#variable-z~18">z</a>
         </div>
       </div>
     </div>
@@ -152,7 +169,18 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/solve_point~4.html#proc-isofugacity">isofugacity</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -167,10 +195,37 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine solve_point(model, z, ns, S, X, F, dF, its, maxits)  
+    <h2>public  subroutine solve_point(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)  
 </h2>
     
 
+    <h1 id="solve-point">Solve point</h1>
+<p>Solve a saturation point for a pure component.</p>
+<h2 id="description">Description</h2>
+<p>The set of equations to solve is:</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+f_1 &= \ln f_{z}(V_z, T) - \ln f_{y}(V_y, T) \\
+f_2 &= \ln \left( \frac{P_z}{P_y} \right) \\
+f_3 &= \ln P_z - \ln P \\
+f_4 &= g(X, ns)
+\end{align*}
+</script>
+</p>
+<p>Where <script type="math/tex">f_4</script> is an specification function defined as:</p>
+<p>
+<script type="math/tex; mode=display">
+g(X, ns) = \left\{
+\begin{array}{lr}
+\ln \left( \frac{V_z}{V_y} \right) - S & \text{if } ns = 1 \text{ or } ns = 2 \\
+X(ns) - S & \text{otherwise}
+\end{array}
+\right\}
+</script>
+</p>
+<p>The vector of variables <script type="math/tex">X</script> is equal to
+<script type="math/tex">[ \ln V_z, \ln V_y, \ln P, \ln T ]</script>.</p>
 
 
     <h3>Arguments</h3>
@@ -186,7 +241,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~15"></span>
+              <span class="anchor" id="variable-model~17"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -196,27 +251,58 @@
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Thermodynamic model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~21"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-ncomp~3"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>z</strong>(:)</td>
+            <td><strong>ncomp</strong></td>
             <td>
-                
+                <p>Component index</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~18"></span>
+              <span class="anchor" id="variable-nc~36"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+            <td>
+                <p>Total number of components</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(4)</td>
+            <td>
+                <p>Variables <script type="math/tex">[ln V_z, lnV_y, lnP, lnT]</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns~14"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -226,12 +312,12 @@
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-                
+                <p>Variable index to solve. If the</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~14"></span>
+              <span class="anchor" id="variable-s~12"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -241,27 +327,12 @@
             <td>::</td>
             <td><strong>S</strong></td>
             <td>
-                
+                <p>Variable value specified to solve</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>X</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-f~9"></span>
+              <span class="anchor" id="variable-f~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -269,9 +340,9 @@
               
             </td>
             <td>::</td>
-            <td><strong>F</strong>(:)</td>
+            <td><strong>F</strong>(4)</td>
             <td>
-                
+                <p>Function</p>
             </td>
         </tr>
         <tr>
@@ -284,39 +355,39 @@
               
             </td>
             <td>::</td>
-            <td><strong>dF</strong>(:,:)</td>
+            <td><strong>dF</strong>(4,4)</td>
             <td>
-                
+                <p>Jacobian</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~11"></span>
+              <span class="anchor" id="variable-dfds~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dFdS</strong>(4)</td>
+            <td>
+                <p>Derivative of the function with respect to S</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-its~9"></span>
               integer,
             </td>
-<td>intent(inout)</td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>its</strong></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-maxits~2"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>maxits</strong></td>
-            <td>
-                
+                <p>Number of iterations</p>
             </td>
         </tr>
     </tbody>
@@ -339,15 +410,15 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~6"></span>
+              <span class="anchor" id="variable-b~5"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dX</strong>(size(X))</td>
+            <td><strong>B</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -356,10 +427,265 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~37"></span>
+              <span class="anchor" id="variable-py"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Py</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Pz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~26"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vy~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xnew~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xnew</strong>(4)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdty"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdTy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdtz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdTz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdvy"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdVy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdvz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdVz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dX</strong>(4)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdt_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdt_y</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdt_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdt_z</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdv_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdv_y</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdv_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdv_z</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~58"></span>
               integer,
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -373,15 +699,49 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~35"></span>
-              integer,
+              <span class="anchor" id="variable-lnfug_y"></span>
+              real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>nc</strong></td>
+            <td><strong>lnfug_y</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_z</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~18"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(nc)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -400,6 +760,94 @@
     
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-isofugacity"></span> <h3> subroutine <a href='solve_point~4.html#proc-isofugacity'>isofugacity</a>(X, F, dF, dFdS)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(4)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>F</strong>(4)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dF</strong>(4,4)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dfds~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dFdS</strong>(4)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+    </section>    
 
     
     
@@ -421,7 +869,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 12:58 +0000             </p>
+ on 2025-05-28 13:01 +0000             </p>
           </div>
         </div>
         <br>
