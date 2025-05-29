@@ -2,6 +2,8 @@
 
 from typing import List
 
+from ugropy import dortmund, writers
+
 from yaeos.core import GeModel
 from yaeos.lib import yaeos_c
 from yaeos.models.groups import groups_from_dicts
@@ -25,8 +27,8 @@ class UNIFACDortmund(GeModel):
         from yaeos import UNIFACDortmund
 
         # Groups for water and ethanol
-        water = {16: 1}
-        ethanol = {1: 1, 2: 1, 14: 1}
+        water = {"H2O": 1}
+        ethanol = {"CH3": 1, "CH2": 1, "OH": 1}
 
         groups = [water, ethanol]
 
@@ -36,9 +38,10 @@ class UNIFACDortmund(GeModel):
     """
 
     def __init__(self, molecules: List[dict]) -> None:
+        groups = [writers.to_thermo(m, dortmund) for m in molecules]
 
         (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
-            molecules
+            groups
         )
         self.id = yaeos_c.unifac_dortmund(
             ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
