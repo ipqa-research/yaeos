@@ -7,7 +7,7 @@ def test_against_caleb_thermo():
     t = 150
     n = [20.0, 70.0, 10.0]
 
-    groups = [{1: 2}, {1: 1, 2: 1, 14: 1}, {28: 1}]
+    groups = [{"CH3": 2}, {"CH3": 1, "CH2": 1, "OH": 1}, {"CH3NH2": 1}]
 
     model = UNIFACVLE(groups)
 

@@ -51,7 +51,7 @@ def test_same_as_fortran():
     nrtl = NRTL(a, b, c)
 
     # UNIFAC VLE
-    groups = [{1: 2, 2: 4}, {1: 1, 2: 1, 14: 1}, {9: 5, 11: 1}]
+    groups = [{"CH3": 2, "CH2": 4}, {"CH3": 1, "CH2": 1, "OH": 1}, {"ACH": 5, "ACCH3": 1}]
 
     unifac = UNIFACVLE(groups)
 
@@ -59,6 +59,8 @@ def test_same_as_fortran():
     psrk = UNIFACPSRK(groups)
 
     # UNIFAC Dortmund
+    groups = [{"CH3": 2, "CH2": 4}, {"CH3": 1, "CH2": 1, "OH (P)": 1}, {"ACH": 5, "ACCH3": 1}]
+    
     unifac_dortmund = UNIFACDortmund(groups)
 
     # UNIQUAC
@@ -139,18 +141,17 @@ def test_same_as_fortran():
         getn = thermoprops[6:9]
         gen2 = np.reshape(thermoprops[9:18], (3, 3))
 
-        (
-            he,
-            het,
-        ) = thermoprops[18:20]
+        he, het = thermoprops[18:20]
         hen = thermoprops[20:23]
+        
+        cpe = thermoprops[23]
 
-        se, se_t = thermoprops[23:25]
-        sen = thermoprops[25:28]
+        se, se_t = thermoprops[24:26]
+        sen = thermoprops[26:29]
 
-        lngamma = thermoprops[28:31]
-        dlngamma_dt = thermoprops[31:34]
-        dlngamma_dn = np.reshape(thermoprops[34:], (3, 3))
+        lngamma = thermoprops[29:32]
+        dlngamma_dt = thermoprops[32:35]
+        dlngamma_dn = np.reshape(thermoprops[35:], (3, 3))
 
         # Test GE
         ge_v, derivatives = model.excess_gibbs(
@@ -176,6 +177,11 @@ def test_same_as_fortran():
         assert np.isclose(he, he_v, rtol=1e-10)
         assert np.isclose(het, derivatives["dt"], rtol=1e-10)
         assert np.allclose(hen, derivatives["dn"], rtol=1e-10)
+        
+        # Test CpE
+        if model_name != "NRTL":
+            cpe_v = model.excess_heat_capacity(n, temp)
+            assert np.isclose(cpe, cpe_v, rtol=1e-10)
 
         # Test SE
         se_v, derivatives = model.excess_entropy(n, temp, dt=True, dn=True)

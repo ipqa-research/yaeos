@@ -12,6 +12,7 @@ program ge_test_values
    ! Properties
    real(pr) :: Ge, GeT, GeT2, Gen(nc), GeTn(nc), Gen2(nc, nc)
    real(pr) :: He, HeT, Hen(nc)
+   real(pr) :: Cpe
    real(pr) :: Se, SeT, Sen(nc)
    real(pr) :: lngamma(nc), dlngamma_dT(nc), dlngamma_dn(nc, nc)
 
@@ -124,6 +125,8 @@ program ge_test_values
       n, T, He=He, HeT=HeT, Hen=Hen &
       )
 
+   ! call nrtl_model%excess_heat_capacity(n, T, Cpe=Cpe)
+
    call nrtl_model%excess_entropy(&
       n, T, Se=Se, SeT=SeT, Sen=Sen &
       )
@@ -137,7 +140,7 @@ program ge_test_values
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
       Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
       Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
-      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      ",", Cpe, ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
       lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
@@ -155,6 +158,10 @@ program ge_test_values
       n, T, He=He, HeT=HeT, Hen=Hen &
       )
 
+   call unifac_model%excess_heat_capacity(&
+      n, T, Cpe=Cpe &
+      )
+
    call unifac_model%excess_entropy(&
       n, T, Se=Se, SeT=SeT, Sen=Sen &
       )
@@ -168,7 +175,7 @@ program ge_test_values
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
       Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
       Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
-      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      ",", Cpe, ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
       lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
@@ -185,6 +192,10 @@ program ge_test_values
    call psrk_model%excess_enthalpy(&
       n, T, He=He, HeT=HeT, Hen=Hen &
       )
+   
+   call psrk_model%excess_heat_capacity(&
+      n, T, Cpe=Cpe &
+      )
 
    call psrk_model%excess_entropy(&
       n, T, Se=Se, SeT=SeT, Sen=Sen &
@@ -199,7 +210,7 @@ program ge_test_values
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
       Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
       Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
-      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      ",", Cpe, ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
       lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
@@ -217,6 +228,10 @@ program ge_test_values
       n, T, He=He, HeT=HeT, Hen=Hen &
       )
 
+   call dortmund_model%excess_heat_capacity(&
+      n, T, Cpe=Cpe &
+      )
+
    call dortmund_model%excess_entropy(&
       n, T, Se=Se, SeT=SeT, Sen=Sen &
       )
@@ -230,7 +245,7 @@ program ge_test_values
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
       Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
       Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
-      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      ",", Cpe, ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
       lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
@@ -248,6 +263,10 @@ program ge_test_values
       n, T, He=He, HeT=HeT, Hen=Hen &
       )
 
+   call uniquac_model%excess_heat_capacity(&
+      n, T, Cpe=Cpe &
+      )
+
    call uniquac_model%excess_entropy(&
       n, T, Se=Se, SeT=SeT, Sen=Sen &
       )
@@ -261,7 +280,7 @@ program ge_test_values
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
       Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
       Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
-      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      ",", Cpe, ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
       lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &

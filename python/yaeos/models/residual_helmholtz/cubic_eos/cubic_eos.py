@@ -1,5 +1,7 @@
 """Cubic EoS implementations module."""
 
+from ugropy import psrk, writers
+
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
 from yaeos.models.groups import groups_from_dicts
@@ -425,7 +427,10 @@ class PSRK(CubicEoS):
             critical_pressures,
             acentric_factors,
         )
-        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(molecules)
+        
+        groups = [writers.to_thermo(m, psrk) for m in molecules]
+        
+        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(groups)
 
         if c1 is None:
             c1 = 0.48 + 1.574 * self.w - 0.175 * self.w**2
