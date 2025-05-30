@@ -62,10 +62,7 @@ def find_init_binary_ll(model, pressure, temperature, kind):
     zs = np.linspace(1e-15, 1 - 1e-15, 100)
 
     phis = np.array(
-        [
-            model.lnphi_pt([z, 1 - z], temperature=t, pressure=p, root=root)
-            for z in zs
-        ]
+        [model.lnphi_pt([z, 1 - z], temperature=t, pressure=p, root=root) for z in zs]
     )
     phis = np.exp(phis)
     fug_1 = zs * phis[:, 0] * p

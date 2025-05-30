@@ -54,9 +54,7 @@ def test_ln_gammas():
 
     ln_gammas = model.ln_gamma(n, t)
 
-    expect = np.array(
-        [-164.62277497059728, -60.906444787104235, -75.52457152449654]
-    )
+    expect = np.array([-164.62277497059728, -60.906444787104235, -75.52457152449654])
 
     assert np.allclose(ln_gammas, expect)
 

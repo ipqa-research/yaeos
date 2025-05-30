@@ -92,18 +92,14 @@ class BinaryFitter:
             # Bubble point
             # -----------------------------------------------------------------
             if row["kind"] == "bubble":
-                sat = model.saturation_pressure(
-                    x, kind="bubble", temperature=t, p0=p
-                )
+                sat = model.saturation_pressure(x, kind="bubble", temperature=t, p0=p)
                 error_i += pressure_error(p, sat["P"])
 
             # =================================================================
             # Dew points
             # -----------------------------------------------------------------
             if row["kind"] == "dew":
-                sat = model.saturation_pressure(
-                    x, kind="dew", temperature=t, p0=p
-                )
+                sat = model.saturation_pressure(x, kind="dew", temperature=t, p0=p)
 
                 error_i += pressure_error(p, sat["P"])
 
@@ -117,9 +113,9 @@ class BinaryFitter:
                     error_i += composition_error(x, [x1, 1 - x1])
 
                 else:
-                    error_i += composition_error(
-                        x, [x1, 1 - x1]
-                    ) + composition_error(y, [y1, 1 - y1])
+                    error_i += composition_error(x, [x1, 1 - x1]) + composition_error(
+                        y, [y1, 1 - y1]
+                    )
 
             # =================================================================
             # Critical point error is calculated by finding the nearest
@@ -141,9 +137,7 @@ class BinaryFitter:
                 )
                 error_i += temperature_error(cp["T"], t_cl)
                 error_i += pressure_error(cp["P"], p_cl)
-                error_i += composition_error(
-                    [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
-                )
+                error_i += composition_error([cp["x1"], 1 - cp["x1"]], [x1, 1 - x1])
 
             if np.isnan(error_i):
                 error_i = row["P"]
@@ -183,9 +177,7 @@ class BinaryFitter:
         -------
         None
         """
-        sol = minimize(
-            self.objective_function, x0=x0, bounds=bounds, method=method
-        )
+        sol = minimize(self.objective_function, x0=x0, bounds=bounds, method=method)
         self._solution = sol
 
     @property

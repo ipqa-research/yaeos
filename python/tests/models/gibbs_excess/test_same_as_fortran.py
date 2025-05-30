@@ -7,9 +7,7 @@ import pytest
 from yaeos import NRTL, UNIFACDortmund, UNIFACPSRK, UNIFACVLE, UNIQUAC
 
 
-data_path = (
-    Path(__file__).parent.parent.parent.parent.parent / "ge_test_vals.txt"
-)
+data_path = Path(__file__).parent.parent.parent.parent.parent / "ge_test_vals.txt"
 
 
 def test_same_as_fortran():

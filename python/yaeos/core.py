@@ -137,7 +137,7 @@ class GeModel(ABC):
             from yaeos import UNIFACVLE
 
             # Ethanol - water system
-            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+            groups = [{"CH3": 2, "CH2": 1, "OH": 1}, {"H2O": 1}]
 
             model = UNIFACVLE(groups)
 
@@ -223,7 +223,7 @@ class GeModel(ABC):
             from yaeos import UNIFACVLE
 
             # Ethanol - water system
-            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+            groups = [{"CH3": 2, "CH2": 1, "OH": 1}, {"H2O": 1}]
 
             model = UNIFACVLE(groups)
 
@@ -250,6 +250,40 @@ class GeModel(ABC):
             ...
         else:
             res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+
+        return res
+
+    def excess_heat_capacity(
+        self, moles, temperature: float
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        """Calculate excess heat capacity [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            Excess heat capacity [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{"CH3": 2, "CH2": 1, "OH": 1}, {"H2O": 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess heat capacity
+            print(model.excess_heat_capacity([0.5, 0.5], 303.15))
+        """
+        res = yaeos_c.excess_heat_capacity_ge(self.id, moles, temperature)
 
         return res
 
@@ -282,7 +316,7 @@ class GeModel(ABC):
             from yaeos import UNIFACVLE
 
             # Ethanol - water system
-            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+            groups = [{"CH3": 2, "CH2": 1, "OH": 1}, {"H2O": 1}]
 
             model = UNIFACVLE(groups)
 
@@ -355,7 +389,8 @@ class GeModel(ABC):
         temperature : float
             Temperature [K]
         k0 : array_like, optional
-            Initial guess for the split, by default None (will use k_wilson)
+            Initial guess for the split, by default None (will use stability
+            analysis minimum value)
 
         Returns
         -------
@@ -363,8 +398,6 @@ class GeModel(ABC):
             Flash result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
                 - T: temperature [K]
                 - beta: light phase fraction
         """
@@ -372,15 +405,13 @@ class GeModel(ABC):
             mintpd, _ = self.stability_analysis(z, temperature)
             k0 = mintpd["w"] / np.array(z)
 
-        x, y, pressure, temperature, volume_x, volume_y, beta = (
-            yaeos_c.flash_ge(self.id, z, t=temperature, k0=k0)
+        x, y, _, temperature, _, _, beta = yaeos_c.flash_ge(
+            self.id, z, t=temperature, k0=k0
         )
 
         flash_result = {
             "x": x,
             "y": y,
-            "Vx": volume_x,
-            "Vy": volume_y,
             "T": temperature,
             "beta": beta,
         }
@@ -986,9 +1017,7 @@ class ArModel(ABC):
             )
         return res
 
-    def cv_residual_vt(
-        self, moles, volume: float, temperature: float
-    ) -> float:
+    def cv_residual_vt(self, moles, volume: float, temperature: float) -> float:
         """Residual isochoric heat capacity given V and T [bar L / K].
 
         Parameters
@@ -1027,9 +1056,7 @@ class ArModel(ABC):
         """
         return yaeos_c.cv_residual_vt(self.id, moles, volume, temperature)
 
-    def cp_residual_vt(
-        self, moles, volume: float, temperature: float
-    ) -> float:
+    def cp_residual_vt(self, moles, volume: float, temperature: float) -> float:
         """Calculate residual isobaric heat capacity given V and T [bar L / K].
 
         Parameters
@@ -1116,9 +1143,7 @@ class ArModel(ABC):
 
         return {"T": t[msk], "P": p[msk], "Vx": vx[msk], "Vy": vy[msk]}
 
-    def flash_pt(
-        self, z, pressure: float, temperature: float, k0=None
-    ) -> dict:
+    def flash_pt(self, z, pressure: float, temperature: float, k0=None) -> dict:
         """Two-phase split with specification of temperature and pressure.
 
         Parameters
@@ -1191,9 +1216,7 @@ class ArModel(ABC):
 
         return flash_result
 
-    def flash_pt_grid(
-        self, z, pressures, temperatures, parallel=False
-    ) -> dict:
+    def flash_pt_grid(self, z, pressures, temperatures, parallel=False) -> dict:
         """Two-phase split with specification of temperature and pressure grid.
 
         Parameters
@@ -1645,7 +1668,7 @@ class ArModel(ABC):
         a0=0.001,
         ns0=None,
         ds0=0.1,
-        w0=None
+        w0=None,
     ):
         """Two phase envelope calculation (TX).
 
@@ -1692,9 +1715,7 @@ class ArModel(ABC):
             w0 = np.zeros_like(z0)
 
         z = a0 * zi + (1 - a0) * z0
-        sat = self.saturation_temperature(
-            z, pressure=pressure, kind=kind, t0=t0, y0=w0
-        )
+        sat = self.saturation_temperature(z, pressure=pressure, kind=kind, t0=t0, y0=w0)
 
         if kind == "dew":
             w0 = sat["x"]
@@ -2004,8 +2025,7 @@ class ArModel(ABC):
         number_of_phases = x_l0.shape[0]
 
         kinds_x, kind_w = adjust_root_kind(
-            number_of_phases=number_of_phases,
-            kinds_x=kinds_x, kind_w=kind_w
+            number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
         x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
@@ -2064,8 +2084,7 @@ class ArModel(ABC):
         number_of_phases = x_l0.shape[0]
 
         kinds_x, kind_w = adjust_root_kind(
-            number_of_phases=number_of_phases,
-            kinds_x=kinds_x, kind_w=kind_w
+            number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
         x_ls, ws, betas, ts, alphas, iters, ns = yaeos_c.tx_mp_phase_envelope(
@@ -2520,9 +2539,7 @@ class ArModel(ABC):
                 "V": vs[msk],
             }
 
-    def critical_line_liquid_liquid(
-        self, z0=[1, 0], zi=[1, 0], pressure=2000, t0=500
-    ):
+    def critical_line_liquid_liquid(self, z0=[1, 0], zi=[1, 0], pressure=2000, t0=500):
         """Find the start of the Liquid-Liquid critical line of a binary.
 
         Parameters
@@ -2536,9 +2553,7 @@ class ArModel(ABC):
         t0: float
             Initial guess for temperature [K]
         """
-        a, t, v = yaeos_c.find_llcl(
-            self.id, z0=z0, zi=zi, p=pressure, tstart=t0
-        )
+        a, t, v = yaeos_c.find_llcl(self.id, z0=z0, zi=zi, p=pressure, tstart=t0)
 
         return a, t, v
 

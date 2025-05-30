@@ -36,9 +36,7 @@ class PTEnvelope:
         self.number_of_phases = main_phases_compositions.shape[1]
         self.global_composition = global_composition
         self.main_phases_compositions = main_phases_compositions[msk, :, :]
-        self.reference_phase_compositions = reference_phase_compositions[
-            msk, :
-        ]
+        self.reference_phase_compositions = reference_phase_compositions[msk, :]
         self.main_phases_molar_fractions = main_phases_molar_fractions[msk]
         self.pressures = pressures[msk]
         self.temperatures = temperatures[msk]
@@ -91,12 +89,8 @@ class PTEnvelope:
             return PTEnvelope(
                 global_composition=self.global_composition,
                 main_phases_compositions=self.main_phases_compositions[key],
-                reference_phase_compositions=self.reference_phase_compositions[
-                    key
-                ],
-                main_phases_molar_fractions=self.main_phases_molar_fractions[
-                    key
-                ],
+                reference_phase_compositions=self.reference_phase_compositions[key],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[key],
                 pressures=self.pressures[key],
                 temperatures=self.temperatures[key],
                 iterations=self.iterations[key],
@@ -123,9 +117,7 @@ class PTEnvelope:
         plt.ylabel("Pressure [bar]")
         plt.title("PT Envelope")
         for cp in self.cp:
-            plt.scatter(
-                self.temperatures[cp], self.pressures[cp], color="black"
-            )
+            plt.scatter(self.temperatures[cp], self.pressures[cp], color="black")
 
     def __repr__(self):
         display(self.df)
@@ -135,10 +127,8 @@ class PTEnvelope:
         return PTEnvelope(
             global_composition=self.global_composition,
             main_phases_compositions=self.main_phases_compositions * other,
-            reference_phase_compositions=self.reference_phase_compositions
-            * other,
-            main_phases_molar_fractions=self.main_phases_molar_fractions
-            * other,
+            reference_phase_compositions=self.reference_phase_compositions * other,
+            main_phases_molar_fractions=self.main_phases_molar_fractions * other,
             pressures=self.pressures * other,
             temperatures=self.temperatures * other,
             iterations=self.iterations,
@@ -176,9 +166,7 @@ class PXEnvelope:
         self.global_composition_0 = global_composition_0
         self.global_composition_i = global_composition_i
         self.main_phases_compositions = main_phases_compositions[msk, :, :]
-        self.reference_phase_compositions = reference_phase_compositions[
-            msk, :
-        ]
+        self.reference_phase_compositions = reference_phase_compositions[msk, :]
         self.main_phases_molar_fractions = main_phases_molar_fractions[msk]
         self.pressures = pressures[msk]
         self.alphas = alphas[msk]
@@ -233,12 +221,8 @@ class PXEnvelope:
                 global_composition_i=self.global_composition_i,
                 temperature=self.temperature,
                 main_phases_compositions=self.main_phases_compositions[key],
-                reference_phase_compositions=self.reference_phase_compositions[
-                    key
-                ],
-                main_phases_molar_fractions=self.main_phases_molar_fractions[
-                    key
-                ],
+                reference_phase_compositions=self.reference_phase_compositions[key],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[key],
                 pressures=self.pressures[key],
                 alphas=self.alphas[key],
                 iterations=self.iterations[key],
@@ -264,10 +248,8 @@ class PXEnvelope:
             global_composition_i=self.global_composition_i,
             temperature=self.temperature,
             main_phases_compositions=self.main_phases_compositions * other,
-            reference_phase_compositions=self.reference_phase_compositions
-            * other,
-            main_phases_molar_fractions=self.main_phases_molar_fractions
-            * other,
+            reference_phase_compositions=self.reference_phase_compositions * other,
+            main_phases_molar_fractions=self.main_phases_molar_fractions * other,
             pressures=self.pressures * other,
             alphas=self.alphas * other,
             iterations=self.iterations,
@@ -305,9 +287,7 @@ class TXEnvelope:
         self.global_composition_0 = global_composition_0
         self.global_composition_i = global_composition_i
         self.main_phases_compositions = main_phases_compositions[msk, :, :]
-        self.reference_phase_compositions = reference_phase_compositions[
-            msk, :
-        ]
+        self.reference_phase_compositions = reference_phase_compositions[msk, :]
         self.main_phases_molar_fractions = main_phases_molar_fractions[msk]
         self.temperatures = temperatures[msk]
         self.alphas = alphas[msk]
@@ -362,12 +342,8 @@ class TXEnvelope:
                 global_composition_i=self.global_composition_i,
                 pressure=self.pressure,
                 main_phases_compositions=self.main_phases_compositions[key],
-                reference_phase_compositions=self.reference_phase_compositions[
-                    key
-                ],
-                main_phases_molar_fractions=self.main_phases_molar_fractions[
-                    key
-                ],
+                reference_phase_compositions=self.reference_phase_compositions[key],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[key],
                 temperatures=self.temperatures[key],
                 alphas=self.alphas[key],
                 iterations=self.iterations[key],
@@ -393,10 +369,8 @@ class TXEnvelope:
             global_composition_i=self.global_composition_i,
             pressure=self.pressure,
             main_phases_compositions=self.main_phases_compositions * other,
-            reference_phase_compositions=self.reference_phase_compositions
-            * other,
-            main_phases_molar_fractions=self.main_phases_molar_fractions
-            * other,
+            reference_phase_compositions=self.reference_phase_compositions * other,
+            main_phases_molar_fractions=self.main_phases_molar_fractions * other,
             temperatures=self.temperature * other,
             alphas=self.alphas * other,
             iterations=self.iterations,

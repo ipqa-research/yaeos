@@ -40,9 +40,7 @@ class UNIFACVLE(GeModel):
     def __init__(self, molecules: List[dict]) -> None:
         groups = [writers.to_thermo(m, unifac) for m in molecules]
 
-        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
-            groups
-        )
+        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(groups)
         self.id = yaeos_c.unifac_vle(
             ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
         )

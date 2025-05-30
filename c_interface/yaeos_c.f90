@@ -36,6 +36,7 @@ module yaeos_c
    public :: ln_gamma_ge
    public :: excess_gibbs_ge
    public :: excess_enthalpy_ge
+   public :: excess_heat_capacity_ge
    public :: excess_entropy_ge
 
    ! Thermoprops
@@ -264,6 +265,18 @@ contains
          n, T, He=He, HeT=HeT, Hen=Hen &
          )
    end subroutine excess_enthalpy_ge
+
+   subroutine excess_heat_capacity_ge(id, n, T, Cpe)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: Cpe
+      !! Excess heat capacity
+
+      call ge_models(id)%model%excess_heat_capacity(n, T, Cpe=Cpe)
+   end subroutine excess_heat_capacity_ge
 
    subroutine excess_entropy_ge(id, n, T, Se, SeT, Sen)
       integer(c_int), intent(in) :: id

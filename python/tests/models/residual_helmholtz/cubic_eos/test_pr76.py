@@ -126,9 +126,7 @@ def test_fugacity():
 
 def test_envelope():
     # TODO: test all the envelope
-    model = PengRobinson76(
-        [305.32, 540.2], [48.72, 27.4], [0.099493, 0.349469]
-    )
+    model = PengRobinson76([305.32, 540.2], [48.72, 27.4], [0.099493, 0.349469])
 
     z = [0.1, 0.9]
     envelope = model.phase_envelope_pt(z, t0=230.0, p0=5.0)
@@ -143,9 +141,7 @@ def test_flash_pt():
     vx = 8.4918883298198036e-002
     vy = 0.32922132295944545
 
-    model = PengRobinson76(
-        [190.564, 425.12], [45.99, 37.96], [0.0115478, 0.200164]
-    )
+    model = PengRobinson76([190.564, 425.12], [45.99, 37.96], [0.0115478, 0.200164])
 
     n = [0.4, 0.6]
 

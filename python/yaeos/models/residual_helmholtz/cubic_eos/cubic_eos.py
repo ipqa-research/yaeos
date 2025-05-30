@@ -425,9 +425,7 @@ class PSRK(CubicEoS):
             critical_pressures,
             acentric_factors,
         )
-        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
-            molecules
-        )
+        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(molecules)
 
         if c1 is None:
             c1 = 0.48 + 1.574 * self.w - 0.175 * self.w**2

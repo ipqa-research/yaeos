@@ -99,9 +99,7 @@ def test_psrk_paper2005_1():
 
     pdew = []
     for i, y in enumerate(y1_exp):
-        sol = model.saturation_pressure(
-            [y, 1 - y], t, kind="dew", p0=pdew_exp[i]
-        )
+        sol = model.saturation_pressure([y, 1 - y], t, kind="dew", p0=pdew_exp[i])
         pdew.append(sol["P"])
 
     assert np.allclose(pdew, pdew_exp, atol=2e-2)
@@ -199,9 +197,7 @@ def test_psrk_paper2005_2():
 
     pdew = []
     for i, y in enumerate(y1_exp):
-        sol = model.saturation_pressure(
-            [y, 1 - y], t, kind="dew", p0=pdew_exp[i]
-        )
+        sol = model.saturation_pressure([y, 1 - y], t, kind="dew", p0=pdew_exp[i])
         pdew.append(sol["P"])
 
     assert np.allclose(pdew, pdew_exp, rtol=7e-3)
@@ -295,9 +291,7 @@ def test_psrk_paper2005_3():
 
     pdew = []
     for i, y in enumerate(y1_exp):
-        sol = model.saturation_pressure(
-            [y, 1 - y], t, kind="dew", p0=pdew_exp[i]
-        )
+        sol = model.saturation_pressure([y, 1 - y], t, kind="dew", p0=pdew_exp[i])
         pdew.append(sol["P"])
 
     assert np.allclose(pdew, pdew_exp, rtol=0.2)
@@ -383,9 +377,7 @@ def test_psrk_paper2005_4():
 
     pdew = []
     for i, y in enumerate(y1_exp):
-        sol = model.saturation_pressure(
-            [y, 1 - y], t, kind="dew", p0=pdew_exp[i]
-        )
+        sol = model.saturation_pressure([y, 1 - y], t, kind="dew", p0=pdew_exp[i])
         pdew.append(sol["P"])
 
     assert np.allclose(pdew, pdew_exp, rtol=1)

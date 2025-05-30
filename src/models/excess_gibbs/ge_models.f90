@@ -10,8 +10,9 @@ module yaeos__models_ge
       procedure(excess_gibbs), deferred :: excess_gibbs
       procedure :: ln_activity_coefficient => ln_activity_coefficient
       procedure :: excess_enthalpy => excess_enthalpy
+      procedure :: excess_heat_capacity => excess_heat_capacity
       procedure :: excess_entropy => excess_entropy
-   end type
+   end type GeModel
 
    abstract interface
       subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
@@ -29,7 +30,7 @@ module yaeos__models_ge
          !! \(\frac{d^2G^E}{dTdn}\)
          real(pr), optional, intent(out) :: Gen2(size(n), size(n))
          !! \(\frac{d^2G^E}{dn^2}\)
-      end subroutine
+      end subroutine excess_gibbs
    end interface
 
 contains
@@ -70,7 +71,7 @@ contains
       if (tt) lngamma = Gen / (R * T)
       if (dt) dlngammadT = (GeTn - Gen / T) / (R * T)
       if (dn) dlngammadn = Gen2 / (R * T)
-   end subroutine
+   end subroutine ln_activity_coefficient
 
    subroutine excess_enthalpy(self, n, T, He, HeT, Hen)
       !! Calculate Excess enthalpy and its derivatives.
@@ -100,6 +101,26 @@ contains
       if (present(Hen)) Hen = Gen - T*GeTn
    end subroutine excess_enthalpy
 
+   subroutine excess_heat_capacity(self, n, T, CpE)
+      !! Calculate Excess heat capacity.
+      !!
+      !! \[
+      !! C_p^E = \frac{\partial H^E}{\partial T} =
+      !! -T \frac{\partial^2 G^E}{\partial T^2}
+      !! \]
+      !!
+      class(GeModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles vector
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: CpE !! Excess heat capacity
+
+      real(pr) :: GeT2
+
+      call self%excess_gibbs(n, T, GeT2=GeT2)
+
+      CpE = -T * GeT2
+   end subroutine excess_heat_capacity
+
    subroutine excess_entropy(self, n, T, Se, SeT, Sen)
       !! Calculate Excess entropy and its derivatives.
       !!
@@ -122,4 +143,4 @@ contains
       if (present(SeT)) SeT = -GeT2
       if (present(Sen)) Sen = -GeTn
    end subroutine excess_entropy
-end module
+end module yaeos__models_ge
