@@ -1004,14 +1004,14 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (T0 == 0 .and. all(y0 == 0)) then
-         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
-      else if (all(y0 == 0)) then
-         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
-      else if (T0 == 0) then
-         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0)
-      else
+      if (T0 /= 0 .and. all(y0 /= 0)) then
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0, T0=T0)
+      else if (all(y0 /= 0)) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0)
+      else if (T0 /= 0) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
+      else
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
       end if
 
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
@@ -1344,7 +1344,7 @@ contains
 
    subroutine pt_mp_phase_envelope(&
       id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
-      beta_w, max_points, stop_pressure, &
+      beta_w, kinds_x, kind_w, max_points, stop_pressure, &
       x_ls, ws, betas, Ps, Ts, iters, ns &
       )
       use yaeos, only: PTEnvelMP, pt_envelope
@@ -1356,6 +1356,8 @@ contains
       real(c_double), intent(in) :: betas0(np)
       real(c_double), intent(in) :: P0
       real(c_double), intent(in) :: T0
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
       real(c_double), intent(in) :: beta_w
       real(c_double), intent(in) :: stop_pressure
 
@@ -1375,6 +1377,7 @@ contains
       integer :: i, j
 
       type(PTEnvelMP) :: pt_mp
+      character(len=14) :: x_kinds(np), w_kind
 
       x_ls = makenan()
       ws = makenan()
@@ -1382,8 +1385,12 @@ contains
       Ps = makenan()
       Ts = makenan()
 
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
       pt_mp = pt_envelope(&
-         model=ar_models(id)%model, np=np, z=z, x_l0=x_l0, w0=w0, betas0=betas0, &
+         model=ar_models(id)%model, np=np, z=z, kinds_x=x_kinds, kind_w=w_kind,&
+         x_l0=x_l0, w0=w0, betas0=betas0, &
          P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
          beta_w=beta_w, points=max_points, max_pressure=stop_pressure &
          )
