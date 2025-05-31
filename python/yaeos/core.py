@@ -1482,16 +1482,22 @@ class ArModel(ABC):
             plt.scatter(env["Tc"], env["Pc"])
         """
 
+        ds0 = 0.001
+
         if kind == "bubble":
             sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
             w0 = sat["y"]
             ns0 = len(z) + 3
             t0 = sat["T"]
+            kinds_x = ["liquid"]
+            kind_w = "vapor"
         elif kind == "dew":
             sat = self.saturation_temperature(z, p0, kind=kind, t0=t0)
             w0 = sat["x"]
             ns0 = len(z) + 2
             p0 = sat["P"]
+            kinds_x = ["vapor"]
+            kind_w = "liquid"
         elif kind == "liquid-liquid":
             ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
                 self.id, z, kind=kind, t0=t0, p0=p0, max_points=2
@@ -1500,50 +1506,26 @@ class ArModel(ABC):
             ns0 = len(z) + 2
             t0 = ts[0]
             p0 = ps[0]
+            kinds_x = ["liquid"]
+            kind_w = "liquid"
+            ds0 = -ds0
 
-        x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
-            id=self.id,
-            np=1,
-            z=z,
+        envelope = self.phase_envelope_pt_mp(
+            z,
             x_l0=[z],
             w0=w0,
             betas0=[1],
             t0=t0,
             p0=p0,
             ns0=ns0,
-            ds0=0.001,
-            beta_w=0,
+            ds0=ds0,
             max_points=max_points,
             stop_pressure=stop_pressure,
-        )
-
-        envelope = PTEnvelope(
-            global_composition=z,
-            main_phases_compositions=x_ls,
-            reference_phase_compositions=ws,
-            main_phases_molar_fractions=betas,
-            pressures=ps,
-            temperatures=ts,
-            iterations=iters,
-            specified_variable=ns,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
         )
 
         return envelope
-
-        msk = ~np.isnan(ts)
-        msk_cp = ~np.isnan(tcs)
-
-        res = {
-            "T": ts[msk],
-            "P": ps[msk],
-            "Tc": tcs[msk_cp],
-            "Pc": pcs[msk_cp],
-            "x": xs[msk],
-            "y": ys[msk],
-            "kinds": kinds[msk],
-        }
-
-        return res
 
     def phase_envelope_px(
         self,
@@ -1903,6 +1885,8 @@ class ArModel(ABC):
         ns0,
         ds0,
         beta_w=0,
+        kinds_x=None,
+        kind_w=None,
         max_points=1000,
         stop_pressure=1000,
     ):
@@ -1910,6 +1894,11 @@ class ArModel(ABC):
         x_l0 = np.array(x_l0)
 
         number_of_phases = x_l0.shape[0]
+
+        kinds_x, kind_w = adjust_root_kind(
+            number_of_phases=number_of_phases,
+            kinds_x=kinds_x, kind_w=kind_w
+        )
 
         x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
             id=self.id,
@@ -1923,6 +1912,8 @@ class ArModel(ABC):
             ns0=ns0,
             ds0=ds0,
             beta_w=beta_w,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
             max_points=max_points,
             stop_pressure=stop_pressure,
         )
