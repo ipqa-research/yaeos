@@ -54,6 +54,9 @@ contains
       type(txenvelmp) :: tx
       type(PTEnvelMP) :: PT
 
+      character(len=14) :: kind_w
+      character(len=14) :: kinds_x(np)
+
       real(pr) :: T, P, beta
       integer :: i
 
@@ -72,17 +75,22 @@ contains
       x_l0(1, :) = z
       
       sat = saturation_temperature(model, z, P=P, kind="bubble", t0=300._pr)
+      kind_w = "vapor"
+      kinds_x(1) = "liquid"
+      
       w0 = sat%y
       tx = tx_envelope(&
-         model, z0, zi, np, sat%P, x_l0, w0, betas0=[1._pr], &
+         model, z0, zi, np, sat%P, kinds_x=kinds_x, kind_w=kind_w, x_l0=x_l0, w0=w0, betas0=[1._pr], &
          T0=sat%t, alpha0=0._pr, ns0=np*nc+np+2, ds0=0.005_pr, &
          beta_w=0.0_pr, points=1000&
          )
 
       sat = saturation_temperature(model, z, P=P, kind="dew", t0=800._pr)
       w0 = sat%x
+      kind_w = "liquid"
+      kinds_x(1) = "vapor"
       tx = tx_envelope(&
-         model, z0, zi, np, sat%P, x_l0, sat%x, betas0=[1._pr], &
+         model, z0, zi, np, sat%P, kinds_x=kinds_x, kind_w=kind_w, x_l0=x_l0, w0=w0, betas0=[1._pr], &
          T0=sat%t, alpha0=0._pr, ns0=np*nc+np+2, ds0=0.005_pr, &
          beta_w=0.0_pr, points=1000&
          )

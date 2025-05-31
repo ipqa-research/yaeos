@@ -29,9 +29,13 @@ program main
    type(CubicEoS) :: model
    type(PTEnvelMP) :: pt
    type(PXEnvelMP) :: px
+   character(len=14) :: kinds_x(np)
+   character(len=14) :: kind_w
 
 
    print *, test_title("Multi-phase PX envelope test")
+   kinds_x = "stable"
+   kind_w = "stable"
 
    model = get_model()
 
@@ -65,9 +69,11 @@ program main
    X(3*nc + np + 2) = log(T)
 
    ns = 3*nc+2
+
    ! Find an initial point by solving a known 4ph point
    call pt%solve_point(&
-      model, z, np=np, beta_w=0.0_pr, X=X, ns=ns, S=S, dXdS=dXdS, &
+      model, z, np=np, beta_w=0.0_pr, kinds_x=kinds_x, kind_w=kind_w, &
+      X=X, ns=ns, S=S, dXdS=dXdS, &
       F=F, dF=dF, iters=iters, max_iterations=100)
    P = exp(X(3*nc+np+1))
    T = exp(X(3*nc+np+2))
@@ -77,10 +83,11 @@ program main
    X(3*nc + np + 2) = 0.01
    ns = size(X)
 
-   ! call numdiff
+   call numdiff
 
    px = px_envelope(&
-      model, z0, zi, np, T=T, x_l0=x_l, w0=w, betas0=betas, p0=P, alpha0=0.0_pr,&
+      model, z0, zi, np, T=T, kinds_x=kinds_x, kind_w=kind_w, &
+      x_l0=x_l, w0=w, betas0=betas, p0=P, alpha0=0.0_pr,&
       ns0=psize, dS0=1e-2_pr, beta_w=0.0_pr, points=200)
    call assert(maxval(abs(px%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(px%points(1)%P - 108.015 )< 1e-2, "First point P")
@@ -88,7 +95,6 @@ program main
 
    i = size(px%points)
    call assert(abs(px%points(i)%P) > 9, "End at low pressure")
-   call px%write(69)
 
 contains
    subroutine numdiff
@@ -101,32 +107,28 @@ contains
 
       integer :: i, j, loc(2)
 
-      call px_F_NP(model, z0, zi, np, T, 0.0_pr, X, ns, S, F, dF)
+      call px_F_NP(model, z0, zi, np, T, 0.0_pr, kinds_x, kind_w, X, ns, S, F, dF)
 
       XdX = X
-      print "(*(I10,2x))", (i, i=1, psize)
       do i=1,nc*np+np + 2
          XdX = X
-         dX = XdX(i) * eps
+         dX = maxval([abs(XdX(i) * eps), 1e-5_pr])
          XdX(i) = XdX(i) + dX
-
-         call px_F_NP(model, z0, zi, np, T, 0.0_pr, Xdx, ns, S, F1, tmp)
+         call px_F_NP(model, z0, zi, np, T, 0.0_pr, kinds_x, kind_w, Xdx, ns, S, F1, tmp)
          XdX(i) = XdX(i) - 2*dx
-         call px_F_NP(model, z0, zi, np, T, 0.0_pr, Xdx, ns, S, F2, tmp)
+         call px_F_NP(model, z0, zi, np, T, 0.0_pr, kinds_x, kind_w, Xdx, ns, S, F2, tmp)
          dfnum(:, i) = (F1 - F2)/(2*dX)
 
-         print *, i
-         print fmt, df(:, i)
-         print fmt, dfnum(:, i)
-         write(1, *) dfnum(:, i)
-         print *, ""
-
-         if (i > nc*np) print *, "=============================================="
       end do
 
-      loc = maxloc(abs(df - dfnum))
-      print *, maxval(abs((df - dfnum))), maxloc(abs(df - dfnum)), df(loc(1), loc(2)), dfnum(loc(1), loc(2))
+      where (dfnum == 0)
+         dfnum = 1e-15_pr
+      end where
 
+      where (df == 0)
+         df = 1e-15_pr
+      end where
+      call assert(maxval(abs((df - dfnum))) < 1e-1, "Numerical derivative matches analytical")
    end subroutine numdiff
 
    type(CubicEoS) function get_model()

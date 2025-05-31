@@ -28,6 +28,8 @@ program main
 
    type(CubicEoS) :: model
    type(PTEnvelMP) :: env
+   character(len=14) :: kinds_x(np)
+   character(len=14) :: kind_w
 
 
    print *, test_title("Multi-phase envelope test")
@@ -49,7 +51,9 @@ program main
    betas = [0.98, 0.00, 0.0]
    P = 70
    T = 260
-   env = pt_envelope(model, z, np, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
+   kinds_x = ["liquid", "liquid", "liquid"]
+   kind_w = "vapor"
+   env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
 
    call env%write(1)
 

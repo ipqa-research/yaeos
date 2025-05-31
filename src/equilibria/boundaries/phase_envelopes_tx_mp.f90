@@ -45,7 +45,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
 
 contains
    type(TXEnvelMP) function tx_envelope(&
-      model, z0, zi, np, P, x_l0, w0, betas0, T0, alpha0, ns0, dS0, beta_w, points &
+      model, z0, zi, np, P, kinds_x, kind_w, &
+      x_l0, w0, betas0, T0, alpha0, ns0, dS0, beta_w, points &
       )
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
@@ -53,6 +54,8 @@ contains
       real(pr), intent(in) :: zi(:)
       integer, intent(in) :: np
       real(pr), intent(in) :: P
+      character(len=14), intent(in) :: kinds_x(np)
+      character(len=14), intent(in) :: kind_w
       real(pr), intent(in) :: x_l0(np, size(z0))
       real(pr), intent(in) :: w0(size(z0))
       real(pr), intent(in) :: betas0(np)
@@ -93,7 +96,14 @@ contains
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
+      integer :: ia
+      real(pr) :: z(size(z0))
+
+      character(len=14) :: x_kinds(np)
+      character(len=14) :: w_kind
+
       nc = size(z0)
+      ia = np*nc + np + 2
 
       number_of_points = optval(points, 1000)
 
@@ -111,16 +121,21 @@ contains
       S = X(ns)
       dS = dS0
 
+      x_kinds = kinds_x
+      w_kind = kind_w
+
       allocate(env_points(0), alphas(0))
       call solve_point(&
-         model, z0, zi, np, P, beta_w, X, ns, S, dXdS, &
-         F, dF, its, 1000 &
+         model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
+         X=X, ns=ns, S=S, dXdS=dXdS, &
+         F=F, dF=dF, iters=its, max_iterations=1000 &
          )
       do i=1,number_of_points
          X0 = X
          call solve_point(&
-            model, z0, zi, np, P, beta_w, X, ns, S, dXdS, &
-            F, dF, its, max_iterations &
+            model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
+            X=X, ns=ns, S=S, dXdS=dXdS, &
+            F=F, dF=dF, iters=its, max_iterations=max_iterations &
             )
 
          ! The point might not converge, in this case we try again with an
@@ -131,8 +146,9 @@ contains
             X = X0 - (1 - real(inner, pr) / 10._pr) * dX
             S = X(ns)
             call solve_point(&
-               model, z0, zi, np, T, beta_w, X, ns, S, dXdS, &
-               F, dF, its, 5&
+               model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
+               X=X, ns=ns, S=S, dXdS=dXdS, &
+               F=F, dF=dF, iters=its, max_iterations=5 &
                )
          end do
 
@@ -153,7 +169,20 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, X, dXdS, ns, dS, S)
+         call detect_critical(&
+            nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, &
+            X=X, dXdS=dXdS, ns=ns, dS=dS, S=S)
+
+         if (nc == 2) then
+            alpha = X(ia) + dXdS(ia)*dS
+            z = alpha * zi + (1- alpha) * z0
+
+            do while((any(z < 0) .or. any(z > 1)) .and. abs(dS) > 0)
+               dS = dS/2
+               alpha = X(ia) + dXdS(ia)*dS
+               z = alpha * zi + (1- alpha) * z0
+            end do
+         end if
 
          ! Next point estimation.
          dX = dXdS * dS
@@ -166,7 +195,8 @@ contains
       call move_alloc(alphas, tx_envelope%alpha)
    end function tx_envelope
 
-   subroutine tx_F_NP(model, z0, zi, np, P, beta_w, X, ns, S, F, dF)
+   subroutine tx_F_NP(model, z0, zi, np, P, beta_w, kinds_x, kind_w, &
+      X, ns, S, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model
@@ -175,6 +205,8 @@ contains
       integer, intent(in) :: np !! Number of main phases.
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
+      character(len=14), intent(in) :: kinds_x(np) !! Kinds of the main phases.
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase.
       real(pr), intent(in)  :: X(:) !! Vector of variables.
       integer, intent(in)  :: ns !! Number of specification.
       real(pr), intent(in)  :: S !! Specification value.
@@ -247,14 +279,14 @@ contains
       ! Calculation of fugacities coeficients and their derivatives
       ! ------------------------------------------------------------------------
       call model%lnphi_pt(&
-         w, P, T, V=Vw, root_type="stable", lnphi=lnphi_w, &
+         w, P, T, V=Vw, root_type=kind_w, lnphi=lnphi_w, &
          dlnphidt=dlnphi_dt_w, dlnphidn=dlnphi_dn_w &
          )
 
       do l=1,np
          x_l(l, :) = K(l, :)*w
          call model%lnphi_pt(&
-            x_l(l, :), P, T, V=Vl(l), root_type="stable", lnphi=lnphi, &
+            x_l(l, :), P, T, V=Vl(l), root_type=kinds_x(l), lnphi=lnphi, &
             dlnphidt=dlnphi_dt, dlnphidn=dlnphi_dn &
             )
          lnphi_l(l, :) = lnphi
@@ -366,7 +398,9 @@ contains
       df(nc * np + np + 2, ns) = 1
    end subroutine tx_F_NP
 
-   subroutine solve_point(model, z0, zi, np, P, beta_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
+   subroutine solve_point(&
+      model, z0, zi, np, P, beta_w, kinds_x, kind_w, &
+      X, ns, S, dXdS, F, dF, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
@@ -375,6 +409,8 @@ contains
       integer, intent(in) :: np !! Number of main phases
       real(pr), intent(in) :: P
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
+      character(len=14), intent(in) :: kinds_x(np) !! Kinds of the main phases
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
@@ -399,7 +435,9 @@ contains
       X0 = X
 
       do iters=1,max_iterations
-         call tx_F_NP(model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, X=X, ns=ns, S=S, F=F, dF=dF)
+         call tx_F_NP(&
+            model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, &
+            kinds_x=kinds_x, kind_w=kind_w, X=X, ns=ns, S=S, F=F, dF=dF)
 
          if (any(isnan(F))) then
             X = X - 0.9 * dX
@@ -488,7 +526,7 @@ contains
       dS = dS * 3._pr/its
    end subroutine update_specification
 
-   subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)
+   subroutine detect_critical(nc, np, kinds_x, kind_w, X, dXdS, ns, dS, S)
       !! # detect_critical
       !! Detect if the system is close to a critical point.
       !!
@@ -505,6 +543,10 @@ contains
       !! Number of components in the mixture.
       integer, intent(in) :: np
       !! Number of main phases.
+      character(len=14), intent(in out) :: kinds_x(np)
+      !! Kinds of the main phases.
+      character(len=14), intent(in out) :: kind_w
+      !! Kind of the reference phase.
       real(pr), intent(in out) :: X(:)
       !! Vector of variables.
       real(pr), intent(in out) :: dXdS(:)
@@ -517,14 +559,29 @@ contains
       !! Specification value.
 
       integer :: i, lb, ub
+      character(len=14) :: incipient_kind
+
+      real(pr) :: Xold(nc*np+np+2)
 
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
 
-         do while(maxval(abs(X(lb:ub))) < 0.3)
+         do while(maxval(abs(X(lb:ub))) < 0.01)
             X = X + dXdS * dS
          end do
+
+         if (all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
+            incipient_kind = kind_w
+            kind_w = kinds_x(i)
+            kinds_x(i) = incipient_kind
+            ! Interpolate here
+
+            if (nc == 2) then
+               dS=0
+               return
+            end if
+         end if
 
       end do
    end subroutine detect_critical
@@ -558,6 +615,7 @@ contains
       ! ========================================================================
       ! Extract variables from the vector X
       ! ------------------------------------------------------------------------
+      alpha = X(np*nc + np + 2)
       call get_z(alpha, z0, zi, z)
       T = exp(X(np*nc + np + 1))
       alpha = X(np*nc + np + 2)
