@@ -1716,6 +1716,8 @@ class ArModel(ABC):
         p0,
         specified_variable=None,
         first_step=None,
+        kinds_x=None,
+        kind_w=None,
         max_points=1000,
         stop_pressure=2500,
     ):
@@ -1749,6 +1751,10 @@ class ArModel(ABC):
             values are pressure, temperature and beta.
         first_step : float, optional
             Step for the specified variable, by default 0.1
+        kinds_x : list, optional
+            Kinds of the main phases, by default None (will use "stable")
+        kind_w : str, optional
+            Kind of the reference phase, by default None (will use "stable")
         max_points : int, optional
             Maximum number of points to calculate, by default 1000
         stop_pressure : float, optional
@@ -1762,10 +1768,14 @@ class ArModel(ABC):
         if first_step is None:
             first_step = 0.1
 
+        kinds_x, kind_w = adjust_root_kind(2, kinds_x=kinds_x, kind_w=kind_w)
+
         x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
             id=self.id,
             np=np,
             z=z,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
             x_l0=[x0, y0],
             w0=w0,
             betas0=[1 - beta0, beta0],

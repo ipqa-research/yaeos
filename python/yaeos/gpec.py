@@ -147,14 +147,24 @@ class GPEC:
 
         tx_12 = tx_21 = tx_ll = None
 
-        # Below saturation temperature of light component
-        loc = np.argmin(abs(psat_2["P"] - pressure))
-        t0 = psat_2["T"][loc]
+        # Below critical pressure of heavy component
+        if pressure < psat_2["P"][-1]:
+            loc = np.argmin(abs(psat_2["P"] - pressure))
+            t0 = psat_2["T"][loc]
 
-        tx_21 = self._model.phase_envelope_tx(
-            self._z0, self._zi, pressure=pressure, kind="bubble",
-            t0=t0, a0=a0, ds0=1e-5
-        )
+            tx_21 = self._model.phase_envelope_tx(
+                self._z0, self._zi, pressure=pressure, kind="dew",
+                t0=t0, a0=a0, ds0=1e-5
+            )
+        if pressure < psat_1["P"][-1]:
+            # Below critical pressure of the light component
+            loc = np.argmin(abs(psat_1["P"] - pressure))
+            t0 = psat_1["T"][loc]
+
+            tx_12 = self._model.phase_envelope_tx(
+                self._z0, self._zi, pressure=pressure, kind="bubble",
+                t0=t0, a0=1-a0, ds0=-1e-5
+            )
 
         if self._cl_ll:
             loc = np.argmin(abs(self._cl_ll["P"] - pressure))
