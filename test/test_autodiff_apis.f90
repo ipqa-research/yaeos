@@ -49,11 +49,18 @@ contains
       z = [0.3, 0.7]
       v = 1
       T = 150
+      call eos%residual_helmholtz(z, V, T, ArV=ArV)     
+      call eos%residual_helmholtz(z, V, T, ArTV=ArTV, ArV2=ArV2, ArVn=ArVn)     
+
+      call eos%residual_helmholtz(z, V, T, ArT=ArT)     
+      call eos%residual_helmholtz(z, V, T, ArTV=ArTV, ArV2=ArT2, ArVn=ArTn)     
+
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
       
+
       call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
       call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
       call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
