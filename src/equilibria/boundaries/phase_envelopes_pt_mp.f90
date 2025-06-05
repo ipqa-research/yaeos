@@ -5,6 +5,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    !! mixture with multiple phases.
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_boundaries_auxiliar, only: detect_critical
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
 
@@ -42,7 +43,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 contains
 
    type(PTEnvelMP) function pt_envelope(&
-      model, z, np, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points, &
+      model, z, np, kinds_x, kind_w, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points, &
       max_pressure &
       )
       !! # `pt_envelope`
@@ -62,8 +63,14 @@ contains
       !! we are calculating a phase boundary.
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:) !! Mixture global composition.
-      integer, intent(in) :: np !! Number of main phases.
+      real(pr), intent(in) :: z(:) 
+      !! Mixture global composition.
+      integer, intent(in) :: np 
+      !! Number of main phases.
+      character(len=14), intent(in) :: kinds_x(np)
+      !! Kind of the main phases.
+      character(len=14), intent(in) :: kind_w
+      !! Kind of the reference phase.
       real(pr), intent(in) :: x_l0(np, size(z))
       !! Initial guess for the mole fractions of each phase. arranged as
       !! an array of size `(np, nc)`, where nc is the number of components
@@ -148,6 +155,8 @@ contains
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
+      character(len=14) :: x_kinds(np), w_kind
+
       nc = size(z)
       iP = np*nc + np + 1
       iT = np*nc + np + 2
@@ -169,18 +178,21 @@ contains
       S = X(ns)
       dS = dS0
 
+      x_kinds = kinds_x
+      w_kind = kind_w
+
       allocate(env_points(0))
       F = 1
       its = 0
       X0 = X
       call solve_point(&
-         model, z, np, beta_w, X, ns, S, dXdS, &
+         model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
          F, dF, its, 1000 &
          )
       do i=1,number_of_points
          X0 = X
          call solve_point(&
-            model, z, np, beta_w, X, ns, S, dXdS, &
+            model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
             F, dF, its, max_iterations &
             )
 
@@ -192,7 +204,7 @@ contains
             X = X0 - (1 - real(inner, pr) / 10._pr) * dX
             S = X(ns)
             call solve_point(&
-               model, z, np, beta_w, X, ns, S, dXdS, &
+               model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
                F, dF, its, max_iterations&
                )
          end do
@@ -220,7 +232,7 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, X, dXdS, ns, dS, S)
+         call detect_critical(nc, np, x_kinds, w_kind, .false., X, dXdS, ns, dS, S)
 
          ! Next point estimation.
          dX = dXdS * dS
@@ -241,13 +253,15 @@ contains
       call move_alloc(env_points, pt_envelope%points)
    end function pt_envelope
 
-   subroutine pt_F_NP(model, z, np, beta_w, X, ns, S, F, dF)
+   subroutine pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases.
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
+      character(len=14), intent(in) :: kinds_x(np) !! Kind of the main phases.
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase.
       real(pr), intent(in)  :: X(:) !! Vector of variables.
       integer, intent(in)  :: ns !! Number of specification.
       real(pr), intent(in)  :: S !! Specification value.
@@ -316,14 +330,14 @@ contains
       ! Calculation of fugacities coeficients and their derivatives
       ! ------------------------------------------------------------------------
       call model%lnphi_pt(&
-         w, P, T, V=Vw, root_type="stable", lnphi=lnphi_w, &
+         w, P, T, V=Vw, root_type=kind_w, lnphi=lnphi_w, &
          dlnphidp=dlnphi_dp_w, dlnphidt=dlnphi_dt_w, dlnphidn=dlnphi_dn_w &
          )
 
       do l=1,np
          x_l(l, :) = K(l, :)*w
          call model%lnphi_pt(&
-            x_l(l, :), P, T, V=Vl(l), root_type="stable", lnphi=lnphi, &
+            x_l(l, :), P, T, V=Vl(l), root_type=kinds_x(l), lnphi=lnphi, &
             dlnphidp=dlnphi_dp, dlnphidt=dlnphi_dt, dlnphidn=dlnphi_dn &
             )
          lnphi_l(l, :) = lnphi
@@ -433,13 +447,15 @@ contains
       df(nc * np + np + 2, ns) = 1
    end subroutine pt_F_NP
 
-   subroutine solve_point(model, z, np, beta_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
+   subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
+      character(len=14), intent(in) :: kinds_x(np) !! Kind of the main phases
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
@@ -474,7 +490,7 @@ contains
       iBetas = [(i, i=np*nc+1, np*nc+np)]
 
       do iters=1,max_iterations
-         call pt_F_NP(model, z, np, beta_w, x, ns, S, F, dF)
+         call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF)
 
          if (any(isnan(F)) .and. can_solve) then
             X = X - 0.9 * dX
@@ -614,47 +630,6 @@ contains
       !end do
 
    end subroutine update_specification
-
-   subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)
-      !! # detect_critical
-      !! Detect if the system is close to a critical point.
-      !!
-      !! # Description
-      !! When the system is close to a critical point, the \(\ln K_i^l\) values
-      !! are close to zero, since the composition of the incipient phase and the
-      !! \(l\) phase are similar (equal in the critical point). This can be used
-      !! to detect if the system is close to a critical point and force a jump
-      !! above it.
-      !!
-      !! # References
-      !!
-      integer, intent(in) :: nc
-      !! Number of components in the mixture.
-      integer, intent(in) :: np
-      !! Number of main phases.
-      real(pr), intent(in out) :: X(:)
-      !! Vector of variables.
-      real(pr), intent(in out) :: dXdS(:)
-      !! Sensitivity of the variables wrt the specification.
-      integer, intent(in out) :: ns
-      !! Number of the specified variable.
-      real(pr), intent(in out) :: dS
-      !! Step size of the specification for the next point.
-      real(pr), intent(in out) :: S
-      !! Specification value.
-
-      integer :: i, lb, ub
-
-      do i=1,np
-         lb = (i-1)*nc + 1
-         ub = i*nc
-
-         do while(maxval(abs(X(lb:ub))) < 0.01)
-            X = X + dXdS * dS
-         end do
-
-      end do
-   end subroutine detect_critical
 
    subroutine get_values_from_X(X, np, z, x_l, w, betas, P, T)
       !! # get_values_from_X

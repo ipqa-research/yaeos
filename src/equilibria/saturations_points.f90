@@ -118,10 +118,9 @@ contains
 
          p = p - step
          if (abs(step) < tol .and. abs(f) < tol) exit
-
       end do
       ! ========================================================================
-      if (its > iters_first_step) then
+      if (its >= iters_first_step) then
          block
             real(pr) :: X(size(n)+2), S
             integer :: ns, nc
@@ -140,6 +139,8 @@ contains
             call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
          end block
       end if
+
+      y = y/sum(y)
       
       select case(kind)
        case("bubble")
