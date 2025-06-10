@@ -74,7 +74,5 @@ contains
 
       i = size(env%alpha)
       call assert(all(abs(env%points(i)%x_l(1, :) - env%points(i)%w) < 1e-3), "Pxy: End a critical point")
-
-      
    end subroutine pxy
 end program main
