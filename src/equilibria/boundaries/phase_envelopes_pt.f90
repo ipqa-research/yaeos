@@ -478,7 +478,7 @@ contains
          y = 0
          y(ncomp) = 1
 
-         do i=int(T0), 1, -10
+         do i=int(T0), 1, -5
             T = real(i, pr)
             call model%lnphi_pt(z, P, T, root_type="liquid", lnPhi=lnphi_z)
             call model%lnphi_pt(y, P, T, root_type="liquid", lnPhi=lnphi_y)
@@ -502,7 +502,7 @@ contains
       ncomp = findloc(Ts, T, dim=1)
 
       y=0
-      y(ncomp) = 1
+      y(ncomp) = 1000
 
       fr%x = z
       fr%y = y + 1e-5
@@ -510,10 +510,13 @@ contains
       fr%T = T
       fr%P = P
       fr%kind = "liquid-liquid"
+      
+      print *, "Initial point:", fr
       find_hpl = pt_envelope_2ph( &
          model, z, fr, &
          specified_variable_0=nc+2, delta_0=-5.0_pr, &
          iterations=1000, points=max_points)
+      print *, find_hpl
    end function find_hpl
 
 end module yaeos__equilibria_boundaries_phase_envelopes_pt

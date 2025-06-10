@@ -630,8 +630,7 @@ contains
       end do
       betas = X(np*nc + 1:np*nc + np)
 
-
-      w = z/matmul(betas, K) + beta_w
+      w = z/(matmul(betas, K) + beta_w)
 
       do l=1,np
          x_l(l, :) = K(l, :) * w

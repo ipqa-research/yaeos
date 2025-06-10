@@ -32,9 +32,6 @@ contains
       !! \(l\) phase are similar (equal in the critical point). This can be used
       !! to detect if the system is close to a critical point and force a jump
       !! above it.
-      !!
-      !! # References
-      !!
       integer, intent(in) :: nc
       !! Number of components in the mixture.
       integer, intent(in) :: np
@@ -67,7 +64,9 @@ contains
          ub = i*nc
 
          do while(maxval(abs(X(lb:ub))) < 0.01)
-            if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6) then
+            if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
+               ! Reached to a critical point in a Txy/Pxy calculation for a 
+               ! binary system, stop the calculation.
                dS=0
                return
             end if
@@ -85,8 +84,6 @@ contains
                return
             end if
          end if
-
       end do
-
    end subroutine detect_critical
 end module yaeos__equilibria_boundaries_auxiliar

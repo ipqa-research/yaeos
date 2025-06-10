@@ -2101,6 +2101,50 @@ class ArModel(ABC):
             specified_variable=ns,
         )
 
+    def phase_envelope_pt_from_dsp(self, z, env1: PTEnvelope, env2: PTEnvelope):
+        """Calculate PT phase envelopes from a DSP.
+        """
+        nc = env1.number_of_components
+        phases = env1.number_of_phases + 1
+
+        Ts, Ps = intersection(env1["T"], env1["P"], env2["T"], env2["P"])
+
+        dsps = []
+        for Tdsp, Pdsp in zip(Ts, Ps):
+            env1_loc = np.argmin(
+                np.abs(env1["T"] - Tdsp) + np.abs(env1["P"] - Pdsp)
+            )
+            env2_loc = np.argmin(
+                np.abs(env2["T"] - Tdsp) + np.abs(env2["P"] - Pdsp)
+            )
+
+            betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
+            betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
+
+            w0 = env1.reference_phase_compositions[env1_loc]
+            y0 = env2.reference_phase_compositions[env2_loc]
+
+            x_l1 = np.vstack((
+                env1.main_phases_compositions[env1_loc, :, :],
+                y0))
+            x_l2 = np.vstack((
+                env1.main_phases_compositions[env1_loc, :, :],
+                w0))
+            dsp_1 = self.phase_envelope_pt_mp(
+                z=z, x_l0=x_l1, w0=w0, betas0=[*betas_1, 0],
+                p0=Pdsp, t0=Tdsp, ns0=phases*nc+phases, ds0=1e-3, beta_w=0
+            )
+
+            dsp_2 = self.phase_envelope_pt_mp(
+                z=z, x_l0=x_l2, w0=y0,
+                betas0=[*betas_2, 0], p0=Pdsp, t0=Tdsp,
+                ns0=phases*nc+phases, ds0=1e-3, beta_w=0
+            )
+
+            dsps.append([dsp_1, dsp_2])
+
+        return dsps
+
     def isopleth(
         self,
         z,

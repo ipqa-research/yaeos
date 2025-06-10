@@ -211,7 +211,7 @@ contains
 
          ! Convert the values of the vector of variables into human-friendly
          ! variables.
-         call get_values_from_X(X, np, z, x_l, w, betas, P, T)
+         call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
          ! If the point did not converge, stop the calculation
          if (&
@@ -423,7 +423,9 @@ contains
             df(lb, nc*np+np+2) = T*(dlnphi_dt_l(l, i) - dlnphi_dt_w(i))
          end do
 
+         ! ====================================================================
          ! Derivatives of the sum of mole fractions
+         ! --------------------------------------------------------------------
 
          ! wrt lnK
          do phase=1,np
@@ -631,13 +633,14 @@ contains
 
    end subroutine update_specification
 
-   subroutine get_values_from_X(X, np, z, x_l, w, betas, P, T)
+   subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
       !! # get_values_from_X
       !! Extract the values of the variables from the vector X.
       !!
       real(pr), intent(in) :: X(:) !! Vector of variables.
       integer, intent(in) :: np !! Number of main phases.
       real(pr), intent(in) :: z(:) !! Mixture composition.
+      real(pr), intent(in) :: beta_w !! Fraction of the reference phase.
       real(pr), intent(out) :: x_l(np, size(z)) !! Mole fractions of the main phases.
       real(pr), intent(out) :: w(size(z)) !! Mole fractions of the incipient phase.
       real(pr), intent(out) :: betas(np) !! Fractions of the main phases.
@@ -663,7 +666,7 @@ contains
       end do
 
       ! Calculate the mole fractions of the incipient phase
-      w = z/matmul(betas, x_l)
+      w = z/(matmul(betas, x_l) + beta_w)
 
       ! Calculate the mole fractions of the main phases with the previously
       ! calculated K values
