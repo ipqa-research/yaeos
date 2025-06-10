@@ -72,8 +72,12 @@ class BinaryFitter:
         cp_msk = data["kind"] == "critical"
         if len(data[cp_msk]) > 0:
             cl = model.critical_line(
-                z0=[0, 1], zi=[1, 0], a0=1e-2, s=1e-2, ds0=1e-3,
-                max_points=15000
+                z0=[0, 1],
+                zi=[1, 0],
+                a0=1e-2,
+                s=1e-2,
+                ds0=1e-3,
+                max_points=15000,
             )
 
         err = 0

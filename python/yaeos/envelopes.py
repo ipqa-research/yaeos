@@ -24,6 +24,8 @@ class PTEnvelope:
         global_composition,
         main_phases_compositions,
         reference_phase_compositions,
+        reference_phase_kinds,
+        main_phases_kinds,
         main_phases_molar_fractions,
         pressures,
         temperatures,
@@ -44,6 +46,8 @@ class PTEnvelope:
         self.temperatures = temperatures[msk]
         self.iterations = iterations[msk]
         self.specified_variable = specified_variable[msk]
+        self.reference_phase_kinds = reference_phase_kinds[msk]
+        self.main_phases_kinds = main_phases_kinds[msk]
 
         df = pd.DataFrame()
 
@@ -117,9 +121,9 @@ class PTEnvelope:
         elif key == "w":
             return self.reference_phase_compositions
 
-    def plot(self):
-        plt.plot(self.temperatures, self.pressures)
-        plt.xlabel("Temperature (K)")
+    def plot(self, **plot_kwargs):
+        plt.plot(self.temperatures, self.pressures, **plot_kwargs)
+        plt.xlabel("Temperature [K]")
         plt.ylabel("Pressure [bar]")
         plt.title("PT Envelope")
         for cp in self.cp:

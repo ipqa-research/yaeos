@@ -36,6 +36,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
       real(pr) :: T !! Temperature [K]
       real(pr), allocatable :: x_l(:, :) !! Mole fractions of the main phases.
       real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
+      character(len=14), allocatable :: kinds_x(:) !! Kinds of the main phases.
+      character(len=14) :: kind_w !! Kind of the reference phase.
       integer :: iters !! Number of iterations needed to converge the point.
       integer :: ns !! Number of the specified variable.
    end type MPPoint
@@ -182,6 +184,7 @@ contains
       w_kind = kind_w
 
       allocate(env_points(0))
+      
       F = 1
       its = 0
       X0 = X
@@ -223,7 +226,7 @@ contains
          ! Attach the new point to the envelope.
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
-            iters=its, ns=ns &
+            kinds_x=x_kinds, kind_w=w_kind, iters=its, ns=ns &
             )
          env_points = [env_points, point]
 

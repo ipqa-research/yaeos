@@ -1345,7 +1345,7 @@ contains
    subroutine pt_mp_phase_envelope(&
       id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
       beta_w, kinds_x, kind_w, max_points, stop_pressure, &
-      x_ls, ws, betas, Ps, Ts, iters, ns &
+      x_ls, ws, betas, Ps, Ts, iters, ns, main_kinds, ref_kinds &
       )
       use yaeos, only: PTEnvelMP, pt_envelope
       integer(c_int), intent(in) :: id
@@ -1373,6 +1373,10 @@ contains
 
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
+
+      character(len=14), intent(out) :: main_kinds(max_points, np)
+      character(len=14), intent(out) :: ref_kinds(max_points)
+
 
       integer :: i, j
 
@@ -1405,6 +1409,8 @@ contains
          Ts(i) = pt_mp%points(i)%T
          iters(i) = pt_mp%points(i)%iters
          ns(i) = pt_mp%points(i)%ns
+         main_kinds(i, :) = pt_mp%points(i)%kinds_x
+         ref_kinds(i) = pt_mp%points(i)%kind_w
       end do
    end subroutine pt_mp_phase_envelope
 

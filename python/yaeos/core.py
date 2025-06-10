@@ -20,16 +20,16 @@ from yaeos.constants import root_kinds
 
 def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
     if kinds_x:
-        kinds_x = [root_kinds[kind] for kind in kinds_x]
+        kinds_x_out = [root_kinds[kind] for kind in kinds_x]
     else:
-        kinds_x = [root_kinds["stable"] for _ in range(number_of_phases)]
+        kinds_x_out = [root_kinds["stable"] for _ in range(number_of_phases)]
 
     if kind_w:
-        kind_w = root_kinds[kind_w]
+        kind_w_out = root_kinds[kind_w]
     else:
-        kind_w = root_kinds["stable"]
+        kind_w_out = root_kinds["stable"]
 
-    return kinds_x, kind_w
+    return kinds_x_out, kind_w_out
 
 
 class GeModel(ABC):
@@ -1627,7 +1627,7 @@ class ArModel(ABC):
         a0=0.001,
         ns0=None,
         ds0=0.1,
-        w0=None
+        w0=None,
     ):
         """Two phase envelope calculation (TX).
 
@@ -1906,32 +1906,40 @@ class ArModel(ABC):
         number_of_phases = x_l0.shape[0]
 
         kinds_x, kind_w = adjust_root_kind(
-            number_of_phases=number_of_phases,
-            kinds_x=kinds_x, kind_w=kind_w
+            number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
-            id=self.id,
-            np=number_of_phases,
-            z=z,
-            x_l0=x_l0,
-            w0=w0,
-            betas0=betas0,
-            t0=t0,
-            p0=p0,
-            ns0=ns0,
-            ds0=ds0,
-            beta_w=beta_w,
-            kinds_x=kinds_x,
-            kind_w=kind_w,
-            max_points=max_points,
-            stop_pressure=stop_pressure,
+        x_ls, ws, betas, ps, ts, iters, ns, x_kinds, w_kinds = (
+            yaeos_c.pt_mp_phase_envelope(
+                id=self.id,
+                np=number_of_phases,
+                z=z,
+                x_l0=x_l0,
+                w0=w0,
+                betas0=betas0,
+                t0=t0,
+                p0=p0,
+                ns0=ns0,
+                ds0=ds0,
+                beta_w=beta_w,
+                kinds_x=kinds_x,
+                kind_w=kind_w,
+                max_points=max_points,
+                stop_pressure=stop_pressure,
+            )
         )
+
+        x_kinds = x_kinds.astype(str)
+        w_kinds = w_kinds.astype(str)
+        x_kinds = np.char.strip(x_kinds)
+        w_kinds = np.char.strip(w_kinds)
 
         envelope = PTEnvelope(
             global_composition=z,
             main_phases_compositions=x_ls,
             reference_phase_compositions=ws,
+            reference_phase_kinds=w_kinds,
+            main_phases_kinds=x_kinds,
             main_phases_molar_fractions=betas,
             pressures=ps,
             temperatures=ts,
@@ -2005,8 +2013,7 @@ class ArModel(ABC):
         number_of_phases = x_l0.shape[0]
 
         kinds_x, kind_w = adjust_root_kind(
-            number_of_phases=number_of_phases,
-            kinds_x=kinds_x, kind_w=kind_w
+            number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
         x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
@@ -2065,8 +2072,7 @@ class ArModel(ABC):
         number_of_phases = x_l0.shape[0]
 
         kinds_x, kind_w = adjust_root_kind(
-            number_of_phases=number_of_phases,
-            kinds_x=kinds_x, kind_w=kind_w
+            number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
         x_ls, ws, betas, ts, alphas, iters, ns = yaeos_c.tx_mp_phase_envelope(
@@ -2101,9 +2107,10 @@ class ArModel(ABC):
             specified_variable=ns,
         )
 
-    def phase_envelope_pt_from_dsp(self, z, env1: PTEnvelope, env2: PTEnvelope):
-        """Calculate PT phase envelopes from a DSP.
-        """
+    def phase_envelope_pt_from_dsp(
+        self, z, env1: PTEnvelope, env2: PTEnvelope
+    ):
+        """Calculate PT phase envelopes from a DSP."""
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
 
@@ -2124,21 +2131,47 @@ class ArModel(ABC):
             w0 = env1.reference_phase_compositions[env1_loc]
             y0 = env2.reference_phase_compositions[env2_loc]
 
-            x_l1 = np.vstack((
-                env1.main_phases_compositions[env1_loc, :, :],
-                y0))
-            x_l2 = np.vstack((
-                env1.main_phases_compositions[env1_loc, :, :],
-                w0))
+            x_l1 = np.vstack(
+                (env1.main_phases_compositions[env1_loc, :, :], y0)
+            )
+            x_l2 = np.vstack(
+                (env1.main_phases_compositions[env1_loc, :, :], w0)
+            )
+
+
+            # Convert the kinds to the correct format. Saving first as *_ to
+            # avoid issues.
+            kinds_x_1 = env1.main_phases_kinds[env1_loc, :]
+            kinds_x_2 = env2.main_phases_kinds[env2_loc, :]
+            kind_w_1 = env1.reference_phase_kinds[env1_loc]
+            kind_w_2 = env2.reference_phase_kinds[env2_loc]
+
             dsp_1 = self.phase_envelope_pt_mp(
-                z=z, x_l0=x_l1, w0=w0, betas0=[*betas_1, 0],
-                p0=Pdsp, t0=Tdsp, ns0=phases*nc+phases, ds0=1e-3, beta_w=0
+                z=z,
+                x_l0=x_l1,
+                w0=w0,
+                betas0=[*betas_1, 0],
+                p0=Pdsp,
+                t0=Tdsp,
+                ns0=phases * nc + phases,
+                ds0=1e-3,
+                beta_w=0,
+                kinds_x=[*kinds_x_1, kind_w_1],
+                kind_w=kind_w_2,
             )
 
             dsp_2 = self.phase_envelope_pt_mp(
-                z=z, x_l0=x_l2, w0=y0,
-                betas0=[*betas_2, 0], p0=Pdsp, t0=Tdsp,
-                ns0=phases*nc+phases, ds0=1e-3, beta_w=0
+                z=z,
+                x_l0=x_l2,
+                w0=y0,
+                betas0=[*betas_2, 0],
+                p0=Pdsp,
+                t0=Tdsp,
+                ns0=phases * nc + phases,
+                ds0=1e-3,
+                beta_w=0,
+                kinds_x=[*kinds_x_2, kind_w_2],
+                kind_w=kind_w_1,
             )
 
             dsps.append([dsp_1, dsp_2])
