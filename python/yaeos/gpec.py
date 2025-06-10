@@ -14,19 +14,19 @@ from yaeos.core import ArModel
 class GPEC:
 
     def __init__(
-            self,
-            model: ArModel,
-            max_pressure=2500,
-            max_points=10000,
-            stability_analysis=True,
-            step_21=1e-2,
-            step_12=1e-5,
-            ):
+        self,
+        model: ArModel,
+        max_pressure=2500,
+        max_points=10000,
+        stability_analysis=True,
+        step_21=1e-2,
+        step_12=1e-5,
+    ):
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
         self._model = model
 
-        # Calculate the pure saturation pressures of each component and 
+        # Calculate the pure saturation pressures of each component and
         # save it as an internal variable
         psats = [model.pure_saturation_pressures(i) for i in [1, 2]]
         self._pures = psats
@@ -53,12 +53,9 @@ class GPEC:
         # if not, calculate the critical line starting from the almost pure
         # first component. It is important to make small steps because this
         # kind of line can be pretty short.
-        if (
-            not np.isnan(cep["T"])
-            or (
-                abs(cl["T"][-1] - psats[0]["T"][-1]) > 10
-                and abs(cl["P"][-1] - psats[0]["P"][-1] > 10)
-            )
+        if not np.isnan(cep["T"]) or (
+            abs(cl["T"][-1] - psats[0]["T"][-1]) > 10
+            and abs(cl["P"][-1] - psats[0]["P"][-1] > 10)
         ):
             cl, cep = model.critical_line(
                 z0=self._z0,
@@ -114,8 +111,7 @@ class GPEC:
         plt.ylabel("Pressure (bar)")
 
     def plot_pxy(self, temperature, a0=1e-5):
-        """Plot a Pxy phase diagram
-        """
+        """Plot a Pxy phase diagram"""
         psat_1, psat_2 = self._pures
 
         px_12 = px_21 = px_iso = None
@@ -124,8 +120,13 @@ class GPEC:
         loc = np.argmin(abs(psat_2["T"] - temperature))
         p0 = psat_2["P"][loc]
         px_21 = self._model.phase_envelope_px(
-            self._z0, self._zi, temperature=temperature, kind="bubble",
-            p0=p0, a0=a0, ds0=1e-5
+            self._z0,
+            self._zi,
+            temperature=temperature,
+            kind="bubble",
+            p0=p0,
+            a0=a0,
+            ds0=1e-5,
         )
 
         pxs = [px_12, px_21, px_iso]
@@ -141,8 +142,7 @@ class GPEC:
         return pxs
 
     def plot_txy(self, pressure, a0=1e-5):
-        """Plot a Txy phase diagram
-        """
+        """Plot a Txy phase diagram"""
         psat_1, psat_2 = self._pures
 
         tx_12 = tx_21 = tx_ll = None
@@ -153,8 +153,13 @@ class GPEC:
             t0 = psat_2["T"][loc]
 
             tx_21 = self._model.phase_envelope_tx(
-                self._z0, self._zi, pressure=pressure, kind="dew",
-                t0=t0, a0=a0, ds0=1e-5
+                self._z0,
+                self._zi,
+                pressure=pressure,
+                kind="dew",
+                t0=t0,
+                a0=a0,
+                ds0=1e-5,
             )
         if pressure < psat_1["P"][-1]:
             # Below critical pressure of the light component
@@ -162,8 +167,13 @@ class GPEC:
             t0 = psat_1["T"][loc]
 
             tx_12 = self._model.phase_envelope_tx(
-                self._z0, self._zi, pressure=pressure, kind="bubble",
-                t0=t0, a0=1-a0, ds0=-1e-5
+                self._z0,
+                self._zi,
+                pressure=pressure,
+                kind="bubble",
+                t0=t0,
+                a0=1 - a0,
+                ds0=-1e-5,
             )
 
         if self._cl_ll:
@@ -182,10 +192,19 @@ class GPEC:
                 w0[1] += 1e-5
 
                 tx_ll = self._model.phase_envelope_tx_mp(
-                    z0=self._z0, zi=self._zi, p=pressure,
-                    kinds_x=["liquid"], kind_w="liquid", 
-                    x_l0=x_l0, w0=w0, betas0=[1], t0=t0, alpha0=a + 1e-5,
-                    ns0=len(z)+3, ds0=1e-4, max_points=1000,
+                    z0=self._z0,
+                    zi=self._zi,
+                    p=pressure,
+                    kinds_x=["liquid"],
+                    kind_w="liquid",
+                    x_l0=x_l0,
+                    w0=w0,
+                    betas0=[1],
+                    t0=t0,
+                    alpha0=a + 1e-5,
+                    ns0=len(z) + 3,
+                    ds0=1e-4,
+                    max_points=1000,
                 )
 
         txs = [tx_12, tx_21, tx_ll]
