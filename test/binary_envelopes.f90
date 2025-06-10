@@ -69,7 +69,7 @@ contains
       env = px_envelope(&
          eos, z0=z0, zi=zi, np=1, T=T, &
          x_l0=x_l0, w0=w0, betas0=betas0, P0=sat%P, alpha0=alpha0, &
-         ns0=nc+1+2, ds0=1e-5_pr, beta_w=0.0_pr,  points=300, kinds_x=kinds_x, kind_w=kind_w&
+         ns0=nc+1+2, ds0=1e-5_pr, beta_w=0.0_pr,  points=800, kinds_x=kinds_x, kind_w=kind_w&
          )
 
       i = size(env%alpha)

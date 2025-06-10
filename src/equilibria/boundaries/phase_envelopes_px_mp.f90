@@ -207,7 +207,7 @@ contains
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS
             z = alpha * zi + (1- alpha) * z0
-            
+
             do while((any(z < 0) .or. any(z > 1)) .and. abs(dS) > 0)
                dS = dS/2
                alpha = X(ia) + dXdS(ia)*dS
@@ -558,6 +558,9 @@ contains
       !! Sensitivity of the functions wrt the specification.
 
       integer :: i
+
+      integer :: ia !! Index of the \(\alpha\) variable
+      integer :: iP !! Index of the \(\ln P\) variable
       integer :: lb !! Lower bound of each phase
       integer :: ub !! Upper bound of each phase
 
@@ -567,6 +570,9 @@ contains
       dXdS = solve_system(dF, -dFdS)
 
       ns = maxloc(abs(dXdS), dim=1)
+
+      iP = nc*np + np + 1
+      ia = nc*np + np + 2
 
       ! ========================================================================
       ! For each phase, check if the mole fractions are too low.
@@ -588,7 +594,19 @@ contains
 
       ! We adapt the step size to the number of iterations, the desired number
       ! of iterations for each point is around 3.
-      dS = dS * 3._pr/its
+      ! dS = dS * 3._pr/its
+
+      do while(maxval(abs(dXdS(:nc*np)*dS)) > 0.1_pr)
+         dS = dS/2
+      end do
+
+      do while(minval(abs(dXdS(:nc*np)*dS)) < 1e-5_pr)
+         dS = dS*1.1
+      end do
+
+      do while(abs(dXdS(ia)*dS) < 1e-3 .and. abs(dXdS(iP)*dS) < 1e-2)
+         dS = dS*1.1
+      end do
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, P, alpha)
