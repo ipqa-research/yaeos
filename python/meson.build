@@ -148,6 +148,13 @@ cubic_eos_sources = [
 ]
 py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos')
 
+#### models.residual_helmholtz.multifluid
+cubic_eos_sources = [
+  python_lib / 'models' / 'residual_helmholtz' / 'multifluid' / '__init__.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'multifluid' / 'gerg2008.py',
+]
+py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'multifluid')
+
 #### fitting
 fitting = [
   python_lib / 'fitting' / '__init__.py',
