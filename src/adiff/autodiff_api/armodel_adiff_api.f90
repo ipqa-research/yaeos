@@ -172,8 +172,8 @@ contains
                 d_n(i)%f1 = 1
                 d_v%f2 = 1
                 d_Ar = self%Ar(d_n, d_v, d_t)
-                Arn(i) = d_Ar%f1
-                ArV = d_Ar%f2
+                if (present(Arn)) Arn(i) = d_Ar%f1
+                if (present(ArV)) ArV = d_Ar%f2
                 ArVn(i) = d_Ar%f12
             end do
         end subroutine
