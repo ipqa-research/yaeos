@@ -22,6 +22,8 @@ module yaeos_c
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv
+   ! Multifluid equations
+   public :: multifluid_gerg2008
 
    ! __del__
    public :: make_available_ar_models_list
@@ -477,6 +479,20 @@ contains
    end subroutine get_ac_b_del1_del2
 
    ! ==========================================================================
+   !  Multifluid equations
+   ! --------------------------------------------------------------------------
+   subroutine multifluid_gerg2008(ids, id)
+      use yaeos, only: gerg_2008, GERG2008
+      integer, intent(in) :: ids(:)
+      integer(c_int), intent(out) :: id
+      
+      integer :: i
+      ar_model = gerg_2008(ids)
+      call extend_ar_models_list(id)
+   end subroutine multifluid_gerg2008
+
+
+   ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
    subroutine residual_helmholtz(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
@@ -758,26 +774,6 @@ contains
          a=a, T=T, V=V &
          )
    end subroutine find_llcl
-
-   subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
-      use yaeos, only: EquilibriumState
-      type(EquilibriumState) :: eq_state
-      real(c_double), intent(out) :: x(:)
-      real(c_double), intent(out) :: y(:)
-      real(c_double), intent(out) :: P
-      real(c_double), intent(out) :: T
-      real(c_double), intent(out) :: Vx
-      real(c_double), intent(out) :: Vy
-      real(c_double), intent(out) :: Beta
-
-      x = eq_state%x
-      y = eq_state%y
-      P = eq_state%p
-      T = eq_state%T
-      Vx = eq_state%Vx
-      Vy = eq_state%Vy
-      beta = eq_state%beta
-   end subroutine equilibria_state_to_arrays
 
    subroutine stability_zpt(id, z, P, T, w_min, min_tm, all_mins)
       use yaeos, only: min_tpd, tm
@@ -1572,4 +1568,80 @@ contains
          string = "unknown"
       end select
    end subroutine convert_kind
+
+   subroutine convert_gerg_components(string, numeric)
+      use yaeos, only: G2008Components
+      use iso_fortran_env, only: error_unit
+
+      character(len=*), intent(in) :: string
+      integer(c_int), intent(out) :: numeric
+
+      select case (string)
+       case ("methane", "C1", "CH4", "nC1")
+         numeric = G2008Components%methane
+       case ("nitrogen", "N2")
+         numeric = G2008Components%nitrogen
+       case ("carbon_dioxide", "CO2", "carbon dioxide")
+         numeric = G2008Components%carbon_dioxide
+       case ("ethane", "C2", "nC2")
+         numeric = G2008Components%ethane
+       case ("propane", "C3", "nC3")
+         numeric = G2008Components%propane
+       case ("nbutane", "C4", "nC4")
+         numeric = G2008Components%nbutane
+       case ("isobutane", "iC4")
+         numeric = G2008Components%isobutane
+       case ("npentane", "C5", "nC5")
+         numeric = G2008Components%npentane
+       case ("isopentane", "iC5")
+         numeric = G2008Components%isopentane
+       case ("nhexane", "C6", "nC6")
+         numeric = G2008Components%nhexane
+       case ("nheptane", "C7", "nC7")
+         numeric = G2008Components%nheptane
+       case ("noctane", "C8", "nC8")
+         numeric = G2008Components%noctane
+       case ("nonane", "C9", "nC9")
+         numeric = G2008Components%nonane
+       case ("decane", "C10", "nC10")
+         numeric = G2008Components%decane
+       case ("hydrogen", "H2")
+         numeric = G2008Components%hydrogen
+       case ("oxygen", "O2")
+         numeric = G2008Components%oxygen
+       case ("carbon_monoxide", "CO")
+         numeric = G2008Components%carbon_monoxide
+       case ("water", "H2O")
+         numeric = G2008Components%water
+       case ("hydrogen_sulfide", "H2S")
+         numeric = G2008Components%hydrogen_sulfide
+       case ("helium", "He")
+         numeric = G2008Components%helium
+       case ("argon", "Ar")
+         numeric = G2008Components%argon
+       case default
+         write(error_unit,*) "Unknown component: ", trim(string)
+         numeric = -1
+      end select
+   end subroutine convert_gerg_components
+   
+   subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState
+      type(EquilibriumState) :: eq_state
+      real(c_double), intent(out) :: x(:)
+      real(c_double), intent(out) :: y(:)
+      real(c_double), intent(out) :: P
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: Beta
+
+      x = eq_state%x
+      y = eq_state%y
+      P = eq_state%p
+      T = eq_state%T
+      Vx = eq_state%Vx
+      Vy = eq_state%Vy
+      beta = eq_state%beta
+   end subroutine equilibria_state_to_arrays
 end module yaeos_c

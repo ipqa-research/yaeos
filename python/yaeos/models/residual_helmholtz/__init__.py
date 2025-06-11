@@ -16,6 +16,6 @@ Yaeos Residual Helmholtz module. This module provides the following submodules:
 """
 
 from . import cubic_eos
+from . import multifluid
 
-
-__all__ = ["cubic_eos"]
+__all__ = ["cubic_eos", "multifluid"]
