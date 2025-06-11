@@ -1768,35 +1768,11 @@ class ArModel(ABC):
         if first_step is None:
             first_step = 0.1
 
-        kinds_x, kind_w = adjust_root_kind(2, kinds_x=kinds_x, kind_w=kind_w)
-
-        x_ls, ws, betas, ps, ts, iters, ns = yaeos_c.pt_mp_phase_envelope(
-            id=self.id,
-            np=np,
-            z=z,
-            kinds_x=kinds_x,
-            kind_w=kind_w,
-            x_l0=[x0, y0],
-            w0=w0,
-            betas0=[1 - beta0, beta0],
-            t0=t0,
-            p0=p0,
-            ns0=specified_variable,
-            ds0=first_step,
-            beta_w=0,
-            max_points=max_points,
-            stop_pressure=stop_pressure,
-        )
-
-        envelope = PTEnvelope(
-            global_composition=z,
-            main_phases_compositions=x_ls,
-            reference_phase_compositions=ws,
-            main_phases_molar_fractions=betas,
-            pressures=ps,
-            temperatures=ts,
-            iterations=iters,
-            specified_variable=ns,
+        envelope = self.phase_envelope_pt_mp(
+            z=z, x_l0=[x0, y0], w0=w0, betas0=[1 - beta0, beta0],
+            t0=t0, p0=p0, ns0=specified_variable, ds0=first_step,
+            beta_w=0, kinds_x=kinds_x, kind_w=kind_w,
+            max_points=max_points, stop_pressure=stop_pressure,
         )
 
         return envelope
