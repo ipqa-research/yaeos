@@ -12,6 +12,7 @@ program main
 
    call pt
    call pxy
+   call txy
 
 contains
 
@@ -75,4 +76,45 @@ contains
       i = size(env%alpha)
       call assert(all(abs(env%points(i)%x_l(1, :) - env%points(i)%w) < 1e-3), "Pxy: End a critical point")
    end subroutine pxy
+
+   subroutine txy
+      type(TXEnvelMP) :: env
+      type(EquilibriumState) :: sat
+      type(PurePsat) :: psat
+      real(pr) :: zi(nc), z0(nc), z(nc), P, T
+
+      real(pr) :: alpha0, betas0(1), x_l0(1, nc), w0(nc)
+      character(len=14) :: kinds_x(1), kind_w
+
+      integer :: i
+
+      eos = binary_PR76()
+
+      zi = [1, 0]
+      z0 = [0, 1]
+      alpha0 = 1e-3
+      z = alpha0 * zi + (1.0_pr - alpha0) * z0
+
+      P = 20
+
+      psat = pure_saturation_line(eos, 2, 1e-5_pr, 100._pr)
+      T = psat%get_T(P)
+
+      sat = saturation_temperature(eos, z, P=P, kind="bubble", T0=T)
+
+      w0 = sat%y
+      x_l0(1, :) = z
+      betas0(1) = 1._pr
+      kinds_x = "liquid"
+      kind_w = "vapor"
+
+      env = tx_envelope(&
+         eos, z0=z0, zi=zi, np=1, P=P, &
+         x_l0=x_l0, w0=w0, betas0=betas0, T0=sat%T, alpha0=alpha0, &
+         ns0=nc+1+2, ds0=1e-5_pr, beta_w=0.0_pr,  points=800, &
+         kinds_x=kinds_x, kind_w=kind_w&
+         )
+      i = size(env%alpha)
+      call assert(all(abs(env%points(i)%x_l(1, :) - env%points(i)%w) < 1e-2), "Txy: End a critical point")
+   end subroutine txy
 end program main

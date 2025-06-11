@@ -7,7 +7,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
-   use yaeos__equilibria_boundaries_auxiliar, only: get_z
+   use yaeos__equilibria_boundaries_auxiliar, only: get_z, detect_critical
 
    implicit none
 
@@ -223,8 +223,12 @@ contains
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
          call detect_critical(&
-            nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, &
-            X=X, dXdS=dXdS, ns=ns, dS=dS, S=S)
+            nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, binary_stop=.true., &
+            X=X, dXdS=dXdS, ns=ns, dS=dS, S=S &
+            )
+         ! call detect_critical(&
+         !    nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, &
+         !    X=X, dXdS=dXdS, ns=ns, dS=dS, S=S)
 
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS
@@ -593,66 +597,6 @@ contains
       dS = dS * 3._pr/its
    end subroutine update_specification
 
-   subroutine detect_critical(nc, np, kinds_x, kind_w, X, dXdS, ns, dS, S)
-      !! # detect_critical
-      !! Detect if the system is close to a critical point.
-      !!
-      !! # Description
-      !! When the system is close to a critical point, the \(\ln K_i^l\) values
-      !! are close to zero, since the composition of the incipient phase and the
-      !! \(l\) phase are similar (equal in the critical point). This can be used
-      !! to detect if the system is close to a critical point and force a jump
-      !! above it.
-      !!
-      !! # References
-      !!
-      integer, intent(in) :: nc
-      !! Number of components in the mixture.
-      integer, intent(in) :: np
-      !! Number of main phases.
-      character(len=14), intent(in out) :: kinds_x(np)
-      !! Kinds of the main phases.
-      character(len=14), intent(in out) :: kind_w
-      !! Kind of the reference phase.
-      real(pr), intent(in out) :: X(:)
-      !! Vector of variables.
-      real(pr), intent(in out) :: dXdS(:)
-      !! Sensitivity of the variables wrt the specification.
-      integer, intent(in out) :: ns
-      !! Number of the specified variable.
-      real(pr), intent(in out) :: dS
-      !! Step size of the specification for the next point.
-      real(pr), intent(in out) :: S
-      !! Specification value.
-
-      integer :: i, lb, ub
-      character(len=14) :: incipient_kind
-
-      real(pr) :: Xold(nc*np+np+2)
-
-      do i=1,np
-         lb = (i-1)*nc + 1
-         ub = i*nc
-
-         do while(maxval(abs(X(lb:ub))) < 0.01)
-            X = X + dXdS * dS
-         end do
-
-         if (all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
-            incipient_kind = kind_w
-            kind_w = kinds_x(i)
-            kinds_x(i) = incipient_kind
-            ! Interpolate here
-
-            if (nc == 2) then
-               dS=0
-               return
-            end if
-         end if
-
-      end do
-   end subroutine detect_critical
-
    subroutine get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, T, alpha)
       !! # get_values_from_X
       !! Extract the values of the variables from the vector X.
@@ -685,7 +629,7 @@ contains
       T = exp(X(np*nc + np + 1))
       alpha = X(np*nc + np + 2)
       betas = X(np*nc + 1:np*nc + np)
-      
+
       call get_z(alpha, z0, zi, z)
       do l=1,np
          lb = (l-1)*nc + 1
