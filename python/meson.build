@@ -39,7 +39,9 @@ fpm_build_dir = meson_path / 'fpm_build'
 # allocation
 cc = meson.get_compiler('c')
 
-glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
+is_windows = host_machine.system() == 'windows'
+glibc_version = is_windows ? '0' : cc.get_define('__GLIBC__', args: [], default_value: '0')
+
 glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
 
 message('glibc major version: ' + glibc_major)
