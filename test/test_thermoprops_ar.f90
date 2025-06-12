@@ -65,17 +65,17 @@ contains
       type(CubicEoS) :: eos
 
 
-      real(pr) :: lnfug(2), dlnphidp(2), dlnphidt(2), dlnphidn(2, 2)
+      real(pr) :: lnphip(2), lnphi(2), dlnphidp(2), dlnphidt(2), dlnphidn(2, 2)
 
       real(pr), allocatable :: z(:)
       real(pr) ::  v, t, p
 
-      real(pr) :: lnfug_val(2), dlnphidp_val(2), dlnphidt_val(2)
+      real(pr) :: lnphi_val(2), dlnphidp_val(2), dlnphidt_val(2)
 
       character(len=:), allocatable :: root_type
 
 
-      lnfug_val = [2.0759140949373416, -2.2851989270402058]
+      lnphi_val = [2.0759140949373416, -2.2851989270402058]
       dlnphidp_val = [-0.99059224575177762, -0.99388122357848807]
       dlnphidt_val = [3.0263769083149254E-002, 7.6204871541712640E-002]
 
@@ -87,11 +87,16 @@ contains
 
       root_type = "liquid"
       call eos%lnphi_pt(&
-         z, P, T, V, root_type, lnfug, dlnPhidP, dlnphidT, dlnPhidn&
+         n=z, P=P, T=T, V=V, root_type=root_type, &
+         lnPhi=lnPhi,lnPhiP=lnPhiP, &
+         dlnPhidP=dlnPhidP, dlnPhidT=dlnphidT, dlnPhidn=dlnPhidn&
          )
 
       call check(&
-         error, maxval(rel_error(lnfug_val, lnfug)) < 1e-4 &
+         error, maxval(rel_error(lnphi_val, lnphi)) < 1e-4 &
+         )
+      call check(&
+         error, maxval(rel_error(lnphi_val + log(P), lnPhiP)) < 1e-4 &
          )
       call check(&
          error, maxval(rel_error(dlnphidp_val, dlnphidp)) < 1e-4 &

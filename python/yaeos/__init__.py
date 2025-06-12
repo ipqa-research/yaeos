@@ -28,6 +28,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     RKPR,
     SoaveRedlichKwong,
 )
+from yaeos.models.residual_helmholtz.multifluid import GERG2008
 
 __all__ = [
     "envelopes",
@@ -41,6 +42,7 @@ __all__ = [
     "PSRK",
     "QMR",
     "QMRTD",
+    "GERG2008",
     "NRTL",
     "UNIFACDortmund",
     "UNIFACPSRK",

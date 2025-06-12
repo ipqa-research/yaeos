@@ -11,4 +11,15 @@ module yaeos__constants
 
    real(pr), parameter :: NOT_IMPLEMENTED = huge(R)
    logical :: solving_volume = .false.
+   
+   type :: KindEnum
+      !! Enumeration of the possible phases that can be used
+      !! in the envelope calculations
+      integer :: stable=0
+      integer :: liquid=1
+      integer :: vapor=2
+   end type KindEnum
+
+   type(KindEnum), parameter :: root_kinds = KindEnum() !! KindEnum instance
+
 end module
