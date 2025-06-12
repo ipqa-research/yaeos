@@ -41,8 +41,9 @@ cc = meson.get_compiler('c')
 
 is_windows = host_machine.system() == 'windows'
 
-glibc_version = is_windows ? '0' : cc.get_define('__GLIBC__', args: [], default_value: '0')
+glibc_major = is_windows ? '0' : cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>', default_value: '0')
 glibc_minor = is_windows ? '0' : cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>', default_value: '0')
+
 
 message('glibc major version: ' + glibc_major)
 message('glibc minor version: ' + glibc_minor)
