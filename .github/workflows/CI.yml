@@ -113,14 +113,14 @@ jobs:
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
-    needs: 
-      - tests_and_coverage
-      - Python-API
+    # needs: 
+    #   - tests_and_coverage
+    #   - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest] #, windows-latest, macos-13, macos-14]
+        os: [windows-latest] #[ubuntu-latest] #, windows-latest, macos-13, macos-14]
     
     steps:
       - uses: actions/checkout@v4
@@ -128,12 +128,23 @@ jobs:
       # Used to host cibuildwheel
       - uses: actions/setup-python@v5
       
-      - name: Install 
+      # gfortran
+      - name: Install gfortran on Linux
+        if: runner.os == 'Linux'
         run: |
+          sudo apt update
           sudo apt install gfortran-14
           sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
 
-      # Install fpm for Windows
+      - name: Setup MinGW-w64 with gfortran on Windows
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          install: >-
+            mingw-w64-x86_64-gcc-fortran
+          msystem: MINGW64
+
+      # Install fpm
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v7
         with:
