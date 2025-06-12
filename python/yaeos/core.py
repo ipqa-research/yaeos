@@ -1142,7 +1142,8 @@ class ArModel(ABC):
                 - Vy: light phase volume [L]
                 - P: pressure [bar]
                 - T: temperature [K]
-                - beta: light phase fraction
+                - beta: light phase fraction. If beta is -1 flash was not
+                successful.
 
         Example
         -------
@@ -1175,8 +1176,84 @@ class ArModel(ABC):
         """
         if k0 is None:
             k0 = [0 for i in range(len(z))]
+
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
             self.id, z, p=pressure, t=temperature, k0=k0
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "P": pressure,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_vt(self, z, volume: float, temperature: float, k0=None) -> dict:
+        """Two-phase split with specification of temperature and volume.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        volume : float
+            Molar volume [L/mol]
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction. If beta is -1 flash was not
+                successful.
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([507.6, 658.0])        # critical temperatures [K]
+            pc = np.array([30.25, 18.20])        # critical pressures [bar]
+            w = np.array([0.301261, 0.576385])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Flash calculation
+            # will print:
+            # {
+            #     'x': array([0.26308567, 0.73691433]),
+            #     'y': array([0.95858707, 0.04141293]),
+            #     'Vx': 0.2417828483590114,
+            #     'Vy': 31.706890870110417,
+            #     'P': 1.0001131874567775,
+            #     'T': 393.15,
+            #     'beta': 0.34063818069513246
+            # }
+
+            print(model.flash_vt([0.5, 0.5], 10.96, 393.15))
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_vt(self.id, z, v=volume, t=temperature, k0=k0)
         )
 
         flash_result = {
@@ -1526,6 +1603,7 @@ class ArModel(ABC):
         )
 
         return envelope
+
 
     def phase_envelope_px(
         self,

@@ -46,7 +46,7 @@ module yaeos_c
    public :: Cv_residual_vt, Cp_residual_vt
 
    ! Phase equilibria
-   public :: flash, flash_grid
+   public :: flash, flash_vt, flash_grid
    public :: flash_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
@@ -849,14 +849,52 @@ contains
          Tout = T
          x = z
          y = z
-         beta = -1
-         Vx = 1
-         Vy = 1
+         beta = -1.0
+         Vx = 1.0
+         Vy = 1.0
          return
       end if
 
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
+
+   subroutine flash_vt(id, z, T, V, x, y, k0, Pout, Tout, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState, fflash => flash
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: V
+      real(c_double), intent(in) :: k0(size(z))
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Pout
+      real(c_double), intent(out) :: Tout
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: beta
+
+      type(EquilibriumState) :: result
+      integer :: iters
+
+      if (all(k0 == 0)) then
+         result = fflash(ar_models(id)%model, z, T, v_spec=V, iters=iters)
+      else
+         result = fflash(ar_models(id)%model, z, T, v_spec=V, k0=k0, iters=iters)
+      end if
+
+      if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
+         Pout = -1.0
+         Tout = T
+         x = z
+         y = z
+         beta = -1.0
+         Vx = 1.0
+         Vy = 1.0
+         return
+      end if
+
+      call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
+   end subroutine flash_vt
 
    subroutine flash_ge(id, z, T, x, y, k0, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fflash => flash
