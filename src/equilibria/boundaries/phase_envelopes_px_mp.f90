@@ -202,7 +202,7 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, x_kinds, w_kind, .true., X, dXdS, ns, dS, S)
+         call detect_critical(nc, np, i, x_kinds, w_kind, .true., X, dXdS, ns, dS, S)
 
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS

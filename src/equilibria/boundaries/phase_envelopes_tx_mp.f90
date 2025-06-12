@@ -223,7 +223,7 @@ contains
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
          call detect_critical(&
-            nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, binary_stop=.true., &
+            nc=nc, np=np, point=i, kinds_x=x_kinds, kind_w=w_kind, binary_stop=.true., &
             X=X, dXdS=dXdS, ns=ns, dS=dS, S=S &
             )
          ! call detect_critical(&

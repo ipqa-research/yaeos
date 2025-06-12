@@ -235,7 +235,7 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, x_kinds, w_kind, .false., X, dXdS, ns, dS, S)
+         call detect_critical(nc, np, i, x_kinds, w_kind, .false., X, dXdS, ns, dS, S)
 
          ! Next point estimation.
          dX = dXdS * dS

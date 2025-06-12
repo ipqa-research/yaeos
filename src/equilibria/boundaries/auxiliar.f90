@@ -22,7 +22,7 @@ contains
       if (present(dzda)) dzda = z_inj - z_0
    end subroutine get_z
 
-   subroutine detect_critical(nc, np, kinds_x, kind_w, binary_stop, X, dXdS, ns, dS, S)
+   subroutine detect_critical(nc, np, point, kinds_x, kind_w, binary_stop, X, dXdS, ns, dS, S)
       !! # detect_critical
       !! Detect if the system is close to a critical point.
       !!
@@ -36,11 +36,13 @@ contains
       !! Number of components in the mixture.
       integer, intent(in) :: np
       !! Number of main phases.
+      integer, intent(in) :: point
+      !! Point number in the phase boundary.
       character(len=14), intent(in out) :: kinds_x(np)
       !! Kinds of the main phases.
       character(len=14), intent(in out) :: kind_w
       !! Kind of the incipient phase.
-      logical, intent(in ) :: binary_stop
+      logical, intent(in) :: binary_stop
       !! If true, stop at the critical point if its a binary system.
       real(pr), intent(in out) :: X(:)
       !! Vector of variables.
@@ -73,7 +75,11 @@ contains
             X = X + dXdS * dS
          end do
 
-         if (all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
+         if (point > 1 .and. all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
+            ! In Liquid-Liquid lines that start from a critical point, this
+            ! could be a false positive, so we check that the point is not
+            ! the first one.
+            
             incipient_kind = kind_w
             kind_w = kinds_x(i)
             kinds_x(i) = incipient_kind
