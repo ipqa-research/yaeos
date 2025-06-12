@@ -1426,7 +1426,7 @@ class ArModel(ABC):
         t0: float = 150.0,
         p0: float = 1.0,
         stop_pressure: float = 2500,
-    ) -> dict:
+    ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
 
         Parameters
@@ -1488,14 +1488,14 @@ class ArModel(ABC):
             sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
             w0 = sat["y"]
             ns0 = len(z) + 3
-            t0 = sat["T"]
+            p0 = sat["P"]
             kinds_x = ["liquid"]
             kind_w = "vapor"
         elif kind == "dew":
             sat = self.saturation_temperature(z, p0, kind=kind, t0=t0)
             w0 = sat["x"]
             ns0 = len(z) + 2
-            p0 = sat["P"]
+            t0 = sat["T"]
             kinds_x = ["vapor"]
             kind_w = "liquid"
         elif kind == "liquid-liquid":
@@ -1539,7 +1539,7 @@ class ArModel(ABC):
         a0=1e-2,
         ns0=None,
         ds0=1e-5,
-    ):
+    ) -> PXEnvelope:
         """Two phase envelope calculation (PX).
 
         Calculation of a phase envelope that starts at a given composition and
@@ -1628,7 +1628,7 @@ class ArModel(ABC):
         ns0=None,
         ds0=0.1,
         w0=None,
-    ):
+    ) -> TXEnvelope:
         """Two phase envelope calculation (TX).
 
         Calculation of a phase envelope that starts at a given composition and
@@ -1720,7 +1720,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=1000,
         stop_pressure=2500,
-    ):
+    ) -> PTEnvelope:
         """
         Three-phase envelope tracing method.
 
@@ -1769,10 +1769,19 @@ class ArModel(ABC):
             first_step = 0.1
 
         envelope = self.phase_envelope_pt_mp(
-            z=z, x_l0=[x0, y0], w0=w0, betas0=[1 - beta0, beta0],
-            t0=t0, p0=p0, ns0=specified_variable, ds0=first_step,
-            beta_w=0, kinds_x=kinds_x, kind_w=kind_w,
-            max_points=max_points, stop_pressure=stop_pressure,
+            z=z,
+            x_l0=[x0, y0],
+            w0=w0,
+            betas0=[1 - beta0, beta0],
+            t0=t0,
+            p0=p0,
+            ns0=specified_variable,
+            ds0=first_step,
+            beta_w=0,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
+            max_points=max_points,
+            stop_pressure=stop_pressure,
         )
 
         return envelope
@@ -1791,7 +1800,9 @@ class ArModel(ABC):
         specified_variable=None,
         first_step=None,
         max_points=1000,
-    ):
+        kinds_x=None,
+        kind_w=None,
+    ) -> PXEnvelope:
         """
         Three-phase envelope tracing method.
 
@@ -1826,6 +1837,12 @@ class ArModel(ABC):
             Step for the specified variable, by default 0.1
         max_points : int, optional
             Maximum number of points to calculate, by default 1000
+        kinds_x : list, optional
+            Kinds of the main phases, by default None (will use "stable")
+            options can be - "stable", "liquid", "vapor"
+        kind_w : str, optional
+            Kind of the reference phase, by default None (will use "stable")
+            options can be - "stable", "liquid", "vapor"
         """
         if specified_variable is None:
             specified_variable = 2 * len(z0) + 2
@@ -1833,32 +1850,26 @@ class ArModel(ABC):
         if first_step is None:
             first_step = 0.1
 
-        x, y, w, p, a, beta = yaeos_c.px3_phase_envelope(
-            id=self.id,
+        kinds_x, kind_w = adjust_root_kind(
+            number_of_phases=2, kinds_x=kinds_x, kind_w=kind_w
+        )
+
+        envelope = self.phase_envelope_px_mp(
             z0=z0,
             zi=zi,
             t=T,
-            x0=x0,
-            y0=y0,
+            x_l0=[x0, y0],
             w0=w0,
+            betas0=[1 - beta0, beta0],
             p0=p0,
-            a0=a0,
-            beta0=beta0,
+            alpha0=a0,
             ns0=specified_variable,
             ds0=first_step,
             max_points=max_points,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
         )
-
-        msk = ~np.isnan(a)
-
-        return {
-            "x": x[msk],
-            "y": y[msk],
-            "w": w[msk],
-            "P": p[msk],
-            "a": a[msk],
-            "beta": beta[msk],
-        }
+        return envelope
 
     def phase_envelope_pt_mp(
         self,
@@ -1875,7 +1886,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=1000,
         stop_pressure=1000,
-    ):
+    ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
 
@@ -1941,7 +1952,7 @@ class ArModel(ABC):
         max_points=1000,
         kinds_x=None,
         kind_w=None,
-    ):
+    ) -> PXEnvelope:
         """Multi-phase PX envelope.
 
         Calculate a phase envelope with a preselected ammount of phases.
@@ -2040,7 +2051,7 @@ class ArModel(ABC):
         max_points=1000,
         kinds_x=None,
         kind_w=None,
-    ):
+    ) -> TXEnvelope:
         """Multi-phase envelope."""
 
         x_l0 = np.array(x_l0, order="F")
@@ -2085,7 +2096,7 @@ class ArModel(ABC):
 
     def phase_envelope_pt_from_dsp(
         self, z, env1: PTEnvelope, env2: PTEnvelope
-    ):
+    ) -> list:
         """Calculate PT phase envelopes from a DSP."""
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
@@ -2113,7 +2124,6 @@ class ArModel(ABC):
             x_l2 = np.vstack(
                 (env1.main_phases_compositions[env1_loc, :, :], w0)
             )
-
 
             # Convert the kinds to the correct format. Saving first as *_ to
             # avoid issues.
@@ -2148,6 +2158,67 @@ class ArModel(ABC):
                 beta_w=0,
                 kinds_x=[*kinds_x_2, kind_w_2],
                 kind_w=kind_w_1,
+            )
+
+            dsps.append([dsp_1, dsp_2])
+
+        return dsps
+
+    def phase_envelope_px_from_dsp(
+        self, z0, zi, env1: PXEnvelope, env2: PXEnvelope
+    ) -> list:
+        """Calculate PX phase envelopes from a DSP."""
+
+        nc = env1.number_of_components
+        phases = env1.number_of_phases + 1
+        dsps = intersection(env1["a"], env1["P"], env2["a"], env2["P"])
+        dsps = []
+
+        for adsp, Pdsp in zip(dsps[0], dsps[1]):
+            env1_loc = np.argmin(abs(env1["a"] - adsp) + abs(env1["P"]) - Pdsp)
+            env2_loc = np.argmin(abs(env2["a"] - adsp) + abs(env2["P"]) - Pdsp)
+
+            betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
+            betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
+
+            w0 = env1.reference_phase_compositions[env1_loc]
+            y0 = env2.reference_phase_compositions[env2_loc]
+
+            x_l1 = np.vstack(
+                (env1.main_phases_compositions[env1_loc, :, :], y0)
+            )
+            x_l2 = np.vstack(
+                (env1.main_phases_compositions[env1_loc, :, :], w0)
+            )
+
+            dsp_1 = self.phase_envelope_px_mp(
+                z0=z0,
+                zi=zi,
+                t=T,
+                x_l0=x_l1,
+                w0=w0,
+                betas0=[*betas_1, 0],
+                p0=Pdsp,
+                alpha0=adsp,
+                ns0=phases * nc + phases,
+                ds0=1e-1,
+                beta_w=0,
+                max_points=500,
+            )
+
+            dsp_2 = self.phase_envelope_px_mp(
+                z0=z0,
+                zi=zi,
+                t=T,
+                x_l0=x_l2,
+                w0=y0,
+                betas0=[*betas_2, 0],
+                p0=Pdsp,
+                alpha0=adsp,
+                ns0=phases * nc + phases,
+                ds0=1e-1,
+                beta_w=0,
+                max_points=800,
             )
 
             dsps.append([dsp_1, dsp_2])
