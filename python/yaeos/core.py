@@ -330,9 +330,7 @@ class GeModel(ABC):
 
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
-    def flash_t(
-        self, z, temperature: float, k0=None
-    ) -> dict:
+    def flash_t(self, z, temperature: float, k0=None) -> dict:
         """Two-phase split with specification of temperature and pressure.
 
         Parameters
@@ -357,10 +355,10 @@ class GeModel(ABC):
         """
         if k0 is None:
             mintpd, _ = self.stability_analysis(z, temperature)
-            k0 = mintpd["w"]/np.array(z)
+            k0 = mintpd["w"] / np.array(z)
 
-        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash_ge(
-            self.id, z, t=temperature, k0=k0
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_ge(self.id, z, t=temperature, k0=k0)
         )
 
         flash_result = {
@@ -1129,7 +1127,8 @@ class ArModel(ABC):
                 - Vy: light phase volume [L]
                 - P: pressure [bar]
                 - T: temperature [K]
-                - beta: light phase fraction
+                - beta: light phase fraction. If beta is -1 flash was not
+                successful.
 
         Example
         -------
@@ -1162,6 +1161,7 @@ class ArModel(ABC):
         """
         if k0 is None:
             k0 = [0 for i in range(len(z))]
+
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
             self.id, z, p=pressure, t=temperature, k0=k0
         )
@@ -1177,10 +1177,8 @@ class ArModel(ABC):
         }
 
         return flash_result
-    
-    def flash_vt(
-        self, z, volume: float, temperature: float, k0=None
-    ) -> dict:
+
+    def flash_vt(self, z, volume: float, temperature: float, k0=None) -> dict:
         """Two-phase split with specification of temperature and volume.
 
         Parameters
@@ -1188,7 +1186,7 @@ class ArModel(ABC):
         z : array_like
             Global mole fractions
         volume : float
-            Volume [L]
+            Molar volume [L/mol]
         temperature : float
             Temperature [K]
         k0 : array_like, optional
@@ -1200,11 +1198,12 @@ class ArModel(ABC):
             Flash result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
                 - P: pressure [bar]
                 - T: temperature [K]
-                - beta: light phase fraction
+                - beta: light phase fraction. If beta is -1 flash was not
+                successful.
 
         Example
         -------
@@ -1215,31 +1214,31 @@ class ArModel(ABC):
             from yaeos import PengRobinson76
 
 
-            tc = np.array([369.83, 507.6])       # critical temperatures [K]
-            pc = np.array([42.48, 30.25])        # critical pressures [bar]
-            w = np.array([0.152291, 0.301261])   # acentric factors
+            tc = np.array([507.6, 658.0])        # critical temperatures [K]
+            pc = np.array([30.25, 18.20])        # critical pressures [bar]
+            w = np.array([0.301261, 0.576385])   # acentric factors
 
             model = PengRobinson76(tc, pc, w)
 
             # Flash calculation
             # will print:
             # {
-            #   'x': array([0.3008742, 0.6991258]),
-            #   'y': array([0.85437317, 0.14562683]),
-            #   'Vx': 0.12742569165483714,
-            #   'Vy': 3.218831515959867,
-            #   'P': 8.0,
-            #   'T': 350.0,
-            #   'beta': 0.35975821044266726
+            #     'x': array([0.26308567, 0.73691433]),
+            #     'y': array([0.95858707, 0.04141293]),
+            #     'Vx': 0.2417828483590114,
+            #     'Vy': 31.706890870110417,
+            #     'P': 1.0001131874567775,
+            #     'T': 393.15,
+            #     'beta': 0.34063818069513246
             # }
 
-            print(model.flash_vt([0.5, 0.5], 8.0, 350.0))
+            print(model.flash_vt([0.5, 0.5], 10.96, 393.15))
         """
         if k0 is None:
             k0 = [0 for i in range(len(z))]
-        
-        x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash_vt(
-            self.id, z,v=volume, t=temperature, k0=k0
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_vt(self.id, z, v=volume, t=temperature, k0=k0)
         )
 
         flash_result = {
@@ -1490,7 +1489,7 @@ class ArModel(ABC):
         t0: float = 150.0,
         p0: float = 1.0,
         stop_pressure: float = 2500,
-    ) -> dict:
+    ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
 
         Parameters
@@ -1593,8 +1592,6 @@ class ArModel(ABC):
         )
 
         return envelope
-
-
 
         msk = ~np.isnan(ts)
         msk_cp = ~np.isnan(tcs)
@@ -1819,7 +1816,7 @@ class ArModel(ABC):
             z=z,
             x_l0=[x0, y0],
             w0=w0,
-            betas0=[1-beta0, beta0],
+            betas0=[1 - beta0, beta0],
             t0=t0,
             p0=p0,
             ns0=specified_variable,
@@ -1841,7 +1838,6 @@ class ArModel(ABC):
         )
 
         return envelope
-
 
         msk = ~np.isnan(t)
 
@@ -2125,7 +2121,7 @@ class ArModel(ABC):
             dsps_set = {
                 "dl": [dsps_dl, dew_line, liq_line],
                 "db": [dsps_db, dew_line, bub_line],
-                "bl": [dsps_bl, bub_line, liq_line]
+                "bl": [dsps_bl, bub_line, liq_line],
             }
         else:
             dsps_set = {"db": [dsps_db, dew_line, bub_line]}
@@ -2178,7 +2174,7 @@ class ArModel(ABC):
                             ns0=2 * len(z) + 2,
                             ds0=delta_dsp_3ph,
                             max_points=1000,
-                            stop_pressure=max([pressure*2, stop_pressure]),
+                            stop_pressure=max([pressure * 2, stop_pressure]),
                         )
 
                         env2 = self.phase_envelope_pt_mp(
@@ -2191,21 +2187,21 @@ class ArModel(ABC):
                             ns0=2 * len(z) + 2,
                             ds0=delta_dsp_3ph,
                             max_points=1000,
-                            stop_pressure=max([pressure*2, stop_pressure]),
+                            stop_pressure=max([pressure * 2, stop_pressure]),
                         )
 
                         three_phase_envs.append((env1, env2))
                     # if len(dew_locs) == 2:
-                        # msk = np.array([False] * len(dew_line))
-                        # msk[: dew_locs[1] + 1] = True
-                        # msk[dew_locs[0] :] = True
-                        # dew_line_stable *= np.nan
-                        # dew_line_stable[msk] = dew_line[msk]
+                    # msk = np.array([False] * len(dew_line))
+                    # msk[: dew_locs[1] + 1] = True
+                    # msk[dew_locs[0] :] = True
+                    # dew_line_stable *= np.nan
+                    # dew_line_stable[msk] = dew_line[msk]
 
-                        # msk = np.array([False] * len(bub_line))
-                        # msk[bub_locs[0] : bub_locs[1] + 1] = True
-                        # bub_line_stable *= np.nan
-                        # bub_line_stable[msk] = bub_line[msk]
+                    # msk = np.array([False] * len(bub_line))
+                    # msk[bub_locs[0] : bub_locs[1] + 1] = True
+                    # bub_line_stable *= np.nan
+                    # bub_line_stable[msk] = bub_line[msk]
 
                 elif len(dsps[0]) == 0:
                     bub_line_stable *= np.nan

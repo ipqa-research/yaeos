@@ -819,9 +819,9 @@ contains
          Tout = T
          x = z
          y = z
-         beta = -1
-         Vx = 1
-         Vy = 1
+         beta = -1.0
+         Vx = 1.0
+         Vy = 1.0
          return
       end if
 
@@ -847,19 +847,19 @@ contains
       integer :: iters
 
       if (all(k0 == 0)) then
-         result = fflash(ar_models(id)%model, z, t, v_spec=v, iters=iters)
+         result = fflash(ar_models(id)%model, z, T, v_spec=V, iters=iters)
       else
-         result = fflash(ar_models(id)%model, z, t, v_spec=v, k0=k0, iters=iters)
+         result = fflash(ar_models(id)%model, z, T, v_spec=V, k0=k0, iters=iters)
       end if
 
       if (.not. allocated(result%x) .or. .not. allocated(result%y)) then
-         Pout = -1
+         Pout = -1.0
          Tout = T
          x = z
          y = z
-         beta = -1
-         Vx = 1
-         Vy = 1
+         beta = -1.0
+         Vx = 1.0
+         Vy = 1.0
          return
       end if
 

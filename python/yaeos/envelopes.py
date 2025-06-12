@@ -123,7 +123,9 @@ class PTEnvelope:
         plt.ylabel("Pressure [bar]")
         plt.title("PT Envelope")
         for cp in self.cp:
-            plt.scatter(self.temperatures[cp], self.pressures[cp], color="black")
+            plt.scatter(
+                self.temperatures[cp], self.pressures[cp], color="black"
+            )
 
     def __repr__(self):
         display(self.df)
