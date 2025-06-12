@@ -142,9 +142,11 @@ jobs:
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
+          msystem: MINGW64
+          update: true
           install: >-
             mingw-w64-x86_64-gcc-fortran
-          msystem: MINGW64
+            pacman
 
       # Install fpm
       - name: Install fpm
