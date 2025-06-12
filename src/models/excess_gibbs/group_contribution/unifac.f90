@@ -159,8 +159,10 @@ module yaeos__models_ge_group_contribution_unifac
       !! Total number of individual groups in the mixture
       integer :: nmolecules
       !! Total number of molecules in the mixture
-      real(pr) :: z = 10
-      !! Model constant
+      real(pr) :: z = 10.0_pr
+      !! Model constant z
+      real(pr) :: d = 1.0_pr
+      !! Model constant d, exponent of the group volume in Flory-Huggins
       real(pr), allocatable :: group_area(:)
       !! Group areas \(Q_k\)
       real(pr), allocatable :: group_volume(:)
@@ -337,26 +339,28 @@ contains
       real(pr) :: dGe_sg_dn2(self%nmolecules,self%nmolecules)
 
       ! utility
-      real(pr) :: nq, nr, n_t
+      real(pr) :: nq, nr, nrp, n_t
       integer :: i, j
 
       associate(&
          q => self%molecules%surface_area,&
          r => self%molecules%volume,&
-         z => self%z &
+         z => self%z, &
+         d => self%d &
          )
 
          nr = dot_product(n, r)
+         nrp = dot_product(n, r**d)
          nq = dot_product(n, q)
          n_t = sum(n)
 
          if (present(Ge)) then
-            Ge_fh = sum(n * log(r)) - n_t * log(nr) + n_t * log(n_t)
+            Ge_fh = sum(n * log(r**d)) - n_t * log(nrp) + n_t * log(n_t)
             Ge_sg = z/2 * sum(n * q * (log(q/r) - log(nq) + log(nr)))
          end if
 
          if (present(dGe_dn)) then
-            dGe_fh_dn = log(r) - log(nr) + log(n_t) + 1.0_pr - n_t * r / nr
+            dGe_fh_dn = log(r**d) - log(nrp) + log(n_t) + 1.0_pr - n_t * r**d / nrp
             dGe_sg_dn = z/2*q*(-log((r*nq)/(q*nr)) - 1.0_pr + (r*nq)/(q*nr))
          end if
 
@@ -364,7 +368,7 @@ contains
             dGe_fh_dn2 = 0.0_pr
             dGe_sg_dn2 = 0.0_pr
             do concurrent(i=1:size(n), j=1:size(n))
-               dGe_fh_dn2(i,j) = -(r(i) + r(j))/nr + 1.0_pr/n_t + n_t*r(i)*r(j)/ nr**2
+               dGe_fh_dn2(i,j) = -(r(i)**d + r(j)**d)/nrp + 1.0_pr/n_t + n_t * r(i)**d * r(j)**d / nrp**2
                dGe_sg_dn2(i,j) = z/2.0_pr*(-q(i)*q(j)/nq + (q(i)*r(j) + q(j)*r(i))/nr - r(i)*r(j)*nq/nr**2)
             end do
          end if

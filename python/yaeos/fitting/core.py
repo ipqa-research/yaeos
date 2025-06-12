@@ -25,8 +25,8 @@ class BinaryFitter:
     data : pandas.DataFrame
         A DataFrame with the experimental data.
         The DataFrame should have the following columns:
-        - kind: str, the kind of data point
-                (bubble, dew, liquid-liquid, PT, critical)
+        - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
+        critical)
         - x1: float, the mole fraction of component 1
         - y1: float, the mole fraction of component 1
         - T: float, the temperature in K
@@ -69,9 +69,16 @@ class BinaryFitter:
         # =====================================================================
         # Calculate the critical line starting from the heavy component
         # ---------------------------------------------------------------------
-        cl = model.critical_line(
-            z0=[0, 1], zi=[1, 0], a0=1e-2, s=1e-2, ds0=1e-3, max_points=5000
-        )
+        cp_msk = data["kind"] == "critical"
+        if len(data[cp_msk]) > 0:
+            cl = model.critical_line(
+                z0=[0, 1],
+                zi=[1, 0],
+                a0=1e-2,
+                s=1e-2,
+                ds0=1e-3,
+                max_points=15000,
+            )
 
         err = 0
 
@@ -156,7 +163,6 @@ class BinaryFitter:
 
         self.evaluations["fobj"].append(err)
         self.evaluations["x"].append(x_values)
-        self.evaluations["cl"].append(cl)
 
         if self.verbose:
             print(err, x_values)

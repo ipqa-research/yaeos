@@ -104,6 +104,7 @@ python_sources = [
     python_lib / 'core.py',
     python_lib / 'constants.py',
     python_lib / 'envelopes.py',
+    python_lib / 'gpec.py',
 ]
 py.install_sources(python_sources, subdir:python_lib)
 
@@ -126,6 +127,8 @@ excess_gibbs_sources = [
   python_lib / 'models' / 'excess_gibbs' / '__init__.py',
   python_lib / 'models' / 'excess_gibbs' / 'nrtl.py',
   python_lib / 'models' / 'excess_gibbs' / 'unifac.py',
+  python_lib / 'models' / 'excess_gibbs' / 'psrk_unifac.py',
+  python_lib / 'models' / 'excess_gibbs' / 'dortmund.py',
   python_lib / 'models' / 'excess_gibbs' / 'uniquac.py',
 ]
 py.install_sources(excess_gibbs_sources, subdir:python_lib / 'models' / 'excess_gibbs')
@@ -144,6 +147,13 @@ cubic_eos_sources = [
   python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'mixing_rules.py'
 ]
 py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos')
+
+#### models.residual_helmholtz.multifluid
+cubic_eos_sources = [
+  python_lib / 'models' / 'residual_helmholtz' / 'multifluid' / '__init__.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'multifluid' / 'gerg2008.py',
+]
+py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'multifluid')
 
 #### fitting
 fitting = [

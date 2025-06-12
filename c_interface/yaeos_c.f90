@@ -22,6 +22,8 @@ module yaeos_c
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv
+   ! Multifluid equations
+   public :: multifluid_gerg2008
 
    ! __del__
    public :: make_available_ar_models_list
@@ -30,7 +32,9 @@ module yaeos_c
    ! GeModels
    public :: nrtl
    public :: unifac_vle
+   public :: unifac_psrk
    public :: uniquac
+   public :: unifac_dortmund
    public :: ln_gamma_ge
    public :: excess_gibbs_ge
    public :: excess_enthalpy_ge
@@ -48,7 +52,7 @@ module yaeos_c
    public :: pure_saturation_line
    public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
    public :: pt3_phase_envelope, px3_phase_envelope !, tx3_phase_envelope
-   public :: pt_mp_phase_envelope, px_mp_phase_envelope
+   public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
    public :: critical_point, critical_line, find_llcl
    public :: stability_zpt, tm
    public :: stability_zt_ge
@@ -129,6 +133,38 @@ contains
       ge_model = setup_unifac(molecules)
       call extend_ge_models_list(id)
    end subroutine unifac_vle
+
+   ! Dortmund
+   subroutine unifac_dortmund(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_dortmund, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_dortmund(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_dortmund
+
+   ! PSRK
+   subroutine unifac_psrk(id, nc, ngs, g_ids, g_v)
+      use yaeos, only: UNIFAC, setup_psrk, Groups
+      integer(c_int), intent(out) :: id !! Saved model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
+      integer(c_int), intent(in) :: g_ids(:, :) !! Ids of groups for each molecule
+      integer(c_int), intent(in) :: g_v(:, :) !! Number of groups for each molecule
+
+      type(Groups) :: molecules(nc)
+
+      call setup_groups(nc, ngs, g_ids, g_v, molecules)
+      ge_model = setup_psrk(molecules)
+      call extend_ge_models_list(id)
+   end subroutine unifac_psrk
 
    subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
       use yaeos, only: Groups
@@ -443,6 +479,20 @@ contains
    end subroutine get_ac_b_del1_del2
 
    ! ==========================================================================
+   !  Multifluid equations
+   ! --------------------------------------------------------------------------
+   subroutine multifluid_gerg2008(ids, id)
+      use yaeos, only: gerg_2008, GERG2008
+      integer, intent(in) :: ids(:)
+      integer(c_int), intent(out) :: id
+      
+      integer :: i
+      ar_model = gerg_2008(ids)
+      call extend_ar_models_list(id)
+   end subroutine multifluid_gerg2008
+
+
+   ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
    subroutine residual_helmholtz(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
@@ -725,26 +775,6 @@ contains
          )
    end subroutine find_llcl
 
-   subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
-      use yaeos, only: EquilibriumState
-      type(EquilibriumState) :: eq_state
-      real(c_double), intent(out) :: x(:)
-      real(c_double), intent(out) :: y(:)
-      real(c_double), intent(out) :: P
-      real(c_double), intent(out) :: T
-      real(c_double), intent(out) :: Vx
-      real(c_double), intent(out) :: Vy
-      real(c_double), intent(out) :: Beta
-
-      x = eq_state%x
-      y = eq_state%y
-      P = eq_state%p
-      T = eq_state%T
-      Vx = eq_state%Vx
-      Vy = eq_state%Vy
-      beta = eq_state%beta
-   end subroutine equilibria_state_to_arrays
-
    subroutine stability_zpt(id, z, P, T, w_min, min_tm, all_mins)
       use yaeos, only: min_tpd, tm
       integer(c_int), intent(in) :: id
@@ -975,14 +1005,14 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (P0 == 0 .and. all(y0 == 0)) then
-         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
+      if (P0 /= 0 .and. all(y0 /= 0)) then
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0, y0=y0)
       elseif (P0 /= 0) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0)
       elseif (all(y0 /= 0)) then
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, y0=y0)
       else
-         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind, P0=P0, y0=y0)
+         sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
    end subroutine saturation_pressure
@@ -1008,14 +1038,14 @@ contains
 
       type(EquilibriumState) :: sat
 
-      if (T0 == 0 .and. all(y0 == 0)) then
-         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
-      else if (all(y0 == 0)) then
-         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
-      else if (T0 == 0) then
-         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0)
-      else
+      if (T0 /= 0 .and. all(y0 /= 0)) then
          sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0, T0=T0)
+      else if (all(y0 /= 0)) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, y0=y0)
+      else if (T0 /= 0) then
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind, T0=T0)
+      else
+         sat = fsaturation_temperature(ar_models(id)%model, z, P, kind)
       end if
 
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
@@ -1348,8 +1378,8 @@ contains
 
    subroutine pt_mp_phase_envelope(&
       id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
-      beta_w, max_points, stop_pressure, &
-      x_ls, ws, betas, Ps, Ts, iters, ns &
+      beta_w, kinds_x, kind_w, max_points, stop_pressure, &
+      x_ls, ws, betas, Ps, Ts, iters, ns, main_kinds, ref_kinds &
       )
       use yaeos, only: PTEnvelMP, pt_envelope
       integer(c_int), intent(in) :: id
@@ -1360,6 +1390,8 @@ contains
       real(c_double), intent(in) :: betas0(np)
       real(c_double), intent(in) :: P0
       real(c_double), intent(in) :: T0
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
       real(c_double), intent(in) :: beta_w
       real(c_double), intent(in) :: stop_pressure
 
@@ -1376,9 +1408,14 @@ contains
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
 
+      character(len=14), intent(out) :: main_kinds(max_points, np)
+      character(len=14), intent(out) :: ref_kinds(max_points)
+
+
       integer :: i, j
 
       type(PTEnvelMP) :: pt_mp
+      character(len=14) :: x_kinds(np), w_kind
 
       x_ls = makenan()
       ws = makenan()
@@ -1386,8 +1423,12 @@ contains
       Ps = makenan()
       Ts = makenan()
 
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
       pt_mp = pt_envelope(&
-         model=ar_models(id)%model, np=np, z=z, x_l0=x_l0, w0=w0, betas0=betas0, &
+         model=ar_models(id)%model, np=np, z=z, kinds_x=x_kinds, kind_w=w_kind,&
+         x_l0=x_l0, w0=w0, betas0=betas0, &
          P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
          beta_w=beta_w, points=max_points, max_pressure=stop_pressure &
          )
@@ -1402,11 +1443,14 @@ contains
          Ts(i) = pt_mp%points(i)%T
          iters(i) = pt_mp%points(i)%iters
          ns(i) = pt_mp%points(i)%ns
+         main_kinds(i, :) = pt_mp%points(i)%kinds_x
+         ref_kinds(i) = pt_mp%points(i)%kind_w
       end do
    end subroutine pt_mp_phase_envelope
 
    subroutine px_mp_phase_envelope(&
-      id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, beta_w, max_points, &
+      id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, &
+      beta_w, kinds_x, kind_w, max_points, &
       x_ls, ws, betas, Ps, alphas, iters, ns &
       )
       use yaeos, only: PXEnvelMP, px_envelope
@@ -1424,6 +1468,8 @@ contains
 
       integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
       integer(c_int), intent(in) :: max_points
 
       real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
@@ -1435,6 +1481,8 @@ contains
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
 
+      character(len=14) :: x_kinds(np), w_kind
+
       integer :: i, j
 
       type(PXEnvelMP) :: px_mp
@@ -1445,10 +1493,13 @@ contains
       Ps = makenan()
       alphas = makenan()
 
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
       px_mp = px_envelope(&
          model=ar_models(id)%model, np=np, z0=z0, zi=zi, T=T, x_l0=x_l0, &
          w0=w0, betas0=betas0, P0=P0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
-         beta_w=beta_w, points=max_points &
+         beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, points=max_points &
          )
 
       do i=1,size(px_mp%points)
@@ -1464,6 +1515,71 @@ contains
       end do
    end subroutine px_mp_phase_envelope
 
+   subroutine tx_mp_phase_envelope(&
+      id, z0, zi, np, P, beta_w, kinds_x, kind_w, x_l0, w0, betas0, T0, alpha0, ns0, ds0, max_points, &
+      x_ls, ws, betas, Ts, alphas, iters, ns &
+      )
+      use yaeos, only: TXEnvelMP, tx_envelope
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z0(:)
+      real(c_double), intent(in) :: zi(:)
+      integer(c_int), intent(in) :: np
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: beta_w
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
+      real(c_double), intent(in) :: x_l0(np, size(z0))
+      real(c_double), intent(in) :: w0(size(z0))
+      real(c_double), intent(in) :: betas0(np)
+      real(c_double), intent(in) :: T0
+      real(c_double), intent(in) :: alpha0
+
+      integer(c_int), intent(in) :: ns0
+      real(c_double), intent(in) :: ds0
+      integer(c_int), intent(in) :: max_points
+
+      real(c_double), intent(out) :: x_ls(max_points, np, size(z0))
+      real(c_double), intent(out) :: ws(max_points, size(z0))
+      real(c_double), intent(out) :: betas(max_points, np)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: alphas(max_points)
+
+      integer(c_int), intent(out) :: iters(max_points)
+      integer(c_int), intent(out) :: ns(max_points)
+
+      integer :: i, j
+
+      type(TXEnvelMP) :: tx_mp
+      character(len=14) :: x_kinds(np), w_kind
+
+      x_ls = makenan()
+      ws = makenan()
+      betas = makenan()
+      Ts = makenan()
+      alphas = makenan()
+
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
+      tx_mp = tx_envelope(&
+         model=ar_models(id)%model, kinds_x=x_kinds, kind_w=w_kind, &
+         np=np, z0=z0, zi=zi, P=P, x_l0=x_l0, &
+         w0=w0, betas0=betas0, T0=T0, alpha0=alpha0, ns0=ns0, ds0=ds0, &
+         beta_w=beta_w, points=max_points &
+         )
+
+      do i=1,size(tx_mp%points)
+         do j=1,np
+            x_ls(i, j, :) = tx_mp%points(i)%x_l(j, :)
+         end do
+         ws(i, :) = tx_mp%points(i)%w
+         betas(i, :) = tx_mp%points(i)%betas
+         Ts(i) = tx_mp%points(i)%T
+         alphas(i) = tx_mp%alpha(i)
+         iters = tx_mp%points(i)%iters
+         ns = tx_mp%points(i)%ns
+      end do
+   end subroutine tx_mp_phase_envelope
 
    ! ==========================================================================
    ! Auxiliar
@@ -1473,4 +1589,97 @@ contains
       makenan = 0
       makenan = makenan/makenan
    end function makenan
+
+   elemental subroutine convert_kind(numeric, string)
+      use yaeos, only: root_kinds
+      integer(c_int), intent(in) :: numeric
+      character(len=14), intent(out) :: string
+
+      select case(numeric)
+       case (root_kinds%liquid)
+         string = "liquid"
+       case (root_kinds%vapor)
+         string = "vapor"
+       case (root_kinds%stable)
+         string = "stable"
+       case default
+         string = "unknown"
+      end select
+   end subroutine convert_kind
+
+   subroutine convert_gerg_components(string, numeric)
+      use yaeos, only: G2008Components
+      use iso_fortran_env, only: error_unit
+
+      character(len=*), intent(in) :: string
+      integer(c_int), intent(out) :: numeric
+
+      select case (string)
+       case ("methane", "C1", "CH4", "nC1")
+         numeric = G2008Components%methane
+       case ("nitrogen", "N2")
+         numeric = G2008Components%nitrogen
+       case ("carbon_dioxide", "CO2", "carbon dioxide")
+         numeric = G2008Components%carbon_dioxide
+       case ("ethane", "C2", "nC2")
+         numeric = G2008Components%ethane
+       case ("propane", "C3", "nC3")
+         numeric = G2008Components%propane
+       case ("nbutane", "C4", "nC4")
+         numeric = G2008Components%nbutane
+       case ("isobutane", "iC4")
+         numeric = G2008Components%isobutane
+       case ("npentane", "C5", "nC5")
+         numeric = G2008Components%npentane
+       case ("isopentane", "iC5")
+         numeric = G2008Components%isopentane
+       case ("nhexane", "C6", "nC6")
+         numeric = G2008Components%nhexane
+       case ("nheptane", "C7", "nC7")
+         numeric = G2008Components%nheptane
+       case ("noctane", "C8", "nC8")
+         numeric = G2008Components%noctane
+       case ("nonane", "C9", "nC9")
+         numeric = G2008Components%nonane
+       case ("decane", "C10", "nC10")
+         numeric = G2008Components%decane
+       case ("hydrogen", "H2")
+         numeric = G2008Components%hydrogen
+       case ("oxygen", "O2")
+         numeric = G2008Components%oxygen
+       case ("carbon_monoxide", "CO")
+         numeric = G2008Components%carbon_monoxide
+       case ("water", "H2O")
+         numeric = G2008Components%water
+       case ("hydrogen_sulfide", "H2S")
+         numeric = G2008Components%hydrogen_sulfide
+       case ("helium", "He")
+         numeric = G2008Components%helium
+       case ("argon", "Ar")
+         numeric = G2008Components%argon
+       case default
+         write(error_unit,*) "Unknown component: ", trim(string)
+         numeric = -1
+      end select
+   end subroutine convert_gerg_components
+   
+   subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
+      use yaeos, only: EquilibriumState
+      type(EquilibriumState) :: eq_state
+      real(c_double), intent(out) :: x(:)
+      real(c_double), intent(out) :: y(:)
+      real(c_double), intent(out) :: P
+      real(c_double), intent(out) :: T
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: Beta
+
+      x = eq_state%x
+      y = eq_state%y
+      P = eq_state%p
+      T = eq_state%T
+      Vx = eq_state%Vx
+      Vy = eq_state%Vy
+      beta = eq_state%beta
+   end subroutine equilibria_state_to_arrays
 end module yaeos_c

@@ -4,6 +4,7 @@ program ge_test_values
    use yaeos, only: NRTL
    use yaeos, only: setup_unifac, UNIFAC, Groups
    use yaeos, only: setup_uniquac, UNIQUAC
+   use yaeos, only: setup_dortmund, setup_psrk
    implicit none
 
    integer, parameter :: nmodels = 3, nc = 3, file=10
@@ -22,6 +23,12 @@ program ge_test_values
    type(UNIFAC) :: unifac_model
    type(Groups) :: molecules(nc)
 
+   ! PSRK
+   type(UNIFAC) :: psrk_model
+
+   ! Dortmund
+   type(UNIFAC) :: dortmund_model
+
    ! UNIQUAC
    type(UNIQUAC) :: uniquac_model
    real(pr) :: aij(nc, nc), bij(nc, nc), cij(nc, nc), dij(nc, nc), eij(nc, nc)
@@ -29,7 +36,6 @@ program ge_test_values
 
    real(pr) :: n(nc), T
 
-   integer :: i
 
    ! ==========================================================================
    ! Set up the models
@@ -63,6 +69,12 @@ program ge_test_values
    molecules(3)%number_of_groups = [5, 1]
 
    unifac_model = setup_unifac(molecules)
+
+   ! PSRK
+   psrk_model = setup_psrk(molecules)
+
+   ! Dortmund
+   dortmund_model = setup_dortmund(molecules)
 
    ! UNIQUAC
    aij(1,:) = [0.0_pr, -75.46_pr, -60.15_pr]
@@ -152,6 +164,68 @@ program ge_test_values
       )
 
    write(file, *) "UNIFAC", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
+      Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
+      Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
+      Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
+      Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
+      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
+      dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
+      dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
+      dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+
+   ! ==========================================================================
+   ! PSRK
+   ! --------------------------------------------------------------------------
+   call psrk_model%excess_gibbs(&
+      n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+      )
+
+   call psrk_model%excess_enthalpy(&
+      n, T, He=He, HeT=HeT, Hen=Hen &
+      )
+
+   call psrk_model%excess_entropy(&
+      n, T, Se=Se, SeT=SeT, Sen=Sen &
+      )
+
+   call psrk_model%ln_activity_coefficient(&
+      n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
+      )
+
+   write(file, *) "PSRK", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
+      Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
+      Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
+      Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &
+      Gen2(3, 3), ",", He, ",", HeT, ",", Hen(1), ",", Hen(2), ",", Hen(3), &
+      ",", Se, ",", SeT, ",", Sen(1), ",", Sen(2), ",", Sen(3), ",", &
+      lngamma(1), ",", lngamma(2), ",", lngamma(3), ",", &
+      dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
+      dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
+      dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+
+   ! ==========================================================================
+   ! Dortmund
+   ! --------------------------------------------------------------------------
+   call dortmund_model%excess_gibbs(&
+      n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+      )
+
+   call dortmund_model%excess_enthalpy(&
+      n, T, He=He, HeT=HeT, Hen=Hen &
+      )
+
+   call dortmund_model%excess_entropy(&
+      n, T, Se=Se, SeT=SeT, Sen=Sen &
+      )
+
+   call dortmund_model%ln_activity_coefficient(&
+      n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
+      )
+
+   write(file, *) "Dortmund", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
       Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
       Gen2(2, 2), ",", Gen2(2, 3), ",", Gen2(3, 1), ",", Gen2(3, 2), ",", &

@@ -8,8 +8,15 @@ import importlib.metadata
 
 import yaeos.constants as constants
 import yaeos.envelopes as envelopes
+from yaeos.gpec import GPEC
 from yaeos.lib import yaeos_c
-from yaeos.models.excess_gibbs import NRTL, UNIFACVLE, UNIQUAC
+from yaeos.models.excess_gibbs import (
+    NRTL,
+    UNIFACDortmund,
+    UNIFACPSRK,
+    UNIFACVLE,
+    UNIQUAC,
+)
 from yaeos.models.residual_helmholtz.cubic_eos import (
     HV,
     MHV,
@@ -21,10 +28,12 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     RKPR,
     SoaveRedlichKwong,
 )
+from yaeos.models.residual_helmholtz.multifluid import GERG2008
 
 __all__ = [
     "envelopes",
     "constants",
+    "GPEC",
     "yaeos_c",
     "SoaveRedlichKwong",
     "PengRobinson76",
@@ -33,7 +42,10 @@ __all__ = [
     "PSRK",
     "QMR",
     "QMRTD",
+    "GERG2008",
     "NRTL",
+    "UNIFACDortmund",
+    "UNIFACPSRK",
     "UNIFACVLE",
     "UNIQUAC",
     "MHV",

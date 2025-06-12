@@ -3,67 +3,20 @@ program main
    !! In this test we calculate two phase envelope from a previously known
    !! double saturation point.
    use testing_aux, only: assert, test_title
+   use yaeos__constants, only: pr
    use yaeos
-   use yaeos__equilibria_boundaries_phase_envelopes_mp, only: &
-      pt_F_NP, pt_envelope, PTEnvelMP
    implicit none
-   integer, parameter :: nc = 15, np=3
-   integer, parameter :: psize = np*nc + np + 2
+   integer, parameter :: nc=15
+
+   type(CubicEoS) :: model
 
    real(pr) :: z(nc)
 
-   real(pr) :: P, T, X(psize), betas(np)
-   real(pr) :: dF(psize, psize), F(psize)
-
-   real(pr) :: x_l(np, nc), w(nc), tmp(nc)
-   real(pr) :: K(np, nc)
-   real(pr) :: beta_w
-
-   integer :: ns
-   real(pr) :: S
-
-   integer :: i, lb, ub
-
-   integer :: iters
-
-   type(CubicEoS) :: model
-   type(PTEnvelMP) :: env
-   character(len=14) :: kinds_x(np)
-   character(len=14) :: kind_w
-
-
-   print *, test_title("Multi-phase envelope test")
+   print *, test_title("Multi-phase TX envelope test")
 
    model = get_model()
 
-   ! Build composition for three main phases and incipient one
-   x_l(1, :) = z
-   x_l(2, :) = [2.26748304e-02, 8.77274788e-03, 8.56790518e-01, 7.53110308e-02, 2.25791412e-02, &
-      1.83124730e-03, 6.75557205e-03, 1.46973097e-03, 2.15197976e-03, 1.51272521e-03, &
-      1.15635706e-04, 8.60487017e-11, 8.01982281e-12, 3.48403955e-05, 3.09839163e-21]
-   x_l(3, :) = 1e-10
-   x_l(3, nc) = 1 - 1e-10*(nc-1)
-   w = [1.00840444e-02, 9.76751155e-03, 6.35587304e-01, 1.11530262e-01, 5.50813917e-02, &
-      6.27551663e-03, 2.67981694e-02, 8.36513089e-03, 1.37645767e-02, 1.51732534e-02, &
-      3.84679648e-02, 1.63919981e-04, 5.56318734e-05, 6.88853217e-02, 8.30156039e-10]
-
-   ! Initial guess for betas, P and T
-   betas = [0.98, 0.00, 0.0]
-   P = 70
-   T = 260
-   kinds_x = ["liquid", "liquid", "liquid"]
-   kind_w = "vapor"
-   env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
-
-   call env%write(1)
-
-   call assert(maxval(abs(env%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
-   call assert(abs(env%points(1)%P - 108.015 )< 1e-2, "First point P")
-   call assert(abs(env%points(1)%T - 261.828 )< 1e-2, "First point T")
-
-   i = size(env%points)
-   call assert(abs(env%points(i)%P) < 1, "End at low pressure")
-
+   call calc_2ph
 contains
 
    type(CubicEoS) function get_model()
@@ -94,22 +47,55 @@ contains
       get_model = PengRobinson76(Tc, Pc, w, kij=kij)
    end function get_model
 
-   subroutine single
-      ! Build variables vector
-      do i=1, np
-         lb = (i-1)*nc + 1
-         ub = i*nc
-         X(lb:ub) = log(x_l(i, :)/w)
-      end do
-      X(3*nc+1:np*nc+np) = betas
-      X(nc*np + np + 2) = log(T)
-      X(nc*np + np + 1) = log(P)
+   subroutine calc_2ph
+      integer, parameter :: np=1
+      real(pr) :: x_l0(np, nc), w0(nc), z0(nc), zi(nc)
+      type(EquilibriumState) :: sat
+      type(txenvelmp) :: tx
+      type(PTEnvelMP) :: PT
 
-      ! Select specification variable
-      ns = nc*np + np + 1
-      S = X(ns)
+      character(len=14) :: kind_w
+      character(len=14) :: kinds_x(np)
 
-      betas = X(3*nc+1:np*nc+np)
+      real(pr) :: T, P, beta
+      integer :: i
 
-   end subroutine single
+      sat = saturation_temperature(model, z, p=1e-3_pr, kind="dew", t0=600._pr)
+      x_l0(1, :) = z
+      P = 100
+
+      sat = saturation_temperature(model, z, P=P, kind="dew", t0=800._pr)
+
+      w0 = sat%t
+
+      z0 = z
+      zi = 0
+      zi(2) = 1
+
+      x_l0(1, :) = z
+      
+      sat = saturation_temperature(model, z, P=P, kind="bubble", t0=300._pr)
+      kind_w = "vapor"
+      kinds_x(1) = "liquid"
+      
+      w0 = sat%y
+      tx = tx_envelope(&
+         model, z0, zi, np, sat%P, kinds_x=kinds_x, kind_w=kind_w, x_l0=x_l0, w0=w0, betas0=[1._pr], &
+         T0=sat%t, alpha0=0._pr, ns0=np*nc+np+2, ds0=0.005_pr, &
+         beta_w=0.0_pr, points=1000&
+         )
+
+      sat = saturation_temperature(model, z, P=P, kind="dew", t0=800._pr)
+      w0 = sat%x
+      kind_w = "liquid"
+      kinds_x(1) = "vapor"
+      tx = tx_envelope(&
+         model, z0, zi, np, sat%P, kinds_x=kinds_x, kind_w=kind_w, x_l0=x_l0, w0=w0, betas0=[1._pr], &
+         T0=sat%t, alpha0=0._pr, ns0=np*nc+np+2, ds0=0.005_pr, &
+         beta_w=0.0_pr, points=1000&
+         )
+
+      call assert(tx%alpha(size(tx%alpha)) > 0.99, "final alpha")
+
+   end subroutine calc_2ph
 end program main
