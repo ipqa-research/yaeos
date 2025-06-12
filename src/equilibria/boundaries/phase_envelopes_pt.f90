@@ -511,12 +511,10 @@ contains
       fr%P = P
       fr%kind = "liquid-liquid"
       
-      print *, "Initial point:", fr
       find_hpl = pt_envelope_2ph( &
          model, z, fr, &
          specified_variable_0=nc+2, delta_0=-5.0_pr, &
          iterations=1000, points=max_points)
-      print *, find_hpl
    end function find_hpl
 
 end module yaeos__equilibria_boundaries_phase_envelopes_pt
