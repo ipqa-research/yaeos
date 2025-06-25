@@ -519,7 +519,7 @@ contains
             end do
          end if
 
-         if (maxval(abs(F)) < 1e-6_pr) exit
+         if (maxval(abs(F)) < 1e-9_pr) exit
 
          X = X + dX
       end do
@@ -613,9 +613,9 @@ contains
          dS = dS/2
       end do
 
-      do while(minval(abs(dXdS(:nc*np)*dS)) < 1e-5_pr)
-         dS = dS*1.1
-      end do
+      ! do while(minval(abs(dXdS(:nc*np)*dS)) < 1e-5_pr)
+      !    dS = dS*1.1
+      ! end do
 
       do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
          dS = dS*1.1
