@@ -5,6 +5,7 @@ module yaeos__equilibria_flash
    use yaeos__equilibria_rachford_rice, only: betato01, betalimits, rachford_rice, solve_rr
    use yaeos__equilibria_auxiliar, only: k_wilson
    use yaeos__solvers_pressure_equality, only: pressure_equality_V_beta_xy
+   use iso_fortran_env, only: error_unit
    implicit none
 
 contains
@@ -115,7 +116,8 @@ contains
          select type (model)
           class is (GeModel)
             if (present(v_spec) .or. present(p_spec)) then
-               error stop "Flash: GeModel can only spec T"
+               write(error_unit, *) "Flash: GeModel can only spec T"
+               return
             end if
             call model%ln_activity_coefficient(y, T, lngamma=lnfug_y)
             call model%ln_activity_coefficient(x, T, lngamma=lnfug_x)
