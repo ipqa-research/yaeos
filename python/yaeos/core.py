@@ -19,6 +19,29 @@ from yaeos.constants import root_kinds
 
 
 def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
+    """Convert the the kinds of each phase to the corresponding value.
+
+    The C interface of `yaeos` expects the kinds of each phase to be defined
+    as integer values, so this function converts the kinds of each phase
+    to the corresponding integer value. If the kind is not specified, it
+    defaults to "stable" for all phases.
+
+    Parameters
+    ----------
+    number_of_phases : int
+        Number of phases in the system, besides de reference phase
+    kinds_x : list, optional
+        Kinds of the phases in the system, by default None
+    kind_w : str, optional
+        Kind of the test phase, by default None
+    Returns
+    -------
+    tuple
+        kinds_x_out : list
+            List of kinds for each phase in the system
+        kind_w_out : str
+            Kind of the test phase
+    """
     if kinds_x:
         kinds_x_out = [root_kinds[kind] for kind in kinds_x]
     else:
@@ -1502,6 +1525,7 @@ class ArModel(ABC):
         max_points: int = 300,
         t0: float = 150.0,
         p0: float = 1.0,
+        w0=None,
         stop_pressure: float = 2500,
     ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
@@ -1576,13 +1600,27 @@ class ArModel(ABC):
             kinds_x = ["vapor"]
             kind_w = "liquid"
         elif kind == "liquid-liquid":
-            ts, ps, tcs, pcs, xs, ys, kinds = yaeos_c.pt2_phase_envelope(
-                self.id, z, kind=kind, t0=t0, p0=p0, max_points=2
-            )
-            w0 = ys[0, :]
             ns0 = len(z) + 2
-            t0 = ts[0]
-            p0 = ps[0]
+            if w0 is None:
+                # =============================================================
+                # Find an initialization for the liquid-liquid envelope
+                # -------------------------------------------------------------
+                ts = []
+                for i in range(len(z)):
+                    w0 = np.zeros_like(z)
+                    w0 += 1e-5
+                    w0[i] = 1 - np.sum(w0[1:]) 
+                    for t in np.linspace(1000, 100, 25):
+                        tm = self.stability_tm(z, w0, p0, t)
+                        if tm < -0.01:
+                            ts.append(t)
+                            break
+                i = np.argmin(ts)
+                t0 = ts[i]
+                w0 = np.zeros_like(z)
+                w0 += 1e-5
+                w0[i] = 1 - np.sum(w0[1:])
+
             kinds_x = ["liquid"]
             kind_w = "liquid"
             ds0 = -ds0
@@ -2173,9 +2211,27 @@ class ArModel(ABC):
         )
 
     def phase_envelope_pt_from_dsp(
-        self, z, env1: PTEnvelope, env2: PTEnvelope
+        self, z, env1: PTEnvelope, env2: PTEnvelope,
+        dbeta0=1e-5, max_points=1000
     ) -> list:
-        """Calculate PT phase envelopes from a DSP."""
+        """Calculate PT phase envelopes from a DSP.
+
+        This method calculates the phase envelope at the intersection of two
+        PT envelopes, `env1` and `env2`.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        env1 : PTEnvelope
+            First PT envelope object
+        env2 : PTEnvelope
+            Second PT envelope object
+        dbeta0 : float, optional
+            initial step for the beta values, by default 1e-5
+        max_points : int, optional
+            Maximum number of points to calculate, by default 1000
+        """
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
 
@@ -2209,7 +2265,6 @@ class ArModel(ABC):
             kinds_x_2 = env2.main_phases_kinds[env2_loc, :]
             kind_w_1 = env1.reference_phase_kinds[env1_loc]
             kind_w_2 = env2.reference_phase_kinds[env2_loc]
-
             dsp_1 = self.phase_envelope_pt_mp(
                 z=z,
                 x_l0=x_l1,
@@ -2218,10 +2273,11 @@ class ArModel(ABC):
                 p0=Pdsp,
                 t0=Tdsp,
                 ns0=phases * nc + phases,
-                ds0=1e-3,
+                ds0=dbeta0,
                 beta_w=0,
                 kinds_x=[*kinds_x_1, kind_w_1],
                 kind_w=kind_w_2,
+                max_points=max_points,
             )
 
             dsp_2 = self.phase_envelope_pt_mp(
@@ -2232,10 +2288,11 @@ class ArModel(ABC):
                 p0=Pdsp,
                 t0=Tdsp,
                 ns0=phases * nc + phases,
-                ds0=1e-3,
+                ds0=dbeta0,
                 beta_w=0,
                 kinds_x=[*kinds_x_2, kind_w_2],
                 kind_w=kind_w_1,
+                max_points=max_points,
             )
 
             dsps.append([dsp_1, dsp_2])
@@ -2243,9 +2300,30 @@ class ArModel(ABC):
         return dsps
 
     def phase_envelope_px_from_dsp(
-        self, z0, zi, env1: PXEnvelope, env2: PXEnvelope
+        self, z0, zi, env1: PXEnvelope, env2: PXEnvelope, dbeta0=1e-5
     ) -> list:
-        """Calculate PX phase envelopes from a DSP."""
+        """Calculate PX phase envelopes from a DSP.
+
+        This method calculates the phase envelope at the intersection of two
+        PX envelopes, `env1` and `env2`.
+        Parameters
+        ----------
+        z0 : array_like
+            Global mole fractions of the original fluid
+        zi : array_like
+            Global mole fractions of the other fluid
+        env1 : PXEnvelope
+            First PX envelope object
+        env2 : PXEnvelope
+            Second PX envelope object
+        dbeta0 : float, optional
+            Initial step for the beta values, by default 1e-5
+        Returns
+        -------
+        list
+            List of lists of two PXEnvelope objects, one for each intersection
+            point.
+        """
 
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
@@ -2279,7 +2357,7 @@ class ArModel(ABC):
                 p0=Pdsp,
                 alpha0=adsp,
                 ns0=phases * nc + phases,
-                ds0=1e-1,
+                ds0=dbeta0,
                 beta_w=0,
                 max_points=500,
             )
@@ -2294,7 +2372,7 @@ class ArModel(ABC):
                 p0=Pdsp,
                 alpha0=adsp,
                 ns0=phases * nc + phases,
-                ds0=1e-1,
+                ds0=dbeta0,
                 beta_w=0,
                 max_points=800,
             )
