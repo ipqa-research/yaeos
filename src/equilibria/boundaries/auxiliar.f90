@@ -77,7 +77,7 @@ contains
             X = X + dXdS * dS
          end do
 
-         if (point > 1 .and. all(Xold(lb:ub) * (X(lb:ub) + 5*dXdS(lb:ub)*dS) < 0)) then
+         if (point > 1 .and. all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
             ! In Liquid-Liquid lines that start from a critical point, this
             ! could be a false positive, so we check that the point is not
             ! the first one.
@@ -88,12 +88,12 @@ contains
             ! TODO: Interpolate here
             
             ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
-            Xnew = X + 5 * dXdS * dS
-            ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
-            a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
-            Xc = a * X + (1-a)*Xnew
+            ! Xnew = X + 5 * dXdS * dS
+            ! ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
+            ! a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
+            ! Xc = a * X + (1-a)*Xnew
 
-            X = Xc + dXdS * dS
+            ! X = Xc + dXdS * dS
 
             if (nc == 2 .and. binary_stop) then
                dS=0
