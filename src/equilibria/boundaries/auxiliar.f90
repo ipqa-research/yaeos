@@ -58,6 +58,8 @@ contains
       real(pr) :: Xold(size(X))
       character(len=14) :: incipient_kind
       integer :: i, lb, ub
+      integer :: ncomp
+      real(pr) :: a, Xc(size(X)), Xnew(size(X))
 
       Xold = X
 
@@ -67,7 +69,7 @@ contains
 
          do while(maxval(abs(X(lb:ub))) < 0.01)
             if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
-               ! Reached to a critical point in a Txy/Pxy calculation for a 
+               ! Reached to a critical point in a Txy/Pxy calculation for a
                ! binary system, stop the calculation.
                dS=0
                return
@@ -75,15 +77,23 @@ contains
             X = X + dXdS * dS
          end do
 
-         if (point > 1 .and. all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
+         if (point > 1 .and. all(Xold(lb:ub) * (X(lb:ub) + 5*dXdS(lb:ub)*dS) < 0)) then
             ! In Liquid-Liquid lines that start from a critical point, this
             ! could be a false positive, so we check that the point is not
             ! the first one.
-            
+
             incipient_kind = kind_w
             kind_w = kinds_x(i)
             kinds_x(i) = incipient_kind
-            ! Interpolate here
+            ! TODO: Interpolate here
+            
+            ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
+            Xnew = X + 5 * dXdS * dS
+            ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
+            a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
+            Xc = a * X + (1-a)*Xnew
+
+            X = Xc + dXdS * dS
 
             if (nc == 2 .and. binary_stop) then
                dS=0
