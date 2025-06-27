@@ -17,6 +17,8 @@ from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
 
 from yaeos.constants import root_kinds
 
+from warnings import warn
+
 
 def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
     """Convert the the kinds of each phase to the corresponding value.
@@ -1522,11 +1524,12 @@ class ArModel(ABC):
         self,
         z,
         kind: str = "bubble",
-        max_points: int = 300,
+        max_points: int = 700,
         t0: float = 150.0,
         p0: float = 1.0,
         w0=None,
         stop_pressure: float = 2500,
+        ds0: float = 0.001,
     ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
 
@@ -1539,16 +1542,30 @@ class ArModel(ABC):
             defaults to "bubble". Options are
             - "bubble"
             - "dew"
+            - "liquid-liquid"
         max_points : int, optional
-            Envelope's maximum points to calculate (T, P), by default 300
+            Envelope's maximum points to calculate (T, P), by default 700
         t0 : float, optional
             Initial guess for temperature [K] for the saturation point of kind:
             `kind`, by default 150.0
         p0 : float, optional
             Initial guess for pressure [bar] for the saturation point of kind:
             `kind`, by default 1.0
+        w0 : array_like, optional
+            Initial guess for the incipient phase mole fractions,
+            by default None In the case of bubble and dew line calculations, it
+            will use the k_wilson correlation. In the case of liquid-liquid
+            envelope it will make a search for the first unstable component 
+            when decreasing temperature at the given pressure.
         stop_pressure : float, optional
-            Stop on pressures above stop_pressure [bar], by default 2500.0
+            Stop on pressures above stop_pressure [bar], by default 2500.0.
+            If the the initial guess pressure is above this value, the
+            calculation will stop immediately.
+        ds0: float, optional
+            Step for the first specified variable, by default 0.001. The
+            specified variable is the temperature for bubble and dew lines, and
+            pressure for liquid-liquid lines. For bubble and dew lines, the
+            step is positive, while for liquid-liquid lines it is negative.
 
         Returns
         -------
@@ -1595,7 +1612,7 @@ class ArModel(ABC):
         elif kind == "dew":
             sat = self.saturation_temperature(z, p0, kind=kind, t0=t0)
             w0 = sat["x"]
-            ns0 = len(z) + 2
+            ns0 = len(z) + 3
             t0 = sat["T"]
             kinds_x = ["vapor"]
             kind_w = "liquid"
@@ -1615,6 +1632,9 @@ class ArModel(ABC):
                         if tm < -0.01:
                             ts.append(t)
                             break
+                if len(ts) == 0:
+                    warn("No liquid-liquid region found.")
+                    return None
                 i = np.argmin(ts)
                 t0 = ts[i]
                 w0 = np.zeros_like(z)
@@ -1641,7 +1661,6 @@ class ArModel(ABC):
         )
 
         return envelope
-
 
     def phase_envelope_px(
         self,
