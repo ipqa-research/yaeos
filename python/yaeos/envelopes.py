@@ -196,7 +196,7 @@ class PXEnvelope:
     critical_pressures : np.ndarray
         The critical pressures of the envelope. Shape is (n_critical_points,).
     critical_alphas : np.ndarray
-        The molar fractions of the `global_composition_i` at the critical 
+        The molar fractions of the `global_composition_i` at the critical
         points, :math:`\alpha`.  Shape is (n_critical_points,).
     iterations : np.ndarray
         The number of iterations taken to compute the envelope at each point.

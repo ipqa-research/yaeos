@@ -108,9 +108,9 @@ contains
                dS=0
                return
             end if
-            
-            X = Xc + dXdS * dS
 
+            dS = sign(min(abs(dS), abs(X(ns)/30)), dS)
+            X = Xc
             return
          end if
       end do

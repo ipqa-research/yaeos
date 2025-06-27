@@ -1555,7 +1555,7 @@ class ArModel(ABC):
             Initial guess for the incipient phase mole fractions,
             by default None In the case of bubble and dew line calculations, it
             will use the k_wilson correlation. In the case of liquid-liquid
-            envelope it will make a search for the first unstable component 
+            envelope it will make a search for the first unstable component
             when decreasing temperature at the given pressure.
         stop_pressure : float, optional
             Stop on pressures above stop_pressure [bar], by default 2500.0.
@@ -1626,7 +1626,7 @@ class ArModel(ABC):
                 for i in range(len(z)):
                     w0 = np.zeros_like(z)
                     w0 += 1e-5
-                    w0[i] = 1 - np.sum(w0[1:]) 
+                    w0[i] = 1 - np.sum(w0[1:])
                     for t in np.linspace(1000, 100, 25):
                         tm = self.stability_tm(z, w0, p0, t)
                         if tm < -0.01:
@@ -2140,23 +2140,25 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ps, alphas, iters, ns, pcs, acs = yaeos_c.px_mp_phase_envelope(
-            id=self.id,
-            np=number_of_phases,
-            z0=z0,
-            zi=zi,
-            x_l0=x_l0,
-            w0=w0,
-            betas0=betas0,
-            t=t,
-            beta_w=beta_w,
-            kinds_x=kinds_x,
-            kind_w=kind_w,
-            alpha0=alpha0,
-            p0=p0,
-            ns0=ns0,
-            ds0=ds0,
-            max_points=max_points,
+        x_ls, ws, betas, ps, alphas, iters, ns, pcs, acs = (
+            yaeos_c.px_mp_phase_envelope(
+                id=self.id,
+                np=number_of_phases,
+                z0=z0,
+                zi=zi,
+                x_l0=x_l0,
+                w0=w0,
+                betas0=betas0,
+                t=t,
+                beta_w=beta_w,
+                kinds_x=kinds_x,
+                kind_w=kind_w,
+                alpha0=alpha0,
+                p0=p0,
+                ns0=ns0,
+                ds0=ds0,
+                max_points=max_points,
+            )
         )
 
         return PXEnvelope(
@@ -2201,23 +2203,25 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ts, alphas, iters, ns, tcs, acs = yaeos_c.tx_mp_phase_envelope(
-            id=self.id,
-            np=number_of_phases,
-            z0=z0,
-            zi=zi,
-            p=p,
-            beta_w=beta_w,
-            kinds_x=kinds_x,
-            kind_w=kind_w,
-            x_l0=x_l0,
-            w0=w0,
-            betas0=betas0,
-            alpha0=alpha0,
-            t0=t0,
-            ns0=ns0,
-            ds0=ds0,
-            max_points=max_points,
+        x_ls, ws, betas, ts, alphas, iters, ns, tcs, acs = (
+            yaeos_c.tx_mp_phase_envelope(
+                id=self.id,
+                np=number_of_phases,
+                z0=z0,
+                zi=zi,
+                p=p,
+                beta_w=beta_w,
+                kinds_x=kinds_x,
+                kind_w=kind_w,
+                x_l0=x_l0,
+                w0=w0,
+                betas0=betas0,
+                alpha0=alpha0,
+                t0=t0,
+                ns0=ns0,
+                ds0=ds0,
+                max_points=max_points,
+            )
         )
 
         return TXEnvelope(
@@ -2236,8 +2240,12 @@ class ArModel(ABC):
         )
 
     def phase_envelope_pt_from_dsp(
-        self, z, env1: PTEnvelope, env2: PTEnvelope,
-        dbeta0=1e-5, max_points=1000
+        self,
+        z,
+        env1: PTEnvelope,
+        env2: PTEnvelope,
+        dbeta0=1e-5,
+        max_points=1000,
     ) -> list:
         """Calculate PT phase envelopes from a DSP.
 
