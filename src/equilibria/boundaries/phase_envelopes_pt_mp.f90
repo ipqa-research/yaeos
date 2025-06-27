@@ -20,6 +20,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    type :: PTEnvelMP
       !! Multiphase PT envelope.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
+      real(pr), allocatable :: Tc(:) !! Critical temperatures.
+      real(pr), allocatable :: Pc(:) !! Critical pressures.
    contains
       procedure :: write => write_envelope_PT_MP
       procedure, nopass :: solve_point
@@ -157,8 +159,13 @@ contains
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
       real(pr) :: X_last_converged(size(X)) !! Last converged point
+      real(pr) :: Xc(size(X)) !! Vector of variables at the critical point
+      logical :: found_critical !! If true, a critical point was found
 
       character(len=14) :: x_kinds(np), w_kind
+
+      real(pr) :: Tc !! Critical temperature [K]
+      real(pr) :: Pc !! Critical pressure [bar]
 
       nc = size(z)
       iP = np*nc + np + 1
@@ -184,7 +191,7 @@ contains
       x_kinds = kinds_x
       w_kind = kind_w
 
-      allocate(env_points(0))
+      allocate(env_points(0), pt_envelope%Tc(0), pt_envelope%Pc(0))
       
       F = 1
       its = 0
@@ -238,7 +245,17 @@ contains
          ! over it.
          call detect_critical(&
             nc, np, i, x_kinds, w_kind, .false., &
-            X_last_converged, X, dXdS, ns, dS, S)
+            X_last_converged, X, dXdS, ns, dS, S, &
+            found_critical, Xc)
+
+         if (found_critical) then
+            ! Save critical point
+            Tc = exp(Xc(iT))
+            Pc = exp(Xc(iP))
+            pt_envelope%Tc = [pt_envelope%Tc, Tc]
+            pt_envelope%Pc = [pt_envelope%Pc, Pc]
+         end if
+
 
          ! Next point estimation.
          dX = dXdS * dS

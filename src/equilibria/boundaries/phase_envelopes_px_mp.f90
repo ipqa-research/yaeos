@@ -23,6 +23,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
       real(pr), allocatable :: alpha(:) !! Molar relation between two mixtures.
       real(pr), allocatable :: z0(:) !! Original mixture mole fractions.
       real(pr), allocatable :: zi(:) !! Other mixture mole fractions
+      real(pr), allocatable :: Pc(:) !! Critical pressure [bar]
+      real(pr), allocatable :: ac(:) !! Critical alphas.
    contains
       procedure :: write => write_envelope_Px_MP
       procedure, nopass :: solve_point
@@ -126,11 +128,15 @@ contains
 
       real(pr) :: Xold(size(X)) !! Old vector of variables
       real(pr) :: X_last_converged(size(X)) !! Last converged point
+      real(pr) :: Xc(size(X)) !! Critical variables
+      logical :: found_critical
+      real(pr) :: ac, Pc
 
-      integer :: ia
+      integer :: ia, iP
 
       nc = size(z0)
       ia = nc*np+np+2
+      iP = nc*np+np+1
 
       number_of_points = optval(points, 1000)
 
@@ -156,7 +162,7 @@ contains
       S = X(ns)
       dS = dS0
 
-      allocate(env_points(0), alphas(0))
+      allocate(env_points(0), alphas(0), px_envelope%ac(0), px_envelope%Pc(0))
       call solve_point(&
          model, z0, zi, np, T, beta_w, x_kinds, w_kind, &
          X, ns, S, dXdS, &
@@ -203,7 +209,14 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, i, x_kinds, w_kind, .true., X_last_converged, X, dXdS, ns, dS, S)
+         call detect_critical(nc, np, i, x_kinds, w_kind, .true., X_last_converged, X, dXdS, ns, dS, S, found_critical, Xc)
+         if (found_critical) then
+            ac = exp(Xc(ia))
+            Pc = exp(Xc(iP))
+            px_envelope%Pc = [px_envelope%Pc, Pc]
+            px_envelope%ac = [px_envelope%ac, ac]
+         end if
+
 
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS

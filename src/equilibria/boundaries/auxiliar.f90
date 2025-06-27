@@ -23,7 +23,8 @@ contains
    end subroutine get_z
 
    subroutine detect_critical(&
-         nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S)
+         nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc&
+      )
       !! # detect_critical
       !! Detect if the system is close to a critical point.
       !!
@@ -57,13 +58,19 @@ contains
       !! Step size of the specification for the next point.
       real(pr), intent(in out) :: S
       !! Specification value.
-
+      logical, intent(out) :: found_critical
+      !! If true, a critical point was found.
+      real(pr) :: Xc(size(X))
+      !! Vector of variables at the critical point.
+      
       character(len=14) :: incipient_kind
       integer :: i, lb, ub
       integer :: ncomp
-      real(pr) :: a, Xc(size(X)), Xnew(size(X))
+      real(pr) :: a,  Xnew(size(X))
 
       real(pr) :: lnKold(nc), lnK(nc)
+         
+      found_critical = .false.
 
       do i=1,np
          lb = (i-1)*nc + 1
@@ -87,7 +94,7 @@ contains
             ! In Liquid-Liquid lines that start from a critical point, this
             ! could be a false positive, so we check that the point is not
             ! the first one.
-
+            found_critical = .true.
             incipient_kind = kind_w
             kind_w = kinds_x(i)
             kinds_x(i) = incipient_kind
@@ -97,16 +104,12 @@ contains
             a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
             Xc = a * Xnew + (1-a)*Xold
 
-            ! X = Xc + 0.1 * dXdS * dS
-
-            ns = lb + ncomp - 1
-            S = X(ns)
-            dS = dXdS(ns) * dS
-
             if (nc == 2 .and. binary_stop) then
                dS=0
                return
             end if
+            
+            X = Xc + dXdS * dS
 
             return
          end if

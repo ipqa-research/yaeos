@@ -2031,7 +2031,7 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ps, ts, iters, ns, x_kinds, w_kinds = (
+        x_ls, ws, betas, ps, ts, iters, ns, x_kinds, w_kinds, pcs, tcs = (
             yaeos_c.pt_mp_phase_envelope(
                 id=self.id,
                 np=number_of_phases,
@@ -2067,6 +2067,8 @@ class ArModel(ABC):
             temperatures=ts,
             iterations=iters,
             specified_variable=ns,
+            critical_pressures=pcs,
+            critical_temperatures=tcs,
         )
 
         return envelope

@@ -18,7 +18,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
    public :: tx_envelope
 
    type :: TXEnvelMP
-      !! Multiphase PT envelope.
+      !! Multiphase T\(alpha\) envelope.
       type(MPPoint), allocatable :: points(:)
       !! Array of converged points.
       real(pr), allocatable :: alpha(:)
@@ -27,6 +27,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
       !! Initial mixture composition.
       real(pr), allocatable :: zi(:)
       !! Second mixture composition.
+      real(pr), allocatable :: ac(:) !! Critical alphas.
+      real(pr), allocatable :: Tc(:) !! Critical temperatures [K]
    contains
       procedure :: write => write_envelope_Tx_MP
       procedure, nopass :: solve_point
@@ -150,13 +152,21 @@ contains
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
       integer :: ia !! Index of the \(alpha\) variable in the vector X
+      integer :: iT !! Index of the temperature variable in the vector X
       real(pr) :: z(size(z0))
 
       character(len=14) :: x_kinds(np) !! Kinds of the main phases
       character(len=14) :: w_kind !! Kind of the reference phase
       real(pr) :: X_last_converged(size(X)) !! Last converged point
+      
+      logical :: found_critical
+       !! If true, a critical point was found during the calculation.
+      real(pr) :: Xc(size(X)) !! Vector of variables at the critical point.
+      real(pr) :: Tc, ac
+
 
       nc = size(z0)
+      iT = np*nc + np + 1
       ia = np*nc + np + 2
 
       number_of_points = optval(points, 1000)
@@ -178,7 +188,7 @@ contains
       x_kinds = kinds_x
       w_kind = kind_w
 
-      allocate(env_points(0), alphas(0))
+      allocate(env_points(0), alphas(0), tx_envelope%ac(0), tx_envelope%Tc(0))
       call solve_point(&
          model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
          X=X, ns=ns, S=S, dXdS=dXdS, &
@@ -225,11 +235,15 @@ contains
          ! over it.
          call detect_critical(&
             nc=nc, np=np, point=i, kinds_x=x_kinds, kind_w=w_kind, binary_stop=.true., &
-            Xold=X_last_converged, X=X, dXdS=dXdS, ns=ns, dS=dS, S=S &
+            Xold=X_last_converged, X=X, dXdS=dXdS, ns=ns, dS=dS, S=S, found_critical=found_critical, Xc=Xc &
             )
-         ! call detect_critical(&
-         !    nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, &
-         !    X=X, dXdS=dXdS, ns=ns, dS=dS, S=S)
+         if (found_critical) then
+            ac = exp(Xc(ia))
+            Tc = exp(Xc(iT))
+            tx_envelope%Tc = [tx_envelope%Tc, Tc]
+            tx_envelope%ac = [tx_envelope%ac, ac]
+         end if
+
 
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS

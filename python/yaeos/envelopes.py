@@ -70,9 +70,12 @@ class PTEnvelope:
         temperatures,
         iterations,
         specified_variable,
+        critical_pressures,
+        critical_temperatures,
     ):
 
         msk = ~np.isnan(pressures)
+        msk_cp = ~np.isnan(critical_pressures)
         self.number_of_components = len(global_composition)
         self.number_of_phases = main_phases_compositions.shape[1]
         self.global_composition = global_composition
@@ -87,6 +90,8 @@ class PTEnvelope:
         self.specified_variable = specified_variable[msk]
         self.reference_phase_kinds = reference_phase_kinds[msk]
         self.main_phases_kinds = main_phases_kinds[msk]
+        self.critical_pressures = critical_pressures[msk_cp]
+        self.critical_temperatures = critical_temperatures[msk_cp]
 
         df = pd.DataFrame()
 
@@ -103,32 +108,6 @@ class PTEnvelope:
 
         self.df = df
 
-        idx = []
-        for phase in range(self.number_of_phases):
-            cp_idx = []
-            lnK = np.log(
-                self.reference_phase_compositions
-                / self.main_phases_compositions[:, phase]
-            )
-
-            for i in range(1, len(lnK)):
-                if all(lnK[i, :] * lnK[i - 1, :] < 0):
-                    # TODO: There should be an interpolation here to find
-                    # a better approximation of the critical point.
-                    cp_idx.append(i)
-
-            idx.append(cp_idx)
-
-        self.cp = idx
-
-        # lnKs1 = np.log(c["w"][1:]/c["x_l"][1:, 1])
-        # lnKs0 = np.log(c["w"][1:]/c["x_l"][1:, 0])
-        # for i, lnK in enumerate(np.log(c["w"][1:]/c["x_l"][1:, 1])):
-        #     lnK2 = np.log(c["w"]/c["x_l"][i, 1])
-        #     crit = (lnK * lnK2 < 0).all()
-        #     if crit:
-        #         print("asd")
-
     def plot(self, **plot_kwargs):
         if "ax" in plot_kwargs:
             ax = plot_kwargs["ax"]
@@ -138,10 +117,9 @@ class PTEnvelope:
         ax.plot(self.temperatures, self.pressures, **plot_kwargs)
         ax.set_xlabel("Temperature [K]")
         ax.set_ylabel("Pressure [bar]")
-        for cp in self.cp:
-            ax.scatter(
-                self.temperatures[cp], self.pressures[cp], color="black"
-            )
+        ax.scatter(
+            self.critical_temperatures, self.critical_pressures, color="black"
+        )
 
     def __repr__(self):
         display(self.df)
@@ -166,13 +144,15 @@ class PTEnvelope:
                 temperatures=self.temperatures[key],
                 iterations=self.iterations[key],
                 specified_variable=self.specified_variable[key],
+                critical_pressures=self.critical_pressures,
+                critical_temperatures=self.critical_temperatures,
             )
         elif key == "T":
             return self.temperatures
         elif key == "Tc":
-            return self.temperatures[self.cp]
+            return self.critical_temperatures
         elif key == "Pc":
-            return self.pressures[self.cp]
+            return self.critical_pressures
         elif key == "P":
             return self.pressures
         elif key == "z":
@@ -194,6 +174,10 @@ class PTEnvelope:
             temperatures=self.temperatures * other,
             iterations=self.iterations,
             specified_variable=self.specified_variable,
+            reference_phase_kinds=self.reference_phase_kinds,
+            main_phases_kinds=self.main_phases_kinds,
+            critical_pressures=self.critical_pressures,
+            critical_temperatures=self.critical_temperatures,
         )
 
     def __len__(self):

@@ -1379,7 +1379,8 @@ contains
    subroutine pt_mp_phase_envelope(&
       id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
       beta_w, kinds_x, kind_w, max_points, stop_pressure, &
-      x_ls, ws, betas, Ps, Ts, iters, ns, main_kinds, ref_kinds &
+      x_ls, ws, betas, Ps, Ts, iters, ns, main_kinds, ref_kinds, &
+      Pcs, Tcs &
       )
       use yaeos, only: PTEnvelMP, pt_envelope
       integer(c_int), intent(in) :: id
@@ -1410,6 +1411,8 @@ contains
 
       character(len=14), intent(out) :: main_kinds(max_points, np)
       character(len=14), intent(out) :: ref_kinds(max_points)
+      real(c_double), intent(out) :: Tcs(max_points)
+      real(c_double), intent(out) :: Pcs(max_points)
 
 
       integer :: i, j
@@ -1422,6 +1425,8 @@ contains
       betas = makenan()
       Ps = makenan()
       Ts = makenan()
+      Tcs = makenan()
+      Pcs = makenan()
 
       call convert_kind(kinds_x, x_kinds)
       call convert_kind(kind_w, w_kind)
@@ -1445,6 +1450,11 @@ contains
          ns(i) = pt_mp%points(i)%ns
          main_kinds(i, :) = pt_mp%points(i)%kinds_x
          ref_kinds(i) = pt_mp%points(i)%kind_w
+      end do
+
+      do i=1,size(pt_mp%Tc)
+         Tcs(i) = pt_mp%Tc(i)
+         Pcs(i) = pt_mp%Pc(i)
       end do
    end subroutine pt_mp_phase_envelope
 
