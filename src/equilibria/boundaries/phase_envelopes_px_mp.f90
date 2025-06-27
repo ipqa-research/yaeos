@@ -124,7 +124,8 @@ contains
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
-      real(pr) :: Xold(size(X))
+      real(pr) :: Xold(size(X)) !! Old vector of variables
+      real(pr) :: X_last_converged(size(X)) !! Last converged point
 
       integer :: ia
 
@@ -202,7 +203,7 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, i, x_kinds, w_kind, .true., X, dXdS, ns, dS, S)
+         call detect_critical(nc, np, i, x_kinds, w_kind, .true., X_last_converged, X, dXdS, ns, dS, S)
 
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS
@@ -217,6 +218,8 @@ contains
 
          ! Next point estimation.
          dX = dXdS * dS
+         
+         X_last_converged = X
          X = X + dX
          S = X(ns)
       end do

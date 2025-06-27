@@ -156,6 +156,7 @@ contains
       real(pr) :: S !! Specified value
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
+      real(pr) :: X_last_converged(size(X)) !! Last converged point
 
       character(len=14) :: x_kinds(np), w_kind
 
@@ -235,7 +236,9 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, i, x_kinds, w_kind, .false., X, dXdS, ns, dS, S)
+         call detect_critical(&
+            nc, np, i, x_kinds, w_kind, .false., &
+            X_last_converged, X, dXdS, ns, dS, S)
 
          ! Next point estimation.
          dX = dXdS * dS
@@ -248,6 +251,12 @@ contains
             dX = dX/2
          end do
          
+         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 1 &
+            .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 1)
+            dX = dX*2
+         end do
+         
+         X_last_converged = X
          X = X + dX
          S = X(ns)
       end do
@@ -605,7 +614,6 @@ contains
          end if
       end do
 
-
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
@@ -613,27 +621,9 @@ contains
          dS = dS/2
       end do
 
-      ! do while(minval(abs(dXdS(:nc*np)*dS)) < 1e-5_pr)
-      !    dS = dS*1.1
-      ! end do
-
       do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
          dS = dS*1.1
       end do
-
-
-      !dT = abs(exp(X(iT))  - exp(X(it) + dXdS(iT)*dS))
-      !dP = abs(exp(X(iP))  - exp(X(it) + dXdS(iP)*dS))
-      !do while(&
-      !   dT > 7._pr &
-      !   .or. dP > 7._pr &
-      !   .or. maxval(abs(dXdS(iBetas) * dS)/X(iBetas)) > 0.1_pr &
-      !   )
-      !   dS = dS * 0.75
-      !   dT = abs(exp(X(iT))  - exp(X(it) + dXdS(iT)*dS))
-      !   dP = abs(exp(X(iP))  - exp(X(it) + dXdS(iP)*dS))
-      !end do
-
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

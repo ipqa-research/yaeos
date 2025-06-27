@@ -22,7 +22,8 @@ contains
       if (present(dzda)) dzda = z_inj - z_0
    end subroutine get_z
 
-   subroutine detect_critical(nc, np, point, kinds_x, kind_w, binary_stop, X, dXdS, ns, dS, S)
+   subroutine detect_critical(&
+         nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S)
       !! # detect_critical
       !! Detect if the system is close to a critical point.
       !!
@@ -44,6 +45,8 @@ contains
       !! Kind of the incipient phase.
       logical, intent(in) :: binary_stop
       !! If true, stop at the critical point if its a binary system.
+      real(pr), intent(in) :: Xold(:)
+      !! Old vector of variables.
       real(pr), intent(in out) :: X(:)
       !! Vector of variables.
       real(pr), intent(in out) :: dXdS(:)
@@ -55,13 +58,12 @@ contains
       real(pr), intent(in out) :: S
       !! Specification value.
 
-      real(pr) :: Xold(size(X))
       character(len=14) :: incipient_kind
       integer :: i, lb, ub
       integer :: ncomp
       real(pr) :: a, Xc(size(X)), Xnew(size(X))
 
-      Xold = X
+      real(pr) :: lnKold(nc), lnK(nc)
 
       do i=1,np
          lb = (i-1)*nc + 1
@@ -77,7 +79,11 @@ contains
             X = X + dXdS * dS
          end do
 
-         if (point > 1 .and. all(Xold(lb:ub) * (X(lb:ub) + dXdS(lb:ub)*dS) < 0)) then
+         lnKold = Xold(lb:ub)
+         lnK = X(lb:ub) + dXdS(lb:ub) * dS
+         Xnew = X + dXdS * dS
+
+         if (point > 1 .and. all(lnKold * lnK < 0)) then
             ! In Liquid-Liquid lines that start from a critical point, this
             ! could be a false positive, so we check that the point is not
             ! the first one.
@@ -85,20 +91,24 @@ contains
             incipient_kind = kind_w
             kind_w = kinds_x(i)
             kinds_x(i) = incipient_kind
-            ! TODO: Interpolate here
             
-            ! 0 = a*X(ns) + (1-a)*Xnew(ns) < Interpolation equation to get X(ns) = 0
-            ! Xnew = X + 5 * dXdS * dS
-            ! ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
-            ! a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
-            ! Xc = a * X + (1-a)*Xnew
+            ! 0 = a*Xnew(ns) + (1-a)*X(ns) < Interpolation equation to get X(ns) = 0
+            ncomp = maxloc(abs(lnK - lnKold), dim=1)
+            a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
+            Xc = a * Xnew + (1-a)*Xold
 
-            ! X = Xc + dXdS * dS
+            X = Xc + 0.1 * dXdS * dS
+
+            ns = lb + ncomp - 1
+            S = X(ns)
+            dS = dXdS(ns) * dS
 
             if (nc == 2 .and. binary_stop) then
                dS=0
                return
             end if
+
+            return
          end if
       end do
    end subroutine detect_critical

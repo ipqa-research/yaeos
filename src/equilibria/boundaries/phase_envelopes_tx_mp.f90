@@ -154,6 +154,7 @@ contains
 
       character(len=14) :: x_kinds(np) !! Kinds of the main phases
       character(len=14) :: w_kind !! Kind of the reference phase
+      real(pr) :: X_last_converged(size(X)) !! Last converged point
 
       nc = size(z0)
       ia = np*nc + np + 2
@@ -224,7 +225,7 @@ contains
          ! over it.
          call detect_critical(&
             nc=nc, np=np, point=i, kinds_x=x_kinds, kind_w=w_kind, binary_stop=.true., &
-            X=X, dXdS=dXdS, ns=ns, dS=dS, S=S &
+            Xold=X_last_converged, X=X, dXdS=dXdS, ns=ns, dS=dS, S=S &
             )
          ! call detect_critical(&
          !    nc=nc, np=np, kinds_x=x_kinds, kind_w=w_kind, &
@@ -243,6 +244,8 @@ contains
 
          ! Next point estimation.
          dX = dXdS * dS
+
+         X_last_converged = X
          X = X + dX
          S = X(ns)
       end do
