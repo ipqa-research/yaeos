@@ -97,7 +97,7 @@ contains
             a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
             Xc = a * Xnew + (1-a)*Xold
 
-            X = Xc + 0.1 * dXdS * dS
+            ! X = Xc + 0.1 * dXdS * dS
 
             ns = lb + ncomp - 1
             S = X(ns)
