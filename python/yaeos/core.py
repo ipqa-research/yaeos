@@ -2140,7 +2140,7 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ps, alphas, iters, ns = yaeos_c.px_mp_phase_envelope(
+        x_ls, ws, betas, ps, alphas, iters, ns, pcs, acs = yaeos_c.px_mp_phase_envelope(
             id=self.id,
             np=number_of_phases,
             z0=z0,
@@ -2170,6 +2170,8 @@ class ArModel(ABC):
             alphas=alphas,
             iterations=iters,
             specified_variable=ns,
+            critical_pressures=pcs,
+            critical_alphas=acs,
         )
 
     def phase_envelope_tx_mp(
@@ -2199,7 +2201,7 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ts, alphas, iters, ns = yaeos_c.tx_mp_phase_envelope(
+        x_ls, ws, betas, ts, alphas, iters, ns, tcs, acs = yaeos_c.tx_mp_phase_envelope(
             id=self.id,
             np=number_of_phases,
             z0=z0,
@@ -2229,6 +2231,8 @@ class ArModel(ABC):
             alphas=alphas,
             iterations=iters,
             specified_variable=ns,
+            critical_temperatures=tcs,
+            critical_alphas=acs,
         )
 
     def phase_envelope_pt_from_dsp(

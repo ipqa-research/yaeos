@@ -1,6 +1,6 @@
 """Envelopes.
 
-This module contains the classes that wrapp the data structures used to
+This module contains the classes that wrap the data structures used to
 represent different kinds of phase envelopes.
 """
 
@@ -121,10 +121,6 @@ class PTEnvelope:
             self.critical_temperatures, self.critical_pressures, color="black"
         )
 
-    def __repr__(self):
-        display(self.df)
-        return ""
-
     def __getitem__(self, key):
         if "key" in self.__dict__:
             return self.__dict__["key"]
@@ -162,23 +158,9 @@ class PTEnvelope:
         elif key == "w":
             return self.reference_phase_compositions
 
-    def __mul__(self, other):
-        return PTEnvelope(
-            global_composition=self.global_composition,
-            main_phases_compositions=self.main_phases_compositions * other,
-            reference_phase_compositions=self.reference_phase_compositions
-            * other,
-            main_phases_molar_fractions=self.main_phases_molar_fractions
-            * other,
-            pressures=self.pressures * other,
-            temperatures=self.temperatures * other,
-            iterations=self.iterations,
-            specified_variable=self.specified_variable,
-            reference_phase_kinds=self.reference_phase_kinds,
-            main_phases_kinds=self.main_phases_kinds,
-            critical_pressures=self.critical_pressures,
-            critical_temperatures=self.critical_temperatures,
-        )
+    def __repr__(self):
+        display(self.df)
+        return ""
 
     def __len__(self):
         return len(self.temperatures)
@@ -211,16 +193,17 @@ class PXEnvelope:
     alphas : np.ndarray
         The molar fraction of the `global_composition_i`, :math:`\alpha`.
         Shape is (n_points,).
+    critical_pressures : np.ndarray
+        The critical pressures of the envelope. Shape is (n_critical_points,).
+    critical_alphas : np.ndarray
+        The molar fractions of the `global_composition_i` at the critical 
+        points, :math:`\alpha`.  Shape is (n_critical_points,).
     iterations : np.ndarray
         The number of iterations taken to compute the envelope at each point.
         Shape is (n_points,).
     specified_variable : np.ndarray
         The specified variable used to compute the envelope at each point.
         Shape is (n_points,).
-    cp : list
-        A list of lists containing the indices of the critical points for each
-        phase. Each sublist corresponds to a phase and contains the indices of
-        the critical points in the `pressures` and `alphas` arrays.
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
         - 'alpha': Molar fraction of the `global_composition_i`.
@@ -245,9 +228,13 @@ class PXEnvelope:
         alphas,
         iterations,
         specified_variable,
+        critical_pressures,
+        critical_alphas,
     ):
 
         msk = ~np.isnan(pressures)
+        msk_cp = ~np.isnan(critical_pressures)
+
         self.temperature = temperature
         self.number_of_components = len(global_composition_0)
         self.number_of_phases = main_phases_compositions.shape[1]
@@ -262,6 +249,8 @@ class PXEnvelope:
         self.alphas = alphas[msk]
         self.iterations = iterations[msk]
         self.specified_variable = specified_variable[msk]
+        self.critical_pressures = critical_pressures[msk_cp]
+        self.critical_alphas = critical_alphas[msk_cp]
 
         df = pd.DataFrame()
 
@@ -277,30 +266,6 @@ class PXEnvelope:
             df[f"beta^{i+1}"] = self.main_phases_molar_fractions[:, i]
 
         self.df = df
-
-        idx = []
-        for phase in range(self.number_of_phases):
-            cp_idx = []
-            lnK = np.log(
-                self.reference_phase_compositions
-                / self.main_phases_compositions[:, phase]
-            )
-
-            for i in range(1, len(lnK)):
-                if all(lnK[i, :] * lnK[i - 1, :] < 0):
-                    cp_idx.append(i)
-
-            idx.append(cp_idx)
-
-        self.cp = idx
-
-        # lnKs1 = np.log(c["w"][1:]/c["x_l"][1:, 1])
-        # lnKs0 = np.log(c["w"][1:]/c["x_l"][1:, 0])
-        # for i, lnK in enumerate(np.log(c["w"][1:]/c["x_l"][1:, 1])):
-        #     lnK2 = np.log(c["w"]/c["x_l"][i, 1])
-        #     crit = (lnK * lnK2 < 0).all()
-        #     if crit:
-        #         print("asd")
 
     def plot(self, **plot_kwargs):
         """Plot the envelope.
@@ -330,7 +295,7 @@ class PXEnvelope:
     def __getitem__(self, key):
         if "key" in self.__dict__:
             return self.__dict__["key"]
-        elif isinstance(key, np.ndarray):
+        elif isinstance(key, np.ndarray) or isinstance(key, list):
             return PXEnvelope(
                 global_composition_0=self.global_composition_0,
                 global_composition_i=self.global_composition_i,
@@ -346,6 +311,8 @@ class PXEnvelope:
                 alphas=self.alphas[key],
                 iterations=self.iterations[key],
                 specified_variable=self.specified_variable[key],
+                critical_pressures=self.critical_pressures,
+                critical_alphas=self.critical_alphas,
             )
         elif key == "alpha" or key == "a":
             return self.alphas
@@ -359,23 +326,8 @@ class PXEnvelope:
             return self.reference_phase_compositions
 
     def __repr__(self):
-        return self.df.__repr__()
-
-    def __mul__(self, other):
-        return PXEnvelope(
-            global_composition_0=self.global_composition_0,
-            global_composition_i=self.global_composition_i,
-            temperature=self.temperature,
-            main_phases_compositions=self.main_phases_compositions * other,
-            reference_phase_compositions=self.reference_phase_compositions
-            * other,
-            main_phases_molar_fractions=self.main_phases_molar_fractions
-            * other,
-            pressures=self.pressures * other,
-            alphas=self.alphas * other,
-            iterations=self.iterations,
-            specified_variable=self.specified_variable,
-        )
+        display(self.df)
+        return ""
 
     def __len__(self):
         return len(self.alphas)
@@ -416,10 +368,11 @@ class TXEnvelope:
         Shape is (n_points,).
     temperature : float
         The temperatures along envelope. [K]
-    cp : list
-        A list of lists containing the indices of the critical points for each
-        phase. Each sublist corresponds to a phase and contains the indices of
-        the critical points in the `temperatures` and `alphas` arrays.
+    critical_temperatures : np.ndarray
+        The critical temperatures of the envelope. Shape is (n_critical_points,).
+    critical_alphas : np.ndarray
+        The molar fractions of the `global_composition_i` at the critical
+        points, :math:`\alpha`.  Shape is (n_critical_points,).
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
         - 'alpha': Molar fraction of the `global_composition_i`.
@@ -444,9 +397,13 @@ class TXEnvelope:
         alphas,
         iterations,
         specified_variable,
+        critical_temperatures=None,
+        critical_alphas=None,
     ):
 
         msk = ~np.isnan(temperatures)
+        msk_cp = ~np.isnan(critical_temperatures)
+
         self.temperature = pressure
         self.number_of_components = len(global_composition_0)
         self.number_of_phases = main_phases_compositions.shape[1]
@@ -461,6 +418,8 @@ class TXEnvelope:
         self.alphas = alphas[msk]
         self.iterations = iterations[msk]
         self.specified_variable = specified_variable[msk]
+        self.critical_temperatures = critical_temperatures[msk_cp]
+        self.critical_alphas = critical_alphas[msk_cp]
 
         df = pd.DataFrame()
 
@@ -476,30 +435,6 @@ class TXEnvelope:
             df[f"beta^{i+1}"] = self.main_phases_molar_fractions[:, i]
 
         self.df = df
-
-        idx = []
-        for phase in range(self.number_of_phases):
-            cp_idx = []
-            lnK = np.log(
-                self.reference_phase_compositions
-                / self.main_phases_compositions[:, phase]
-            )
-
-            for i in range(1, len(lnK)):
-                if all(lnK[i, :] * lnK[i - 1, :] < 0):
-                    cp_idx.append(i)
-
-            idx.append(cp_idx)
-
-        self.cp = idx
-
-        # lnKs1 = np.log(c["w"][1:]/c["x_l"][1:, 1])
-        # lnKs0 = np.log(c["w"][1:]/c["x_l"][1:, 0])
-        # for i, lnK in enumerate(np.log(c["w"][1:]/c["x_l"][1:, 1])):
-        #     lnK2 = np.log(c["w"]/c["x_l"][i, 1])
-        #     crit = (lnK * lnK2 < 0).all()
-        #     if crit:
-        #         print("asd")
 
     def plot(self, **plot_kwargs):
         """Plot the envelope.
@@ -545,6 +480,8 @@ class TXEnvelope:
                 alphas=self.alphas[key],
                 iterations=self.iterations[key],
                 specified_variable=self.specified_variable[key],
+                critical_temperatures=self.critical_temperatures,
+                critical_alphas=self.critical_alphas,
             )
         elif key == "alpha" or key == "a":
             return self.alphas
@@ -558,23 +495,8 @@ class TXEnvelope:
             return self.reference_phase_compositions
 
     def __repr__(self):
-        return self.df.__repr__()
-
-    def __mul__(self, other):
-        return TXEnvelope(
-            global_composition_0=self.global_composition_0,
-            global_composition_i=self.global_composition_i,
-            pressure=self.pressure,
-            main_phases_compositions=self.main_phases_compositions * other,
-            reference_phase_compositions=self.reference_phase_compositions
-            * other,
-            main_phases_molar_fractions=self.main_phases_molar_fractions
-            * other,
-            temperatures=self.temperature * other,
-            alphas=self.alphas * other,
-            iterations=self.iterations,
-            specified_variable=self.specified_variable,
-        )
+        display(self.df)
+        return ""
 
     def __len__(self):
         return len(self.alphas)

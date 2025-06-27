@@ -601,7 +601,7 @@ contains
       integer :: iBetas(np)
 
       real(pr) :: dT, dP
-
+      
       iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = size(X) - 1
       iT = size(X)
@@ -626,7 +626,7 @@ contains
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
             dS = dXdS(ns) * dS
             dXdS = dXdS/dXdS(ns)
-            dS = sign(min(0.01_pr, abs(dS)), dS)
+            dS = sign(min(0.001_pr, abs(dS), sqrt(abs(X(ns))/10)), dS)
             exit
          end if
       end do
@@ -641,6 +641,8 @@ contains
       do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
          dS = dS*1.1
       end do
+
+      dS = sign(min(dS, sqrt(abs(X(ns)/10))), dS)
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

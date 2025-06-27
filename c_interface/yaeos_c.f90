@@ -1461,7 +1461,7 @@ contains
    subroutine px_mp_phase_envelope(&
       id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, &
       beta_w, kinds_x, kind_w, max_points, &
-      x_ls, ws, betas, Ps, alphas, iters, ns &
+      x_ls, ws, betas, Ps, alphas, iters, ns, Pcs, acs &
       )
       use yaeos, only: PXEnvelMP, px_envelope
       integer(c_int), intent(in) :: id
@@ -1490,6 +1490,9 @@ contains
 
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
+      
+      real(c_double), intent(out) :: Pcs(max_points)
+      real(c_double), intent(out) :: acs(max_points)
 
       character(len=14) :: x_kinds(np), w_kind
 
@@ -1502,6 +1505,8 @@ contains
       betas = makenan()
       Ps = makenan()
       alphas = makenan()
+      Pcs = makenan()
+      acs = makenan()
 
       call convert_kind(kinds_x, x_kinds)
       call convert_kind(kind_w, w_kind)
@@ -1523,11 +1528,16 @@ contains
          iters = px_mp%points(i)%iters
          ns = px_mp%points(i)%ns
       end do
+
+      do i=1,size(px_mp%Pc)
+         Pcs(i) = px_mp%Pc(i)
+         acs(i) = px_mp%ac(i)
+      end do
    end subroutine px_mp_phase_envelope
 
    subroutine tx_mp_phase_envelope(&
       id, z0, zi, np, P, beta_w, kinds_x, kind_w, x_l0, w0, betas0, T0, alpha0, ns0, ds0, max_points, &
-      x_ls, ws, betas, Ts, alphas, iters, ns &
+      x_ls, ws, betas, Ts, alphas, iters, ns, Tcs, acs &
       )
       use yaeos, only: TXEnvelMP, tx_envelope
       integer(c_int), intent(in) :: id
@@ -1556,6 +1566,8 @@ contains
 
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
+      real(c_double), intent(out) :: Tcs(max_points)
+      real(c_double), intent(out) :: acs(max_points)
 
       integer :: i, j
 
@@ -1567,6 +1579,8 @@ contains
       betas = makenan()
       Ts = makenan()
       alphas = makenan()
+      Tcs = makenan()
+      acs = makenan()
 
       call convert_kind(kinds_x, x_kinds)
       call convert_kind(kind_w, w_kind)
@@ -1588,6 +1602,11 @@ contains
          alphas(i) = tx_mp%alpha(i)
          iters = tx_mp%points(i)%iters
          ns = tx_mp%points(i)%ns
+      end do
+
+      do i=1,size(tx_mp%Tc)
+         Tcs(i) = tx_mp%Tc(i)
+         acs(i) = tx_mp%ac(i)
       end do
    end subroutine tx_mp_phase_envelope
 
