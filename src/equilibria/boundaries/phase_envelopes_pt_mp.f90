@@ -626,7 +626,6 @@ contains
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
             dS = dXdS(ns) * dS
             dXdS = dXdS/dXdS(ns)
-            dS = sign(min(0.001_pr, abs(dS), sqrt(abs(X(ns))/10)), dS)
             exit
          end if
       end do
@@ -642,7 +641,7 @@ contains
          dS = dS*1.1
       end do
 
-      dS = sign(min(dS, sqrt(abs(X(ns)/10))), dS)
+      ! dS = sign(min(dS, 0.01_pr, sqrt(abs(X(ns)/5))), dS)
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
