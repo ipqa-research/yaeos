@@ -2140,7 +2140,7 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ps, alphas, iters, ns, pcs, acs = (
+        x_ls, ws, betas, ps, alphas, iters, ns, x_kinds, w_kinds, pcs, acs = (
             yaeos_c.px_mp_phase_envelope(
                 id=self.id,
                 np=number_of_phases,
@@ -2174,6 +2174,8 @@ class ArModel(ABC):
             specified_variable=ns,
             critical_pressures=pcs,
             critical_alphas=acs,
+            main_phases_kinds=x_kinds,
+            reference_phase_kinds=w_kinds,
         )
 
     def phase_envelope_tx_mp(
@@ -2203,7 +2205,7 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ts, alphas, iters, ns, tcs, acs = (
+        x_ls, ws, betas, ts, alphas, iters, ns, main_kinds, ref_kinds, tcs, acs = (
             yaeos_c.tx_mp_phase_envelope(
                 id=self.id,
                 np=number_of_phases,
@@ -2237,6 +2239,8 @@ class ArModel(ABC):
             specified_variable=ns,
             critical_temperatures=tcs,
             critical_alphas=acs,
+            main_phases_kinds=main_kinds,
+            reference_phase_kinds=ref_kinds,
         )
 
     def phase_envelope_pt_from_dsp(
@@ -2588,7 +2592,6 @@ class ArModel(ABC):
                     # bub_line_stable[msk] = bub_line[msk]
 
                 elif len(dsps[0]) == 0:
-                    bub_line_stable *= np.nan
 
                     k0 = dew_line.reference_phase_compositions[0, :] / z
                     flash = self.flash_pt(

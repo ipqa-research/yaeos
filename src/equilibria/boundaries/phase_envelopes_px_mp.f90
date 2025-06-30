@@ -43,6 +43,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
       real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
       integer :: iters !! Number of iterations needed to converge the point.
       integer :: ns !! Number of the specified variable.
+      character(len=14), allocatable :: kinds_x(:) !! Kinds of the main phases.
+      character(len=14) :: kind_w !! Kind of the reference phase.
    end type MPPoint
 
 contains
@@ -199,7 +201,7 @@ contains
          call get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, P, alpha)
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
-            iters=its, ns=ns &
+            iters=its, ns=ns, kinds_x=x_kinds, kind_w=w_kind &
             )
          env_points = [env_points, point]
          alphas = [alphas, alpha]

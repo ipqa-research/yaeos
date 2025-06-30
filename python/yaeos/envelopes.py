@@ -230,6 +230,8 @@ class PXEnvelope:
         specified_variable,
         critical_pressures,
         critical_alphas,
+        main_phases_kinds,
+        reference_phase_kinds,
     ):
 
         msk = ~np.isnan(pressures)
@@ -249,6 +251,8 @@ class PXEnvelope:
         self.alphas = alphas[msk]
         self.iterations = iterations[msk]
         self.specified_variable = specified_variable[msk]
+        self.main_phases_kinds = main_phases_kinds[msk]
+        self.reference_phase_kinds = reference_phase_kinds[msk]
         self.critical_pressures = critical_pressures[msk_cp]
         self.critical_alphas = critical_alphas[msk_cp]
 
@@ -397,8 +401,10 @@ class TXEnvelope:
         alphas,
         iterations,
         specified_variable,
-        critical_temperatures=None,
-        critical_alphas=None,
+        critical_temperatures,
+        critical_alphas,
+        main_phases_kinds,
+        reference_phase_kinds,
     ):
 
         msk = ~np.isnan(temperatures)
@@ -420,6 +426,8 @@ class TXEnvelope:
         self.specified_variable = specified_variable[msk]
         self.critical_temperatures = critical_temperatures[msk_cp]
         self.critical_alphas = critical_alphas[msk_cp]
+        self.main_phases_kinds = main_phases_kinds[msk]
+        self.reference_phase_kinds = reference_phase_kinds[msk]
 
         df = pd.DataFrame()
 

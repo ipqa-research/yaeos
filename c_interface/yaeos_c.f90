@@ -1461,7 +1461,7 @@ contains
    subroutine px_mp_phase_envelope(&
       id, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, ds0, &
       beta_w, kinds_x, kind_w, max_points, &
-      x_ls, ws, betas, Ps, alphas, iters, ns, Pcs, acs &
+      x_ls, ws, betas, Ps, alphas, iters, ns, main_kinds, ref_kinds, Pcs, acs &
       )
       use yaeos, only: PXEnvelMP, px_envelope
       integer(c_int), intent(in) :: id
@@ -1490,7 +1490,9 @@ contains
 
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
-      
+     
+      character(len=14), intent(out) :: main_kinds(max_points, np)
+      character(len=14), intent(out) :: ref_kinds(max_points)
       real(c_double), intent(out) :: Pcs(max_points)
       real(c_double), intent(out) :: acs(max_points)
 
@@ -1527,6 +1529,8 @@ contains
          alphas(i) = px_mp%alpha(i)
          iters = px_mp%points(i)%iters
          ns = px_mp%points(i)%ns
+         main_kinds(i, :) = px_mp%points(i)%kinds_x
+         ref_kinds(i) = px_mp%points(i)%kind_w
       end do
 
       do i=1,size(px_mp%Pc)
@@ -1537,7 +1541,7 @@ contains
 
    subroutine tx_mp_phase_envelope(&
       id, z0, zi, np, P, beta_w, kinds_x, kind_w, x_l0, w0, betas0, T0, alpha0, ns0, ds0, max_points, &
-      x_ls, ws, betas, Ts, alphas, iters, ns, Tcs, acs &
+      x_ls, ws, betas, Ts, alphas, iters, ns, main_kinds, ref_kinds, Tcs, acs &
       )
       use yaeos, only: TXEnvelMP, tx_envelope
       integer(c_int), intent(in) :: id
@@ -1566,6 +1570,8 @@ contains
 
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
+      character(len=14), intent(out) :: main_kinds(max_points, np)
+      character(len=14), intent(out) :: ref_kinds(max_points)
       real(c_double), intent(out) :: Tcs(max_points)
       real(c_double), intent(out) :: acs(max_points)
 
@@ -1602,6 +1608,8 @@ contains
          alphas(i) = tx_mp%alpha(i)
          iters = tx_mp%points(i)%iters
          ns = tx_mp%points(i)%ns
+         main_kinds(i, :) = tx_mp%points(i)%kinds_x
+         ref_kinds(i) = tx_mp%points(i)%kind_w
       end do
 
       do i=1,size(tx_mp%Tc)
