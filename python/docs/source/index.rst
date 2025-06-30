@@ -14,6 +14,7 @@
    :caption: API documentation
    
    core
+   envelopes
 
 .. toctree::
    :maxdepth: 5

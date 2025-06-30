@@ -7,7 +7,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
-   use yaeos__equilibria_boundaries_auxiliar, only: get_z
+   use yaeos__equilibria_boundaries_auxiliar, only: get_z, detect_critical
 
    implicit none
 
@@ -18,11 +18,20 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
    public :: tx_envelope
 
    type :: TXEnvelMP
-      !! Multiphase PT envelope.
-      type(MPPoint), allocatable :: points(:) !! Array of converged points.
+      !! Multiphase T\(alpha\) envelope.
+      type(MPPoint), allocatable :: points(:)
+      !! Array of converged points.
       real(pr), allocatable :: alpha(:)
+      !! Array of \(alpha\) values for each point in the envelope.
       real(pr), allocatable :: z0(:)
+      !! Initial mixture composition.
       real(pr), allocatable :: zi(:)
+      !! Second mixture composition.
+      real(pr), allocatable :: ac(:) !! Critical alphas.
+      real(pr), allocatable :: Tc(:) !! Critical temperatures [K]
+      character(len=14), allocatable :: kinds_x(:) !! Kinds of the main phases
+      character(len=14), allocatable :: kind_w(:) !! Kind of the reference phase
+
    contains
       procedure :: write => write_envelope_Tx_MP
       procedure, nopass :: solve_point
@@ -41,43 +50,97 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
       real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
       integer :: iters !! Number of iterations needed to converge the point.
       integer :: ns !! Number of the specified variable.
+      character(len=14), allocatable :: kinds_x(:) !! Kinds of the main phases.
+      character(len=14) :: kind_w !! Kind of the reference phase.
    end type MPPoint
 
 contains
    type(TXEnvelMP) function tx_envelope(&
-      model, z0, zi, np, P, x_l0, w0, betas0, T0, alpha0, ns0, dS0, beta_w, points &
+      model, z0, zi, np, P, kinds_x, kind_w, &
+      x_l0, w0, betas0, T0, alpha0, ns0, dS0, beta_w, points &
       )
+      !! # tx_envelope
+      !! Calculate the multiphase isobar of a mixture.
+      !!
+      !! # Description
+      !! This function calculates the multiphase isobar of a mixture. It uses
+      !! the Newton-Raphson method to solve the system of equations for each
+      !! point of the envelope. Each point is estimated using the continuation
+      !! method, where the sensitivity (vector of the derivatives of the
+      !! variables with respect to the specified variable) vector of the
+      !! previous point is used to estimate the next point.
+      !! The specification is updated at each step.
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
+      !!  Model to use for the calculations.
       real(pr), intent(in) :: z0(:)
+      !! Initial mixture composition.
       real(pr), intent(in) :: zi(:)
+      !! Second mixture composition.
       integer, intent(in) :: np
+      !! Number of main phases.
       real(pr), intent(in) :: P
+      !! Pressure [bar].
+      character(len=14), intent(in) :: kinds_x(np)
+      !! Kinds of the main phases. Can be "liquid", "vapor", "stable"
+      character(len=14), intent(in) :: kind_w
+      !! Kind of the reference phase. Can be "liquid", "vapor", "stable"
       real(pr), intent(in) :: x_l0(np, size(z0))
+      !! Mole fractions matrix of the main phases at the initial point. Each
+      !! row corresponds to a phase, and each column corresponds to a
+      !! component.
       real(pr), intent(in) :: w0(size(z0))
+      !! Mole fractions of the incipient/reference phase at the initial point.
       real(pr), intent(in) :: betas0(np)
+      !! Mole fractions of each main phases at the initial point.
       real(pr), intent(in) :: T0
+      !! Initial Temperature [K].
       real(pr), intent(in) :: alpha0
+      !! Initial value of the \(alpha\) variable.
       integer, intent(in) :: ns0
+      !! Number of the specified variable. This is the variable that will be
+      !! used to specify the next point. the first \(nc \cdot  np\) variables
+      !! corresponds to the \(\ln K_i^l\) of each phase, sorted by phases
+      !! (\[\ln K_1^1, \ln K_2^1, \dots, \ln K_{nc}^1,
+      !! \dots, \ln K_{nc}^{np}]\).
+      !! The next \(np\) variables are the mole fractions of each main phase.
+      !! The last two variables are the temperature and the
+      !! \(alpha\) variable. Respectively
       real(pr), intent(in) :: dS0
+      !! Step size of the specification for the next point.
       real(pr), intent(in) :: beta_w
       !! Fraction of the reference (incipient) phase.
       integer, optional, intent(in) :: points
+      !! Number of points to calculate in the envelope. If not specified,
+      !! the default value is 1000.
 
       type(MPPoint), allocatable :: env_points(:)
+      !! Array of converged points in the envelope.
       real(pr), allocatable :: alphas(:)
+      !! Array of \(alpha\) values for each point in the envelope.
       type(MPPoint) :: point
+      !! Point to store the information of the current point.
 
       real(pr) :: F(size(z0) * np + np + 2)
+      !! Vector of functions valuated at the current point.
       real(pr) :: dF(size(z0) * np + np + 2, size(z0) * np + np + 2)
+      !! Jacobian matrix of the functions at the current point.
       real(pr) :: dXdS(size(z0) * np + np + 2)
+      !! Sensitivity of the variables with respect to the specification.
       real(pr) :: X(size(z0) * np + np + 2), dX(size(z0) * np + np + 2)
+      !! Vector of variables. It contains the \(\ln K_i^l\) of each phase,
+      !! the mole fractions of each main phase, the temperature and the
+      !! \(alpha\) variable.
 
       integer :: nc
+      !! Number of components in the mixture.
 
       integer :: its
+      !! Number of iterations needed to converge the point.
       integer :: max_iterations = 100
+      !! Maximum number of iterations to solve each point.
       integer :: number_of_points
+      !! Number of points to calculate in the envelope.
 
 
       real(pr) :: x_l(np, size(z0)), w(size(z0)), betas(np), T, alpha
@@ -93,7 +156,23 @@ contains
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
+      integer :: ia !! Index of the \(alpha\) variable in the vector X
+      integer :: iT !! Index of the temperature variable in the vector X
+      real(pr) :: z(size(z0))
+
+      character(len=14) :: x_kinds(np) !! Kinds of the main phases
+      character(len=14) :: w_kind !! Kind of the reference phase
+      real(pr) :: X_last_converged(size(X)) !! Last converged point
+      
+      logical :: found_critical
+       !! If true, a critical point was found during the calculation.
+      real(pr) :: Xc(size(X)) !! Vector of variables at the critical point.
+      real(pr) :: Tc, ac
+
+
       nc = size(z0)
+      iT = np*nc + np + 1
+      ia = np*nc + np + 2
 
       number_of_points = optval(points, 1000)
 
@@ -111,16 +190,21 @@ contains
       S = X(ns)
       dS = dS0
 
-      allocate(env_points(0), alphas(0))
+      x_kinds = kinds_x
+      w_kind = kind_w
+
+      allocate(env_points(0), alphas(0), tx_envelope%ac(0), tx_envelope%Tc(0))
       call solve_point(&
-         model, z0, zi, np, P, beta_w, X, ns, S, dXdS, &
-         F, dF, its, 1000 &
+         model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
+         X=X, ns=ns, S=S, dXdS=dXdS, &
+         F=F, dF=dF, iters=its, max_iterations=1000 &
          )
       do i=1,number_of_points
          X0 = X
          call solve_point(&
-            model, z0, zi, np, P, beta_w, X, ns, S, dXdS, &
-            F, dF, its, max_iterations &
+            model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
+            X=X, ns=ns, S=S, dXdS=dXdS, &
+            F=F, dF=dF, iters=its, max_iterations=max_iterations &
             )
 
          ! The point might not converge, in this case we try again with an
@@ -131,8 +215,9 @@ contains
             X = X0 - (1 - real(inner, pr) / 10._pr) * dX
             S = X(ns)
             call solve_point(&
-               model, z0, zi, np, T, beta_w, X, ns, S, dXdS, &
-               F, dF, its, 5&
+               model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, kinds_x=x_kinds, kind_w=w_kind, &
+               X=X, ns=ns, S=S, dXdS=dXdS, &
+               F=F, dF=dF, iters=its, max_iterations=5 &
                )
          end do
 
@@ -143,7 +228,7 @@ contains
          call get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, T, alpha)
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
-            iters=its, ns=ns &
+            iters=its, ns=ns, kinds_x=x_kinds, kind_w=w_kind &
             )
          env_points = [env_points, point]
          alphas = [alphas, alpha]
@@ -153,10 +238,33 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
-         call detect_critical(nc, np, X, dXdS, ns, dS, S)
+         call detect_critical(&
+            nc=nc, np=np, point=i, kinds_x=x_kinds, kind_w=w_kind, binary_stop=.true., &
+            Xold=X_last_converged, X=X, dXdS=dXdS, ns=ns, dS=dS, S=S, found_critical=found_critical, Xc=Xc &
+            )
+         if (found_critical) then
+            ac = exp(Xc(ia))
+            Tc = exp(Xc(iT))
+            tx_envelope%Tc = [tx_envelope%Tc, Tc]
+            tx_envelope%ac = [tx_envelope%ac, ac]
+         end if
+
+
+         if (nc == 2) then
+            alpha = X(ia) + dXdS(ia)*dS
+            z = alpha * zi + (1- alpha) * z0
+
+            do while((any(z < 0) .or. any(z > 1)) .and. abs(dS) > 0)
+               dS = dS/2
+               alpha = X(ia) + dXdS(ia)*dS
+               z = alpha * zi + (1- alpha) * z0
+            end do
+         end if
 
          ! Next point estimation.
          dX = dXdS * dS
+
+         X_last_converged = X
          X = X + dX
          S = X(ns)
       end do
@@ -166,7 +274,8 @@ contains
       call move_alloc(alphas, tx_envelope%alpha)
    end function tx_envelope
 
-   subroutine tx_F_NP(model, z0, zi, np, P, beta_w, X, ns, S, F, dF)
+   subroutine tx_F_NP(model, z0, zi, np, P, beta_w, kinds_x, kind_w, &
+      X, ns, S, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model
@@ -175,6 +284,8 @@ contains
       integer, intent(in) :: np !! Number of main phases.
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
+      character(len=14), intent(in) :: kinds_x(np) !! Kinds of the main phases.
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase.
       real(pr), intent(in)  :: X(:) !! Vector of variables.
       integer, intent(in)  :: ns !! Number of specification.
       real(pr), intent(in)  :: S !! Specification value.
@@ -247,14 +358,14 @@ contains
       ! Calculation of fugacities coeficients and their derivatives
       ! ------------------------------------------------------------------------
       call model%lnphi_pt(&
-         w, P, T, V=Vw, root_type="stable", lnphi=lnphi_w, &
+         w, P, T, V=Vw, root_type=kind_w, lnphi=lnphi_w, &
          dlnphidt=dlnphi_dt_w, dlnphidn=dlnphi_dn_w &
          )
 
       do l=1,np
          x_l(l, :) = K(l, :)*w
          call model%lnphi_pt(&
-            x_l(l, :), P, T, V=Vl(l), root_type="stable", lnphi=lnphi, &
+            x_l(l, :), P, T, V=Vl(l), root_type=kinds_x(l), lnphi=lnphi, &
             dlnphidt=dlnphi_dt, dlnphidn=dlnphi_dn &
             )
          lnphi_l(l, :) = lnphi
@@ -366,15 +477,31 @@ contains
       df(nc * np + np + 2, ns) = 1
    end subroutine tx_F_NP
 
-   subroutine solve_point(model, z0, zi, np, P, beta_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
+   subroutine solve_point(&
+      model, z0, zi, np, P, beta_w, kinds_x, kind_w, &
+      X, ns, S, dXdS, F, dF, iters, max_iterations)
+      !! # solve_point
+      !! Solve a point in the multiphase envelope.
+      !!
+      !! # Description
+      !! This subroutine solves a point of the system of equations for a
+      !! multiphase isobaric line. It uses the Newton-Raphson method,.
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model
+      !! Model to use for the calculations.
       real(pr), intent(in) :: z0(:)
+      !! Initial mixture composition.
       real(pr), intent(in) :: zi(:)
-      integer, intent(in) :: np !! Number of main phases
+      !! Second mixture composition.
+      integer, intent(in) :: np
+      !! Number of main phases.
       real(pr), intent(in) :: P
-      real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase
+      !! Presure [bar].
+      real(pr), intent(in) :: beta_w
+      !! Fraction of the reference (incipient) phase
+      character(len=14), intent(in) :: kinds_x(np) !! Kinds of the main phases
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
@@ -382,12 +509,14 @@ contains
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
       integer, intent(in) :: max_iterations
+      !! Maximum number of iterations to solve the point.
       integer, intent(out) :: iters
+      !! Number of iterations needed to converge the point.
 
 
-      integer :: ia
-      integer :: iT
-      integer :: nc
+      integer :: ia !! Index of the \(alpha\) variable in the vector X
+      integer :: iT !! Index of the temperature variable in the vector X
+      integer :: nc !! Number of components in the mixture.
 
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
@@ -399,7 +528,9 @@ contains
       X0 = X
 
       do iters=1,max_iterations
-         call tx_F_NP(model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, X=X, ns=ns, S=S, F=F, dF=dF)
+         call tx_F_NP(&
+            model=model, z0=z0, zi=zi, np=np, P=P, beta_w=beta_w, &
+            kinds_x=kinds_x, kind_w=kind_w, X=X, ns=ns, S=S, F=F, dF=dF)
 
          if (any(isnan(F))) then
             X = X - 0.9 * dX
@@ -488,47 +619,6 @@ contains
       dS = dS * 3._pr/its
    end subroutine update_specification
 
-   subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)
-      !! # detect_critical
-      !! Detect if the system is close to a critical point.
-      !!
-      !! # Description
-      !! When the system is close to a critical point, the \(\ln K_i^l\) values
-      !! are close to zero, since the composition of the incipient phase and the
-      !! \(l\) phase are similar (equal in the critical point). This can be used
-      !! to detect if the system is close to a critical point and force a jump
-      !! above it.
-      !!
-      !! # References
-      !!
-      integer, intent(in) :: nc
-      !! Number of components in the mixture.
-      integer, intent(in) :: np
-      !! Number of main phases.
-      real(pr), intent(in out) :: X(:)
-      !! Vector of variables.
-      real(pr), intent(in out) :: dXdS(:)
-      !! Sensitivity of the variables wrt the specification.
-      integer, intent(in out) :: ns
-      !! Number of the specified variable.
-      real(pr), intent(in out) :: dS
-      !! Step size of the specification for the next point.
-      real(pr), intent(in out) :: S
-      !! Specification value.
-
-      integer :: i, lb, ub
-
-      do i=1,np
-         lb = (i-1)*nc + 1
-         ub = i*nc
-
-         do while(maxval(abs(X(lb:ub))) < 0.3)
-            X = X + dXdS * dS
-         end do
-
-      end do
-   end subroutine detect_critical
-
    subroutine get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, T, alpha)
       !! # get_values_from_X
       !! Extract the values of the variables from the vector X.
@@ -558,18 +648,18 @@ contains
       ! ========================================================================
       ! Extract variables from the vector X
       ! ------------------------------------------------------------------------
-      call get_z(alpha, z0, zi, z)
       T = exp(X(np*nc + np + 1))
       alpha = X(np*nc + np + 2)
+      betas = X(np*nc + 1:np*nc + np)
+
+      call get_z(alpha, z0, zi, z)
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
          K(l, :) = exp(X(lb:ub))
       end do
-      betas = X(np*nc + 1:np*nc + np)
 
-
-      w = z/matmul(betas, K) + beta_w
+      w = z/(matmul(betas, K) + beta_w)
 
       do l=1,np
          x_l(l, :) = K(l, :) * w
@@ -577,8 +667,10 @@ contains
    end subroutine get_values_from_X
 
    subroutine write_envelope_TX_MP(env, unit)
-      class(TXEnvelMP), intent(in) :: env
-      integer, intent(in) :: unit
+      !! # write_envelope_TX_MP
+      !! Write the multiphase envelope to a file.
+      class(TXEnvelMP), intent(in) :: env !! Envelope to write.
+      integer, intent(in) :: unit !! Unit to write the envelope to.
 
       integer :: i, j
       integer :: np, nc
