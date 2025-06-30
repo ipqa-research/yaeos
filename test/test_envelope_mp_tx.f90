@@ -99,7 +99,7 @@ contains
 
       open(unit=5, status="scratch")
       call tx%write(5)
-      close(t)
+      close(5)
 
    end subroutine calc_2ph
 end program main
