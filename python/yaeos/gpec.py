@@ -10,6 +10,8 @@ import numpy as np
 
 from yaeos.core import ArModel
 
+MAX_POINTS = 10000
+
 
 class GPEC:
 
@@ -126,7 +128,8 @@ class GPEC:
             kind="bubble",
             p0=p0,
             a0=a0,
-            ds0=1e-5,
+            ds0=1e-3,
+            max_points=MAX_POINTS,
         )
 
         pxs = [px_12, px_21, px_iso]
@@ -160,6 +163,7 @@ class GPEC:
                 t0=t0,
                 a0=a0,
                 ds0=1e-5,
+                max_points=MAX_POINTS,
             )
         if pressure < psat_1["P"][-1]:
             # Below critical pressure of the light component
@@ -174,6 +178,7 @@ class GPEC:
                 t0=t0,
                 a0=1 - a0,
                 ds0=-1e-5,
+                max_points=MAX_POINTS,
             )
 
         if self._cl_ll:
@@ -204,7 +209,7 @@ class GPEC:
                     alpha0=a + 1e-5,
                     ns0=len(z) + 3,
                     ds0=1e-4,
-                    max_points=1000,
+                    max_points=MAX_POINTS,
                 )
 
         txs = [tx_12, tx_21, tx_ll]
