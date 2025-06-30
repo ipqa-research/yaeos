@@ -2205,25 +2205,35 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ts, alphas, iters, ns, main_kinds, ref_kinds, tcs, acs = (
-            yaeos_c.tx_mp_phase_envelope(
-                id=self.id,
-                np=number_of_phases,
-                z0=z0,
-                zi=zi,
-                p=p,
-                beta_w=beta_w,
-                kinds_x=kinds_x,
-                kind_w=kind_w,
-                x_l0=x_l0,
-                w0=w0,
-                betas0=betas0,
-                alpha0=alpha0,
-                t0=t0,
-                ns0=ns0,
-                ds0=ds0,
-                max_points=max_points,
-            )
+        (
+            x_ls,
+            ws,
+            betas,
+            ts,
+            alphas,
+            iters,
+            ns,
+            main_kinds,
+            ref_kinds,
+            tcs,
+            acs,
+        ) = yaeos_c.tx_mp_phase_envelope(
+            id=self.id,
+            np=number_of_phases,
+            z0=z0,
+            zi=zi,
+            p=p,
+            beta_w=beta_w,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
+            x_l0=x_l0,
+            w0=w0,
+            betas0=betas0,
+            alpha0=alpha0,
+            t0=t0,
+            ns0=ns0,
+            ds0=ds0,
+            max_points=max_points,
         )
 
         return TXEnvelope(
