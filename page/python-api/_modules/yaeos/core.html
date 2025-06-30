@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 3.1.0 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dd1205ac"></script>
+      <script src="../../_static/documentation_options.js?v=3304f9e4"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -99,6 +99,50 @@
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
 
 <span class="kn">from</span> <span class="nn">yaeos.envelopes</span> <span class="kn">import</span> <span class="n">PTEnvelope</span><span class="p">,</span> <span class="n">PXEnvelope</span><span class="p">,</span> <span class="n">TXEnvelope</span>
+
+<span class="kn">from</span> <span class="nn">yaeos.constants</span> <span class="kn">import</span> <span class="n">root_kinds</span>
+
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+
+<div class="viewcode-block" id="adjust_root_kind">
+<a class="viewcode-back" href="../../core.html#yaeos.core.adjust_root_kind">[docs]</a>
+<span class="k">def</span> <span class="nf">adjust_root_kind</span><span class="p">(</span><span class="n">number_of_phases</span><span class="p">,</span> <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the the kinds of each phase to the corresponding value.</span>
+
+<span class="sd">    The C interface of `yaeos` expects the kinds of each phase to be defined</span>
+<span class="sd">    as integer values, so this function converts the kinds of each phase</span>
+<span class="sd">    to the corresponding integer value. If the kind is not specified, it</span>
+<span class="sd">    defaults to &quot;stable&quot; for all phases.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    number_of_phases : int</span>
+<span class="sd">        Number of phases in the system, besides de reference phase</span>
+<span class="sd">    kinds_x : list, optional</span>
+<span class="sd">        Kinds of the phases in the system, by default None</span>
+<span class="sd">    kind_w : str, optional</span>
+<span class="sd">        Kind of the test phase, by default None</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        kinds_x_out : list</span>
+<span class="sd">            List of kinds for each phase in the system</span>
+<span class="sd">        kind_w_out : str</span>
+<span class="sd">            Kind of the test phase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kinds_x</span><span class="p">:</span>
+        <span class="n">kinds_x_out</span> <span class="o">=</span> <span class="p">[</span><span class="n">root_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">kinds_x</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kinds_x_out</span> <span class="o">=</span> <span class="p">[</span><span class="n">root_kinds</span><span class="p">[</span><span class="s2">&quot;stable&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_phases</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">kind_w</span><span class="p">:</span>
+        <span class="n">kind_w_out</span> <span class="o">=</span> <span class="n">root_kinds</span><span class="p">[</span><span class="n">kind_w</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kind_w_out</span> <span class="o">=</span> <span class="n">root_kinds</span><span class="p">[</span><span class="s2">&quot;stable&quot;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">kinds_x_out</span><span class="p">,</span> <span class="n">kind_w_out</span></div>
+
 
 
 <div class="viewcode-block" id="GeModel">
@@ -1266,7 +1310,8 @@
 <span class="sd">                - Vy: light phase volume [L]</span>
 <span class="sd">                - P: pressure [bar]</span>
 <span class="sd">                - T: temperature [K]</span>
-<span class="sd">                - beta: light phase fraction</span>
+<span class="sd">                - beta: light phase fraction. If beta is -1 flash was not</span>
+<span class="sd">                successful.</span>
 
 <span class="sd">        Example</span>
 <span class="sd">        -------</span>
@@ -1299,8 +1344,87 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">k0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">k0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))]</span>
+
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">volume_x</span><span class="p">,</span> <span class="n">volume_y</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">flash</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="n">k0</span>
+        <span class="p">)</span>
+
+        <span class="n">flash_result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+            <span class="s2">&quot;Vx&quot;</span><span class="p">:</span> <span class="n">volume_x</span><span class="p">,</span>
+            <span class="s2">&quot;Vy&quot;</span><span class="p">:</span> <span class="n">volume_y</span><span class="p">,</span>
+            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">pressure</span><span class="p">,</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="n">beta</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">flash_result</span></div>
+
+
+<div class="viewcode-block" id="ArModel.flash_vt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.flash_vt">[docs]</a>
+    <span class="k">def</span> <span class="nf">flash_vt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Two-phase split with specification of temperature and volume.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        volume : float</span>
+<span class="sd">            Molar volume [L/mol]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        k0 : array_like, optional</span>
+<span class="sd">            Initial guess for the split, by default None (will use k_wilson)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Flash result dictionary with keys:</span>
+<span class="sd">                - x: heavy phase mole fractions</span>
+<span class="sd">                - y: light phase mole fractions</span>
+<span class="sd">                - Vx: heavy phase molar volume [L/mol]</span>
+<span class="sd">                - Vy: light phase molar volume [L/mol]</span>
+<span class="sd">                - P: pressure [bar]</span>
+<span class="sd">                - T: temperature [K]</span>
+<span class="sd">                - beta: light phase fraction. If beta is -1 flash was not</span>
+<span class="sd">                successful.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([507.6, 658.0])        # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([30.25, 18.20])        # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.301261, 0.576385])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            # Flash calculation</span>
+<span class="sd">            # will print:</span>
+<span class="sd">            # {</span>
+<span class="sd">            #     &#39;x&#39;: array([0.26308567, 0.73691433]),</span>
+<span class="sd">            #     &#39;y&#39;: array([0.95858707, 0.04141293]),</span>
+<span class="sd">            #     &#39;Vx&#39;: 0.2417828483590114,</span>
+<span class="sd">            #     &#39;Vy&#39;: 31.706890870110417,</span>
+<span class="sd">            #     &#39;P&#39;: 1.0001131874567775,</span>
+<span class="sd">            #     &#39;T&#39;: 393.15,</span>
+<span class="sd">            #     &#39;beta&#39;: 0.34063818069513246</span>
+<span class="sd">            # }</span>
+
+<span class="sd">            print(model.flash_vt([0.5, 0.5], 10.96, 393.15))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">k0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">k0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))]</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">volume_x</span><span class="p">,</span> <span class="n">volume_y</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">yaeos_c</span><span class="o">.</span><span class="n">flash_vt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="n">k0</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">flash_result</span> <span class="o">=</span> <span class="p">{</span>
@@ -1558,11 +1682,13 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">z</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bubble&quot;</span><span class="p">,</span>
-        <span class="n">max_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">max_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">700</span><span class="p">,</span>
         <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">150.0</span><span class="p">,</span>
         <span class="n">p0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">w0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">stop_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2500</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">ds0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PTEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Two phase envelope calculation (PT).</span>
 
 <span class="sd">        Parameters</span>
@@ -1574,16 +1700,30 @@
 <span class="sd">            defaults to &quot;bubble&quot;. Options are</span>
 <span class="sd">            - &quot;bubble&quot;</span>
 <span class="sd">            - &quot;dew&quot;</span>
+<span class="sd">            - &quot;liquid-liquid&quot;</span>
 <span class="sd">        max_points : int, optional</span>
-<span class="sd">            Envelope&#39;s maximum points to calculate (T, P), by default 300</span>
+<span class="sd">            Envelope&#39;s maximum points to calculate (T, P), by default 700</span>
 <span class="sd">        t0 : float, optional</span>
 <span class="sd">            Initial guess for temperature [K] for the saturation point of kind:</span>
 <span class="sd">            `kind`, by default 150.0</span>
 <span class="sd">        p0 : float, optional</span>
 <span class="sd">            Initial guess for pressure [bar] for the saturation point of kind:</span>
 <span class="sd">            `kind`, by default 1.0</span>
+<span class="sd">        w0 : array_like, optional</span>
+<span class="sd">            Initial guess for the incipient phase mole fractions,</span>
+<span class="sd">            by default None In the case of bubble and dew line calculations, it</span>
+<span class="sd">            will use the k_wilson correlation. In the case of liquid-liquid</span>
+<span class="sd">            envelope it will make a search for the first unstable component</span>
+<span class="sd">            when decreasing temperature at the given pressure.</span>
 <span class="sd">        stop_pressure : float, optional</span>
-<span class="sd">            Stop on pressures above stop_pressure [bar], by default 2500.0</span>
+<span class="sd">            Stop on pressures above stop_pressure [bar], by default 2500.0.</span>
+<span class="sd">            If the the initial guess pressure is above this value, the</span>
+<span class="sd">            calculation will stop immediately.</span>
+<span class="sd">        ds0: float, optional</span>
+<span class="sd">            Step for the first specified variable, by default 0.001. The</span>
+<span class="sd">            specified variable is the temperature for bubble and dew lines, and</span>
+<span class="sd">            pressure for liquid-liquid lines. For bubble and dew lines, the</span>
+<span class="sd">            step is positive, while for liquid-liquid lines it is negative.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1618,68 +1758,67 @@
 <span class="sd">            plt.scatter(env[&quot;Tc&quot;], env[&quot;Pc&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="n">ds0</span> <span class="o">=</span> <span class="mf">0.001</span>
+
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;bubble&quot;</span><span class="p">:</span>
             <span class="n">sat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
             <span class="n">w0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
             <span class="n">ns0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span>
-            <span class="n">t0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+            <span class="n">kinds_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;liquid&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;vapor&quot;</span>
         <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;dew&quot;</span><span class="p">:</span>
             <span class="n">sat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
             <span class="n">w0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
-            <span class="n">ns0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
-            <span class="n">p0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+            <span class="n">ns0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span>
+            <span class="n">kinds_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vapor&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;liquid&quot;</span>
         <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;liquid-liquid&quot;</span><span class="p">:</span>
-            <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">tcs</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">kinds</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pt2_phase_envelope</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">2</span>
-            <span class="p">)</span>
-            <span class="n">w0</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">ns0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
-            <span class="n">t0</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">p0</span> <span class="o">=</span> <span class="n">ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">w0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># =============================================================</span>
+                <span class="c1"># Find an initialization for the liquid-liquid envelope</span>
+                <span class="c1"># -------------------------------------------------------------</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)):</span>
+                    <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                    <span class="n">w0</span> <span class="o">+=</span> <span class="mf">1e-5</span>
+                    <span class="n">w0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w0</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+                        <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_tm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">tm</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">:</span>
+                            <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                            <span class="k">break</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No liquid-liquid region found.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                <span class="n">w0</span> <span class="o">+=</span> <span class="mf">1e-5</span>
+                <span class="n">w0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w0</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
-        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pt_mp_phase_envelope</span><span class="p">(</span>
-            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+            <span class="n">kinds_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;liquid&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;liquid&quot;</span>
+            <span class="n">ds0</span> <span class="o">=</span> <span class="o">-</span><span class="n">ds0</span>
+
+        <span class="n">envelope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
+            <span class="n">z</span><span class="p">,</span>
             <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
             <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
             <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
             <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
             <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
             <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
-            <span class="n">ds0</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-            <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
             <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
             <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">envelope</span> <span class="o">=</span> <span class="n">PTEnvelope</span><span class="p">(</span>
-            <span class="n">global_composition</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-            <span class="n">main_phases_compositions</span><span class="o">=</span><span class="n">x_ls</span><span class="p">,</span>
-            <span class="n">reference_phase_compositions</span><span class="o">=</span><span class="n">ws</span><span class="p">,</span>
-            <span class="n">main_phases_molar_fractions</span><span class="o">=</span><span class="n">betas</span><span class="p">,</span>
-            <span class="n">pressures</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
-            <span class="n">temperatures</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
-            <span class="n">iterations</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span>
-            <span class="n">specified_variable</span><span class="o">=</span><span class="n">ns</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">envelope</span>
-
-        <span class="n">msk</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
-        <span class="n">msk_cp</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tcs</span><span class="p">)</span>
-
-        <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">ps</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;Tc&quot;</span><span class="p">:</span> <span class="n">tcs</span><span class="p">[</span><span class="n">msk_cp</span><span class="p">],</span>
-            <span class="s2">&quot;Pc&quot;</span><span class="p">:</span> <span class="n">pcs</span><span class="p">[</span><span class="n">msk_cp</span><span class="p">],</span>
-            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ys</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;kinds&quot;</span><span class="p">:</span> <span class="n">kinds</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-        <span class="p">}</span>
-
-        <span class="k">return</span> <span class="n">res</span></div>
+        <span class="k">return</span> <span class="n">envelope</span></div>
 
 
 <div class="viewcode-block" id="ArModel.phase_envelope_px">
@@ -1692,10 +1831,11 @@
         <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
         <span class="n">p0</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">w0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">a0</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
         <span class="n">ns0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PXEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Two phase envelope calculation (PX).</span>
 
 <span class="sd">        Calculation of a phase envelope that starts at a given composition and</span>
@@ -1735,15 +1875,23 @@
         <span class="n">zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span>
         <span class="n">z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">w0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+
         <span class="n">z</span> <span class="o">=</span> <span class="n">a0</span> <span class="o">*</span> <span class="n">zi</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a0</span><span class="p">)</span> <span class="o">*</span> <span class="n">z0</span>
         <span class="n">sat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
-            <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span>
+            <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">w0</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;dew&quot;</span><span class="p">:</span>
             <span class="n">w0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+            <span class="n">kind_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vapor&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;liquid&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">w0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+            <span class="n">kind_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;liquid&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;vapor&quot;</span>
+
         <span class="n">p0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
 
         <span class="n">envelope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
@@ -1758,6 +1906,8 @@
             <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
             <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
             <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kind_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">envelope</span></div>
@@ -1776,7 +1926,8 @@
         <span class="n">a0</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
         <span class="n">ns0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">ds0</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">w0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TXEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Two phase envelope calculation (TX).</span>
 
 <span class="sd">        Calculation of a phase envelope that starts at a given composition and</span>
@@ -1789,7 +1940,7 @@
 <span class="sd">        zi : array_like</span>
 <span class="sd">            Final global mole fractions</span>
 <span class="sd">        pressure : float</span>
-<span class="sd">            Pressure [K]</span>
+<span class="sd">            Pressure [bar]</span>
 <span class="sd">        kind : str, optional</span>
 <span class="sd">            Kind of saturation point to start the envelope calculation,</span>
 <span class="sd">            defaults to &quot;bubble&quot;. Options are</span>
@@ -1808,34 +1959,50 @@
 <span class="sd">            the last two values are the temperature and alpha.</span>
 <span class="sd">        ds0 : float, optional</span>
 <span class="sd">            Step for a, by default 0.1</span>
+<span class="sd">        w0 : array_like, optional</span>
+<span class="sd">            Initial guess for the incipient phase, by default None</span>
+<span class="sd">            (will use k_wilson correlation)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ns0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ns0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">acs</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">kinds</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">tx2_phase_envelope</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
-            <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
-            <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
-            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-            <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
-            <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
-            <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
-            <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
+        <span class="n">zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span>
+        <span class="n">z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ns0</span><span class="p">:</span>
+            <span class="n">ns0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span>
+
+        <span class="k">if</span> <span class="n">w0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="n">a0</span> <span class="o">*</span> <span class="n">zi</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a0</span><span class="p">)</span> <span class="o">*</span> <span class="n">z0</span>
+        <span class="n">sat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
+            <span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">w0</span>
         <span class="p">)</span>
 
-        <span class="n">msk</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
-        <span class="n">msk_cp</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pcs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;dew&quot;</span><span class="p">:</span>
+            <span class="n">w0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+            <span class="n">kind_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vapor&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;liquid&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">w0</span> <span class="o">=</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+            <span class="n">kind_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;liquid&quot;</span><span class="p">]</span>
+            <span class="n">kind_w</span> <span class="o">=</span> <span class="s2">&quot;vapor&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ys</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;ac&quot;</span><span class="p">:</span> <span class="n">acs</span><span class="p">[</span><span class="n">msk_cp</span><span class="p">],</span>
-            <span class="s2">&quot;Pc&quot;</span><span class="p">:</span> <span class="n">pcs</span><span class="p">[</span><span class="n">msk_cp</span><span class="p">],</span>
-            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">kinds</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-        <span class="p">}</span></div>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_tx_mp</span><span class="p">(</span>
+            <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
+            <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+            <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
+            <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+            <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+            <span class="n">alpha0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span>
+            <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
+            <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
+            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kind_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">envelope</span></div>
 
 
 <div class="viewcode-block" id="ArModel.phase_envelope_pt3">
@@ -1851,9 +2018,11 @@
         <span class="n">p0</span><span class="p">,</span>
         <span class="n">specified_variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">first_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
         <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PTEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Three-phase envelope tracing method.</span>
 
@@ -1884,6 +2053,10 @@
 <span class="sd">            values are pressure, temperature and beta.</span>
 <span class="sd">        first_step : float, optional</span>
 <span class="sd">            Step for the specified variable, by default 0.1</span>
+<span class="sd">        kinds_x : list, optional</span>
+<span class="sd">            Kinds of the main phases, by default None (will use &quot;stable&quot;)</span>
+<span class="sd">        kind_w : str, optional</span>
+<span class="sd">            Kind of the reference phase, by default None (will use &quot;stable&quot;)</span>
 <span class="sd">        max_points : int, optional</span>
 <span class="sd">            Maximum number of points to calculate, by default 1000</span>
 <span class="sd">        stop_pressure : float, optional</span>
@@ -1897,9 +2070,7 @@
         <span class="k">if</span> <span class="n">first_step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">first_step</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pt_mp_phase_envelope</span><span class="p">(</span>
-            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">=</span><span class="n">np</span><span class="p">,</span>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
             <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
             <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">],</span>
             <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
@@ -1909,19 +2080,10 @@
             <span class="n">ns0</span><span class="o">=</span><span class="n">specified_variable</span><span class="p">,</span>
             <span class="n">ds0</span><span class="o">=</span><span class="n">first_step</span><span class="p">,</span>
             <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
             <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
             <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">envelope</span> <span class="o">=</span> <span class="n">PTEnvelope</span><span class="p">(</span>
-            <span class="n">global_composition</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-            <span class="n">main_phases_compositions</span><span class="o">=</span><span class="n">x_ls</span><span class="p">,</span>
-            <span class="n">reference_phase_compositions</span><span class="o">=</span><span class="n">ws</span><span class="p">,</span>
-            <span class="n">main_phases_molar_fractions</span><span class="o">=</span><span class="n">betas</span><span class="p">,</span>
-            <span class="n">pressures</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
-            <span class="n">temperatures</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
-            <span class="n">iterations</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span>
-            <span class="n">specified_variable</span><span class="o">=</span><span class="n">ns</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">envelope</span></div>
@@ -1943,7 +2105,9 @@
         <span class="n">specified_variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">first_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PXEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Three-phase envelope tracing method.</span>
 
@@ -1978,6 +2142,12 @@
 <span class="sd">            Step for the specified variable, by default 0.1</span>
 <span class="sd">        max_points : int, optional</span>
 <span class="sd">            Maximum number of points to calculate, by default 1000</span>
+<span class="sd">        kinds_x : list, optional</span>
+<span class="sd">            Kinds of the main phases, by default None (will use &quot;stable&quot;)</span>
+<span class="sd">            options can be - &quot;stable&quot;, &quot;liquid&quot;, &quot;vapor&quot;</span>
+<span class="sd">        kind_w : str, optional</span>
+<span class="sd">            Kind of the reference phase, by default None (will use &quot;stable&quot;)</span>
+<span class="sd">            options can be - &quot;stable&quot;, &quot;liquid&quot;, &quot;vapor&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">specified_variable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">specified_variable</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
@@ -1985,32 +2155,26 @@
         <span class="k">if</span> <span class="n">first_step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">first_step</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">px3_phase_envelope</span><span class="p">(</span>
-            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+            <span class="n">number_of_phases</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
+        <span class="p">)</span>
+
+        <span class="n">envelope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
             <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
             <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
             <span class="n">t</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
-            <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
-            <span class="n">y0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span>
+            <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">],</span>
             <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+            <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta0</span><span class="p">,</span> <span class="n">beta0</span><span class="p">],</span>
             <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
-            <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span>
-            <span class="n">beta0</span><span class="o">=</span><span class="n">beta0</span><span class="p">,</span>
+            <span class="n">alpha0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span>
             <span class="n">ns0</span><span class="o">=</span><span class="n">specified_variable</span><span class="p">,</span>
             <span class="n">ds0</span><span class="o">=</span><span class="n">first_step</span><span class="p">,</span>
             <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="n">msk</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="n">beta</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
-        <span class="p">}</span></div>
+        <span class="k">return</span> <span class="n">envelope</span></div>
 
 
 <div class="viewcode-block" id="ArModel.phase_envelope_pt_mp">
@@ -2026,39 +2190,58 @@
         <span class="n">ns0</span><span class="p">,</span>
         <span class="n">ds0</span><span class="p">,</span>
         <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
         <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PTEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multi-phase envelope.&quot;&quot;&quot;</span>
         <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_l0</span><span class="p">)</span>
 
         <span class="n">number_of_phases</span> <span class="o">=</span> <span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pt_mp_phase_envelope</span><span class="p">(</span>
-            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span>
-            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-            <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
-            <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
-            <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
-            <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
-            <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
-            <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
-            <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
-            <span class="n">beta_w</span><span class="o">=</span><span class="n">beta_w</span><span class="p">,</span>
-            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-            <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+            <span class="n">number_of_phases</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
         <span class="p">)</span>
+
+        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">x_kinds</span><span class="p">,</span> <span class="n">w_kinds</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">tcs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pt_mp_phase_envelope</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span>
+                <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
+                <span class="n">beta_w</span><span class="o">=</span><span class="n">beta_w</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+                <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">x_kinds</span> <span class="o">=</span> <span class="n">x_kinds</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">w_kinds</span> <span class="o">=</span> <span class="n">w_kinds</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">x_kinds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">char</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">x_kinds</span><span class="p">)</span>
+        <span class="n">w_kinds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">char</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">w_kinds</span><span class="p">)</span>
 
         <span class="n">envelope</span> <span class="o">=</span> <span class="n">PTEnvelope</span><span class="p">(</span>
             <span class="n">global_composition</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
             <span class="n">main_phases_compositions</span><span class="o">=</span><span class="n">x_ls</span><span class="p">,</span>
             <span class="n">reference_phase_compositions</span><span class="o">=</span><span class="n">ws</span><span class="p">,</span>
+            <span class="n">reference_phase_kinds</span><span class="o">=</span><span class="n">w_kinds</span><span class="p">,</span>
+            <span class="n">main_phases_kinds</span><span class="o">=</span><span class="n">x_kinds</span><span class="p">,</span>
             <span class="n">main_phases_molar_fractions</span><span class="o">=</span><span class="n">betas</span><span class="p">,</span>
             <span class="n">pressures</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
             <span class="n">temperatures</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
             <span class="n">iterations</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span>
             <span class="n">specified_variable</span><span class="o">=</span><span class="n">ns</span><span class="p">,</span>
+            <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span>
+            <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">envelope</span></div>
@@ -2080,7 +2263,9 @@
         <span class="n">alpha0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PXEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multi-phase PX envelope.</span>
 
 <span class="sd">        Calculate a phase envelope with a preselected ammount of phases.</span>
@@ -2112,26 +2297,44 @@
 <span class="sd">            corresponds to each beta value of the main phases.</span>
 <span class="sd">            The last two posibilities are the pressure and molar relation</span>
 <span class="sd">            between the two fluids, respectively.</span>
+<span class="sd">        kinds_x: list(str), optional</span>
+<span class="sd">            List of kinds of main phases, defaults to stable. options are:</span>
+<span class="sd">            - &quot;stable&quot;</span>
+<span class="sd">            - &quot;liquid&quot;</span>
+<span class="sd">            - &quot;vapor&quot;</span>
+<span class="sd">        kinds_w: list(str), optional</span>
+<span class="sd">            Kind of reference phase, defaults to stable. options are:</span>
+<span class="sd">            - &quot;stable&quot;</span>
+<span class="sd">            - &quot;liquid&quot;</span>
+<span class="sd">            - &quot;vapor&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
         <span class="n">number_of_phases</span> <span class="o">=</span> <span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">px_mp_phase_envelope</span><span class="p">(</span>
-            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span>
-            <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
-            <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
-            <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
-            <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
-            <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
-            <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
-            <span class="n">alpha0</span><span class="o">=</span><span class="n">alpha0</span><span class="p">,</span>
-            <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
-            <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
-            <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
-            <span class="n">beta_w</span><span class="o">=</span><span class="n">beta_w</span><span class="p">,</span>
-            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+            <span class="n">number_of_phases</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
+        <span class="p">)</span>
+
+        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">x_kinds</span><span class="p">,</span> <span class="n">w_kinds</span><span class="p">,</span> <span class="n">pcs</span><span class="p">,</span> <span class="n">acs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">yaeos_c</span><span class="o">.</span><span class="n">px_mp_phase_envelope</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span>
+                <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
+                <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+                <span class="n">beta_w</span><span class="o">=</span><span class="n">beta_w</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
+                <span class="n">alpha0</span><span class="o">=</span><span class="n">alpha0</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">PXEnvelope</span><span class="p">(</span>
@@ -2145,6 +2348,10 @@
             <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">,</span>
             <span class="n">iterations</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span>
             <span class="n">specified_variable</span><span class="o">=</span><span class="n">ns</span><span class="p">,</span>
+            <span class="n">critical_pressures</span><span class="o">=</span><span class="n">pcs</span><span class="p">,</span>
+            <span class="n">critical_alphas</span><span class="o">=</span><span class="n">acs</span><span class="p">,</span>
+            <span class="n">main_phases_kinds</span><span class="o">=</span><span class="n">x_kinds</span><span class="p">,</span>
+            <span class="n">reference_phase_kinds</span><span class="o">=</span><span class="n">w_kinds</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -2164,25 +2371,47 @@
         <span class="n">alpha0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TXEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multi-phase envelope.&quot;&quot;&quot;</span>
+
+        <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
         <span class="n">number_of_phases</span> <span class="o">=</span> <span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">tx_mp_phase_envelope</span><span class="p">(</span>
+        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+            <span class="n">number_of_phases</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
+        <span class="p">)</span>
+
+        <span class="p">(</span>
+            <span class="n">x_ls</span><span class="p">,</span>
+            <span class="n">ws</span><span class="p">,</span>
+            <span class="n">betas</span><span class="p">,</span>
+            <span class="n">ts</span><span class="p">,</span>
+            <span class="n">alphas</span><span class="p">,</span>
+            <span class="n">iters</span><span class="p">,</span>
+            <span class="n">ns</span><span class="p">,</span>
+            <span class="n">main_kinds</span><span class="p">,</span>
+            <span class="n">ref_kinds</span><span class="p">,</span>
+            <span class="n">tcs</span><span class="p">,</span>
+            <span class="n">acs</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">tx_mp_phase_envelope</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">np</span><span class="o">=</span><span class="n">number_of_phases</span><span class="p">,</span>
             <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
             <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+            <span class="n">beta_w</span><span class="o">=</span><span class="n">beta_w</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
             <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
             <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
             <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
             <span class="n">alpha0</span><span class="o">=</span><span class="n">alpha0</span><span class="p">,</span>
             <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
             <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
             <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
-            <span class="n">beta_w</span><span class="o">=</span><span class="n">beta_w</span><span class="p">,</span>
             <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -2197,7 +2426,192 @@
             <span class="n">alphas</span><span class="o">=</span><span class="n">alphas</span><span class="p">,</span>
             <span class="n">iterations</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span>
             <span class="n">specified_variable</span><span class="o">=</span><span class="n">ns</span><span class="p">,</span>
+            <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">tcs</span><span class="p">,</span>
+            <span class="n">critical_alphas</span><span class="o">=</span><span class="n">acs</span><span class="p">,</span>
+            <span class="n">main_phases_kinds</span><span class="o">=</span><span class="n">main_kinds</span><span class="p">,</span>
+            <span class="n">reference_phase_kinds</span><span class="o">=</span><span class="n">ref_kinds</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArModel.phase_envelope_pt_from_dsp">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.phase_envelope_pt_from_dsp">[docs]</a>
+    <span class="k">def</span> <span class="nf">phase_envelope_pt_from_dsp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">,</span>
+        <span class="n">env1</span><span class="p">:</span> <span class="n">PTEnvelope</span><span class="p">,</span>
+        <span class="n">env2</span><span class="p">:</span> <span class="n">PTEnvelope</span><span class="p">,</span>
+        <span class="n">dbeta0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate PT phase envelopes from a DSP.</span>
+
+<span class="sd">        This method calculates the phase envelope at the intersection of two</span>
+<span class="sd">        PT envelopes, `env1` and `env2`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        env1 : PTEnvelope</span>
+<span class="sd">            First PT envelope object</span>
+<span class="sd">        env2 : PTEnvelope</span>
+<span class="sd">            Second PT envelope object</span>
+<span class="sd">        dbeta0 : float, optional</span>
+<span class="sd">            initial step for the beta values, by default 1e-5</span>
+<span class="sd">        max_points : int, optional</span>
+<span class="sd">            Maximum number of points to calculate, by default 1000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_components</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_phases</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+
+        <span class="n">dsps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">Tdsp</span><span class="p">,</span> <span class="n">Pdsp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span><span class="p">):</span>
+            <span class="n">env1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">env2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">betas_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">betas_2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="n">w0</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">]</span>
+            <span class="n">y0</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">]</span>
+
+            <span class="n">x_l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">env1</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">y0</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">x_l2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">env1</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">w0</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Convert the kinds to the correct format. Saving first as *_ to</span>
+            <span class="c1"># avoid issues.</span>
+            <span class="n">kinds_x_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_kinds</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">kinds_x_2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">main_phases_kinds</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">kind_w_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">reference_phase_kinds</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">]</span>
+            <span class="n">kind_w_2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">reference_phase_kinds</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">]</span>
+            <span class="n">dsp_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
+                <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l1</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">Tdsp</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
+                <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_1</span><span class="p">,</span> <span class="n">kind_w_1</span><span class="p">],</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_2</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">dsp_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
+                <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l2</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">Tdsp</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
+                <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_2</span><span class="p">,</span> <span class="n">kind_w_2</span><span class="p">],</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_1</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">dsps</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">dsp_1</span><span class="p">,</span> <span class="n">dsp_2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">dsps</span></div>
+
+
+<div class="viewcode-block" id="ArModel.phase_envelope_px_from_dsp">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.phase_envelope_px_from_dsp">[docs]</a>
+    <span class="k">def</span> <span class="nf">phase_envelope_px_from_dsp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">env1</span><span class="p">:</span> <span class="n">PXEnvelope</span><span class="p">,</span> <span class="n">env2</span><span class="p">:</span> <span class="n">PXEnvelope</span><span class="p">,</span> <span class="n">dbeta0</span><span class="o">=</span><span class="mf">1e-5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate PX phase envelopes from a DSP.</span>
+
+<span class="sd">        This method calculates the phase envelope at the intersection of two</span>
+<span class="sd">        PX envelopes, `env1` and `env2`.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z0 : array_like</span>
+<span class="sd">            Global mole fractions of the original fluid</span>
+<span class="sd">        zi : array_like</span>
+<span class="sd">            Global mole fractions of the other fluid</span>
+<span class="sd">        env1 : PXEnvelope</span>
+<span class="sd">            First PX envelope object</span>
+<span class="sd">        env2 : PXEnvelope</span>
+<span class="sd">            Second PX envelope object</span>
+<span class="sd">        dbeta0 : float, optional</span>
+<span class="sd">            Initial step for the beta values, by default 1e-5</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            List of lists of two PXEnvelope objects, one for each intersection</span>
+<span class="sd">            point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nc</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_components</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_phases</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">dsps</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+        <span class="n">dsps</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">adsp</span><span class="p">,</span> <span class="n">Pdsp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dsps</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">env1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">adsp</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+            <span class="n">env2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">adsp</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+
+            <span class="n">betas_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">betas_2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="n">w0</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">]</span>
+            <span class="n">y0</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">]</span>
+
+            <span class="n">x_l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">env1</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">y0</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">x_l2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">env1</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">w0</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">dsp_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
+                <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
+                <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l1</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
+                <span class="n">alpha0</span><span class="o">=</span><span class="n">adsp</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
+                <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">dsp_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
+                <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
+                <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l2</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
+                <span class="n">alpha0</span><span class="o">=</span><span class="n">adsp</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
+                <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">dsps</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">dsp_1</span><span class="p">,</span> <span class="n">dsp_2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">dsps</span></div>
 
 
 <div class="viewcode-block" id="ArModel.isopleth">
@@ -2376,7 +2790,6 @@
                     <span class="c1"># bub_line_stable[msk] = bub_line[msk]</span>
 
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">bub_line_stable</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
                     <span class="n">k0</span> <span class="o">=</span> <span class="n">dew_line</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">z</span>
                     <span class="n">flash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_pt</span><span class="p">(</span>
@@ -2638,7 +3051,7 @@
 <div class="viewcode-block" id="ArModel.critical_line_liquid_liquid">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.critical_line_liquid_liquid">[docs]</a>
     <span class="k">def</span> <span class="nf">critical_line_liquid_liquid</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">500</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">500</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the start of the Liquid-Liquid critical line of a binary.</span>
 

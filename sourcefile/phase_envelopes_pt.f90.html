@@ -652,7 +652,7 @@
 <a id="ln-478" name="ln-478" href="#ln-478"></a><span class="w">         </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
 <a id="ln-479" name="ln-479" href="#ln-479"></a><span class="w">         </span><span class="n">y</span><span class="p">(</span><span class="n">ncomp</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
 <a id="ln-480" name="ln-480" href="#ln-480"></a>
-<a id="ln-481" name="ln-481" href="#ln-481"></a><span class="w">         </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">T0</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">10</span>
+<a id="ln-481" name="ln-481" href="#ln-481"></a><span class="w">         </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">T0</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span>
 <a id="ln-482" name="ln-482" href="#ln-482"></a><span class="w">            </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="p">)</span>
 <a id="ln-483" name="ln-483" href="#ln-483"></a><span class="w">            </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnphi_z</span><span class="p">)</span>
 <a id="ln-484" name="ln-484" href="#ln-484"></a><span class="w">            </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnphi_y</span><span class="p">)</span>
@@ -676,7 +676,7 @@
 <a id="ln-502" name="ln-502" href="#ln-502"></a><span class="w">      </span><span class="n">ncomp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">findloc</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="nb">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <a id="ln-503" name="ln-503" href="#ln-503"></a>
 <a id="ln-504" name="ln-504" href="#ln-504"></a><span class="w">      </span><span class="n">y</span><span class="o">=</span><span class="mi">0</span>
-<a id="ln-505" name="ln-505" href="#ln-505"></a><span class="w">      </span><span class="n">y</span><span class="p">(</span><span class="n">ncomp</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<a id="ln-505" name="ln-505" href="#ln-505"></a><span class="w">      </span><span class="n">y</span><span class="p">(</span><span class="n">ncomp</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
 <a id="ln-506" name="ln-506" href="#ln-506"></a>
 <a id="ln-507" name="ln-507" href="#ln-507"></a><span class="w">      </span><span class="n">fr</span><span class="p">%</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span>
 <a id="ln-508" name="ln-508" href="#ln-508"></a><span class="w">      </span><span class="n">fr</span><span class="p">%</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1e-5</span>
@@ -684,13 +684,14 @@
 <a id="ln-510" name="ln-510" href="#ln-510"></a><span class="w">      </span><span class="n">fr</span><span class="p">%</span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span>
 <a id="ln-511" name="ln-511" href="#ln-511"></a><span class="w">      </span><span class="n">fr</span><span class="p">%</span><span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">P</span>
 <a id="ln-512" name="ln-512" href="#ln-512"></a><span class="w">      </span><span class="n">fr</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;liquid-liquid&quot;</span>
-<a id="ln-513" name="ln-513" href="#ln-513"></a><span class="w">      </span><span class="n">find_hpl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
-<a id="ln-514" name="ln-514" href="#ln-514"></a><span class="w">         </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">fr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
-<a id="ln-515" name="ln-515" href="#ln-515"></a><span class="w">         </span><span class="n">specified_variable_0</span><span class="o">=</span><span class="n">nc</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">delta_0</span><span class="o">=-</span><span class="mf">5.0_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
-<a id="ln-516" name="ln-516" href="#ln-516"></a><span class="w">         </span><span class="n">iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="n">points</span><span class="o">=</span><span class="n">max_points</span><span class="p">)</span>
-<a id="ln-517" name="ln-517" href="#ln-517"></a><span class="w">   </span><span class="k">end function </span><span class="n">find_hpl</span>
-<a id="ln-518" name="ln-518" href="#ln-518"></a>
-<a id="ln-519" name="ln-519" href="#ln-519"></a><span class="k">end module </span><span class="n">yaeos__equilibria_boundaries_phase_envelopes_pt</span>
+<a id="ln-513" name="ln-513" href="#ln-513"></a><span class="w">      </span>
+<a id="ln-514" name="ln-514" href="#ln-514"></a><span class="w">      </span><span class="n">find_hpl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-515" name="ln-515" href="#ln-515"></a><span class="w">         </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">fr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-516" name="ln-516" href="#ln-516"></a><span class="w">         </span><span class="n">specified_variable_0</span><span class="o">=</span><span class="n">nc</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">delta_0</span><span class="o">=-</span><span class="mf">5.0_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-517" name="ln-517" href="#ln-517"></a><span class="w">         </span><span class="n">iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="n">points</span><span class="o">=</span><span class="n">max_points</span><span class="p">)</span>
+<a id="ln-518" name="ln-518" href="#ln-518"></a><span class="w">   </span><span class="k">end function </span><span class="n">find_hpl</span>
+<a id="ln-519" name="ln-519" href="#ln-519"></a>
+<a id="ln-520" name="ln-520" href="#ln-520"></a><span class="k">end module </span><span class="n">yaeos__equilibria_boundaries_phase_envelopes_pt</span>
 </pre></div>
 
       </section>
@@ -712,7 +713,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 13:10 +0000             </p>
+ on 2025-06-30 17:52 +0000             </p>
           </div>
         </div>
         <br>

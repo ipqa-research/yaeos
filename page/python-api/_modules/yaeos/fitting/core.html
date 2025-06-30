@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.fitting.core &mdash; yaeos 3.1.0 documentation</title>
+  <title>yaeos.fitting.core &mdash; yaeos 4.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=dd1205ac"></script>
+      <script src="../../../_static/documentation_options.js?v=3304f9e4"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -158,9 +158,16 @@
         <span class="c1"># =====================================================================</span>
         <span class="c1"># Calculate the critical line starting from the heavy component</span>
         <span class="c1"># ---------------------------------------------------------------------</span>
-        <span class="n">cl</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
-            <span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">a0</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">5000</span>
-        <span class="p">)</span>
+        <span class="n">cp_msk</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">cp_msk</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cl</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
+                <span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">a0</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="mi">15000</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -245,7 +252,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;fobj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;cl&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>

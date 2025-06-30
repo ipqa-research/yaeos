@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">17 statements</a>
+                 title=" 0.5% of total for procedures.">52 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_tx_mp.f90"> Source File</a>
+              <a href="../src/auxiliar.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_tx_mp.f90.html'>phase_envelopes_tx_mp.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90~2.html'>auxiliar.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
             <li class="breadcrumb-item active" aria-current="page">detect_critical</li>
           </ol>
         </nav>
@@ -135,9 +135,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/detect_critical.html#variable-i~13">i</a>
-            <a class="list-group-item" href="../proc/detect_critical.html#variable-lb~4">lb</a>
-            <a class="list-group-item" href="../proc/detect_critical.html#variable-ub~4">ub</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-xnew~2">Xnew</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-a~10">a</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-i~25">i</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-incipient_kind">incipient_kind</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-lb~5">lb</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-lnk~2">lnK</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-lnkold~2">lnKold</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-ncomp">ncomp</a>
+            <a class="list-group-item" href="../proc/detect_critical.html#variable-ub~5">ub</a>
         </div>
       </div>
     </div>
@@ -167,7 +173,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine detect_critical(nc, np, X, dXdS, ns, dS, S)  
+    <h2>public  subroutine detect_critical(nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc)  
 </h2>
     
 
@@ -179,7 +185,6 @@ are close to zero, since the composition of the incipient phase and the
 <script type="math/tex">l</script> phase are similar (equal in the critical point). This can be used
 to detect if the system is close to a critical point and force a jump
 above it.</p>
-<h1 id="references">References</h1>
 
 
     <h3>Arguments</h3>
@@ -195,7 +200,7 @@ above it.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~7"></span>
+              <span class="anchor" id="variable-nc~12"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -210,7 +215,7 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~6"></span>
+              <span class="anchor" id="variable-np~8"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -225,7 +230,82 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~5"></span>
+              <span class="anchor" id="variable-point~5"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>point</strong></td>
+            <td>
+                <p>Point number in the phase boundary.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kinds_x~5"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kinds_x</strong>(np)</td>
+            <td>
+                <p>Kinds of the main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kind_w~5"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kind_w</strong></td>
+            <td>
+                <p>Kind of the incipient phase.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-binary_stop"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>binary_stop</strong></td>
+            <td>
+                <p>If true, stop at the critical point if its a binary system.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xold~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xold</strong>(:)</td>
+            <td>
+                <p>Old vector of variables.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~20"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -240,7 +320,7 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~4"></span>
+              <span class="anchor" id="variable-dxds~11"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -255,7 +335,7 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~6"></span>
+              <span class="anchor" id="variable-ns~17"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -270,7 +350,7 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~3"></span>
+              <span class="anchor" id="variable-ds~11"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -285,7 +365,7 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~4"></span>
+              <span class="anchor" id="variable-s~14"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -296,6 +376,36 @@ above it.</p>
             <td><strong>S</strong></td>
             <td>
                 <p>Specification value.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-found_critical~2"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>found_critical</strong></td>
+            <td>
+                <p>If true, a critical point was found.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xc~3"></span>
+              real(kind=pr)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xc</strong>(size(X))</td>
+            <td>
+                <p>Vector of variables at the critical point.</p>
             </td>
         </tr>
     </tbody>
@@ -318,10 +428,44 @@ above it.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~13"></span>
+              <span class="anchor" id="variable-xnew~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xnew</strong>(size(X))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~10"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~25"></span>
               integer,
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -335,10 +479,27 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lb~4"></span>
+              <span class="anchor" id="variable-incipient_kind"></span>
+              character(len=14),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>incipient_kind</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lb~5"></span>
               integer,
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -352,10 +513,61 @@ above it.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~4"></span>
+              <span class="anchor" id="variable-lnk~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnK</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnkold~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnKold</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncomp"></span>
               integer,
             </td>
-              <td>private</td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncomp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ub~5"></span>
+              integer,
+            </td>
+              <td>public</td>
             <td>
               
             </td>
@@ -400,7 +612,7 @@ above it.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 13:10 +0000             </p>
+ on 2025-06-30 17:52 +0000             </p>
           </div>
         </div>
         <br>

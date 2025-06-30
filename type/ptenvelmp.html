@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.5% of total for derived types.</p>Including implementation: 106 statements,  2.2% of total for derived types.">7 statements</a>
+                 title="<p> 1.9% of total for derived types.</p>Including implementation: 111 statements,  2.2% of total for derived types.">9 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,7 +135,9 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/ptenvelmp.html#variable-points~11">points</a>
+            <a class="list-group-item" href="../type/ptenvelmp.html#variable-pc">Pc</a>
+            <a class="list-group-item" href="../type/ptenvelmp.html#variable-tc~2">Tc</a>
+            <a class="list-group-item" href="../type/ptenvelmp.html#variable-points">points</a>
         </div>
       </div>
     </div>
@@ -162,9 +164,9 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/ptenvelmp.html#boundprocedure-get_values_from_x~3">get_values_from_X</a>
-            <a class="list-group-item" href="../type/ptenvelmp.html#boundprocedure-solve_point~3">solve_point</a>
-            <a class="list-group-item" href="../type/ptenvelmp.html#boundprocedure-write~3">write</a>
+            <a class="list-group-item" href="../type/ptenvelmp.html#boundprocedure-get_values_from_x">get_values_from_X</a>
+            <a class="list-group-item" href="../type/ptenvelmp.html#boundprocedure-solve_point">solve_point</a>
+            <a class="list-group-item" href="../type/ptenvelmp.html#boundprocedure-write">write</a>
         </div>
       </div>
     </div>
@@ -197,7 +199,41 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-points~11"></span>
+              <span class="anchor" id="variable-pc"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Pc</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Critical pressures.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tc~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Tc</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Critical temperatures.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-points"></span>
               type(<a href='mppoint.html'>MPPoint</a>),
             </td>
               <td>public,</td>
@@ -225,7 +261,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_values_from_x~3"></span>
+      <span class="anchor" id="boundprocedure-get_values_from_x"></span>
       <h3>
           procedure, public, nopass ::
   <strong>get_values_from_X</strong>
@@ -235,11 +271,11 @@
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/get_values_from_x~4.html'>get_values_from_X</a>(X, np, z, x_l, w, betas, P, T)  
+    private  subroutine <a href='../proc/get_values_from_x.html'>get_values_from_X</a>(X, np, z, beta_w, x_l, w, betas, P, T)  
 </h3>
     
 
-  <p>Extract the values of the variables from the vector X.</p><a href="../proc/get_values_from_x~4.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Extract the values of the variables from the vector X.</p><a href="../proc/get_values_from_x.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -295,6 +331,21 @@
             <td><strong>z</strong>(:)</td>
             <td>
 <p>Mixture composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta_w</strong></td>
+            <td>
+<p>Fraction of the reference phase.</p>
             </td>
         </tr>
         <tr>
@@ -384,7 +435,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-solve_point~3"></span>
+      <span class="anchor" id="boundprocedure-solve_point"></span>
       <h3>
           procedure, public, nopass ::
   <strong>solve_point</strong>
@@ -394,7 +445,7 @@
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/solve_point~6.html'>solve_point</a>(model, z, np, beta_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
+    private  subroutine <a href='../proc/solve_point.html'>solve_point</a>(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
 </h3>
     
 
@@ -469,6 +520,36 @@
             <td><strong>beta_w</strong></td>
             <td>
 <p>Fraction of the reference (incipient) phase</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=14),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kinds_x</strong>(np)</td>
+            <td>
+<p>Kind of the main phases</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character(len=14),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kind_w</strong></td>
+            <td>
+<p>Kind of the reference phase</p>
             </td>
         </tr>
         <tr>
@@ -603,7 +684,7 @@
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-write~3"></span>
+      <span class="anchor" id="boundprocedure-write"></span>
       <h3>
           procedure, public ::
   <strong>write</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_envelope_pt_mp.html'>write_envelope_PT_MP</a>
@@ -690,7 +771,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 13:10 +0000             </p>
+ on 2025-06-30 17:52 +0000             </p>
           </div>
         </div>
         <br>

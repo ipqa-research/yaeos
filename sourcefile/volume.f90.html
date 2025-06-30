@@ -279,7 +279,7 @@
 <a id="ln-105" name="ln-105" href="#ln-105"></a><span class="w">         </span><span class="k">end select</span>
 <a id="ln-106" name="ln-106" href="#ln-106"></a><span class="k">      end if</span>
 <a id="ln-107" name="ln-107" href="#ln-107"></a><span class="k">   end subroutine </span><span class="n">volume_michelsen</span>
-<a id="ln-108" name="ln-108" href="#ln-108"></a><span class="w">   </span>
+<a id="ln-108" name="ln-108" href="#ln-108"></a>
 <a id="ln-109" name="ln-109" href="#ln-109"></a><span class="w">   </span><span class="k">subroutine </span><span class="n">solve_point</span><span class="p">(</span><span class="n">eos</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Pcalc</span><span class="p">,</span><span class="w"> </span><span class="n">ZETA</span><span class="p">,</span><span class="w"> </span><span class="n">ZETMIN</span><span class="p">,</span><span class="w"> </span><span class="n">ZETMAX</span><span class="p">,</span><span class="w"> </span><span class="n">AT</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">)</span>
 <a id="ln-110" name="ln-110" href="#ln-110"></a><span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
 <a id="ln-111" name="ln-111" href="#ln-111"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
@@ -322,10 +322,10 @@
 <a id="ln-148" name="ln-148" href="#ln-148"></a>
 <a id="ln-149" name="ln-149" href="#ln-149"></a><span class="w">         </span><span class="c">! AT is something close to Gr(P,T)</span>
 <a id="ln-150" name="ln-150" href="#ln-150"></a><span class="w">         </span><span class="n">AT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Ar</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">V</span><span class="o">*</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="n">R</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">TOTN</span><span class="o">*</span><span class="nb">log</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
-<a id="ln-151" name="ln-151" href="#ln-151"></a><span class="w">         </span>
+<a id="ln-151" name="ln-151" href="#ln-151"></a>
 <a id="ln-152" name="ln-152" href="#ln-152"></a><span class="w">         </span><span class="c">! this is dPdrho/B</span>
-<a id="ln-153" name="ln-153" href="#ln-153"></a><span class="w">         </span><span class="n">DER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ArV2</span><span class="o">*</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TOTN</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">B</span><span class="w"> </span>
-<a id="ln-154" name="ln-154" href="#ln-154"></a><span class="w">         </span>
+<a id="ln-153" name="ln-153" href="#ln-153"></a><span class="w">         </span><span class="n">DER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ArV2</span><span class="o">*</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TOTN</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">B</span>
+<a id="ln-154" name="ln-154" href="#ln-154"></a>
 <a id="ln-155" name="ln-155" href="#ln-155"></a><span class="w">         </span><span class="n">DEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="n">Pcalc</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="n">DER</span>
 <a id="ln-156" name="ln-156" href="#ln-156"></a><span class="w">         </span><span class="n">ZETA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ZETA</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">DEL</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="p">),</span><span class="w"> </span><span class="o">-</span><span class="p">.</span><span class="mi">1_pr</span><span class="p">)</span>
 <a id="ln-157" name="ln-157" href="#ln-157"></a>
@@ -356,7 +356,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 13:10 +0000             </p>
+ on 2025-06-30 17:52 +0000             </p>
           </div>
         </div>
         <br>

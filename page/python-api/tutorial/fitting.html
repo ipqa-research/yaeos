@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fitting interaction parameters of binary systems &mdash; yaeos 3.1.0 documentation</title>
+  <title>Fitting interaction parameters of binary systems &mdash; yaeos 4.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=dd1205ac"></script>
+      <script src="../_static/documentation_options.js?v=3304f9e4"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -133,6 +133,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/CO2_C6.csv&#39;</span><span class="p">)</span>
 <span class="n">df</span>
 </pre></div>
@@ -358,22 +359,16 @@ array([303.15, 315.15])
 
 <span class="n">z0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">zi</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">pxs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">Ts</span><span class="p">:</span>
+    <span class="n">msk</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">T</span>
+    <span class="n">pxy</span> <span class="o">=</span> <span class="n">gpec</span><span class="o">.</span><span class="n">plot_pxy</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 
-    <span class="c1"># Let&#39;s use a mask to only get the data for a specific temperature</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">T</span>
-    <span class="n">px</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_px</span><span class="p">(</span><span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">ns0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Bubble Points&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;y1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Dew Points&quot;</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">px</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">px</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;data Bubble&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;y1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;data Dew&quot;</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pxy diagram at T = </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2"> K&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;P [bar]&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x_1, y_1$&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -408,7 +403,7 @@ array([303.15, 315.15])
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
 <span class="kn">from</span> <span class="nn">yaeos.fitting</span> <span class="kn">import</span> <span class="n">BinaryFitter</span>
 
-BinaryFitter<span class="o">?</span>
+<span class="o">?</span>BinaryFitter
 </pre></div>
 </div>
 </div>
@@ -480,19 +475,19 @@ BinaryFitter<span class="o">?</span>
 1.559327111499111 [0.00775]
 1.4668506368944916 [0.01175]
 1.3759871697248645 [0.01575]
-1.199517124958797 [0.02375]
+1.1995171255846175 [0.02375]
 1.030807090584202 [0.03175]
 0.7207125515768745 [0.04775]
-0.45494890252076453 [0.06375]
+0.45494890342547334 [0.06375]
 0.1633296153190301 [0.09575]
 0.22052696455206036 [0.12775]
 0.22052696455206036 [0.12775]
-0.09792206009347366 [0.11175]
+0.09792206166179376 [0.11175]
 0.22052696455206036 [0.12775]
 0.11825669217983152 [0.10375]
 0.10598288555962829 [0.11975]
 0.09823429765712599 [0.11575]
-0.10459879763851507 [0.10775]
+0.10459879842351241 [0.10775]
 0.09712360613884066 [0.11375]
 0.09823429765712599 [0.11575]
 0.09730049165208345 [0.11275]
@@ -561,21 +556,20 @@ BinaryFitter<span class="o">?</span>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">Ts</span><span class="p">:</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-    <span class="c1"># Let&#39;s use a mask to only get the data for a specific temperature</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">T</span>
-    <span class="n">px</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_px</span><span class="p">(</span><span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">z0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">zi</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">pxs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">px</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">px</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">Ts</span><span class="p">:</span>
+    <span class="n">msk</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">T</span>
+    <span class="n">pxy</span> <span class="o">=</span> <span class="n">gpec</span><span class="o">.</span><span class="n">plot_pxy</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;data Bubble&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;y1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;data Dew&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Bubble Points&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;y1&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Dew Points&quot;</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pxy diagram at T = </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2"> K&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;P [bar]&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x_1, y_1$&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>

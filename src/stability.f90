@@ -134,6 +134,7 @@ contains
       integer :: i, j
 
       integer :: nc, stat
+      integer :: max_iters, iters
 
       nc = size(z)
 
@@ -152,12 +153,15 @@ contains
       ! Minimize for each component using each quasi-pure component
       ! as initialization.
       ! --------------------------------------------------------------
+      max_iters = 1000
       mins = 10
       do i=1,nc
+         iters = 0
          w = 1e-10
          w(i) = 1 - 1e-10
          dw = 100
-         do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4)
+         do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4 .and. iters < max_iters)
+            iters = iters + 1
             select type (model)
              class is (ArModel)
                call model%lnphi_pt(w, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_w)

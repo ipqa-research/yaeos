@@ -105,7 +105,7 @@ contains
          end select
       end if
    end subroutine volume_michelsen
-   
+
    subroutine solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
       class(ArModel), intent(in) :: eos
       real(pr), intent(in) :: n(:)
@@ -148,10 +148,10 @@ contains
 
          ! AT is something close to Gr(P,T)
          AT = (Ar + V*P)/(T*R) - TOTN*log(V)
-         
+
          ! this is dPdrho/B
-         DER = (ArV2*V**2 + TOTN*R*T)/B 
-         
+         DER = (ArV2*V**2 + TOTN*R*T)/B
+
          DEL = -(Pcalc - P)/DER
          ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
 

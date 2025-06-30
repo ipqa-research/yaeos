@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for modules and submodules.">14 statements</a>
+                 title=" 0.5% of total for modules and submodules.">66 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -145,6 +145,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_auxiliar.html#proc-detect_critical">detect_critical</a>
             <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_auxiliar.html#proc-get_z">get_z</a>
         </div>
       </div>
@@ -193,6 +194,241 @@ used in the phase-boundaries calculations.</p>
         <section>
           <h2>Subroutines</h2>
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-detect_critical"></span> <h3>public  subroutine <a href='../proc/detect_critical.html'>detect_critical</a>(nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Detect if the system is close to a critical point.</p><a href="../proc/detect_critical.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~12"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+            <td>
+<p>Number of components in the mixture.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-np~8"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>np</strong></td>
+            <td>
+<p>Number of main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-point~5"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>point</strong></td>
+            <td>
+<p>Point number in the phase boundary.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kinds_x~5"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kinds_x</strong>(np)</td>
+            <td>
+<p>Kinds of the main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kind_w~5"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kind_w</strong></td>
+            <td>
+<p>Kind of the incipient phase.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-binary_stop"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>binary_stop</strong></td>
+            <td>
+<p>If true, stop at the critical point if its a binary system.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xold~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xold</strong>(:)</td>
+            <td>
+<p>Old vector of variables.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~20"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:)</td>
+            <td>
+<p>Vector of variables.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxds~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dXdS</strong>(:)</td>
+            <td>
+<p>Sensitivity of the variables wrt the specification.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ns~17"></span>
+              integer,
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ns</strong></td>
+            <td>
+<p>Number of the specified variable.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ds~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dS</strong></td>
+            <td>
+<p>Step size of the specification for the next point.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+<p>Specification value.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-found_critical~2"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>found_critical</strong></td>
+            <td>
+<p>If true, a critical point was found.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xc~3"></span>
+              real(kind=pr)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xc</strong>(size(X))</td>
+            <td>
+<p>Vector of variables at the critical point.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-get_z"></span> <h3>public  subroutine <a href='../proc/get_z.html'>get_z</a>(alpha, z_0, z_inj, z, dzda)  
 </h3></div>
     <div class="card-body">
@@ -213,7 +449,7 @@ of second fluid.</p><a href="../proc/get_z.html" class="pull-right"><emph>Read m
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~33"></span>
+              <span class="anchor" id="variable-alpha~5"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -244,7 +480,7 @@ of second fluid.</p><a href="../proc/get_z.html" class="pull-right"><emph>Read m
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z_inj~3"></span>
+              <span class="anchor" id="variable-z_inj~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -259,7 +495,7 @@ of second fluid.</p><a href="../proc/get_z.html" class="pull-right"><emph>Read m
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~49"></span>
+              <span class="anchor" id="variable-z~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -274,7 +510,7 @@ of second fluid.</p><a href="../proc/get_z.html" class="pull-right"><emph>Read m
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dzda~6"></span>
+              <span class="anchor" id="variable-dzda~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -318,7 +554,7 @@ of second fluid.</p><a href="../proc/get_z.html" class="pull-right"><emph>Read m
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 13:10 +0000             </p>
+ on 2025-06-30 17:52 +0000             </p>
           </div>
         </div>
         <br>

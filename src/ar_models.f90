@@ -1,5 +1,4 @@
 module yaeos__models_ar
-
    !! # Module that defines the basics of a residual Helmholtz energy.
    !!
    !! All the residual properties that are calculated in this library are
@@ -265,7 +264,7 @@ contains
 
    subroutine lnphi_pt(eos, &
       n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, &
-      dPdV, dPdT, dPdn &
+      dPdV, dPdT, dPdn, lnPhiP &
       )
       !! Calculate natural logarithm of fugacity given pressure and temperature.
       !!
@@ -306,6 +305,9 @@ contains
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
       real(pr), optional, intent(out) :: dPdn(size(n)) !! \(\frac{dP}{dn_i}\)
+      real(pr), optional, intent(out) :: lnPhiP(:)
+      !! \(\ln(\phi_i)P \). It is useful to calculate fugacity coefficients
+      !! at negatives pressures.
 
       real(pr) :: V_in, P_in
 
@@ -315,7 +317,7 @@ contains
          n, V=V_in, T=T, &
          P=P_in, lnPhi=lnPhi, &
          dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn, &
-         dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+         dPdV=dPdV, dPdT=dPdT, dPdn=dPdn, lnPhiP=lnPhiP &
          )
 
       if(present(V)) V = V_in
@@ -329,7 +331,7 @@ contains
    subroutine lnphi_vt(eos, &
       n, V, T, P, lnPhi, &
       dlnPhidP, dlnPhidT, dlnPhidn, &
-      dPdV, dPdT, dPdn &
+      dPdV, dPdT, dPdn, lnPhiP &
       )
       !! Calculate natural logarithm of fugacity coefficent.
       !!
@@ -364,6 +366,9 @@ contains
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}{dn_i}\)
+      real(pr), optional, intent(out) :: lnPhiP(:)
+      !! \(\ln(\phi_i)P \). It is useful to calculate fugacity coefficients
+      !! at negatives pressures.
 
       real(pr) :: Ar, ArTV, ArV, ArV2
       real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
@@ -372,7 +377,7 @@ contains
       real(pr) :: dPdV_in, dPdT_in, dPdn_in(size(n))
       real(pr) :: P_in
 
-      real(pr) :: RT, Z
+      real(pr) :: RT, Z, Z_P
 
       real(pr) :: totn
       integer :: nc, i, j
@@ -382,16 +387,25 @@ contains
 
       RT = R*T
 
-      if (present(lnPhi) .and. .not. (&
+      if ((present(lnPhi) .or. present(lnPhiP)) .and. .not. (&
          present(dlnPhidn) &
          .or. present(dlnPhidP) &
          .or. present(dlnPhidT) &
          )) then
          call eos%residual_helmholtz(n, v, t, Arn=Arn, ArV=ArV)
+
          P_in = totn*RT/V - ArV
-         Z = P_in*V/(totn*RT)
-         lnPhi(:) = Arn(:)/RT - log(Z)
          if (present(P)) P = P_in
+
+         if (present(lnPhi)) then
+            Z = P_in*V/(totn*RT)
+            lnPhi(:) = Arn(:)/RT - log(Z)
+         end if
+
+         if (present(lnPhiP)) then
+            Z = V/(totn*RT)
+            lnPhiP(:) = Arn(:)/RT - log(Z)
+         end if
          return
       else if (present(dlnPhidn)) then
          call eos%residual_helmholtz(&
@@ -415,6 +429,12 @@ contains
       dPdn_in = RT/V - ArVn
 
       if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
+      if (present(lnPhiP)) then
+         ! Avoiding P in Z makes it possible to calculate fugacities at 
+         ! negative pressures
+         Z_P = V/(totn*RT)
+         lnPhiP = Arn(:)/RT - log(Z_P)
+      end if
 
       if (present(dlnPhidP)) then
          dlnPhidP(:) = -dPdn_in(:)/dPdV_in/RT - 1._pr/P_in

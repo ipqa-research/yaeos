@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.7% of total for derived types.</p>Including implementation: 531 statements, 10.8% of total for derived types.">8 statements</a>
+                 title="<p> 1.7% of total for derived types.</p>Including implementation: 543 statements, 10.9% of total for derived types.">8 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -169,17 +169,17 @@
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-cp_residual_vt">Cp_residual_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-cv_residual_vt">Cv_residual_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-psat_pure">Psat_pure</a>
-            <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-ar~4">ar</a>
+            <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-ar">ar</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-enthalpy_residual_vt">enthalpy_residual_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-entropy_residual_vt">entropy_residual_vt</a>
-            <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-get_v0~3">get_v0</a>
+            <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-get_v0">get_v0</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-gibbs_residual_vt">gibbs_residual_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-internal_energy_residual_vt">internal_energy_residual_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-lnfug_vt">lnfug_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-lnphi_pt">lnphi_pt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-lnphi_vt">lnphi_vt</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-pressure">pressure</a>
-            <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-residual_helmholtz~4">residual_helmholtz</a>
+            <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-residual_helmholtz">residual_helmholtz</a>
             <a class="list-group-item" href="../type/gerg2008.html#boundprocedure-volume~2">volume</a>
         </div>
       </div>
@@ -628,7 +628,7 @@ will be calculated</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ar~4"></span>
+      <span class="anchor" id="boundprocedure-ar"></span>
       <h3>
           procedure, public ::
   <strong>ar</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/arfun.html'>arfun</a>
@@ -1062,7 +1062,7 @@ will be calculated</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_v0~3"></span>
+      <span class="anchor" id="boundprocedure-get_v0"></span>
       <h3>
           procedure, public ::
   <strong>get_v0</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/volume_initalizer.html'>volume_initalizer</a>
@@ -1735,7 +1735,7 @@ will be calculated</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/lnphi_pt.html'>lnphi_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+    private  subroutine <a href='../proc/lnphi_pt.html'>lnphi_pt</a>(eos, n, P, T, V, root_type, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn, lnPhiP)  
 </h3>
     
 
@@ -1954,6 +1954,23 @@ will be calculated</p>
 </p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhiP</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\ln(\phi_i)P </script>. It is useful to calculate fugacity coefficients
+at negatives pressures.</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -1976,7 +1993,7 @@ will be calculated</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/lnphi_vt.html'>lnphi_vt</a>(eos, n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn)  
+    private  subroutine <a href='../proc/lnphi_vt.html'>lnphi_vt</a>(eos, n, V, T, P, lnPhi, dlnPhidP, dlnPhidT, dlnPhidn, dPdV, dPdT, dPdn, lnPhiP)  
 </h3>
     
 
@@ -2183,6 +2200,23 @@ will be calculated</p>
 </p>
             </td>
         </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhiP</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\ln(\phi_i)P </script>. It is useful to calculate fugacity coefficients
+at negatives pressures.</p>
+            </td>
+        </tr>
     </tbody>
   </table>
 
@@ -2360,7 +2394,7 @@ will be calculated</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-residual_helmholtz~4"></span>
+      <span class="anchor" id="boundprocedure-residual_helmholtz"></span>
       <h3>
           procedure, public ::
   <strong>residual_helmholtz</strong>
@@ -2370,7 +2404,7 @@ will be calculated</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    public  subroutine <a href='../proc/residual_helmholtz~2.html'>residual_helmholtz</a>(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)  
+    public  subroutine <a href='../proc/residual_helmholtz.html'>residual_helmholtz</a>(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)  
 </h3>
     
 
@@ -2619,11 +2653,11 @@ will be calculated</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    public  subroutine <a href='../proc/volume~2.html'>volume</a>(eos, n, P, T, V, root_type)  
+    public  subroutine <a href='../proc/volume.html'>volume</a>(eos, n, P, T, V, root_type)  
 </h3>
     
 
-  <p>Volume solver routine for residual Helmholtz models.</p><a href="../proc/volume~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Volume solver routine for residual Helmholtz models.</p><a href="../proc/volume.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2757,7 +2791,7 @@ will be calculated</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-05-28 13:10 +0000             </p>
+ on 2025-06-30 17:52 +0000             </p>
           </div>
         </div>
         <br>
