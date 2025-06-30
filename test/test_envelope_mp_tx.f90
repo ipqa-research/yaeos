@@ -97,9 +97,9 @@ contains
 
       call assert(tx%alpha(size(tx%alpha)) > 0.99, "final alpha")
 
-      open(unit=5, status="scratch")
-      call tx%write(5)
-      close(5)
+      open(newunit=i, status="scratch")
+      call tx%write(i)
+      close(i)
 
    end subroutine calc_2ph
 end program main
