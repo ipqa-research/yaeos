@@ -2848,7 +2848,7 @@ class ArModel(ABC):
             }
 
     def critical_line_liquid_liquid(
-        self, z0=[1, 0], zi=[1, 0], pressure=2000, t0=500
+        self, z0=[0, 1], zi=[1, 0], pressure=2000, t0=500
     ):
         """Find the start of the Liquid-Liquid critical line of a binary.
 
