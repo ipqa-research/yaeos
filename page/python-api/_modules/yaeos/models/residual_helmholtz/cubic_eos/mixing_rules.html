@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.0.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=3304f9e4"></script>
+      <script src="../../../../../_static/documentation_options.js?v=42d1b3bd"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -364,6 +364,61 @@
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_hv</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HVNRTL">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL">[docs]</a>
+<span class="k">class</span> <span class="nc">HVNRTL</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Huron-Vidal mixing rule using an NRTL model.</span>
+
+<span class="sd">    Huron Vidal mixing rule coupled with the excess Gibbs energy model defined</span>
+<span class="sd">    by Huron-Vidal. This model can use the classic VdW1f mixing rules kij</span>
+<span class="sd">    parameters when desired.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : matrix_like</span>
+<span class="sd">        NRTL alpha parameters matrix</span>
+<span class="sd">    gji : matrix_like</span>
+<span class="sd">        NRTL gij parameters matrix</span>
+<span class="sd">    use_kij : matrix_like</span>
+<span class="sd">        Boolean matrix indicating whether to use kij parameters</span>
+<span class="sd">    kij : matrix_like</span>
+<span class="sd">        kij binary interaction parameters matrix</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : matrix_like</span>
+<span class="sd">        NRTL alpha parameters matrix</span>
+<span class="sd">    gji : matrix_like</span>
+<span class="sd">        NRTL gij parameters matrix</span>
+<span class="sd">    use_kij : matrix_like</span>
+<span class="sd">        Boolean matrix indicating whether to use kij parameters</span>
+<span class="sd">    kij : matrix_like</span>
+<span class="sd">        kij binary interaction parameters matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">gji</span><span class="p">,</span> <span class="n">use_kij</span><span class="p">,</span> <span class="n">kij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gji</span> <span class="o">=</span> <span class="n">gji</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">use_kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HVNRTL.set_mixrule">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.set_mixrule">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set modified Huron-Vidal mix rule method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ar_model_id : int</span>
+<span class="sd">            ID of the cubic EoS model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_hvnrtl</span><span class="p">(</span>
+            <span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kij</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>

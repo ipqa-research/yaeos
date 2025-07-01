@@ -18,8 +18,10 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    !!
    use yaeos__constants, only: pr, R, solving_volume
    use yaeos__models_ar_genericcubic, only: CubicMixRule
+   use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
    use yaeos__models_ge, only: GeModel
+   use yaeos__models_ge_nrtlhv, only: NRTLHV
    implicit none
 
    private
@@ -27,6 +29,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
    public :: HV
    public :: MHV
    public :: DmixMHV
+   public :: HV_NRTL, init_hvnrtl
 
    type, extends(CubicMixRule) :: HV
       class(GeModel), allocatable :: ge
@@ -91,9 +94,52 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
       procedure :: Dmix => DmixMHV
    end type MHV
 
+   type, extends(CubicMixRule) :: HV_NRTL
+      !! # HV_NRTL
+      !! Huron-Vidal mixing rule including the NRTL model modified by Huron
+      !! and Vidal.
+      !!
+      !! # Description
+      !! This is the Huron-Vidal mixing rule that includes the NRTL model
+      !! modified by Huron and Vidal. It is a mixing rule that allows to
+      !! use the NRTL model as an excess Gibbs energy model and can. be
+      !! simplified to the classic Quatratic mixing rules when the parameters
+      !! are set to:
+      !!
+      !! \[
+      !!  \alpha_{ji} = 0
+      !! \]
+      !!
+      !! \[
+      !!  g_{ii} = -\frac{a_i}{b_i} \lambda
+      !! \]
+      !!
+      !! \[
+      !!  g_{ji} = -2\frac{\sqrt{b_i b_j}}{b_i + b_j} \sqrt{g_{ii}g_{jj}}
+      !!           \left(1 - k_{ij})\right)
+      !! \]
+      !!
+      !! # Examples
+      !!
+      !! # References
+      type(NRTLHV) :: ge
+      real(pr), allocatable :: del1(:)
+      real(pr), allocatable :: bi(:)
+      logical, allocatable :: use_kij(:, :)
+      real(pr), allocatable :: kij(:, :)
+   contains
+      procedure :: Bmix => BmixHVNRTL
+      procedure :: D1Mix => D1MixHVNRTL
+      procedure :: Dmix => DmixHVNRTL
+   end type HV_NRTL
+
    interface MHV
       module procedure :: init_mhv
    end interface MHV
+
+   interface HV_NRTL
+      module procedure :: init_hvnrtl
+   end interface HV_NRTL
 
 contains
 
@@ -129,13 +175,12 @@ contains
       ai, daidt, daidt2, &
       D, dDdT, dDdT2, dDi, dDidT, dDij &
       )
-      use yaeos__models_ar_cubic_mixing_base, only: lamdba_hv
+      use yaeos__models_ar_cubic_mixing_base, only: lamdba_hv, mix => DMixHV
       class(HV), intent(in) :: self
       real(pr), intent(in) :: T, n(:)
       real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
       real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
 
-      real(pr) :: f, fdt, fdt2, fdi(size(n)), fdit(size(n)), fdij(size(n), size(n))
       real(pr) :: b, bi(size(n)), dbi(size(n)), dbij(size(n), size(n))
       real(pr) :: del1(size(n)), del2(size(n))
       real(pr) :: d1, d1i(size(n)), dd1i(size(n)), dd1ij(size(n), size(n))
@@ -154,47 +199,148 @@ contains
 
       call self%Bmix(n, bi, B, dBi, dBij)
       call self%D1Mix(n, del1, D1, dD1i, dD1ij)
-      call lamdba_hv(D1, dD1i, dD1ij, L, dL, dL2)
+      call lamdba_hv(nc, D1, dD1i, dD1ij, L, dL, dL2)
 
       call self%ge%excess_gibbs( &
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
          )
+      call mix(n, T,&
+         bi, B, dBi, dBij, &
+         D1, dD1i, dD1ij, &
+         ai, daidt, daidt2, &
+         Ge, GeT, GeT2, Gen, GeTn, Gen2,&
+         D, dDdT, dDdT2, dDi, dDidT, dDij)
+   end subroutine DmixHV
 
-      f    = sum(n*ai/bi) - Ge/L
-      fdt  = sum(n*daidt/bi) - GeT/L
-      fdt2 = sum(n*daidt2/bi) - GeT2/L
+   ! ===========================================================================
+   ! Huron-Vidal Mixing rule with Huron-Vidal NRTL
+   ! ---------------------------------------------------------------------------
+   type(HV_NRTL) function init_hvnrtl(b, del1, alpha, gji, use_kij, kij) result(mixrule)
+      !! # Huron-Vidal NRTL mixing rule
+      !! This is the Huron-Vidal mixing rule that includes the NRTL model
+      !! modified by Huron and Vidal.
+      !!
+      !! # Description
+      !! This is the Huron-Vidal mixing rule that includes the NRTL model
+      !! modified by Huron and Vidal. It is a mixing rule that allows to
+      !! use the NRTL model as an excess Gibbs energy model and can. be
+      !! simplified to the classic Quatratic mixing rules when the parameters
+      !! are set to:
+      !! \[
+      !!  \alpha_{ji} = 0
+      !! \]
+      !!
+      !! \[
+      !!  g_{ii} = -\frac{a_i}{b_i} \lambda
+      !! \]
+      !!
+      !! \[
+      !!  g_{ji} = -2\frac{\sqrt{b_i b_j}}{b_i + b_j} \sqrt{g_{ii}g_{jj}}
+      !!           \left(1 - k_{ij})\right)
+      !! \]
+      !!
+      !! # Examples
+      !!
+      use yaeos__models_ge_nrtlhv, only: NRTLHV
+      real(pr), intent(in) :: b(:)
+      real(pr), intent(in) :: del1(:)
+      real(pr), intent(in) :: alpha(:, :)
+      real(pr), intent(in) :: gji(:, :)
+      logical, intent(in) :: use_kij(:, :)
+      real(pr), intent(in) :: kij(:, :)
 
-      fdi = ai/bi - (Gen/L - dL * Ge/L**2)
-      fdiT = daidt/bi - (GeTn/L - dL * GeT/L**2)
+      integer :: i, nc
 
-      do concurrent(i=1:nc, j=1:nc)
-         fdij(i, j) = &
-            Ge * dL2(i, j) / L**2 &
-            - 2 * Ge * dL(i) * dL(j) / L**3 &
-            - Gen2(i, j) / L &
-            + Gen(i) * dL(j) / L**2 &
-            + Gen(j) * dL(i) / L**2
-         !   Gen2(i, j)/L &
-         ! - dL(j) * Gen(i)/L**2 &
-         ! - (dL2(i,j) * Gen2(i,j)/L**2 &
-         ! + dL(i)*(Gen2(i,j)/L**2-Gen(i)/L * dL(j)/2))
-      end do
+      nc = size(b)
 
-      dDi = B*fdi + f*dBi
-      dDidT = B*fdiT + fdT*dBi
+      mixrule%ge = NRTLHV(b=b, alpha=alpha, gij=gji)
+      mixrule%bi = b
+      mixrule%del1 = del1
+      mixrule%use_kij = use_kij
+      mixrule%kij = kij
+   end function init_hvnrtl
 
-      D = f*B
-      dDdT = fdT*B
-      dDdT2 = fdT2*B
-      dDij = fdij
+   subroutine BmixHVNRTL(self, n, bi, B, dBi, dBij)
+      !! # Repulsive parameter \(B\) mixing rule
+      !! Quadratinc mixing rule for the repulsive parameter.
+      !!
+      !! # Description
+      !! \[B = \sum_i n_i b_i\]
+      use yaeos__models_ar_cubic_mixing_base, only: bmix_linear
+      class(HV_NRTL), intent(in) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: bi(:)
+      real(pr), intent(out) :: B, dBi(:), dBij(:, :)
+      call bmix_linear(n, bi, b, dbi, dbij)
+   end subroutine BmixHVNRTL
+
+   subroutine D1MixHVNRTL(self, n, d1i, D1, dD1i, dD1ij)
+      use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
+      class(HV_NRTL), intent(in) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: d1i(:)
+      real(pr), intent(out) :: D1
+      real(pr), intent(out) :: dD1i(:)
+      real(pr), intent(out) :: dD1ij(:, :)
+      call d1mix_rkpr(n, d1i, D1, dD1i, dD1ij)
+   end subroutine D1MixHVNRTL
+
+   subroutine DmixHVNRTL(self, n, T, &
+      ai, daidt, daidt2, &
+      D, dDdT, dDdT2, dDi, dDidT, dDij &
+      )
+      use yaeos__models_ar_cubic_mixing_base, only: lamdba_hv, DmixHV
+      use yaeos__models_ge_nrtlhv, only: NRTLHV
+      class(HV_NRTL), intent(in) :: self
+      real(pr), intent(in) :: T, n(:)
+      real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
+      real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+
+      real(pr) :: Ge, GeT, GeT2
+      real(pr) :: Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
+
+      real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
+      real(pr) :: D1, dD1i(size(n)), dD1ij(size(n), size(n))
+      real(pr) :: L
+
+      type(NRTLHV) :: ge_model
+
+      real(pr) :: gii(size(n)), gji(size(n), size(n))
+      real(pr) :: bi(size(n))
+
+      integer :: i, j, nc
+
+      ge_model = self%ge
+
+      nc = size(n)
+      bi = self%bi
+      call self%Bmix(n, bi, B, dBi, dBij)
+      call self%D1Mix(n, self%del1, D1, dD1i, dD1ij)
+      call lamdba_hv(nc, D1, L=L)
+
+      gii = - ai/bi * L
 
       do i=1,nc
          do j=1,nc
-            dDij(i, j) = dBi(j)*fdi(i) + B*fdij(j, i) + f*dBij(i, j) + fdi(j)*dBi(i)
+            if (self%use_kij(i, j)) then
+               ge_model%alpha(i, j) = 0
+               ge_model%gij(i, j) = -2 * sqrt(bi(i) * bi(j)) / (bi(i) + bi(j)) * &
+                  sqrt(gii(i) * gii(j)) * (1 - self%kij(i, j)) - gii(j)
+            end if
          end do
       end do
 
-   end subroutine DmixHV
+      call ge_model%excess_gibbs( &
+         n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+         )
+
+      call DMixHV(n, T,&
+         bi, B, dBi, dBij, &
+         D1, dD1i, dD1ij, &
+         ai, daidt, daidt2, &
+         Ge, GeT, GeT2, Gen, GeTn, Gen2,&
+         D, dDdT, dDdT2, dDi, dDidT, dDij)
+   end subroutine DmixHVNRTL
 
    ! ===========================================================================
    ! Michelsen's Modified Huron-Vidal 1

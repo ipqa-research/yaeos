@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">21 statements</a>
+                 title=" 0.2% of total for procedures.">24 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_pt_3ph.f90"> Source File</a>
+              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_3ph.f90.html'>phase_envelopes_pt_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
             <li class="breadcrumb-item active" aria-current="page">get_values_from_X</li>
           </ol>
         </nav>
@@ -137,7 +137,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/get_values_from_x~4.html#variable-kx~3">Kx</a>
             <a class="list-group-item" href="../proc/get_values_from_x~4.html#variable-ky~3">Ky</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~4.html#variable-nc~52">nc</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~4.html#variable-nc~61">nc</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~4.html#variable-z~40">z</a>
         </div>
       </div>
     </div>
@@ -167,7 +168,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine get_values_from_X(z, Xvars, x, y, w, P, T, beta)  
+    <h2>public  subroutine get_values_from_X(z0, zi, Xvars, x, y, w, P, alpha, beta)  
 </h2>
     
 
@@ -186,7 +187,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~34"></span>
+              <span class="anchor" id="variable-z0~21"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -194,7 +195,22 @@
               
             </td>
             <td>::</td>
-            <td><strong>z</strong>(:)</td>
+            <td><strong>z0</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zi~17"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
             <td>
                 
             </td>
@@ -209,14 +225,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>Xvars</strong>(size(z)*2+3)</td>
+            <td><strong>Xvars</strong>(size(z0)*2+3)</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~20"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -224,14 +240,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>x</strong>(size(z))</td>
+            <td><strong>x</strong>(size(z0))</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y~18"></span>
+              <span class="anchor" id="variable-y~17"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -239,14 +255,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>y</strong>(size(z))</td>
+            <td><strong>y</strong>(size(z0))</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~18"></span>
+              <span class="anchor" id="variable-w~27"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -254,14 +270,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>w</strong>(size(z))</td>
+            <td><strong>w</strong>(size(z0))</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~42"></span>
+              <span class="anchor" id="variable-p~48"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -276,7 +292,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~60"></span>
+              <span class="anchor" id="variable-alpha~26"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -284,14 +300,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>alpha</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta~11"></span>
+              <span class="anchor" id="variable-beta~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -358,7 +374,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~52"></span>
+              <span class="anchor" id="variable-nc~61"></span>
               integer,
             </td>
               <td>private</td>
@@ -367,6 +383,23 @@
             </td>
             <td>::</td>
             <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~40"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(size(z0))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -406,7 +439,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-06-30 17:52 +0000             </p>
+ on 2025-07-01 23:26 +0000             </p>
           </div>
         </div>
         <br>

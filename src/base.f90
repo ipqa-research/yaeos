@@ -1,166 +1,212 @@
-module yaeos__models_ar_cubic_mixing_base
-   !! # Mixing rules core math
-   !! Procedures of the core calculations of CubicEoS mixing rules.
-   !!
-   !! # Description
-   !! This module holds all the basic math to use mixing rules in other codes.
-   !! Keeping it simple and accesible.
-   !!
-   !! # Examples
-   !!
-   !! ```fortran
-   !! bi = [0.2, 0.3]
-   !! lij = reshape([0.0, 0.2, 0.2, 0], [2,2])
-   !!
-   !! ! Calculate B parameter with Quadratric Mixing Rules.
-   !! call bmix_qmr(n, bi, lij, b, dbi, dbij)
-   !!
-   !! ```
-   !!
-   !! # References
-   use yaeos__constants, only: pr, solving_volume
-   implicit none
+module yaeos__models_ge_base
+   !! Base module for excess Gibbs energy models in YAEOS
+   !! This module provides implementations of excess Gibbs energy models
+   !! using only Fortran native types.
+   use yaeos__constants, only: pr, R
 contains
 
-   pure subroutine bmix_linear(n, bi, b, dbi, dbij)
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: bi(:)
-      real(pr), intent(out) :: b, dbi(:), dbij(:, :)
+   ! ==========================================================================
+   ! NRTL Model, modified by Huron and vidal
+   ! --------------------------------------------------------------------------
 
-      b = sum(n*bi)
-      dbi = bi
-      dbij = 0
-   end subroutine bmix_linear
+   subroutine nrtl_hv_ge(&
+      n, T, &
+      b, &
+      alpha, &
+      tau, dtaudt, dtaudt2, &
+      Ge, Gen, GeT, GeT2, GeTn, Gen2)
+      real(pr), intent(in) :: n(:) !! Number of moles vector.
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: b(:) !! \(b\) parameter
+      real(pr), intent(in) :: alpha(:, :) !! \(alpha\) matrix
+      real(pr), intent(in) :: tau(:, :) !! \(\tau\) matrix
+      real(pr), intent(in) :: dtaudt(:, :)
+      !! First derivative of \(\tau\) with respect to temperature
+      real(pr), intent(in) :: dtaudt2(:, :)
+      !! Second derivative of \(\tau\) with respect to temperature
+      real(pr), optional, intent(out) :: Ge
+      !! Excess Gibbs energy
+      real(pr), optional, intent(out) :: Gen(:)
+      !! Excess Gibbs energy derivative with repect to number of moles
+      real(pr), optional, intent(out) :: GeT
+      !! Excess Gibbs energy derivative with respect to temperature
+      real(pr), optional, intent(out) :: GeT2
+      !! Excess Gibbs energy second derivative with respect to temperature
+      real(pr), optional, intent(out) :: GeTn(:)
+      !! Excess Gibbs energy derivative with respect to temperature and number of moles
+      real(pr), optional, intent(out) :: Gen2(:, :)
+      !! Excess Gibbs energy second derivative with respect to number of moles
 
-   pure subroutine bmix_qmr(n, bi, lij, b, dbi, dbij)
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: bi(:)
-      real(pr), intent(in) :: lij(:, :)
-      real(pr), intent(out) :: b, dbi(:), dbij(:, :)
+      real(pr) :: E(size(n), size(n)), U, D
+      real(pr) :: dEdT(size(n), size(n)), dEdT2(size(n), size(n))
 
-      real(pr) :: bij(size(n), size(n))
+      real(pr) :: Dn(size(n))
 
-      real(pr) :: totn, aux(size(n))
+      real(pr) :: xi(size(n), size(n)), theta(size(n), size(n)), omega(size(n), size(n)), eta(size(n), size(n))
+      real(pr) :: xiT(size(n)), etaT(size(n), size(n)), thetaT(size(n)), omegaT(size(n), size(n))
+      real(pr) :: xiTT(size(n)), thetaTT(size(n))
 
-      integer :: i, j, nc
+      real(pr) :: denom
 
-      nc = size(n)
-      TOTN = sum(n)
-      B = 0
-      dBi = 0
-      dBij = 0
-      aux = 0
+      integer :: i, j, k, l, nc
 
-      do i = 1, nc
-         do j = 1, nc
-            bij(i, j) = 0.5_pr * (bi(i) + bi(j)) * (1.0_pr - lij(i,j))
-            aux(i) = aux(i) + n(j) * bij(i, j)
-         end do
-         B = B + n(i)*aux(i)
-      end do
+      logical :: p_ge, p_get, p_get2, p_gent, p_gen2, p_gen
+      real(pr) :: aux_Ge, aux_Gen(size(n)), aux_GeT, aux_GeTn(size(n))
 
-      B = B/totn
-
-      if (solving_volume) return
-
-      do i = 1, nc
-         dBi(i) = (2*aux(i) - B)/totn
-         do j = 1, i
-            dBij(i, j) = (2*bij(i, j) - dBi(i) - dBi(j))/totn
-            dBij(j, i) = dBij(i, j)
-         end do
-      end do
-   end subroutine bmix_qmr
-
-   pure subroutine d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
-      !! RKPR \(\delta_1\) parameter mixing rule.
-      !!
-      !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each
-      !! component, so a proper mixing rule should be provided. A linear
-      !! combination is used.
-      !!
-      !! \[
-      !!     \Delta_1 = \sum_i^N n_i \delta_{1i}
-      !! \]
-      !!
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: d1i(:)
-      real(pr), intent(out) :: D1
-      real(pr), intent(out) :: dD1i(:)
-      real(pr), intent(out) :: dD1ij(:, :)
-
-      integer :: i, j, nc
-      real(pr) :: totn
+      integer :: m
 
       nc = size(n)
-      totn = sum(n)
+      p_ge = present(Ge)
+      p_get = present(GeT)
+      p_gen = present(Gen)
+      p_get2 = present(GeT2)
+      p_gent = present(GeTn)
+      p_gen2 = present(Gen2)
 
-      D1 = sum(n * d1i)/totn
+      E = exp(-alpha * tau)
+      dEdT = - alpha * dtaudt * E
+      dEdT2 = -alpha * (dtaudt2 * E + dtaudt * dEdT)
 
-      if (solving_volume) return
+      do i=1,nc
+         xi(:, i)     = E(:, i) * b * tau(:, i) * n
+         eta(:, i)    = E(:, i) * b * tau(:, i)
+         theta(:, i)  = E(:, i) * b * n
+         omega(:, i)  = E(:, i) * b
 
-      do i = 1, nc
-         dD1i(i) = (d1i(i) - D1)/totn
-         do j = 1, nc
-            dD1ij(i, j) = (2 * D1 - d1i(i) - d1i(j))/totn**2
+         xiT(i)    = sum(b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i)))
+         etaT(:, i)   = b * (dEdT(:, i) * tau(:, i) + E(:, i) * dtaudt(:, i))
+         thetaT(i) = sum(dEdT(:, i) * b * n)
+         omegaT(:, i) = dEdT(:, i) * b
+
+         xiTT(i) = sum(&
+            b * n * &
+            (dEdT2(:, i) * tau(:, i) &
+            + 2 * dEdT(:, i) * dtaudt(:, i) &
+            + E(:, i) * dtaudt2(:, i)))
+         thetaTT(i) = sum(b * n * (dEdT2(:, i)))
+      end do
+
+      do i=1,nc
+         Dn(i) = sum(theta(:, i))
+      end do
+
+      ! ==============================================================
+      ! Calculate the excess Gibbs energy
+      ! It is also needed to calculate the derivatives wrt T
+      ! --------------------------------------------------------------
+      if (p_ge .or. p_get .or. p_get2) then
+         aux_Ge = 0
+         do i=1,nc
+            aux_Ge = aux_Ge + n(i) * sum(xi(:, i) / sum(theta(:, i)))
          end do
-      end do
-   end subroutine d1mix_rkpr
+      end if
 
-   subroutine lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
-      !! Infinite pressure limit parameter \(\Lambda\)
-      !!
-      !! \[
-      !! \Lambda = \frac{1}{\delta_1 + \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
-      !! \]
-      real(pr), intent(in) :: d1
-      real(pr), intent(in) :: dd1i(:)
-      real(pr), intent(in) :: dd1ij(:, :)
-      real(pr), intent(out) :: L
-      real(pr), intent(out) :: dLi(:)
-      real(pr), intent(out) :: dLij(:, :)
 
-      real(pr) :: f, g, h
-      real(pr), dimension(size(dd1i)) :: df, dg, dh
-      real(pr), dimension(size(dd1i), size(dd1i)) :: d2f, d2g, d2h
+      ! ==============================================================
+      ! Derivatives wrt number of moles
+      ! --------------------------------------------------------------
+      if (p_gen .or. p_gent) then
+         aux_Gen = 0.0
+         do i=1,nc
+            aux_Gen(i) = sum(xi(:, i)) / sum(theta(:, i))
+            do k=1,nc
+               aux_Gen(i) = aux_Gen(i) + n(k) * (&
+                  eta(i, k)/sum(theta(:, k)) &
+                  - omega(i, k) * sum(xi(:, k))/sum(theta(:,k))**2 &
+                  )
+            end do
+         end do
+      end if
 
-      integer :: i, j, nc
+      if (p_gen2) then
+         Gen2 = 0.0
+         do i=1,nc
+            do j=1,nc
+               Gen2(i, j) = &
+                  - omega(j, i) * sum(xi(:, i)) / sum(theta(:, i))**2 &
+                  - omega(i, j) * sum(xi(:, j)) / sum(theta(:, j))**2 &
+                  + eta(j, i) / sum(theta(:, i)) &
+                  + eta(i, j) / sum(theta(:, j))
 
-      nc = size(dd1i)
+               do k=1,nc
+                  denom = sum(theta(:, k))
+                  Gen2(i, j) = Gen2(i, j) + &
+                     2 * n(k) * omega(i, k) * omega(j, k) * sum(xi(:, k)) / denom**3 &
+                     - n(k) * omega(i, k) * eta(j, k) / denom**2 &
+                     - n(k) * omega(j, k) * eta(i, k) / denom**2
+               end do
+            end do
+         end do
+      end if
 
-      f = d1 + 1
-      g = (d1 + 1)*d1 + d1 - 1
-      h = log((d1+1)**2 / 2)
+      if (p_genT) then
+         do i=1,nc
+            aux_GeTn(i) = xiT(i)/Dn(i) - sum(xi(:, i)) * thetaT(i)/Dn(i)**2
+            do k=1,nc
+               aux_GeTn(i) = aux_GeTn(i) + n(k) * (&
+                  etaT(i, k)/Dn(k) - eta(i, k) * thetaT(k) / Dn(k)**2 &
+                  - (omega(i, k) * xiT(k) + omegaT(i, k) * sum(xi(:, k))) / Dn(k)**2 &
+                  + 2 * thetaT(k) * omega(i, k) * sum(xi(:, k)) / Dn(k)**3 &
+                  )
+            end do
+         end do
+      end if
 
-      L = f/g * h
+      ! ==============================================================
+      ! Derivatives wrt temperature
+      ! --------------------------------------------------------------
+      if (p_get .or. p_get2) then
+         aux_GeT = 0
+         do i=1,nc
+            aux_GeT = aux_GeT + n(i) * (xiT(i)/sum(theta(:, i)) - sum(xi(:, i))*(thetaT(i))/Dn(i)**2)
+         end do
+      end if
 
-      if (solving_volume) return
+      if (p_get2) then
+         GeT2 = 0
+         do i=1,nc
+            GeT2 = GeT2 + n(i) * (&
+               xiTT(i)/Dn(i) - 2*xiT(i)*thetaT(i)/Dn(i)**2 &
+               - sum(xi(:, i))*thetaTT(i)/Dn(i)**2 + 2*sum(xi(:, i))*thetaT(i)**2/Dn(i)**3)
+         end do
+      end if
 
-      df = dd1i
-      dg = 2*(d1 + 1)*dd1i
-      dh = 2 * dd1i/(d1 + 1)
+      if (present(Ge))   Ge   = aux_Ge * R * T
+      if (present(Gen))  Gen  = aux_Gen * R * T
+      if (present(GeTn)) GeTn = (R*T*aux_Gen)/T + R * T * aux_GeTn
+      if (present(Gen2)) Gen2 = Gen2 * R * T
+      if(present(GeT))   GeT  = aux_GeT * R * T + (aux_Ge * R * T) / T
+      if(present(Get2))  GeT2 = -(aux_Ge*R*T)/T**2 + (aux_GeT * R * T + (aux_Ge*R*T) / T)/T + R * aux_GeT + R*T * GeT2
+   end subroutine nrtl_hv_ge
 
-      dLi = f/g * dh - f*h*dg/g**2 + h * df/g
+   elemental subroutine nrtl_hv_tdep(T, gij, tau, dtaudt, dtaudt2)
+      !! Temperature dependent parameters for NRTL model
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: gij !! Interaction parameters
+      real(pr), intent(out) :: tau !! \(\tau\) matrix
+      real(pr), intent(out) :: dtaudt
+      !! First derivative of \(\tau\) with respect to temperature
+      real(pr), intent(out) :: dtaudt2
+      !! Second derivative of \(\tau\) with respect to temperature
 
-      do concurrent (i=1:nc, j=1:nc)
-         d2f(i, j) = dd1ij(i, j)
-         d2g(i, j) = 2*dd1ij(i, j)*(d1 + 1) + 2*dd1i(i)*dd1i(j)
-         d2h(i, j) = 2*(dd1ij(i, j)/(d1 + 1) - dd1i(i)*dd1i(j)/(d1 + 1)**2)
-      end do
+      tau = gij/(R*T)
+      dtaudt = -gij/(R*T**2)
+      dtaudt2 = 2*gij/(R*T**3)
+   end subroutine nrtl_hv_tdep
 
-      ! This derivative probably could be simplifyied
-      do concurrent (i=1:nc, j=1:nc)
-         dLij(i, j) = &
-            f * d2h(i,j)/g - &
-            f * h *d2g(i, j)/g**2 - &
-            f * dg(i) * dh(j)/g**2 - &
-            f * dg(j) * dh(i)/g**2 + &
-            2 * f * h * dg(i) * dg(j)/g**3 + &
-            h * d2f(i, j)/g + &
-            df(i)*dh(j)/g + &
-            df(j)*dh(i)/g - &
-            h * df(i)*dg(j)/g**2 - &
-            h * df(j) * dg(i)/g**2
-      end do
-   end subroutine lamdba_hv
-end module yaeos__models_ar_cubic_mixing_base
+   elemental subroutine nrtl_hv_tdep_linear(T, A, B, tau, dtaudt, dtaudt2)
+      !! Temperature dependent parameters for NRTL model
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: A !! Interaction parameters
+      real(pr), intent(in) :: B !! Interaction parameters
+      real(pr), intent(out) :: tau !! \(\tau\) matrix
+      real(pr), intent(out) :: dtaudt
+      !! First derivative of \(\tau\) with respect to temperature
+      real(pr), intent(out) :: dtaudt2
+      !! Second derivative of \(\tau\) with respect to temperature
+
+      tau = A + B/T
+      dtaudt = -B/(T**2)
+      dtaudt2 = 2*B/(T**3)
+   end subroutine nrtl_hv_tdep_linear
+end module yaeos__models_ge_base

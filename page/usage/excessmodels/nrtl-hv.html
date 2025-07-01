@@ -1,0 +1,321 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../../../favicon.png">
+
+    <title>NRTL-HV &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../../css/local.css" rel="stylesheet">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>NRTL-HV</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Gibbs Excess Models</a></li>
+              <li class="breadcrumb-item active" aria-current="page">NRTL-HV</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../index.html">Using yaeos</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link active disabled" href="nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="nrtl.html">NRTL</a>
+              <a class="nav-link" href="unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="uniquac.html">UNIQUAC</a>
+
+                </nav>
+              <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <h1 id="nrtl-hv">NRTL-HV</h1>
+<p>The NRLT model presented by Huron and Vidal is a variation of the original
+non-random two-liquid model. This variation is inteded to be used combined with
+cubic Equations of State, using the Huron-Vidal mixing rule.  The major
+difference with respect to the original NRTL model is that it includes the
+repulsive parameter of the cubic EoS in the expression for the excess Gibbs
+energy. This allows the model to be simplified to the classic Van der Waals
+1-fluid quadratic mixing rules when giving special values to the parameters.</p>
+<p>The general expression for the excess Gibbs energy is given by:</p>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+    \frac{G^E}{RT} = \sum\limits_i n_i 
+    \frac
+    {\sum\limits_j n_j b_j E_{j,i} \tau_{j,i}}
+    {\sum\limits_j n_j b_j E_{j, i}}
+\end{equation}</script>
+</p>
+<p>Where the parameters are defined as follows:</p>
+<p>
+<script type="math/tex; mode=display">\begin{align}
+    \tau_{j, i} & = \frac{g_{j,i} - g_{i,i}}{RT} \\
+    E_{j, i} &= \exp\left(-\alpha_{j, i} \tau_{j, i} \right)
+\end{align}</script>
+</p>
+<p>Where <script type="math/tex">g_{j,i}</script> is the interaction parameter between components <script type="math/tex">j</script> and <script type="math/tex">i</script>,
+which can be a function of temperature, and <script type="math/tex">\alpha_{j,i}</script> is the non-randomness
+parameters which is ussually symmetric with values between 0 and 0.5.</p>
+<h2 id="derivatives">Derivatives</h2>
+<p>In this section we present the first and second order derivatives of the excess
+Gibbs energy. To simplify the expressions we will define the following
+parameters:</p>
+<p>
+<script type="math/tex; mode=display">\begin{align}
+    \xi_{ji} & = E_{ji} \tau_{ji} b_j n_j \\
+    \theta{ji} & = {E_{ji} b_j n_j} \\
+    \Omega{ji} &= E_{ji} b_j \\
+    \eta_{ji} &= E_{ji} \tau_{ji} b_j
+\end{align}</script>
+</p>
+<p>With this definitions, the excess Gibbs energy can be rewritten as:</p>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+    \frac{G^E}{RT} = \sum\limits_i n_i \frac
+    {\sum\limits_j \xi_{j,i}}{\sum\limits_j \theta_{j,i}}
+\end{equation}</script>
+</p>
+<h3 id="compositional-derivatives">Compositional derivatives</h3>
+<p>The first order derivatives of the excess Gibbs energy with respect to the
+number of moles of component <script type="math/tex">i</script> are given by:</p>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+    \frac{1}{RT}\frac{dG^E}{dn_i} = \left(\sum_{i=1}^{NC} \frac{{E}_{k,i}
+    {\tau}_{k,i} {b}_{k} {n}_{i}}{\sum_{j=1}^{NC} {E}_{j,i} {b}_{j} {n}_{j}} +
+    \sum_{i=1}^{NC} - \frac{{E}_{k,i} {b}_{k} {n}_{i} \sum_{j=1}^{NC} {E}_{j,i}
+    {\tau}_{j,i} {b}_{j} {n}_{j}}{\left(\sum_{j=1}^{NC} {E}_{j,i} {b}_{j}
+    {n}_{j}\right)^{2}} + \frac{\sum_{j=1}^{NC} {E}_{j,k} {\tau}_{j,k} {b}_{j}
+    {n}_{j}}{\sum_{j=1}^{NC} {E}_{j,k} {b}_{j} {n}_{j}}\right)
+\end{equation}</script>
+</p>
+<p>Which can be rewritten in terms of the defined parameters as:</p>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+\frac{1}{RT}\frac{dG^E}{dn_i} =
+\frac{\sum\limits_l \xi_{l, i}}{\sum\limits_l \theta_{l, i}} 
++ \sum\limits_k n_k 
+\left(
+    \frac{\eta_{i, k}}{\sum\limits_l \theta_{l, k}} - \frac{\Omega_{i, k}
+    \sum\limits_l \xi_{l, k}}{\left(\sum\limits_l \theta_{l,k}\right)^2}
+\right)
+\end{equation}</script>
+</p>
+<p>The second order derivatives of the excess Gibbs energy with respect to the number of moles of components <script type="math/tex">i</script> and <script type="math/tex">j</script> are given by:</p>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+    \frac{1}{RT}\frac{dG^E}{dn_{ij}} = 
+    \begin{aligned}
+    - \frac{\Omega_{ji} \sum\limits_k{\xi_{ki}}}{\left(\sum\limits_k \theta_{ki}\right)^2}
+    - \frac{\Omega_{ij} \sum\limits_k \xi_{kj}}{\left(\sum\limits_k \theta_{kj}\right)^2}
+    + \frac{\eta_{ji}}{\sum\limits_k \theta_{ki}}
+    + \frac{\eta_{ij}}{\sum\limits_k \theta_{kj}}
+    + \sum\limits_k 
+    \left(
+        \frac{2 n_k \Omega_{ik} \Omega_{jk} \sum\limits_l \xi_{lk}}{\left(\sum\limits_l \theta_{lk}\right)^3}
+        - \frac{n_k \Omega_{ik} \eta_{jk}}{\left(\sum\limits_l \theta_{lk}\right)^2}
+        - \frac{n_k \Omega_{jk} \eta_{ik}}{\left(\sum\limits_l \theta_{lk}\right)^2}
+    \right)
+    \end{aligned}
+\end{equation}</script>
+</p>
+<h3 id="temperature-derivatives">Temperature derivatives</h3>
+<p>To simplify the equations, we present the derivatives of each variable as
+<script type="math/tex">x^T</script> for first order derivatives wrt to temperature and <script type="math/tex">x^{TT}</script> for
+second order derivatives.</p>
+<p>First derivative
+<script type="math/tex; mode=display">\begin{equation}
+    \frac{\partial G^E}{\partial T} = \frac{G^E}{T} + RT \sum\limits_i n_i \left( \frac{\sum\limits_j \xi^T_{j,i}}{\sum\limits_j \theta_{j, i}} - \frac{\sum\limits_j \xi_{j,i} \sum\limits_j \theta^T_{j,i}}{\left(\sum\limits_j{\theta_{j,i}}\right)^2}\right)
+\end{equation}</script>
+</p>
+<p>Second derivative</p>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+    \begin{aligned}
+    \frac{\partial^2 G^E}{\partial T^2} =& 
+    \left( -\frac{G^E}{T^2} + \frac{\frac{\partial G^E}{\partial T}}{T} \right) 
+    + R \sum\limits_i n_i \left( \frac{\sum\limits_j \xi^T_{j,i}}{\sum\limits_j \theta_{j, i}} - \frac{\sum\limits_j \xi_{j,i} \sum\limits_j \theta^T_{j,i}}{\left(\sum\limits_j{\theta_{j,i}}\right)^2}\right) \\
+    &+ RT \sum\limits_i n_i 
+    \left(
+        \frac{\sum\limits_j \xi_{j,i}^{TT}}{\sum\limits_j \theta_{j,i}} - \frac{\sum\limits_j \xi^{T}_{j,i} \sum\limits_j \theta^T_{j,i}}{\left(\sum\limits_j{\theta_{j,i}}\right)^2}
+        - \left(
+            \frac{\sum\limits_j \xi^T_{j,i}\sum\limits_j\theta^T_{j,i} + \sum\limits_j\xi_{j,i}\sum\limits_j\theta^{TT}_{j,i}}{\left(\sum\limits_j \theta_{j,i}\right)^2} \right. \right. \\
+        & \left. \left. 
+            - 2 \frac{\left(\sum\limits_j\theta^T_{j,i}\right)^2 \sum\limits_j\xi_{j,i}}{\left(\sum\limits_j \theta_{j,i}\right)^3}
+        \right)
+        \right)
+    \end{aligned}
+\end{equation}</script>
+</p>
+<h3 id="crossed-derivative">Crossed derivative</h3>
+<p>
+<script type="math/tex; mode=display">\begin{equation}
+\begin{aligned}
+    \frac{\partial G^E}{\partial n_i \partial T}  = & \\
+    & \frac{\frac{\partial G^E}{\partial n_i}}{T}  + RT \left( 
+       \frac{\sum\limits_l \xi_{l,i}^T}{\sum\limits_l\theta_{l,i}} - \sum\limits_l \xi_{l, i} \frac{\sum\limits_l \theta^T_{l,i}}{\left(\sum\limits_l\theta_{l,i}\right)^2} \right.\\
+    & + \sum\limits_k^{NC} n_k 
+    \left. \left[
+        \frac{\eta_{i,k}^T}{\sum\limits_l \theta_{l,k}} - \eta_{i,k}\frac{\sum\limits_l \theta^T_{l,k}}{\left(\sum\limits_l \theta_{l,k}\right)^2} 
+        - \left(
+            \frac{\Omega_{i,k} \sum\limits_l \xi_{l,k}^T + \Omega_{i, k}^T \sum\limits_l\xi_{l,k}}{\left(\sum\limits_l \theta_{l,k}\right)^2} 
+            - 2 \frac{\sum\limits_l \theta_{l,k}^T \Omega_{i,k} \sum\limits_l \xi_{l,k}}{\left(\sum\limits_l \theta_{l,k}\right)^3}
+        \right)
+    \right]
+    \right)
+\end{aligned}
+\end{equation}</script>
+</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-07-01 23:26 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

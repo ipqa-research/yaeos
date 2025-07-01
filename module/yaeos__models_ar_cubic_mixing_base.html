@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.8% of total for modules and submodules.">93 statements</a>
+                 title=" 1.1% of total for modules and submodules.">130 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -145,6 +145,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_mixing_base.html#proc-dmixhv">DmixHV</a>
             <a class="list-group-item" href="../module/yaeos__models_ar_cubic_mixing_base.html#proc-bmix_linear">bmix_linear</a>
             <a class="list-group-item" href="../module/yaeos__models_ar_cubic_mixing_base.html#proc-bmix_qmr">bmix_qmr</a>
             <a class="list-group-item" href="../module/yaeos__models_ar_cubic_mixing_base.html#proc-d1mix_rkpr">d1mix_rkpr</a>
@@ -207,6 +208,391 @@ Keeping it simple and accesible.</p>
         <section>
           <h2>Subroutines</h2>
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-dmixhv"></span> <h3>public  subroutine <a href='../proc/dmixhv.html'>DmixHV</a>(n, T, bi, B, dBi, dBij, D1, dD1i, dD1ij, ai, daidt, daidt2, Ge, GeT, GeT2, Gen, GeTn, Gen2, D, dDdT, dDdT2, dDi, dDidT, dDij)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~38"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~42"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bi~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bi</strong>(:)</td>
+            <td>
+<p>Covolume parameter</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>B</strong></td>
+            <td>
+<p>mixture covolume parameter</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbi~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbij~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D1</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1i~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1ij~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1ij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ai~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ai</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt2~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt2</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ge~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ge</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-get~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GeT</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-get2~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GeT2</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gen~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gen</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-getn~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>GeTn</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gen2~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gen2</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddt~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdT</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddt2~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdT2</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddi~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddidt~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDidT</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddij~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-bmix_linear"></span> <h3>public pure subroutine <a href='../proc/bmix_linear.html'>bmix_linear</a>(n, bi, b, dbi, dbij)  
 </h3></div>
     <div class="card-body">
@@ -226,7 +612,7 @@ Keeping it simple and accesible.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~71"></span>
+              <span class="anchor" id="variable-n~35"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -241,7 +627,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~9"></span>
+              <span class="anchor" id="variable-bi~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -256,7 +642,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~15"></span>
+              <span class="anchor" id="variable-b~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -271,7 +657,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbi~5"></span>
+              <span class="anchor" id="variable-dbi"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -286,7 +672,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbij~5"></span>
+              <span class="anchor" id="variable-dbij"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -326,7 +712,7 @@ Keeping it simple and accesible.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~72"></span>
+              <span class="anchor" id="variable-n~36"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -341,7 +727,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~10"></span>
+              <span class="anchor" id="variable-bi~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -356,7 +742,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lij~7"></span>
+              <span class="anchor" id="variable-lij"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -371,7 +757,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~16"></span>
+              <span class="anchor" id="variable-b~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -386,7 +772,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbi~6"></span>
+              <span class="anchor" id="variable-dbi~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -401,7 +787,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbij~6"></span>
+              <span class="anchor" id="variable-dbij~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -441,7 +827,7 @@ Keeping it simple and accesible.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~73"></span>
+              <span class="anchor" id="variable-n~37"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -456,7 +842,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1i~6"></span>
+              <span class="anchor" id="variable-d1i~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -471,7 +857,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1~8"></span>
+              <span class="anchor" id="variable-d1~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -486,7 +872,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1i~10"></span>
+              <span class="anchor" id="variable-dd1i~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -501,7 +887,7 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1ij~10"></span>
+              <span class="anchor" id="variable-dd1ij~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -522,7 +908,7 @@ Keeping it simple and accesible.</p>
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-lamdba_hv"></span> <h3>public  subroutine <a href='../proc/lamdba_hv.html'>lamdba_hv</a>(d1, dd1i, dd1ij, L, dLi, dLij)  
+    <div class="card-header codesum"><span class="anchor" id="proc-lamdba_hv"></span> <h3>public  subroutine <a href='../proc/lamdba_hv.html'>lamdba_hv</a>(nc, d1, dd1i, dd1ij, L, dLi, dLij)  
 </h3></div>
     <div class="card-body">
           
@@ -542,7 +928,22 @@ Keeping it simple and accesible.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1~7"></span>
+              <span class="anchor" id="variable-nc~27"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -557,37 +958,37 @@ Keeping it simple and accesible.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1i~2"></span>
+              <span class="anchor" id="variable-dd1i"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>dd1i</strong>(:)</td>
+            <td><strong>dd1i</strong>(nc)</td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1ij~2"></span>
+              <span class="anchor" id="variable-dd1ij"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>dd1ij</strong>(:,:)</td>
+            <td><strong>dd1ij</strong>(nc,nc)</td>
             <td>
 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~2"></span>
+              <span class="anchor" id="variable-l"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -605,12 +1006,12 @@ Keeping it simple and accesible.</p>
               <span class="anchor" id="variable-dli"></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>dLi</strong>(:)</td>
+            <td><strong>dLi</strong>(nc)</td>
             <td>
 
             </td>
@@ -620,12 +1021,12 @@ Keeping it simple and accesible.</p>
               <span class="anchor" id="variable-dlij"></span>
               real(kind=pr),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>dLij</strong>(:,:)</td>
+            <td><strong>dLij</strong>(nc,nc)</td>
             <td>
 
             </td>
@@ -660,7 +1061,7 @@ Keeping it simple and accesible.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-06-30 17:52 +0000             </p>
+ on 2025-07-01 23:26 +0000             </p>
           </div>
         </div>
         <br>
