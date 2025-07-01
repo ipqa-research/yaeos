@@ -111,6 +111,7 @@ contains
       call model_kij%set_mixrule(mixrule)
       call model_kij%residual_helmholtz(n, V, T, Ar=Ar2)
 
-      print *, Ar1, Ar2
+      call assert(abs(Ar1- Ar2) < 1e-10, &
+         "Huron-Vidal mixing rule: Ar must match with the one calculated with QMR")
    end subroutine test_kij
 end program main
