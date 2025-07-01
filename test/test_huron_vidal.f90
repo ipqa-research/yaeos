@@ -2,7 +2,7 @@ program main
    use yaeos, only: pr, CubicEoS
    use fixtures_models, only: binary_NRTL_SRK_HV
    use auxiliar_functions, only: allclose
-   use testing_aux, only: test_ok, test_title
+   use testing_aux, only: test_title, assert
 
    integer, parameter :: nc = 2
    real(pr) :: test_tol = 1e-7
@@ -51,7 +51,7 @@ program main
       "Huron-Vidal Mixing Rule: dDi does not match expected value")
    call assert(allclose(dDidT, test_dDidT, test_tol), &
       "Huron-Vidal Mixing Rule: dDidT does not match expected value")
-   call assert(allclose(dDij, test_dDij, test_tol), &
+   call assert(allclose([dDij], [test_dDij], test_tol), &
       "Huron-Vidal Mixing Rule: dDij does not match expected value")
 
    ! Below are the numerical derivatives used to generate the test values 
