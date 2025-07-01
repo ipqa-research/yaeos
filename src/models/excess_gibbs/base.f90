@@ -207,6 +207,6 @@ contains
 
       tau = A + B/T
       dtaudt = -B/(T**2)
-      dtaudt2 = 2*B/(R*T**3)
+      dtaudt2 = 2*B/(T**3)
    end subroutine nrtl_hv_tdep_linear
 end module yaeos__models_ge_base
