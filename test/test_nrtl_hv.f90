@@ -1,18 +1,22 @@
 program main
+   use testing_aux, only: test_title, assert
    use yaeos, only: pr, R
-   use yaeos__consistency_gemodel, only: numeric_ge_derivatives
+   use yaeos__models_ge_base, only: nrtl_hv_ge, nrtl_hv_tdep
+   use yaeos__models_ge_nrtlhv, only: NRTLHV
    use hyperdual_mod
    implicit none
 
    integer, parameter :: nc = 3
    real(pr) :: n(nc), T, Ge, Gen(nc), GenT(nc), dgendn_num(nc), Gen2(nc, nc), dgendn2(nc, nc), GeT, GeT2
-
-   real(pr) :: alpha(nc, nc), b(nc), gij(nc, nc)
+   real(pr) :: alpha(nc, nc), b(nc), gij(nc, nc), tau(nc, nc), dtaudt(nc, nc), dtaudt2(nc, nc)
+   real(pr) :: adiff_ge, adiff_get, adiff_get2, adiff_gen(nc), adiff_gent(nc), adiff_gen2(nc, nc)
 
    type(hyperdual) :: t_hd, n_hd(nc), ge_hdv
+   type(NRTLHV) :: model
 
+   integer :: i, j
 
-   integer :: i
+   write(*, *) test_title("NRTL-HV model")
 
    gij = reshape([ &
       0.0, 0.1, 0.2, &
@@ -24,188 +28,69 @@ program main
       1.6, 1.7, 0.0], [nc, nc])
 
    b = [0.1, 0.2, 0.3]
-   n = [0.1, 0.3, 0.5]
-   T = 250.0
 
-   dgendn_num = dgedn(n, T)
-   dgendn2 = dgedn2(n, T)
-   call excess_gibbs(n, T, Ge, Gen, GeT, GeT2, GenT, Gen2)
+   model = NRTLHV(gij=gij, alpha=alpha, b=b)
+
+   n = [0.1, 0.3, 0.5]
+   T = 350.0
+
+
    n_hd = n
    t_hd = t
    t_hd%f1 = 1._pr
    t_hd%f2 = 1._pr
    ge_hdv = ge_hd(n_hd, t_hd)
-   print *, "Excess Gibbs Energy Function:", ge_f(n, T)
-   print *, "Excess Gibbs Energy:", Ge
-   print *, "Excess Gibbs Energy Derivative:", Gen
-   print *, "Numerical Derivative of Excess Gibbs Energy:", dgendn_num
+   
+   adiff_ge = ge_hdv%f0
+   adiff_get = ge_hdv%f1
+   adiff_get2 = ge_hdv%f12
 
-   ! print *, "Anal:"
-   ! do i=1,nc
-   !    print *, Gen2(i, :)
-   ! end do
+   do i=1,nc
+      n_hd = n
+      t_hd = t
+      n_hd(i)%f1 = 1._pr
+      t_hd%f2 = 1._pr
+      ge_hdv = ge_hd(n_hd, t_hd)
+      adiff_gen(i) = ge_hdv%f1
+      adiff_gent(i) = ge_hdv%f12
+   end do
 
-   ! print *, "Numd:"
-   ! do i=1,nc
-   !    print *, dgendn2(i, :)
-   ! end do
+   do i=1,nc
+      do j=1,nc
+         n_hd = n
+         t_hd = t
+         n_hd(i)%f1 = 1._pr
+         n_hd(j)%f2 = 1._pr
+         ge_hdv = ge_hd(n_hd, t_hd)
+         adiff_gen2(i, j) = ge_hdv%f12
+      end do
+   end do
 
-   print *, "GenT:    ", GenT
-   print *, "numGenT: ", dgednt(n, T)
-   print *, "Hyperdual Ge GeT and GeT2:", ge_hdv
-   print *, "Analyitic Ge GeT and GeT2:", Ge, GeT, GeT2
-
+   call model%excess_gibbs(n, T, Ge, GeT, GeT2, Gen, GenT, Gen2)
+   call assert(abs(Ge - adiff_ge) < 1e-6, "Excess Gibbs energy")
+   call assert(abs(GeT - adiff_get) < 1e-6, "Excess Gibbs energy derivative wrt T")
+   call assert(abs(GeT2 - adiff_get2) < 1e-6, "Excess Gibbs energy 2nd derivative wrt T")
+   call assert(all(abs(Gen - adiff_gen) < 1e-6), "Excess Gibbs energy derivative wrt n")
+   call assert(all(abs(GenT - adiff_gent) < 1e-6), "Excess Gibbs energy derivative wrt T and n")
+   call assert(all(abs(Gen2 - adiff_gen2) < 1e-6), "Excess Gibbs energy second derivative wrt n")
+   
+   call model%excess_gibbs(n, T, Ge)
+   call assert(abs(Ge - adiff_ge) < 1e-6, "Excess Gibbs energy alone: Individual call")
+   
+   call model%excess_gibbs(n, T, GeT=GeT)
+   call assert(abs(GeT - adiff_get) < 1e-6, "Excess Gibbs energy derivative wrt T: Individual call")
+   
+   call model%excess_gibbs(n, T, GeT2=GeT2)
+   call assert(abs(GeT2 - adiff_get2) < 1e-6, "Excess Gibbs energy 2nd derivative wrt T: Individual call")
+   
+   call model%excess_gibbs(n, T, Gen=Gen)
+   call assert(all(abs(Gen - adiff_gen) < 1e-6), "Excess Gibbs energy derivative wrt n: Individual call")
+   call model%excess_gibbs(n, T, GeTn=GenT)
+   call assert(all(abs(GenT - adiff_gent) < 1e-6), "Excess Gibbs energy derivative wrt T and n: Individual call")
+   call model%excess_gibbs(n, T, Gen2=Gen2)
+   call assert(all(abs(Gen2 - adiff_gen2) < 1e-6), "Excess Gibbs energy second derivative wrt n: Individual call")
 
 contains
-   subroutine excess_gibbs(n, T, Ge, Gen, GeT, GeT2, GenT, Gen2)
-      real(pr), intent(in) :: n(:), T
-      real(pr), intent(out) :: Ge, Gen(:), GeT, GeT2, GenT(:), Gen2(:, :)
-
-      real(pr) :: E(nc, nc), U, D
-      real(pr) :: dEdT(nc, nc), dEdT2(nc, nc)
-
-      real(pr) :: T1(nc), T2(nc), T3(nc), Dn(nc)
-
-      real(pr) :: xi(nc, nc), theta(nc, nc), omega(nc, nc), eta(nc, nc)
-      real(pr) :: xiT(nc), etaT(nc, nc), thetaT(nc), omegaT(nc, nc)
-      real(pr) :: xiTT(nc), thetaTT(nc)
-
-      real(pr) :: tau(nc, nc), dtaudt(nc, nc), dtaudt2(nc, nc)
-      real(pr) :: denom, aux_GeT
-
-      integer :: i, j, k, l
-
-      real(pr) :: dT1dn(nc, nc), dDndn(nc, nc)
-      real(pr) :: tau1(nc, nc)
-      integer :: m
-
-      call tdep(T, gij, tau, dtaudt, dtaudt2)
-
-      E = exp(-alpha * tau)
-      dEdT = - alpha * dtaudt * E
-      dEdT2 = -alpha * (dtaudt2 * E + dtaudt * dEdT)
-
-      do i=1,nc
-         xi(:, i)     = E(:, i) * b * tau(:, i) * n
-         eta(:, i)    = E(:, i) * b * tau(:, i)
-         theta(:, i)  = E(:, i) * b * n
-         omega(:, i)  = E(:, i) * b
-
-         xiT(i)    = sum(b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i)))
-         etaT(:, i)   = b * (dEdT(:, i) * tau(:, i) + E(:, i) * dtaudt(:, i))
-         thetaT(i) = sum(dEdT(:, i) * b * n)
-         omegaT(:, i) = dEdT(:, i) * b
-
-         xiTT(i) = sum(b * n * (dEdT2(:, i) * tau(:, i) + 2 * dEdT(:, i) * dtaudt(:, i) + E(:, i) * dtaudt2(:, i)))
-         thetaTT(i) = sum(b * n * (dEdT2(:, i)))
-      end do
-
-      Ge= 0
-      Gen = 0
-
-      do i=1,nc
-         U = 0
-         D = 0
-         do j=1,nc
-            U = U + n(j) * b(j) * E(j, i) * tau(j, i)
-            D = D + n(j) * b(j) * E(j, i)
-         end do
-         Ge = Ge + n(i) * U/D
-      end do
-
-
-      do i=1,nc
-         Dn(i) = sum(theta(:, i))
-         T1(i) = sum(xi(:, i))
-      end do
-
-      Gen = 0.0
-      do i=1,nc
-         Gen(i) = sum(xi(:, i)) / sum(theta(:, i))
-         do k=1,nc
-            Gen(i) = Gen(i) + n(k) * (&
-               eta(i, k)/sum(theta(:, k)) &
-               - omega(i, k) * sum(xi(:, k))/sum(theta(:,k))**2 &
-               )
-         end do
-      end do
-
-      Gen2 = 0.0
-      do i=1,nc
-         do j=1,nc
-            Gen2(i, j) = &
-               - omega(j, i) * sum(xi(:, i)) / sum(theta(:, i))**2 &
-               - omega(i, j) * sum(xi(:, j)) / sum(theta(:, j))**2 &
-               + eta(j, i) / sum(theta(:, i)) &
-               + eta(i, j) / sum(theta(:, j))
-
-            do k=1,nc
-               denom = sum(theta(:, k))
-               Gen2(i, j) = Gen2(i, j) + &
-                  2 * n(k) * omega(i, k) * omega(j, k) * sum(xi(:, k)) / denom**3 &
-                  - n(k) * omega(i, k) * eta(j, k) / denom**2 &
-                  - n(k) * omega(j, k) * eta(i, k) / denom**2
-            end do
-         end do
-      end do
-
-      GenT = 0.0
-      do i=1,nc
-         GenT(i) = xiT(i)/Dn(i) - sum(xi(:, i)) * thetaT(i)/Dn(i)**2
-         do k=1,nc
-            GenT(i) = GenT(i) + n(k) * (&
-               etaT(i, k)/Dn(k) - eta(i, k) * thetaT(k) / Dn(k)**2 &
-               - (omega(i, k) * xiT(k) + omegaT(i, k) * sum(xi(:, k))) / Dn(k)**2 &
-               + 2 * thetaT(k) * omega(i, k) * sum(xi(:, k)) / Dn(k)**3 &
-               )
-         end do
-      end do
-
-      Ge = Ge * R * T
-      Gen = Gen * R * T
-      GenT = Gen/T + R * T * GenT
-      Gen2 = Gen2 * R * T
-
-      aux_GeT = 0
-      do i=1,nc
-         aux_GeT = aux_GeT + n(i) * (xiT(i)/sum(theta(:, i)) - sum(xi(:, i))*(thetaT(i))/Dn(i)**2)
-      end do
-
-      GeT2 = 0
-      do i=1,nc
-         GeT2 = GeT2 + n(i) * (xiTT(i)/Dn(i) - 2*xiT(i)*thetaT(i)/Dn(i)**2 - sum(xi(:, i))*thetaTT(i)/Dn(i)**2 + 2*sum(xi(:, i))*thetaT(i)**2/Dn(i)**3)
-      end do
-      
-      GeT = aux_GeT * R * T + Ge / T
-      
-      GeT2 = -Ge/T**2 + GeT/T + R * aux_GeT + R*T * GeT2
-   end subroutine excess_gibbs
-
-   real(pr) function ge_f(n, T)
-      real(pr), intent(in) :: n(:), T
-
-      real(pr) :: E(nc, nc), U, D
-      real(pr) :: tau(nc, nc), dtaudt(nc, nc), dtaudt2(nc, nc)
-
-      integer :: i, j
-
-      call tdep(T, gij, tau, dtaudt, dtaudt2)
-      E = exp(-alpha * tau)
-
-      ge_f = 0
-      do i=1,nc
-         U = 0
-         D = 0
-         do j=1,nc
-            U = U + n(j) * b(j) * E(j, i) * tau(j, i)
-            D = D + n(j) * b(j) * E(j, i)
-         end do
-         ge_f = ge_f + n(i) * U/D
-      end do
-
-      ge_f = ge_f * R * T
-   end function ge_f
-
    type(hyperdual) function ge_hd(n, T)
       type(hyperdual), intent(in) :: n(:), T
 
@@ -240,118 +125,6 @@ contains
 
       ge_hd = ge_hd * R * T
    end function ge_hd
-
-   function dgedn(n, T)
-      real(pr), intent(in) :: n(:), T
-      real(pr) :: dgedn(size(n))
-
-      real(pr) :: dx(size(n))
-
-      integer :: i
-
-      do i=1,size(n)
-         dx = 0.0
-         dx(i) = 1e-4
-         dgedn(i) = (ge_f(n + dx, T) - ge_f(n - dx, T)) / (2 * dx(i))
-      end do
-   end function dgedn
-
-   function dgedn2(n, T)
-      real(pr), intent(in) :: n(:), T
-      real(pr) :: dgedn2(size(n), size(n))
-      real(pr) :: dx(size(n)), eps
-      integer :: i, j
-
-      real(pr) :: f, f1, f2, f3, f4, f5, f6
-
-      f = ge_f(n, T)
-      eps = 1e-6
-      do i=1,nc
-         do j=1,nc
-            dx = 0
-            dx(i) = eps
-            dx(j) = eps
-            f1 = ge_f(n + dx, T)
-
-            dx(i) = eps
-            dx(j) = 0
-            f2 = ge_f(n + dx, T)
-
-            dx(i) = 0
-            dx(j) = eps
-            f3 = ge_f(n + dx, T)
-
-            dx(i) = -eps
-            dx(j) = 0
-            f4 = ge_f(n + dx, T)
-
-            dx(i) = 0
-            dx(j) = -eps
-            f5 = ge_f(n + dx, T)
-
-            dx(i) = -eps
-            dx(j) = -eps
-            f6 = ge_f(n + dx, T)
-            dgedn2(i, j) = (f1 - f2 - f3 + 2*f - f4 - f5 + f6) / (2 * eps**2)
-         end do
-
-         dx = 0
-         dx(i) = 1e-2
-         f1 = ge_f(n + dx, T)
-         f2 = ge_f(n - dx, T)
-
-         dgendn2(i, i) = (f1 - 2*f + f2) / (dx(i)**2)
-      end do
-
-   end function dgedn2
-
-   function dgednt(n, T)
-      real(pr), intent(in) :: n(:), T
-      real(pr) :: dgednt(size(n))
-      real(pr) :: dx(size(n)), eps
-      integer :: i, j
-
-      real(pr) :: f, f1, f2, f3, f4, f5, f6, dt
-
-      f = ge_f(n, T)
-      eps = 1e-6
-      do i=1,nc
-         dx = 0
-         dx(i) = eps
-         dt = eps
-         f1 = ge_f(n + dx, T + dt)
-
-         dx(i) = eps
-         dt = 0
-         f2 = ge_f(n + dx, T + dt)
-
-         dx(i) = 0
-         dt = eps
-         f3 = ge_f(n + dx, T + dt)
-
-         dx(i) = -eps
-         dt = 0
-         f4 = ge_f(n + dx, T + dt)
-
-         dx(i) = 0
-         dt = -eps
-         f5 = ge_f(n + dx, T + dt)
-
-         dx(i) = -eps
-         dt = -eps
-         f6 = ge_f(n + dx, T + dt)
-         dgednt(i) = (f1 - f2 - f3 + 2*f - f4 - f5 + f6) / (2 * eps**2)
-      end do
-
-   end function dgednt
-
-   elemental subroutine tdep(T, U, f, df, df2)
-      real(pr), intent(in) :: T, U
-      real(pr), intent(out) :: f, df, df2
-      f = U/(R*T)
-      df = -U/(R*T**2)
-      df2 = 2*U/(R*T**3)
-   end subroutine tdep
 end program main
 
 
