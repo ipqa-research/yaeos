@@ -9,7 +9,7 @@ program main
 
    real(pr) :: alpha(nc, nc), b(nc), gij(nc, nc)
 
-   type(hyperdual) :: t_hd, n_hd(nc)
+   type(hyperdual) :: t_hd, n_hd(nc), ge_hdv
 
 
    integer :: i
@@ -25,11 +25,16 @@ program main
 
    b = [0.1, 0.2, 0.3]
    n = [0.1, 0.3, 0.5]
-   T = 150.0
+   T = 250.0
 
    dgendn_num = dgedn(n, T)
    dgendn2 = dgedn2(n, T)
    call excess_gibbs(n, T, Ge, Gen, GeT, GeT2, GenT, Gen2)
+   n_hd = n
+   t_hd = t
+   t_hd%f1 = 1._pr
+   t_hd%f2 = 1._pr
+   ge_hdv = ge_hd(n_hd, t_hd)
    print *, "Excess Gibbs Energy Function:", ge_f(n, T)
    print *, "Excess Gibbs Energy:", Ge
    print *, "Excess Gibbs Energy Derivative:", Gen
@@ -47,11 +52,7 @@ program main
 
    print *, "GenT:    ", GenT
    print *, "numGenT: ", dgednt(n, T)
-   n_hd = n
-   t_hd = t
-   t_hd%f1 = 1._pr
-   t_hd%f2 = 1._pr
-   print *, "Hyperdual Ge GeT and GeT2:", ge_hd(n_hd, t_hd)
+   print *, "Hyperdual Ge GeT and GeT2:", ge_hdv
    print *, "Analyitic Ge GeT and GeT2:", Ge, GeT, GeT2
 
 
@@ -70,7 +71,7 @@ contains
       real(pr) :: xiTT(nc), thetaTT(nc)
 
       real(pr) :: tau(nc, nc), dtaudt(nc, nc), dtaudt2(nc, nc)
-      real(pr) :: denom
+      real(pr) :: denom, aux_GeT
 
       integer :: i, j, k, l
 
@@ -95,10 +96,7 @@ contains
          thetaT(i) = sum(dEdT(:, i) * b * n)
          omegaT(:, i) = dEdT(:, i) * b
 
-         xiTT(i) = sum ( b * n *  (&
-            (dEdT(:, i) * dtaudt(:, i) + dEdT(:, i) * dtaudt2(:, i)) &
-            + (E(:, i) * dtaudt2(:, i) + dEdT(:, i) * dtaudt(:, i)) &
-            ) )
+         xiTT(i) = sum(b * n * (dEdT2(:, i) * tau(:, i) + 2 * dEdT(:, i) * dtaudt(:, i) + E(:, i) * dtaudt2(:, i)))
          thetaTT(i) = sum(b * n * (dEdT2(:, i)))
       end do
 
@@ -168,24 +166,19 @@ contains
       GenT = Gen/T + R * T * GenT
       Gen2 = Gen2 * R * T
 
-      GeT = 0
+      aux_GeT = 0
       do i=1,nc
-         GeT = GeT + n(i) * (xiT(i)/sum(theta(:, i)) - sum(xi(:, i))*(thetaT(i))/Dn(i)**2)
+         aux_GeT = aux_GeT + n(i) * (xiT(i)/sum(theta(:, i)) - sum(xi(:, i))*(thetaT(i))/Dn(i)**2)
       end do
 
-      GeT2 = GeT
+      GeT2 = 0
       do i=1,nc
-         GeT2 = GeT2 + T * n(i) * (&
-            xiTT(i)/Dn(i) - xiT(i) * sum(thetaT(:, i))/Dn(i)**2 &
-            - xiT(i)*sum(thetaT(:, i))) + sum(xi(:, i)) * thetaTT(i))/Dn(i)**2 &
-            + 2 * sum(thetaT(:, i)**2  * sum(xi(:, i))) / Dn(i)**3 &
-         )
+         GeT2 = GeT2 + n(i) * (xiTT(i)/Dn(i) - 2*xiT(i)*thetaT(i)/Dn(i)**2 - sum(xi(:, i))*thetaTT(i)/Dn(i)**2 + 2*sum(xi(:, i))*thetaT(i)**2/Dn(i)**3)
       end do
-
-
-      GeT = GeT * R * T + Ge/T
-      GeT2 = R * (-Ge/T**2 + GeT/T) + R*GeT2
-
+      
+      GeT = aux_GeT * R * T + Ge / T
+      
+      GeT2 = -Ge/T**2 + GeT/T + R * aux_GeT + R*T * GeT2
    end subroutine excess_gibbs
 
    real(pr) function ge_f(n, T)
@@ -216,7 +209,7 @@ contains
    type(hyperdual) function ge_hd(n, T)
       type(hyperdual), intent(in) :: n(:), T
 
-      type(hyperdual) :: E(nc, nc), U, D
+      type(hyperdual) :: E(nc, nc), U, D, xi(nc), theta(nc), xxi(nc, nc)
       type(hyperdual) :: tau(nc, nc)
 
       real(pr) :: tin
@@ -227,6 +220,12 @@ contains
       ! call tdep(Tin, gij, tau, dtaudt)
       tau = gij/(R*T)
       E = exp(-alpha * tau)
+
+      do i=1,nc
+         xxi(:, i)     = E(:, i) * b * tau(:, i) * n
+         xi(i)     = sum(E(:, i) * b * tau(:, i) * n)
+         theta(i)  = sum(E(:, i) * b * n)
+      end do
 
       ge_hd = 0._pr
       do i=1,nc
