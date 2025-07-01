@@ -66,7 +66,7 @@ contains
       real(pr) :: T1(nc), T2(nc), T3(nc), Dn(nc)
 
       real(pr) :: xi(nc, nc), theta(nc, nc), omega(nc, nc), eta(nc, nc)
-      real(pr) :: xiT(nc, nc), etaT(nc, nc), thetaT(nc, nc), omegaT(nc, nc)
+      real(pr) :: xiT(nc), etaT(nc, nc), thetaT(nc), omegaT(nc, nc)
       real(pr) :: xiTT(nc), thetaTT(nc)
 
       real(pr) :: tau(nc, nc), dtaudt(nc, nc), dtaudt2(nc, nc)
@@ -90,9 +90,9 @@ contains
          theta(:, i)  = E(:, i) * b * n
          omega(:, i)  = E(:, i) * b
 
-         xiT(:, i)    = b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i))
+         xiT(i)    = sum(b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i)))
          etaT(:, i)   = b * (dEdT(:, i) * tau(:, i) + E(:, i) * dtaudt(:, i))
-         thetaT(:, i) = dEdT(:, i) * b * n
+         thetaT(i) = sum(dEdT(:, i) * b * n)
          omegaT(:, i) = dEdT(:, i) * b
 
          xiTT(i) = sum ( b * n *  (&
@@ -153,12 +153,12 @@ contains
 
       GenT = 0.0
       do i=1,nc
-         GenT(i) = sum(xiT(:, i))/Dn(i) - sum(xi(:, i)) * sum(thetaT(:, i))/Dn(i)**2
+         GenT(i) = xiT(i)/Dn(i) - sum(xi(:, i)) * thetaT(i)/Dn(i)**2
          do k=1,nc
             GenT(i) = GenT(i) + n(k) * (&
-               etaT(i, k)/Dn(k) - eta(i, k) * sum(thetaT(:, k)) / Dn(k)**2 &
-               - (omega(i, k) * sum(xiT(:, k)) + omegaT(i, k) * sum(xi(:, k))) / Dn(k)**2 &
-               + 2 * sum(thetaT(:, k)) * omega(i, k) * sum(xi(:, k)) / Dn(k)**3 &
+               etaT(i, k)/Dn(k) - eta(i, k) * thetaT(k) / Dn(k)**2 &
+               - (omega(i, k) * xiT(k) + omegaT(i, k) * sum(xi(:, k))) / Dn(k)**2 &
+               + 2 * thetaT(k) * omega(i, k) * sum(xi(:, k)) / Dn(k)**3 &
                )
          end do
       end do
@@ -170,14 +170,14 @@ contains
 
       GeT = 0
       do i=1,nc
-         GeT = GeT + n(i) * (sum(xiT(:, i))/sum(theta(:, i)) - sum(xi(:, i))*sum(thetaT(:,i))/Dn(i)**2)
+         GeT = GeT + n(i) * (xiT(i)/sum(theta(:, i)) - sum(xi(:, i))*(thetaT(i))/Dn(i)**2)
       end do
 
       GeT2 = GeT
       do i=1,nc
          GeT2 = GeT2 + T * n(i) * (&
-            xiTT(i)/Dn(i) - sum(xiT(:, i)) * sum(thetaT(:, i))/Dn(i)**2 &
-            - (sum(xiT(:, i)*sum(thetaT(:, i))) + sum(xi(:, i)) * thetaTT(i))/Dn(i)**2 &
+            xiTT(i)/Dn(i) - xiT(i) * sum(thetaT(:, i))/Dn(i)**2 &
+            - xiT(i)*sum(thetaT(:, i))) + sum(xi(:, i)) * thetaTT(i))/Dn(i)**2 &
             + 2 * sum(thetaT(:, i)**2  * sum(xi(:, i))) / Dn(i)**3 &
          )
       end do
