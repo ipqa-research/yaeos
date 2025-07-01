@@ -222,7 +222,7 @@ contains
          end do
 
          ! If the point did not converge, stop the calculation
-         if (any(isnan(F)) .or. its > max_iterations) exit
+         if (any(isnan(F)) .or. its > max_iterations .or. abs(dS) < 1e-14) exit
 
          ! Save the information of the converged point
          call get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, T, alpha)
