@@ -251,3 +251,52 @@ class HV(CubicMixRule):
             ID of the cubic EoS model
         """
         yaeos_c.set_hv(ar_model_id, self.ge.id)
+
+
+class HVNRTL(CubicMixRule):
+    """Huron-Vidal mixing rule using an NRTL model.
+
+    Huron Vidal mixing rule coupled with the excess Gibbs energy model defined
+    by Huron-Vidal. This model can use the classic VdW1f mixing rules kij
+    parameters when desired.
+
+    Parameters
+    ----------
+    alpha : matrix_like
+        NRTL alpha parameters matrix
+    gji : matrix_like
+        NRTL gij parameters matrix
+    use_kij : matrix_like
+        Boolean matrix indicating whether to use kij parameters
+    kij : matrix_like
+        kij binary interaction parameters matrix
+
+    Attributes
+    ----------
+    alpha : matrix_like
+        NRTL alpha parameters matrix
+    gji : matrix_like
+        NRTL gij parameters matrix
+    use_kij : matrix_like
+        Boolean matrix indicating whether to use kij parameters
+    kij : matrix_like
+        kij binary interaction parameters matrix
+    """
+
+    def __init__(self, alpha, gji, use_kij, kij) -> None:
+        self.alpha = alpha
+        self.gji = gji
+        self.use_kij = np.array(use_kij, order="F")
+        self.kij = np.array(kij, order="F")
+
+    def set_mixrule(self, ar_model_id: int) -> None:
+        """Set modified Huron-Vidal mix rule method.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
+        yaeos_c.set_hvnrtl(
+            ar_model_id, self.alpha, self.gji, self.use_kij, self.kij
+        )

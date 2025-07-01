@@ -10,6 +10,7 @@ program main
    real(pr) :: n(nc), T, Ge, Gen(nc), GenT(nc), dgendn_num(nc), Gen2(nc, nc), dgendn2(nc, nc), GeT, GeT2
    real(pr) :: alpha(nc, nc), b(nc), gij(nc, nc), tau(nc, nc), dtaudt(nc, nc), dtaudt2(nc, nc)
    real(pr) :: adiff_ge, adiff_get, adiff_get2, adiff_gen(nc), adiff_gent(nc), adiff_gen2(nc, nc)
+   real(pr) :: kij(nc, nc)
 
    type(hyperdual) :: t_hd, n_hd(nc), ge_hdv
    type(NRTLHV) :: model
@@ -33,7 +34,6 @@ program main
 
    n = [0.1, 0.3, 0.5]
    T = 350.0
-
 
    n_hd = n
    t_hd = t

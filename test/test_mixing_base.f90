@@ -14,7 +14,7 @@ program main
    n = [9, 5, 2]
    d1i = [0.1_pr, 0.2_pr, 0.3_pr]
    call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
-   call lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
+   call lamdba_hv(size(n), d1, dd1i, dd1ij, L, dLi, dLij)
 
    dn = 0.0001_pr
    do i=1,nc
@@ -36,7 +36,7 @@ program main
    end do
 
    call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
-   call lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
+   call lamdba_hv(size(n), d1, dd1i, dd1ij, L, dLi, dLij)
 
 contains
 
@@ -44,7 +44,7 @@ contains
       real(pr), intent(in) :: n(:)
 
       call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
-      call lamdba_hv(d1, dd1i, dd1ij, Lval, dLi, dLij)
+      call lamdba_hv(size(n), d1, dd1i, dd1ij, Lval, dLi, dLij)
    end function
 
 end program

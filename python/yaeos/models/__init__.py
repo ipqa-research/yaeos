@@ -16,6 +16,8 @@ Yaeos models module. This module provides the following submodules:
     - Mixing rules: mixing rules for cubic EoS
         - QMR: cuadratic mixing rule
         - MHV: modified Huron-Vidal mixing rule
+        - HV: Huron-Vidal mixing rule
+        - HVNRTL: Huron-Vidal NRTL mixing rule
     - Multifluid EoS:
         - GERG2008: GERG2008 Residual contribution
 """
