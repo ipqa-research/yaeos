@@ -4,8 +4,6 @@ title: NRTL-HV
 
 # NRTL-HV
 
-\newcommand{\sum\limits}{\sum\limits}
-
 
 The NRLT model presented by Huron and Vidal is a variation of the original
 non-random two-liquid model. This variation is inteded to be used combined with
@@ -100,6 +98,10 @@ The second order derivatives of the excess Gibbs energy with respect to the numb
 \end{equation}
 
 ### Temperature derivatives
+
+To simplify the equations, we present the derivatives of each variable as
+\(x^T\) for first order derivatives wrt to temperature and \(x^{TT}\) for
+second order derivatives.
 
 First derivative
 \begin{equation}
