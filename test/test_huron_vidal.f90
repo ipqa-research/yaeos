@@ -39,21 +39,20 @@ program main
    daidt2 = daidt2*model%ac/Tc**2
 
    call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-   
-   if (.not. allclose([D], [test_D], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: D")
-   if (.not. allclose([dDdT], [test_dDdT], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDdT")
-   if (.not. allclose([dDdT2], [test_dDdT2], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDdT2")
-   if (.not. allclose([dDi], [test_dDi], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDi")
-   if (.not. allclose([dDidT], [test_dDidT], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDidT")
-   if (.not. allclose([dDij], [test_dDij], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDij")
 
-   write(*, *) test_ok("Huron-Vidal Mixing Rule")
+   call assert(allclose([D], [test_D], test_tol), &
+      "Huron-Vidal Mixing Rule: D does not match expected value")
+
+   call assert(allclose([dDdT], [test_dDdT], test_tol), &
+      "Huron-Vidal Mixing Rule: dDdT does not match expected value")
+   call assert(allclose([dDdT2], [test_dDdT2], test_tol), &
+      "Huron-Vidal Mixing Rule: dDdT2 does not match expected value")
+   call assert(allclose(dDi, test_dDi, test_tol), &
+      "Huron-Vidal Mixing Rule: dDi does not match expected value")
+   call assert(allclose(dDidT, test_dDidT, test_tol), &
+      "Huron-Vidal Mixing Rule: dDidT does not match expected value")
+   call assert(allclose(dDij, test_dDij, test_tol), &
+      "Huron-Vidal Mixing Rule: dDij does not match expected value")
 
    ! Below are the numerical derivatives used to generate the test values 
 
