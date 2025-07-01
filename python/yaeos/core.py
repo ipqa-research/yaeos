@@ -20,6 +20,9 @@ from yaeos.constants import root_kinds
 from warnings import warn
 
 
+MAX_POINTS_ENVELOPES = 1000000
+
+
 def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
     """Convert the the kinds of each phase to the corresponding value.
 
@@ -1524,7 +1527,7 @@ class ArModel(ABC):
         self,
         z,
         kind: str = "bubble",
-        max_points: int = 700,
+        max_points: int = MAX_POINTS_ENVELOPES,
         t0: float = 150.0,
         p0: float = 1.0,
         w0=None,
@@ -1544,7 +1547,7 @@ class ArModel(ABC):
             - "dew"
             - "liquid-liquid"
         max_points : int, optional
-            Envelope's maximum points to calculate (T, P), by default 700
+            Envelope's maximum points to calculate (T, P)
         t0 : float, optional
             Initial guess for temperature [K] for the saturation point of kind:
             `kind`, by default 150.0
@@ -1668,7 +1671,7 @@ class ArModel(ABC):
         zi,
         temperature,
         kind="bubble",
-        max_points=500,
+        max_points=MAX_POINTS_ENVELOPES,
         p0=10.0,
         w0=None,
         a0=1e-2,
@@ -1694,7 +1697,7 @@ class ArModel(ABC):
             - "bubble"
             - "dew"
         max_points : int, optional
-            Envelope's maximum points to calculate, by default 500
+            Envelope's maximum points to calculate.
         p0 : float, optional
             Initial guess for pressure [bar] for the saturation point of kind:
             `kind`, by default 10.0
@@ -1757,7 +1760,7 @@ class ArModel(ABC):
         zi,
         pressure,
         kind="bubble",
-        max_points=300,
+        max_points=MAX_POINTS_ENVELOPES,
         t0=150.0,
         a0=0.001,
         ns0=None,
@@ -1783,7 +1786,7 @@ class ArModel(ABC):
             - "bubble"
             - "dew"
         max_points : int, optional
-            Envelope's maximum points to calculate (P, X), by default 300
+            Envelope's maximum points to calculate (P, X).
         t0 : float, optional
             Initial guess for temperature [K] for the saturation point of kind:
             `kind`, by default 150.0
@@ -1853,7 +1856,7 @@ class ArModel(ABC):
         first_step=None,
         kinds_x=None,
         kind_w=None,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
     ) -> PTEnvelope:
         """
@@ -1891,7 +1894,7 @@ class ArModel(ABC):
         kind_w : str, optional
             Kind of the reference phase, by default None (will use "stable")
         max_points : int, optional
-            Maximum number of points to calculate, by default 1000
+            Maximum number of points to calculate
         stop_pressure : float, optional
             Stop at pressure above stop_pressure [bar], default 2500
         """
@@ -1934,7 +1937,7 @@ class ArModel(ABC):
         p0,
         specified_variable=None,
         first_step=None,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         kinds_x=None,
         kind_w=None,
     ) -> PXEnvelope:
@@ -1971,7 +1974,7 @@ class ArModel(ABC):
         first_step : float, optional
             Step for the specified variable, by default 0.1
         max_points : int, optional
-            Maximum number of points to calculate, by default 1000
+            Maximum number of points to calculate
         kinds_x : list, optional
             Kinds of the main phases, by default None (will use "stable")
             options can be - "stable", "liquid", "vapor"
@@ -2019,7 +2022,7 @@ class ArModel(ABC):
         beta_w=0,
         kinds_x=None,
         kind_w=None,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=1000,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
@@ -2086,7 +2089,7 @@ class ArModel(ABC):
         ds0,
         alpha0=0,
         beta_w=0,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         kinds_x=None,
         kind_w=None,
     ) -> PXEnvelope:
@@ -2191,7 +2194,7 @@ class ArModel(ABC):
         ds0,
         alpha0=0,
         beta_w=0,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         kinds_x=None,
         kind_w=None,
     ) -> TXEnvelope:
@@ -2259,7 +2262,7 @@ class ArModel(ABC):
         env1: PTEnvelope,
         env2: PTEnvelope,
         dbeta0=1e-5,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
     ) -> list:
         """Calculate PT phase envelopes from a DSP.
 
@@ -2277,7 +2280,7 @@ class ArModel(ABC):
         dbeta0 : float, optional
             initial step for the beta values, by default 1e-5
         max_points : int, optional
-            Maximum number of points to calculate, by default 1000
+            Maximum number of points to calculate
         """
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
@@ -2406,7 +2409,7 @@ class ArModel(ABC):
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
-                max_points=500,
+                max_points=MAX_POINTS_ENVELOPES,
             )
 
             dsp_2 = self.phase_envelope_px_mp(
@@ -2421,7 +2424,7 @@ class ArModel(ABC):
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
-                max_points=800,
+                max_points=MAX_POINTS_ENVELOPES,
             )
 
             dsps.append([dsp_1, dsp_2])
@@ -2434,7 +2437,7 @@ class ArModel(ABC):
         three_phase=True,
         dew_start=(500, 0.01),
         bubble_start=(200, 10),
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         delta_dew_2ph=0.01,
         delta_bub_2ph=0.01,
         delta_dsp_3ph=0.01,
@@ -2571,7 +2574,7 @@ class ArModel(ABC):
                             p0=pressure,
                             ns0=2 * len(z) + 2,
                             ds0=delta_dsp_3ph,
-                            max_points=1000,
+                            max_points=max_points,
                             stop_pressure=max([pressure * 2, stop_pressure]),
                         )
 
@@ -2584,7 +2587,7 @@ class ArModel(ABC):
                             p0=pressure,
                             ns0=2 * len(z) + 2,
                             ds0=delta_dsp_3ph,
-                            max_points=1000,
+                            max_points=max_points,
                             stop_pressure=max([pressure * 2, stop_pressure]),
                         )
 
@@ -2775,7 +2778,7 @@ class ArModel(ABC):
         t0=0,
         p0=0,
         stability_analysis=False,
-        max_points=1000,
+        max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
     ):
         """Critical Line calculation.

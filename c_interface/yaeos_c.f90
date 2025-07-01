@@ -21,7 +21,7 @@ module yaeos_c
    ! CubicEoS
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
    ! Mixing rules
-   public :: set_mhv, set_qmr, set_qmrtd, set_hv
+   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
    ! Multifluid equations
    public :: multifluid_gerg2008
 
@@ -359,6 +359,31 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_mhv
 
+   subroutine set_hvnrtl(ar_id, alpha, gji, use_kij, kij)
+      !! Huron-Vidal NRTL mixing rule
+      use yaeos, only: fHV_NRTL => HV_NRTL, init_hvnrtl, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: alpha(:, :)
+      real(c_double), intent(in) :: gji(:, :)
+      logical, intent(in) :: use_kij(:, :)
+      real(c_double), intent(in) :: kij(:, :)
+
+      type(fHV_NRTL) :: mixrule
+
+      ar_model = ar_models(ar_id)%model
+
+      select type(ar_model)
+       class is(CubicEoS)
+         mixrule = init_hvnrtl(b=ar_model%b, &
+            del1=ar_model%del1, alpha=alpha, gji=gji, use_kij=use_kij, &
+            kij=kij)
+         deallocate(ar_model%mixrule)
+         ar_model%mixrule = mixrule
+      end select
+
+      call move_alloc(ar_model, ar_models(ar_id)%model)
+   end subroutine set_hvnrtl
+
    subroutine set_hv(ar_id, ge_id)
       !! Huron-Vidal Mixing rule
       use yaeos, only: HV, CubicEoS
@@ -485,7 +510,7 @@ contains
       use yaeos, only: gerg_2008, GERG2008
       integer, intent(in) :: ids(:)
       integer(c_int), intent(out) :: id
-      
+
       integer :: i
       ar_model = gerg_2008(ids)
       call extend_ar_models_list(id)
@@ -1490,7 +1515,7 @@ contains
 
       integer(c_int), intent(out) :: iters(max_points)
       integer(c_int), intent(out) :: ns(max_points)
-     
+
       character(len=14), intent(out) :: main_kinds(max_points, np)
       character(len=14), intent(out) :: ref_kinds(max_points)
       real(c_double), intent(out) :: Pcs(max_points)
@@ -1699,7 +1724,7 @@ contains
          numeric = -1
       end select
    end subroutine convert_gerg_components
-   
+
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
       type(EquilibriumState) :: eq_state

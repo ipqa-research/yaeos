@@ -20,6 +20,7 @@ from yaeos.models.excess_gibbs import (
 from yaeos.models.residual_helmholtz.cubic_eos import (
     HV,
     MHV,
+    HVNRTL,
     PSRK,
     PengRobinson76,
     PengRobinson78,
@@ -50,6 +51,7 @@ __all__ = [
     "UNIQUAC",
     "MHV",
     "HV",
+    "HVNRTL",
 ]
 
 

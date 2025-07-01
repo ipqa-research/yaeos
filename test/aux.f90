@@ -7,25 +7,31 @@ module testing_aux
 
    character(len=*), parameter :: style_reset = char(27) // "[0m"
 
+   logical :: compact = .true.
+
 contains
 
    function test_title(str)
       character(*), intent(in) :: str
       character(100) :: test_title
-      test_title = underline_start // "TESTING: " // str // style_reset
-   end function
+      test_title = new_line("a") // underline_start // "TESTING: " // str // style_reset
+   end function test_title
 
    function test_ok(str)
       character(*), intent(in) :: str
       character(100) :: test_ok
-      test_ok = green_start // "OK: " // str // style_reset
-   end function
-   
+      if (compact) then
+         test_ok = green_start // "." // style_reset
+      else
+         test_ok = green_start // "OK: " // str // style_reset
+      end if
+   end function test_ok
+
    function test_notok(str)
       character(*), intent(in) :: str
       character(100) :: test_notok
       test_notok = red_start // "ERROR: " // str // style_reset
-   end function
+   end function test_notok
 
    subroutine assert(expr, test_name)
       logical, intent(in) :: expr
@@ -33,7 +39,11 @@ contains
       if (.not. expr) then
          error stop test_notok(test_name)
       else
-         print *, test_ok(test_name)
+         if (compact) then
+            write(*,  "(A)", advance="no") trim(test_ok(test_name))
+         else
+            write(*,  *) trim(test_ok(test_name))
+         end if
       end if
-   end subroutine
-end module
+   end subroutine assert
+end module testing_aux

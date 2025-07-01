@@ -107,26 +107,25 @@ contains
       end do
    end subroutine d1mix_rkpr
 
-   subroutine lamdba_hv(d1, dd1i, dd1ij, L, dLi, dLij)
+   subroutine lamdba_hv(nc, d1, dd1i, dd1ij, L, dLi, dLij)
       !! Infinite pressure limit parameter \(\Lambda\)
       !!
       !! \[
       !! \Lambda = \frac{1}{\delta_1 + \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
       !! \]
+      integer, intent(in) :: nc
       real(pr), intent(in) :: d1
-      real(pr), intent(in) :: dd1i(:)
-      real(pr), intent(in) :: dd1ij(:, :)
+      real(pr), optional, intent(in) :: dd1i(nc)
+      real(pr), optional, intent(in) :: dd1ij(nc, nc)
       real(pr), intent(out) :: L
-      real(pr), intent(out) :: dLi(:)
-      real(pr), intent(out) :: dLij(:, :)
+      real(pr), optional, intent(out) :: dLi(nc)
+      real(pr), optional, intent(out) :: dLij(nc, nc)
 
       real(pr) :: f, g, h
-      real(pr), dimension(size(dd1i)) :: df, dg, dh
-      real(pr), dimension(size(dd1i), size(dd1i)) :: d2f, d2g, d2h
+      real(pr), dimension(nc) :: df, dg, dh
+      real(pr), dimension(nc, nc) :: d2f, d2g, d2h
 
-      integer :: i, j, nc
-
-      nc = size(dd1i)
+      integer :: i, j
 
       f = d1 + 1
       g = (d1 + 1)*d1 + d1 - 1
@@ -134,7 +133,7 @@ contains
 
       L = f/g * h
 
-      if (solving_volume) return
+      if (solving_volume .or. .not. present(dLij)) return
 
       df = dd1i
       dg = 2*(d1 + 1)*dd1i
@@ -163,4 +162,65 @@ contains
             h * df(j) * dg(i)/g**2
       end do
    end subroutine lamdba_hv
+
+   subroutine DmixHV(n, T, &
+      bi, B, dBi, dBij, &
+      D1, dD1i, dD1ij, &
+      ai, daidt, daidt2, &
+      Ge, GeT, GeT2, Gen, GeTn, Gen2, &
+      D, dDdT, dDdT2, dDi, dDidT, dDij &
+      )
+      real(pr), intent(in) :: T, n(:)
+      real(pr), intent(in) :: bi(:) !! Covolume parameter
+      real(pr), intent(in) :: B !! mixture covolume parameter
+      real(pr), intent(in) :: dBi(:), dBij(:, :)
+      real(pr), intent(in) :: D1, dD1i(:), dD1ij(:, :)
+      real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
+      real(pr), intent(in) :: Ge, GeT, GeT2
+      real(pr), intent(in) :: Gen(:), GeTn(:), Gen2(:, :)
+      real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+
+      real(pr) :: f, fdt, fdt2, fdi(size(n)), fdit(size(n)), fdij(size(n), size(n))
+      real(pr) :: totn !! Total number of moles
+
+      integer :: i, j, nc
+      real(pr) :: L, dL(size(n)), dL2(size(n), size(n))
+
+      nc = size(n)
+      totn = sum(n)
+
+      call lamdba_hv(nc, D1, dD1i, dD1ij, L, dL, dL2)
+
+      f    = sum(n*ai/bi) - Ge/L
+      fdt  = sum(n*daidt/bi) - GeT/L
+      fdt2 = sum(n*daidt2/bi) - GeT2/L
+
+      fdi = ai/bi - (Gen/L - dL * Ge/L**2)
+      fdiT = daidt/bi - (GeTn/L - dL * GeT/L**2)
+
+      do concurrent(i=1:nc, j=1:nc)
+         fdij(i, j) = &
+            Ge * dL2(i, j) / L**2 &
+            - 2 * Ge * dL(i) * dL(j) / L**3 &
+            - Gen2(i, j) / L &
+            + Gen(i) * dL(j) / L**2 &
+            + Gen(j) * dL(i) / L**2
+      end do
+
+      dDi = B*fdi + f*dBi
+      dDidT = B*fdiT + fdT*dBi
+
+      D = f*B
+      dDdT = fdT*B
+      dDdT2 = fdT2*B
+      dDij = fdij
+
+      do i=1,nc
+         do j=1,nc
+            dDij(i, j) = dBi(j)*fdi(i) + B*fdij(j, i) + f*dBij(i, j) + fdi(j)*dBi(i)
+         end do
+      end do
+
+   end subroutine DmixHV
+
 end module yaeos__models_ar_cubic_mixing_base

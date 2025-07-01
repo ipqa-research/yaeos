@@ -2,7 +2,7 @@ program main
    use yaeos, only: pr, CubicEoS
    use fixtures_models, only: binary_NRTL_SRK_HV
    use auxiliar_functions, only: allclose
-   use testing_aux, only: test_ok, test_title
+   use testing_aux, only: test_title, assert
 
    integer, parameter :: nc = 2
    real(pr) :: test_tol = 1e-7
@@ -13,7 +13,7 @@ program main
    real(pr) :: test_dDidT(nc) = [-0.11932459578485301, -0.20145758095042413]
    real(pr) :: test_dDij(nc, nc) = reshape( &
       [26.205198410827229, 48.801394909170199, &
-       48.801394909170199,69.658285068205771 ], [nc, nc])
+      48.801394909170199,69.658285068205771 ], [nc, nc])
 
    real(pr) :: ai(nc), daidt(nc), daidt2(nc)
    real(pr) :: n(nc), T, Tr(nc), Tc(nc), dn(nc)
@@ -39,89 +39,79 @@ program main
    daidt2 = daidt2*model%ac/Tc**2
 
    call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-   
-   if (.not. allclose([D], [test_D], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: D")
-   if (.not. allclose([dDdT], [test_dDdT], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDdT")
-   if (.not. allclose([dDdT2], [test_dDdT2], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDdT2")
-   if (.not. allclose([dDi], [test_dDi], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDi")
-   if (.not. allclose([dDidT], [test_dDidT], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDidT")
-   if (.not. allclose([dDij], [test_dDij], test_tol)) error stop 1
-   write(*, *) test_ok("Huron-Vidal Mixing Rule: dDij")
 
-   write(*, *) test_ok("Huron-Vidal Mixing Rule")
+   call assert(allclose([D], [test_D], test_tol), &
+      "Huron-Vidal Mixing Rule: D does not match expected value")
 
-   ! Below are the numerical derivatives used to generate the test values 
+   call assert(allclose([dDdT], [test_dDdT], test_tol), &
+      "Huron-Vidal Mixing Rule: dDdT does not match expected value")
+   call assert(allclose([dDdT2], [test_dDdT2], test_tol), &
+      "Huron-Vidal Mixing Rule: dDdT2 does not match expected value")
+   call assert(allclose(dDi, test_dDi, test_tol), &
+      "Huron-Vidal Mixing Rule: dDi does not match expected value")
+   call assert(allclose(dDidT, test_dDidT, test_tol), &
+      "Huron-Vidal Mixing Rule: dDidT does not match expected value")
+   call assert(allclose([dDij], [test_dDij], test_tol), &
+      "Huron-Vidal Mixing Rule: dDij does not match expected value")
 
-   
-   ! print *, "numdiff"
+   call test_kij
 
-   ! print *, "dDdT", dDdT,   (Dhv(n, T+0.01) - Dhv(n, T))/0.01
-   ! print *, "dDdT2", dDdT2, (Dhv(n, T+0.01) - 2*Dhv(n, T) + Dhv(n, T-0.01))/(0.01**2)
+contains
+   subroutine test_kij
+      use yaeos, only: pr, CubicEoS, NRTLHV, init_hvnrtl, HV_NRTL, PengRobinson76
+      integer, parameter :: nc = 3
+      type(CubicEoS) :: model_kij
+      type(HV_NRTL) :: mixrule
+      type(NRTLHV) :: ge
+      real(pr) :: kij(nc, nc)
+      logical :: use_kij(nc, nc)
+      real(pr) :: alpha(nc, nc), gji(nc, nc)
+      real(pr) :: Tc(nc), Pc(nc), w(nc)
 
-   ! print *, "dDi"
-   ! do i = 1, nc
-   !   dn = 0
-   !   dn(i) = 0.001
-   !   print *, dDi(i), (Dhv(n + dn, T) - Dhv(n - dn, T))/(2 * dn(i))
-   ! end do
+      real(pr) :: D, dDi(nc), dDT, dDdT2, dDidT(nc), dDij(nc, nc)
+      real(pr) :: Ar1, Ar2
+      real(pr) :: n(nc), V, T
 
-   ! print *, "dDidT"
-   ! do i = 1, nc
-   !    dn = 0
-   !    dn(i) = 0.005
+      n = [2, 3, 5]
+      V = 1
+      T = 300
 
-   !    print *, dDidT(i), (&
-   !         Dhv(n + dn, T + dn(i)) &
-   !       - Dhv(n + dn, T - dn(i)) &
-   !       - Dhv(n - dn, T + dn(i)) &
-   !       + Dhv(n - dn, T - dn(i)) &
-   !       )/(4 * dn(i)**2)
-   ! end do
+      use_kij = .false.
+      use_kij(1, 2) = .true.
+      use_kij(2, 1) = .true.
 
-   ! print *, "dDij"
+      alpha(1, :) = [0.0, 0.2, 0.3]
+      alpha(2, :) = [0.3, 0.0, 0.1]
+      alpha(3, :) = [0.5, 0.0, 0.1]
 
-   ! dn = 0
-   ! dn(1) = 1e-5
-   ! print *, dDij(1, 1), (Dhv(n + dn, T) - 2*Dhv(n, T) + Dhv(n - dn, T))/(dn(1)**2)
+      gji(1, :) = [0.0, 0.1, 0.2]*100
+      gji(2, :) = [0.2, 0.0, 0.3]*100
+      gji(3, :) = [0.2, 0.9, 0.0]*100
 
-   ! dn = 0
-   ! dn(2) = 1e-5
-   ! print *, dDij(2, 2), (Dhv(n + dn, T) - 2*Dhv(n, T) + Dhv(n - dn, T))/(dn(2)**2)
-  
-   ! dx = 1e-6
-   
-   ! print *, dDij(1, 2), (&
-   !         Dhv(n + [dx, dx], T) &
-   !       - Dhv(n + [-dx, dx], T) &
-   !       - Dhv(n + [dx, -dx], T) &
-   !       + Dhv(n + [-dx, -dx], T) &
-   !       )/(4 * dx **2)
-  
+      kij = 0.0
+      kij(1, 2) = 0.1
+      kij(2, 1) = 0.1
 
-   ! contains
+      ! CO2, Methane, Butane
+      Tc =  [304.21, 190.564, 425.12]
+      Pc =  [73.83000000000001, 45.99, 37.96]
+      w =  [0.223621, 0.0115478, 0.200164]
 
-   !real(pr) function Dhv(n, T)
-   !   real(pr), intent(in) :: n(:), T
+      model_kij = PengRobinson76(Tc, Pc, w, kij=kij)
+      use_kij = .true.
 
-   !   real(pr) :: Tc(size(n)), Tr(size(n))
-   !   real(pr), dimension(size(n)) :: ai, daidt, dadit2
-   !   real(pr) :: D, dDdT, dDdT2, dDi(size(n)), dDidT(size(n)), dDij(size(n), size(n))
-   !   
-   !   Tc = model%components%Tc
-   !   Tr = T/Tc
+      use_kij(1, 2) = .true.
+      use_kij(2, 1) = .true.
 
-   !   call model%alpha%alpha(Tr, ai, daidt, daidt2)
+      ge = NRTLHV(b=model_kij%b, alpha=alpha, gij=gji)
+      mixrule = init_hvnrtl(b=model_kij%b, del1=model_kij%del1, alpha=alpha, gji=gji, use_kij=use_kij, kij=kij)
 
-   !   ai = ai*model%ac
-   !   daidt = daidt*model%ac/Tc
-   !   daidt2 = daidt2*model%ac/Tc**2
+      call model_kij%residual_helmholtz(n, V, T, Ar=Ar1)
 
-   !   call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
-   !   Dhv = D
-   !end function
+      call model_kij%set_mixrule(mixrule)
+      call model_kij%residual_helmholtz(n, V, T, Ar=Ar2)
+
+      call assert(abs(Ar1- Ar2) < 1e-10, &
+         "Huron-Vidal mixing rule: Ar must match with the one calculated with QMR")
+   end subroutine test_kij
 end program main
