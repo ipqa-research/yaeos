@@ -4,7 +4,7 @@ ArModel and GeModel abstract classes definition. Also, the implementation of
 the models' thermoprops methods.
 """
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Union
 
 from intersect import intersection
@@ -62,6 +62,26 @@ def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
 
 class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
+
+    @abstractmethod
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        pass
+
+    @abstractmethod
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        pass
 
     def ln_gamma(
         self, moles, temperature: float, dt: bool = False, dn: bool = False
@@ -422,6 +442,26 @@ class GeModel(ABC):
 
 class ArModel(ABC):
     """Residual Helmholtz (Ar) model abstract class."""
+
+    @abstractmethod
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        pass
+
+    @abstractmethod
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        pass
 
     def lnphi_vt(
         self,
