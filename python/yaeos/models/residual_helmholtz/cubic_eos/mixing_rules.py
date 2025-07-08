@@ -29,6 +29,26 @@ class CubicMixRule(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        pass
+
+    @abstractmethod
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        pass
+
 
 class QMR(CubicMixRule):
     """Quadratic mixing rule.

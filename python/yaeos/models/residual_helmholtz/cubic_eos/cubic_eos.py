@@ -1,5 +1,7 @@
 """Cubic EoS implementations module."""
 
+import numpy as np
+
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
 from yaeos.models.groups import groups_from_dicts
@@ -28,7 +30,11 @@ class CubicEoS(ArModel):
         Critical pressures vector [bar]
     w : array_like
         Acentric factors vector
+    mixrule : CubicMixRule
+        Cubic Mixing rule object
     """
+
+    name = None
 
     def __init__(
         self,
@@ -41,6 +47,7 @@ class CubicEoS(ArModel):
         self.tc = critical_temperatures
         self.pc = critical_pressures
         self.w = acentric_factors
+        self.mixrule = None
 
     def set_mixrule(self, mixrule: CubicMixRule) -> None:
         """Set the mixing rule for the EoS.
@@ -52,6 +59,40 @@ class CubicEoS(ArModel):
         """
         self.mixrule = mixrule
         self.mixrule.set_mixrule(self.id)
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = (
+            f"tc = [{', '.join(str(t) + '_pr' for t in self.tc)}]\n"
+            f"pc = [{', '.join(str(p) + '_pr' for p in self.pc)}]\n"
+            f"w = [{', '.join(str(w) + '_pr' for w in self.w)}]\n"
+            "\n"
+            f"model = {self.name}(tc, pc, w)"
+        )
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        fcode = (
+            f"integer, parameter :: nc={self.nc}\n"
+            "\n"
+            "class(ArModel), allocatable :: model\n"
+            "\n"
+            f"real(pr) :: tc(nc), pc(nc), w(nc)\n"
+        )
+
+        return fcode
 
 
 class PengRobinson76(CubicEoS):
@@ -117,6 +158,8 @@ class PengRobinson76(CubicEoS):
         if mixrule:
             mixrule.set_mixrule(self.id)
 
+        self._fname = "PengRobinson76"
+
 
 class PengRobinson78(CubicEoS):
     """Peng-Robinson 1978 cubic equation of state.
@@ -180,6 +223,8 @@ class PengRobinson78(CubicEoS):
         self.mixrule = mixrule
         if mixrule:
             mixrule.set_mixrule(self.id)
+
+        self._fname = "PengRobinson78"
 
 
 class SoaveRedlichKwong(CubicEoS):
@@ -409,6 +454,8 @@ class PSRK(CubicEoS):
         >>> [{15: 1}, {1: 1, 2: 1, 14: 1}]
     """
 
+    name = "PSRK"
+
     def __init__(
         self,
         critical_temperatures,
@@ -430,6 +477,7 @@ class PSRK(CubicEoS):
         )
 
         if c1 is None:
+            self.w = np.array(self.w)
             c1 = 0.48 + 1.574 * self.w - 0.175 * self.w**2
         if c2 is None:
             c2 = [0 for i in range(len(self.w))]
