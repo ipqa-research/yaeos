@@ -170,7 +170,7 @@ contains
             end select
 
             dw = exp(di - lnphi_w) - w
-            do while(any(dw + w < 0) .or. maxval(abs(dw)) > 0.01)
+            do while(any(dw + w < 0))
                dw = dw/2
             end do
 
