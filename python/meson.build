@@ -5,6 +5,12 @@ project('yaeos', 'c',
   default_options : ['warning_level=2'],
 )
 
+if get_option('debug')
+  message('COMPILING DEBUGABLE VERSION')
+else
+  message('COMPILING OPTIMIZED VERSION')
+endif
+
 add_languages('fortran', native: false)
 
 meson_path = meson.current_build_dir()
@@ -15,7 +21,6 @@ omp = dependency('openmp')
 py_mod = import('python')
 py = py_mod.find_installation(pure: false)
 py_dep = py.dependency()
-
 
 incdir_numpy = run_command(py,
   ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
@@ -30,7 +35,12 @@ incdir_f2py = run_command(py,
 
 
 # fpm
-fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
+if get_option('debug')
+  fflags = '-g -fPIC -Og'
+else
+  fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
+endif
+
 cflags = '-g -fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
@@ -176,6 +186,8 @@ py.extension_module(module_name,
   dependencies : [py_dep, omp],
   link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp'],
   subdir: python_lib / 'lib',
-  install : true,
+  install: true,
+  c_args: ['-g', '-Og'],
 )
+
 #LDFLAGS=-Wl,-rpath=.,-z,noexecstack
