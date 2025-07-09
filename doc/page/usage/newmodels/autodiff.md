@@ -31,29 +31,28 @@ that derived type with your own implementation and a volume initializer.
 
 ```fortran
 module hyperdual_pr76
-    use yaeos__constants, only: pr, R
-    use yaeos__ar_models_hyperdual
-    use yaeos__substance, only: Substances
-    implicit none
+   use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
+   use yaeos__constants, only: pr, R
+   use yaeos__substance, only: Substances
+   implicit none
 
-    type, extends(ArModelAdiff) :: PR76
-        !! PengRobinson 76 EoS
-        ! Composition
-        type(Substances) :: composition
-        
-        ! Mixing rule Parameters
-        real(pr), allocatable :: kij(:, :), lij(:, :)
-        
-        ! EoS parameters
-        real(pr), allocatable :: ac(:), b(:), k(:)
-        real(pr), allocatable :: tc(:), pc(:), w(:)
-    contains
-        procedure :: Ar => arfun
-        procedure :: get_v0 => v0
-    end type
+   type, extends(ArModelAdiff) :: PR76
+      !! PengRobinson 76 EoS
+      
+      ! Mixing rule Parameters
+      real(pr), allocatable :: kij(:, :), lij(:, :)
 
-    real(pr), parameter :: del1 = 1._pr + sqrt(2._pr)
-    real(pr), parameter :: del2 = 1._pr - sqrt(2._pr)
+      ! EoS parameters
+      real(pr), allocatable :: ac(:), b(:), k(:)
+      real(pr), allocatable :: tc(:), pc(:), w(:)
+   contains
+      procedure :: Ar => arfun
+      procedure :: get_v0 => v0
+      procedure :: volume => volume
+   end type PR76
+
+   real(pr), parameter :: del1 = 1._pr + sqrt(2._pr)
+   real(pr), parameter :: del2 = 1._pr - sqrt(2._pr)
 
 contains
 
@@ -91,6 +90,7 @@ contains
 
         integer :: i, j
 
+        ! Associate allows us to keep the later expressions simple.
         associate(&
             pc => self%composition%pc, ac => self%ac, b => self%b, k => self%k,&
             kij => self%kij, lij => self%lij, tc => self%compostion%tc & 
@@ -112,35 +112,49 @@ contains
                     bmix = bmix + nij * (b(i) + b(j)) * (1 - lij(i, j))
                 end do
             end do
+         end do
 
-            amix = amix + sum(n**2*a)
-            bmix = bmix + sum(n**2 * b)
+         amix = amix + sum(n**2*a)
+         bmix = bmix + sum(n**2 * b)
 
-            bmix = bmix/sum(n)
+         bmix = bmix/sum(n)
 
-            b_v = bmix/v
+         b_v = bmix/v
 
-            ! Generic Cubic Ar function
-            ar = (&
-                - sum(n) * log(1.0_pr - b_v) &
-                - amix / (R*T*bmix)*1.0_pr / (del1 - del2) &
-                * log((1.0_pr + del1 * b_v) / (1.0_pr + del2 * b_v)) &
+         ! Generic Cubic Ar function
+         ar = (&
+            - sum(n) * log(1.0_pr - b_v) &
+            - amix / (R*T*bmix)*1.0_pr / (del1 - del2) &
+            * log((1.0_pr + del1 * b_v) / (1.0_pr + del2 * b_v)) &
             ) * (R * T)
 
-            end associate
-    end function
+      end associate
+   end function arfun
 
-    function v0(self, n, p, t)
-        !! Initialization of liquid volume solving with covolume
-        class(PR76), intent(in) :: self
-        real(pr), intent(in) :: n(:)
-        real(pr), intent(in) :: p
-        real(pr), intent(in) :: t
-        real(pr) :: v0
+   function v0(self, n, p, t)
+      !! Initialization of liquid volume solving with covolume. This also
+      !! helps the Michelsen volume solver
+      class(PR76), intent(in) :: self
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: p
+      real(pr), intent(in) :: t
+      real(pr) :: v0
 
-        v0 = sum(n * self%b) / sum(n)
-    end function
-end module
+      v0 = sum(n * self%b) / sum(n)
+   end function v0
+
+   subroutine volume(eos, n, P, T, V, root_type)
+      !! In the case of models that have a "covolume" value, using the solver
+      !! of Michelsen is a better option that the default.
+      use yaeos__models_solvers, only: volume_michelsen
+      class(PR76), intent(in) :: eos
+      real(pr), intent(in)  :: n(:), P, T
+      real(pr), intent(out) :: V
+      character(len=*), intent(in) :: root_type
+
+      call volume_michelsen(eos, n, P, T, V, root_type)
+   end subroutine
+end module hyperdual_pr76
 ```
 
 

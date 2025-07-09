@@ -1,4 +1,4 @@
-module yaeos__ar_models_hyperdual
+module yaeos__adiff_hyperdual_ar_api
     !! Module that contains the automatic differentiation logic for an Ar model.
     !! 
     !! All that is needed to define an Ar model that uses automatic
@@ -8,7 +8,7 @@ module yaeos__ar_models_hyperdual
     !!
     !! ```fortran
     !! module newmodel
-    !! use yaeos__ar_models_hyperdual, only: ArModelAdiff
+    !! use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
     !!
     !! type, extends(ArModelAdiff) :: YourNewModel
     !!       type(Substances) :: composition
@@ -45,7 +45,7 @@ module yaeos__ar_models_hyperdual
     !!
     use yaeos__constants, only: pr
     use yaeos__models_ar, only: ArModel
-    use yaeos__autodiff
+    use hyperdual_mod
 
     implicit none
 
@@ -79,7 +79,12 @@ contains
         type(hyperdual) :: d_v, d_t, d_n(size(n))
         type(hyperdual) :: d_Ar
 
+        logical :: any_deriv
+
+        any_deriv = .false.
+
         if (present(ArV)) then
+            any_deriv = .true.
             if (present(ArV2)) call get_dardv2
             if (present(ArVn)) call get_dardvn
             if (present(ArTV)) call get_dardvt
@@ -88,12 +93,19 @@ contains
         end if
 
         if (present(ArT)) then
+            any_deriv = .true.
             if (present(ArT2)) call get_dardt2
-            if (present(ArTn)) call get_dardtn
             if (.not. (present(ArT2) .and. present(ArTn))) call get_dardt
         end if
 
+        if (present(ArTn)) then
+            any_deriv = .true.
+            call get_dardtn
+        end if
+
+
         if (present(Arn)) then
+            any_deriv = .true.
             if (present(Arn2)) then
                 call get_dardn2
             else
@@ -101,19 +113,37 @@ contains
             end if
         end if
 
-        if (present(Ar)) Ar = d_Ar%f0
+        if (present(Ar)) then
+            if (.not. any_deriv) then
+                call reset_vars
+                d_ar = self%Ar(d_n, d_v, d_t)
+            end if
+            Ar = d_Ar%f0
+        end if
 
     contains
 
         subroutine get_dardn()
             integer :: i, j
 
-            do i=1,size(n)
+            do i=2, size(n), 2
                 call reset_vars
-                d_n(i)%f1 = 1
+                d_n(i-1)%f1 = 1
+                d_n(i )%f2 = 1
+
                 d_Ar = self%Ar(d_n, d_v, d_t)
-                Arn(i) = d_Ar%f1
+                
+                Arn(i-1) = d_Ar%f1
+                Arn(i) = d_Ar%f2
             end do
+            
+            if (mod(size(n), 2) /= 0) then
+                call reset_vars
+                d_n(size(n))%f1 = 1
+                d_Ar = self%Ar(d_n, d_v, d_t)
+                Arn(size(n)) = d_Ar%f1
+            end if
+
         end subroutine
         
         subroutine get_dardn2()
@@ -142,8 +172,8 @@ contains
                 d_n(i)%f1 = 1
                 d_v%f2 = 1
                 d_Ar = self%Ar(d_n, d_v, d_t)
-                Arn(i) = d_Ar%f1
-                ArV = d_Ar%f2
+                if (present(Arn)) Arn(i) = d_Ar%f1
+                if (present(ArV)) ArV = d_Ar%f2
                 ArVn(i) = d_Ar%f12
             end do
         end subroutine
@@ -156,8 +186,8 @@ contains
                 d_n(i)%f1 = 1
                 d_t%f2 = 1
                 d_Ar = self%Ar(d_n, d_v, d_t)
-                Arn(i) = d_Ar%f1
-                ArT = d_Ar%f2
+                if (present(Arn)) Arn(i) = d_Ar%f1
+                if (present(ArT)) ArT = d_Ar%f2
                 ArTn(i) = d_Ar%f12
             end do
         end subroutine
