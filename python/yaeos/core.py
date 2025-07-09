@@ -2281,6 +2281,12 @@ class ArModel(ABC):
             initial step for the beta values, by default 1e-5
         max_points : int, optional
             Maximum number of points to calculate
+
+        Returns
+        -------
+        list
+            List of lists of two PTEnvelope objects, one for each intersection
+            point.
         """
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
@@ -2288,12 +2294,16 @@ class ArModel(ABC):
         Ts, Ps = intersection(env1["T"], env1["P"], env2["T"], env2["P"])
 
         dsps = []
+        locs_1 = []
+        locs_2 = []
         for Tdsp, Pdsp in zip(Ts, Ps):
-            env1_loc = np.argmin(
-                np.abs(env1["T"] - Tdsp) + np.abs(env1["P"] - Pdsp)
+            env1_loc = (
+                np.argmin(np.abs(env1["T"] - Tdsp) + np.abs(env1["P"] - Pdsp))
+                + 1
             )
-            env2_loc = np.argmin(
-                np.abs(env2["T"] - Tdsp) + np.abs(env2["P"] - Pdsp)
+            env2_loc = (
+                np.argmin(np.abs(env2["T"] - Tdsp) + np.abs(env2["P"] - Pdsp))
+                + 1
             )
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
@@ -2325,8 +2335,8 @@ class ArModel(ABC):
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
-                kinds_x=[*kinds_x_1, kind_w_1],
-                kind_w=kind_w_2,
+                kinds_x=[*kinds_x_1, kind_w_2],
+                kind_w=kind_w_1,
                 max_points=max_points,
             )
 
@@ -2340,14 +2350,16 @@ class ArModel(ABC):
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
-                kinds_x=[*kinds_x_2, kind_w_2],
-                kind_w=kind_w_1,
+                kinds_x=[*kinds_x_2, kind_w_1],
+                kind_w=kind_w_2,
                 max_points=max_points,
             )
 
+            locs_1.append(env1_loc)
+            locs_2.append(env2_loc)
             dsps.append([dsp_1, dsp_2])
 
-        return dsps
+        return dsps, locs_1, locs_2
 
     def phase_envelope_px_from_dsp(
         self, z0, zi, env1: PXEnvelope, env2: PXEnvelope, dbeta0=1e-5

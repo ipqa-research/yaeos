@@ -124,6 +124,25 @@ class PTEnvelope:
     def __getitem__(self, key):
         if "key" in self.__dict__:
             return self.__dict__["key"]
+        elif isinstance(key, slice):
+            return PTEnvelope(
+                global_composition=self.global_composition,
+                main_phases_compositions=self.main_phases_compositions[key],
+                reference_phase_compositions=self.reference_phase_compositions[
+                    key
+                ],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[
+                    key
+                ],
+                main_phases_kinds=self.main_phases_kinds[key],
+                reference_phase_kinds=self.reference_phase_kinds[key],
+                pressures=self.pressures[key],
+                temperatures=self.temperatures[key],
+                iterations=self.iterations[key],
+                specified_variable=self.specified_variable[key],
+                critical_pressures=self.critical_pressures,
+                critical_temperatures=self.critical_temperatures,
+            )
         elif isinstance(key, np.ndarray) or isinstance(key, list):
             return PTEnvelope(
                 global_composition=self.global_composition,
