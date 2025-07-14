@@ -67,9 +67,9 @@ contains
       !! we are calculating a phase boundary.
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:) 
+      real(pr), intent(in) :: z(:)
       !! Mixture global composition.
-      integer, intent(in) :: np 
+      integer, intent(in) :: np
       !! Number of main phases.
       character(len=14), intent(in) :: kinds_x(np)
       !! Kind of the main phases.
@@ -192,7 +192,7 @@ contains
       w_kind = kind_w
 
       allocate(env_points(0), pt_envelope%Tc(0), pt_envelope%Pc(0))
-      
+
       F = 1
       its = 0
       X0 = X
@@ -263,16 +263,16 @@ contains
          do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
             dX = dX/2
          end do
-         
+
          do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
             dX = dX/2
          end do
-         
+
          do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 1 &
             .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 1)
             dX = dX*2
          end do
-         
+
          X_last_converged = X
          X = X + dX
          S = X(ns)
@@ -493,9 +493,9 @@ contains
       real(pr), intent(in) :: dXdS(size(X))
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
-      integer, intent(in) :: max_iterations 
+      integer, intent(in) :: max_iterations
       !! Maximum number of iterations to solve the point
-      integer, intent(out) :: iters 
+      integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
 
@@ -531,19 +531,21 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do while(abs(dX(iT)) > 0.1)
+         do while(abs(dX(iT)) > 0.5)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.1)
+         do while(abs(dX(iP)) > 0.5)
             dX = dX/2
          end do
 
-         if (.not. any(X(iBetas) == 0)) then
-            do while(maxval(abs(dX(iBetas)/X(iBetas))) > 0.5)
-               dX = dX/2
-            end do
-         end if
+         do i=1,np
+            if (X(iBetas(i)) /= 0) then
+               do while(abs(dX(iBetas(i))/X(iBetas(i))) > 0.5)
+                  dX = dX/2
+               end do
+            end if
+         end do
 
          if (maxval(abs(F)) < 1e-9_pr) exit
 
@@ -601,7 +603,7 @@ contains
       integer :: iBetas(np)
 
       real(pr) :: dT, dP
-      
+
       iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = size(X) - 1
       iT = size(X)

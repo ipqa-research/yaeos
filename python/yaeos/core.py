@@ -20,7 +20,7 @@ from yaeos.constants import root_kinds
 from warnings import warn
 
 
-MAX_POINTS_ENVELOPES = 1000000
+MAX_POINTS_ENVELOPES = 1000
 
 
 def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
@@ -1882,11 +1882,12 @@ class ArModel(ABC):
         p0 : float
             Initial pressure [bar]
         specified_variable : int, optional
-            Initial specified variable number, by default 2*len(z)+2
+            Initial specified variable number, by default 2*len(z)+2+2
             (temperature).  The the first `n=(1,len(z))` values correspond to
             the K-values between phase x and w, the next `n=(len(z)+1,
-            2*len(z))` are the K-values between phase y and w.  The last three
-            values are pressure, temperature and beta.
+            2*len(z))` are the K-values between phase y and w. The next two
+            values are the beta values of the main phases, then the pressure
+            and finally temperature.
         first_step : float, optional
             Step for the specified variable, by default 0.1
         kinds_x : list, optional
@@ -1969,8 +1970,9 @@ class ArModel(ABC):
             Initial specified variable number, by default 2*len(z)+2
             (temperature).  The the first `n=(1,len(z))` values correspond to
             the K-values between phase x and w, the next `n=(len(z)+1,
-            2*len(z))` are the K-values between phase y and w.  The last three
-            values are pressure, a and beta.
+            2*len(z))` are the K-values between phase y and w. The next two
+            values are the beta values of the main phases, then the pressure
+            and and finally the molar relation between the two fluids.
         first_step : float, optional
             Step for the specified variable, by default 0.1
         max_points : int, optional

@@ -109,7 +109,7 @@ contains
                return
             end if
 
-            dS = sign(min(abs(dS), abs(X(ns)/30)), dS)
+            dS = sign(max(abs(dS), sqrt(abs(X(ns))/10)), dS)
             X = Xc
             return
          end if
