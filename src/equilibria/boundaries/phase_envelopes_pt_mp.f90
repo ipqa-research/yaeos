@@ -228,7 +228,8 @@ contains
          if (&
             any(isnan(F)) .or. its > max_iterations &
             .or. exp(X(nc*np+np+1)) < 1e-5 &
-            .or. P > max_P &
+            .or. P > max_P  &
+            .or. any(betas < -1e-8) .or. any(betas > 1 + 1e-8) &
             ) exit
 
          ! Attach the new point to the envelope.
