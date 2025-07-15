@@ -238,8 +238,6 @@ contains
             )
          env_points = [env_points, point]
 
-         ! Update the specification for the next point.
-         call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
@@ -255,6 +253,9 @@ contains
             pt_envelope%Tc = [pt_envelope%Tc, Tc]
             pt_envelope%Pc = [pt_envelope%Pc, Pc]
          end if
+         
+         ! Update the specification for the next point.
+         call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
 
 
          ! Next point estimation.
@@ -270,7 +271,7 @@ contains
 
          do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 1 &
             .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 1)
-            dX = dX*2
+            dX = dX*1.1
          end do
 
          X_last_converged = X
@@ -499,7 +500,7 @@ contains
       !! Number of iterations to solve the current point
 
 
-      integer :: i
+      integer :: i, l
       integer :: iT
       integer :: iP
       integer :: iBetas(np)
@@ -531,11 +532,19 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do while(abs(dX(iT)) > 0.5)
+         do l=1,np
+            if (maxval(abs(X(l:nc*l))) < 1e-1) then
+               do while(maxval(abs(dX(l:nc*l))) > 1e-1)
+                  dX = dX/2
+               end do
+            end if
+         end do
+         
+         do while(abs(dX(iT)) > 0.25)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.5)
+         do while(abs(dX(iP)) > 0.25)
             dX = dX/2
          end do
 
@@ -626,7 +635,7 @@ contains
 
          if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
-            dS = dXdS(ns) * dS
+            dS = dXdS(ns) * dS * 0.1
             dXdS = dXdS/dXdS(ns)
             exit
          end if
@@ -643,7 +652,7 @@ contains
          dS = dS*1.1
       end do
 
-      ! dS = sign(min(dS, 0.01_pr, sqrt(abs(X(ns)/5))), dS)
+      dS = sign(min(dS, 0.01_pr, sqrt(abs(X(ns)/5))), dS)
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

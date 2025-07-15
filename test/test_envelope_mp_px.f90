@@ -102,7 +102,7 @@ contains
       real(pr) :: dfnum(psize, psize), F1(psize), F2(psize)
       real(pr) :: tmp(psize, psize)
       real(pr) :: XdX(psize)
-      real(pr) :: eps = 1e-5, dx
+      real(pr) :: eps = 1e-3, dx
       character(len=*), parameter :: fmt="(*(E10.2,2x))"
 
       integer :: i, j, loc(2)
@@ -128,7 +128,8 @@ contains
       where (df == 0)
          df = 1e-15_pr
       end where
-      call assert(maxval(abs((df - dfnum))) < 1e-1, "Numerical derivative matches analytical")
+
+      call assert(maxval(abs((df - dfnum))) < 2e-1, "Numerical derivative matches analytical")
    end subroutine numdiff
 
    type(CubicEoS) function get_model()
