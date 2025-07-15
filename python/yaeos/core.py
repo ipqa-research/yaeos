@@ -2293,20 +2293,14 @@ class ArModel(ABC):
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
 
-        Ts, Ps = intersection(env1["T"], env1["P"], env2["T"], env2["P"])
+        Ts, Ps, locs_1, locs_2 = intersection(
+            env1["T"], env1["P"], env2["T"], env2["P"]
+        )
 
         dsps = []
         locs_1 = []
         locs_2 = []
-        for Tdsp, Pdsp in zip(Ts, Ps):
-            env1_loc = (
-                np.argmin(np.abs(env1["T"] - Tdsp) + np.abs(env1["P"] - Pdsp))
-                + 1
-            )
-            env2_loc = (
-                np.argmin(np.abs(env2["T"] - Tdsp) + np.abs(env2["P"] - Pdsp))
-                + 1
-            )
+        for Tdsp, Pdsp, env1_loc, env2_loc in zip(Ts, Ps, locs_1, locs_2):
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
