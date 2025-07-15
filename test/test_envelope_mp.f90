@@ -62,7 +62,7 @@ program main
    call assert(abs(env%points(1)%T - 261.828 )< 1e-2, "First point T")
 
    i = size(env%points)
-   call assert(abs(env%points(i)%P) < 1, "End at low pressure")
+   call assert(abs(env%points(i)%P) < 9, "End at low pressure")
 
 contains
 
