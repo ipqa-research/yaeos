@@ -39,16 +39,16 @@ class PTEnvelope:
     specified_variable : np.ndarray
         The specified variable used to compute the envelope at each point.
         Shape is (n_points,).
+    critical_pressures : np.ndarray
+        The critical pressures of the envelope.
+    critical_temperatures : np.ndarray
+        The critical temperatures of the envelope.
     reference_phase_kinds : np.ndarray
         The kinds of the reference phase at each point.
         Shape is (n_points,).
     main_phases_kinds : np.ndarray
         The kinds of the main phases at each point.
         Shape is (n_points, n_phases).
-    cp : list
-        A list of lists containing the indices of the critical points for each
-        phase. Each sublist corresponds to a phase and contains the indices of
-        the critical points in the `temperatures` and `pressures` arrays.
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
         - 'T': Temperatures along the envelope.
@@ -312,8 +312,9 @@ class PXEnvelope:
         ax.plot(self.alphas, self.alphas, **plot_kwargs)
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Pressure [bar]")
-        for cp in self.cp:
-            ax.scatter(self.pressures[cp], self.alphas[cp], color="black")
+        ax.scatter(
+            self.critical_alphas, self.critical_pressures, color="black"
+        )
 
     def __getitem__(self, key):
         if "key" in self.__dict__:
@@ -485,8 +486,7 @@ class TXEnvelope:
         ax.plot(self.alphas, self.temperatures, **plot_kwargs)
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Temperature [K]")
-        for cp in self.cp:
-            ax.scatter(self.alphas[cp], self.temperatures[cp], color="black")
+        ax.scatter(self.alphas[cp], self.temperatures[cp], color="black")
 
     def __getitem__(self, key):
         if "key" in self.__dict__:
