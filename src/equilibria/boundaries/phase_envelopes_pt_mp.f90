@@ -224,14 +224,6 @@ contains
          ! variables.
          call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
-         ! If the point did not converge, stop the calculation
-         if (&
-            any(isnan(F)) .or. its > max_iterations &
-            .or. exp(X(nc*np+np+1)) < 1e-5 &
-            .or. P > max_P  &
-            .or. any(betas < -1e-8) .or. any(betas > 1 + 1e-8) &
-            ) exit
-
          ! Attach the new point to the envelope.
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
@@ -257,7 +249,15 @@ contains
          
          ! Update the specification for the next point.
          call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
-
+         
+         ! If the point did not converge, stop the calculation
+         if (&
+            any(isnan(F)) .or. its > max_iterations &
+            .or. exp(X(nc*np+np+1)) < 1e-5 &
+            .or. P > max_P  &
+            .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
+            .or. abs(dS) <= 1e-14 &
+            ) exit
 
          ! Next point estimation.
          dX = dXdS * dS
@@ -270,8 +270,8 @@ contains
             dX = dX/2
          end do
 
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 1 &
-            .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 1)
+         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
+            .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
             dX = dX*1.1
          end do
 
@@ -541,11 +541,11 @@ contains
             end if
          end do
          
-         do while(abs(dX(iT)) > 0.25)
+         do while(abs(dX(iT)) > 0.5)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.25)
+         do while(abs(dX(iP)) > 0.5)
             dX = dX/2
          end do
 
@@ -653,7 +653,7 @@ contains
          dS = dS*1.1
       end do
 
-      dS = sign(min(dS, 0.01_pr, sqrt(abs(X(ns)/5))), dS)
+      dS = sign(min(dS, 0.01_pr, sqrt(abs((X(ns)+1e-15)/5))), dS)
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
