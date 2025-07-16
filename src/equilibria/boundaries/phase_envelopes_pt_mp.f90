@@ -229,8 +229,6 @@ contains
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
             kinds_x=x_kinds, kind_w=w_kind, iters=its, ns=ns &
             )
-         env_points = [env_points, point]
-
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
@@ -258,6 +256,8 @@ contains
             .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
             ) exit
+         
+         env_points = [env_points, point]
 
          ! Next point estimation.
          dX = dXdS * dS
