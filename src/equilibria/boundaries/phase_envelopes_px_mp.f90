@@ -213,7 +213,7 @@ contains
          ! over it.
          call detect_critical(nc, np, i, x_kinds, w_kind, .true., X_last_converged, X, dXdS, ns, dS, S, found_critical, Xc)
          if (found_critical) then
-            ac = exp(Xc(ia))
+            ac = Xc(ia)
             Pc = exp(Xc(iP))
             px_envelope%Pc = [px_envelope%Pc, Pc]
             px_envelope%ac = [px_envelope%ac, ac]
