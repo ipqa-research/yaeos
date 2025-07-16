@@ -75,16 +75,19 @@ contains
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
-
-         do while(maxval(abs(X(lb:ub))) < 0.01)
-            if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
-               ! Reached to a critical point in a Txy/Pxy calculation for a
-               ! binary system, stop the calculation.
-               dS=0
-               return
-            end if
-            X = X + dXdS * dS
-         end do
+         ! TODO: In many cases this makes more damage than good.
+         ! do while(maxval(abs(X(lb:ub))) < 0.05)
+         !    print *, "Increasing X", point, X(lb:ub)
+         !    dS = sign(max(abs(dS), sqrt(abs(X(ns))/10), 0.01), dS)
+         !    if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
+         !       ! Reached to a critical point in a Txy/Pxy calculation for a
+         !       ! binary system, stop the calculation.
+         !       dS=0
+         !       return
+         !    end if
+         !    X = X + dXdS * dS
+         !    print *, "next: X", point, X(lb:ub)
+         ! end do
 
          lnKold = Xold(lb:ub)
          lnK = X(lb:ub) + dXdS(lb:ub) * dS
@@ -109,7 +112,7 @@ contains
                return
             end if
 
-            dS = sign(min(abs(dS), abs(X(ns)/30)), dS)
+            dS = sign(max(abs(dS), sqrt(abs(X(ns))/10), 0.01), dS)
             X = Xc
             return
          end if

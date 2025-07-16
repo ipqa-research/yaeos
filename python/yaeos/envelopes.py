@@ -39,16 +39,16 @@ class PTEnvelope:
     specified_variable : np.ndarray
         The specified variable used to compute the envelope at each point.
         Shape is (n_points,).
+    critical_pressures : np.ndarray
+        The critical pressures of the envelope.
+    critical_temperatures : np.ndarray
+        The critical temperatures of the envelope.
     reference_phase_kinds : np.ndarray
         The kinds of the reference phase at each point.
         Shape is (n_points,).
     main_phases_kinds : np.ndarray
         The kinds of the main phases at each point.
         Shape is (n_points, n_phases).
-    cp : list
-        A list of lists containing the indices of the critical points for each
-        phase. Each sublist corresponds to a phase and contains the indices of
-        the critical points in the `temperatures` and `pressures` arrays.
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
         - 'T': Temperatures along the envelope.
@@ -124,6 +124,25 @@ class PTEnvelope:
     def __getitem__(self, key):
         if "key" in self.__dict__:
             return self.__dict__["key"]
+        elif isinstance(key, slice):
+            return PTEnvelope(
+                global_composition=self.global_composition,
+                main_phases_compositions=self.main_phases_compositions[key],
+                reference_phase_compositions=self.reference_phase_compositions[
+                    key
+                ],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[
+                    key
+                ],
+                main_phases_kinds=self.main_phases_kinds[key],
+                reference_phase_kinds=self.reference_phase_kinds[key],
+                pressures=self.pressures[key],
+                temperatures=self.temperatures[key],
+                iterations=self.iterations[key],
+                specified_variable=self.specified_variable[key],
+                critical_pressures=self.critical_pressures,
+                critical_temperatures=self.critical_temperatures,
+            )
         elif isinstance(key, np.ndarray) or isinstance(key, list):
             return PTEnvelope(
                 global_composition=self.global_composition,
@@ -290,11 +309,12 @@ class PXEnvelope:
             del plot_kwargs["ax"]
         else:
             ax = plt.gca()
-        ax.plot(self.alphas, self.alphas, **plot_kwargs)
+        ax.plot(self.alphas, self.pressures, **plot_kwargs)
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Pressure [bar]")
-        for cp in self.cp:
-            ax.scatter(self.pressures[cp], self.alphas[cp], color="black")
+        ax.scatter(
+            self.critical_alphas, self.critical_pressures, color="black"
+        )
 
     def __getitem__(self, key):
         if "key" in self.__dict__:
@@ -466,8 +486,9 @@ class TXEnvelope:
         ax.plot(self.alphas, self.temperatures, **plot_kwargs)
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Temperature [K]")
-        for cp in self.cp:
-            ax.scatter(self.alphas[cp], self.temperatures[cp], color="black")
+        ax.scatter(
+            self.critical_alphas, self.critical_pressures, color="black"
+        )
 
     def __getitem__(self, key):
         if "key" in self.__dict__:

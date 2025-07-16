@@ -10,7 +10,7 @@ import numpy as np
 
 from yaeos.core import ArModel
 
-MAX_POINTS = 10000
+MAX_POINTS = 1000
 
 
 class GPEC:
