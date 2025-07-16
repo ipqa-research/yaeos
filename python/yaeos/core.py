@@ -2145,7 +2145,7 @@ class ArModel(ABC):
             number_of_phases=number_of_phases, kinds_x=kinds_x, kind_w=kind_w
         )
 
-        x_ls, ws, betas, ps, alphas, iters, ns, x_kinds, w_kinds, acs, pcs = (
+        x_ls, ws, betas, ps, alphas, iters, ns, x_kinds, w_kinds, pcs, acs = (
             yaeos_c.px_mp_phase_envelope(
                 id=self.id,
                 np=number_of_phases,
@@ -2220,8 +2220,8 @@ class ArModel(ABC):
             ns,
             main_kinds,
             ref_kinds,
-            acs,
             tcs,
+            acs,
         ) = yaeos_c.tx_mp_phase_envelope(
             id=self.id,
             np=number_of_phases,
