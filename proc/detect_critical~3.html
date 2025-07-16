@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">44 statements</a>
+                 title=" 0.4% of total for procedures.">45 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
+              <a href="../src/auxiliar.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90~3.html'>auxiliar.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
             <li class="breadcrumb-item active" aria-current="page">detect_critical</li>
           </ol>
         </nav>
@@ -135,18 +135,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-xc~7">Xc</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-xnew~7">Xnew</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-xold~7">Xold</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-a~34">a</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-critical_set~2">critical_set</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-first_set~3">first_set</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-found_critical~5">found_critical</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-i~85">i</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-idx~4">idx</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-nc~63">nc</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-second_set~3">second_set</a>
-            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-step~3">step</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-xnew~9">Xnew</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-a~35">a</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-i~64">i</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-incipient_kind">incipient_kind</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-lb~9">lb</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-lnk~2">lnK</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-lnkold~2">lnKold</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-ncomp~6">ncomp</a>
+            <a class="list-group-item" href="../proc/detect_critical~3.html#variable-ub~9">ub</a>
         </div>
       </div>
     </div>
@@ -176,29 +173,18 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine detect_critical(X, dXdS, ns, S, dS)  
+    <h2>public  subroutine detect_critical(nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc)  
 </h2>
     
 
-    <h1 id="detect_critical"><code>detect_critical</code></h1>
-<p>Critical point detection</p>
+    <h1 id="detect_critical">detect_critical</h1>
+<p>Detect if the system is close to a critical point.</p>
 <h1 id="description">Description</h1>
-<p>If the values of lnK (X[:nc]) change sign then a critical point
-Has passed, since for this to happen all variables should pass
-through zero. Near critical points (lnK &lt; 0.05) points are harder
-to converge, so more steps in the extrapolation vector are made to
-jump over the critical point.
-If the critical point is detected then the kind of the point is
-changed and the point is saved using an interpolation knowing that</p>
-<p>
-<script type="math/tex; mode=display">
-  X_c = a * X + (1-a)*X_{new}
-</script>
-</p>
-<p>With <script type="math/tex">X_c</script> is the variables at the critical point, <script type="math/tex">X_{new}</script>
-is the new initialization point of the method and <script type="math/tex">a</script> is the
-parameter to interpolate the values. This subroutine finds the
-value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X_c</script>.</p>
+<p>When the system is close to a critical point, the <script type="math/tex">\ln K_i^l</script> values
+are close to zero, since the composition of the incipient phase and the
+<script type="math/tex">l</script> phase are similar (equal in the critical point). This can be used
+to detect if the system is close to a critical point and force a jump
+above it.</p>
 
 
     <h3>Arguments</h3>
@@ -214,7 +200,112 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~43"></span>
+              <span class="anchor" id="variable-nc~49"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+            <td>
+                <p>Number of components in the mixture.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-np~15"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>np</strong></td>
+            <td>
+                <p>Number of main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-point~6"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>point</strong></td>
+            <td>
+                <p>Point number in the phase boundary.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kinds_x~7"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kinds_x</strong>(np)</td>
+            <td>
+                <p>Kinds of the main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kind_w~7"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kind_w</strong></td>
+            <td>
+                <p>Kind of the incipient phase.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-binary_stop"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>binary_stop</strong></td>
+            <td>
+                <p>If true, stop at the critical point if its a binary system.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xold~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xold</strong>(:)</td>
+            <td>
+                <p>Old vector of variables.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~44"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -224,12 +315,12 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
             <td>::</td>
             <td><strong>X</strong>(:)</td>
             <td>
-                <p>Vector of variables</p>
+                <p>Vector of variables.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~23"></span>
+              <span class="anchor" id="variable-dxds~20"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -239,12 +330,12 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
             <td>::</td>
             <td><strong>dXdS</strong>(:)</td>
             <td>
-                <p>Variation of variables wrt S</p>
+                <p>Sensitivity of the variables wrt the specification.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~43"></span>
+              <span class="anchor" id="variable-ns~42"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -254,27 +345,12 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-                <p>Number of specified variable</p>
+                <p>Number of the specified variable.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~34"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>S</strong></td>
-            <td>
-                <p>Specification value</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ds~22"></span>
+              <span class="anchor" id="variable-ds~18"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -284,7 +360,52 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
             <td>::</td>
             <td><strong>dS</strong></td>
             <td>
-                <p>Step in specification</p>
+                <p>Step size of the specification for the next point.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~32"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+                <p>Specification value.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-found_critical~5"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>found_critical</strong></td>
+            <td>
+                <p>If true, a critical point was found.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xc~8"></span>
+              real(kind=pr)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xc</strong>(size(X))</td>
+            <td>
+                <p>Vector of variables at the critical point.</p>
             </td>
         </tr>
     </tbody>
@@ -307,27 +428,10 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-xc~7"></span>
+              <span class="anchor" id="variable-xnew~9"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Xc</strong>(size(X))</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Value at (near) critical point</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-xnew~7"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -336,32 +440,15 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
                 <td></td>
                 <td></td>
             <td>
-                <p>Value of the next initialization</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xold~7"></span>
+              <span class="anchor" id="variable-a~35"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Xold</strong>(size(X))</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Old value of X</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~34"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -370,66 +457,15 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
                 <td></td>
                 <td></td>
             <td>
-                <p>Parameter for interpolation</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-critical_set~2"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>critical_set</strong>((size(X)-3)/2)</td>
-                <td></td>
-                <td></td>
-            <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-first_set~3"></span>
+              <span class="anchor" id="variable-i~64"></span>
               integer,
             </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>first_set</strong>((size(X)-3)/2)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-found_critical~5"></span>
-              logical,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>found_critical</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-i~85"></span>
-              integer,
-            </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -443,15 +479,15 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-idx~4"></span>
-              integer,
+              <span class="anchor" id="variable-incipient_kind"></span>
+              character(len=14),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>idx</strong>((size(X)-3)/2)</td>
+            <td><strong>incipient_kind</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -460,15 +496,15 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~63"></span>
+              <span class="anchor" id="variable-lb~9"></span>
               integer,
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>nc</strong></td>
+            <td><strong>lb</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -477,32 +513,66 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-second_set~3"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>second_set</strong>((size(X)-3)/2)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-step~3"></span>
+              <span class="anchor" id="variable-lnk~2"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>step</strong>(size(X))</td>
+            <td><strong>lnK</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnkold~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnKold</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncomp~6"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncomp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ub~9"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ub</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -542,7 +612,7 @@ value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-01 23:26 +0000             </p>
+ on 2025-07-16 22:01 +0000             </p>
           </div>
         </div>
         <br>

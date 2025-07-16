@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.1.0 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=42d1b3bd"></script>
+      <script src="../../_static/documentation_options.js?v=d0ae6d56"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -105,7 +105,7 @@
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 
-<span class="n">MAX_POINTS_ENVELOPES</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="n">MAX_POINTS_ENVELOPES</span> <span class="o">=</span> <span class="mi">1000</span>
 
 
 <div class="viewcode-block" id="adjust_root_kind">
@@ -2049,11 +2049,12 @@
 <span class="sd">        p0 : float</span>
 <span class="sd">            Initial pressure [bar]</span>
 <span class="sd">        specified_variable : int, optional</span>
-<span class="sd">            Initial specified variable number, by default 2*len(z)+2</span>
+<span class="sd">            Initial specified variable number, by default 2*len(z)+2+2</span>
 <span class="sd">            (temperature).  The the first `n=(1,len(z))` values correspond to</span>
 <span class="sd">            the K-values between phase x and w, the next `n=(len(z)+1,</span>
-<span class="sd">            2*len(z))` are the K-values between phase y and w.  The last three</span>
-<span class="sd">            values are pressure, temperature and beta.</span>
+<span class="sd">            2*len(z))` are the K-values between phase y and w. The next two</span>
+<span class="sd">            values are the beta values of the main phases, then the pressure</span>
+<span class="sd">            and finally temperature.</span>
 <span class="sd">        first_step : float, optional</span>
 <span class="sd">            Step for the specified variable, by default 0.1</span>
 <span class="sd">        kinds_x : list, optional</span>
@@ -2139,8 +2140,9 @@
 <span class="sd">            Initial specified variable number, by default 2*len(z)+2</span>
 <span class="sd">            (temperature).  The the first `n=(1,len(z))` values correspond to</span>
 <span class="sd">            the K-values between phase x and w, the next `n=(len(z)+1,</span>
-<span class="sd">            2*len(z))` are the K-values between phase y and w.  The last three</span>
-<span class="sd">            values are pressure, a and beta.</span>
+<span class="sd">            2*len(z))` are the K-values between phase y and w. The next two</span>
+<span class="sd">            values are the beta values of the main phases, then the pressure</span>
+<span class="sd">            and and finally the molar relation between the two fluids.</span>
 <span class="sd">        first_step : float, optional</span>
 <span class="sd">            Step for the specified variable, by default 0.1</span>
 <span class="sd">        max_points : int, optional</span>
@@ -2463,19 +2465,29 @@
 <span class="sd">            initial step for the beta values, by default 1e-5</span>
 <span class="sd">        max_points : int, optional</span>
 <span class="sd">            Maximum number of points to calculate</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            List of lists of two PTEnvelope objects, one for each intersection</span>
+<span class="sd">            point.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nc</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_components</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_phases</span> <span class="o">+</span> <span class="mi">1</span>
 
-        <span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+        <span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
 
         <span class="n">dsps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">locs_1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">locs_2</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">Tdsp</span><span class="p">,</span> <span class="n">Pdsp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span><span class="p">):</span>
-            <span class="n">env1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+            <span class="n">env1_loc</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">))</span>
+                <span class="o">+</span> <span class="mi">1</span>
             <span class="p">)</span>
-            <span class="n">env2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+            <span class="n">env2_loc</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">))</span>
+                <span class="o">+</span> <span class="mi">1</span>
             <span class="p">)</span>
 
             <span class="n">betas_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
@@ -2507,8 +2519,8 @@
                 <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
                 <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
                 <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_1</span><span class="p">,</span> <span class="n">kind_w_1</span><span class="p">],</span>
-                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_2</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_1</span><span class="p">,</span> <span class="n">kind_w_2</span><span class="p">],</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_1</span><span class="p">,</span>
                 <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -2522,14 +2534,16 @@
                 <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
                 <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
                 <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_2</span><span class="p">,</span> <span class="n">kind_w_2</span><span class="p">],</span>
-                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_1</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_2</span><span class="p">,</span> <span class="n">kind_w_1</span><span class="p">],</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_2</span><span class="p">,</span>
                 <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
             <span class="p">)</span>
 
+            <span class="n">locs_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env1_loc</span><span class="p">)</span>
+            <span class="n">locs_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env2_loc</span><span class="p">)</span>
             <span class="n">dsps</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">dsp_1</span><span class="p">,</span> <span class="n">dsp_2</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">dsps</span></div>
+        <span class="k">return</span> <span class="n">dsps</span><span class="p">,</span> <span class="n">locs_1</span><span class="p">,</span> <span class="n">locs_2</span></div>
 
 
 <div class="viewcode-block" id="ArModel.phase_envelope_px_from_dsp">

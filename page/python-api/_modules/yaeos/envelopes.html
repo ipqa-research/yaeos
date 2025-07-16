@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.envelopes &mdash; yaeos 4.1.0 documentation</title>
+  <title>yaeos.envelopes &mdash; yaeos 4.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=42d1b3bd"></script>
+      <script src="../../_static/documentation_options.js?v=d0ae6d56"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -126,16 +126,16 @@
 <span class="sd">    specified_variable : np.ndarray</span>
 <span class="sd">        The specified variable used to compute the envelope at each point.</span>
 <span class="sd">        Shape is (n_points,).</span>
+<span class="sd">    critical_pressures : np.ndarray</span>
+<span class="sd">        The critical pressures of the envelope.</span>
+<span class="sd">    critical_temperatures : np.ndarray</span>
+<span class="sd">        The critical temperatures of the envelope.</span>
 <span class="sd">    reference_phase_kinds : np.ndarray</span>
 <span class="sd">        The kinds of the reference phase at each point.</span>
 <span class="sd">        Shape is (n_points,).</span>
 <span class="sd">    main_phases_kinds : np.ndarray</span>
 <span class="sd">        The kinds of the main phases at each point.</span>
 <span class="sd">        Shape is (n_points, n_phases).</span>
-<span class="sd">    cp : list</span>
-<span class="sd">        A list of lists containing the indices of the critical points for each</span>
-<span class="sd">        phase. Each sublist corresponds to a phase and contains the indices of</span>
-<span class="sd">        the critical points in the `temperatures` and `pressures` arrays.</span>
 <span class="sd">    df : pd.DataFrame</span>
 <span class="sd">        A DataFrame containing the data of the envelope. The columns are:</span>
 <span class="sd">        - &#39;T&#39;: Temperatures along the envelope.</span>
@@ -214,6 +214,25 @@
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;key&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">PTEnvelope</span><span class="p">(</span>
+                <span class="n">global_composition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_composition</span><span class="p">,</span>
+                <span class="n">main_phases_compositions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">reference_phase_compositions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span>
+                    <span class="n">key</span>
+                <span class="p">],</span>
+                <span class="n">main_phases_molar_fractions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span>
+                    <span class="n">key</span>
+                <span class="p">],</span>
+                <span class="n">main_phases_kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_phases_kinds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">reference_phase_kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_phase_kinds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">pressures</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">temperatures</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">iterations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">specified_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">specified_variable</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">critical_pressures</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">critical_pressures</span><span class="p">,</span>
+                <span class="n">critical_temperatures</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">critical_temperatures</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">PTEnvelope</span><span class="p">(</span>
                 <span class="n">global_composition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_composition</span><span class="p">,</span>
@@ -385,11 +404,12 @@
             <span class="k">del</span> <span class="n">plot_kwargs</span><span class="p">[</span><span class="s2">&quot;ax&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\alpha$&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure [bar]&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">[</span><span class="n">cp</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">[</span><span class="n">cp</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span></div>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">critical_alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_pressures</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -567,8 +587,9 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\alpha$&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">[</span><span class="n">cp</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="p">[</span><span class="n">cp</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span></div>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">critical_alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_pressures</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>

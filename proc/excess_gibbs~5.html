@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">15 statements</a>
+                 title=" 1.0% of total for procedures.">105 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/nrtl_hv.f90"> Source File</a>
+              <a href="../src/gemodel_adiff_api.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/nrtl_hv.f90.html'>nrtl_hv.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_nrtlhv.html'>yaeos__models_ge_nrtlhv</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/gemodel_adiff_api.f90.html'>gemodel_adiff_api.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__adiff_hyperdual_ge_api.html'>yaeos__adiff_hyperdual_ge_api</a></li>
             <li class="breadcrumb-item active" aria-current="page">excess_gibbs</li>
           </ol>
         </nav>
@@ -135,9 +135,12 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-dtaudt~5">dtaudt</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-dtaudt2~5">dtaudt2</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-tau~7">tau</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-any_deriv~2">any_deriv</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-dge">dGe</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-d_ge">d_Ge</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-d_n~2">d_n</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-d_t~2">d_t</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#variable-nc~56">nc</a>
         </div>
       </div>
     </div>
@@ -152,7 +155,23 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#proc-get_dgedn">get_dgedn</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#proc-get_dgedn2">get_dgedn2</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#proc-get_dgedt">get_dgedt</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#proc-get_dgedt2">get_dgedt2</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#proc-get_dgedtn">get_dgedtn</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~5.html#proc-reset_vars~2">reset_vars</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -167,26 +186,13 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    <h2>public  subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__models_ge_base.html'>yaeos__models_ge_base</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+    
 
-
-    <p>Calculate Excess Gibbs and its derivatives.</p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/nrtlhv.html'>NRTLHV</a></p>
+    <p><a href='../type/gemodeladiff.html'>GeModelAdiff</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -201,8 +207,8 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~41"></span>
-              class(<a href='../type/nrtlhv.html'>NRTLHV</a>),
+              <span class="anchor" id="variable-self~42"></span>
+              class(<a href='../type/gemodeladiff.html'>GeModelAdiff</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -211,12 +217,12 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                <p>Model</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~62"></span>
+              <span class="anchor" id="variable-n~30"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -226,12 +232,12 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                <p>Moles vector</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~85"></span>
+              <span class="anchor" id="variable-t~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -239,14 +245,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>t</strong></td>
             <td>
-                <p>Temperature [K]</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~15"></span>
+              <span class="anchor" id="variable-ge~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -256,12 +262,12 @@
             <td>::</td>
             <td><strong>Ge</strong></td>
             <td>
-                <p>Excess Gibbs free energy</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~11"></span>
+              <span class="anchor" id="variable-get~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -271,14 +277,12 @@
             <td>::</td>
             <td><strong>GeT</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{dG^E}{dT}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~11"></span>
+              <span class="anchor" id="variable-get2~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -288,46 +292,42 @@
             <td>::</td>
             <td><strong>GeT2</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dT^2}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~12"></span>
+              <span class="anchor" id="variable-gen~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              dimension(size(n))
             </td>
             <td>::</td>
-            <td><strong>Gen</strong>(size(n))</td>
-            <td>
-                <p>
-<script type="math/tex">\frac{dG^E}{dn}</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-getn~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>GeTn</strong>(size(n))</td>
+            <td><strong>Gen</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~11"></span>
+              <span class="anchor" id="variable-getn~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              dimension(size(n))
+            </td>
+            <td>::</td>
+            <td><strong>GeTn</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gen2~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -360,15 +360,15 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dtaudt~5"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-any_deriv~2"></span>
+              logical,
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dtaudt</strong>(size(n),size(n))</td>
+            <td><strong>any_deriv</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -377,7 +377,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dtaudt2~5"></span>
+              <span class="anchor" id="variable-dge"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -385,7 +385,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>dtaudt2</strong>(size(n),size(n))</td>
+            <td><strong>dGe</strong>(size(n)+1,size(n)+1)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -394,15 +394,66 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~7"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-d_ge"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>tau</strong>(size(n),size(n))</td>
+            <td><strong>d_Ge</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d_n~2"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d_n</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d_t~2"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d_t</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~56"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -421,6 +472,87 @@
     
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedn"></span> <h3> subroutine <a href='excess_gibbs~5.html#proc-get_dgedn'>get_dgedn</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedn2"></span> <h3> subroutine <a href='excess_gibbs~5.html#proc-get_dgedn2'>get_dgedn2</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedt"></span> <h3> subroutine <a href='excess_gibbs~5.html#proc-get_dgedt'>get_dgedt</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedt2"></span> <h3> subroutine <a href='excess_gibbs~5.html#proc-get_dgedt2'>get_dgedt2</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedtn"></span> <h3> subroutine <a href='excess_gibbs~5.html#proc-get_dgedtn'>get_dgedtn</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-reset_vars~2"></span> <h3> subroutine <a href='excess_gibbs~5.html#proc-reset_vars~2'>reset_vars</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+    </section>    
 
     
     
@@ -442,7 +574,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-01 23:26 +0000             </p>
+ on 2025-07-16 22:01 +0000             </p>
           </div>
         </div>
         <br>

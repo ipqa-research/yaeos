@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cubic Equations of State &mdash; yaeos 4.1.0 documentation</title>
+  <title>Cubic Equations of State &mdash; yaeos 4.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=42d1b3bd"></script>
+      <script src="../_static/documentation_options.js?v=d0ae6d56"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -175,14 +175,14 @@
 <span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1"># Envelope with the model with kij and lij</span>
-<span class="n">env_kij</span> <span class="o">=</span> <span class="n">model_kij</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+<span class="n">env_kij</span> <span class="o">=</span> <span class="n">model_kij</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">)</span>
 
 <span class="c1"># Envelope with the model without kij and lij</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_kij</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+<span class="n">env_kij</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;With kij and lij&quot;</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
@@ -257,7 +257,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="n">t0</span> <span class="o">=</span> <span class="mf">200.0</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">150.0</span>
 <span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1"># Envelope with the model with kij and lij</span>
@@ -383,7 +383,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="n">env_hv_nrtl</span> <span class="o">=</span> <span class="n">model_hv_nrtl</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Envelope with the model without kij and lij</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
@@ -510,7 +510,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7f088f3fbb00&gt;
+&lt;matplotlib.legend.Legend at 0x7fc1e8158e00&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
