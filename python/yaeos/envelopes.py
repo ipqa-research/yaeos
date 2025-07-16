@@ -309,7 +309,7 @@ class PXEnvelope:
             del plot_kwargs["ax"]
         else:
             ax = plt.gca()
-        ax.plot(self.alphas, self.alphas, **plot_kwargs)
+        ax.plot(self.alphas, self.pressures, **plot_kwargs)
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Pressure [bar]")
         ax.scatter(
@@ -486,7 +486,9 @@ class TXEnvelope:
         ax.plot(self.alphas, self.temperatures, **plot_kwargs)
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Temperature [K]")
-        ax.scatter(self.alphas[cp], self.temperatures[cp], color="black")
+        ax.scatter(
+            self.critical_alphas, self.critical_pressures, color="black"
+        )
 
     def __getitem__(self, key):
         if "key" in self.__dict__:
