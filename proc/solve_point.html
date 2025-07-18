@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">34 statements</a>
+                 title=" 0.2% of total for procedures.">26 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
+              <a href="../src/phase_envelopes_pt_3ph.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_3ph.f90.html'>phase_envelopes_pt_3ph.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -136,7 +136,8 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/solve_point.html#variable-dx~2">dX</a>
-            <a class="list-group-item" href="../proc/solve_point.html#variable-nc~12">nc</a>
+            <a class="list-group-item" href="../proc/solve_point.html#variable-i~7">i</a>
+            <a class="list-group-item" href="../proc/solve_point.html#variable-nc~11">nc</a>
         </div>
       </div>
     </div>
@@ -166,7 +167,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine solve_point(model, z0, zi, T, ns, S, X, F, dF, its, maxits)  
+    <h2>public  subroutine solve_point(model, z, ns, S, X, F, dF, its, maxits)  
 </h2>
     
 
@@ -185,7 +186,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~10"></span>
+              <span class="anchor" id="variable-model~9"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -200,7 +201,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~6"></span>
+              <span class="anchor" id="variable-z~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -208,37 +209,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>z0</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-zi~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>zi</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~5"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>z</strong>(:)</td>
             <td>
                 
             </td>
@@ -260,7 +231,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~8"></span>
+              <span class="anchor" id="variable-s~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -275,7 +246,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~8"></span>
+              <span class="anchor" id="variable-x~7"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -290,7 +261,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~4"></span>
+              <span class="anchor" id="variable-f~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -305,7 +276,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~4"></span>
+              <span class="anchor" id="variable-df~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -320,7 +291,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~3"></span>
+              <span class="anchor" id="variable-its~6"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -385,7 +356,24 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~12"></span>
+              <span class="anchor" id="variable-i~7"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~11"></span>
               integer,
             </td>
               <td>private</td>
@@ -433,7 +421,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-18 00:59 +0000             </p>
+ on 2025-07-18 01:33 +0000             </p>
           </div>
         </div>
         <br>

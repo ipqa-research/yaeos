@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">39 statements</a>
+                 title=" 0.4% of total for procedures.">44 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_tx_mp.f90"> Source File</a>
+              <a href="../src/phase_envelopes_px_mp.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_tx_mp.f90.html'>phase_envelopes_tx_mp.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_mp.f90.html'>phase_envelopes_px_mp.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_px.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_px</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,11 +135,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~6.html#variable-x0~8">X0</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-x0~7">X0</a>
             <a class="list-group-item" href="../proc/solve_point~6.html#variable-dx~11">dX</a>
-            <a class="list-group-item" href="../proc/solve_point~6.html#variable-it~5">iT</a>
-            <a class="list-group-item" href="../proc/solve_point~6.html#variable-ia~5">ia</a>
-            <a class="list-group-item" href="../proc/solve_point~6.html#variable-nc~70">nc</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-ip~5">iP</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-ia~2">ia</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-nc~75">nc</a>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine solve_point(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
+    <h2>private  subroutine solve_point(model, z0, zi, np, T, beta_w, x_kinds, w_kind, X, ns, S, dXdS, F, df, iters, max_iterations)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -186,14 +186,14 @@
     </div>
 
 
-    <h1 id="solve_point">solve_point</h1>
-<p>Solve a point in the multiphase envelope.</p>
+    <h1 id="solve_point"><code>solve_point</code></h1>
+<p>Solve the system of equations for a multiphase point.</p>
 <h1 id="description">Description</h1>
-<p>This subroutine solves a point of the system of equations for a
-multiphase isobaric line. It uses the Newton-Raphson method,.</p>
+<p>Solves the point of a multiphase system using the Newton-Raphson
+method. The system of equations is defined in <a href="../proc/px_f_np.html">px_F_NP</a></p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/txenvelmp.html'>TXEnvelMP</a></p>
+    <p><a href='../type/pxenvelmp.html'>PXEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -208,7 +208,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~38"></span>
+              <span class="anchor" id="variable-model~58"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -218,12 +218,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                <p>Model to use for the calculations.</p>
+                <p>Model to use.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~15"></span>
+              <span class="anchor" id="variable-z0~23"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -233,12 +233,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>z0</strong>(:)</td>
             <td>
-                <p>Initial mixture composition.</p>
+                <p>First mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~13"></span>
+              <span class="anchor" id="variable-zi~19"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -253,7 +253,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~19"></span>
+              <span class="anchor" id="variable-np~12"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -263,12 +263,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>np</strong></td>
             <td>
-                <p>Number of main phases.</p>
+                <p>Number of main phases</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~41"></span>
+              <span class="anchor" id="variable-t~95"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -276,14 +276,14 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>T</strong></td>
             <td>
-                <p>Presure [bar].</p>
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~14"></span>
+              <span class="anchor" id="variable-beta_w~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -298,7 +298,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~12"></span>
+              <span class="anchor" id="variable-x_kinds~4"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -306,14 +306,14 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>kinds_x</strong>(np)</td>
+            <td><strong>x_kinds</strong>(np)</td>
             <td>
-                <p>Kinds of the main phases</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~12"></span>
+              <span class="anchor" id="variable-w_kind~4"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -321,14 +321,14 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>kind_w</strong></td>
+            <td><strong>w_kind</strong></td>
             <td>
-                <p>Kind of the reference phase</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~36"></span>
+              <span class="anchor" id="variable-x~51"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -343,7 +343,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~42"></span>
+              <span class="anchor" id="variable-ns~52"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -358,7 +358,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~34"></span>
+              <span class="anchor" id="variable-s~43"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -373,7 +373,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~22"></span>
+              <span class="anchor" id="variable-dxds~24"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -383,12 +383,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>dXdS</strong>(size(X))</td>
             <td>
-                
+                <p>Sensitivity of the variables wrt the specification</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~23"></span>
+              <span class="anchor" id="variable-f~26"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -403,7 +403,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~13"></span>
+              <span class="anchor" id="variable-df~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -418,7 +418,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~11"></span>
+              <span class="anchor" id="variable-iters~13"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -428,12 +428,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>iters</strong></td>
             <td>
-                <p>Number of iterations needed to converge the point.</p>
+                <p>Number of iterations needed to converge the point</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iterations~10"></span>
+              <span class="anchor" id="variable-max_iterations~11"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -443,7 +443,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>max_iterations</strong></td>
             <td>
-                <p>Maximum number of iterations to solve the point.</p>
+                <p>Maximum number of iterations to solve the point</p>
             </td>
         </tr>
     </tbody>
@@ -466,7 +466,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x0~8"></span>
+              <span class="anchor" id="variable-x0~7"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -500,7 +500,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-it~5"></span>
+              <span class="anchor" id="variable-ip~5"></span>
               integer,
             </td>
               <td>private</td>
@@ -508,16 +508,16 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>iT</strong></td>
+            <td><strong>iP</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                <p>Index of the temperature variable in the vector X</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ia~5"></span>
+              <span class="anchor" id="variable-ia~2"></span>
               integer,
             </td>
               <td>private</td>
@@ -529,12 +529,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
                 <td></td>
                 <td></td>
             <td>
-                <p>Index of the <script type="math/tex">alpha</script> variable in the vector X</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~70"></span>
+              <span class="anchor" id="variable-nc~75"></span>
               integer,
             </td>
               <td>private</td>
@@ -546,7 +546,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
                 <td></td>
                 <td></td>
             <td>
-                <p>Number of components in the mixture.</p>
+                
             </td>
         </tr>
     </tbody>
@@ -582,7 +582,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-18 00:59 +0000             </p>
+ on 2025-07-18 01:33 +0000             </p>
           </div>
         </div>
         <br>

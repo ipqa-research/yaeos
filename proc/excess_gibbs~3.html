@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">32 statements</a>
+                 title=" 0.2% of total for procedures.">17 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/unifac.f90"> Source File</a>
+              <a href="../src/nrtl.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/unifac.f90.html'>unifac.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_group_contribution_unifac.html'>yaeos__models_ge_group_contribution_unifac</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/nrtl.f90.html'>nrtl.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_nrtl.html'>yaeos__models_ge_NRTL</a></li>
             <li class="breadcrumb-item active" aria-current="page">excess_gibbs</li>
           </ol>
         </nav>
@@ -135,12 +135,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-ge_c">Ge_c</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-dge_c_dn">dGe_c_dn</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-dge_c_dn2">dGe_c_dn2</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-dn">dn</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-dn2">dn2</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-pge">pge</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-b~12">b</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-dtaudt">dtaudt</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-dtaudt2">dtaudt2</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~3.html#variable-tau">tau</a>
         </div>
       </div>
     </div>
@@ -172,68 +170,24 @@
     <div class="col-md-9" id='text'>
     <h2>public  subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h2>
-    
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/yaeos__models_ge_base.html'>yaeos__models_ge_base</a></li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
 
-    <h1 id="excess-gibbs-energy">Excess Gibbs energy</h1>
-<p>Calculate the Gibbs excess energy of the UNIFAC model</p>
-<h1 id="description">Description</h1>
-<p>Calculate the Gibbs excess energy of the UNIFAC model and its
-derivatives.</p>
-<h1 id="examples">Examples</h1>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="c">! Gibbs excess of ethane-ethanol-methyl amine mixture.</span>
-<span class="w"> </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span>
 
-<span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
-
-<span class="w"> </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">ng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
-
-<span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
-
-<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ge</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">GeT</span><span class="p">,</span><span class="w"> </span><span class="n">GeT2</span><span class="p">,</span><span class="w"> </span><span class="n">GeTn</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
-
-<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">T</span>
-
-<span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="mf">0.0_pr</span>
-<span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">2.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">7.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! Ethane [CH3]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! Ethanol [CH3, CH2, OH]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! Methylamine [H3C-NH2]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">28</span><span class="p">]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! setup UNIFAC model</span>
-<span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
-
-<span class="w"> </span><span class="c">! Call all Ge and derivatives</span>
-<span class="w"> </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="p">,</span><span class="w"> </span><span class="n">GeT</span><span class="p">,</span><span class="w"> </span><span class="n">GeT2</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span><span class="p">,</span><span class="w"> </span><span class="n">GeTn</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">)</span>
-
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ge: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GeT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GeT</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GeT2: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GeT2</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Gen: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GeTn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GeTn</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Gen2:&quot;</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="mi">1</span><span class="p">,:)</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="mi">2</span><span class="p">,:)</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="mi">3</span><span class="p">,:)</span>
-
-<span class="w"> </span><span class="c">! If you want the ln_gammas from &quot;Gen&quot; derivative:</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln_gammas: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">T</span>
-
-<span class="w"> </span><span class="c">! Or</span>
-<span class="w"> </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln_gammas: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span>
-</code></pre></div>
+    <p>Calculate Excess Gibbs and its derivatives.</p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/unifac.html'>UNIFAC</a></p>
+    <p><a href='../type/nrtl.html'>NRTL</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -248,8 +202,8 @@ derivatives.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~18"></span>
-              class(<a href='../type/unifac.html'>UNIFAC</a>),
+              <span class="anchor" id="variable-self~52"></span>
+              class(<a href='../type/nrtl.html'>NRTL</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -258,12 +212,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                <p>UNIFAC model</p>
+                <p>Model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~31"></span>
+              <span class="anchor" id="variable-n~67"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -273,12 +227,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                <p>Moles vector [mol]</p>
+                <p>Moles vector</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~29"></span>
+              <span class="anchor" id="variable-t~66"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -293,7 +247,7 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~9"></span>
+              <span class="anchor" id="variable-ge~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -303,12 +257,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>Ge</strong></td>
             <td>
-                <p>Excess Gibbs energy</p>
+                <p>Excess Gibbs free energy</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~7"></span>
+              <span class="anchor" id="variable-get~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -325,7 +279,7 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~7"></span>
+              <span class="anchor" id="variable-get2~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -342,7 +296,7 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~7"></span>
+              <span class="anchor" id="variable-gen~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -359,7 +313,7 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~7"></span>
+              <span class="anchor" id="variable-getn~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -369,14 +323,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>GeTn</strong>(size(n))</td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dTdn}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~7"></span>
+              <span class="anchor" id="variable-gen2~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -386,9 +338,7 @@ derivatives.</p>
             <td>::</td>
             <td><strong>Gen2</strong>(size(n),size(n))</td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dn^2}</script>
-</p>
+                
             </td>
         </tr>
     </tbody>
@@ -411,7 +361,7 @@ derivatives.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge_c"></span>
+              <span class="anchor" id="variable-b~12"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -419,7 +369,7 @@ derivatives.</p>
               
             </td>
             <td>::</td>
-            <td><strong>Ge_c</strong></td>
+            <td><strong>b</strong>(size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -428,7 +378,7 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dge_c_dn"></span>
+              <span class="anchor" id="variable-dtaudt"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -436,7 +386,7 @@ derivatives.</p>
               
             </td>
             <td>::</td>
-            <td><strong>dGe_c_dn</strong>(self%nmolecules)</td>
+            <td><strong>dtaudt</strong>(size(n),size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -445,7 +395,7 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dge_c_dn2"></span>
+              <span class="anchor" id="variable-dtaudt2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -453,7 +403,7 @@ derivatives.</p>
               
             </td>
             <td>::</td>
-            <td><strong>dGe_c_dn2</strong>(self%nmolecules,self%nmolecules)</td>
+            <td><strong>dtaudt2</strong>(size(n),size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -462,49 +412,15 @@ derivatives.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dn"></span>
-              logical,
+              <span class="anchor" id="variable-tau"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dn</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dn2"></span>
-              logical,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dn2</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-pge"></span>
-              logical,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>pge</strong></td>
+            <td><strong>tau</strong>(size(n),size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -544,7 +460,7 @@ derivatives.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-18 00:59 +0000             </p>
+ on 2025-07-18 01:33 +0000             </p>
           </div>
         </div>
         <br>
