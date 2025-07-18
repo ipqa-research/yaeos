@@ -214,8 +214,9 @@ contains
 
             do while(&
                (maxval(abs(dX)) > 1e-5 &
-               .or. maxval(abs(F)) > 1e-5) &
+               .or. maxval(abs(F)) > 1e-7) &
                .and. real_its < 500)
+
 
                its = its + 1
                real_its = real_its + 1
@@ -239,7 +240,6 @@ contains
             if (real_its == 500) exit
             if (any(isnan(X))) exit
             if (exp(X(spec_CP%P)) > max_P) exit
-
 
             a = get_a(X(1))
             V = exp(X(2))
@@ -308,6 +308,7 @@ contains
 
       real(pr) :: y_cep(size(z0)), V_cep
       real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
+      integer :: its
 
       found = .false.
       y_cep = 0
@@ -316,15 +317,17 @@ contains
       call stability_check(model, z0, zi, Pc, Vc, Tc, a, found, y_cep, V_cep)
 
       if (found) then
+         its = 0
          Fcep = 1
          Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(a)]
          do while(maxval(abs(Fcep)) > 1e-5)
+            its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dXcep = solve_system(dFcep, -Fcep)
 
-            do while(abs(dXcep(2+4)) > 0.01)
-               dXcep(2+4) = dXcep(2+4)/2
+            do while(maxval(abs(dXcep)) > 0.1)
+               dXcep = dXcep/2
             end do
             Xcep = Xcep + dXcep
          end do
@@ -362,7 +365,7 @@ contains
 
       real(pr) :: z(2)
       real(pr) :: y(2), dy
-      real(pr) :: fug_z(2), fug_y(2), P
+      real(pr) :: fug_z(2), fug_y(2), P, mintpd
       integer :: istab, istab0
       real(pr) :: tpd
 
