@@ -545,7 +545,7 @@ contains
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.5)
+         do while(abs(dX(iP)) > 0.25)
             dX = dX/2
          end do
 
