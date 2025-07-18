@@ -23,6 +23,8 @@ class GPEC:
         stability_analysis=True,
         step_21=1e-2,
         step_12=1e-5,
+        x20=0.9999,
+        x10=0.99999,
     ):
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
@@ -35,13 +37,12 @@ class GPEC:
 
         # Calculate the critical line starting from the almost pure second
         # component.
-        diff = 1e-3
         cl, cep = model.critical_line(
             z0=self._z0,
             zi=self._zi,
             ns=1,
-            s=diff,
-            a0=diff,
+            s=1-x20,
+            a0=1-x20,
             ds0=step_21,
             stop_pressure=max_pressure,
             max_points=max_points,
@@ -63,8 +64,8 @@ class GPEC:
                 z0=self._z0,
                 zi=self._zi,
                 ns=1,
-                s=1 - diff / 10,
-                a0=1 - diff / 10,
+                s=x10,
+                a0=x10,
                 ds0=-step_12,
                 stop_pressure=max_pressure,
                 max_points=max_points,
