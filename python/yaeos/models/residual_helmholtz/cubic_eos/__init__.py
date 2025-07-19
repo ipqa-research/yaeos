@@ -9,7 +9,12 @@ Implemented models:
     - RKPR: RKPR model
 - Mixing rules: mixing rules for cubic EoS
     - QMR: cuadratic mixing rule
-    - MHV: modified Huron-Vidal mixing rule
+    - MHV1: modified Huron-Vidal mixing rule
+    - HV: Huron-Vidal mixing rule
+    - HVNRTL:
+    Huron-Vidal mixing rule with NRTL excess Gibbs energy
+    model modified by Huron-Vidal
+
 """
 
 from .cubic_eos import (

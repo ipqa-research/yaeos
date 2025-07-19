@@ -6,18 +6,15 @@ the models' thermoprops methods.
 
 from abc import ABC
 from typing import Union
+from warnings import warn
 
 from intersect import intersection
 
 import numpy as np
 
-from yaeos.lib import yaeos_c
-
-from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
-
 from yaeos.constants import root_kinds
-
-from warnings import warn
+from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
+from yaeos.lib import yaeos_c
 
 
 MAX_POINTS_ENVELOPES = 1000
@@ -357,13 +354,14 @@ class GeModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-            - w: value of the test phase that minimizes the :math:`tm` function
-            - tm: minimum value of the :math:`tm` function.
+            `w:` value of the test phase that minimizes the :math:`tm` function
+            `tm:` minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
-            - w: all values of :math:`w` that minimize the :math:`tm` function
-            - tm: all values found minima of the :math:`tm` function"""
+            `w:` all values of :math:`w` that minimize the :math:`tm` function
+            `tm:` all values found minima of the :math:`tm` function
+        """
         (w_min, tm_min, all_mins) = yaeos_c.stability_zt_ge(
             id=self.id, z=z, t=temperature
         )
@@ -1602,7 +1600,6 @@ class ArModel(ABC):
             plt.plot(env["T"], env["P"])
             plt.scatter(env["Tc"], env["Pc"])
         """
-
         ds0 = 0.001
 
         if kind == "bubble":
@@ -1899,7 +1896,6 @@ class ArModel(ABC):
         stop_pressure : float, optional
             Stop at pressure above stop_pressure [bar], default 2500
         """
-
         np = 2
         if specified_variable is None:
             specified_variable = 2 * len(z) + np + 2
@@ -2201,7 +2197,6 @@ class ArModel(ABC):
         kind_w=None,
     ) -> TXEnvelope:
         """Multi-phase envelope."""
-
         x_l0 = np.array(x_l0, order="F")
 
         number_of_phases = x_l0.shape[0]
@@ -2293,19 +2288,19 @@ class ArModel(ABC):
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
 
-        Ts, Ps, *_ = intersection(env1["T"], env1["P"], env2["T"], env2["P"])
+        temperatures, pressures, *_ = intersection(
+            env1["T"], env1["P"], env2["T"], env2["P"]
+        )
 
         dsps = []
         locs_1 = []
         locs_2 = []
-        for Tdsp, Pdsp in zip(Ts, Ps):
+        for t, p in zip(temperatures, pressures):
             env1_loc = (
-                np.argmin(np.abs(env1["T"] - Tdsp) + np.abs(env1["P"] - Pdsp))
-                + 1
+                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
             )
             env2_loc = (
-                np.argmin(np.abs(env2["T"] - Tdsp) + np.abs(env2["P"] - Pdsp))
-                + 1
+                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p)) + 1
             )
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
@@ -2332,8 +2327,8 @@ class ArModel(ABC):
                 x_l0=x_l1,
                 w0=w0,
                 betas0=[*betas_1, 0],
-                p0=Pdsp,
-                t0=Tdsp,
+                p0=p,
+                t0=t,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2347,8 +2342,8 @@ class ArModel(ABC):
                 x_l0=x_l2,
                 w0=y0,
                 betas0=[*betas_2, 0],
-                p0=Pdsp,
-                t0=Tdsp,
+                p0=p,
+                t0=t,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2370,6 +2365,7 @@ class ArModel(ABC):
 
         This method calculates the phase envelope at the intersection of two
         PX envelopes, `env1` and `env2`.
+
         Parameters
         ----------
         z0 : array_like
@@ -2388,15 +2384,23 @@ class ArModel(ABC):
             List of lists of two PXEnvelope objects, one for each intersection
             point.
         """
+        temperature = env1.temperature
+        t2 = env2.temperature
+        if temperature != t2:
+            raise ValueError(
+                "The temperatures of the envelopes must be the same"
+            )
 
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
-        dsps = intersection(env1["a"], env1["P"], env2["a"], env2["P"])
+        alphas, pressures, *_ = intersection(
+            env1["a"], env1["P"], env2["a"], env2["P"]
+        )
         dsps = []
 
-        for adsp, Pdsp in zip(dsps[0], dsps[1]):
-            env1_loc = np.argmin(abs(env1["a"] - adsp) + abs(env1["P"]) - Pdsp)
-            env2_loc = np.argmin(abs(env2["a"] - adsp) + abs(env2["P"]) - Pdsp)
+        for a, p in zip(alphas, pressures):
+            env1_loc = np.argmin(abs(env1["a"] - a) + abs(env1["P"] - p))
+            env2_loc = np.argmin(abs(env2["a"] - a) + abs(env2["P"] - p))
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
@@ -2414,12 +2418,12 @@ class ArModel(ABC):
             dsp_1 = self.phase_envelope_px_mp(
                 z0=z0,
                 zi=zi,
-                t=T,
+                t=temperature,
                 x_l0=x_l1,
                 w0=w0,
                 betas0=[*betas_1, 0],
-                p0=Pdsp,
-                alpha0=adsp,
+                p0=p,
+                alpha0=a,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2429,12 +2433,12 @@ class ArModel(ABC):
             dsp_2 = self.phase_envelope_px_mp(
                 z0=z0,
                 zi=zi,
-                t=T,
+                t=temperature,
                 x_l0=x_l2,
                 w0=y0,
                 betas0=[*betas_2, 0],
-                p0=Pdsp,
-                alpha0=adsp,
+                p0=p,
+                alpha0=a,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2457,7 +2461,12 @@ class ArModel(ABC):
         delta_dsp_3ph=0.01,
         stop_pressure=2500,
     ):
+        """Calculate a whole isoplethic phase diagram.
 
+        This method calculates the isoplethic phase diagram for a given
+        composition `z`. It is still under construction, so it should be used
+        with caution.
+        """
         dew_point = self.saturation_temperature(
             z, pressure=dew_start[1], kind="dew", t0=dew_start[0]
         )
@@ -2543,7 +2552,7 @@ class ArModel(ABC):
 
         dew_locs = []
         bub_locs = []
-        liq_locs = []
+        liq_locs = []  # noqa
 
         three_phase_envs = []
         stable_lines = {"3ph": [], "2ph": []}

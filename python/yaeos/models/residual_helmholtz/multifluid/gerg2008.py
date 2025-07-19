@@ -1,10 +1,26 @@
-"""Gerg2008 Equation of State"""
+"""GERG2008 Equation of State."""
 
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
 
 
 class GERG2008(ArModel):
+    """GERG2008 Equation of State.
+
+    This class implements the residual contribution of the GERG2008 equation of
+    state for multi-component systems. It is a highly accurate thermodynamic
+    model for natural gas applications.
+
+    Parameters
+    ----------
+    names: list, str
+        List of names for the components to use in the model. Valid names are:
+        methane, nitrogen, carbon dioxide, ethane, propane, n-butane,
+        isobutane, n-pentane, isopentane, n-hexane, n-heptane, n-octane,
+        nonane, decane, hydrogen, oxygen, carbon monoxide, water,
+        hydrogen sulfide, helium, argon.
+    """
+
     possible_components = {
         "methane": 1,
         "c1": 1,
@@ -61,13 +77,12 @@ class GERG2008(ArModel):
     }
 
     def __init__(self, names):
-        """GERG2008 Equation of State.
-
-        Parameters
-        ----------
-        names: list, str
-            List of names for the components to use in the model.
-        """
-
-        ids = [self.possible_components[name] for name in names]
+        try:
+            ids = [self.possible_components[name] for name in names]
+        except KeyError as e:
+            raise ValueError(
+                f"Invalid component name: {e}. "
+                "Valid names are: "
+                f"{', '.join(self.possible_components.keys())}"
+            )
         self.id = yaeos_c.multifluid_gerg2008(ids)
