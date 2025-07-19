@@ -196,4 +196,5 @@ class BinaryFitter:
 
     @property
     def solution(self):
+        """Return the optimization solution."""
         return self._solution

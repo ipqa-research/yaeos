@@ -15,7 +15,9 @@ import pandas as pd
 
 class PTEnvelope:
     """PTEnvelope.
+
     This class represents a pressure-temperature envelope.
+
     Attributes
     ----------
     global_composition : np.ndarray
@@ -53,9 +55,12 @@ class PTEnvelope:
         A DataFrame containing the data of the envelope. The columns are:
         - 'T': Temperatures along the envelope.
         - 'P': Pressures along the envelope.
-        - 'x_i^j': Compositions of the main phases, where `i` is the component index and `j` is the phase index.
-        - 'w_i': Compositions of the reference phase, where `i` is the component index.
-        - 'beta^j': Molar fractions of the main phases, where `j` is the phase index.
+        - 'x_i^j': Compositions of the main phases, where `i` is the component
+          index and `j` is the phase index.
+        - 'w_i': Compositions of the reference phase, where `i` is the
+          component index.
+        - 'beta^j': Molar fractions of the main phases, where `j` is the
+          phase index.
     """
 
     def __init__(
@@ -100,15 +105,28 @@ class PTEnvelope:
 
         for i in range(self.number_of_components):
             for j in range(self.number_of_phases):
-                df[f"x_{i+1}^{j+1}"] = self.main_phases_compositions[:, j, i]
-            df[f"w_{i+1}"] = self.reference_phase_compositions[:, i]
+                label = f"x_{i + 1}^{j + 1}"
+                df[label] = self.main_phases_compositions[:, j, i]
+            df[f"w_{i + 1}"] = self.reference_phase_compositions[:, i]
 
         for i in range(self.number_of_phases):
-            df[f"beta^{i+1}"] = self.main_phases_molar_fractions[:, i]
+            df[f"beta^{i + 1}"] = self.main_phases_molar_fractions[:, i]
 
         self.df = df
 
     def plot(self, **plot_kwargs):
+        """Plot the envelope.
+
+        Plot the envelope in a matplotlib axis. Using the natural variables of
+        the envelope (temperature and pressure). If the `ax` keyword argument
+        is provided, it will be used as the axis to plot on. Otherwise, the
+        current axis will be used.
+
+        Parameters
+        ----------
+        plot_kwargs : dict
+            Keyword arguments to pass to the `plot` method of the axis.
+        """
         if "ax" in plot_kwargs:
             ax = plot_kwargs["ax"]
             del plot_kwargs["ax"]
@@ -122,6 +140,24 @@ class PTEnvelope:
         )
 
     def __getitem__(self, key):
+        """Get item from the envelope.
+
+        This method allows for indexing into the envelope object to retrieve
+        specific data. It supports various types of keys, including slices,
+        numpy arrays, lists, and specific attributes like 'T', 'Pc', 'P',
+        'z', 'x', and 'w'.
+
+        Parameters
+        ----------
+        key : int, slice, np.ndarray, list, str
+            The key to index into the envelope. It can be an integer, a slice,
+            a numpy array, a list, or a string representing an attribute.
+
+        Returns
+        -------
+        PTEnvelope
+            A new PTEnvelope object with the selected data.
+        """
         if "key" in self.__dict__:
             return self.__dict__["key"]
         elif isinstance(key, slice):
@@ -176,17 +212,24 @@ class PTEnvelope:
             return self.main_phases_compositions
         elif key == "w":
             return self.reference_phase_compositions
+        else:
+            raise KeyError(
+                f"Key {key} not found in PTEnvelope. "
+                "Available keys are: 'T', 'Pc', 'P', 'z', 'x', 'w'."
+            )
 
     def __repr__(self):
+        """Return a representation of the envelope."""
         display(self.df)
         return ""
 
     def __len__(self):
+        """Return the length of the envelope."""
         return len(self.temperatures)
 
 
 class PXEnvelope:
-    """PXEnvelope.
+    r"""PXEnvelope.
 
     This class represents a pressure-composition envelope.
 
@@ -282,11 +325,12 @@ class PXEnvelope:
 
         for i in range(self.number_of_components):
             for j in range(self.number_of_phases):
-                df[f"x_{i+1}^{j+1}"] = self.main_phases_compositions[:, j, i]
-            df[f"w_{i+1}"] = self.reference_phase_compositions[:, i]
+                label = f"x_{i + 1}^{j + 1}"
+                df[label] = self.main_phases_compositions[:, j, i]
+            df[f"w_{i + 1}"] = self.reference_phase_compositions[:, i]
 
         for i in range(self.number_of_phases):
-            df[f"beta^{i+1}"] = self.main_phases_molar_fractions[:, i]
+            df[f"beta^{i + 1}"] = self.main_phases_molar_fractions[:, i]
 
         self.df = df
 
@@ -317,6 +361,24 @@ class PXEnvelope:
         )
 
     def __getitem__(self, key):
+        """Get item from the envelope.
+
+        This method allows for indexing into the envelope object to retrieve
+        specific data. It supports various types of keys, including slices,
+        numpy arrays, lists, and specific attributes like 'alpha', 'P', 'z',
+        'x', and 'w'.
+
+        Parameters
+        ----------
+        key : int, slice, np.ndarray, list, str
+            The key to index into the envelope. It can be an integer, a slice,
+            a numpy array, a list, or a string representing an attribute.
+
+        Returns
+        -------
+        PXEnvelope
+            A new PXEnvelope object with the selected data.
+        """
         if "key" in self.__dict__:
             return self.__dict__["key"]
         elif isinstance(key, np.ndarray) or isinstance(key, list):
@@ -350,15 +412,17 @@ class PXEnvelope:
             return self.reference_phase_compositions
 
     def __repr__(self):
+        """Return a representation of the envelope."""
         display(self.df)
         return ""
 
     def __len__(self):
+        """Return the length of the envelope."""
         return len(self.alphas)
 
 
 class TXEnvelope:
-    """TXEnvelope.
+    r"""TXEnvelope.
 
     This class represents a temperature-composition envelope.
 
@@ -393,7 +457,8 @@ class TXEnvelope:
     temperature : float
         The temperatures along envelope. [K]
     critical_temperatures : np.ndarray
-        The critical temperatures of the envelope. Shape is (n_critical_points,).
+        The critical temperatures of the envelope.
+        It's shape is (n_critical_points,).
     critical_alphas : np.ndarray
         The molar fractions of the `global_composition_i` at the critical
         points, :math:`\alpha`.  Shape is (n_critical_points,).
@@ -456,11 +521,12 @@ class TXEnvelope:
 
         for i in range(self.number_of_components):
             for j in range(self.number_of_phases):
-                df[f"x_{i+1}^{j+1}"] = self.main_phases_compositions[:, j, i]
-            df[f"w_{i+1}"] = self.reference_phase_compositions[:, i]
+                label = f"x_{i + 1}^{j + 1}"
+                df[label] = self.main_phases_compositions[:, j, i]
+            df[f"w_{i + 1}"] = self.reference_phase_compositions[:, i]
 
         for i in range(self.number_of_phases):
-            df[f"beta^{i+1}"] = self.main_phases_molar_fractions[:, i]
+            df[f"beta^{i + 1}"] = self.main_phases_molar_fractions[:, i]
 
         self.df = df
 
@@ -491,6 +557,24 @@ class TXEnvelope:
         )
 
     def __getitem__(self, key):
+        """Get item from the envelope.
+
+        This method allows for indexing into the envelope object to retrieve
+        specific data. It supports various types of keys, including slices,
+        numpy arrays, lists, and specific attributes like 'alpha', 'T', 'z',
+        'x', and 'w'.
+
+        Parameters
+        ----------
+        key : int, slice, np.ndarray, list, str
+            The key to index into the envelope. It can be an integer, a slice,
+            a numpy array, a list, or a string representing an attribute.
+
+        Returns
+        -------
+        TXEnvelope
+            A new TXEnvelope object with the selected data.
+        """
         if "key" in self.__dict__:
             return self.__dict__["key"]
         elif isinstance(key, np.ndarray) or isinstance(key, list):
@@ -524,8 +608,10 @@ class TXEnvelope:
             return self.reference_phase_compositions
 
     def __repr__(self):
+        """Return a representation of the envelope."""
         display(self.df)
         return ""
 
     def __len__(self):
+        """Return the length of the envelope."""
         return len(self.alphas)
