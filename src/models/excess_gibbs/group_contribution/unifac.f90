@@ -74,42 +74,9 @@ module yaeos__models_ge_group_contribution_unifac
    use yaeos__models_ge, only: GeModel
    use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
    use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
+   use yaeos__models_ge_gc_td, only: PsiFunction, UNIFACPsi
+   use yaeos__models_ge_group_contribution_groups, only: Groups
    implicit none
-
-   type :: Groups
-      !! # Groups
-      !! Derived type used to represent a molecule and its UNIFAC groups.
-      !!
-      !! # Description
-      !! Derived type used to represent a molecule and its UNIFAC groups. Is
-      !! necessary to specify the subgroups ids and the subgroups on each
-      !! molecule as shown in the example.
-      !!
-      !! # Examples
-      !!
-      !! ```fortran
-      !!  ! Define toluene molecule groups
-      !!  use yaeos, only: Groups
-      !!
-      !!  type(Groups) :: toluene
-      !!
-      !!  ! Toluene [ACH, ACCH3]
-      !!  toluene%groups_ids = [9, 11] ! Subgroups ids
-      !!  toluene%number_of_groups = [5, 1] ! Subgroups occurrences
-      !! ```
-      !!
-      !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
-      integer, allocatable :: groups_ids(:)
-      !! Indexes (ids) of each subgroup in the main group matrix
-      integer, allocatable :: number_of_groups(:)
-      !! Occurrences of each subgroup in the molecule
-      real(pr) :: surface_area
-      !! Molecule surface area \(q\)
-      real(pr) :: volume
-      !! Molecule volume \(r\)
-   end type Groups
 
    type, extends(GeModel) :: UNIFAC
       !! # UNIFAC model
@@ -192,8 +159,10 @@ module yaeos__models_ge_group_contribution_unifac
       !! Total number of individual groups in the mixture
       integer :: nmolecules
       !! Total number of molecules in the mixture
-      real(pr) :: z = 10
-      !! Model constant
+      real(pr) :: z = 10.0_pr
+      !! Model constant z
+      real(pr) :: d = 1.0_pr
+      !! Model constant d, exponent of the group volume in Flory-Huggins
       real(pr), allocatable :: group_area(:)
       !! Group areas \(Q_k\)
       real(pr), allocatable :: group_volume(:)
@@ -212,101 +181,11 @@ module yaeos__models_ge_group_contribution_unifac
       !! All the groups present in the system
    contains
       procedure :: excess_gibbs
+      procedure :: Ge_combinatorial
+      procedure :: Ge_residual
    end type UNIFAC
 
-   type, abstract :: PsiFunction
-      !! # \(\psi(T)\) function
-      !! UNIFAC \(\psi(T)\) functions abstract type
-      !!
-      !! # Description
-      !! Abstract derived type for UNIFAC models temperature dependent functions
-      !!
-   contains
-      procedure(temperature_dependence), deferred :: psi
-   end type PsiFunction
 
-   abstract interface
-      subroutine temperature_dependence(&
-         self, systems_groups, T, psi, dpsi_dt, dpsi_dt2&
-         )
-         !! # temperature_dependence interface
-         !! Interface subroutine for UNIFAC models temperature dependent
-         !! functions
-         !!
-         import pr, PsiFunction, Groups
-         class(PsiFunction) :: self
-         !! PsiFunction type variable
-         class(Groups) :: systems_groups
-         !! Groups type variable containig all the system's groups. See the
-         !! `groups_stew` variable on the `UNIFAC` documentation.
-         real(pr), intent(in) :: T
-         !! Temperature [K]
-         real(pr), optional, intent(out) :: psi(:, :)
-         !! \(\psi(T)\)
-         real(pr), optional, intent(out) :: dpsi_dt(:, :)
-         !! \(\frac{d \psi (T)}{dT}\)
-         real(pr), optional, intent(out) :: dpsi_dt2(:, :)
-         !! \(\frac{d^2 \psi (T)}{dT^2}\)
-      end subroutine temperature_dependence
-   end interface
-
-   type, extends(PsiFunction) :: UNIFACPsi
-      !! # Original UNIFAC \(\psi\) function
-      !! \[
-      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
-      !! \]
-      !!
-      !! \[
-      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
-      !!    \exp(-\frac{A_{ij}}{T})
-      !! \]
-      !!
-      !! \[
-      !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
-      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
-      !! \]
-      !!
-      !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
-      !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
-      !! Group‐contribution estimation of activity coefficients in nonideal liquid
-      !! mixtures. AIChE Journal, 21(6), 1086–1099.
-      !! [https://doi.org/10.1002/aic.690210607](https://doi.org/10.1002/aic.690210607)
-      !! 3. Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., & Rasmussen, P. (1979).
-      !! Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and
-      !! Extension. Industrial & Engineering Chemistry Process Design and
-      !! Development, 18(4), 714–722.
-      !! [https://doi.org/10.1021/i260072a024](https://doi.org/10.1021/i260072a024)
-      !! 4. Gmehling, J., Rasmussen, P., & Fredenslund, A. (1982). Vapor-liquid
-      !! equilibriums by UNIFAC group contribution. Revision and extension. 2.
-      !! Industrial & Engineering Chemistry Process Design and Development, 21(1),
-      !! 118–127.
-      !! [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
-      !! 5. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
-      !! Vapor-liquid equilibriums by UNIFAC group contribution. Revision and
-      !! extension. 3. Industrial & Engineering Chemistry Process Design and
-      !! Development, 22(4), 676–678.
-      !! [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
-      !! 6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
-      !! Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
-      !! extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
-      !! [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
-      !! 7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &
-      !! Gmehling, J. (1991). Vapor-liquid equilibria by UNIFAC group
-      !! contribution. 5. Revision and extension. Industrial & Engineering
-      !! Chemistry Research, 30 (10), 2352–2355.
-      !! [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
-      !! 8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria
-      !! by UNIFAC Group Contribution. 6. Revision and Extension. Industrial &
-      !! Engineering Chemistry Research, 42(1), 183–188.
-      !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
-      !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
-      !!
-      real(pr), allocatable :: Aij(:, :)
-   contains
-      procedure :: psi => UNIFAC_temperature_dependence
-   end type UNIFACPsi
 contains
 
    subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
@@ -400,7 +279,7 @@ contains
       logical :: pge, dn, dn2
 
       ! Residual calling
-      call Ge_residual(self, n, T, Ge, Gen, Gen2, GeT, GeT2, GeTn)
+      call self%Ge_residual(n, T, Ge, Gen, Gen2, GeT, GeT2, GeTn)
 
       ! Individual combinatorial calling
       pge = present(Ge)
@@ -408,12 +287,12 @@ contains
       dn2 = present(Gen2)
 
       if (dn .and. .not. dn2) then
-         call Ge_combinatorial(self, n, T, Ge=Ge_c, dGe_dn=dGe_c_dn)
+         call self%Ge_combinatorial(n, T, Ge=Ge_c, dGe_dn=dGe_c_dn)
       elseif (dn2 .and. .not. dn) then
-         call Ge_combinatorial(self, n, T, Ge=Ge_c, dGe_dn2=dGe_c_dn2)
+         call self%Ge_combinatorial(n, T, Ge=Ge_c, dGe_dn2=dGe_c_dn2)
       else
-         call Ge_combinatorial(&
-            self, n, T, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2 &
+         call self%Ge_combinatorial(&
+            n, T, Ge=Ge_c, dGe_dn=dGe_c_dn, dGe_dn2=dGe_c_dn2 &
             )
       end if
 
@@ -430,65 +309,9 @@ contains
       !! Calculate the UNIFAC combinatorial term of Gibbs excess energy
       !!
       !! # Description
-      !! Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
-      !! The subroutine uses the Flory-Huggins and Staverman-Guggenheim
-      !! combinatory terms as follows:
-      !!
-      !! ### Flory-Huggins
-      !!
-      !! \[
-      !!    G^{E,FH} =
-      !!    RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i
-      !!    - n \, \text{ln} \, \sum_j^{NC} n_j r_j
-      !!    + n \, \text{ln} \, n \right)
-      !! \]
-      !!
-      !! \[
-      !!    \frac{dG^{E,FH}}{dn_i} =
-      !!    RT \left(\text{ln} \, r_i - \text{ln} \, \sum_j^{NC} n_j r_j
-      !!    + \text{ln} \, n + 1 - \frac{n r_i}{\displaystyle
-      !!    \sum_j^{NC} n_j r_j} \right)
-      !! \]
-      !!
-      !! \[
-      !!    \frac{d^2G^{E,FH}}{dn_i dn_j} =
-      !!    RT \left(- \frac{r_i + r_j}{\displaystyle \sum_l^{NC} n_l r_l}
-      !!    + \frac{1}{n} + \frac{n r_i r_j}{\displaystyle \left(\sum_l^{NC}
-      !!    n_l r_l \right)^2} \right)
-      !! \]
-      !!
-      !! ### Staverman-Guggenheim
-      !!
-      !! \[
-      !!    \frac{G^{E,SG}}{RT} =
-      !!    \frac{z}{2} \sum_i^{NC} n_i q_i
-      !!    \left(\text{ln} \frac{q_i}{r_i}
-      !!    - \text{ln} \, \sum_j^{NC} n_j q_j
-      !!    + \text{ln} \, \sum_j^{NC} n_j r_j \right)
-      !! \]
-      !!
-      !! \[
-      !!    \frac{1}{RT}\frac{dG^{E,SG}}{dn_i} =
-      !!    \frac{z}{2} q_i \left(
-      !!    - \text{ln} \, \left(
-      !!    \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC}
-      !!    n_j r_j} \right) - 1 + \frac{\displaystyle r_i \sum_j^{NC} n_j
-      !!    q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
-      !! \]
-      !!
-      !! \[
-      !!    \frac{1}{RT}\frac{d^2G^{E,SG}}{dn_i dn_j} =
-      !!    \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_lq_l}
-      !!    + \frac{q_i r_j + q_j r_i}{\displaystyle \sum_l^{NC} n_l r_l}
-      !!    - \frac{\displaystyle r_i r_j \sum_l^{NC} n_l q_l}
-      !!    {\left(\displaystyle \sum_l^{NC} n_l r_l \right)^2} \right)
-      !! \]
-      !!
-      !! ### Fredenslund et al. (UNIFAC)
-      !! \[
-      !!    \frac{G^{E,\text{UNIFAC}}}{RT} =
-      !!    \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
-      !! \]
+      !! Calculate the UNIFAC combinatorial term of reduced Gibbs excess 
+      !! energy. The subroutine uses the Flory-Huggins and 
+      !! Staverman-Guggenheim.
       !!
       !! # References
       !! 1. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
@@ -516,26 +339,28 @@ contains
       real(pr) :: dGe_sg_dn2(self%nmolecules,self%nmolecules)
 
       ! utility
-      real(pr) :: nq, nr, n_t
+      real(pr) :: nq, nr, nrp, n_t
       integer :: i, j
 
       associate(&
          q => self%molecules%surface_area,&
          r => self%molecules%volume,&
-         z => self%z &
+         z => self%z, &
+         d => self%d &
          )
 
          nr = dot_product(n, r)
+         nrp = dot_product(n, r**d)
          nq = dot_product(n, q)
          n_t = sum(n)
 
          if (present(Ge)) then
-            Ge_fh = sum(n * log(r)) - n_t * log(nr) + n_t * log(n_t)
+            Ge_fh = sum(n * log(r**d)) - n_t * log(nrp) + n_t * log(n_t)
             Ge_sg = z/2 * sum(n * q * (log(q/r) - log(nq) + log(nr)))
          end if
 
          if (present(dGe_dn)) then
-            dGe_fh_dn = log(r) - log(nr) + log(n_t) + 1.0_pr - n_t * r / nr
+            dGe_fh_dn = log(r**d) - log(nrp) + log(n_t) + 1.0_pr - n_t * r**d / nrp
             dGe_sg_dn = z/2*q*(-log((r*nq)/(q*nr)) - 1.0_pr + (r*nq)/(q*nr))
          end if
 
@@ -543,7 +368,7 @@ contains
             dGe_fh_dn2 = 0.0_pr
             dGe_sg_dn2 = 0.0_pr
             do concurrent(i=1:size(n), j=1:size(n))
-               dGe_fh_dn2(i,j) = -(r(i) + r(j))/nr + 1.0_pr/n_t + n_t*r(i)*r(j)/ nr**2
+               dGe_fh_dn2(i,j) = -(r(i)**d + r(j)**d)/nrp + 1.0_pr/n_t + n_t * r(i)**d * r(j)**d / nrp**2
                dGe_sg_dn2(i,j) = z/2.0_pr*(-q(i)*q(j)/nq + (q(i)*r(j) + q(j)*r(i))/nr - r(i)*r(j)*nq/nr**2)
             end do
          end if
@@ -556,153 +381,7 @@ contains
 
    subroutine Ge_residual(self, n, T, Ge, dGe_dn, dGe_dn2, dGe_dT, dGe_dT2, dGe_dTn)
       !! # UNIFAC residual term
-      !! Evaluate the UNIFAC residual therm
-      !!
-      !! # Description
-      !! Evaluate the UNIFAC residual therm. The residual Gibbs excess energy
-      !! and its derivatives are evaluated as:
-      !!
-      !! \[
-      !!  \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
-      !!  (\Lambda_k - \Lambda_k^i)
-      !! \]
-      !!
-      !! With:
-      !!
-      !! \[
-      !!  \Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}
-      !! \]
-      !!
-      !! \[
-      !!  \Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}
-      !! \]
-      !!
-      !! \[
-      !!  E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)
-      !! \]
-      !!
-      !! \[
-      !!  \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
-      !!  {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}
-      !! \]
-      !!
-      !! \[
-      !!  \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
-      !! \]
-      !!
-      !! In the UNIFAC model, the \(\Theta_j^i \) values are calculated assuming
-      !! that the molecule "i" is pure, hence only the subgroups of the molecule
-      !! "i" must be considered for the calculation. On the other hand, for the
-      !! \(\Theta_j \) values, all the system's subgroups are considered.
-      !!
-      !! ##### The compositional derivatives:
-      !!
-      !! \[
-      !!  \frac{1}{R T} \frac{\partial G^{E,R}}{\partial n_\alpha} =
-      !!  - \sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\Lambda_k -
-      !!  \Lambda_k^\alpha \right) - \sum_i^{\mathrm{NC}} n_i
-      !!  \sum_k^{\mathrm{NG}} v_k^i Q_k
-      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}
-      !! \]
-      !!
-      !! \[
-      !!  \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_
-      !!  \alpha \partial n_\beta} = -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha
-      !!  \frac{\partial \Lambda_k}{\partial n_\beta} + v_k^\beta
-      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}\right)
-      !!  - \sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
-      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
-      !! \]
-      !!
-      !! With:
-      !!
-      !! \[
-      !!  \frac{\partial \Lambda_k}{\partial n_\alpha}
-      !!  = \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}}
-      !!  {\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
-      !!  E_{j k}} - \frac{\sum_m^{\mathrm{NG}} v_m^\alpha Q_m}
-      !!  {\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m}
-      !! \]
-      !!
-      !! \[
-      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
-      !!  = - \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}\right)
-      !!  \left(\sum_j^{\mathrm{NG}} v_j^\beta Q_j E_{j k}\right)}
-      !!  {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
-      !!  E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
-      !!  Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
-      !!  {\left(\sum_l^{\mathrm{NC}} n_l
-      !!  \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
-      !! \]
-      !!
-      !! ##### The temperature derivatives:
-      !!
-      !! \[
-      !!  \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} =
-      !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
-      !!  \left(\frac{\partial \Lambda_k}{\partial T}
-      !!  -\frac{\partial \Lambda_k^i}{\partial T}\right)
-      !! \]
-      !!
-      !! \[
-      !!  \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
-      !!  -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
-      !!  \left(\frac{\partial^2 \Lambda_k}{\partial T^2} -
-      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
-      !! \]
-      !!
-      !! With:
-      !!
-      !! \[
-      !!  \frac{\partial \Lambda_k}{\partial T} =
-      !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
-      !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
-      !! \]
-      !!
-      !! \[
-      !!  \frac{\partial \Lambda_k^i}{\partial T} =
-      !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
-      !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
-      !! \]
-      !!
-      !! \[
-      !!  \frac{\partial^2 \Lambda_k}{\partial T^2} =
-      !!  \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
-      !!  {\sum_{j}^{NG} \Theta_j E_{jk}}
-      !!  - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
-      !! \]
-      !!
-      !! \[
-      !!  \frac{\partial^2 \Lambda_k^i}{\partial T^2} =
-      !!  \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
-      !!  {\sum_{j}^{NG} \Theta_j^i E_{jk}}
-      !!  - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
-      !! \]
-      !!
-      !! ##### Temperature-compositional cross derivative:
-      !!
-      !! \[
-      !!  \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
-      !!  {\partial n_\alpha \partial T}=
-      !!  -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
-      !!  {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right)
-      !!  -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right)
-      !!  Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
-      !! \]
-      !!
-      !! With:
-      !!
-      !! \[
-      !!  \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T} =
-      !!  \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \frac{\partial
-      !!  \tilde{E}_{j k}}{\partial T}}{\sum_l^{\mathrm{NC}} n_l
-      !!  \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}} -
-      !!  \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \tilde{E}_{j k}\right)
-      !!  \left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
-      !!  \frac{\partial \tilde{E}_{j k}}{\partial T}\right)}
-      !!  {\left(\sum_l^{\mathrm{NC}} n_l
-      !!  \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}\right)^2}
-      !! \]
+      !! Evaluate the UNIFAC residual term
       !!
       !! # References
       !! 1. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
@@ -982,97 +661,6 @@ contains
       end if
    end subroutine Ge_residual
 
-   subroutine UNIFAC_temperature_dependence(&
-      self, systems_groups, T, psi, dpsi_dt, dpsi_dt2 &
-      )
-      !! # UNIFAC temperature dependence
-      !! Implementation of the \(\psi(T) \) function of the UNIFAC model.
-      !!
-      !! \[
-      !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
-      !! \]
-      !!
-      !! \[
-      !!    \frac{d \psi_{ij}(T)}{dT} = \frac{A_{ij}}{T^2}
-      !!    \exp(-\frac{A_{ij}}{T})
-      !! \]
-      !!
-      !! \[
-      !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
-      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
-      !! \]
-      !!
-      !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
-      !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
-      !! Group‐contribution estimation of activity coefficients in nonideal liquid
-      !! mixtures. AIChE Journal, 21(6), 1086–1099.
-      !! [https://doi.org/10.1002/aic.690210607](https://doi.org/10.1002/aic.690210607)
-      !! 3. Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., & Rasmussen, P. (1979).
-      !! Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and
-      !! Extension. Industrial & Engineering Chemistry Process Design and
-      !! Development, 18(4), 714–722.
-      !! [https://doi.org/10.1021/i260072a024](https://doi.org/10.1021/i260072a024)
-      !! 4. Gmehling, J., Rasmussen, P., & Fredenslund, A. (1982). Vapor-liquid
-      !! equilibriums by UNIFAC group contribution. Revision and extension. 2.
-      !! Industrial & Engineering Chemistry Process Design and Development, 21(1),
-      !! 118–127.
-      !! [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
-      !! 5. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
-      !! Vapor-liquid equilibriums by UNIFAC group contribution. Revision and
-      !! extension. 3. Industrial & Engineering Chemistry Process Design and
-      !! Development, 22(4), 676–678.
-      !! [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
-      !! 6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
-      !! Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
-      !! extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
-      !! [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
-      !! 7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &
-      !! Gmehling, J. (1991). Vapor-liquid equilibria by UNIFAC group
-      !! contribution. 5. Revision and extension. Industrial & Engineering
-      !! Chemistry Research, 30 (10), 2352–2355.
-      !! [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
-      !! 8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria
-      !! by UNIFAC Group Contribution. 6. Revision and Extension. Industrial &
-      !! Engineering Chemistry Research, 42(1), 183–188.
-      !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
-      !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
-      !!
-      class(UNIFACPsi) :: self
-      !! \(\psi\) function
-      class(Groups) :: systems_groups
-      !! Groups in the system
-      real(pr), intent(in) :: T
-      !! Temperature [K]
-      real(pr), optional, intent(out) :: psi(:, :)
-      !! \(\psi\)
-      real(pr), optional, intent(out) :: dpsi_dt(:, :)
-      !! \(\frac{d \psi}{dT}\)
-      real(pr), optional, intent(out) :: dpsi_dt2(:, :)
-      !! \(\frac{d^2 \psi}{dT^2}\)
-
-      integer :: i, j
-      integer :: ngroups
-
-      real(pr) :: Aij
-      real(pr) :: Eij
-
-      ngroups = size(systems_groups%groups_ids)
-
-      do concurrent(i=1:ngroups, j=1:ngroups)
-         Aij = self%Aij(i, j)
-         Eij = exp(-Aij / T)
-
-         if (present(psi)) &
-            psi(i, j) = Eij
-         if (present(dpsi_dt)) &
-            dpsi_dt(i, j) = Aij * Eij / T**2
-         if (present(dpsi_dt2)) &
-            dpsi_dt2(i, j) = Aij * (Aij - 2_pr*T) * Eij / T**4
-      end do
-   end subroutine UNIFAC_temperature_dependence
-
    function thetas_i(nm, ng, parameters, stew, molecules) result(thetas_ij)
       !! # \(\Theta_i \) calculation
       !! Calculate the area fraciton of each froup on each molecule.
@@ -1202,6 +790,8 @@ contains
       else
          params = parameters
       end if
+
+      call params%check_consistency
 
       ! ========================================================================
       ! Count all the individual groups and each molecule volume and area
