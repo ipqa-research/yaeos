@@ -61,6 +61,7 @@ class PTEnvelope:
           component index.
         - 'beta^j': Molar fractions of the main phases, where `j` is the
           phase index.
+
     """
 
     def __init__(
