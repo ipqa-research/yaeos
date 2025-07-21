@@ -558,7 +558,6 @@ contains
          end do
 
          if (maxval(abs(F)) < 1e-9_pr) exit
-
          if (iters < 3) then
             X = X + 0.1 * dX
          else

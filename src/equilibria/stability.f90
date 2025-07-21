@@ -157,8 +157,9 @@ contains
       mins = 10
       do i=1,nc
          iters = 0
-         w = 1e-10
-         w(i) = 1 - 1e-10
+         w = 1e-15
+         w(i) = 1 - 1e-15
+         w = w/sum(w)
          dw = 100
          do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4 .and. iters < max_iters)
             iters = iters + 1
@@ -174,8 +175,15 @@ contains
                dw = dw/2
             end do
 
-            w = w + dw
+            do while(maxval(abs(dw)) > 1)
+               dw = dw/2
+            end do
+            
             mins(i) = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
+            if (mins(i) < 0) then
+               exit
+            end if
+            w = w + dw
          end do
          w = w/sum(w)
          mins(i) = tm(model, z, w, P, T, d=di)
