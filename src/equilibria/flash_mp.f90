@@ -117,7 +117,7 @@ contains
 
          x_l(1, :) = z
          K(1, :) = x_l(1, :) / w_stab
-         betas = [0.5, 0.5]
+         betas = [0.9, 0.0001]
 
          X = [log(K(1, :)), betas, log(P), log(T)]
          F = X
@@ -171,7 +171,7 @@ contains
 
             x_l(2, :) = w
             w = w_stab
-  
+
             K(1, :) = x_l(1, :) / w
             K(2, :) = x_l(2, :) / w
 
