@@ -98,6 +98,7 @@ contains
       integer :: max_iters
 
       real(pr), allocatable :: X(:), F(:), betas(:)
+      real(pr) :: beta0
 
       max_iters = 1000
       kinds_x = "liquid"
@@ -117,7 +118,10 @@ contains
 
          x_l(1, :) = z
          K(1, :) = x_l(1, :) / w_stab
-         betas = [0.9, 0.0001]
+
+         beta0 = z(maxloc(w_stab, dim=1))
+         beta0 = 0.0001
+         betas = [1-beta0, beta0]
 
          X = [log(K(1, :)), betas, log(P), log(T)]
          F = X
@@ -175,7 +179,8 @@ contains
             K(1, :) = x_l(1, :) / w
             K(2, :) = x_l(2, :) / w
 
-            betas = [betas, 0.01_pr]
+            beta0 = z(maxloc(w, dim=1))
+            betas = [betas - beta0/(size(betas)), beta0]
 
             X = [log(K(1, :)), log(K(2, :)), betas, log(P), log(T)]
             F = X
@@ -331,7 +336,7 @@ contains
          dwdlnK(l, :) = -K(l, :) * betas(l)*z/denom**2
       end do
 
-      dwdbw = -z /denom**2
+      dwdbw = -z / denom**2
 
       do l=1,np
          do phase=1,np
