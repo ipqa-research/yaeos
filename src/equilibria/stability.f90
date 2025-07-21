@@ -180,9 +180,6 @@ contains
             end do
             
             mins(i) = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
-            if (mins(i) < 0) then
-               exit
-            end if
             w = w + dw
          end do
          w = w/sum(w)
