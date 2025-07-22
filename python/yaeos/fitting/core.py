@@ -109,7 +109,7 @@ class BinaryFitter:
             # -----------------------------------------------------------------
             if row["kind"] == "dew":
                 sat = model.saturation_pressure(
-                    x, kind="dew", temperature=t, p0=p
+                    y, kind="dew", temperature=t, p0=p
                 )
 
                 error_i += pressure_error(p, sat["P"])
