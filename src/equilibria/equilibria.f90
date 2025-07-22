@@ -10,6 +10,9 @@ module yaeos__equilibria
    ! Phase split calculations
    use yaeos__equilibria_flash, only: flash
 
+   use yaeos__equilibria_multiphase_flash, only: &
+      solve_mp_flash_point, pt_mp_flash, MPEquilibriumState
+
    ! Saturation points
    use yaeos__equilibria_saturation_points, only:&
       saturation_pressure, saturation_temperature

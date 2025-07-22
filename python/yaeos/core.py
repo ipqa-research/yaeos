@@ -1219,6 +1219,79 @@ class ArModel(ABC):
 
         return flash_result
 
+    def flash_pt_mp(
+        self,
+        z,
+        pressure,
+        temperature,
+        x_l0,
+        w0,
+        betas0,
+        kinds_x=None,
+        kind_w=None,
+        max_iters=100,
+    ):
+        """Multiphase flash with specification of temperature and pressure.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        x_l0 : matrix_like
+            Initial guess for the main phases mole fractions.
+        w0 : array_like
+            Initial guess for the reference phase mole fractions.
+        betas0 : array_like
+            Initial guess for each mole phase fraction. Including the reference
+            phase.
+        kinds_x : list, optional
+            Kinds of the main phases, by default None (will use `stable`).
+            Can be "liquid", "vapor" or "stable".
+        kind_w : str, optional
+            Kind of the reference phase, by default None (will use `stable`).
+            Can be "liquid", "vapor" or "stable".
+        max_iters : int, optional
+            Maximum number of iterations, by default 100
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x_l: main phases mole fractions.
+                - w: reference phase mole fractions.
+                - betas: mole phase fractions.
+                - iters: number of iterations.
+                - Vector of evaluated function values at the last iteration.
+        """
+        x_l0 = np.asarray(x_l0, order="F")
+        kinds_x, kind_w = adjust_root_kind(
+            number_of_phases=x_l0.shape[0], kinds_x=kinds_x, kind_w=kind_w
+        )
+
+        x_l, w, betas, iters, foo = yaeos_c.solve_mp_flash(
+            id=self.id,
+            z=z,
+            t=temperature,
+            p=pressure,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
+            max_iters=100,
+            x_l0=x_l0,
+            w0=w0,
+            betas0=betas0,
+        )
+
+        return {
+            "x_l": x_l,
+            "w": w,
+            "betas": betas,
+            "iters": iters,
+        }
+
     def flash_vt(self, z, volume: float, temperature: float, k0=None) -> dict:
         """Two-phase split with specification of temperature and volume.
 

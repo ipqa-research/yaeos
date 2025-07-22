@@ -46,7 +46,7 @@ module yaeos_c
    public :: Cv_residual_vt, Cp_residual_vt
 
    ! Phase equilibria
-   public :: flash, flash_vt, flash_grid
+   public :: flash, flash_vt, flash_grid, solve_mp_flash
    public :: flash_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
@@ -882,6 +882,71 @@ contains
 
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
+
+   subroutine solve_mp_flash(np, id, z, P, T, kinds_x, kind_w, max_iters, x_l0, w0, betas0, x_l, w, betas, iters, F)
+      use yaeos, only: solve_mp_flash_point
+      integer(c_int), intent(in) :: np
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: P
+      real(c_double), intent(in) :: T
+      integer(c_int), intent(in) :: kinds_x(np)
+      integer(c_int), intent(in) :: kind_w
+      integer(c_int), intent(in) :: max_iters
+      real(c_double), intent(in) :: x_l0(np, size(z))
+      real(c_double), intent(in) :: w0(size(z))
+      real(c_double), intent(in) :: betas0(np+1)
+      real(c_double), intent(out) :: x_l(np, size(z))
+      real(c_double), intent(out) :: w(size(z))
+      real(c_double), intent(out) :: betas(np+1)
+      integer(c_int), intent(out) :: iters
+      real(c_double), intent(out) :: F(size(z)*np+np+1+2)
+
+      character(len=14) :: x_kinds(np), w_kind
+
+      real(c_double) :: X(size(z)*np+np+1+2)
+      integer :: nc
+      integer :: ns1, ns2
+      real(c_double) :: S1, S2
+
+      real(c_double) :: dF(size(F), size(F))
+      real(c_double) :: K(np, size(z))
+
+      logical :: less_phases
+      integer :: beta_0_index
+      integer :: i
+
+      nc = size(z)
+
+      call convert_kind(kinds_x, x_kinds)
+      call convert_kind(kind_w, w_kind)
+
+      X = [(log(x_l0(i, :)/w0), i=1,np), betas0, log(P), log(T)]
+
+      ns1 = nc*np+np+1+1
+      ns2 = nc*np+np+1+2
+      S1 = X(ns1)
+      S2 = X(ns2)
+
+      call solve_mp_flash_point(&
+         ar_models(id)%model, z=z, np=np, kinds_x=x_kinds, kind_w=w_kind, &
+         X=X, ns1=ns1, S1=S1, ns2=ns2, S2=S2, max_iters=max_iters, F=F, &
+         less_phases=less_phases, beta_0_index=beta_0_index, iters=iters &
+         )
+
+      do i=1,np
+         K(i, :) = exp(X((i-1)*nc+1 : i*nc))
+      end do
+
+      betas = X(np*nc+1 : np*nc+np+1)
+
+      w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
+
+      do i=1,np
+         x_l(i, :) = K(i, :) * w
+      end do
+
+   end subroutine solve_mp_flash
 
    subroutine flash_vt(id, z, T, V, x, y, k0, Pout, Tout, Vx, Vy, beta)
       use yaeos, only: EquilibriumState, fflash => flash
