@@ -1,4 +1,30 @@
-"""GERG2008 Equation of State."""
+"""GERG2008 Equation of State.
+
+The `GERG2008` object is instantiated by providing a list of the components
+desired to include. The available components are:
+
+- `methane`
+- `nitrogen`
+- `carbon dioxide`
+- `ethane`
+- `propane`
+- `n-butane`
+- `isobutane`
+- `n-pentane`
+- `isopentane`
+- `n-hexane`
+- `n-heptane`
+- `n-octane`
+- `nonane`
+- `decane`
+- `hydrogen`
+- `oxygen`
+- `carbon monoxide`
+- `water`
+- `hydrogen sulfide`
+- `helium`
+- `argon`
+"""
 
 from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
@@ -19,9 +45,17 @@ class GERG2008(ArModel):
         isobutane, n-pentane, isopentane, n-hexane, n-heptane, n-octane,
         nonane, decane, hydrogen, oxygen, carbon monoxide, water,
         hydrogen sulfide, helium, argon.
+        
+    Example
+    -------
+    .. code-block:: python
+
+        from yaeos import GERG2008
+
+        model = GERG2008(["methane", "nitrogen", "carbon dioxide",])
     """
 
-    possible_components = {
+    _possible_components = {
         "methane": 1,
         "c1": 1,
         "ch4": 1,
@@ -78,11 +112,11 @@ class GERG2008(ArModel):
 
     def __init__(self, names):
         try:
-            ids = [self.possible_components[name] for name in names]
+            ids = [self._possible_components[name] for name in names]
         except KeyError as e:
             raise ValueError(
                 f"Invalid component name: {e}. "
                 "Valid names are: "
-                f"{', '.join(self.possible_components.keys())}"
+                f"{', '.join(self._possible_components.keys())}"
             )
         self.id = yaeos_c.multifluid_gerg2008(ids)

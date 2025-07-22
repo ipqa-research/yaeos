@@ -17,7 +17,7 @@
    envelopes
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 4
 
    models/init
 
