@@ -6,7 +6,7 @@ program main
    use yaeos__math, only: solve_system
    use testing_aux, only: test_title, assert
    use auxiliar_functions, only: allclose
-   integer, parameter :: nc = 7, np = 2
+   integer, parameter :: nc = 3, np = 2
    integer, parameter :: psize = nc * np + np + 3
    real(kind=pr) :: X(psize)
    real(kind=pr) :: z(nc), et, st
@@ -43,12 +43,12 @@ program main
    model = get_model()
 
    T = 260
-   P = 50
-   ! w = [8.21852603e-01, 1.78147397e-01, 3.03035466e-16]
-   ! x_l(1, :) = [2.64466950e-01, 1.33648382e-01, 6.01884668e-01]
-   ! x_l(2, :) = [7.22697463e-02, 9.27730254e-01, 5.51527260e-13]
-   ! beta_w = 0.01_pr
-   ! betas = [0.66457915, 0.33542085]
+   P = 150
+   w = [8.21852603e-01, 1.78147397e-01, 3.03035466e-16]
+   x_l(1, :) = [2.64466950e-01, 1.33648382e-01, 6.01884668e-01]
+   x_l(2, :) = [7.22697463e-02, 9.27730254e-01, 5.51527260e-13]
+   beta_w = 0.01_pr
+   betas = [0.66457915, 0.33542085]
 
    kinds_x = "liquid"
    kind_w = "vapor"
@@ -57,16 +57,7 @@ program main
    S1 = log(P)
    ns2 = np * nc + np + 1 + 2
    S2 = log(T)
-
-   X(1:nc) = log(x_l(1, :) / w)
-   X(nc + 1:2 * nc) = log(x_l(2, :) / w)
-   X(np * nc + 1:np * nc + np) = betas
-   X(np * nc + np + 1) = beta_w
-   X(np * nc + np + 2) = log(P)
-   X(np * nc + np + 3) = log(T)
-
-   T = 318
-   P = 400
+   
    block
       real(kind=pr) :: k(nc)
       k = 0.001_pr
@@ -81,101 +72,39 @@ program main
    call assert(allclose(mpfr%w, fr%y, rtol=0.01_pr), "Light phase" // &
       " composition compared with SS flash")
 
-   T = 290
-   P = 45
+   T = 260
+   P = 50
    mpfr = pt_mp_flash(model, z, P, T)
-
    call assert(mpfr%np == 2, "Number of phases in multiphase flash")
 
-   x_l(1, :) = [0.5507E-03, 0.6366E+00, 0.3613E+00, 0.1590E-02, 0.7322E-05, &
-      0.4985E-07, 0.2840E-10]
-   x_l(2, :) = [0.9999E+00, 0.6820E-04, 0.3450E-07, 0.1678E-29, 0.2427E-39, &
-      0.2318E-55, 0.6331E-101]
-   w = [0.3328E-03, 0.4025E+00, 0.8987E-01, 0.3861E+00, 0.5422E-01, 0.1674E-01&
-      , 0.5022E-01]
+   x_l(1, :) = [0.16813294321741362, 0.30875990831447953, 0.52310714846810680]
+   x_l(2, :) = [0.11282300674090837, 0.88717246176596665, 4.5314931247530688E-006]
+   w = [0.41554260326577303, 0.58445738903117439, 7.7030530774883127E-009]
 
    call assert(allclose(mpfr%betas, &
-      [0.82526590969778513_pr, 1.4879261194292029E-003_pr, &
-      0.17324616418278566_pr], rtol=0.01_pr), "Beta")
+      [0.76466094081795022_pr, 8.7071006133493931E-002_pr, 0.14826805304855589_pr], &
+      rtol=0.01_pr), "Beta")
    call assert(allclose(mpfr%x_l(1, :), x_l(1, :), rtol=0.01_pr), "x_l1" // &
       " phase composition")
-   call assert(maxval(abs(mpfr%x_l(2, :) - x_l(2, :))) < 1e-4, "Water" // &
+   call assert(allclose(mpfr%x_l(2, :), x_l(2, :), rtol=0.01_pr), "x_l2" // &
       " phase composition")
    call assert(allclose(mpfr%w, w, rtol=0.01_pr), "w phase composition")
-
-   call exit
-
-   call min_tpd(model, z, P, T, tpd, w)
-   print *, "TPD:", tpd
-   ! call exit
-
-   ! call exit
-   w = 1e-10
-   w(1) = 1 - 1e-10
-   ! tpd = tm(model, z, w, P, T)
-   ! print *, tpd
-
-   ! call min_tpd(model, z, P, T, tpd, w)
-   ! print *, tpd
-   ! print *, w
-   ! print *, z
-   ! print *, fr%x
-   ! print *, fr%y
-   ! call exit
-
-   !$OMP PARALLEL DO PRIVATE(i, j, T, P, mpfr) SHARED(model, z, dT, dP, T0,   &
-   !$OMP P0, ts, ps, nps)
-   do i = 1, npp
-      P = P0 + i * dP
-      do j = 1, nt
-         T = T0 + j * dT
-         ! print *, T, P
-         mpfr = pt_mp_flash(model, z, P, T)
-         ts(j, i) = T
-         ps(j, i) = P
-         nps(j, i) = mpfr%np
-         write(2, *) mpfr%np, T, P
-         print *, T, P
-      end do
-      write(2, *)
-   end do
-   !$OMP END PARALLEL DO
-
-   ! do i=1,npp
-   !    do j=1,nt
-   !       write(2, *) nps(j, i), ts(j, i), ps(j, i)
-   !    end do
-   !    write(2, *)
-   ! end do
-
 contains
 
    type(CubicEoS) function get_model()
       real(kind=pr) :: tc(nc), pc(nc), w(nc), kij(nc, nc)
-      Tc = [374, 31, -83, 335, 388, 496, 623] + 273
-      Pc = [221, 74, 46, 28, 23, 19, 12]
-      w = [0.344, 0.293, 0.011, 0.161, 0.478, 0.551, 0.865]
+      z = [0.2, 0.4, 0.4]
+      tc = [190.564, 304.1282, 768.0]
+      pc = [45.992, 73.773, 10.7]
+      w = [0.01142, 0.22394, 0.8805]
 
-      kij(1, 3:) = 0.5
-      kij(3:, 1) = 0.5
-      kij(2, :) = [0.2, 0., 0.105, 0.091, 0.08, 0.096, 0.096]
-      kij(:, 2) = [0.2, 0., 0.105, 0.091, 0.08, 0.096, 0.096]
+      kij = 0.0_pr
+      kij(1, 2) = 0.1
+      kij(2, 1) = 0.1
+      kij(2, 3) = 0.2
+      kij(3, 2) = 0.2
 
-      z = [0.2, 59.51, 31.37, 6.82, 0.94, 0.29, 0.87]
-      z = z / sum(z)
-
-      ! z = [0.2, 0.4, 0.4]
-      ! tc = [190.564, 304.1282, 768.0]
-      ! pc = [45.992, 73.773, 10.7]
-      ! w = [0.01142, 0.22394, 0.8805]
-
-      ! kij = 0.0_pr
-      ! kij(1, 2) = 0.1
-      ! kij(2, 1) = 0.1
-      ! kij(2, 3) = 0.2
-      ! kij(3, 2) = 0.2
-
-      ! z = z/sum(z)
+      z = z/sum(z)
 
       get_model = PengRobinson78(Tc, Pc, w, kij=kij)
    end function get_model
