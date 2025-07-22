@@ -1169,7 +1169,7 @@ class ArModel(ABC):
                 - P: pressure [bar]
                 - T: temperature [K]
                 - beta: light phase fraction. If beta is -1 flash was not
-                successful.
+                        successful.
 
         Example
         -------
@@ -1317,7 +1317,7 @@ class ArModel(ABC):
                 - P: pressure [bar]
                 - T: temperature [K]
                 - beta: light phase fraction. If beta is -1 flash was not
-                successful.
+                        successful.
 
         Example
         -------

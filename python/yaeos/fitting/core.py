@@ -1,9 +1,14 @@
 """Yaeos fitting core module."""
 
+from typing import Callable
+
 import numpy as np
+
+import pandas as pd
 
 from scipy.optimize import minimize
 
+from yaeos.core import ArModel
 from yaeos.fitting.solvers import solve_pt
 
 
@@ -16,7 +21,7 @@ class BinaryFitter:
 
     Parameters
     ----------
-    model_setter : callable
+    model_setter : Callable
         A function that returns a model object. The function should take the
         optimization parameters as the first argument and any other arguments
         as the following arguments.
@@ -31,27 +36,54 @@ class BinaryFitter:
         - y1: float, the mole fraction of component 1
         - T: float, the temperature in K
         - P: float, the pressure in bar
+        - weight: float, optional, the weight of the data point (default is 1)
     verbose : bool, optional
         If True, print the objective function value and the optimization
+
+    Attributes
+    ----------
+    get_model : Callable
+        The function that returns the model object from the optimization
+        parameters and the model_setter_args.
+    get_model_args : tuple
+        The arguments to pass to the model_setter function.
+    data : pandas.DataFrame
+        The experimental data.
+    evaluations : dict
+        A dictionary with the evaluations of the objective function. The keys
+        are 'fobj', and 'x'. 'fobj' is the objective function value,
+        'x' is the optimization parameters.
     """
 
-    def __init__(self, model_setter, model_setter_args, data, verbose=False):
-        self._get_model = model_setter
-        self._get_model_args = model_setter_args
+    def __init__(
+        self,
+        model_setter: Callable,
+        model_setter_args: tuple,
+        data: pd.DataFrame,
+        verbose: bool = False,
+    ) -> None:
+        self.get_model = model_setter
+        self.get_model_args = model_setter_args
         self.data = data
         self.verbose = verbose
-        self.evaluations = {"fobj": [], "x": [], "cl": []}
+        self.evaluations = {"fobj": [], "x": []}
 
-    def objective_function(self, x_values):
+    def objective_function(self, x_values) -> float:
         """
         Objective function to minimize when fitting interaction parameters.
 
         Parameters
         ----------
         x_values : array-like
-            The interaction parameters to fit.
+            The interaction parameters to fit, 1D array-like.
+            
+        Returns
+        -------
+        float
+            The value of the objective function, which is the sum of the
+            squared relative errors between the experimental data and the model
+            predictions.
         """
-
         def pressure_error(Pexp, Pmodel):
             return (Pexp - Pmodel) ** 2 / Pexp
 
@@ -63,7 +95,7 @@ class BinaryFitter:
         def temperature_error(Texp, Tmodel):
             return (Texp - Tmodel) ** 2 / Texp
 
-        model = self._get_model(x_values, *self._get_model_args)
+        model: ArModel = self.get_model(x_values, *self.get_model_args)
         data = self.data
 
         # =====================================================================
@@ -105,7 +137,7 @@ class BinaryFitter:
                 error_i += pressure_error(p, sat["P"])
 
             # =================================================================
-            # Dew points
+            # Dew point
             # -----------------------------------------------------------------
             if row["kind"] == "dew":
                 sat = model.saturation_pressure(
@@ -114,8 +146,13 @@ class BinaryFitter:
 
                 error_i += pressure_error(p, sat["P"])
 
+            # =================================================================
+            # PT or Liquid-liquid equilibrium
+            # -----------------------------------------------------------------
             if row["kind"] == "PT" or row["kind"] == "liquid-liquid":
                 x1, y1 = solve_pt(model, row["P"], row["T"], row["kind"])
+
+                # print(x1, y1)
 
                 if np.isnan(x[0]):
                     error_i += composition_error(y, [y1, 1 - y1])
@@ -152,8 +189,10 @@ class BinaryFitter:
                     [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
                 )
 
-            if np.isnan(error_i):
+            if np.isnan(error_i) or np.isinf(error_i):
+                # TODO make more robust PT solver to avoid infs
                 error_i = row["P"]
+            
             err += error_i * w
 
         # =====================================================================
@@ -166,6 +205,7 @@ class BinaryFitter:
 
         if self.verbose:
             print(err, x_values)
+
         return err
 
     def fit(self, x0, bounds, method="Nelder-Mead"):

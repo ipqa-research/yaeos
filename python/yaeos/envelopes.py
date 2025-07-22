@@ -53,6 +53,7 @@ class PTEnvelope:
         Shape is (n_points, n_phases).
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
+
         - 'T': Temperatures along the envelope.
         - 'P': Pressures along the envelope.
         - 'x_i^j': Compositions of the main phases, where `i` is the component
@@ -277,6 +278,7 @@ class PXEnvelope:
         component index.
         - 'beta^j': Molar fractions of the main phases, where `j`
         is the phase index.
+
     """
 
     def __init__(

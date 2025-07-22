@@ -11,9 +11,8 @@ Implemented models:
     - QMR: cuadratic mixing rule
     - MHV1: modified Huron-Vidal mixing rule
     - HV: Huron-Vidal mixing rule
-    - HVNRTL:
-    Huron-Vidal mixing rule with NRTL excess Gibbs energy
-    model modified by Huron-Vidal
+    - HVNRTL: Huron-Vidal mixing rule with NRTL excess Gibbs energy
+              model modified by Huron-Vidal
 
 """
 
