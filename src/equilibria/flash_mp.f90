@@ -167,35 +167,6 @@ contains
             w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
             x_l(1, :) = K(1, :) * w
             x_l(2, :) = K(2, :) * w
-         else if (mintpd_xl1 < -0.001) then
-            np = np + 1
-
-            ns1 = np*nc + np + 1 + 1
-            ns2 = np*nc + np + 1 + 2
-
-            x_l(2, :) = w
-            w = w_stab
-
-            K(1, :) = x_l(1, :) / w
-            K(2, :) = x_l(2, :) / w
-
-            beta0 = z(maxloc(w, dim=1))
-            betas = [betas - beta0/(size(betas)), beta0]
-
-            X = [log(K(1, :)), log(K(2, :)), betas, log(P), log(T)]
-            F = X
-            call solve_mp_flash_point(&
-               model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
-               less_phases, beta_0_index, iters &
-               )
-
-            K(1, :) = exp(X(:nc))
-            K(2, :) = exp(X(nc+1:2*nc))
-
-            betas = X(np*nc+1 : np*nc+np+1)
-            w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
-            x_l(1, :) = K(1, :) * w
-            x_l(2, :) = K(2, :) * w
          end if
       end if
 
