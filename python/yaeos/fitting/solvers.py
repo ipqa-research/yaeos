@@ -5,8 +5,12 @@ Module that contains different solvers for specific porpouses.
 
 import numpy as np
 
+from scipy.signal import argrelmin, argrelmax
 
-def binary_isofugacity_x1y1pt(x, p, t, model):
+from yaeos.core import ArModel
+
+
+def binary_isofugacity_x1y1pt(x, p, t, model: ArModel):
     """Isofugacity evaluation at a given P and T."""
     y1, x1 = x
 
@@ -21,8 +25,35 @@ def binary_isofugacity_x1y1pt(x, p, t, model):
     return isofug**2
 
 
-def solve_pt(model, p, t, kind):
-    """Solve a point at a given P and T."""
+def solve_pt(
+    model: ArModel, pressure: float, temperature: float, kind: str
+) -> tuple[float, float]:
+    """Solve a point at a given P and T.
+
+    This function solves a point at a given pressure and temperature. That is,
+    solve the composition of two phases in equilibrium at T and P. The function
+    handles liquid-vapor or liquid-liquid.
+
+    Parameters
+    ----------
+    model : ArModel
+        yaeos ArModel object.
+    pressure : float
+        Pressure [bar].
+    temperature : float
+        Temperature [K].
+    kind : str
+        Kind of phase equilibrium calculation. Options are:
+        - "liquid-liquid": liquid-liquid equilibrium calculation.
+        - "PT": pressure-temperature calculation.
+
+    Returns
+    -------
+    tuple[float, float]
+        x1, y1: Mole fractions of component 1 (light component) in both phases.
+    """
+    p, t = pressure, temperature
+
     try:
         x10, y10 = find_init_binary_ll(model, p, t, kind)
     except ValueError:
@@ -42,17 +73,31 @@ def solve_pt(model, p, t, kind):
     return x1, y1
 
 
-def find_init_binary_ll(model, pressure, temperature, kind):
-    """Find initial guess for a binary liquid-liquid system."""
-    from scipy.signal import argrelmin, argrelmax
+def find_init_binary_ll(
+    model: ArModel, pressure: float, temperature: float, kind: str
+) -> tuple[float, float]:
+    """Find initial guess for a binary liquid-liquid system.
 
-    (
-        p,
-        t,
-    ) = (
-        pressure,
-        temperature,
-    )
+    Parameters
+    ----------
+    model : ArModel
+        yaeos ArModel object.
+    pressure : float
+        Pressure [bar].
+    temperature : float
+        Temperature [K].
+    kind : str
+        Kind of phase equilibrium calculation. Options are:
+        - "liquid-liquid": liquid-liquid equilibrium calculation.
+        - "PT": pressure-temperature calculation.
+
+    Returns
+    -------
+    tuple[float, float]
+        x1, y1: Initial guess for mole fractions of component 1 (light
+        component) in both phases.
+    """
+    p, t = pressure, temperature
 
     if kind == "liquid-liquid":
         root = "liquid"
@@ -67,6 +112,7 @@ def find_init_binary_ll(model, pressure, temperature, kind):
             for z in zs
         ]
     )
+
     phis = np.exp(phis)
     fug_1 = zs * phis[:, 0] * p
 
