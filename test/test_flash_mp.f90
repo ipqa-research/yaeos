@@ -6,81 +6,62 @@ program main
    use yaeos__math, only: solve_system
    use testing_aux, only: test_title, assert
    use auxiliar_functions, only: allclose
+   implicit none
+
    integer, parameter :: nc = 3, np = 2
    integer, parameter :: psize = nc * np + np + 3
-   real(kind=pr) :: X(psize)
-   real(kind=pr) :: z(nc), et, st
    type(CubicEoS) :: model
-   type(EquilibriumState) :: fr
+   real(kind=pr) :: z(nc)
 
-   integer :: ns1, ns2, i, iters, max_iters = 1000, beta_0_index
-   logical :: less_phases
-   real(kind=pr) :: S1, S2, tpd
+   type(EquilibriumState) :: fr
+   type(MPEquilibriumState) :: mpfr
+
    real(kind=pr) :: x_l(np, nc), w(nc), K(np, nc)
    real(kind=pr) :: betas(np), beta_w, P, T
-
-   real(kind=pr) :: F(psize), dX(psize)
-   real(kind=pr) :: df(psize, psize)
 
    character(len=14) :: kinds_x(np)
    character(len=14) :: kind_w
 
-   integer :: j
-   real(kind=pr) :: T0 = 150, Tf = 700
-   real(kind=pr) :: P0 = 1, Pf = 350
-   ! real(pr) :: T0=100, Tf=400
-   ! real(pr) :: P0=5, Pf=400
-   real(kind=pr) :: dT, dP
-   integer, parameter :: npp = 500, nt = 500
-   type(MPEquilibriumState) :: mpfr
-   real(kind=pr) :: ts(nt, npp), ps(nt, npp), nps(nt, npp)
-
-   dT = (Tf - T0) / nt
-   dP = (Pf - P0) / npp
+   integer :: i, j
 
    write(*, *) test_title("MULTIPHASE FLASH SOLVER")
 
    model = get_model()
 
-   T = 260
-   P = 150
-   w = [8.21852603e-01, 1.78147397e-01, 3.03035466e-16]
-   x_l(1, :) = [2.64466950e-01, 1.33648382e-01, 6.01884668e-01]
-   x_l(2, :) = [7.22697463e-02, 9.27730254e-01, 5.51527260e-13]
-   beta_w = 0.01_pr
-   betas = [0.66457915, 0.33542085]
-
    kinds_x = "liquid"
    kind_w = "vapor"
 
-   ns1 = np * nc + np + 1 + 1
-   S1 = log(P)
-   ns2 = np * nc + np + 1 + 2
-   S2 = log(T)
-   
-   block
-      real(kind=pr) :: k(nc)
-      k = 0.001_pr
-      k(1) = 100
-      fr = flash(model, z, T, P_spec=P, iters=i, k0=k)
-   end block
-   mpfr = pt_mp_flash(model, z, P, T)
 
+   ! ==========================================================================
+   ! Comparing with the SS two-phase flash
+   ! --------------------------------------------------------------------------
+   T = 260
+   P = 150
+   fr = flash(model, z, T, P_spec=P, iters=i)
+   mpfr = pt_mp_flash(model, z, P, T)
    call assert(mpfr%np == 1, "Number of phases in multiphase flash")
    call assert(allclose(mpfr%x_l(1, :), fr%x, rtol=0.01_pr), "Heavy phase" // &
       " composition compared with SS flash")
    call assert(allclose(mpfr%w, fr%y, rtol=0.01_pr), "Light phase" // &
       " composition compared with SS flash")
 
+   ! ==========================================================================
+   ! Calculation of a three-phase multiphase flash. Known from a previously
+   ! calculated multiphase flash. T and P are known from a phase envelope
+   ! calculation.
+   ! --------------------------------------------------------------------------
+
+   ! Specified T and P
    T = 260
    P = 50
-   mpfr = pt_mp_flash(model, z, P, T)
-   call assert(mpfr%np == 2, "Number of phases in multiphase flash")
 
+   ! Known multiphase flash results
    x_l(1, :) = [0.16813294321741362, 0.30875990831447953, 0.52310714846810680]
    x_l(2, :) = [0.11282300674090837, 0.88717246176596665, 4.5314931247530688E-006]
    w = [0.41554260326577303, 0.58445738903117439, 7.7030530774883127E-009]
-
+   mpfr = pt_mp_flash(model, z, P, T)
+   
+   call assert(mpfr%np == 2, "Number of phases in multiphase flash")
    call assert(allclose(mpfr%betas, &
       [0.76466094081795022_pr, 8.7071006133493931E-002_pr, 0.14826805304855589_pr], &
       rtol=0.01_pr), "Beta")
@@ -110,12 +91,18 @@ contains
    end function get_model
 
    subroutine numdiff
+      real(kind=pr) :: X(psize)
       real(kind=pr) :: dfnum(psize, psize), F1(psize), F2(psize)
       real(kind=pr) :: tmp(psize, psize)
       real(kind=pr) :: XdX(psize)
       real(kind=pr) :: eps = 1e-2, dx
       character(len=*), parameter :: fmt = "(*(E11.3,2x))"
       integer :: i, j, loc(2)
+      real(kind=pr) :: F(psize)
+      real(kind=pr) :: df(psize, psize)
+      integer :: ns1, ns2, iters, max_iters = 1000, beta_0_index
+      real(kind=pr) :: S1, S2
+      logical :: less_phases
 
       XdX = X
       print "(*(I10,2x))", (i, i = 1, psize)
@@ -146,7 +133,6 @@ contains
       loc = maxloc(abs(df - dfnum))
       ! print *, maxval(abs((df - dfnum))), maxloc(abs(df - dfnum)), df(loc(1),
       ! loc(2)), dfnum(loc(1), loc(2))
-
    end subroutine numdiff
 
 end program main
