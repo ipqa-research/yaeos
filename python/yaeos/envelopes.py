@@ -1,4 +1,4 @@
-"""Envelopes.
+"""Envelopes Module.
 
 This module contains the classes that wrap the data structures used to
 represent different kinds of phase envelopes.

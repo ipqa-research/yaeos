@@ -14,7 +14,6 @@
    :caption: API documentation
    
    core
-   envelopes
 
 .. toctree::
    :maxdepth: 4
@@ -24,6 +23,7 @@
 .. toctree::
    :maxdepth: 5
 
+   envelopes
    fitting
 
 Indices and tables
