@@ -165,8 +165,8 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
 
-      integer :: max_iters=30
-      real(pr) :: tol=1e-7
+      integer :: max_iters=300
+      real(pr) :: tol=1e-10
 
       real(pr) :: totnRT, GrL, GrV, Gr
       real(pr) :: Vliq, Vvap
