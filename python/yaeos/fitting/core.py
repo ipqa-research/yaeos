@@ -76,7 +76,7 @@ class BinaryFitter:
         ----------
         x_values : array-like
             The interaction parameters to fit, 1D array-like.
-            
+
         Returns
         -------
         float
@@ -84,6 +84,7 @@ class BinaryFitter:
             squared relative errors between the experimental data and the model
             predictions.
         """
+
         def pressure_error(Pexp, Pmodel):
             return (Pexp - Pmodel) ** 2 / Pexp
 
@@ -192,7 +193,7 @@ class BinaryFitter:
             if np.isnan(error_i) or np.isinf(error_i):
                 # TODO make more robust PT solver to avoid infs
                 error_i = row["P"]
-            
+
             err += error_i * w
 
         # =====================================================================

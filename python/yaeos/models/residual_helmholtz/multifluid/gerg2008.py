@@ -45,7 +45,7 @@ class GERG2008(ArModel):
         isobutane, n-pentane, isopentane, n-hexane, n-heptane, n-octane,
         nonane, decane, hydrogen, oxygen, carbon monoxide, water,
         hydrogen sulfide, helium, argon.
-        
+
     Example
     -------
     .. code-block:: python
