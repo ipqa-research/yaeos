@@ -165,11 +165,12 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
 
-      integer :: max_iters=300
-      real(pr) :: tol=1e-10
+      integer :: max_iters=30
+      real(pr) :: tol=1e-8
 
       real(pr) :: totnRT, GrL, GrV, Gr
       real(pr) :: Vliq, Vvap
+      logical :: failed
 
       GrL = HUGE(GrL)
       GrV = HUGE(GrV)
@@ -178,19 +179,19 @@ contains
       select case(root_type)
        case("liquid")
          Vliq = eos%get_v0(n, P, T) * 1.001_pr
-         call newton(foo, Vliq, tol=tol, max_iters=max_iters)
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
          GrL = Gr
        case("vapor")
          Vvap = R * T / P
-         call newton(foo, Vvap, tol=tol, max_iters=max_iters)
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
          GrV = Gr
        case("stable")
          Vliq = eos%get_v0(n, P, T)*1.00001_pr
-         call newton(foo, Vliq, tol=tol, max_iters=max_iters)
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
          GrL = Gr
 
          Vvap = R * T / P
-         call newton(foo, Vvap, tol=tol, max_iters=max_iters)
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
          GrV = Gr
       end select
 
@@ -199,6 +200,8 @@ contains
       else
          V = Vvap
       end if
+
+      if (failed) V = -1
 
    contains
       subroutine foo(x, f, df)

@@ -221,9 +221,10 @@ contains
       real(pr) :: x
       real(pr) :: tol=1e-5
       integer :: max_iters = 100
+      logical :: failed
 
       x = 0.5
-      call newton(foo, x, tol, max_iters)
+      call newton(foo, x, tol, max_iters, failed)
       call check(error, abs(x - sqrt(2._pr)) < tol)
    contains
       subroutine foo(xx, f, df)

@@ -66,14 +66,14 @@ contains
       z(component) = 1
       call model%volume(z, P=Pc, T=Tc, V=Vc, root_type="vapor")
 
-      Vx = Vc*0.995
-      Vy = Vc*1.005
+      Vx = Vc*0.99
+      Vy = Vc*1.01
 
       X = [log(Vx), log(Vy), log(Pc), log(Tc)]
 
       ns = 1
       S = log(0.95)
-      dS = -0.15
+      dS = -0.01
       allocate(pt%T(0), pt%P(0), pt%Vx(0), pt%Vy(0))
 
       ! ========================================================================
@@ -94,6 +94,10 @@ contains
          end do
          
          ds = sign(max(dS, 0.01_pr), dS)
+
+         do while(maxval(abs(dXdS(1:2)* dS / X(1:2))) > 0.1)
+            dS = dS/2
+         end do
 
          Vx = exp(X(1))
          Vy = exp(X(2))
@@ -207,6 +211,9 @@ contains
 
          if (any(isnan(F))) exit
          dX = solve_system(dF, -F)
+         do while (maxval(abs(dX)) > 1)
+            dX = dX/2
+         end do
          Xnew = X + dX
          X = Xnew
       end do

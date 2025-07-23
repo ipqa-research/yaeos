@@ -31,7 +31,7 @@ module yaeos__math
    use yaeos__constants, only: pr
 
    implicit none
-   
+
    type :: Point
       !! # Point
       !! Represents the single point of a line segment.
@@ -162,11 +162,12 @@ contains
       end do
    end function derivative_d2xk_dnidnj
 
-   subroutine newton_1d(f, x, tol, max_iters)
+   subroutine newton_1d(f, x, tol, max_iters, failed)
       procedure(f_1d) :: f
       real(pr), intent(in out) :: x
       real(pr), intent(in) :: tol
       integer, intent(in) :: max_iters
+      logical, intent(out) :: failed
 
       integer :: i
       real(pr) :: fval, df, step
@@ -179,9 +180,18 @@ contains
          if (abs(fval) < tol .or. abs(step) < tol)  exit
          call f(x, fval, df)
 
+
          step = fval/df
+
+         do while (abs(step) > 0.5 * abs(x))
+            step = step/2
+         end do
+
          x = x - step
+         
+         failed = i >= max_iters
       end do
+
    end subroutine newton_1d
 
    elemental function interpol(x1, x2, y1, y2, x_obj) result(y)
@@ -227,7 +237,7 @@ contains
       !! Find the intersections of a single line with itself.
       !!
       !! # Description
-      !! This function finds the self-intersections in a line. This is 
+      !! This function finds the self-intersections in a line. This is
       !! determined by checking all possible pairs of lines segments.
       !! The iteration starts from the first segment of the line and compares
       !! it with all subsequent segments to find intersections. Then it goes
@@ -280,7 +290,7 @@ contains
          deallocate(intersections)
          allocate(intersections(0))
       end if
-   end function
+   end function intersect_one_line
 
    subroutine intersects(x1, x2, x3, x4, y1, y2, y3, y4, s, t)
       !! # intersects
@@ -296,7 +306,7 @@ contains
       !!    x = s \cdot (x2 - x1) + x1
       !!    y = s \cdot (y2 - y1) + y1
       !! \]
-      !! If the segments do not intersect, s and t will be outside 
+      !! If the segments do not intersect, s and t will be outside
       !! the range [0, 1].
       !!
       !! # Examples
@@ -318,6 +328,6 @@ contains
       b = solve_system(a, b)
       s = b(1)
       t = b(2)
-   end subroutine
+   end subroutine intersects
 
 end module yaeos__math
