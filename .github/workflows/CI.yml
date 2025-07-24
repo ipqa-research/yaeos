@@ -71,7 +71,7 @@ jobs:
     - name: Install conda dependencies
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        conda install -y -c conda-forge liblapack gfortran fpm
+        conda install -y -c conda-forge liblapack "gfortran<15" fpm
 
     - name: Conda FPM run
       if: ${{ matrix.os == 'windows-latest' }}
