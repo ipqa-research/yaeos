@@ -22,7 +22,6 @@ jobs:
         submodules: false
 
     - name: Setup Fortran Compiler
-      if: ${{ (matrix.os == 'windows-latest' && matrix.toolchain.compiler == 'intel') || (matrix.os == 'windows-latest' && matrix.toolchain.compiler == 'gcc' && matrix.toolchain.version >= 14) }}
       uses: fortran-lang/setup-fortran@v1
       id: setup-fortran
       with:
