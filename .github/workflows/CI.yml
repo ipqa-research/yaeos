@@ -70,8 +70,7 @@ jobs:
     - name: Install conda dependencies
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        conda install -y -c conda-forge
-        conda install -y -c lapack
+        conda install -y -c conda-forge lapack
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
