@@ -182,6 +182,7 @@ contains
          call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
          GrL = Gr
        case("vapor")
+         ! Vvap = R * T / P
          Vvap = R * T / P
          call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
          GrV = Gr
