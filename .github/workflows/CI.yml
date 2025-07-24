@@ -54,11 +54,21 @@ jobs:
 
     - name: Install dependencies
       if: ${{ matrix.os == 'ubuntu-latest' }}
-        # python -m pip install --upgrade pip
-        # pip install ford numpy matplotlib gcovr numpy scipy coverage
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       run: |
         sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
+        python -m pip install --upgrade pip
+        pip install ford numpy matplotlib gcovr numpy scipy coverage
+
+    - name: Install conda
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        miniconda-version: "latest"
+        activate-environment: ''
+      run: |
+        conda install -y -c conda-forge
+        conda install -y -c lapack
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
@@ -161,6 +171,10 @@ jobs:
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
           CIBW_BEFORE_TEST: pip install pytest
           CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+#          CIBW_ENVIRONMENT_WINDOWS: >
+#            FPM_FC=gcc
+#            CC=gcc
+#            CXX=g++
 
       - uses: actions/upload-artifact@v4
         with:
