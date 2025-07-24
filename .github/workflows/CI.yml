@@ -66,6 +66,11 @@ jobs:
       with:
         miniconda-version: "latest"
         activate-environment: ''
+    - name: Install conda dependencies
+      if: ${{ matrix.os == 'windows-latest' }}
+      with:
+        miniconda-version: "latest"
+        activate-environment: ''
       run: |
         conda install -y -c conda-forge
         conda install -y -c lapack
