@@ -65,12 +65,12 @@ jobs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         miniconda-version: "latest"
-        activate-environment: ''
+        autoactivate-base: true
     
     - name: Install conda dependencies
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        conda install -y -c conda-forge lapack
+        conda install -y -c conda-forge lapack gfortran fpm
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
