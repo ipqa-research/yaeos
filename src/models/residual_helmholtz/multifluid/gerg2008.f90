@@ -16,6 +16,7 @@ module yaeos__models_ar_gerg2008
    contains
       procedure :: ar => arfun
       procedure :: get_v0 => volume_initalizer
+      procedure :: volume => volume
    end type Gerg2008
 
    type, private :: GERG2008Selector
@@ -209,6 +210,96 @@ contains
       end do
       arval = arval * (sum(n) * ryaeos * t)
    end function arfun
+
+   subroutine volume(eos, n, P, T, V, root_type)
+      !! Volume solver routine for the GERG2008.
+      !!
+      !! Solves volume roots using newton method. Given pressure and
+      !! temperature. It will use the SRK equation of state to initialize the
+      !! volume values.
+      !!
+      !! # Description
+      !! This subroutine solves the volume using a newton method. The variable
+      !! `root_type` is used to specify the desired root to solve. The options
+      !! are: `["liquid", "vapor", "stable"]`
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%volume(n, P, T, V, root_type="liquid")
+      !! call eos%volume(n, P, T, V, root_type="vapor")
+      !! call eos%volume(n, P, T, V, root_type="stable")
+      !! ```
+      use yaeos__constants, only: pr, R
+      use yaeos__math, only: newton
+
+      class(GERG2008), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: V !! Volume [L]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+
+      integer :: max_iters=30
+      real(pr) :: tol=1e-8
+
+      real(pr) :: totnRT, GrL, GrV, Gr
+      real(pr) :: Vliq, Vvap
+      logical :: failed
+
+      GrL = HUGE(GrL)
+      GrV = HUGE(GrV)
+
+      totnRT = sum(n) * R * T
+      select case(root_type)
+       case("liquid")
+         Vliq = eos%get_v0(n, P, T) * 1.001_pr
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         GrL = Gr
+       case("vapor")
+         call eos%srk%volume(n=n, P=P, T=T, V=Vvap, root_type="vapor")
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         GrV = Gr
+       case("stable")
+         Vliq = eos%get_v0(n, P, T)*1.00001_pr
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         GrL = Gr
+
+         Vvap = R * T / P
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         GrV = Gr
+      end select
+
+      if (GrL < GrV) then
+         V = Vliq
+      else
+         V = Vvap
+      end if
+
+      if (failed) V = -1
+
+   contains
+      subroutine foo(x, f, df)
+         real(pr), intent(in) :: x
+         real(pr), intent(out) :: f, df
+         real(pr) :: Ar, ArV, ArV2, Pcalc, dPcalcdV, Vin
+         Vin = x
+         call eos%residual_helmholtz(n, Vin, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
+         Pcalc = totnRT / Vin - ArV
+         dPcalcdV = -totnRT / Vin**2 - ArV2
+         f = Pcalc - p
+         df = dPcalcdV
+         Gr = Ar + P * Vin - totnRT - totnRT * log(P*Vin/(R*T))
+      end subroutine foo
+   end subroutine volume
 
    function volume_initalizer(self, n, p, t) result(v0)
       class(Gerg2008), intent(in) :: self
