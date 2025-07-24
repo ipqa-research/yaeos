@@ -507,7 +507,7 @@ class ArModel(ABC):
         if dt is None and dp is None and dn is None:
             ...
         else:
-            res = (res, {"dt": float(dt), "dp": float(dp), "dn": dn})
+            res = (res, {"dt": dt if dt is None else float(dt), "dp": dp if dp is None else float(dp), "dn": dn})
         return res
 
     def lnphi_pt(
@@ -599,7 +599,7 @@ class ArModel(ABC):
         if dt is None and dp is None and dn is None:
             ...
         else:
-            res = (res, {"dt": float(dt), "dp": float(dp), "dn": dn})
+            res = (res, {"dt": dt if dt is None else float(dt), "dp": dp if dp is None else float(dp), "dn": dn})
         return res
 
     def pressure(
