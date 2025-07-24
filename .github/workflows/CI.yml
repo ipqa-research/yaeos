@@ -49,6 +49,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
+      if: ${{ matrix.os == 'ubuntu-latest' }}
         # python -m pip install --upgrade pip
         # pip install ford numpy matplotlib gcovr numpy scipy coverage
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
