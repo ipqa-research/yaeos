@@ -490,8 +490,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.array(0, dtype=np.float64) if dt else None
-        dp = np.array(0, dtype=np.float64) if dp else None
+        dt = np.empty(nc, order="F") if dt else None
+        dp = np.empty(nc, order="F") if dp else None
         dn = np.empty((nc, nc), order="F") if dn else None
 
         res = yaeos_c.lnphi_vt(
@@ -510,8 +510,8 @@ class ArModel(ABC):
             res = (
                 res,
                 {
-                    "dt": dt if dt is None else float(dt),
-                    "dp": dp if dp is None else float(dp),
+                    "dt": dt,
+                    "dp": dp,
                     "dn": dn,
                 },
             )
@@ -588,8 +588,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.array(0, dtype=np.float64) if dt else None
-        dp = np.array(0, dtype=np.float64) if dp else None
+        dt = np.empty(nc, order="F") if dt else None
+        dp = np.empty(nc, order="F") if dp else None
         dn = np.empty((nc, nc), order="F") if dn else None
 
         res = yaeos_c.lnphi_pt(
@@ -609,8 +609,8 @@ class ArModel(ABC):
             res = (
                 res,
                 {
-                    "dt": dt if dt is None else float(dt),
-                    "dp": dp if dp is None else float(dp),
+                    "dt": dt,
+                    "dp": dp,
                     "dn": dn,
                 },
             )
