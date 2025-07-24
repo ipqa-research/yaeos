@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: [3.9]
         toolchain:
           - {compiler: gcc, version: 10}
@@ -27,6 +27,13 @@ jobs:
       with:
         compiler: ${{ matrix.toolchain.compiler }}
         version: ${{ matrix.toolchain.version }}
+      
+    # Install fpm for Windows
+    - name: Install fpm
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: fortran-lang/setup-fpm@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Python
       uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
