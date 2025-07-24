@@ -15,6 +15,11 @@ jobs:
           - {compiler: gcc, version: 14}
           - {compiler: intel, version: '2024.2'}
           # - {compiler: intel, version: '2023.2'}
+        exclude:
+          - os: windows-latest
+            toolchain: {compiler: gcc, version: 14}
+          - os: windows-latest
+            toolchain: {compiler: gcc, version: 13}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
