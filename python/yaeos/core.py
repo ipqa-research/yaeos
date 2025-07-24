@@ -1,7 +1,10 @@
 """yaeos Python API core module.
 
-ArModel and GeModel abstract classes definition. Also, the implementation of
-the models' thermoprops methods.
+Residual Helmholtz models (ArModel) and Gibbs excess models (GeModel) abstract
+classes definition. Also, the implementation of the models' thermoprops
+methods.
+
+Here you will find all the methods that are available for the models in yaeos.
 """
 
 from abc import ABC
@@ -20,7 +23,7 @@ from yaeos.lib import yaeos_c
 MAX_POINTS_ENVELOPES = 1000
 
 
-def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
+def adjust_root_kind(number_of_phases: int, kinds_x=None, kind_w=None):
     """Convert the the kinds of each phase to the corresponding value.
 
     The C interface of `yaeos` expects the kinds of each phase to be defined
@@ -183,8 +186,8 @@ class GeModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(1, order="F") if dt else None
-        dt2 = np.empty(1, order="F") if dt2 else None
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dt2 = np.array(0, dtype=np.float64) if dt2 else None
         dn = np.empty(nc, order="F") if dn else None
         dtn = np.empty(nc, order="F") if dtn else None
         dn2 = np.empty((nc, nc), order="F") if dn2 else None
@@ -209,8 +212,8 @@ class GeModel(ABC):
             res = (
                 res,
                 {
-                    "dt": dt if dt is None else dt[0],
-                    "dt2": dt2 if dt2 is None else dt2[0],
+                    "dt": dt if dt is None else float(dt),
+                    "dt2": dt2 if dt2 is None else float(dt2),
                     "dn": dn,
                     "dtn": dtn,
                     "dn2": dn2,
@@ -260,7 +263,7 @@ class GeModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(1, order="F") if dt else None
+        dt = np.array(0, dtype=np.float64) if dt else None
         dn = np.empty(nc, order="F") if dn else None
 
         res = yaeos_c.excess_enthalpy_ge(
@@ -274,7 +277,7 @@ class GeModel(ABC):
         if dt is None and dn is None:
             ...
         else:
-            res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+            res = (res, {"dt": dt if dt is None else float(dt), "dn": dn})
 
         return res
 
@@ -319,7 +322,7 @@ class GeModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(1, order="F") if dt else None
+        dt = np.array(0, dtype=np.float64) if dt else None
         dn = np.empty(nc, order="F") if dn else None
 
         res = yaeos_c.excess_entropy_ge(
@@ -333,11 +336,11 @@ class GeModel(ABC):
         if dt is None and dn is None:
             ...
         else:
-            res = (res, {"dt": dt if dt is None else dt[0], "dn": dn})
+            res = (res, {"dt": dt if dt is None else float(dt), "dn": dn})
 
         return res
 
-    def stability_analysis(self, z, temperature):
+    def stability_analysis(self, z, temperature: float) -> tuple[dict, dict]:
         """Perform stability analysis.
 
         Find all the possible minima values that the :math:`tm` function,
@@ -352,15 +355,17 @@ class GeModel(ABC):
 
         Returns
         -------
-        dict
-            Stability analysis result dictionary with keys:
-            `w:` value of the test phase that minimizes the :math:`tm` function
-            `tm:` minimum value of the :math:`tm` function.
-        dict
-            All found minimum values of the :math:`tm` function and the
-            corresponding test phase mole fractions.
-            `w:` all values of :math:`w` that minimize the :math:`tm` function
-            `tm:` all values found minima of the :math:`tm` function
+        tuple[dict, dict]
+            dict
+                Stability analysis result dictionary with keys: `w:` value of
+                the test phase that minimizes the :math:`tm` function `tm:`
+                minimum value of the :math:`tm` function. If this value is
+                negative, the system is unstable.
+            dict
+                All found minimum values of the :math:`tm` function and the
+                corresponding test phase mole fractions. `w:` all values of
+                :math:`w` that minimize the :math:`tm` function `tm:` all
+                values found minima of the :math:`tm` function
         """
         (w_min, tm_min, all_mins) = yaeos_c.stability_zt_ge(
             id=self.id, z=z, t=temperature
@@ -381,18 +386,17 @@ class GeModel(ABC):
         temperature : float
             Temperature [K]
         k0 : array_like, optional
-            Initial guess for the split, by default None (will use k_wilson)
+            Initial guess for the split, by default None (will use stability
+            analysis)
 
         Returns
         -------
         dict
             Flash result dictionary with keys:
-                - x: heavy phase mole fractions
-                - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
+                - x: "phase 1" mole fractions
+                - y: "phase 2" mole fractions
                 - T: temperature [K]
-                - beta: light phase fraction
+                - beta: "phase 2" fraction
         """
         if k0 is None:
             mintpd, _ = self.stability_analysis(z, temperature)
@@ -405,8 +409,6 @@ class GeModel(ABC):
         flash_result = {
             "x": x,
             "y": y,
-            "Vx": volume_x,
-            "Vy": volume_y,
             "T": temperature,
             "beta": beta,
         }
@@ -488,8 +490,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(nc, order="F") if dt else None
-        dp = np.empty(nc, order="F") if dp else None
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
         dn = np.empty((nc, nc), order="F") if dn else None
 
         res = yaeos_c.lnphi_vt(
@@ -505,7 +507,7 @@ class ArModel(ABC):
         if dt is None and dp is None and dn is None:
             ...
         else:
-            res = (res, {"dt": dt, "dp": dp, "dn": dn})
+            res = (res, {"dt": float(dt), "dp": float(dp), "dn": dn})
         return res
 
     def lnphi_pt(
@@ -579,8 +581,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(nc, order="F") if dt else None
-        dp = np.empty(nc, order="F") if dp else None
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
         dn = np.empty((nc, nc), order="F") if dn else None
 
         res = yaeos_c.lnphi_pt(
@@ -597,7 +599,7 @@ class ArModel(ABC):
         if dt is None and dp is None and dn is None:
             ...
         else:
-            res = (res, {"dt": dt, "dp": dp, "dn": dn})
+            res = (res, {"dt": float(dt), "dp": float(dp), "dn": dn})
         return res
 
     def pressure(
@@ -666,8 +668,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dv = np.empty(1, order="F") if dv else None
-        dt = np.empty(1, order="F") if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
+        dt = np.array(0, dtype=np.float64) if dt else None
         dn = np.empty(nc, order="F") if dn else None
 
         res = yaeos_c.pressure(
@@ -680,8 +682,8 @@ class ArModel(ABC):
             res = (
                 res,
                 {
-                    "dv": dv if dv is None else dv[0],
-                    "dt": dt if dt is None else dt[0],
+                    "dv": dv if dv is None else float(dv),
+                    "dt": dt if dt is None else float(dt),
                     "dn": dn,
                 },
             )
@@ -803,8 +805,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(1, order="F") if dt else None
-        dv = np.empty(1, order="F") if dv else None
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
         dn = np.empty(nc, order="F") if dn else None
 
         res = yaeos_c.enthalpy_residual_vt(
@@ -823,8 +825,8 @@ class ArModel(ABC):
             res = (
                 res,
                 {
-                    "dt": dt if dt is None else dt[0],
-                    "dv": dv if dv is None else dv[0],
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
                     "dn": dn,
                 },
             )
@@ -894,8 +896,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(1, order="F") if dt else None
-        dv = np.empty(1, order="F") if dv else None
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
         dn = np.empty(nc, order="F") if dn else None
 
         res = yaeos_c.gibbs_residual_vt(
@@ -914,8 +916,8 @@ class ArModel(ABC):
             res = (
                 res,
                 {
-                    "dt": dt if dt is None else dt[0],
-                    "dv": dv if dv is None else dv[0],
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
                     "dn": dn,
                 },
             )
@@ -985,8 +987,8 @@ class ArModel(ABC):
         """
         nc = len(moles)
 
-        dt = np.empty(1, order="F") if dt else None
-        dv = np.empty(1, order="F") if dv else None
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
         dn = np.empty(nc, order="F") if dn else None
 
         res = yaeos_c.entropy_residual_vt(
@@ -1005,8 +1007,8 @@ class ArModel(ABC):
             res = (
                 res,
                 {
-                    "dt": dt if dt is None else dt[0],
-                    "dv": dv if dv is None else dv[0],
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
                     "dn": dn,
                 },
             )
@@ -2767,7 +2769,9 @@ class ArModel(ABC):
     # =========================================================================
     # Stability analysis
     # -------------------------------------------------------------------------
-    def stability_analysis(self, z, pressure, temperature):
+    def stability_analysis(
+        self, z, pressure: float, temperature: float
+    ) -> tuple[dict, dict]:
         """Perform stability analysis.
 
         Find all the possible minima values that the :math:`tm` function,
@@ -2784,15 +2788,17 @@ class ArModel(ABC):
 
         Returns
         -------
-        dict
-            Stability analysis result dictionary with keys:
-            - w: value of the test phase that minimizes the :math:`tm` function
-            - tm: minimum value of the :math:`tm` function.
-        dict
-            All found minimum values of the :math:`tm` function and the
-            corresponding test phase mole fractions.
-            - w: all values of :math:`w` that minimize the :math:`tm` function
-            - tm: all values found minima of the :math:`tm` function
+        tuple[dict, dict]
+            dict
+                Stability analysis result dictionary with keys: `w:` value of
+                the test phase that minimizes the :math:`tm` function `tm:`
+                minimum value of the :math:`tm` function. If this value is
+                negative, the system is unstable.
+            dict
+                All found minimum values of the :math:`tm` function and the
+                corresponding test phase mole fractions. `w:` all values of
+                :math:`w` that minimize the :math:`tm` function `tm:` all
+                values found minima of the :math:`tm` function
         """
         (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
