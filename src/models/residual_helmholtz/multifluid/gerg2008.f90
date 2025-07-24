@@ -140,9 +140,9 @@ contains
 
       integer :: idx_poly, idx_exp
 
-      real(8) :: n_pol(binary%Kpolij), d_pol(binary%Kpolij), t_pol(binary%Kpolij)
-      real(8) :: n_exp(binary%Kexpij), d_exp(binary%Kexpij), t_exp(binary%Kexpij)
-      real(8) :: etha(binary%Kexpij), eps(binary%Kexpij), beta(binary%Kexpij), gama(binary%Kexpij)
+      real(pr) :: n_pol(binary%Kpolij), d_pol(binary%Kpolij), t_pol(binary%Kpolij)
+      real(pr) :: n_exp(binary%Kexpij), d_exp(binary%Kexpij), t_exp(binary%Kexpij)
+      real(pr) :: etha(binary%Kexpij), eps(binary%Kexpij), beta(binary%Kexpij), gama(binary%Kexpij)
 
       idx_poly = binary%Kpolij
       idx_exp = binary%Kexpij + idx_poly
