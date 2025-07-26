@@ -9,7 +9,14 @@ title: UNIFAC-LV
 ## Model description
 
 This is the original and classic Liquid-Vapor UNIFAC model. In this model, the
-parameters \(z\) and \(d\) are set to 10 and 1, respectively.
+parameters are defined as:
+$$
+    z = 10
+$$
+
+$$
+    d = 1
+$$
 
 The temperature function \(E_{jk}\) is defined with a single temperature 
 constant \(a_{jk}\) coefficient as follows:
@@ -24,8 +31,8 @@ The list of the functional groups and its interaction parameters could be
 accessed on the DDBST web page:
 [https://www.ddbst.com/published-parameters-unifac.html](https://www.ddbst.com/published-parameters-unifac.html)
 
-We reproduce here the list of functional groups. To instanciate a UNIFAC number
-you defined which functional groups are used in a molecule by the Subgroup
+We reproduce here the list of functional groups. To instantiate a UNIFAC model
+you must define which functional groups are used in a molecule by the Subgroup
 Number column.
 
 |   Subgroup number | Subgroup Name   | Maingroup    |      R |      Q |
@@ -63,8 +70,8 @@ Number column.
 |                31 | CH3NH           | [15]CNH      | 1.4337 | 1.244  |
 |                32 | CH2NH           | [15]CNH      | 1.207  | 0.936  |
 |                33 | CHNH            | [15]CNH      | 0.9795 | 0.624  |
-|                34 | CH3N            | [16] (C)3N    | 1.1865 | 0.94   |
-|                35 | CH2N            | [16] (C)3N    | 0.9597 | 0.632  |
+|                34 | CH3N            | [16] (C)3N   | 1.1865 | 0.94   |
+|                35 | CH2N            | [16] (C)3N   | 0.9597 | 0.632  |
 |                36 | ACNH2           | [17]ACNH2    | 1.06   | 0.816  |
 |                37 | C5H5N           | [18]PYRIDINE | 2.9993 | 2.113  |
 |                38 | C5H4N           | [18]PYRIDINE | 2.8332 | 1.833  |
@@ -147,7 +154,7 @@ Number column.
 
 ## Using `ugropy` to retrieve UNIFAC subgroups
 
-We recommend using another library of our group
+There is the possibility of using another library of our group
 [`ugropy`](https://github.com/ipqa-research/ugropy) to retrieve the UNIFAC 
 subgroups and not suffer the pain of typing the subgroup numbers and
 parameters by hand. The next Python snippet shows how you can use it.
@@ -182,6 +189,46 @@ molecules(3)%number_of_groups = [1, 1]
 ```
 
 
+## Examples
+
+Here is an example of a fully instantiated UNIFACLV model. Please check the
+`Gibbs Excess Models` section in the user documentation to learn all the things
+you can do with this model.
+
+Notice that here we are using the [[setup_unifac]] function to instantiate the
+model.
+
+### Calculating activity coefficients
+We can instantiate a [[UNIFAC]] model with a mixture ethanol-water and evaluate
+the logarithm of activity coefficients of the model for a 0.5 mole fraction of
+each, and a temperature of 298.0 K.
+
+```fortran
+use yaeos__constants, only: pr
+use yaeos__models_ge_group_contribution_unifac, only: Groups, UNIFAC, setup_unifac
+
+! Variables declarations
+type(UNIFAC) :: model
+type(Groups) :: molecules(2)
+real(pr) :: ln_gammas(2)
+
+! Variables instances
+! Ethanol definition [CH3, CH2, OH]
+molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
+molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
+
+! Water definition [H2O]
+molecules(2)%groups_ids = [16]
+molecules(2)%number_of_groups = [1]
+
+! Model setup
+model = setup_unifac(molecules)
+
+! Calculate ln_gammas
+call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+
+print *, ln_gammas
+```
 
 ## References
 
