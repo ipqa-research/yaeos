@@ -2,12 +2,7 @@ Tutorial
 ========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 4
 
    getting_started.ipynb
-   instantiate_model.ipynb
-   more_calculations.ipynb
-   cubic_eos.ipynb
-   gerg2008.ipynb
-   gpec.ipynb
-   fitting.ipynb
+   equations_of_state/equations_of_state.rst

@@ -3,7 +3,7 @@
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 4
    :caption: Tutorial
 
    tutorial/tutorial_tree
