@@ -263,8 +263,14 @@ contains
       ! -----------------------------------------------------------------------
       call check(error, abs(Ge - Ge_i) <= 1e-10)
       call check(error, abs(GeT - GeT_i) <= 1e-10)
+      print *, "==============================="
+      print *, GeT, Get_i
       call check(error, abs(GeT2 - GeT2_i) <= 1e-10)
+      print *, GeT2, GeT2_i
       call check(error, allclose(Gen, Gen_i, 1e-10_pr))
+      print *, Gen
+      print *, Gen_i
+      print *, "==============================="
       call check(error, allclose(GeTn, GeTn_i, 1e-10_pr))
 
       call check(error, allclose(Gen2(1,:), Gen2_i(1,:), 1e-10_pr))
