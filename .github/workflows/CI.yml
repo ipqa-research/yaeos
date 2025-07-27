@@ -78,16 +78,21 @@ jobs:
           mingw-w64-x86_64-lapack 
 
     - name: Run tests without coverage
-      if: ${{ env.FC != 'gfortran' }}
+      if: ${{ matrix.os == 'windows-latest' }}
+      shell: msys2 {0}
+      run: |
+        fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
+
+    - name: Run tests without coverage
+      if: ${{ env.FC != 'gfortran' and matrix.os != 'windows-latest' }}
       run: |
         fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests with coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: ${{ env.FC != 'gfortran' and matrix.os != 'windows-latest' }}
       run: |
         fpm test --profile release --flag "-g -coverage" --compiler ${{ env.FC }} --c-compiler gcc
         bash ci/ci.sh
-
 
     - name: Coverage
       run: bash ci/ci.sh coverage
