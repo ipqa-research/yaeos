@@ -11,7 +11,7 @@ contains
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: a(size(b), size(b))
       integer, parameter :: dp = selected_real_kind(15)
-      type(linalg_state_type) :: err
+      ! type(linalg_state_type) :: err
 
       real(pr) :: x(size(b))
 
@@ -19,7 +19,8 @@ contains
       integer :: n, nrhs, lda, ipiv(size(b)), ldb, info
 
       real(pr), allocatable :: xtmp(:)
-      xtmp = solve(a, b, err=err)
+      ! xtmp = solve(a=a, b=b, overwrite_a=.true., err=err)
+      xtmp = solve(a, b)
       x = xtmp
 
       ! interface
