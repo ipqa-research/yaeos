@@ -84,12 +84,12 @@ jobs:
         fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests without coverage
-      if: ${{ env.FC != 'gfortran' and matrix.os != 'windows-latest' }}
+      if: ${{ env.FC != 'gfortran' && matrix.os != 'windows-latest' }}
       run: |
         fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests with coverage
-      if: ${{ env.FC != 'gfortran' and matrix.os != 'windows-latest' }}
+      if: ${{ env.FC != 'gfortran' && matrix.os != 'windows-latest' }}
       run: |
         fpm test --profile release --flag "-g -coverage" --compiler ${{ env.FC }} --c-compiler gcc
         bash ci/ci.sh
