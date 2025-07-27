@@ -7,7 +7,7 @@ contains
    function solve_system(a, b) result(x)
       !! Solve a linear sytem AX = b
       use iso_fortran_env, only: error_unit
-      use stdlib_linalg, only: solve, linalg_state_type
+      ! use stdlib_linalg, only: solve, linalg_state_type
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: a(size(b), size(b))
       integer, parameter :: dp = selected_real_kind(15)
@@ -17,38 +17,38 @@ contains
 
       real(dp) :: a_lapack(size(b), size(b)), b_lapack(size(b))
       integer :: n, nrhs, lda, ipiv(size(b)), ldb, info
-
-      real(pr), allocatable :: xtmp(:)
+      ! real(pr), allocatable :: xtmp(:)
+      
       ! xtmp = solve(a=a, b=b, overwrite_a=.true., err=err)
-      xtmp = solve(a, b)
-      x = xtmp
+      ! xtmp = solve(a, b)
+      ! x = xtmp
 
-      ! interface
-      !    subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
-      !       import dp
-      !       integer :: n
-      !       integer :: nrhs
-      !       real(dp) :: a(n, n)
-      !       integer :: lda
-      !       integer :: ipiv(n)
-      !       real(dp) :: b(n)
-      !       integer :: ldb
-      !       integer :: info
-      !    end subroutine dgesv
-      ! end interface
+      interface
+         subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
+            import dp
+            integer :: n
+            integer :: nrhs
+            real(dp) :: a(n, n)
+            integer :: lda
+            integer :: ipiv(n)
+            real(dp) :: b(n)
+            integer :: ldb
+            integer :: info
+         end subroutine dgesv
+      end interface
 
-      ! n = size(a, dim=1)
-      ! nrhs = 1
-      ! lda = n
-      ! ldb = n
+      n = size(a, dim=1)
+      nrhs = 1
+      lda = n
+      ldb = n
 
-      ! a_lapack = a
-      ! b_lapack = b
-      ! call dgesv(n, nrhs, a_lapack, lda, ipiv, b_lapack, ldb, info)
+      a_lapack = a
+      b_lapack = b
+      call dgesv(n, nrhs, a_lapack, lda, ipiv, b_lapack, ldb, info)
 
-      ! ! if (info > 0) write(error_unit, *) "WARN: dgesv error"
+      ! if (info > 0) write(error_unit, *) "WARN: dgesv error"
 
-      ! x = b_lapack
+      x = b_lapack
    end function solve_system
 
    subroutine cubic_roots(parameters, real_roots, complex_roots, flag)
@@ -164,45 +164,45 @@ contains
       !! `A` using LAPACK's `dsyev`. The eigenvectors are stored in the columns
       !! of `eigenvectors`. The eigenvalues are stored in `eigenvalues`.
 
-      use stdlib_linalg, only: eigh, linalg_state_type
-      type(linalg_state_type) :: stat
+      ! use stdlib_linalg, only: eigh, linalg_state_type
+      ! type(linalg_state_type) :: stat
       real(pr), intent(in out) :: A(:, :)
       real(pr), intent(out) :: eigenvalues(:)
       real(pr), optional, intent(out) :: eigenvectors(:, :)
       
-      ! interface
-      !    subroutine dsyev(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO) 	
-      !       character(1) :: JOBZ
-      !       character(1) :: UPLO
-      !       integer :: N
-      !       double precision :: A(lda, *)
-      !       integer :: lda
-      !       double precision :: W(*)
-      !       double precision :: WORK(*)
-      !       integer :: LWORK
-      !       integer :: INFO
-      !    end subroutine
-      ! end interface
-      ! integer :: istat
-      ! real(pr) :: work(size(A, 1)*10)
-      ! real(pr) :: Ain(size(A, 1), size(A, 1))
-      ! integer :: n
+      interface
+         subroutine dsyev(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO) 	
+            character(1) :: JOBZ
+            character(1) :: UPLO
+            integer :: N
+            double precision :: A(lda, *)
+            integer :: lda
+            double precision :: W(*)
+            double precision :: WORK(*)
+            integer :: LWORK
+            integer :: INFO
+         end subroutine
+      end interface
+      integer :: istat
+      real(pr) :: work(size(A, 1)*10)
+      real(pr) :: Ain(size(A, 1), size(A, 1))
+      integer :: n
 
-      ! n = size(A, 1)
-      ! Ain = A
+      n = size(A, 1)
+      Ain = A
 
-      ! call dsyev(jobz='V', uplo='U', n=n, A=Ain, lda=n, w=eigenvalues, &
-      !    work=work, lwork=size(work, 1), info=istat &
-      ! )
-      ! eigenvectors = Ain
-
-      call eigh(&
-         A=A, lambda=eigenvalues, vectors=eigenvectors, err=stat  &
+      call dsyev(jobz='V', uplo='U', n=n, A=Ain, lda=n, w=eigenvalues, &
+         work=work, lwork=size(work, 1), info=istat &
       )
+      eigenvectors = Ain
 
-      if (.not. stat%ok()) then
-         write(*, *) stat%print_msg()
-      end if
+      ! call eigh(&
+      !    A=A, lambda=eigenvalues, vectors=eigenvectors, err=stat  &
+      ! )
+
+      ! if (.not. stat%ok()) then
+      !    write(*, *) stat%print_msg()
+      ! end if
    end subroutine
 
 end module yaeos__math_linalg
