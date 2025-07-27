@@ -79,7 +79,6 @@ jobs:
       run: |
         conda info
         conda list
-        export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
         fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests without coverage
