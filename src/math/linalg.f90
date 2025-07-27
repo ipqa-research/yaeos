@@ -18,7 +18,7 @@ contains
       real(dp) :: a_lapack(size(b), size(b)), b_lapack(size(b))
       integer :: n, nrhs, lda, ipiv(size(b)), ldb, info
 
-      real(pr), allocatable :: xtmp
+      real(pr), allocatable :: xtmp(:)
       xtmp = solve(a, b, err=err)
       x = xtmp
 
