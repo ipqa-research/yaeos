@@ -67,19 +67,15 @@ jobs:
         miniconda-version: "latest"
         autoactivate-base: true
         activate-environment: ""
-    
-    - name: Install conda dependencies
-      if: ${{ matrix.os == 'windows-latest' }}
-      run: |
-        conda install -y -c conda-forge liblapack "gfortran<15" fpm
 
-    - name: Conda FPM run
-      if: ${{ matrix.os == 'windows-latest' }}
-      shell: bash -el {0}
-      run: |
-        conda info
-        conda list
-        fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
+   - name: Set up MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msys2-architecture: x86_64
+        update: true
+        install: >
+          mingw-w64-x86_64-gcc-fortran
+          mingw-w64-x86_64-lapack 
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
