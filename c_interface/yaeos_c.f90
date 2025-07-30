@@ -57,6 +57,9 @@ module yaeos_c
    public :: stability_zpt, tm
    public :: stability_zt_ge
 
+   ! Helpers
+   public :: find_self_intersections
+
    type :: ArModelContainer
       !! Container type for ArModels
       class(ArModel), allocatable :: model
@@ -915,13 +918,21 @@ contains
       logical :: less_phases
       integer :: beta_0_index
       integer :: i
+      real(c_double) :: betas_in(np+1)
 
       nc = size(z)
 
       call convert_kind(kinds_x, x_kinds)
       call convert_kind(kind_w, w_kind)
 
-      X = [(log(x_l0(i, :)/w0), i=1,np), betas0, log(P), log(T)]
+      ! where (betas0 == 0.0)
+      !    betas_in = 1e-20
+      ! elsewhere
+      !    betas_in = betas0
+      ! end where
+      betas_in = betas0
+
+      X = [(log(x_l0(i, :)/w0), i=1,np), betas_in, log(P), log(T)]
 
       ns1 = nc*np+np+1+1
       ns2 = nc*np+np+1+2
@@ -1105,6 +1116,10 @@ contains
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
+      if (sat%kind == "failed") then
+         ! If the saturation pressure calculation failed, set P to NaN
+         P = makenan()
+      end if
    end subroutine saturation_pressure
 
    subroutine saturation_temperature(id, z, P, kind, T0, y0, T, x, y, Vx, Vy, beta)
@@ -1139,6 +1154,10 @@ contains
       end if
 
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
+      if (sat%kind == "failed") then
+         ! If the saturation temperature calculation failed, set T to NaN
+         T = makenan()
+      end if
    end subroutine saturation_temperature
 
    subroutine pure_saturation_line(id, comp_id, stop_P, stop_T, P, T, Vx, Vy)
@@ -1789,6 +1808,31 @@ contains
          numeric = -1
       end select
    end subroutine convert_gerg_components
+
+   subroutine find_self_intersections(x, y, x_inter, y_inter, i, j)
+      use yaeos__math, only: intersect_one_line, Point
+      integer, parameter :: max_intersections = 10
+      real(c_double), intent(in) :: x(:), y(:)
+      real(c_double), intent(out) :: x_inter(max_intersections), y_inter(max_intersections)
+      integer(c_int), intent(out) :: i(max_intersections), j(max_intersections)
+
+      integer :: k
+
+      type(Point), allocatable :: intersections(:)
+
+      intersections = intersect_one_line(x, y)
+
+      x_inter = makenan()
+      y_inter = makenan()
+
+      ! Populate the output arrays
+      do concurrent (k=1:min(max_intersections, size(intersections)))
+         x_inter(k) = intersections(k)%x
+         y_inter(k) = intersections(k)%y
+         i(k) = intersections(k)%i
+         j(k) = intersections(k)%j
+      end do
+   end subroutine find_self_intersections
 
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
