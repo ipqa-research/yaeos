@@ -158,7 +158,7 @@ contains
       end select
 
       if (its >= max_iterations .or. any(isnan([P, y])) .or. abs(Vz - Vy) < 1e-8) then
-         saturation_temperature%kind = "failed"
+         saturation_pressure%kind = "failed"
       end if
    end function saturation_pressure
 
