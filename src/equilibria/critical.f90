@@ -275,6 +275,7 @@ contains
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
 
+            dS = sign(max(abs(dS), 1e-2_pr), dS)
             if (i > 4) then
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
