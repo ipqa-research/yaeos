@@ -339,6 +339,39 @@ class GeModel(ABC):
             res = (res, {"dt": dt if dt is None else float(dt), "dn": dn})
 
         return res
+    
+    def excess_cp(self, moles, temperature: float) -> float:
+        """Calculate excess heat capacity [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+
+        Returns
+        -------
+        float
+            Excess heat capacity [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            from yaeos import UNIFACVLE
+
+            # Ethanol - water system
+            groups = [{1: 2, 2: 1, 14: 1}, {16: 1}]
+
+            model = UNIFACVLE(groups)
+
+            # Evaluating excess heat capacity
+            print(model.excess_cp([0.5, 0.5], 303.15))
+        """
+        res = yaeos_c.excess_cp_ge(self.id, moles, temperature)
+
+        return res
 
     def stability_analysis(self, z, temperature: float) -> tuple[dict, dict]:
         """Perform stability analysis.
