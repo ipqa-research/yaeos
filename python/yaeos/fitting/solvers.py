@@ -5,7 +5,7 @@ Module that contains different solvers for specific porpouses.
 
 import numpy as np
 
-from scipy.signal import argrelmin, argrelmax
+from scipy.signal import argrelmax, argrelmin
 
 from yaeos.core import ArModel
 

@@ -238,3 +238,17 @@ def test_same_as_caleb_vt():
         cv = model.cv_residual_vt(n, v, t)
 
         assert np.isclose(cv_exp[idx], cv / nt)
+
+    # =========================================================================
+    # ln_phi
+    # =========================================================================
+    ln_phi_e = [
+        [-0.0010030671414005777, -0.0014236487978196851],
+        [-0.0010030671414005777, -0.0014236487978196851],
+        [-0.00096472785584406, -0.0013817578146076205],
+    ]
+
+    for idx, model in enumerate(models):
+        ln_phi = model.lnphi_vt(n, v, t)
+
+        assert np.allclose(ln_phi_e[idx], ln_phi, atol=1e-7)

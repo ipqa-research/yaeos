@@ -11,6 +11,7 @@ module yaeos__models_ge
       procedure :: ln_activity_coefficient => ln_activity_coefficient
       procedure :: excess_enthalpy => excess_enthalpy
       procedure :: excess_entropy => excess_entropy
+      procedure :: excess_Cp => excess_Cp
    end type
 
    abstract interface
@@ -122,4 +123,25 @@ contains
       if (present(SeT)) SeT = -GeT2
       if (present(Sen)) Sen = -GeTn
    end subroutine excess_entropy
+
+   subroutine excess_Cp(self, n, T, Cpe)
+      !! Calculate Excess heat capacity.
+      !!
+      !! \[
+      !! C_p^E = -T \frac{\partial^2 G^E}{\partial T^2}
+      !! \]
+      !!
+      class(GeModel), intent(in) :: self !! Model
+      real(pr), intent(in) :: n(:) !! Moles vector
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: Cpe !! Excess heat capacity [bar L / K]
+
+      real(pr) :: Ge, GeT, GeT2, Gen(size(n)), GeTn(size(n))
+
+      call self%excess_gibbs(&
+         n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn &
+         )
+
+      Cpe = -T * GeT2
+   end subroutine excess_Cp
 end module

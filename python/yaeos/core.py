@@ -192,7 +192,7 @@ class GeModel(ABC):
         dtn = np.empty(nc, order="F") if dtn else None
         dn2 = np.empty((nc, nc), order="F") if dn2 else None
 
-        possible_derivatives = [dt, dt2, dn, dtn]
+        possible_derivatives = [dt, dt2, dn, dtn, dn2]
         all_none = all([d is None for d in possible_derivatives])
 
         res = yaeos_c.excess_gibbs_ge(
@@ -339,7 +339,7 @@ class GeModel(ABC):
             res = (res, {"dt": dt if dt is None else float(dt), "dn": dn})
 
         return res
-    
+
     def excess_cp(self, moles, temperature: float) -> float:
         """Calculate excess heat capacity [bar L / K].
 
