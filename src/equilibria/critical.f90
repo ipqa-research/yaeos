@@ -282,7 +282,7 @@ contains
 
                d2PdT2 = (P - 2*critical_line%P(i-1) + critical_line%P(i-2)) / dT2
 
-               if (abs(d2PdT2) > 0.1 .and. abs(dPdT_1) < 1) then
+               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
                   ns = spec_CP%T
                   dS = dXdS(ns) * dS
                   dXdS = dXdS/dXdS(ns)
