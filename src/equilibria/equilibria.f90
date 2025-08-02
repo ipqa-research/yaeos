@@ -5,7 +5,8 @@ module yaeos__equilibria
    use yaeos__equilibria_stability, only: tm, min_tpd
 
    ! Equilibrium State definitions
-   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__equilibria_equilibrium_state, only: &
+      EquilibriumState, MPEquilibriumState
 
    ! Phase split calculations
    use yaeos__equilibria_flash, only: flash
@@ -46,4 +47,5 @@ module yaeos__equilibria
       PXEnvelMP, px_envelope
    use yaeos__equilibria_boundaries_phase_envelopes_mp_tx, only: &
       TXEnvelMP, tx_envelope
+   use yaeos__equilibria_boundaries_generalized_isopleths, only: create_generalized_isoz_line, GeneralizedIsoZLine
 end module yaeos__equilibria
