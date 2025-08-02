@@ -31,33 +31,8 @@ module yaeos__equilibria_multiphase_flash
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models, only: ArModel
+   use yaeos__equilibria_equilibrium_state, only: MPEquilibriumState
    implicit none
-
-   type :: MPEquilibriumState
-      !! # `MPEquilibriumState`
-      !! Type to hold the state of a multiphase equilibrium calculation.
-      !!
-      !! # Description
-      !! This type holds the results of a multiphase equilibrium calculation,
-      !! including phase compositions, pressures, and temperatures.
-      !!
-      !! # Examples
-      !!
-      !! ```fortran
-      !! ```
-      !!
-      !! # References
-      !!
-      real(pr), allocatable :: z(:) !! Global composition
-      real(pr) :: P !! Pressure
-      real(pr) :: T !! Temperature
-      integer :: np !! Number of phases
-      real(pr), allocatable :: x_l(:,:)  !! Mole fractions of the main phases
-      real(pr), allocatable :: w(:)  !! Mole fractions of the reference phase
-      real(pr), allocatable :: betas(:)  !! Mole fractions of each phase
-      character(len=14), allocatable :: kinds_x(:)  !! Kinds of the main phases
-      character(len=14) :: kind_w !! Kind of the reference phase
-   end type MPEquilibriumState
 
 contains
 
