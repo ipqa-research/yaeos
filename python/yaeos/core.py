@@ -1279,7 +1279,7 @@ class ArModel(ABC):
             p=pressure,
             kinds_x=kinds_x,
             kind_w=kind_w,
-            max_iters=100,
+            max_iters=max_iters,
             x_l0=x_l0,
             w0=w0,
             betas0=betas0,
@@ -1290,6 +1290,7 @@ class ArModel(ABC):
             "w": w,
             "betas": betas,
             "iters": iters,
+            "F": foo,
         }
 
     def flash_vt(self, z, volume: float, temperature: float, k0=None) -> dict:
