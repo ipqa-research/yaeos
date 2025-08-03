@@ -66,12 +66,6 @@ contains
       ws_stab(1, :) = bub%y
       ws_stab(2, :) = 1 - sat%x
 
-      print *, sat%y
-      print *, sat%x
-      print *, sat%P
-      print *, sat%T
-      print *, "======="
-
       line = create_generalized_isoz_line(&
          model, nc, np, nstab, kinds_x, kind_w, z, &
          x_l0, w0, betas0, P0, T0, &
