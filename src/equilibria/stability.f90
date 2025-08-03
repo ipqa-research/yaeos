@@ -160,8 +160,8 @@ contains
          ! w = 1e-15
          ! w(i) = 1 - 1e-15
          ! w = w/sum(w)
-         w = 1
-         w(i) = 1000
+         w = 10
+         w(i) = 10000
          dw = 100
          do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4 .and. iters < max_iters)
             iters = iters + 1
