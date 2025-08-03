@@ -1459,7 +1459,7 @@ contains
       real(c_double), intent(in) :: spec_variable_value
       integer, intent(in) :: ns0
       real(c_double), intent(in) :: S0, dS0
-      real(c_double), intent(in) :: ws_stab(np, nc)
+      real(c_double), intent(in) :: ws_stab(nstab, nc)
       integer(c_int), intent(in) :: max_points
 
       real(c_double), intent(out) :: x_ls(max_points, np, nc)
