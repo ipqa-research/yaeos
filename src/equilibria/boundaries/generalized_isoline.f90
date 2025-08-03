@@ -116,7 +116,7 @@ contains
 
          dX = dXdS * dS
 
-         do while(any(abs(dX(ibetas)) > 1) .or. abs(dX(iT)) > 0.05)
+         do while(any(abs(dX(ibetas)) > 1) .or. abs(dX(iT)) > 0.05 .or. abs(dX(iP)) > 0.05)
             dX = dX/2
          end do
 
