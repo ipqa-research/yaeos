@@ -13,7 +13,7 @@ program generalized_line
    real(pr) :: T, P, z(nc)
 
    integer :: i
-   
+
    write(*, *) test_title("GENERALIZED ISOPLETHS")
 
    Tc = [190.564, 304.1282, 768.0]
@@ -57,9 +57,9 @@ contains
       spec_variable = (nc*np) + (np + 1) + 1
       spec_variable_value = log(P0)
 
-      ns0 = (nc*np) + (np+1) + 2
-      S0 = log(T0) - 0.001
-      dS0 = -0.1
+      ns0 = (nc*np) + (np+1)
+      S0 = log(1e-10)
+      dS0 = 0.0001
 
       ! ws_stab(1, :) = [4.79003592e-01, 5.20996408e-01, 1.30001898e-15]
       ! ws_stab(2, :) = [5.63039080e-01, 4.36960920e-01, 4.17032026e-16]

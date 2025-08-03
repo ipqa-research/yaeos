@@ -68,14 +68,17 @@ contains
       found_unstability = .false.
 
       ibetas = [(i, i=nc*np+1, nc*np+np+1)]
+      iP = nc*np+np+1+1
+      iT = nc*np+np+1+2
 
       dFdS = 0
       dFdS(nc*np+np+3) = -1
 
-      X = [log([(x_l0(i, :)/w0, i=1,np)]), betas0, log(P0), log(T0)]
+      X = [log([(x_l0(i, :)/w0, i=1,np)]), log(betas0), log(P0), log(T0)]
 
       i_point = 0
       allocate(create_generalized_isoz_line%points(0))
+      iters = 0
       do while(iters < max_iters .and. .not. found_unstability)
          i_point = i_point + 1
          call solve_generalized_point(model, z, np, kinds_x, kind_w, &
@@ -83,20 +86,20 @@ contains
             iters)
 
          dXdS = solve_system(dF, -dFdS)
-         ns = maxloc(dXdS, dim=1)
+         ns = maxloc(abs(dXdS), dim=1)
 
          dS = dXdS(ns) * dS * 3./iters
          dXdS = dXdS/dXdS(ns)
 
          point = MPEquilibriumState_from_X(nc, np, z, kinds_x, kind_w, X)
-         
+
          do i=1,nstab
             tms(i) = tm(model, point%w, ws_stab(i, :), point%P, point%T)
          end do
 
          create_generalized_isoz_line%points = [&
             create_generalized_isoz_line%points, point &
-         ]
+            ]
 
          if (any(tms < -0.01)) then
             i = minloc(tms, dim=1)
@@ -110,6 +113,11 @@ contains
          end if
 
          dX = dXdS * dS
+
+         do while(any(abs(dX(ibetas)) > 1) .or. abs(dX(iT)) > 0.05)
+            dX = dX/2
+         end do
+
          X = X + dX
          S = X(ns)
       end do
@@ -178,8 +186,8 @@ contains
          K(l, :) = exp(X(lb:ub))
       end do
 
-      betas = X(np*nc + 1:np*nc + np)
-      beta_w = X(np*nc + np + 1)
+      betas = exp(X(np*nc + 1:np*nc + np))
+      beta_w = exp(X(np*nc + np + 1))
       P = exp(X(np*nc + np + 2))
       T = exp(X(np*nc + np + 3))
 
@@ -236,11 +244,11 @@ contains
 
       do l=1,np
          ! Save the derivatives of w wrt beta and K of the incipient phase
-         dwdb(l, :) = -z * K(l, :)/denom**2
+         dwdb(l, :) =  betas(l) * (-z * K(l, :)/denom**2)
          dwdlnK(l, :) = -K(l, :) * betas(l)*z/denom**2
       end do
 
-      dwdbw = -z / denom**2
+      dwdbw = beta_w * (-z / denom**2)
 
       do l=1,np
          do phase=1,np
@@ -312,7 +320,7 @@ contains
          end do
 
          ! Derivatives of sum(beta)==1
-         df(nc * np + np + 1, np*nc + l) = 1
+         df(nc * np + np + 1, np*nc + l) = betas(l)
       end do
 
       do j=1,np
@@ -330,7 +338,7 @@ contains
          end do
       end do
 
-      df(nc * np + np + 1, np*nc + np + 1) = 1
+      df(nc * np + np + 1, np*nc + np + 1) = beta_w
 
       df(nc * np + np + 2, ns1) = 1
       df(nc * np + np + 3, ns2) = 1
@@ -377,9 +385,9 @@ contains
             dX = dX/2
          end do
 
-         do while(any(abs(X(iBetas) + dX(iBetas)) > 1))
-            X(iBetas) = X(iBetas) / 2
-         end do
+         ! do while(any(abs(X(iBetas) + dX(iBetas)) > 1))
+         !    X(iBetas) = X(iBetas) / 2
+         ! end do
 
          X = X + dX
       end do

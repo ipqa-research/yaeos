@@ -78,7 +78,7 @@ contains
          ub = nc*np
          K(l, :) = exp(X(lb:ub))
       end do
-      betas = X(np*nc+1 : np*nc+np+1)
+      betas = exp(X(np*nc+1 : np*nc+np+1))
       P = exp(X(nc*np+np+1 + 1))
       T = exp(X(nc*np+np+1 + 2))
 
