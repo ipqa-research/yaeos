@@ -85,7 +85,8 @@ contains
       S2 = log(T)
 
       call min_tpd(model, z, P, T, mintpd, w_stab)
-      if (mintpd < -0.01) then
+      print *, mintpd
+      if (mintpd < -0.001) then
          np = np + 1
 
          ns1 = np*nc + np + 1 + 1
