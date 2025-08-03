@@ -85,6 +85,8 @@ contains
             X, spec_variable, spec_variable_value, ns, S, max_iters, F, dF, &
             iters)
 
+         if (iters > max_iters .or. any(isnan(F))) exit
+
          dXdS = solve_system(dF, -dFdS)
          ns = maxloc(abs(dXdS), dim=1)
 

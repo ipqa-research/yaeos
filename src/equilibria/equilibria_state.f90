@@ -83,7 +83,7 @@ contains
       T = exp(X(nc*np+np+1 + 2))
 
       w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
-      do  l=1,np
+      do l=1,np
          x_l(l, :) = K(l, :) * w
       end do
 
