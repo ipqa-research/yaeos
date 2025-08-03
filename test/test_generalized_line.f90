@@ -74,7 +74,6 @@ contains
          )
 
       i = size(line%points)
-      print *, i, line%points(1)%T, line%points(i)%T
       call assert(line%points(1)%T > 570._pr, "Line sart at high T")
       call assert(line%points(i)%T < 150._pr, "Line stop at low T")
 
