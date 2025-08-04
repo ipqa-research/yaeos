@@ -76,7 +76,7 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
          ! TODO: In many cases this makes more damage than good.
-         do while(maxval(abs(X(lb:ub))) < 0.01)
+         do while(maxval(abs(X(lb:ub))) < 0.01 + nc * (0.1 - 0.01)/20.)
             if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
                ! Reached to a critical point in a Txy/Pxy calculation for a
                ! binary system, stop the calculation.
@@ -111,7 +111,7 @@ contains
             end if
 
             dS = sign(max(abs(dS), sqrt(abs(X(ns))/10), 0.01), dS)
-            X = Xc
+            X = Xc + 0.5*dS*dXdS
             return
          end if
       end do

@@ -1,7 +1,7 @@
 program main
    use yaeos
    use yaeos__equilibria_multiphase_flash, only: pt_F_NP, solve_mp_flash_point&
-      , pt_mp_flash, MPEquilibriumState
+      , pt_mp_flash
    use yaeos__equilibria_stability, only: min_tpd
    use yaeos__math, only: solve_system
    use testing_aux, only: test_title, assert

@@ -1,162 +1,130 @@
-module yaeos__equilibria_multiphase_flash
-   !! # `yaeos__equilibria_multiphase_flash`
-   !! Module for multiphase flash calculations.
+module yaeos__equilibria_boundaries_generalized_isopleths
+   !! Calculation of isoplethic phase equilibria lines.
    !!
-   !! # Description
-   !! This module contains routines and functions to perform multiphase flash
-   !! calculations.
-   !!
-   !! # Examples
-   !!
-   !! ```fortran
-   !!  type(MPEquilibriumState) :: mpfr
-   !!  type(ArModel) :: model
-   !!  real(pr) :: z(3), P, T, Tc(3), Pc(3), w(3)
-   !!  Tc = [374, 31, -83] + 273
-   !!  Pc = [221, 74, 46]
-   !!  w = [0.344, 0.293, 0.011]
-   !!  z = [0.03_pr, 1-0.13_pr, 0.1_pr]
-   !!  P = 45.6_pr
-   !!  T = 190._pr
-   !!  mpfr = pt_mp_flash(model, z, P, T)
-   !!  print *, "Number of phases:", mpfr%np
-   !!  print *, "Phase compositions:"
-   !!  do i=1, mpfr%np
-   !!     print *, "Phase", i, "composition:", mpfr%x_l(i, :)
-   !!  end do
-   !!  print *, "Reference phase composition:", mpfr%w(:)
-   !! ```
-   !!
-   !! # References
-   !!
+   !! This module contains the subroutines to calculate any kind of phase
+   !! equilibria lines with constant composition.
    use yaeos__constants, only: pr, R
    use yaeos__models, only: ArModel
-   use yaeos__equilibria_equilibrium_state, only: MPEquilibriumState
+   use yaeos__equilibria_equilibrium_state, only: MPEquilibriumState, MPEquilibriumState_from_X
+   use yaeos__equilibria_stability, only: tm
+   use yaeos__math, only: solve_system
    implicit none
 
+   type :: GeneralizedIsoZLine
+      type(MPEquilibriumState), allocatable :: points(:)
+      logical :: did_stability = .false.
+      logical :: found_unstability = .false.
+      real(pr), allocatable :: w_more_stable(:)
+   end type GeneralizedIsoZLine
+
 contains
-
-   type(MPEquilibriumState) function pt_mp_flash(model, z, P, T)
-      !! # `pt_mp_flash`
-      !! Perform a multiphase flash calculation at constant zPT.
-      !!
-      !! # Description
-      !! This method will do stability analysis to detect the possibility of
-      !! new phases. For each new phase detected it will calculate a multiphase
-      !! flash and repeat stability analysis until no new phases are detected.
-      !!
-      !! # Examples
-      !!
-      !! ```fortran
-      !! ```
-      !!
-      !! # References
-      !!
-      use yaeos__equilibria_stability, only: min_tpd
+   type(GeneralizedIsoZLine) function create_generalized_isoz_line(&
+      model, nc, np, nstab, kinds_x, kind_w, z, x_l0, w0, betas0, P0, T0, &
+      spec_variable, spec_variable_value, ns0, S0, dS0, &
+      ws_stab, max_points &
+      )
+      !! Create a new generalized line.
+      !! This function initializes a new instance of the GeneralizedLine type.
       class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: P, T
-      integer, parameter :: max_phases = 4
-      integer :: np
+      integer, intent(in) :: nc
+      integer, intent(in) :: np
+      integer, intent(in) :: nstab
+      character(len=14), intent(in) :: kinds_x(np)
+      character(len=14), intent(in) :: kind_w
+      real(pr), intent(in) :: z(nc)
+      real(pr), intent(in) :: x_l0(np, nc)
+      real(pr), intent(in) :: w0(nc)
+      real(pr), intent(in) :: betas0(np+1)
+      real(pr), intent(in) :: P0
+      real(pr), intent(in) :: T0
+      integer, intent(in) :: spec_variable
+      real(pr), intent(in) :: spec_variable_value
+      integer, intent(in) :: ns0
+      real(pr), intent(in) :: S0
+      real(pr), intent(in) :: dS0
+      real(pr), optional, intent(in) :: ws_stab(nstab, nc)
+      integer, optional, intent(in) :: max_points
 
-      real(pr) :: mintpd, all_minima(size(z), size(z)), w(size(z)), w_stab(size(z))
-      real(pr) :: mintpd_xl1, mintpd_w
-      real(pr) :: x_l(max_phases, size(z))
-      real(pr) :: K(max_phases, size(z))
+      real(pr) :: tms(nstab)
 
-      character(len=14) :: kinds_x(max_phases)
-      character(len=14) :: kind_w
-      logical :: less_phases
+      integer :: ns, ns1
+      real(pr) :: S, S1, dS
+      real(pr) :: X(nc*np + np + 3)
+      real(pr) :: F(nc*np + np + 3), df(nc*np + np + 3, nc*np + np + 3)
+      real(pr) :: dX(nc*np + np + 3), dXdS(nc*np+np+3), dFdS(nc*np+np+3)
 
-      integer :: beta_0_index, iters, ns1, ns2, nc
-      real(pr) :: S1, S2
-      integer :: max_iters
+      integer :: lb, ub, i, l, i_point
+      integer :: iT, iP, iBetas(np+1)
+      character(len=14) :: x_kinds(np), w_kind
+      integer :: iters, max_iters = 1000
+      type(MPEquilibriumState) :: point
 
-      real(pr), allocatable :: X(:), F(:), betas(:)
-      real(pr) :: beta0
+      logical :: found_unstability
 
-      max_iters = 1000
-      kinds_x = "liquid"
-      kind_w = "vapor"
+      ns = ns0
+      S = S0
+      dS = dS0
 
-      nc = size(z)
-      np = 0
-      S1 = log(P)
-      S2 = log(T)
+      found_unstability = .false.
 
-      call min_tpd(model, z, P, T, mintpd, w_stab)
-      if (mintpd < -0.001) then
-         np = np + 1
+      ibetas = [(i, i=nc*np+1, nc*np+np+1)]
+      iP = nc*np+np+1+1
+      iT = nc*np+np+1+2
 
-         ns1 = np*nc + np + 1 + 1
-         ns2 = np*nc + np + 1 + 2
+      dFdS = 0
+      dFdS(nc*np+np+3) = -1
 
-         x_l(1, :) = z
-         K(1, :) = x_l(1, :) / w_stab
+      X = [log([(x_l0(i, :)/w0, i=1,np)]), log(betas0), log(P0), log(T0)]
 
-         beta0 = z(maxloc(w_stab, dim=1))
-         beta0 = 0.0001
-         betas = [1-beta0, beta0]
+      i_point = 0
+      allocate(create_generalized_isoz_line%points(0))
+      iters = 0
+      do while(iters < max_iters .and. .not. found_unstability)
+         i_point = i_point + 1
+         call solve_generalized_point(model, z, np, kinds_x, kind_w, &
+            X, spec_variable, spec_variable_value, ns, S, max_iters, F, dF, &
+            iters)
 
-         X = [log(K(1, :)), betas, log(P), log(T)]
-         F = X
-         call solve_mp_flash_point(&
-            model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
-            less_phases, beta_0_index, iters &
-            )
+         if (iters > max_iters .or. any(isnan(F))) exit
 
-         K(1, :) = exp(X(:nc))
+         dXdS = solve_system(dF, -dFdS)
+         ns = maxloc(abs(dXdS), dim=1)
 
-         betas = X(np*nc+1 : np*nc+np+1)
+         dS = dXdS(ns) * dS * 3./iters
+         dXdS = dXdS/dXdS(ns)
 
-         w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
-         x_l(1, :) = K(1, :) * w
+         point = MPEquilibriumState_from_X(nc, np, z, kinds_x, kind_w, X)
 
-         call min_tpd(model, w, P, T, mintpd_w, w_stab)
-         call min_tpd(model, x_l(1, :), P, T, mintpd_xl1, w_stab)
-         if (mintpd_w < -0.001) then
-            np = np + 1
+         do i=1,nstab
+            tms(i) = tm(model, point%w, ws_stab(i, :), point%P, point%T)
+         end do
 
-            ns1 = np*nc + np + 1 + 1
-            ns2 = np*nc + np + 1 + 2
+         create_generalized_isoz_line%points = [&
+            create_generalized_isoz_line%points, point &
+            ]
 
-            x_l(2, :) = w
-            w = w_stab
-
-            K(1, :) = x_l(1, :) / w
-            K(2, :) = x_l(2, :) / w
-
-            betas = [betas, 0.5_pr]
-
-            X = [log(K(1, :)), log(K(2, :)), betas, log(P), log(T)]
-            F = X
-            call solve_mp_flash_point(&
-               model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
-               less_phases, beta_0_index, iters &
-               )
-
-            K(1, :) = exp(X(:nc))
-            K(2, :) = exp(X(nc+1:2*nc))
-
-            betas = X(np*nc+1 : np*nc+np+1)
-            w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
-            x_l(1, :) = K(1, :) * w
-            x_l(2, :) = K(2, :) * w
+         if (any(tms < -0.01)) then
+            i = minloc(tms, dim=1)
+            create_generalized_isoz_line%w_more_stable = ws_stab(i,:)
+            found_unstability = .true.
+            create_generalized_isoz_line%found_unstability = found_unstability
          end if
-      end if
 
-      pt_mp_flash%z = z
-      pt_mp_flash%P = P
-      pt_mp_flash%T = T
-      pt_mp_flash%np = np
-      pt_mp_flash%x_l = x_l(1:np, :)
-      pt_mp_flash%w = w
-      pt_mp_flash%kinds_x = kinds_x(1:np)
-      pt_mp_flash%kind_w = kind_w
-      pt_mp_flash%betas = betas
+         if (present(max_points)) then
+            if (i_point > max_points) exit
+         end if
 
+         dX = dXdS * dS
 
-   end function pt_mp_flash
+         do while(any(abs(dX(ibetas)) > 1) .or. abs(dX(iT)) > 0.05 .or. abs(dX(iP)) > 0.05)
+            dX = dX/2
+         end do
+
+         X = X + dX
+         S = X(ns)
+      end do
+
+   end function create_generalized_isoz_line
 
    subroutine pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, dF)
       !! Function to solve at each point of a multi-phase envelope.
@@ -220,8 +188,8 @@ contains
          K(l, :) = exp(X(lb:ub))
       end do
 
-      betas = X(np*nc + 1:np*nc + np)
-      beta_w = X(np*nc + np + 1)
+      betas = exp(X(np*nc + 1:np*nc + np))
+      beta_w = exp(X(np*nc + np + 1))
       P = exp(X(np*nc + np + 2))
       T = exp(X(np*nc + np + 3))
 
@@ -278,11 +246,11 @@ contains
 
       do l=1,np
          ! Save the derivatives of w wrt beta and K of the incipient phase
-         dwdb(l, :) = -z * K(l, :)/denom**2
+         dwdb(l, :) =  betas(l) * (-z * K(l, :)/denom**2)
          dwdlnK(l, :) = -K(l, :) * betas(l)*z/denom**2
       end do
 
-      dwdbw = -z / denom**2
+      dwdbw = beta_w * (-z / denom**2)
 
       do l=1,np
          do phase=1,np
@@ -354,7 +322,7 @@ contains
          end do
 
          ! Derivatives of sum(beta)==1
-         df(nc * np + np + 1, np*nc + l) = 1
+         df(nc * np + np + 1, np*nc + l) = betas(l)
       end do
 
       do j=1,np
@@ -372,16 +340,15 @@ contains
          end do
       end do
 
-
-      df(nc * np + np + 1, np*nc + np + 1) = 1
+      df(nc * np + np + 1, np*nc + np + 1) = beta_w
 
       df(nc * np + np + 2, ns1) = 1
       df(nc * np + np + 3, ns2) = 1
    end subroutine pt_F_NP
 
-   subroutine solve_mp_flash_point(&
-      model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
-      less_phases, beta_0_index, iters &
+   subroutine solve_generalized_point( &
+      model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, dF, &
+      iters &
       )
       !! Function to solve the multiphase flash problem.
       use yaeos__math, only: solve_system
@@ -397,11 +364,9 @@ contains
       real(pr), intent(in) :: S2 !! Second specification value.
       integer, intent(in) :: max_iters !! Maximum number of iterations.
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated.
-      logical, intent(out) :: less_phases !! True if the solution has less phases than expected.
-      integer, intent(out) :: beta_0_index !! Index of beta that equals zero.
+      real(pr), intent(out), dimension(size(X), size(X)) :: df !! Jacobian matrix.
       integer, intent(out) :: iters !! Number of iterations performed.
 
-      real(pr), dimension(size(X), size(X)) :: df !! Jacobian matrix.
       real(pr), dimension(size(X)) :: dX !! Newton step vector.
 
       integer :: nc !! Number of components
@@ -410,8 +375,6 @@ contains
 
       nc = size(z)
       iBetas = [(i, i=nc*np+1,nc*np+np+1)]
-
-      less_phases = .false.
 
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
@@ -424,11 +387,11 @@ contains
             dX = dX/2
          end do
 
-         do while(any(abs(X(iBetas) + dX(iBetas)) > 1))
-            X(iBetas) = X(iBetas) / 2
-         end do
+         ! do while(any(abs(X(iBetas) + dX(iBetas)) > 1))
+         !    X(iBetas) = X(iBetas) / 2
+         ! end do
 
          X = X + dX
       end do
-   end subroutine solve_mp_flash_point
-end module yaeos__equilibria_multiphase_flash
+   end subroutine solve_generalized_point
+end module yaeos__equilibria_boundaries_generalized_isopleths

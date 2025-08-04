@@ -192,13 +192,13 @@ contains
          use yaeos__math_continuation, only: full_newton
          real(pr) :: X(4), dX(4), dS, F(4), dF(4,4), dFdS(4), dXdS(4)
          real(pr) :: u_new(size(z0)), l1, Si
+         real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
 
          integer :: its, real_its
 
          if (exp(X(4)) > max_P) then
             max_P = exp(X(4)) + 100
          end if
-
 
          X = X0
          dS = dS0
@@ -272,8 +272,26 @@ contains
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
             ns = maxloc(abs(dXdS), dim=1)
-            dS = dXdS(ns)*dS
+            dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
+
+            dS = sign(max(abs(dS), 1e-2_pr), dS)
+            if (i > 4) then
+               dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
+               dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
+               dT2 = (T - critical_line%T(i-1)) * (critical_line%T(i-2) - critical_line%T(i-3))
+
+               d2PdT2 = (P - 2*critical_line%P(i-1) + critical_line%P(i-2)) / dT2
+
+               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
+                  ns = spec_CP%T
+                  dS = dXdS(ns) * dS
+                  dXdS = dXdS/dXdS(ns)
+                  do while(abs(exp(X(3) + dXdS(3) * dS) - T) > 1)
+                     dS = 0.9 * dS
+                  end do
+               end if
+            end if
 
             ! dS = sign(min(abs(dS * 3./its), dS0), dS)
             ! ==============================================================

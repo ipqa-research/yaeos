@@ -31,7 +31,74 @@ module yaeos__equilibria_equilibrium_state
       generic, public :: write (FORMATTED) => write
    end type EquilibriumState
 
+   type :: MPEquilibriumState
+      !! # `MPEquilibriumState`
+      !! Type to hold the state of a multiphase equilibrium calculation.
+      !!
+      !! # Description
+      !! This type holds the results of a multiphase equilibrium calculation,
+      !! including phase compositions, pressures, and temperatures.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! ```
+      !!
+      !! # References
+      !!
+      real(pr), allocatable :: z(:) !! Global composition
+      real(pr) :: P !! Pressure
+      real(pr) :: T !! Temperature
+      integer :: np !! Number of phases
+      real(pr), allocatable :: x_l(:,:)  !! Mole fractions of the main phases
+      real(pr), allocatable :: w(:)  !! Mole fractions of the reference phase
+      real(pr), allocatable :: betas(:)  !! Mole fractions of each phase
+      character(len=14), allocatable :: kinds_x(:)  !! Kinds of the main phases
+      character(len=14) :: kind_w !! Kind of the reference phase
+   end type MPEquilibriumState
+
 contains
+
+   type(MPEquilibriumState) function MPEquilibriumState_from_X(nc, np, z, kinds_x, kind_w, X)
+      integer, intent(in) :: nc
+      integer, intent(in) :: np
+      real(pr), intent(in) :: z(nc)
+      character(len=14), intent(in) :: kinds_x(np)
+      character(len=14), intent(in) :: kind_w
+      real(pr), intent(in) :: X(nc*np+np+1+2)
+
+      integer :: l, lb, ub
+
+      real(pr) :: K(np, nc)
+
+      real(pr) :: x_l(np, nc), w(nc), betas(np+1), P, T
+
+      do l=1,np
+         lb = (l-1)*nc + 1
+         ub = nc*np
+         K(l, :) = exp(X(lb:ub))
+      end do
+      betas = exp(X(np*nc+1 : np*nc+np+1))
+      P = exp(X(nc*np+np+1 + 1))
+      T = exp(X(nc*np+np+1 + 2))
+
+      w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
+      do l=1,np
+         x_l(l, :) = K(l, :) * w
+      end do
+
+      MPEquilibriumState_from_X = MPEquilibriumState(&
+         z=z, &
+         P=P, &
+         T=T, &
+         np=np, &
+         x_l=x_l, &
+         w=w, &
+         betas=betas, &
+         kinds_x=kinds_x, &
+         kind_w=kind_w &
+         )
+   end function MPEquilibriumState_from_X
 
    subroutine write_EquilibriumState(eq, unit, iotype, v_list, iostat, iomsg)
       class(EquilibriumState), intent(in) :: eq

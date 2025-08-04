@@ -165,8 +165,12 @@ class GPEC:
             stability_analysis=stability_analysis,
         )
 
-        self._cl_ll = cl
-        self._cep_ll = cep
+        if len(cl["a"]) > 0:
+            self._cl_ll = cl
+            self._cep_ll = cep
+        else:
+            self._cl_ll = None
+            self._cep_ll = None
 
     def plot_gped(self):
         """Plot the global phase equilibria diagram (GPED).

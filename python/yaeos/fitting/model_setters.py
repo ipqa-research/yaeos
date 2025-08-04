@@ -54,7 +54,8 @@ def fit_mhv_nrtl(x, args):
 
 def fit_hv_nrtl(x, args):
     """Fit the HV mixing rule for Cubic EoS with NRTL GE."""
-    from yaeos.models import NRTL, HV
+    from yaeos.models.excess_gibbs import NRTL
+    from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import HV
 
     a12, a21, b12, b21, alpha = x
 

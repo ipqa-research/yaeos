@@ -51,12 +51,14 @@ module yaeos_c
    public :: flash_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
-   public :: pt2_phase_envelope, px2_phase_envelope, tx2_phase_envelope
-   public :: pt3_phase_envelope, px3_phase_envelope !, tx3_phase_envelope
    public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
+   public :: generalized_isopleth
    public :: critical_point, critical_line, find_llcl
    public :: stability_zpt, tm
    public :: stability_zt_ge
+
+   ! Helpers
+   public :: find_self_intersections
 
    type :: ArModelContainer
       !! Container type for ArModels
@@ -927,13 +929,21 @@ contains
       logical :: less_phases
       integer :: beta_0_index
       integer :: i
+      real(c_double) :: betas_in(np+1)
 
       nc = size(z)
 
       call convert_kind(kinds_x, x_kinds)
       call convert_kind(kind_w, w_kind)
 
-      X = [(log(x_l0(i, :)/w0), i=1,np), betas0, log(P), log(T)]
+      ! where (betas0 == 0.0)
+      !    betas_in = 1e-20
+      ! elsewhere
+      !    betas_in = betas0
+      ! end where
+      betas_in = betas0
+
+      X = [(log(x_l0(i, :)/w0), i=1,np), betas_in, log(P), log(T)]
 
       ns1 = nc*np+np+1+1
       ns2 = nc*np+np+1+2
@@ -1117,6 +1127,10 @@ contains
          sat = fsaturation_pressure(ar_models(id)%model, z, T, kind)
       end if
       call equilibria_state_to_arrays(sat, x, y, P, aux, Vx, Vy, beta)
+      if (sat%kind == "failed") then
+         ! If the saturation pressure calculation failed, set P to NaN
+         P = makenan()
+      end if
    end subroutine saturation_pressure
 
    subroutine saturation_temperature(id, z, P, kind, T0, y0, T, x, y, Vx, Vy, beta)
@@ -1151,6 +1165,10 @@ contains
       end if
 
       call equilibria_state_to_arrays(sat, x, y, aux, T, Vx, Vy, beta)
+      if (sat%kind == "failed") then
+         ! If the saturation temperature calculation failed, set T to NaN
+         T = makenan()
+      end if
    end subroutine saturation_temperature
 
    subroutine pure_saturation_line(id, comp_id, stop_P, stop_T, P, T, Vx, Vy)
@@ -1188,296 +1206,8 @@ contains
    end subroutine pure_saturation_line
 
    ! ==========================================================================
-   ! Two-phase envelopes
+   ! Multi-phase envelopes
    ! --------------------------------------------------------------------------
-   subroutine pt2_phase_envelope(&
-      id, z, kind, max_points, T0, P0, Ts, Ps, tcs, pcs, xs, ys, kinds &
-      )
-      use yaeos, only: &
-         saturation_pressure, saturation_temperature, pt_envelope_2ph, &
-         EquilibriumState, PTEnvel2, find_hpl
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:)
-      integer, intent(in) :: max_points
-      character(len=15), intent(in) :: kind
-      real(c_double), intent(in) :: T0, P0
-      real(c_double), intent(out) :: Ts(max_points)
-      real(c_double), intent(out) :: Ps(max_points)
-      real(c_double), intent(out) :: Tcs(max_points), Pcs(max_points)
-      real(c_double), intent(out) :: xs(max_points, size(z))
-      real(c_double), intent(out) :: ys(max_points, size(z))
-      character(len=15), intent(out) :: kinds(max_points)
-
-      real(8) :: nan
-      type(EquilibriumState) :: sat
-      type(PTEnvel2) :: env
-
-      integer :: i, neval=0
-
-      real(c_double) :: T, P
-
-      neval = neval + 1
-      nan = makenan()
-      Ts = nan
-      Ps = nan
-      Tcs = nan
-      Pcs = nan
-      kinds = "nan"
-
-      T = T0
-      P = P0
-
-      select case(kind)
-       case("bubble")
-         sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
-         env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
-       case("dew")
-         sat = saturation_temperature(ar_models(id)%model, z, P=P, kind=kind, T0=T0)
-         env = pt_envelope_2ph(ar_models(id)%model, z, sat, points=max_points)
-       case("liquid-liquid")
-         env = find_hpl(ar_models(id)%model, z, T, P, max_points)
-      end select
-
-      i = size(env%points)
-      Ts(:i) = env%points%T
-      Ps(:i) = env%points%P
-      kinds(:i) = env%points%kind
-
-      do i=1,size(env%points)
-         xs(i, :) = env%points(i)%x
-         ys(i, :) = env%points(i)%y
-      end do
-
-      i = size(env%cps)
-      Tcs(:i) = env%cps%T
-      Pcs(:i) = env%cps%P
-   end subroutine pt2_phase_envelope
-
-   subroutine px2_phase_envelope(&
-      id, z0, zi, kind, max_points, T, P0, ns0, ds0, &
-      as, Ps, xs, ys, acs, pcs, a0, kinds)
-      use yaeos, only: &
-         saturation_pressure, saturation_temperature, px_envelope_2ph, &
-         EquilibriumState, PXEnvel2
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z0(:)
-      real(c_double), intent(in) :: zi(:)
-      integer, intent(in) :: max_points
-      character(len=15), intent(in) :: kind
-      real(c_double), intent(in) :: T
-      integer(c_int), intent(in) :: ns0
-      real(c_double), intent(in) :: ds0
-      real(c_double), intent(out) :: as(max_points)
-      real(c_double), intent(out) :: Ps(max_points)
-      real(c_double), intent(out) :: xs(max_points, size(z0))
-      real(c_double), intent(out) :: ys(max_points, size(z0))
-      real(c_double), intent(in) :: a0
-      real(c_double), intent(out) :: acs(5), Pcs(5)
-      real(c_double), intent(in) :: P0
-      character(len=15), intent(out) :: kinds(max_points)
-
-      real(8) :: nan
-      type(EquilibriumState) :: sat
-      type(PXEnvel2) :: env
-
-      integer :: i, j
-
-      real(c_double) :: z(size(z0))
-
-      nan = makenan()
-      as = nan
-      Ps = nan
-      acs = nan
-      Pcs = nan
-      kinds = "nan"
-
-      z = a0 * zi + (1-a0)*z0
-      sat = saturation_pressure(ar_models(id)%model, z, T=T, kind=kind, P0=P0)
-
-      env = px_envelope_2ph(&
-         ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
-         first_point=sat, points=max_points, &
-         delta_0=ds0, specified_variable_0=ns0 &
-         )
-
-      i = size(env%points)
-      as(:i) = env%alpha
-      Ps(:i) = env%points%P
-      kinds(:i) = env%points%kind
-
-      do j=1,i
-         xs(j, :) = env%points(j)%x
-         ys(j, :) = env%points(j)%y
-      end do
-
-      i = size(env%cps)
-      acs(:i) = env%cps%alpha
-      Pcs(:i) = env%cps%P
-   end subroutine px2_phase_envelope
-
-   subroutine tx2_phase_envelope(&
-      id, z0, zi, kind, max_points, P, T0, ns0, ds0, &
-      as, ts, xs, ys, acs, tcs, a0, kinds)
-      use yaeos, only: &
-         saturation_pressure, saturation_temperature, tx_envelope_2ph, &
-         EquilibriumState, TXEnvel2
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z0(:)
-      real(c_double), intent(in) :: zi(:)
-      integer, intent(in) :: max_points
-      character(len=15), intent(in) :: kind
-      real(c_double), intent(in) :: P
-      real(c_double), intent(in) :: T0
-      integer(c_int), intent(in) :: ns0
-      real(c_double), intent(in) :: ds0
-      real(c_double), intent(out) :: as(max_points)
-      real(c_double), intent(out) :: Ts(max_points)
-      real(c_double), intent(out) :: xs(max_points, size(z0))
-      real(c_double), intent(out) :: ys(max_points, size(z0))
-      real(c_double), intent(in) :: a0
-      real(c_double), intent(out) :: acs(5), Tcs(5)
-      character(len=15), intent(out) :: kinds(max_points)
-
-      real(8) :: nan
-      type(EquilibriumState) :: sat
-      type(TXEnvel2) :: env
-
-      integer :: i, j
-
-      real(c_double) :: z(size(z0))
-
-      nan = makenan()
-      as = nan
-      Ts = nan
-      acs = nan
-      Tcs = nan
-      kinds = "nan"
-
-      z = a0 * zi + (1-a0)*z0
-
-      sat = saturation_temperature(&
-         ar_models(id)%model, z, P=P, kind=kind, T0=T0)
-
-      env = tx_envelope_2ph(&
-         ar_models(id)%model, z0=z0, alpha0=a0, z_injection=zi, &
-         first_point=sat, points=max_points, &
-         delta_0=ds0, specified_variable_0=ns0)
-
-      i = size(env%points)
-      as(:i) = env%alpha
-      Ts(:i) = env%points%T
-
-      do j=1,i
-         xs(j, :) = env%points(j)%x
-         ys(j, :) = env%points(j)%y
-      end do
-
-      i = size(env%cps)
-      acs(:i) = env%cps%alpha
-      Tcs(:i) = env%cps%T
-      kinds = env%points%kind
-   end subroutine tx2_phase_envelope
-
-   subroutine pt3_phase_envelope(&
-      id, z, x0, y0, w0, p0, t0, beta0, ns0, ds0, max_points, &
-      x, y, w, p, t, beta &
-      )
-      use yaeos, only: ptenvel3, pt_envelope_3ph
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z(:)
-      real(c_double), intent(in) :: x0(:)
-      real(c_double), intent(in) :: y0(:)
-      real(c_double), intent(in) :: w0(:)
-      real(c_double), intent(in) :: p0
-      real(c_double), intent(in) :: t0
-      real(c_double), intent(in) :: beta0
-      integer(c_int), intent(in) :: ns0
-      real(c_double), intent(in) :: ds0
-      integer(c_int), intent(in) :: max_points
-      real(c_double), intent(out) :: x(max_points, size(z))
-      real(c_double), intent(out) :: y(max_points, size(z))
-      real(c_double), intent(out) :: w(max_points, size(z))
-      real(c_double), intent(out) :: p(max_points)
-      real(c_double), intent(out) :: t(max_points)
-      real(c_double), intent(out) :: beta(max_points)
-
-      type(ptenvel3) :: pt3
-      integer :: converged_points
-
-      x = makenan()
-      y = makenan()
-      w = makenan()
-      p = makenan()
-      t = makenan()
-      beta = makenan()
-
-
-      pt3 = pt_envelope_3ph(&
-         model=ar_models(id)%model, z=z, &
-         x0=x0, y0=y0, w0=w0, p0=p0, t0=t0, beta0=beta0, ns0=ns0, &
-         ds0=ds0, points=max_points &
-         )
-
-      converged_points = size(pt3%beta)
-      x(:converged_points, :) = pt3%x
-      y(:converged_points, :) = pt3%y
-      w(:converged_points, :) = pt3%w
-      p(:converged_points) = pt3%p
-      t(:converged_points) = pt3%t
-      beta(:converged_points) = pt3%beta
-   end subroutine pt3_phase_envelope
-
-   subroutine px3_phase_envelope(&
-      id, z0, zi, T, x0, y0, w0, p0, a0, beta0, ns0, ds0, max_points, &
-      x, y, w, p, a, beta &
-      )
-      use yaeos, only: PXenvel3, PX_envelope_3ph
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: z0(:)
-      real(c_double), intent(in) :: zi(:)
-      real(c_double), intent(in) :: T
-      real(c_double), intent(in) :: x0(:)
-      real(c_double), intent(in) :: y0(:)
-      real(c_double), intent(in) :: w0(:)
-      real(c_double), intent(in) :: p0
-      real(c_double), intent(in) :: a0
-      real(c_double), intent(in) :: beta0
-      integer(c_int), intent(in) :: ns0
-      real(c_double), intent(in) :: ds0
-      integer(c_int), intent(in) :: max_points
-      real(c_double), intent(out) :: x(max_points, size(z0))
-      real(c_double), intent(out) :: y(max_points, size(z0))
-      real(c_double), intent(out) :: w(max_points, size(z0))
-      real(c_double), intent(out) :: p(max_points)
-      real(c_double), intent(out) :: a(max_points)
-      real(c_double), intent(out) :: beta(max_points)
-
-      type(pxenvel3) :: px3
-      integer :: converged_points
-
-      x = makenan()
-      y = makenan()
-      w = makenan()
-      p = makenan()
-      a = makenan()
-      beta = makenan()
-
-      px3 = px_envelope_3ph(&
-         model=ar_models(id)%model, z0=z0, zi=zi, T=T, &
-         x0=x0, y0=y0, w0=w0, p0=p0, a0=a0, beta0=beta0, ns0=ns0, &
-         ds0=ds0, points=max_points &
-         )
-
-      converged_points = size(px3%alpha)
-
-      x(:converged_points, :) = px3%x
-      y(:converged_points, :) = px3%y
-      w(:converged_points, :) = px3%w
-      p(:converged_points) = px3%p
-      a(:converged_points) = px3%alpha
-      beta(:converged_points) = px3%beta
-   end subroutine px3_phase_envelope
-
    subroutine pt_mp_phase_envelope(&
       id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
       beta_w, kinds_x, kind_w, max_points, stop_pressure, &
@@ -1721,6 +1451,81 @@ contains
    end subroutine tx_mp_phase_envelope
 
    ! ==========================================================================
+   ! Generalized isolines
+   ! --------------------------------------------------------------------------
+   subroutine generalized_isopleth(&
+      id, nc, np, nstab, kinds_x, kind_w, z, x_l0, w0, betas0, P0, T0, &
+      spec_variable, spec_variable_value, ns0, S0, dS0, &
+      ws_stab, &
+      x_ls, ws, betas, Ts, Ps, w_more_stable, found_unstability, max_points &
+      )
+      use yaeos, only: GeneralizedIsoZLine, create_generalized_isoz_line
+      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: nc
+      integer(c_int), intent(in) :: np
+      integer(c_int), intent(in) :: nstab
+      real(c_double), intent(in) :: z(nc)
+      real(c_double), intent(in) :: x_l0(np, nc), w0(nc), betas0(np+1), P0, T0
+      integer(c_int), intent(in) :: kinds_x(np), kind_w
+      integer, intent(in) :: spec_variable
+      real(c_double), intent(in) :: spec_variable_value
+      integer, intent(in) :: ns0
+      real(c_double), intent(in) :: S0, dS0
+      real(c_double), intent(in) :: ws_stab(nstab, nc)
+      integer(c_int), intent(in) :: max_points
+
+      real(c_double), intent(out) :: x_ls(max_points, np, nc)
+      real(c_double), intent(out) :: ws(max_points, nc)
+      real(c_double), intent(out) :: betas(max_points, np+1)
+      real(c_double), intent(out) :: Ts(max_points)
+      real(c_double), intent(out) :: Ps(max_points)
+      real(c_double), intent(out) :: w_more_stable(nc)
+      logical, intent(out) :: found_unstability
+
+      character(len=14) :: kx(np), kw
+
+      type(GeneralizedIsoZLine) :: line
+      integer :: i, l
+      
+      call convert_kind(kinds_x, kx)
+      call convert_kind(kind_w, kw)
+
+      line = create_generalized_isoz_line(&
+         ar_models(id)%model, nc=nc, np=np, nstab=nstab, kinds_x=kx, kind_w=kw, z=z, &
+         x_l0=x_l0, w0=w0, betas0=betas0, P0=P0, T0=T0, &
+         spec_variable=spec_variable, spec_variable_value=spec_variable_value, ns0=ns0, S0=S0, dS0=dS0, &
+         ws_stab=ws_stab, max_points=max_points &
+         )
+
+      found_unstability = line%found_unstability
+
+
+      x_ls = makenan()
+      ws = makenan()
+      Ts = makenan()
+      Ps = makenan()
+      betas = makenan()
+      w_more_stable = makenan()
+
+      do i=1,min(size(line%points), max_points)
+         do l=1,np
+            x_ls(i, np, :) = line%points(i)%x_l(l, :)
+         end do
+         ws(i, :) = line%points(i)%w
+         Ts(i) = line%points(i)%T
+         Ps(i) = line%points(i)%P
+         betas(i, :) = line%points(i)%betas
+      end do
+
+      if (found_unstability) then
+         w_more_stable = line%w_more_stable
+      end if
+
+   end subroutine generalized_isopleth
+
+
+
+   ! ==========================================================================
    ! Auxiliar
    ! --------------------------------------------------------------------------
    function makenan()
@@ -1801,6 +1606,31 @@ contains
          numeric = -1
       end select
    end subroutine convert_gerg_components
+
+   subroutine find_self_intersections(x, y, x_inter, y_inter, i, j)
+      use yaeos__math, only: intersect_one_line, Point
+      integer, parameter :: max_intersections = 10
+      real(c_double), intent(in) :: x(:), y(:)
+      real(c_double), intent(out) :: x_inter(max_intersections), y_inter(max_intersections)
+      integer(c_int), intent(out) :: i(max_intersections), j(max_intersections)
+
+      integer :: k
+
+      type(Point), allocatable :: intersections(:)
+
+      intersections = intersect_one_line(x, y)
+
+      x_inter = makenan()
+      y_inter = makenan()
+
+      ! Populate the output arrays
+      do concurrent (k=1:min(max_intersections, size(intersections)))
+         x_inter(k) = intersections(k)%x
+         y_inter(k) = intersections(k)%y
+         i(k) = intersections(k)%i
+         j(k) = intersections(k)%j
+      end do
+   end subroutine find_self_intersections
 
    subroutine equilibria_state_to_arrays(eq_state, x, y, P, T, Vx, Vy, beta)
       use yaeos, only: EquilibriumState
