@@ -455,6 +455,125 @@ class GeModel(ABC):
 
 class ArModel(ABC):
     """Residual Helmholtz (Ar) model abstract class."""
+    
+    def helmholtz_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+        dtv: bool = False,
+        dv2: bool = False,
+        dt2: bool = False,
+        dvn: bool = False,
+        dtn: bool = False,
+        dn2: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual Helmholtz given volume and temperature [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+        dtv : bool, optional
+            Calculate cross temperature and volume derivative, by default False
+        dv2 : bool, optional
+            Calculate volume second derivative, by default False
+        dt2 : bool, optional
+            Calculate temperature second derivative, by default False
+        dvn : bool, optional
+            Calculate cross volume and moles derivative, by default False
+        dtn : bool, optional
+            Calculate cross temperature and moles derivative, by default False
+        dn2 : bool, optional
+            Calculate moles second derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual helholtz free energy or tuple with Residual helholtz free
+            energy and derivatives dictionary if any derivative is asked [bar
+            L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.helmholtz_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0)
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+        dtv = np.array(0, dtype=np.float64) if dtv else None
+        dv2 = np.array(0, dtype=np.float64) if dv2 else None
+        dt2 = np.array(0, dtype=np.float64) if dt2 else None
+        dvn = np.empty(nc, order="F") if dvn else None
+        dtn = np.empty(nc, order="F") if dtn else None
+        dn2 = np.empty((nc, nc), order="F") if dn2 else None
+
+        res = yaeos_c.helmholtz_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            art=dt,
+            arv=dv,
+            arn=dn,
+            artv=dtv,
+            arv2=dv2,
+            art2=dt2,
+            arvn=dvn,
+            artn=dtn,
+            arn2=dn2,
+        )
+
+        all_d_none = all(d is None for d in [dt, dv, dn, dtv, dv2, dt2, dvn, dtn, dn2])
+
+        if all_d_none:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
+                    "dn": dn,
+                    "dtv": dtv if dtv is None else float(dtv),
+                    "dv2": dv2 if dv2 is None else float(dv2),
+                    "dt2": dt2 if dt2 is None else float(dt2),
+                    "dvn": dvn,
+                    "dtn": dtn,
+                    "dn2": dn2,
+                },
+            )
+        return res
 
     def lnphi_vt(
         self,
@@ -805,6 +924,12 @@ class ArModel(ABC):
             Volume [L]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
@@ -898,6 +1023,12 @@ class ArModel(ABC):
             Volume [L]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
@@ -989,12 +1120,18 @@ class ArModel(ABC):
             Volume [L]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
         Union[float, tuple[float, dict]]
             Residual entropy or tuple with Residual entropy and derivatives
-            dictionary if any derivative is asked [bar L]
+            dictionary if any derivative is asked [bar L / K]
 
         Example
         -------
