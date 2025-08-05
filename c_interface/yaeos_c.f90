@@ -1496,9 +1496,7 @@ contains
       w_more_stable = makenan()
 
       do i=1,min(size(line%points), max_points)
-         do l=1,np
-            x_ls(i, np, :) = line%points(i)%x_l(l, :)
-         end do
+         x_ls(i, :, :) = line%points(i)%x_l(:, :)
          ws(i, :) = line%points(i)%w
          Ts(i) = line%points(i)%T
          Ps(i) = line%points(i)%P
