@@ -1004,6 +1004,98 @@ class ArModel(ABC):
             )
         return res
 
+    def internal_energy_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual internal energy at volume and temperature [bar L]
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual internal energy or tuple with Residual internal energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =
+            np.array([45.0, 60.0])     # critical pressures [bar] w =
+            np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual internal energy only
+
+            print(
+                model.internal_energy_residual_vt(
+                    np.array([5.0, 5.6]), 10.0, 300.0
+                )
+            )
+
+            # Asking for derivatives
+
+            print(
+                model.internal_energy_residual_vt(
+                    np.array([5.0, 5.6]), 10.0, 300.0, dt=True)
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.internal_energy_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            urt=dt,
+            urv=dv,
+            urn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
+                    "dn": dn,
+                },
+            )
+        return res
+
     def gibbs_residual_vt(
         self,
         moles,

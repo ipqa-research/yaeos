@@ -77,6 +77,48 @@ def test_same_as_caleb_vt():
         assert np.allclose(dpdn_exp[idx] / nt, der4["dn"])
 
     # =========================================================================
+    # Residual helholtz VT
+    # =========================================================================   
+    for idx, model in enumerate(models):
+        a = model.helmholtz_residual_vt(n, v, t)
+
+        ad1, der1 = model.helmholtz_residual_vt(n, v, t, dv=True)
+        ad2, der2 = model.helmholtz_residual_vt(n, v, t, dt=True)
+        ad3, der3 = model.helmholtz_residual_vt(n, v, t, dn=True)
+        ad4, der4 = model.helmholtz_residual_vt(n, v, t, dtv=True)
+        ad5, der5 = model.helmholtz_residual_vt(n, v, t, dv2=True)
+        ad6, der6 = model.helmholtz_residual_vt(n, v, t, dt2=True)
+        ad7, der7 = model.helmholtz_residual_vt(n, v, t, dvn=True)
+        ad8, der8 = model.helmholtz_residual_vt(n, v, t, dtn=True)
+        ad9, der9 = model.helmholtz_residual_vt(n, v, t, dn2=True)
+        
+        ad10, der10 = model.helmholtz_residual_vt(
+            n, v, t, dv=True, dt=True, dn=True, dtv=True,
+            dv2=True, dt2=True, dvn=True, dtn=True, dn2=True
+        )
+
+        assert np.isclose(a, ad1)
+        assert np.isclose(a, ad2)
+        assert np.isclose(a, ad3)
+        assert np.isclose(a, ad4)
+        assert np.isclose(a, ad5)
+        assert np.isclose(a, ad6)
+        assert np.isclose(a, ad7)
+        assert np.isclose(a, ad8)
+        assert np.isclose(a, ad9)
+        assert np.isclose(a, ad10)
+
+        assert np.isclose(der1["dv"], der10["dv"])
+        assert np.isclose(der2["dt"], der10["dt"])
+        assert np.allclose(der3["dn"], der10["dn"])
+        assert np.isclose(der4["dtv"], der10["dtv"])
+        assert np.isclose(der5["dv2"], der10["dv2"])
+        assert np.isclose(der6["dt2"], der10["dt2"])
+        assert np.allclose(der7["dvn"], der10["dvn"])
+        assert np.allclose(der8["dtn"], der10["dtn"])
+        assert np.allclose(der9["dn2"], der10["dn2"])
+
+    # =========================================================================
     # Residual enthalpy VT
     # =========================================================================
     h_exp = [-0.08233139437821592, -0.08233139437821592, -0.08244045745725088]
