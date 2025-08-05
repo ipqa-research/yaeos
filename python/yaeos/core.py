@@ -2626,8 +2626,8 @@ class ArModel(ABC):
         x_ls, ws, betas, ts, ps, w_more_stable, found_unstability = (
             yaeos_c.generalized_isopleth(
                 id=self.id,
-                kinds_x=2,
-                kind_w=1,
+                kinds_x=kinds_x,
+                kind_w=kind_w,
                 z=z,
                 x_l0=x_l0,
                 w0=w0,
@@ -2640,16 +2640,17 @@ class ArModel(ABC):
                 s0=s0,
                 ds0=ds0,
                 ws_stab=ws_stability,
-                max_points=100,
+                max_points=max_points,
             )
         )
 
+        msk = ~np.isnan(ts)
         return {
-            "x": x_ls,
-            "w": ws,
-            "betas": betas,
-            "T": ts,
-            "P": ps,
+            "x": x_ls[msk],
+            "w": ws[msk],
+            "betas": betas[msk],
+            "T": ts[msk],
+            "P": ps[msk],
             "w_more_stable": w_more_stable,
             "found_unstability": found_unstability,
         }
