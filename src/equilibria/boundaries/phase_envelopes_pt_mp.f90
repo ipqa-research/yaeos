@@ -266,14 +266,36 @@ contains
             dX = dX/2
          end do
 
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
-            dX = dX/2
-         end do
+         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
+         !    dX = dX/2
+         ! end do
 
          do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
             .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
             dX = dX*1.1
          end do
+
+         dejavu: block
+            !! Getting too close to a local minima in the envelope, which can
+            !! be hard to select corrects steps.
+            real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
+            if (i > 4) then
+               dPdT_1 = (P - env_points(i-1)%P) / (T - env_points(i-1)%T)
+               dPdT_2 = (P - env_points(i-2)%P) / (T - env_points(i-2)%T)
+               dT2 = (T - env_points(i-1)%T) * (env_points(i-2)%T - env_points(i-3)%T)
+
+               d2PdT2 = (P - 2*env_points(i-1)%P + env_points(i-2)%P) / dT2
+
+               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
+                  ns = iT
+                  dS = dXdS(ns) * dS
+                  dXdS = dXdS/dXdS(ns)
+                  do while(abs(exp(X(iT) + dXdS(iT) * dS) - T) > 1)
+                     dS = 0.9 * dS
+                  end do
+               end if
+            end if
+         end block dejavu
 
          X_last_converged = X
          X = X + dX
