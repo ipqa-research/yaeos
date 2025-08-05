@@ -58,7 +58,7 @@ contains
       spec_variable_value = log(P0)
 
       ns0 = (nc*np) + (np+1)
-      S0 = log(1e-10)
+      S0 = 1e-10
       dS0 = 0.0001
 
       ! ws_stab(1, :) = [4.79003592e-01, 5.20996408e-01, 1.30001898e-15]
