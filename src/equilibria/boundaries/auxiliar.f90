@@ -69,29 +69,31 @@ contains
       real(pr) :: a,  Xnew(size(X))
 
       real(pr) :: lnKold(nc), lnK(nc)
+
+      real(pr) :: limit
          
       found_critical = .false.
+
+      limit = 0.01 + nc * (0.1 - 0.01)/(20. - 2)
 
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
          ! TODO: In many cases this makes more damage than good.
-         ! do while(maxval(abs(X(lb:ub))) < 0.05)
-         !    print *, "Increasing X", point, X(lb:ub)
-         !    dS = sign(max(abs(dS), sqrt(abs(X(ns))/10), 0.01), dS)
-         !    if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
-         !       ! Reached to a critical point in a Txy/Pxy calculation for a
-         !       ! binary system, stop the calculation.
-         !       dS=0
-         !       return
-         !    end if
-         !    X = X + dXdS * dS
-         !    print *, "next: X", point, X(lb:ub)
-         ! end do
+         do while(maxval(abs(X(lb:ub))) < min(limit, 0.1_pr))
+            if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
+               ! Reached to a critical point in a Txy/Pxy calculation for a
+               ! binary system, stop the calculation.
+               dS=0
+               return
+            end if
+            X = X + dXdS * dS
+         end do
 
-         lnKold = Xold(lb:ub)
-         lnK = X(lb:ub) + dXdS(lb:ub) * dS
          Xnew = X + dXdS * dS
+         
+         lnKold = Xold(lb:ub)
+         lnK = Xnew(lb:ub)
 
          if (point > 1 .and. all(lnKold * lnK < 0)) then
             ! In Liquid-Liquid lines that start from a critical point, this
@@ -113,7 +115,7 @@ contains
             end if
 
             dS = sign(max(abs(dS), sqrt(abs(X(ns))/10), 0.01), dS)
-            X = Xc
+            X = Xc + 0.5*dS*dXdS
             return
          end if
       end do

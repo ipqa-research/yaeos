@@ -46,3 +46,29 @@ def test_saturation():
 
     bub = model.saturation_pressure(n, temperature=303.15, kind="bubble")
     npt.assert_allclose(bub["y"], [0.899642, 0.100358], rtol=1e-5)
+
+
+def test_envelope_pt():
+    import yaeos
+    import numpy as np
+
+    tc = [304.21, 373.53, 190.564]
+    pc = [73.83000000000001, 89.62910000000001, 45.99]
+    w = [0.223621, 0.0941677, 0.0115478]
+
+    kij = np.zeros((3, 3))
+
+    kij[0, 1] = kij[1, 0] = 0.0974
+    kij[0, 2] = kij[2, 0] = 0.110
+    kij[1, 2] = kij[2, 1] = 0.069
+
+    mr = yaeos.QMR(kij, 0 * kij)
+
+    model = yaeos.PengRobinson76(tc, pc, w, mr)
+    z = np.array([0.0987, 0.4023, 0.4990])
+    z = z / sum(z)
+    dew = model.phase_envelope_pt(z, kind="dew", p0=0.01, max_points=1500)
+
+    assert dew["P"][-1] > 1000
+    npt.assert_allclose(dew["Tc"], [275, 218], atol=1)
+    npt.assert_allclose(dew["Pc"], [122, 95], atol=1)

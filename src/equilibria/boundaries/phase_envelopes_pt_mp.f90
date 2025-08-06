@@ -244,10 +244,10 @@ contains
             pt_envelope%Tc = [pt_envelope%Tc, Tc]
             pt_envelope%Pc = [pt_envelope%Pc, Pc]
          end if
-         
+
          ! Update the specification for the next point.
          call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
-         
+
          ! If the point did not converge, stop the calculation
          if (&
             any(isnan(F)) .or. its > max_iterations &
@@ -256,7 +256,7 @@ contains
             .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
             ) exit
-         
+
          env_points = [env_points, point]
 
          ! Next point estimation.
@@ -274,6 +274,28 @@ contains
             .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
             dX = dX*1.1
          end do
+
+         ! dejavu: block
+         !    !! Getting too close to a local minima in the envelope, which can
+         !    !! be hard to select corrects steps.
+         !    real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
+         !    if (i > 4) then
+         !       dPdT_1 = (P - env_points(i-1)%P) / (T - env_points(i-1)%T)
+         !       dPdT_2 = (P - env_points(i-2)%P) / (T - env_points(i-2)%T)
+         !       dT2 = (T - env_points(i-1)%T) * (env_points(i-2)%T - env_points(i-3)%T)
+
+         !       d2PdT2 = (P - 2*env_points(i-1)%P + env_points(i-2)%P) / dT2
+
+         !       if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
+         !          ns = iT
+         !          dS = dXdS(ns) * dS
+         !          dXdS = dXdS/dXdS(ns)
+         !          do while(abs(exp(X(iT) + dXdS(iT) * dS) - T) > 1)
+         !             dS = 0.9 * dS
+         !          end do
+         !       end if
+         !    end if
+         ! end block dejavu
 
          X_last_converged = X
          X = X + dX
@@ -540,7 +562,7 @@ contains
                end do
             end if
          end do
-         
+
          do while(abs(dX(iT)) > 0.5)
             dX = dX/2
          end do
@@ -558,8 +580,11 @@ contains
          end do
 
          if (maxval(abs(F)) < 1e-9_pr) exit
-
-         X = X + dX
+         if (iters < 3) then
+            X = X + 0.1 * dX
+         else
+            X = X + dX
+         end if
       end do
    end subroutine solve_point
 
@@ -644,14 +669,6 @@ contains
 
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
-
-      do while(maxval(abs(dXdS(:nc*np)*dS)) > 0.1_pr)
-         dS = dS/2
-      end do
-
-      do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
-         dS = dS*1.1
-      end do
 
       dS = sign(min(dS, 0.01_pr, sqrt(abs((X(ns)+1e-15)/5))), dS)
    end subroutine update_specification

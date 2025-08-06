@@ -6,18 +6,15 @@ the models' thermoprops methods.
 
 from abc import ABC
 from typing import Union
+from warnings import warn
 
 from intersect import intersection
 
 import numpy as np
 
-from yaeos.lib import yaeos_c
-
-from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
-
 from yaeos.constants import root_kinds
-
-from warnings import warn
+from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
+from yaeos.lib import yaeos_c
 
 
 MAX_POINTS_ENVELOPES = 1000
@@ -357,13 +354,14 @@ class GeModel(ABC):
         -------
         dict
             Stability analysis result dictionary with keys:
-            - w: value of the test phase that minimizes the :math:`tm` function
-            - tm: minimum value of the :math:`tm` function.
+            `w:` value of the test phase that minimizes the :math:`tm` function
+            `tm:` minimum value of the :math:`tm` function.
         dict
             All found minimum values of the :math:`tm` function and the
             corresponding test phase mole fractions.
-            - w: all values of :math:`w` that minimize the :math:`tm` function
-            - tm: all values found minima of the :math:`tm` function"""
+            `w:` all values of :math:`w` that minimize the :math:`tm` function
+            `tm:` all values found minima of the :math:`tm` function
+        """
         (w_min, tm_min, all_mins) = yaeos_c.stability_zt_ge(
             id=self.id, z=z, t=temperature
         )
@@ -1221,6 +1219,80 @@ class ArModel(ABC):
 
         return flash_result
 
+    def flash_pt_mp(
+        self,
+        z,
+        pressure,
+        temperature,
+        x_l0,
+        w0,
+        betas0,
+        kinds_x=None,
+        kind_w=None,
+        max_iters=100,
+    ):
+        """Multiphase flash with specification of temperature and pressure.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        x_l0 : matrix_like
+            Initial guess for the main phases mole fractions.
+        w0 : array_like
+            Initial guess for the reference phase mole fractions.
+        betas0 : array_like
+            Initial guess for each mole phase fraction. Including the reference
+            phase.
+        kinds_x : list, optional
+            Kinds of the main phases, by default None (will use `stable`).
+            Can be "liquid", "vapor" or "stable".
+        kind_w : str, optional
+            Kind of the reference phase, by default None (will use `stable`).
+            Can be "liquid", "vapor" or "stable".
+        max_iters : int, optional
+            Maximum number of iterations, by default 100
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x_l: main phases mole fractions.
+                - w: reference phase mole fractions.
+                - betas: mole phase fractions.
+                - iters: number of iterations.
+                - Vector of evaluated function values at the last iteration.
+        """
+        x_l0 = np.asarray(x_l0, order="F")
+        kinds_x, kind_w = adjust_root_kind(
+            number_of_phases=x_l0.shape[0], kinds_x=kinds_x, kind_w=kind_w
+        )
+
+        x_l, w, betas, iters, foo = yaeos_c.solve_mp_flash(
+            id=self.id,
+            z=z,
+            t=temperature,
+            p=pressure,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
+            max_iters=max_iters,
+            x_l0=x_l0,
+            w0=w0,
+            betas0=betas0,
+        )
+
+        return {
+            "x_l": x_l,
+            "w": w,
+            "betas": betas,
+            "iters": iters,
+            "F": foo,
+        }
+
     def flash_vt(self, z, volume: float, temperature: float, k0=None) -> dict:
         """Two-phase split with specification of temperature and volume.
 
@@ -1602,7 +1674,6 @@ class ArModel(ABC):
             plt.plot(env["T"], env["P"])
             plt.scatter(env["Tc"], env["Pc"])
         """
-
         ds0 = 0.001
 
         if kind == "bubble":
@@ -1899,7 +1970,6 @@ class ArModel(ABC):
         stop_pressure : float, optional
             Stop at pressure above stop_pressure [bar], default 2500
         """
-
         np = 2
         if specified_variable is None:
             specified_variable = 2 * len(z) + np + 2
@@ -2201,7 +2271,6 @@ class ArModel(ABC):
         kind_w=None,
     ) -> TXEnvelope:
         """Multi-phase envelope."""
-
         x_l0 = np.array(x_l0, order="F")
 
         number_of_phases = x_l0.shape[0]
@@ -2293,19 +2362,19 @@ class ArModel(ABC):
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
 
-        Ts, Ps, *_ = intersection(env1["T"], env1["P"], env2["T"], env2["P"])
+        temperatures, pressures, *_ = intersection(
+            env1["T"], env1["P"], env2["T"], env2["P"]
+        )
 
         dsps = []
         locs_1 = []
         locs_2 = []
-        for Tdsp, Pdsp in zip(Ts, Ps):
+        for t, p in zip(temperatures, pressures):
             env1_loc = (
-                np.argmin(np.abs(env1["T"] - Tdsp) + np.abs(env1["P"] - Pdsp))
-                + 1
+                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
             )
             env2_loc = (
-                np.argmin(np.abs(env2["T"] - Tdsp) + np.abs(env2["P"] - Pdsp))
-                + 1
+                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p)) + 1
             )
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
@@ -2332,8 +2401,8 @@ class ArModel(ABC):
                 x_l0=x_l1,
                 w0=w0,
                 betas0=[*betas_1, 0],
-                p0=Pdsp,
-                t0=Tdsp,
+                p0=p,
+                t0=t,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2347,8 +2416,8 @@ class ArModel(ABC):
                 x_l0=x_l2,
                 w0=y0,
                 betas0=[*betas_2, 0],
-                p0=Pdsp,
-                t0=Tdsp,
+                p0=p,
+                t0=t,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2370,6 +2439,7 @@ class ArModel(ABC):
 
         This method calculates the phase envelope at the intersection of two
         PX envelopes, `env1` and `env2`.
+
         Parameters
         ----------
         z0 : array_like
@@ -2388,15 +2458,23 @@ class ArModel(ABC):
             List of lists of two PXEnvelope objects, one for each intersection
             point.
         """
+        temperature = env1.temperature
+        t2 = env2.temperature
+        if temperature != t2:
+            raise ValueError(
+                "The temperatures of the envelopes must be the same"
+            )
 
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
-        dsps = intersection(env1["a"], env1["P"], env2["a"], env2["P"])
+        alphas, pressures, *_ = intersection(
+            env1["a"], env1["P"], env2["a"], env2["P"]
+        )
         dsps = []
 
-        for adsp, Pdsp in zip(dsps[0], dsps[1]):
-            env1_loc = np.argmin(abs(env1["a"] - adsp) + abs(env1["P"]) - Pdsp)
-            env2_loc = np.argmin(abs(env2["a"] - adsp) + abs(env2["P"]) - Pdsp)
+        for a, p in zip(alphas, pressures):
+            env1_loc = np.argmin(abs(env1["a"] - a) + abs(env1["P"] - p))
+            env2_loc = np.argmin(abs(env2["a"] - a) + abs(env2["P"] - p))
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
@@ -2414,12 +2492,12 @@ class ArModel(ABC):
             dsp_1 = self.phase_envelope_px_mp(
                 z0=z0,
                 zi=zi,
-                t=T,
+                t=temperature,
                 x_l0=x_l1,
                 w0=w0,
                 betas0=[*betas_1, 0],
-                p0=Pdsp,
-                alpha0=adsp,
+                p0=p,
+                alpha0=a,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2429,12 +2507,12 @@ class ArModel(ABC):
             dsp_2 = self.phase_envelope_px_mp(
                 z0=z0,
                 zi=zi,
-                t=T,
+                t=temperature,
                 x_l0=x_l2,
                 w0=y0,
                 betas0=[*betas_2, 0],
-                p0=Pdsp,
-                alpha0=adsp,
+                p0=p,
+                alpha0=a,
                 ns0=phases * nc + phases,
                 ds0=dbeta0,
                 beta_w=0,
@@ -2445,242 +2523,137 @@ class ArModel(ABC):
 
         return dsps
 
-    def isopleth(
+    def generalized_isopleth(
         self,
         z,
-        three_phase=True,
-        dew_start=(500, 0.01),
-        bubble_start=(200, 10),
-        max_points=MAX_POINTS_ENVELOPES,
-        delta_dew_2ph=0.01,
-        delta_bub_2ph=0.01,
-        delta_dsp_3ph=0.01,
-        stop_pressure=2500,
+        kinds_x,
+        kind_w,
+        x_l0,
+        spec_variable,
+        spec_variable_value,
+        w0,
+        betas0,
+        p0,
+        t0,
+        ns0,
+        s0,
+        ds0,
+        ws_stability,
+        max_points=100,
     ):
+        r"""Calculation of a generalized multiphase isoplethic line.
 
-        dew_point = self.saturation_temperature(
-            z, pressure=dew_start[1], kind="dew", t0=dew_start[0]
-        )
-        bub_point = self.saturation_pressure(
-            z, temperature=bubble_start[0], kind="bubble", p0=bubble_start[1]
+        Calculates a line for a constant composition specification.
+        A multiphase line is defined as a line of `np+1` phases, where the
+        first `np` phases are what are considered _main_ phases and the `np+1`
+        phase is what is considered a _reference_ phase. When the _reference_
+        phase :math:`\beta` value is equal to zero, this phase will be an
+        incipient phase.
+        It is needed to specify a variable that will remain constant. This
+        variable is specified with the `spec_variable` argument. It corresponds
+        to the index of the variable that should be specified. The first
+        `np*nc` variables are the :math:`\lnK_i^l` variables, the next `np+1`
+        variables are :math:`\ln\beta^l`. The last two indexes correspond to
+        :math:`\lnP` and :math:`\lnT` respectively.
+        Another variable must be specified, which will be used as another
+        specification to calculate the first point, and will have a step
+        defined by `ds0` which will define how the next points will be
+        calculated. This variable is specified with the `s0` argument.  The
+        `ns0` argument specifies the index of the variable that will be used.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        kinds_x : list(str)
+            Kinds of the main phases, options can be - "stable", "liquid",
+            "vapor"
+        kind_w : str
+            Kind of the reference phase, options can be - "stable", "liquid",
+            "vapor"
+        x_l0 : array_like
+            Initial guess for the main phases compositions.
+            A matrix where each row is the composition of a main phase.
+        spec_variable : int
+            Index of the specified variable. From 1 to `np*nc` corresponds to
+            each :math:`\lnK_i^l`, from `np*nc+1` to `np*nc+np` corresponds to
+            each :math:`\ln\beta^l`, and the last two correspond to
+            :math:`\lnP` and :math:`\lnT`.
+        spec_variable_value : float
+            Value of the specified variable.
+        w0 : array_like
+            Initial guess for the reference phase composition.
+        betas0 : array_like
+            Initial guess for the main phases molar fractions.
+        p0 : float
+            Initial guess for pressure [bar]
+        t0 : float
+            Initial guess for temperature [K]
+        ns0 : int
+            Initial specified variable number.
+        s0 : float
+            Initial specified value that will be used.
+        ds0 : float
+            Step for the specified variable.
+        ws_stability : array_like
+            List of compositions that will be used to check stability of the
+            reference phase.
+        max_points : int, optional
+            Maximum number of points to calculate, by default 100
+
+        Returns
+        -------
+        dict
+            Dictionary with the following keys:
+
+            - x: main phases compositions
+            - w: reference phase compositions
+            - betas: main phases molar fractions
+            - T: temperatures [K]
+            - P: pressures [bar]
+            - w_more_stable: reference phase that is more stable than the
+              incipient phase
+            - found_unstability: boolean indicating if an unstable point was
+              found.
+        """
+        x_l0 = np.asarray(x_l0, order="F")
+        ws_stability = np.asarray(ws_stability, order="F")
+
+        kinds_x, kind_w = adjust_root_kind(
+            number_of_phases=x_l0.shape[0], kinds_x=kinds_x, kind_w=kind_w
         )
 
-        dew_line = self.phase_envelope_pt_mp(
-            z=z,
-            x_l0=[z],
-            w0=dew_point["x"],
-            betas0=[1],
-            p0=dew_point["P"],
-            t0=dew_point["T"],
-            ns0=len(z) + 2,
-            ds0=delta_dew_2ph,
-            max_points=max_points,
-            stop_pressure=stop_pressure,
-        )
-
-        bub_line = self.phase_envelope_pt_mp(
-            z=z,
-            x_l0=[z],
-            w0=bub_point["y"],
-            betas0=[1],
-            p0=bub_point["P"],
-            t0=bub_point["T"],
-            ns0=len(z) + 2,
-            ds0=delta_bub_2ph,
-            max_points=max_points,
-            stop_pressure=stop_pressure,
-        )
-
-        liq = self.phase_envelope_pt(
-            z, kind="liquid-liquid", t0=500, p0=2000, max_points=2
-        )
-
-        if len(liq["T"]) > 0:
-            liq_line = self.phase_envelope_pt_mp(
+        x_ls, ws, betas, ts, ps, w_more_stable, found_unstability = (
+            yaeos_c.generalized_isopleth(
+                id=self.id,
+                kinds_x=kinds_x,
+                kind_w=kind_w,
                 z=z,
-                x_l0=[z],
-                w0=liq.reference_phase_compositions[0],
-                betas0=[1],
-                p0=liq["P"][0],
-                t0=liq["T"][0],
-                ns0=len(z) + 2,
-                ds0=-0.01,
+                x_l0=x_l0,
+                w0=w0,
+                betas0=betas0,
+                p0=p0,
+                t0=t0,
+                spec_variable=spec_variable,
+                spec_variable_value=spec_variable_value,
+                ns0=ns0,
+                s0=s0,
+                ds0=ds0,
+                ws_stab=ws_stability,
                 max_points=max_points,
-                stop_pressure=1e10,
             )
-        else:
-            liq_line = None
-
-        dsps_db = intersection(
-            dew_line["T"],
-            dew_line["P"],
-            bub_line["T"],
-            bub_line["P"],
         )
 
-        if liq_line:
-            dsps_dl = intersection(
-                dew_line["T"],
-                dew_line["P"],
-                liq_line["T"],
-                liq_line["P"],
-            )
-
-            dsps_bl = intersection(
-                bub_line["T"],
-                bub_line["P"],
-                liq_line["T"],
-                liq_line["P"],
-            )
-
-            dsps_set = {
-                "dl": [dsps_dl, dew_line, liq_line],
-                "db": [dsps_db, dew_line, bub_line],
-                "bl": [dsps_bl, bub_line, liq_line],
-            }
-        else:
-            dsps_set = {"db": [dsps_db, dew_line, bub_line]}
-
-        dew_locs = []
-        bub_locs = []
-        liq_locs = []
-
-        three_phase_envs = []
-        stable_lines = {"3ph": [], "2ph": []}
-
-        if three_phase:
-            dew_line_stable = dew_line
-            bub_line_stable = bub_line
-            liq_line_stable = liq_line
-
-            for dsp_name in dsps_set:
-                # Order the DSPs wrt temperature
-                dsps = dsps_set[dsp_name][0]
-                env_1, env_2 = dsps_set[dsp_name][1], dsps_set[dsp_name][2]
-
-                idx = dsps[0].argsort()
-
-                dsps = (dsps[0][idx], dsps[1][idx])
-
-                if 0 < len(dsps[0]) <= 2:
-                    for temperature, pressure in zip(dsps[0], dsps[1]):
-                        env_1_loc = np.argmin(
-                            np.abs(env_1["T"] - temperature)
-                            + np.abs(env_1["P"] - pressure)
-                        )
-                        env_2_loc = np.argmin(
-                            np.abs(env_2["T"] - temperature)
-                            + np.abs(env_2["P"] - pressure)
-                        )
-
-                        dew_locs.append(env_1_loc)
-                        bub_locs.append(env_2_loc)
-
-                        w_env_1 = env_1.reference_phase_compositions[env_1_loc]
-                        w_env_2 = env_2.reference_phase_compositions[env_2_loc]
-
-                        env1 = self.phase_envelope_pt_mp(
-                            z,
-                            x_l0=np.array([z, w_env_1]),
-                            w0=w_env_2,
-                            betas0=[1, 0],
-                            t0=temperature,
-                            p0=pressure,
-                            ns0=2 * len(z) + 2,
-                            ds0=delta_dsp_3ph,
-                            max_points=max_points,
-                            stop_pressure=max([pressure * 2, stop_pressure]),
-                        )
-
-                        env2 = self.phase_envelope_pt_mp(
-                            z,
-                            x_l0=np.array([z, w_env_2]),
-                            w0=w_env_1,
-                            betas0=[1, 0],
-                            t0=temperature,
-                            p0=pressure,
-                            ns0=2 * len(z) + 2,
-                            ds0=delta_dsp_3ph,
-                            max_points=max_points,
-                            stop_pressure=max([pressure * 2, stop_pressure]),
-                        )
-
-                        three_phase_envs.append((env1, env2))
-                    # if len(dew_locs) == 2:
-                    # msk = np.array([False] * len(dew_line))
-                    # msk[: dew_locs[1] + 1] = True
-                    # msk[dew_locs[0] :] = True
-                    # dew_line_stable *= np.nan
-                    # dew_line_stable[msk] = dew_line[msk]
-
-                    # msk = np.array([False] * len(bub_line))
-                    # msk[bub_locs[0] : bub_locs[1] + 1] = True
-                    # bub_line_stable *= np.nan
-                    # bub_line_stable[msk] = bub_line[msk]
-
-                elif len(dsps[0]) == 0:
-
-                    k0 = dew_line.reference_phase_compositions[0, :] / z
-                    flash = self.flash_pt(
-                        z,
-                        pressure=bub_line["P"][0],
-                        temperature=bub_line["T"][0],
-                        k0=k0,
-                    )
-
-                    x_l0 = [z, flash["y"]]
-                    w0 = bub_line.reference_phase_compositions[0, :]
-                    betas = [1 - flash["beta"], flash["beta"]]
-
-                    bubble_isolated = self.phase_envelope_pt_mp(
-                        z=z,
-                        x_l0=x_l0,
-                        w0=w0,
-                        betas0=betas,
-                        p0=flash["P"],
-                        t0=flash["T"],
-                        ns0=2 * len(z) + 4,
-                        ds0=delta_bub_2ph,
-                        max_points=max_points,
-                    )
-
-                    x_l0 = [z, bub_line.reference_phase_compositions[0, :]]
-                    w0 = flash["y"]
-                    idx = np.argmax(w0)
-
-                    flash = self.flash_pt(z, flash["P"], flash["T"])
-                    betas = [1 - flash["beta"], flash["beta"]]
-
-                    dew_isolated = self.phase_envelope_pt_mp(
-                        z=z,
-                        x_l0=x_l0,
-                        w0=w0,
-                        betas0=betas,
-                        p0=flash["P"] - 5,
-                        t0=flash["T"] + 5,
-                        ns0=2 * len(z) + 3,
-                        ds0=delta_bub_2ph,
-                        max_points=max_points,
-                    )
-
-                    three_phase_envs.append((bubble_isolated, dew_isolated))
-
-            stable_lines["2ph"] = {
-                "dew": dew_line_stable,
-                "bub": bub_line_stable,
-                "liq": liq_line_stable,
-            }
-
-            return {
-                "2ph": (dew_line, bub_line, liq_line),
-                "DSP": dsps,
-                "3ph": three_phase_envs,
-                "2ph_stable": stable_lines["2ph"],
-            }
-        else:
-            return {
-                "2ph": {"dew": dew_line, "bub": bub_line},
-            }
+        msk = ~np.isnan(ts)
+        return {
+            "x": x_ls[msk],
+            "w": ws[msk],
+            "betas": betas[msk],
+            "T": ts[msk],
+            "P": ps[msk],
+            "w_more_stable": w_more_stable,
+            "found_unstability": found_unstability,
+        }
 
     # =========================================================================
     # Stability analysis
