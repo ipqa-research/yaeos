@@ -425,7 +425,7 @@ contains
          end do
 
          do while(any(abs(X(iBetas) + dX(iBetas)) > 1))
-            X(iBetas) = X(iBetas) / 2
+            dX(iBetas) = dX(iBetas) / 2
          end do
 
          X = X + dX
