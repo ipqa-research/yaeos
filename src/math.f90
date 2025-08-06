@@ -32,6 +32,28 @@ module yaeos__math
 
    implicit none
 
+   type :: Point
+      !! # Point
+      !! Represents the single point of a line segment.
+      !!
+      !! # Description
+      !! Representation of a point in the 2D space with its coordinates. It is
+      !! used to represent either the intersection of two lines segments or the
+      !! self-intersection of a single line. In the first case the `i` and `j`
+      !! attributes represent the indices of the line segments that intersected.
+      !! In the second case both represent the index of the line segment that
+      !! self-intersected.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! ```
+      real(pr) :: x !! X coordinate
+      real(pr) :: y !! Y coordinate
+      integer :: i !! Index of the first line segment
+      integer :: j !! Index of the second line segment
+   end type Point
+
    abstract interface
       subroutine f_1d(x, f, df)
          import pr
@@ -140,11 +162,12 @@ contains
       end do
    end function derivative_d2xk_dnidnj
 
-   subroutine newton_1d(f, x, tol, max_iters)
+   subroutine newton_1d(f, x, tol, max_iters, failed)
       procedure(f_1d) :: f
       real(pr), intent(in out) :: x
       real(pr), intent(in) :: tol
       integer, intent(in) :: max_iters
+      logical, intent(out) :: failed
 
       integer :: i
       real(pr) :: fval, df, step
@@ -157,6 +180,7 @@ contains
          if (abs(fval) < tol .or. abs(step) < tol)  exit
          call f(x, fval, df)
 
+
          step = fval/df
 
          do while (abs(step) > 0.5 * abs(x))
@@ -164,7 +188,10 @@ contains
          end do
 
          x = x - step
+         
+         failed = i >= max_iters
       end do
+
    end subroutine newton_1d
 
    elemental function interpol(x1, x2, y1, y2, x_obj) result(y)
@@ -204,4 +231,103 @@ contains
       real(pr) :: y !! y value at `x_obj`
       y = (y2 - y1)/(x2 - x1)*(x_obj - x1) + y1
    end function interpol
+
+   function intersect_one_line(lx, ly) result(intersections)
+      !! # intersect_one_line
+      !! Find the intersections of a single line with itself.
+      !!
+      !! # Description
+      !! This function finds the self-intersections in a line. This is
+      !! determined by checking all possible pairs of lines segments.
+      !! The iteration starts from the first segment of the line and compares
+      !! it with all subsequent segments to find intersections. Then it goes
+      !! to the next segment and repeats the process. The intersections are
+      !! stored in an array of `point` type, which contains the coordinates
+      !! of the intersection points.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! ```
+      !!
+      !! # References
+      !!
+      real(pr), intent(in) :: lx(:), ly(:)
+      type(point), allocatable :: intersections(:)
+
+      real(pr) :: s, t
+      integer :: i, j
+
+      real(pr) :: x, y, xold, yold
+
+      xold = 9999
+      yold = 9999
+
+      allocate (intersections(0))
+      line1: do i = 2, size(lx) - 1
+         line2: do j = i + 2, size(lx)
+            associate ( &
+               x1 => lx(i - 1), x2 => lx(i), &
+               x3 => lx(j), x4 => lx(j - 1), &
+               y1 => ly(i - 1), y2 => ly(i), &
+               y3 => ly(j), y4 => ly(j - 1))
+
+               call intersects(x1, x2, x3, x4, y1, y2, y3, y4, s, t)
+               if (0 <= s .and. s <= 1 .and. 0 <= t .and. t <= 1) then
+                  x = s*(x2 - x1) + x1
+                  y = s*(y2 - y1) + y1
+                  if (abs(x - xold) > 1 .or. abs(y - yold) > 1) then
+                     xold = x
+                     yold = y
+                     ! Use earliest point for the "other" line
+                     intersections = [intersections, point(x, y, i, j - 1)]
+                  end if
+               end if
+            end associate
+         end do line2
+      end do line1
+      if (size(intersections) > 3) then
+         deallocate(intersections)
+         allocate(intersections(0))
+      end if
+   end function intersect_one_line
+
+   subroutine intersects(x1, x2, x3, x4, y1, y2, y3, y4, s, t)
+      !! # intersects
+      !! Calculate the intersection between two line segments.
+      !!
+      !! # Description
+      !! This subroutine calculates the intersection point of two line segments
+      !! defined by their endpoints (x1, y1) to (x2, y2) and (x3, y3) to (x4, y4).
+      !! If the segments intersect, the parameters s and t will contain the
+      !! normalized distances along each segment to the intersection point.
+      !! The intersection point can be calculated as:
+      !! \[
+      !!    x = s \cdot (x2 - x1) + x1
+      !!    y = s \cdot (y2 - y1) + y1
+      !! \]
+      !! If the segments do not intersect, s and t will be outside
+      !! the range [0, 1].
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! ```
+      !!
+      !! # References
+      !!
+      real(pr), intent(in) :: x1, x2, x3, x4, y1, y2, y3, y4
+      real(pr), intent(out) :: s, t
+
+      real(pr) :: A(2, 2), b(2), tmp
+
+      A(1, :) = [x2 - x1, x3 - x4]
+      A(2, :) = [y2 - y1, y3 - y4]
+      b = [x3 - x1, y3 - y1]
+
+      b = solve_system(a, b)
+      s = b(1)
+      t = b(2)
+   end subroutine intersects
+
 end module yaeos__math

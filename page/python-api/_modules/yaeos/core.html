@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.2.1 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=74d6e94f"></script>
+      <script src="../../_static/documentation_options.js?v=a17b270f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -91,18 +91,15 @@
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">intersect</span> <span class="kn">import</span> <span class="n">intersection</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
-
-<span class="kn">from</span> <span class="nn">yaeos.envelopes</span> <span class="kn">import</span> <span class="n">PTEnvelope</span><span class="p">,</span> <span class="n">PXEnvelope</span><span class="p">,</span> <span class="n">TXEnvelope</span>
-
 <span class="kn">from</span> <span class="nn">yaeos.constants</span> <span class="kn">import</span> <span class="n">root_kinds</span>
-
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">yaeos.envelopes</span> <span class="kn">import</span> <span class="n">PTEnvelope</span><span class="p">,</span> <span class="n">PXEnvelope</span><span class="p">,</span> <span class="n">TXEnvelope</span>
+<span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
 
 
 <span class="n">MAX_POINTS_ENVELOPES</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -461,13 +458,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Stability analysis result dictionary with keys:</span>
-<span class="sd">            - w: value of the test phase that minimizes the :math:`tm` function</span>
-<span class="sd">            - tm: minimum value of the :math:`tm` function.</span>
+<span class="sd">            `w:` value of the test phase that minimizes the :math:`tm` function</span>
+<span class="sd">            `tm:` minimum value of the :math:`tm` function.</span>
 <span class="sd">        dict</span>
 <span class="sd">            All found minimum values of the :math:`tm` function and the</span>
 <span class="sd">            corresponding test phase mole fractions.</span>
-<span class="sd">            - w: all values of :math:`w` that minimize the :math:`tm` function</span>
-<span class="sd">            - tm: all values found minima of the :math:`tm` function&quot;&quot;&quot;</span>
+<span class="sd">            `w:` all values of :math:`w` that minimize the :math:`tm` function</span>
+<span class="sd">            `tm:` all values found minima of the :math:`tm` function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">(</span><span class="n">w_min</span><span class="p">,</span> <span class="n">tm_min</span><span class="p">,</span> <span class="n">all_mins</span><span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">stability_zt_ge</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span>
         <span class="p">)</span>
@@ -1365,6 +1363,83 @@
         <span class="k">return</span> <span class="n">flash_result</span></div>
 
 
+<div class="viewcode-block" id="ArModel.flash_pt_mp">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.flash_pt_mp">[docs]</a>
+    <span class="k">def</span> <span class="nf">flash_pt_mp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">,</span>
+        <span class="n">x_l0</span><span class="p">,</span>
+        <span class="n">w0</span><span class="p">,</span>
+        <span class="n">betas0</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_iters</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Multiphase flash with specification of temperature and pressure.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        x_l0 : matrix_like</span>
+<span class="sd">            Initial guess for the main phases mole fractions.</span>
+<span class="sd">        w0 : array_like</span>
+<span class="sd">            Initial guess for the reference phase mole fractions.</span>
+<span class="sd">        betas0 : array_like</span>
+<span class="sd">            Initial guess for each mole phase fraction. Including the reference</span>
+<span class="sd">            phase.</span>
+<span class="sd">        kinds_x : list, optional</span>
+<span class="sd">            Kinds of the main phases, by default None (will use `stable`).</span>
+<span class="sd">            Can be &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;.</span>
+<span class="sd">        kind_w : str, optional</span>
+<span class="sd">            Kind of the reference phase, by default None (will use `stable`).</span>
+<span class="sd">            Can be &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;.</span>
+<span class="sd">        max_iters : int, optional</span>
+<span class="sd">            Maximum number of iterations, by default 100</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Flash result dictionary with keys:</span>
+<span class="sd">                - x_l: main phases mole fractions.</span>
+<span class="sd">                - w: reference phase mole fractions.</span>
+<span class="sd">                - betas: mole phase fractions.</span>
+<span class="sd">                - iters: number of iterations.</span>
+<span class="sd">                - Vector of evaluated function values at the last iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+            <span class="n">number_of_phases</span><span class="o">=</span><span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
+        <span class="p">)</span>
+
+        <span class="n">x_l</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">solve_mp_flash</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+            <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
+            <span class="n">max_iters</span><span class="o">=</span><span class="n">max_iters</span><span class="p">,</span>
+            <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+            <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+            <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;x_l&quot;</span><span class="p">:</span> <span class="n">x_l</span><span class="p">,</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span>
+            <span class="s2">&quot;betas&quot;</span><span class="p">:</span> <span class="n">betas</span><span class="p">,</span>
+            <span class="s2">&quot;iters&quot;</span><span class="p">:</span> <span class="n">iters</span><span class="p">,</span>
+            <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="n">foo</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
 <div class="viewcode-block" id="ArModel.flash_vt">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.flash_vt">[docs]</a>
     <span class="k">def</span> <span class="nf">flash_vt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -1760,7 +1835,6 @@
 <span class="sd">            plt.plot(env[&quot;T&quot;], env[&quot;P&quot;])</span>
 <span class="sd">            plt.scatter(env[&quot;Tc&quot;], env[&quot;Pc&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">ds0</span> <span class="o">=</span> <span class="mf">0.001</span>
 
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;bubble&quot;</span><span class="p">:</span>
@@ -2066,7 +2140,6 @@
 <span class="sd">        stop_pressure : float, optional</span>
 <span class="sd">            Stop at pressure above stop_pressure [bar], default 2500</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">np</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="k">if</span> <span class="n">specified_variable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">specified_variable</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span> <span class="o">+</span> <span class="mi">2</span>
@@ -2380,7 +2453,6 @@
         <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TXEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multi-phase envelope.&quot;&quot;&quot;</span>
-
         <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
         <span class="n">number_of_phases</span> <span class="o">=</span> <span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -2475,19 +2547,19 @@
         <span class="n">nc</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_components</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_phases</span> <span class="o">+</span> <span class="mi">1</span>
 
-        <span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+        <span class="n">temperatures</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span>
+            <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
 
         <span class="n">dsps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">locs_1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">locs_2</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">Tdsp</span><span class="p">,</span> <span class="n">Pdsp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Ps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">temperatures</span><span class="p">,</span> <span class="n">pressures</span><span class="p">):</span>
             <span class="n">env1_loc</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">))</span>
-                <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="p">)</span>
             <span class="n">env2_loc</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Tdsp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">))</span>
-                <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="p">)</span>
 
             <span class="n">betas_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
@@ -2514,8 +2586,8 @@
                 <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l1</span><span class="p">,</span>
                 <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
                 <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
-                <span class="n">t0</span><span class="o">=</span><span class="n">Tdsp</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
                 <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
                 <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
                 <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -2529,8 +2601,8 @@
                 <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l2</span><span class="p">,</span>
                 <span class="n">w0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span>
                 <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
-                <span class="n">t0</span><span class="o">=</span><span class="n">Tdsp</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
                 <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
                 <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
                 <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -2555,6 +2627,7 @@
 
 <span class="sd">        This method calculates the phase envelope at the intersection of two</span>
 <span class="sd">        PX envelopes, `env1` and `env2`.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        z0 : array_like</span>
@@ -2573,15 +2646,23 @@
 <span class="sd">            List of lists of two PXEnvelope objects, one for each intersection</span>
 <span class="sd">            point.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">temperature</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">temperature</span>
+        <span class="k">if</span> <span class="n">temperature</span> <span class="o">!=</span> <span class="n">t2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The temperatures of the envelopes must be the same&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">nc</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_components</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">number_of_phases</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">dsps</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+        <span class="n">alphas</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span>
+            <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">dsps</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">adsp</span><span class="p">,</span> <span class="n">Pdsp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dsps</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">env1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">adsp</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
-            <span class="n">env2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">adsp</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">Pdsp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span> <span class="n">pressures</span><span class="p">):</span>
+            <span class="n">env1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span>
+            <span class="n">env2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span>
 
             <span class="n">betas_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">betas_2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">,</span> <span class="p">:]</span>
@@ -2599,12 +2680,12 @@
             <span class="n">dsp_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
                 <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
                 <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
-                <span class="n">t</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
                 <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l1</span><span class="p">,</span>
                 <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
                 <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
-                <span class="n">alpha0</span><span class="o">=</span><span class="n">adsp</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+                <span class="n">alpha0</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
                 <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
                 <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
                 <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -2614,12 +2695,12 @@
             <span class="n">dsp_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
                 <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
                 <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span>
-                <span class="n">t</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
                 <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l2</span><span class="p">,</span>
                 <span class="n">w0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span>
                 <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">betas_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                <span class="n">p0</span><span class="o">=</span><span class="n">Pdsp</span><span class="p">,</span>
-                <span class="n">alpha0</span><span class="o">=</span><span class="n">adsp</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+                <span class="n">alpha0</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
                 <span class="n">ns0</span><span class="o">=</span><span class="n">phases</span> <span class="o">*</span> <span class="n">nc</span> <span class="o">+</span> <span class="n">phases</span><span class="p">,</span>
                 <span class="n">ds0</span><span class="o">=</span><span class="n">dbeta0</span><span class="p">,</span>
                 <span class="n">beta_w</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -2631,244 +2712,139 @@
         <span class="k">return</span> <span class="n">dsps</span></div>
 
 
-<div class="viewcode-block" id="ArModel.isopleth">
-<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.isopleth">[docs]</a>
-    <span class="k">def</span> <span class="nf">isopleth</span><span class="p">(</span>
+<div class="viewcode-block" id="ArModel.generalized_isopleth">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.generalized_isopleth">[docs]</a>
+    <span class="k">def</span> <span class="nf">generalized_isopleth</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">z</span><span class="p">,</span>
-        <span class="n">three_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">dew_start</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span>
-        <span class="n">bubble_start</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-        <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS_ENVELOPES</span><span class="p">,</span>
-        <span class="n">delta_dew_2ph</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-        <span class="n">delta_bub_2ph</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-        <span class="n">delta_dsp_3ph</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-        <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
+        <span class="n">kinds_x</span><span class="p">,</span>
+        <span class="n">kind_w</span><span class="p">,</span>
+        <span class="n">x_l0</span><span class="p">,</span>
+        <span class="n">spec_variable</span><span class="p">,</span>
+        <span class="n">spec_variable_value</span><span class="p">,</span>
+        <span class="n">w0</span><span class="p">,</span>
+        <span class="n">betas0</span><span class="p">,</span>
+        <span class="n">p0</span><span class="p">,</span>
+        <span class="n">t0</span><span class="p">,</span>
+        <span class="n">ns0</span><span class="p">,</span>
+        <span class="n">s0</span><span class="p">,</span>
+        <span class="n">ds0</span><span class="p">,</span>
+        <span class="n">ws_stability</span><span class="p">,</span>
+        <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculation of a generalized multiphase isoplethic line.</span>
 
-        <span class="n">dew_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
-            <span class="n">z</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">dew_start</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">dew_start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">bub_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
-            <span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">bubble_start</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">bubble_start</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="sd">        Calculates a line for a constant composition specification.</span>
+<span class="sd">        A multiphase line is defined as a line of `np+1` phases, where the</span>
+<span class="sd">        first `np` phases are what are considered _main_ phases and the `np+1`</span>
+<span class="sd">        phase is what is considered a _reference_ phase. When the _reference_</span>
+<span class="sd">        phase :math:`\beta` value is equal to zero, this phase will be an</span>
+<span class="sd">        incipient phase.</span>
+<span class="sd">        It is needed to specify a variable that will remain constant. This</span>
+<span class="sd">        variable is specified with the `spec_variable` argument. It corresponds</span>
+<span class="sd">        to the index of the variable that should be specified. The first</span>
+<span class="sd">        `np*nc` variables are the :math:`\lnK_i^l` variables, the next `np+1`</span>
+<span class="sd">        variables are :math:`\ln\beta^l`. The last two indexes correspond to</span>
+<span class="sd">        :math:`\lnP` and :math:`\lnT` respectively.</span>
+<span class="sd">        Another variable must be specified, which will be used as another</span>
+<span class="sd">        specification to calculate the first point, and will have a step</span>
+<span class="sd">        defined by `ds0` which will define how the next points will be</span>
+<span class="sd">        calculated. This variable is specified with the `s0` argument.  The</span>
+<span class="sd">        `ns0` argument specifies the index of the variable that will be used.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : array_like</span>
+<span class="sd">            Global mole fractions</span>
+<span class="sd">        kinds_x : list(str)</span>
+<span class="sd">            Kinds of the main phases, options can be - &quot;stable&quot;, &quot;liquid&quot;,</span>
+<span class="sd">            &quot;vapor&quot;</span>
+<span class="sd">        kind_w : str</span>
+<span class="sd">            Kind of the reference phase, options can be - &quot;stable&quot;, &quot;liquid&quot;,</span>
+<span class="sd">            &quot;vapor&quot;</span>
+<span class="sd">        x_l0 : array_like</span>
+<span class="sd">            Initial guess for the main phases compositions.</span>
+<span class="sd">            A matrix where each row is the composition of a main phase.</span>
+<span class="sd">        spec_variable : int</span>
+<span class="sd">            Index of the specified variable. From 1 to `np*nc` corresponds to</span>
+<span class="sd">            each :math:`\lnK_i^l`, from `np*nc+1` to `np*nc+np` corresponds to</span>
+<span class="sd">            each :math:`\ln\beta^l`, and the last two correspond to</span>
+<span class="sd">            :math:`\lnP` and :math:`\lnT`.</span>
+<span class="sd">        spec_variable_value : float</span>
+<span class="sd">            Value of the specified variable.</span>
+<span class="sd">        w0 : array_like</span>
+<span class="sd">            Initial guess for the reference phase composition.</span>
+<span class="sd">        betas0 : array_like</span>
+<span class="sd">            Initial guess for the main phases molar fractions.</span>
+<span class="sd">        p0 : float</span>
+<span class="sd">            Initial guess for pressure [bar]</span>
+<span class="sd">        t0 : float</span>
+<span class="sd">            Initial guess for temperature [K]</span>
+<span class="sd">        ns0 : int</span>
+<span class="sd">            Initial specified variable number.</span>
+<span class="sd">        s0 : float</span>
+<span class="sd">            Initial specified value that will be used.</span>
+<span class="sd">        ds0 : float</span>
+<span class="sd">            Step for the specified variable.</span>
+<span class="sd">        ws_stability : array_like</span>
+<span class="sd">            List of compositions that will be used to check stability of the</span>
+<span class="sd">            reference phase.</span>
+<span class="sd">        max_points : int, optional</span>
+<span class="sd">            Maximum number of points to calculate, by default 100</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary with the following keys:</span>
+
+<span class="sd">            - x: main phases compositions</span>
+<span class="sd">            - w: reference phase compositions</span>
+<span class="sd">            - betas: main phases molar fractions</span>
+<span class="sd">            - T: temperatures [K]</span>
+<span class="sd">            - P: pressures [bar]</span>
+<span class="sd">            - w_more_stable: reference phase that is more stable than the</span>
+<span class="sd">              incipient phase</span>
+<span class="sd">            - found_unstability: boolean indicating if an unstable point was</span>
+<span class="sd">              found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="n">ws_stability</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ws_stability</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+            <span class="n">number_of_phases</span><span class="o">=</span><span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
         <span class="p">)</span>
 
-        <span class="n">dew_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
-            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-            <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
-            <span class="n">w0</span><span class="o">=</span><span class="n">dew_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>
-            <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">p0</span><span class="o">=</span><span class="n">dew_point</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-            <span class="n">t0</span><span class="o">=</span><span class="n">dew_point</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-            <span class="n">ns0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="n">ds0</span><span class="o">=</span><span class="n">delta_dew_2ph</span><span class="p">,</span>
-            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-            <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">bub_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
-            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-            <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
-            <span class="n">w0</span><span class="o">=</span><span class="n">bub_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
-            <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">p0</span><span class="o">=</span><span class="n">bub_point</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-            <span class="n">t0</span><span class="o">=</span><span class="n">bub_point</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-            <span class="n">ns0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="n">ds0</span><span class="o">=</span><span class="n">delta_bub_2ph</span><span class="p">,</span>
-            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-            <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">liq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span>
-            <span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;liquid-liquid&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">2</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">liq</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">liq_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
+        <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">w_more_stable</span><span class="p">,</span> <span class="n">found_unstability</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">yaeos_c</span><span class="o">.</span><span class="n">generalized_isopleth</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
                 <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-                <span class="n">x_l0</span><span class="o">=</span><span class="p">[</span><span class="n">z</span><span class="p">],</span>
-                <span class="n">w0</span><span class="o">=</span><span class="n">liq</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">p0</span><span class="o">=</span><span class="n">liq</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">t0</span><span class="o">=</span><span class="n">liq</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">ns0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="n">ds0</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">,</span>
+                <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+                <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+                <span class="n">spec_variable</span><span class="o">=</span><span class="n">spec_variable</span><span class="p">,</span>
+                <span class="n">spec_variable_value</span><span class="o">=</span><span class="n">spec_variable_value</span><span class="p">,</span>
+                <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
+                <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
+                <span class="n">ws_stab</span><span class="o">=</span><span class="n">ws_stability</span><span class="p">,</span>
                 <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-                <span class="n">stop_pressure</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">liq_line</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">dsps_db</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span>
-            <span class="n">dew_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-            <span class="n">dew_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-            <span class="n">bub_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-            <span class="n">bub_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">liq_line</span><span class="p">:</span>
-            <span class="n">dsps_dl</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span>
-                <span class="n">dew_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-                <span class="n">dew_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-                <span class="n">liq_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-                <span class="n">liq_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-            <span class="p">)</span>
-
-            <span class="n">dsps_bl</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span>
-                <span class="n">bub_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-                <span class="n">bub_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-                <span class="n">liq_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-                <span class="n">liq_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-            <span class="p">)</span>
-
-            <span class="n">dsps_set</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;dl&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dsps_dl</span><span class="p">,</span> <span class="n">dew_line</span><span class="p">,</span> <span class="n">liq_line</span><span class="p">],</span>
-                <span class="s2">&quot;db&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dsps_db</span><span class="p">,</span> <span class="n">dew_line</span><span class="p">,</span> <span class="n">bub_line</span><span class="p">],</span>
-                <span class="s2">&quot;bl&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dsps_bl</span><span class="p">,</span> <span class="n">bub_line</span><span class="p">,</span> <span class="n">liq_line</span><span class="p">],</span>
-            <span class="p">}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dsps_set</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dsps_db</span><span class="p">,</span> <span class="n">dew_line</span><span class="p">,</span> <span class="n">bub_line</span><span class="p">]}</span>
-
-        <span class="n">dew_locs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">bub_locs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">liq_locs</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">three_phase_envs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">stable_lines</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;3ph&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;2ph&quot;</span><span class="p">:</span> <span class="p">[]}</span>
-
-        <span class="k">if</span> <span class="n">three_phase</span><span class="p">:</span>
-            <span class="n">dew_line_stable</span> <span class="o">=</span> <span class="n">dew_line</span>
-            <span class="n">bub_line_stable</span> <span class="o">=</span> <span class="n">bub_line</span>
-            <span class="n">liq_line_stable</span> <span class="o">=</span> <span class="n">liq_line</span>
-
-            <span class="k">for</span> <span class="n">dsp_name</span> <span class="ow">in</span> <span class="n">dsps_set</span><span class="p">:</span>
-                <span class="c1"># Order the DSPs wrt temperature</span>
-                <span class="n">dsps</span> <span class="o">=</span> <span class="n">dsps_set</span><span class="p">[</span><span class="n">dsp_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">env_1</span><span class="p">,</span> <span class="n">env_2</span> <span class="o">=</span> <span class="n">dsps_set</span><span class="p">[</span><span class="n">dsp_name</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dsps_set</span><span class="p">[</span><span class="n">dsp_name</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-
-                <span class="n">idx</span> <span class="o">=</span> <span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
-
-                <span class="n">dsps</span> <span class="o">=</span> <span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">],</span> <span class="n">dsps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">idx</span><span class="p">])</span>
-
-                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dsps</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                        <span class="n">env_1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env_1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">temperature</span><span class="p">)</span>
-                            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env_1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pressure</span><span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="n">env_2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env_2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">temperature</span><span class="p">)</span>
-                            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env_2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pressure</span><span class="p">)</span>
-                        <span class="p">)</span>
-
-                        <span class="n">dew_locs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env_1_loc</span><span class="p">)</span>
-                        <span class="n">bub_locs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env_2_loc</span><span class="p">)</span>
-
-                        <span class="n">w_env_1</span> <span class="o">=</span> <span class="n">env_1</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env_1_loc</span><span class="p">]</span>
-                        <span class="n">w_env_2</span> <span class="o">=</span> <span class="n">env_2</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env_2_loc</span><span class="p">]</span>
-
-                        <span class="n">env1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
-                            <span class="n">z</span><span class="p">,</span>
-                            <span class="n">x_l0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">z</span><span class="p">,</span> <span class="n">w_env_1</span><span class="p">]),</span>
-                            <span class="n">w0</span><span class="o">=</span><span class="n">w_env_2</span><span class="p">,</span>
-                            <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                            <span class="n">t0</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                            <span class="n">p0</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
-                            <span class="n">ns0</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-                            <span class="n">ds0</span><span class="o">=</span><span class="n">delta_dsp_3ph</span><span class="p">,</span>
-                            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-                            <span class="n">stop_pressure</span><span class="o">=</span><span class="nb">max</span><span class="p">([</span><span class="n">pressure</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">stop_pressure</span><span class="p">]),</span>
-                        <span class="p">)</span>
-
-                        <span class="n">env2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
-                            <span class="n">z</span><span class="p">,</span>
-                            <span class="n">x_l0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">z</span><span class="p">,</span> <span class="n">w_env_2</span><span class="p">]),</span>
-                            <span class="n">w0</span><span class="o">=</span><span class="n">w_env_1</span><span class="p">,</span>
-                            <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                            <span class="n">t0</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
-                            <span class="n">p0</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
-                            <span class="n">ns0</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-                            <span class="n">ds0</span><span class="o">=</span><span class="n">delta_dsp_3ph</span><span class="p">,</span>
-                            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-                            <span class="n">stop_pressure</span><span class="o">=</span><span class="nb">max</span><span class="p">([</span><span class="n">pressure</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">stop_pressure</span><span class="p">]),</span>
-                        <span class="p">)</span>
-
-                        <span class="n">three_phase_envs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">env1</span><span class="p">,</span> <span class="n">env2</span><span class="p">))</span>
-                    <span class="c1"># if len(dew_locs) == 2:</span>
-                    <span class="c1"># msk = np.array([False] * len(dew_line))</span>
-                    <span class="c1"># msk[: dew_locs[1] + 1] = True</span>
-                    <span class="c1"># msk[dew_locs[0] :] = True</span>
-                    <span class="c1"># dew_line_stable *= np.nan</span>
-                    <span class="c1"># dew_line_stable[msk] = dew_line[msk]</span>
-
-                    <span class="c1"># msk = np.array([False] * len(bub_line))</span>
-                    <span class="c1"># msk[bub_locs[0] : bub_locs[1] + 1] = True</span>
-                    <span class="c1"># bub_line_stable *= np.nan</span>
-                    <span class="c1"># bub_line_stable[msk] = bub_line[msk]</span>
-
-                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dsps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-
-                    <span class="n">k0</span> <span class="o">=</span> <span class="n">dew_line</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">z</span>
-                    <span class="n">flash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_pt</span><span class="p">(</span>
-                        <span class="n">z</span><span class="p">,</span>
-                        <span class="n">pressure</span><span class="o">=</span><span class="n">bub_line</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">temperature</span><span class="o">=</span><span class="n">bub_line</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">k0</span><span class="o">=</span><span class="n">k0</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                    <span class="n">x_l0</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span><span class="p">,</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]]</span>
-                    <span class="n">w0</span> <span class="o">=</span> <span class="n">bub_line</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-                    <span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">],</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]]</span>
-
-                    <span class="n">bubble_isolated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
-                        <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-                        <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
-                        <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
-                        <span class="n">betas0</span><span class="o">=</span><span class="n">betas</span><span class="p">,</span>
-                        <span class="n">p0</span><span class="o">=</span><span class="n">flash</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
-                        <span class="n">t0</span><span class="o">=</span><span class="n">flash</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
-                        <span class="n">ns0</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">,</span>
-                        <span class="n">ds0</span><span class="o">=</span><span class="n">delta_bub_2ph</span><span class="p">,</span>
-                        <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                    <span class="n">x_l0</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span><span class="p">,</span> <span class="n">bub_line</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]]</span>
-                    <span class="n">w0</span> <span class="o">=</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
-                    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">w0</span><span class="p">)</span>
-
-                    <span class="n">flash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span>
-                    <span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">],</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]]</span>
-
-                    <span class="n">dew_isolated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
-                        <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
-                        <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
-                        <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
-                        <span class="n">betas0</span><span class="o">=</span><span class="n">betas</span><span class="p">,</span>
-                        <span class="n">p0</span><span class="o">=</span><span class="n">flash</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span>
-                        <span class="n">t0</span><span class="o">=</span><span class="n">flash</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span>
-                        <span class="n">ns0</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span>
-                        <span class="n">ds0</span><span class="o">=</span><span class="n">delta_bub_2ph</span><span class="p">,</span>
-                        <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                    <span class="n">three_phase_envs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bubble_isolated</span><span class="p">,</span> <span class="n">dew_isolated</span><span class="p">))</span>
-
-            <span class="n">stable_lines</span><span class="p">[</span><span class="s2">&quot;2ph&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;dew&quot;</span><span class="p">:</span> <span class="n">dew_line_stable</span><span class="p">,</span>
-                <span class="s2">&quot;bub&quot;</span><span class="p">:</span> <span class="n">bub_line_stable</span><span class="p">,</span>
-                <span class="s2">&quot;liq&quot;</span><span class="p">:</span> <span class="n">liq_line_stable</span><span class="p">,</span>
-            <span class="p">}</span>
-
-            <span class="k">return</span> <span class="p">{</span>
-                <span class="s2">&quot;2ph&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">dew_line</span><span class="p">,</span> <span class="n">bub_line</span><span class="p">,</span> <span class="n">liq_line</span><span class="p">),</span>
-                <span class="s2">&quot;DSP&quot;</span><span class="p">:</span> <span class="n">dsps</span><span class="p">,</span>
-                <span class="s2">&quot;3ph&quot;</span><span class="p">:</span> <span class="n">three_phase_envs</span><span class="p">,</span>
-                <span class="s2">&quot;2ph_stable&quot;</span><span class="p">:</span> <span class="n">stable_lines</span><span class="p">[</span><span class="s2">&quot;2ph&quot;</span><span class="p">],</span>
-            <span class="p">}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span>
-                <span class="s2">&quot;2ph&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dew&quot;</span><span class="p">:</span> <span class="n">dew_line</span><span class="p">,</span> <span class="s2">&quot;bub&quot;</span><span class="p">:</span> <span class="n">bub_line</span><span class="p">},</span>
-            <span class="p">}</span></div>
+        <span class="n">msk</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x_ls</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">ws</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;betas&quot;</span><span class="p">:</span> <span class="n">betas</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">ps</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;w_more_stable&quot;</span><span class="p">:</span> <span class="n">w_more_stable</span><span class="p">,</span>
+            <span class="s2">&quot;found_unstability&quot;</span><span class="p">:</span> <span class="n">found_unstability</span><span class="p">,</span>
+        <span class="p">}</span></div>
 
 
     <span class="c1"># =========================================================================</span>

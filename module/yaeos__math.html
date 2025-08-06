@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.8% of total for modules and submodules.">98 statements</a>
+                 title=" 1.2% of total for modules and submodules.">147 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -158,7 +158,18 @@
       </div>
     </div>
 
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__math.html#type-point">Point</a>
+        </div>
+      </div>
+    </div>
+
       <div class="card mb-4">
       <a data-bs-toggle="collapse" href="#funcs-0"
          aria-expanded="false" aria-controls="funcs-0">
@@ -170,6 +181,7 @@
             <a class="list-group-item" href="../module/yaeos__math.html#proc-derivative_dxk_dni">derivative_dxk_dni</a>
             <a class="list-group-item" href="../module/yaeos__math.html#proc-dx_to_dn">dx_to_dn</a>
             <a class="list-group-item" href="../module/yaeos__math.html#proc-interpol">interpol</a>
+            <a class="list-group-item" href="../module/yaeos__math.html#proc-intersect_one_line">intersect_one_line</a>
             <a class="list-group-item" href="../module/yaeos__math.html#proc-sq_error">sq_error</a>
         </div>
       </div>
@@ -182,6 +194,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__math.html#proc-intersects">intersects</a>
             <a class="list-group-item" href="../module/yaeos__math.html#proc-newton_1d">newton_1d</a>
         </div>
       </div>
@@ -230,8 +243,8 @@ library. Most important ones are:</p>
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos__math_continuation.html'>yaeos__math_continuation</a></li>
                   <li class="list-inline-item"><a href='yaeos__math_linalg.html'>yaeos__math_linalg</a></li>
+                  <li class="list-inline-item"><a href='yaeos__math_continuation.html'>yaeos__math_continuation</a></li>
               </ul>
             </li>
         </ul>
@@ -255,7 +268,7 @@ library. Most important ones are:</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    public  subroutine <a href='../proc/newton_1d.html'>newton_1d</a>(f, x, tol, max_iters)  
+    public  subroutine <a href='../proc/newton_1d.html'>newton_1d</a>(f, x, tol, max_iters, failed)  
 
     </h3>
     
@@ -274,7 +287,7 @@ library. Most important ones are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~15"></span>
+              <span class="anchor" id="variable-f~4"></span>
               procedure(<a href='../interface/f_1d.html'>f_1d</a>)
             </td>
 <td></td>
@@ -289,7 +302,7 @@ library. Most important ones are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~18"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -304,7 +317,7 @@ library. Most important ones are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~8"></span>
+              <span class="anchor" id="variable-tol"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -319,7 +332,7 @@ library. Most important ones are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~10"></span>
+              <span class="anchor" id="variable-max_iters~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -328,6 +341,21 @@ library. Most important ones are:</p>
             </td>
             <td>::</td>
             <td><strong>max_iters</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-failed"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>failed</strong></td>
             <td>
 
             </td>
@@ -370,7 +398,7 @@ library. Most important ones are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~16"></span>
+              <span class="anchor" id="variable-x~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -385,7 +413,7 @@ library. Most important ones are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~14"></span>
+              <span class="anchor" id="variable-f~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -400,7 +428,7 @@ library. Most important ones are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~15"></span>
+              <span class="anchor" id="variable-df~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -424,6 +452,110 @@ library. Most important ones are:</p>
         </section>
         <br>
 
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-point"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/point.html'>Point</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Represents the single point of a line segment.</p><a href="../type/point.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~25"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Index of the first line segment</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~17"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Index of the second line segment</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~7"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>X coordinate</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~8"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Y coordinate</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
 
         <section>
           <h2>Functions</h2>
@@ -447,7 +579,7 @@ library. Most important ones are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~85"></span>
+              <span class="anchor" id="variable-n~13"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -492,7 +624,7 @@ library. Most important ones are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~84"></span>
+              <span class="anchor" id="variable-n~12"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -541,7 +673,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~17"></span>
+              <span class="anchor" id="variable-x~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -556,7 +688,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~11"></span>
+              <span class="anchor" id="variable-dx~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -687,6 +819,66 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-intersect_one_line"></span> <h3>public  function <a href='../proc/intersect_one_line.html'>intersect_one_line</a>(lx, ly) result(intersections)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Find the intersections of a single line with itself.</p><a href="../proc/intersect_one_line.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lx"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lx</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ly"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ly</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/point.html'>Point</a>), allocatable, (:)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-sq_error"></span> <h3>public elemental function <a href='../proc/sq_error.html'>sq_error</a>(exp, pred)  
 </h3></div>
     <div class="card-body">
@@ -752,7 +944,182 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-newton_1d"></span> <h3>public  subroutine <a href='../proc/newton_1d.html'>newton_1d</a>(f, x, tol, max_iters)  
+    <div class="card-header codesum"><span class="anchor" id="proc-intersects"></span> <h3>public  subroutine <a href='../proc/intersects.html'>intersects</a>(x1, x2, x3, x4, y1, y2, y3, y4, s, t)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Calculate the intersection between two line segments.</p><a href="../proc/intersects.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x1~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x1</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x2~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x2</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x3</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x4</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y1~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y1</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y2~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y2</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y3</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y4</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>s</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-newton_1d"></span> <h3>public  subroutine <a href='../proc/newton_1d.html'>newton_1d</a>(f, x, tol, max_iters, failed)  
 </h3></div>
     <div class="card-body">
           
@@ -771,7 +1138,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~15"></span>
+              <span class="anchor" id="variable-f~4"></span>
               procedure(<a href='../interface/f_1d.html'>f_1d</a>)
             </td>
 <td></td>
@@ -786,7 +1153,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~18"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -801,7 +1168,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~8"></span>
+              <span class="anchor" id="variable-tol"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -816,7 +1183,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~10"></span>
+              <span class="anchor" id="variable-max_iters~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -825,6 +1192,21 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
             </td>
             <td>::</td>
             <td><strong>max_iters</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-failed"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>failed</strong></td>
             <td>
 
             </td>
@@ -859,7 +1241,7 @@ From <a href="Chemicals (Python)">https://chemicals.readthedocs.io/chemicals.uti
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-18 01:33 +0000             </p>
+ on 2025-08-06 02:37 +0000             </p>
           </div>
         </div>
         <br>

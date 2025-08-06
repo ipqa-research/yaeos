@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.5% of total for procedures.">52 statements</a>
+                 title=" 0.5% of total for procedures.">54 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/ar_models.f90"> Source File</a>
+              <a href="../src/gerg2008.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/gerg2008.f90.html'>gerg2008.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar_gerg2008.html'>yaeos__models_ar_gerg2008</a></li>
             <li class="breadcrumb-item active" aria-current="page">volume</li>
           </ol>
         </nav>
@@ -140,8 +140,9 @@
             <a class="list-group-item" href="../proc/volume~2.html#variable-grv">GrV</a>
             <a class="list-group-item" href="../proc/volume~2.html#variable-vliq">Vliq</a>
             <a class="list-group-item" href="../proc/volume~2.html#variable-vvap">Vvap</a>
-            <a class="list-group-item" href="../proc/volume~2.html#variable-max_iters~6">max_iters</a>
-            <a class="list-group-item" href="../proc/volume~2.html#variable-tol~5">tol</a>
+            <a class="list-group-item" href="../proc/volume~2.html#variable-failed~2">failed</a>
+            <a class="list-group-item" href="../proc/volume~2.html#variable-max_iters~5">max_iters</a>
+            <a class="list-group-item" href="../proc/volume~2.html#variable-tol~2">tol</a>
             <a class="list-group-item" href="../proc/volume~2.html#variable-totnrt">totnRT</a>
         </div>
       </div>
@@ -164,7 +165,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/volume~2.html#proc-foo~2">foo</a>
+            <a class="list-group-item" href="../proc/volume~2.html#proc-foo">foo</a>
         </div>
       </div>
     </div>
@@ -200,9 +201,10 @@
     </div>
 
 
-    <p>Volume solver routine for residual Helmholtz models.</p>
+    <p>Volume solver routine for the GERG2008.</p>
 <p>Solves volume roots using newton method. Given pressure and
-temperature.</p>
+temperature. It will use the SRK equation of state to initialize the
+volume values.</p>
 <h1 id="description">Description</h1>
 <p>This subroutine solves the volume using a newton method. The variable
 <code>root_type</code> is used to specify the desired root to solve. The options
@@ -220,7 +222,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
 </code></pre></div>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/armodel.html'>ArModel</a></p>
+    <p><a href='../type/gerg2008.html'>Gerg2008</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -235,8 +237,8 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~5"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>),
+              <span class="anchor" id="variable-eos~2"></span>
+              class(<a href='../type/gerg2008.html'>Gerg2008</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -250,7 +252,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~29"></span>
+              <span class="anchor" id="variable-n~46"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -265,7 +267,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~27"></span>
+              <span class="anchor" id="variable-p~21"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -280,7 +282,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~36"></span>
+              <span class="anchor" id="variable-t~39"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -295,7 +297,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~12"></span>
+              <span class="anchor" id="variable-v~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -347,7 +349,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
               <span class="anchor" id="variable-gr"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -364,7 +366,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
               <span class="anchor" id="variable-grl"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -381,7 +383,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
               <span class="anchor" id="variable-grv"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -398,7 +400,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
               <span class="anchor" id="variable-vliq"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -415,7 +417,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
               <span class="anchor" id="variable-vvap"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -429,10 +431,27 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~6"></span>
+              <span class="anchor" id="variable-failed~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>failed</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iters~5"></span>
               integer,
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -446,17 +465,17 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~5"></span>
+              <span class="anchor" id="variable-tol~2"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
             <td><strong>tol</strong></td>
 <td> =</td>
-                <td>1e-7</td>
+                <td>1e-8</td>
             <td>
                 
             </td>
@@ -466,7 +485,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
               <span class="anchor" id="variable-totnrt"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
@@ -493,7 +512,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
     <section>
     <h2>Subroutines</h2>
       <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-foo~2"></span> <h3> subroutine <a href='volume~2.html#proc-foo~2'>foo</a>(x, f, df)  
+    <div class="card-header codesum"><span class="anchor" id="proc-foo"></span> <h3> subroutine <a href='volume~2.html#proc-foo'>foo</a>(x, f, df)  
 </h3></div>
     <div class="card-body">
           
@@ -512,7 +531,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~9"></span>
+              <span class="anchor" id="variable-x~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -527,7 +546,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~2"></span>
+              <span class="anchor" id="variable-f~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -542,7 +561,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~7"></span>
+              <span class="anchor" id="variable-df~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -584,7 +603,7 @@ are: <code>["liquid", "vapor", "stable"]</code></p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-07-18 01:33 +0000             </p>
+ on 2025-08-06 02:37 +0000             </p>
           </div>
         </div>
         <br>

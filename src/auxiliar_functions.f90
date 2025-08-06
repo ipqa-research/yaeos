@@ -15,5 +15,10 @@ contains
 
         logical :: allclose
         allclose = maxval(rel_error(x, y)) < rtol
+        if (.not. allclose) then
+            print *, "Max relative error:", maxval(rel_error(x, y))
+            print *, "x:", x
+            print *, "y:", y
+        end if
     end function allclose
 end module auxiliar_functions

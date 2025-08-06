@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerg2008 &mdash; yaeos 4.2.1 documentation</title>
+  <title>Gerg2008 &mdash; yaeos 4.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=74d6e94f"></script>
+      <script src="../_static/documentation_options.js?v=a17b270f"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -131,8 +131,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the model to use</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GERG2008</span><span class="p">([</span><span class="s2">&quot;methane&quot;</span><span class="p">,</span> <span class="s2">&quot;n-butane&quot;</span><span class="p">,</span> <span class="s2">&quot;decane&quot;</span><span class="p">])</span>
 
-<span class="c1"># Make a flash calculation at</span>
-
+<span class="c1"># Calculate the phase envelope at a specific composition</span>
 <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
 <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
@@ -145,6 +144,80 @@
 <img alt="../_images/tutorial_gerg2008_3_0.png" src="../_images/tutorial_gerg2008_3_0.png" />
 </div>
 </div>
+<section id="Things-to-be-careful-about">
+<h2>Things to be careful about<a class="headerlink" href="#Things-to-be-careful-about" title="Link to this heading"></a></h2>
+<section id="Multiple-volume-roots">
+<h3>Multiple volume roots<a class="headerlink" href="#Multiple-volume-roots" title="Link to this heading"></a></h3>
+<p>Due to it’s multiparametric nature, the GERG2008 can also be the source of unexpected and undesired errors in modelling. One of the most common cases is the precense of multiple unrealistic volume roots. In this example we show how the isotherm of pure n-Heptane can present an unrealistic root.</p>
+<p>When we draw the isotherm at <span class="math notranslate nohighlight">\(350~K\)</span> we can see that there are three possible volume roots for pressures from <span class="math notranslate nohighlight">\(0 bar\)</span> to near <span class="math notranslate nohighlight">\(250 bar\)</span>. The middle root does not satisfy the mechanically stability criteria (<span class="math notranslate nohighlight">\(dP/dV\)</span> should be negative) but the other two roots do. But, if we pay attention to the root at higher molar volumes, we can see that it is an unrealistic vapor root that’s just an artifact of the complexity of the GERG2008 equation, and it should not be taken into
+account.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>, we use the <span class="math notranslate nohighlight">\(SRK\)</span> equation of state to initialize liquid and vapor volumes, so in most cases we should not end on those unrealisic roots. This is shown in this example, where both the (initialized as) liquid and vapor roots end up in the realistic liquid root. But extra care should be taken when calculating these kind of roots, because this method is not perfect.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">yaeos</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GERG2008</span><span class="p">([</span><span class="s2">&quot;n-heptane&quot;</span><span class="p">])</span>
+
+<span class="n">Tc</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">540.2</span><span class="p">]</span>
+<span class="n">Pc</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">27.4</span><span class="p">]</span>
+<span class="n">w</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">0.349469</span><span class="p">]</span>
+
+<span class="n">srk</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="mi">350</span>  <span class="c1"># Temperature in Kelvin</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Pressure in bar</span>
+
+<span class="c1"># Define a range of molar volumes to calculate pressures</span>
+<span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+
+<span class="c1"># Calculate pressures for the specified molar volumes using the GERG2008 model</span>
+<span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">]</span>
+
+<span class="c1"># Calculate pressures using the SRK EoS for comparison</span>
+<span class="n">ps_srk</span> <span class="o">=</span> <span class="p">[</span><span class="n">srk</span><span class="o">.</span><span class="n">pressure</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">]</span>
+
+<span class="c1"># Calculate the liquid and vapor roots at the specified pressure and temperature</span>
+<span class="n">v_liq</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">)</span>
+<span class="n">v_vap</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plotting the results</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GERG2008 EoS&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">ps_srk</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SRK EoS&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">v_liq</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Initialized Liquid root&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">v_vap</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Initialized Vapor root&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Specified pressure&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Molar volume (L/mol)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure (bar)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Pressure vs Molar Volume for n-Heptane at </span><span class="si">{T}</span><span class="s2"> K&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorial_gerg2008_6_0.png" src="../_images/tutorial_gerg2008_6_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
 </section>
 
 

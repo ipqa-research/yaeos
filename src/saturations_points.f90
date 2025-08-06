@@ -156,6 +156,10 @@ contains
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
+
+      if (its >= max_iterations .or. any(isnan([P, y])) .or. abs(Vz - Vy) < 1e-8) then
+         saturation_pressure%kind = "failed"
+      end if
    end function saturation_pressure
 
    type(EquilibriumState) function saturation_temperature(model, n, p, kind, t0, y0, max_iters)
@@ -305,6 +309,10 @@ contains
             iters=its, y=y, x=z, vx=vz, vy=vy, t=t, p=p, beta=0._pr&
             )
       end select
+
+      if (its >= max_iterations .or. any(isnan([P, y])) .or. abs(Vz - Vy) < 1e-8) then
+         saturation_temperature%kind = "failed"
+      end if
    end function saturation_temperature
 
 end module yaeos__equilibria_saturation_points

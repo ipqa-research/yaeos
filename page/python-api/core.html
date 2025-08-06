@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Module &mdash; yaeos 4.2.1 documentation</title>
+  <title>Core Module &mdash; yaeos 4.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=74d6e94f"></script>
+      <script src="_static/documentation_options.js?v=a17b270f"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -77,6 +77,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.cp_residual_vt"><code class="docutils literal notranslate"><span class="pre">ArModel.cp_residual_vt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.pure_saturation_pressures"><code class="docutils literal notranslate"><span class="pre">ArModel.pure_saturation_pressures()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt_mp"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt_mp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_vt"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_vt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.flash_pt_grid"><code class="docutils literal notranslate"><span class="pre">ArModel.flash_pt_grid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.saturation_pressure"><code class="docutils literal notranslate"><span class="pre">ArModel.saturation_pressure()</span></code></a></li>
@@ -91,7 +92,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_tx_mp"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_tx_mp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_pt_from_dsp"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_pt_from_dsp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.phase_envelope_px_from_dsp"><code class="docutils literal notranslate"><span class="pre">ArModel.phase_envelope_px_from_dsp()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.isopleth"><code class="docutils literal notranslate"><span class="pre">ArModel.isopleth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.generalized_isopleth"><code class="docutils literal notranslate"><span class="pre">ArModel.generalized_isopleth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_analysis"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_analysis()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.stability_tm"><code class="docutils literal notranslate"><span class="pre">ArModel.stability_tm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.core.ArModel.critical_point"><code class="docutils literal notranslate"><span class="pre">ArModel.critical_point()</span></code></a></li>
@@ -356,12 +357,12 @@ defined by Michelsen and Mollerup.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><em>dict</em> – Stability analysis result dictionary with keys:
-- w: value of the test phase that minimizes the <span class="math notranslate nohighlight">\(tm\)</span> function
-- tm: minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function.</p></li>
+<cite>w:</cite> value of the test phase that minimizes the <span class="math notranslate nohighlight">\(tm\)</span> function
+<cite>tm:</cite> minimum value of the <span class="math notranslate nohighlight">\(tm\)</span> function.</p></li>
 <li><p><em>dict</em> – All found minimum values of the <span class="math notranslate nohighlight">\(tm\)</span> function and the
 corresponding test phase mole fractions.
-- w: all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the <span class="math notranslate nohighlight">\(tm\)</span> function
-- tm: all values found minima of the <span class="math notranslate nohighlight">\(tm\)</span> function</p></li>
+<cite>w:</cite> all values of <span class="math notranslate nohighlight">\(w\)</span> that minimize the <span class="math notranslate nohighlight">\(tm\)</span> function
+<cite>tm:</cite> all values found minima of the <span class="math notranslate nohighlight">\(tm\)</span> function</p></li>
 </ul>
 </p>
 </dd>
@@ -962,6 +963,46 @@ stop pressure or stop temperature.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.flash_pt_mp">
+<span class="sig-name descname"><span class="pre">flash_pt_mp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.flash_pt_mp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.flash_pt_mp" title="Link to this definition"></a></dt>
+<dd><p>Multiphase flash with specification of temperature and pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>x_l0</strong> (<em>matrix_like</em>) – Initial guess for the main phases mole fractions.</p></li>
+<li><p><strong>w0</strong> (<em>array_like</em>) – Initial guess for the reference phase mole fractions.</p></li>
+<li><p><strong>betas0</strong> (<em>array_like</em>) – Initial guess for each mole phase fraction. Including the reference
+phase.</p></li>
+<li><p><strong>kinds_x</strong> (<em>list</em><em>, </em><em>optional</em>) – Kinds of the main phases, by default None (will use <cite>stable</cite>).
+Can be “liquid”, “vapor” or “stable”.</p></li>
+<li><p><strong>kind_w</strong> (<em>str</em><em>, </em><em>optional</em>) – Kind of the reference phase, by default None (will use <cite>stable</cite>).
+Can be “liquid”, “vapor” or “stable”.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations, by default 100</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Flash result dictionary with keys:</dt><dd><ul class="simple">
+<li><p>x_l: main phases mole fractions.</p></li>
+<li><p>w: reference phase mole fractions.</p></li>
+<li><p>betas: mole phase fractions.</p></li>
+<li><p>iters: number of iterations.</p></li>
+<li><p>Vector of evaluated function values at the last iteration.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.flash_vt">
 <span class="sig-name descname"><span class="pre">flash_vt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.flash_vt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.flash_vt" title="Link to this definition"></a></dt>
 <dd><p>Two-phase split with specification of temperature and volume.</p>
@@ -1482,32 +1523,95 @@ point.</p>
 <span class="sig-name descname"><span class="pre">phase_envelope_px_from_dsp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="core%20copy.html#yaeos.envelopes.PXEnvelope" title="yaeos.envelopes.PXEnvelope"><span class="pre">PXEnvelope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">env2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="core%20copy.html#yaeos.envelopes.PXEnvelope" title="yaeos.envelopes.PXEnvelope"><span class="pre">PXEnvelope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbeta0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_px_from_dsp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_px_from_dsp" title="Link to this definition"></a></dt>
 <dd><p>Calculate PX phase envelopes from a DSP.</p>
 <p>This method calculates the phase envelope at the intersection of two
-PX envelopes, <cite>env1</cite> and <cite>env2</cite>.
-:param z0: Global mole fractions of the original fluid
-:type z0: array_like
-:param zi: Global mole fractions of the other fluid
-:type zi: array_like
-:param env1: First PX envelope object
-:type env1: PXEnvelope
-:param env2: Second PX envelope object
-:type env2: PXEnvelope
-:param dbeta0: Initial step for the beta values, by default 1e-5
-:type dbeta0: float, optional</p>
+PX envelopes, <cite>env1</cite> and <cite>env2</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of lists of two PXEnvelope objects, one for each intersection
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>array_like</em>) – Global mole fractions of the original fluid</p></li>
+<li><p><strong>zi</strong> (<em>array_like</em>) – Global mole fractions of the other fluid</p></li>
+<li><p><strong>env1</strong> (<a class="reference internal" href="core%20copy.html#yaeos.envelopes.PXEnvelope" title="yaeos.envelopes.PXEnvelope"><em>PXEnvelope</em></a>) – First PX envelope object</p></li>
+<li><p><strong>env2</strong> (<a class="reference internal" href="core%20copy.html#yaeos.envelopes.PXEnvelope" title="yaeos.envelopes.PXEnvelope"><em>PXEnvelope</em></a>) – Second PX envelope object</p></li>
+<li><p><strong>dbeta0</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial step for the beta values, by default 1e-5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of lists of two PXEnvelope objects, one for each intersection
 point.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="yaeos.core.ArModel.isopleth">
-<span class="sig-name descname"><span class="pre">isopleth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">three_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dew_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(500,</span> <span class="pre">0.01)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bubble_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(200,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_dew_2ph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_bub_2ph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_dsp_3ph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.isopleth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.isopleth" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="yaeos.core.ArModel.generalized_isopleth">
+<span class="sig-name descname"><span class="pre">generalized_isopleth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind_w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_variable_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_stability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.generalized_isopleth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.generalized_isopleth" title="Link to this definition"></a></dt>
+<dd><p>Calculation of a generalized multiphase isoplethic line.</p>
+<p>Calculates a line for a constant composition specification.
+A multiphase line is defined as a line of <cite>np+1</cite> phases, where the
+first <cite>np</cite> phases are what are considered _main_ phases and the <cite>np+1</cite>
+phase is what is considered a _reference_ phase. When the _reference_
+phase <span class="math notranslate nohighlight">\(\beta\)</span> value is equal to zero, this phase will be an
+incipient phase.
+It is needed to specify a variable that will remain constant. This
+variable is specified with the <cite>spec_variable</cite> argument. It corresponds
+to the index of the variable that should be specified. The first
+<cite>np*nc</cite> variables are the <span class="math notranslate nohighlight">\(\lnK_i^l\)</span> variables, the next <cite>np+1</cite>
+variables are <span class="math notranslate nohighlight">\(\ln\beta^l\)</span>. The last two indexes correspond to
+<span class="math notranslate nohighlight">\(\lnP\)</span> and <span class="math notranslate nohighlight">\(\lnT\)</span> respectively.
+Another variable must be specified, which will be used as another
+specification to calculate the first point, and will have a step
+defined by <cite>ds0</cite> which will define how the next points will be
+calculated. This variable is specified with the <cite>s0</cite> argument.  The
+<cite>ns0</cite> argument specifies the index of the variable that will be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>array_like</em>) – Global mole fractions</p></li>
+<li><p><strong>kinds_x</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – Kinds of the main phases, options can be - “stable”, “liquid”,
+“vapor”</p></li>
+<li><p><strong>kind_w</strong> (<em>str</em>) – Kind of the reference phase, options can be - “stable”, “liquid”,
+“vapor”</p></li>
+<li><p><strong>x_l0</strong> (<em>array_like</em>) – Initial guess for the main phases compositions.
+A matrix where each row is the composition of a main phase.</p></li>
+<li><p><strong>spec_variable</strong> (<em>int</em>) – Index of the specified variable. From 1 to <cite>np*nc</cite> corresponds to
+each <span class="math notranslate nohighlight">\(\lnK_i^l\)</span>, from <cite>np*nc+1</cite> to <cite>np*nc+np</cite> corresponds to
+each <span class="math notranslate nohighlight">\(\ln\beta^l\)</span>, and the last two correspond to
+<span class="math notranslate nohighlight">\(\lnP\)</span> and <span class="math notranslate nohighlight">\(\lnT\)</span>.</p></li>
+<li><p><strong>spec_variable_value</strong> (<em>float</em>) – Value of the specified variable.</p></li>
+<li><p><strong>w0</strong> (<em>array_like</em>) – Initial guess for the reference phase composition.</p></li>
+<li><p><strong>betas0</strong> (<em>array_like</em>) – Initial guess for the main phases molar fractions.</p></li>
+<li><p><strong>p0</strong> (<em>float</em>) – Initial guess for pressure [bar]</p></li>
+<li><p><strong>t0</strong> (<em>float</em>) – Initial guess for temperature [K]</p></li>
+<li><p><strong>ns0</strong> (<em>int</em>) – Initial specified variable number.</p></li>
+<li><p><strong>s0</strong> (<em>float</em>) – Initial specified value that will be used.</p></li>
+<li><p><strong>ds0</strong> (<em>float</em>) – Step for the specified variable.</p></li>
+<li><p><strong>ws_stability</strong> (<em>array_like</em>) – List of compositions that will be used to check stability of the
+reference phase.</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of points to calculate, by default 100</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary with the following keys:</p>
+<ul class="simple">
+<li><p>x: main phases compositions</p></li>
+<li><p>w: reference phase compositions</p></li>
+<li><p>betas: main phases molar fractions</p></li>
+<li><p>T: temperatures [K]</p></li>
+<li><p>P: pressures [bar]</p></li>
+<li><p>w_more_stable: reference phase that is more stable than the
+incipient phase</p></li>
+<li><p>found_unstability: boolean indicating if an unstable point was
+found.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.stability_analysis">

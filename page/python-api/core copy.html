@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Envelopes Module &mdash; yaeos 4.2.1 documentation</title>
+  <title>Envelopes Module &mdash; yaeos 4.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=74d6e94f"></script>
+      <script src="_static/documentation_options.js?v=a17b270f"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -94,17 +94,19 @@ represent different kinds of phase envelopes.</p>
 <dt class="sig sig-object py" id="yaeos.envelopes.PTEnvelope">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PTEnvelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_composition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_phases_compositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_phase_compositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_phase_kinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_phases_kinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_phases_molar_fractions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specified_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_pressures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_temperatures</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/envelopes.html#PTEnvelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.envelopes.PTEnvelope" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>PTEnvelope.
-This class represents a pressure-temperature envelope.
-.. attribute:: global_composition</p>
-<blockquote>
-<div><p>The global composition of the system. Shape is (n_components,).</p>
+<p>PTEnvelope.</p>
+<p>This class represents a pressure-temperature envelope.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.envelopes.PTEnvelope.global_composition">
+<span class="sig-name descname"><span class="pre">global_composition</span></span><a class="headerlink" href="#yaeos.envelopes.PTEnvelope.global_composition" title="Link to this definition"></a></dt>
+<dd><p>The global composition of the system. Shape is (n_components,).</p>
 <dl class="field-list simple">
-<dt class="field-odd">type<span class="colon">:</span></dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
-</div></blockquote>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.PTEnvelope.main_phases_compositions">
 <span class="sig-name descname"><span class="pre">main_phases_compositions</span></span><a class="headerlink" href="#yaeos.envelopes.PTEnvelope.main_phases_compositions" title="Link to this definition"></a></dt>
@@ -239,9 +241,16 @@ Shape is (n_points, n_phases).</p>
 <dd><p>A DataFrame containing the data of the envelope. The columns are:
 - ‘T’: Temperatures along the envelope.
 - ‘P’: Pressures along the envelope.
-- ‘x_i^j’: Compositions of the main phases, where <cite>i</cite> is the component index and <cite>j</cite> is the phase index.
-- ‘w_i’: Compositions of the reference phase, where <cite>i</cite> is the component index.
-- ‘beta^j’: Molar fractions of the main phases, where <cite>j</cite> is the phase index.</p>
+- ‘x_i^j’: Compositions of the main phases, where <cite>i</cite> is the component</p>
+<blockquote>
+<div><p>index and <cite>j</cite> is the phase index.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>‘w_i’: Compositions of the reference phase, where <cite>i</cite> is the
+component index.</p></li>
+<li><p>‘beta^j’: Molar fractions of the main phases, where <cite>j</cite> is the
+phase index.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -252,7 +261,17 @@ Shape is (n_points, n_phases).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.envelopes.PTEnvelope.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/envelopes.html#PTEnvelope.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.envelopes.PTEnvelope.plot" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot the envelope.</p>
+<p>Plot the envelope in a matplotlib axis. Using the natural variables of
+the envelope (temperature and pressure). If the <cite>ax</cite> keyword argument
+is provided, it will be used as the axis to plot on. Otherwise, the
+current axis will be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>plot_kwargs</strong> (<em>dict</em>) – Keyword arguments to pass to the <cite>plot</cite> method of the axis.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -276,7 +295,7 @@ Shape is (n_points, n_phases).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.PXEnvelope.global_composition_0">
 <span class="sig-name descname"><span class="pre">global_composition_0</span></span><a class="headerlink" href="#yaeos.envelopes.PXEnvelope.global_composition_0" title="Link to this definition"></a></dt>
-<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(lpha = 0\)</span>.</p>
+<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(\alpha = 0\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -287,7 +306,7 @@ Shape is (n_points, n_phases).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.PXEnvelope.global_composition_i">
 <span class="sig-name descname"><span class="pre">global_composition_i</span></span><a class="headerlink" href="#yaeos.envelopes.PXEnvelope.global_composition_i" title="Link to this definition"></a></dt>
-<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(lpha = 1\)</span>.</p>
+<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(\alpha = 1\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -345,7 +364,7 @@ Shape is (n_points, n_phases).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.PXEnvelope.alphas">
 <span class="sig-name descname"><span class="pre">alphas</span></span><a class="headerlink" href="#yaeos.envelopes.PXEnvelope.alphas" title="Link to this definition"></a></dt>
-<dd><p>The molar fraction of the <cite>global_composition_i</cite>, <span class="math notranslate nohighlight">\(lpha\)</span>.
+<dd><p>The molar fraction of the <cite>global_composition_i</cite>, <span class="math notranslate nohighlight">\(\alpha\)</span>.
 Shape is (n_points,).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -369,7 +388,7 @@ Shape is (n_points,).</p>
 <dt class="sig sig-object py" id="yaeos.envelopes.PXEnvelope.critical_alphas">
 <span class="sig-name descname"><span class="pre">critical_alphas</span></span><a class="headerlink" href="#yaeos.envelopes.PXEnvelope.critical_alphas" title="Link to this definition"></a></dt>
 <dd><p>The molar fractions of the <cite>global_composition_i</cite> at the critical
-points, <span class="math notranslate nohighlight">\(lpha\)</span>.  Shape is (n_critical_points,).</p>
+points, <span class="math notranslate nohighlight">\(\alpha\)</span>.  Shape is (n_critical_points,).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -458,7 +477,7 @@ This can include line style, color, etc.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.global_composition_0">
 <span class="sig-name descname"><span class="pre">global_composition_0</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.global_composition_0" title="Link to this definition"></a></dt>
-<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(lpha = 0\)</span>.</p>
+<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(\alpha = 0\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -469,7 +488,7 @@ This can include line style, color, etc.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.global_composition_i">
 <span class="sig-name descname"><span class="pre">global_composition_i</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.global_composition_i" title="Link to this definition"></a></dt>
-<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(lpha = 1\)</span>.</p>
+<dd><p>The global composition at the point where <span class="math notranslate nohighlight">\(\alpha = 1\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -527,7 +546,7 @@ Shape is (n_points, n_phases).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.alphas">
 <span class="sig-name descname"><span class="pre">alphas</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.alphas" title="Link to this definition"></a></dt>
-<dd><p>The molar fraction of the <cite>global_composition_i</cite>, <span class="math notranslate nohighlight">\(lpha\)</span>.
+<dd><p>The molar fraction of the <cite>global_composition_i</cite>, <span class="math notranslate nohighlight">\(\alpha\)</span>.
 Shape is (n_points,).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -574,7 +593,8 @@ Shape is (n_points,).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.critical_temperatures">
 <span class="sig-name descname"><span class="pre">critical_temperatures</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.critical_temperatures" title="Link to this definition"></a></dt>
-<dd><p>The critical temperatures of the envelope. Shape is (n_critical_points,).</p>
+<dd><p>The critical temperatures of the envelope.
+It’s shape is (n_critical_points,).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -586,7 +606,7 @@ Shape is (n_points,).</p>
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.critical_alphas">
 <span class="sig-name descname"><span class="pre">critical_alphas</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.critical_alphas" title="Link to this definition"></a></dt>
 <dd><p>The molar fractions of the <cite>global_composition_i</cite> at the critical
-points, <span class="math notranslate nohighlight">\(lpha\)</span>.  Shape is (n_critical_points,).</p>
+points, <span class="math notranslate nohighlight">\(\alpha\)</span>.  Shape is (n_critical_points,).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
