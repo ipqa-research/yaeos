@@ -455,7 +455,7 @@ class GeModel(ABC):
 
 class ArModel(ABC):
     """Residual Helmholtz (Ar) model abstract class."""
-    
+
     def helmholtz_residual_vt(
         self,
         moles,
@@ -554,7 +554,9 @@ class ArModel(ABC):
             arn2=dn2,
         )
 
-        all_d_none = all(d is None for d in [dt, dv, dn, dtv, dv2, dt2, dvn, dtn, dn2])
+        all_d_none = all(
+            d is None for d in [dt, dv, dn, dtv, dv2, dt2, dvn, dtn, dn2]
+        )
 
         if all_d_none:
             ...
