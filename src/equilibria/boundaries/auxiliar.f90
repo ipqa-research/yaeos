@@ -80,7 +80,7 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
          ! TODO: In many cases this makes more damage than good.
-         do while(maxval(abs(X(lb:ub))) < min(limit, 0.1_pr))
+         do while(maxval(abs(X(lb:ub))) < min(limit, 0.05_pr))
             if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
                ! Reached to a critical point in a Txy/Pxy calculation for a
                ! binary system, stop the calculation.
