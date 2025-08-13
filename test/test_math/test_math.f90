@@ -225,6 +225,7 @@ contains
 
       x = 0.5
       call newton(foo, x, tol, max_iters, failed)
+      call check(error, .not. failed)
       call check(error, abs(x - sqrt(2._pr)) < tol)
    contains
       subroutine foo(xx, f, df)
