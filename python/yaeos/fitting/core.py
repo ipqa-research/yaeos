@@ -87,6 +87,9 @@ class BinaryFitter:
 
         def pressure_error(Pexp, Pmodel):
             return (Pexp - Pmodel) ** 2 / Pexp
+        
+        def temperature_error(Texp, Tmodel):
+            return (Texp - Tmodel) ** 2 / Texp
 
         def composition_error(zexp, zmodel):
             return np.abs(np.log(zmodel[0] / zexp[0])) + np.abs(
@@ -129,20 +132,39 @@ class BinaryFitter:
             error_i = 0
 
             # =================================================================
-            # Bubble point
+            # Bubble point - Pressure
             # -----------------------------------------------------------------
-            if row["kind"] == "bubble":
+            if row["kind"] == "bubbleP":
                 sat = model.saturation_pressure(
                     x, kind="bubble", temperature=t, p0=p
                 )
                 error_i += pressure_error(p, sat["P"])
+                
+            # =================================================================
+            # Bubble point - Temperature
+            # -----------------------------------------------------------------
+            elif row["kind"] == "bubbleT":
+                sat = model.saturation_temperature(
+                    x, kind="bubble", pressure=p, t0=t
+                )
+                error_i += temperature_error(t, sat["T"])
 
             # =================================================================
-            # Dew point
+            # Dew point - Pressure
             # -----------------------------------------------------------------
-            if row["kind"] == "dew":
+            elif row["kind"] == "dewP":
                 sat = model.saturation_pressure(
                     y, kind="dew", temperature=t, p0=p
+                )
+
+                error_i += pressure_error(p, sat["P"])
+            
+            # =================================================================
+            # Dew point - Temperature
+            # -----------------------------------------------------------------
+            elif row["kind"] == "dewT":
+                sat = model.saturation_temperature(
+                    y, kind="dew", pressure=p, t0=t
                 )
 
                 error_i += pressure_error(p, sat["P"])
@@ -150,10 +172,8 @@ class BinaryFitter:
             # =================================================================
             # PT or Liquid-liquid equilibrium
             # -----------------------------------------------------------------
-            if row["kind"] == "PT" or row["kind"] == "liquid-liquid":
+            elif row["kind"] == "PT" or row["kind"] == "liquid-liquid":
                 x1, y1 = solve_pt(model, row["P"], row["T"], row["kind"])
-
-                # print(x1, y1)
 
                 if np.isnan(x[0]):
                     error_i += composition_error(y, [y1, 1 - y1])
@@ -171,7 +191,7 @@ class BinaryFitter:
             # critical point in the critical line to the given critical
             # point in the data.
             # -----------------------------------------------------------------
-            if row["kind"] == "critical":
+            elif row["kind"] == "critical":
                 cp = row
                 distances = (
                     (cp["T"] - cl["T"]) ** 2
@@ -189,6 +209,9 @@ class BinaryFitter:
                 error_i += composition_error(
                     [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
                 )
+                
+            else:
+                raise ValueError(f"{row["kind"]} is not a valid data kind.")
 
             if np.isnan(error_i) or np.isinf(error_i):
                 # TODO make more robust PT solver to avoid infs
