@@ -211,7 +211,7 @@ class BinaryFitter:
                 )
                 
             else:
-                raise ValueError(f"{row["kind"]} is not a valid data kind.")
+                raise ValueError(f"{row['kind']} is not a valid data kind.")
 
             if np.isnan(error_i) or np.isinf(error_i):
                 # TODO make more robust PT solver to avoid infs
