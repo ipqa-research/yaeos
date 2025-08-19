@@ -32,8 +32,10 @@ class BinaryFitter:
         The DataFrame should have the following columns:
         - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
         critical)
-        - x1: float, the mole fraction of component 1
-        - y1: float, the mole fraction of component 1
+        - x1: float, the mole fraction of component 1 (lightest component) in
+        heavy phase.
+        - y1: float, the mole fraction of component 1 (lightest component) in
+        light phase.
         - T: float, the temperature in K
         - P: float, the pressure in bar
         - weight: float, optional, the weight of the data point (default is 1)
@@ -126,6 +128,9 @@ class BinaryFitter:
 
             try:
                 w = row["weight"]
+                
+                if np.isnan(w) or w is None:
+                    w = 1
             except KeyError:
                 w = 1
 
