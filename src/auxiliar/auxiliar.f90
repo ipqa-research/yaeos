@@ -1,4 +1,34 @@
 module yaeos__auxiliar
+   !! # Auxiliary Functions and Utilities
+   !!
+   !! This module provides utility functions used throughout yaeos,
+   !! particularly for handling optional arguments and providing
+   !! default values.
+   !!
+   !! ## Main Features
+   !!
+   !! - **Optional value handling**: `optval` interface for setting defaults
+   !! - **Type-generic**: Works with integers, reals, and characters
+   !!
+   !! ## Usage Examples
+   !!
+   !! ```fortran
+   !! use yaeos__auxiliar, only: optval
+   !!
+   !! subroutine my_procedure(required_arg, optional_arg)
+   !!     real(pr), intent(in) :: required_arg
+   !!     real(pr), optional, intent(in) :: optional_arg
+   !!     
+   !!     real(pr) :: tol
+   !!     
+   !!     ! Set default tolerance if not provided
+   !!     tol = optval(optional_arg, 1e-6_pr)
+   !! end subroutine
+   !! ```
+   !!
+   !! The `optval` interface provides a clean way to handle optional
+   !! arguments with default values, improving code readability and
+   !! reducing boilerplate code.
    use yaeos__constants, only: pr
    implicit none
 

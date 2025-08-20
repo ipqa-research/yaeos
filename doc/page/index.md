@@ -1,6 +1,10 @@
 ---
 title: User documentation
-ordered_subpage: usage
+ordered_subpage: installation
+                 usage
+                 examples
+                 api-reference
+                 troubleshooting
                  contributing
 ---
 

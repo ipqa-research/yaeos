@@ -1,5 +1,63 @@
 module yaeos__equilibria
-   !! Module to handle phase equilibria calculations.
+   !! # Phase Equilibrium Calculations Module
+   !!
+   !! This module provides comprehensive functionality for calculating
+   !! phase equilibria using thermodynamic models. It includes:
+   !!
+   !! ## Main Features
+   !!
+   !! - **Flash calculations**: PT, TV, PV flash for vapor-liquid equilibria
+   !! - **Saturation points**: Bubble/dew point calculations for mixtures
+   !! - **Phase envelopes**: PT, PX, TX envelope tracing
+   !! - **Critical points**: Critical point detection and critical lines
+   !! - **Stability analysis**: Thermodynamic stability testing
+   !! - **Multiphase flash**: Handling systems with more than two phases
+   !!
+   !! ## Usage Examples
+   !!
+   !! ### Basic PT Flash
+   !! ```fortran
+   !! use yaeos, only: flash, EquilibriumState
+   !! 
+   !! type(EquilibriumState) :: result
+   !! call flash(model, n, T=350.0_pr, P=15.0_pr, equilibrium=result)
+   !!
+   !! if (result%phases == 2) then
+   !!     print *, "Vapor fraction:", result%beta(2)
+   !! end if
+   !! ```
+   !!
+   !! ### Saturation Pressure
+   !! ```fortran
+   !! use yaeos, only: saturation_pressure
+   !!
+   !! real(pr) :: Psat
+   !! call saturation_pressure(model, T=350.0_pr, Psat)
+   !! ```
+   !!
+   !! ## Available Procedures
+   !!
+   !! - [[flash]]: Main flash calculation routine
+   !! - [[saturation_pressure]]: Bubble/dew pressure calculations  
+   !! - [[saturation_temperature]]: Bubble/dew temperature calculations
+   !! - [[pt_envelope_2ph]]: PT phase envelope tracing
+   !! - [[px_envelope_2ph]]: PX phase envelope tracing
+   !! - [[critical_point]]: Critical point calculation
+   !! - [[min_tpd]]: Stability analysis using TPD method
+   !!
+   !! ## Derived Types
+   !!
+   !! - [[EquilibriumState]]: Contains results of equilibrium calculations
+   !! - [[MPEquilibriumState]]: Results for multiphase equilibria
+   !! - [[PTEnvelope2Ph]]: PT envelope data structure
+   !! - [[CriticalLine]]: Critical line data structure
+   !!
+   !! ## References
+   !!
+   !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+   !!    Fundamentals & computational aspects. Tie-Line Publications.
+   !! 2. Firoozabadi, A. (1999). Thermodynamics of hydrocarbon reservoirs.
+   !!    McGraw-Hill Professional.
 
    ! Stability analysis
    use yaeos__equilibria_stability, only: tm, min_tpd
