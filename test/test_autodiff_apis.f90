@@ -1,29 +1,23 @@
-module test_autodiff_api
+program test_autodiff_apis
    use yaeos__constants, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
+   use fixtures_models, only: binary_PR76_hd, binary_PR76_tape
+   use yaeos, only: ArModel
    use auxiliar_functions, only: allclose
+   use testing_aux, only: assert, test_title
    implicit none
 
    real(pr) :: absolute_tolerance = 1e-6_pr
 
+   write(*, *) test_title("AUTODIFF APIs TESTS")
+
+   call test_pr76_hd()
+   call test_pr76_tape()
+
+   write(*, *) " "
+
 contains
 
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("hdPR76", test_pr76_hd), &
-         new_unittest("tapePR76", test_pr76_tape) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_pr76_hd(error)
-      use yaeos__constants, only: pr
-      use fixtures_models, only: binary_PR76_hd
-      use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
-
+   subroutine test_pr76_hd()
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
       real(pr) :: z(n), V, T
@@ -59,54 +53,47 @@ contains
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
-      
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "hdPR76: Ar")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "hdPR76: ArV")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "hdPR76: ArT")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "hdPR76: ArTV")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "hdPR76: ArV2")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "hdPR76: ArT2")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "hdPR76: ArVn")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "hdPR76: ArTn")
 
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([Arn], [Arn_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "hdPR76: Ar (with Arn2)")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "hdPR76: ArV (with Arn2)")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "hdPR76: ArT (with Arn2)")
+      call assert(allclose([Arn], [Arn_val], absolute_tolerance), "hdPR76: Arn")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "hdPR76: ArTV (with Arn2)")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "hdPR76: ArV2 (with Arn2)")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "hdPR76: ArT2 (with Arn2)")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "hdPR76: ArVn (with Arn2)")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "hdPR76: ArTn (with Arn2)")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "hdPR76: Arn2")
 
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, ArVn=ArVn, ArTn=ArTn &
          )
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "hdPR76: Ar (final)")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "hdPR76: ArV (final)")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "hdPR76: ArT (final)")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "hdPR76: ArTV (final)")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "hdPR76: ArV2 (final)")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "hdPR76: ArT2 (final)")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "hdPR76: ArVn (final)")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "hdPR76: ArTn (final)")
    end subroutine test_pr76_hd
 
-   subroutine test_pr76_tape(error)
-      use yaeos__constants, only: pr
-      use fixtures_models, only: binary_PR76_tape
-      use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
-
+   subroutine test_pr76_tape()
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
       real(pr) :: z(n), V, T
@@ -138,29 +125,28 @@ contains
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
          )
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "tapePR76: Ar")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "tapePR76: ArV")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "tapePR76: ArT")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "tapePR76: ArTV")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "tapePR76: ArV2")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "tapePR76: ArT2")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "tapePR76: ArVn")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "tapePR76: ArTn")
 
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "tapePR76: Ar (with Arn2)")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "tapePR76: ArV (with Arn2)")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "tapePR76: ArT (with Arn2)")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "tapePR76: ArTV (with Arn2)")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "tapePR76: ArV2 (with Arn2)")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "tapePR76: ArT2 (with Arn2)")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "tapePR76: ArVn (with Arn2)")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "tapePR76: ArTn (with Arn2)")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "tapePR76: Arn2")
    end subroutine test_pr76_tape
-end module test_autodiff_api
+end program test_autodiff_apis
