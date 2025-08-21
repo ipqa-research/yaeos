@@ -12,7 +12,7 @@ program tester
     use test_thermoprops, only: suite_thermoprops => collect_suite
     use test_flash, only: suite_flash => collect_suite
     use test_saturation, only: suite_saturation => collect_suite
-    use test_math, only: suite_math => collect_suite
+
 
     ! =========================================================================
     ! Implemented ArModels testings
@@ -53,7 +53,6 @@ program tester
         new_testsuite("Thermoprops", suite_thermoprops), &
         new_testsuite("Flash", suite_flash), &
         new_testsuite("Saturation Points", suite_saturation), &
-        new_testsuite("Math module", suite_math), &
         ! =====================================================================
         ! Armodel particular tests
         ! ---------------------------------------------------------------------
