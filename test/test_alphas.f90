@@ -1,29 +1,22 @@
-module test_cubic_alphas
+program test_alphas
     use yaeos__constants, only: pr
-    use testdrive, only: new_unittest, unittest_type, error_type, check
+    use yaeos__models_ar_cubic_alphas, only: AlphaSoave, AlphaRKPR
     use auxiliar_functions, only: allclose
+    use testing_aux, only: assert, test_title
     implicit none
 
     real(pr) :: absolute_tolerance = 1e-5_pr
 
+    write(*, *) test_title("CUBIC ALPHA FUNCTIONS TESTS")
+
+    call test_alpha_soave()
+    call test_alpha_RKPR()
+
+    write(*, *) " "
+
 contains
-    subroutine collect_suite(testsuite)
-        !> Collection of tests
-        type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-        testsuite = [ &
-            new_unittest("AlphaSoave", test_alpha_soave), &
-            new_unittest("AlphaRKPR", test_alpha_RKPR) &
-            ]
-    end subroutine collect_suite
-
-    subroutine test_alpha_soave(error)
-        use yaeos__constants, only: pr
-        use yaeos__models_ar_cubic_alphas, only: AlphaSoave
-        type(error_type), allocatable, intent(out) :: error
-
+    subroutine test_alpha_soave()
         type(AlphaSoave) :: alpha
-
         integer, parameter :: n = 2
         real(pr) :: Tr(n), k(n)
         real(pr) :: a(n), dadt(n), dadt2(n)
@@ -38,18 +31,13 @@ contains
         alpha%k = k
         call alpha%alpha(Tr, a, dadt, dadt2)
 
-        call check(error, allclose(a, aval, absolute_tolerance))
-        call check(error, allclose(dadt, davaldt, absolute_tolerance))
-        call check(error, allclose(dadt2, davaldt2, absolute_tolerance))
+        call assert(allclose(a, aval, absolute_tolerance), "AlphaSoave: a values")
+        call assert(allclose(dadt, davaldt, absolute_tolerance), "AlphaSoave: dadt values")
+        call assert(allclose(dadt2, davaldt2, absolute_tolerance), "AlphaSoave: dadt2 values")
     end subroutine test_alpha_soave
 
-    subroutine test_alpha_RKPR(error)
-        use yaeos__constants, only: pr
-        use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
-        type(error_type), allocatable, intent(out) :: error
-
+    subroutine test_alpha_RKPR()
         type(AlphaRKPR) :: alpha
-
         integer, parameter :: n = 2
         real(pr) :: Tr(n), k(n)
         real(pr) :: a(n), dadt(n), dadt2(n)
@@ -64,8 +52,8 @@ contains
         alpha%k = k
         call alpha%alpha(Tr, a, dadt, dadt2)
 
-        call check(error, allclose(a, aval, absolute_tolerance))
-        call check(error, allclose(dadt, davaldt, absolute_tolerance))
-        call check(error, allclose(dadt2, davaldt2, absolute_tolerance))
+        call assert(allclose(a, aval, absolute_tolerance), "AlphaRKPR: a values")
+        call assert(allclose(dadt, davaldt, absolute_tolerance), "AlphaRKPR: dadt values")
+        call assert(allclose(dadt2, davaldt2, absolute_tolerance), "AlphaRKPR: dadt2 values")
     end subroutine test_alpha_RKPR
-end module test_cubic_alphas
+end program test_alphas

@@ -5,7 +5,7 @@ program tester
     use fortime, only: Timer
 
 
-    use test_cubic_alphas, only: suite_alphas => collect_suite
+
     use test_cubic_implementations, only: suite_implementations => collect_suite
     use test_cubic_mixrules, only: suite_cubic_mixrules => collect_suite
 
@@ -46,7 +46,6 @@ program tester
     stat = 0
 
     testsuites = [ &
-        new_testsuite("Alphas", suite_alphas), &
         new_testsuite("Cubic EoS", suite_implementations), &
         new_testsuite("Cubic MixRules", suite_cubic_mixrules), &
         new_testsuite("Thermoprops", suite_thermoprops), &
