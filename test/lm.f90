@@ -1,5 +1,6 @@
 program test_lm
    !! Test the Levenberg-Marquardt algorithm
+   use testing_aux, only: test_title, assert
    use yaeos
    use yaeos__math, only: levenberg_marquardt
 
@@ -8,6 +9,8 @@ program test_lm
    real(pr) :: K0(nc), beta0, z(nc), P, T, F(nc+1), X(nc+1)
    type(CubicEoS) :: model
    integer :: info
+
+   write(*, *) test_title("Levenberg-Marquardt")
 
    Tc=[190.578, 425.17, 617.65, 304.20]
    Pc=[46.04, 37.96, 21.07, 73.84]
@@ -28,9 +31,7 @@ program test_lm
    X = [log(K0), 0.1_pr]
 
    call levenberg_marquardt(flash_pt_fun, 1e-5_pr, X, F, info)
-   print *, F
-   print *, X
-   print *, info
+   call assert(all(abs(F) < 1e-5_pr), "Should converge")
 
 contains
    subroutine flash_pt_fun(m, n, xvar, fvec, iflag)
