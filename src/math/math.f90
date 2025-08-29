@@ -188,7 +188,7 @@ contains
          end do
 
          x = x - step
-         
+
          failed = i >= max_iters
       end do
 
@@ -329,5 +329,38 @@ contains
       s = b(1)
       t = b(2)
    end subroutine intersects
+
+
+   subroutine levenberg_marquardt(&
+      fun, tol, X, F, info &
+      )
+      use minpack_module, only: lmdif1
+      use yaeos__auxiliar, only: optval
+      use yaeos__math_linalg, only: solve_system
+
+      interface
+         subroutine fun(m, n, x, fvec, iflag)
+            import pr
+            integer, intent(in) :: m, n
+            real(pr), intent(in) :: x(n)
+            real(pr), intent(out) :: fvec(m)
+            integer, intent(in out) :: iflag
+         end subroutine fun
+      end interface
+
+      real(pr), intent(in) :: tol
+      real(pr), intent(in out) :: X(:)  !! Variables vector
+      real(pr), intent(out) :: F(:) !! Function values at solved point
+      integer, intent(out) :: info
+
+      integer :: m, n, iwa(size(x))
+      integer :: lwa
+      real(pr) :: wa(size(F) * size(x) + 5*size(x) + size(f))
+
+      m = size(F)
+      n = size(X)
+      lwa = size(F) * size(X) + 5 * size(X) + size(F)
+      call lmdif1(fun, m, n, X, F, tol, Info, Iwa, Wa, Lwa)
+   end subroutine levenberg_marquardt
 
 end module yaeos__math
