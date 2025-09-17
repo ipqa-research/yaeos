@@ -1447,6 +1447,8 @@ contains
       ws_stab, &
       x_ls, ws, betas, Ts, Ps, w_more_stable, found_unstability, max_points &
       )
+      !! Calculates a generalized isopleth line for a given model and conditions.
+      !! This subroutine computes the generalized isopleth line for a given model and conditions,
       use yaeos, only: GeneralizedIsoZLine, create_generalized_isoz_line
       integer(c_int), intent(in) :: id
       integer(c_int), intent(in) :: nc
@@ -1538,11 +1540,12 @@ contains
    end subroutine convert_kind
 
    subroutine convert_gerg_components(string, numeric)
+      !! Converts a string representation of a component to its numeric identifier
       use yaeos, only: G2008Components
       use iso_fortran_env, only: error_unit
 
-      character(len=*), intent(in) :: string
-      integer(c_int), intent(out) :: numeric
+      character(len=*), intent(in) :: string !! String representation of the component
+      integer(c_int), intent(out) :: numeric !! Numeric identifier for the component
 
       select case (string)
        case ("methane", "C1", "CH4", "nC1")
