@@ -266,14 +266,14 @@ contains
             dX = dX/2
          end do
 
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
-            dX = dX/2
-         end do
+         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
+         !    dX = dX/2
+         ! end do
 
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
-            .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
-            dX = dX*1.1
-         end do
+         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
+         !    .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
+         !    dX = dX*1.1
+         ! end do
 
          ! dejavu: block
          !    !! Getting too close to a local minima in the envelope, which can
@@ -563,7 +563,7 @@ contains
             end if
          end do
 
-         do while(abs(dX(iT)) > 0.5)
+         do while(abs(exp(X(iT)) - exp(X(iT) + dX(iT))) > 10)
             dX = dX/2
          end do
 
@@ -580,11 +580,11 @@ contains
          end do
 
          if (maxval(abs(F)) < 1e-9_pr) exit
-         if (iters < 3) then
-            X = X + 0.1 * dX
-         else
+         !if (iters < 3) then
+         !   X = X + 0.1 * dX
+         !else
             X = X + dX
-         end if
+         ! end if
       end do
    end subroutine solve_point
 
@@ -661,7 +661,9 @@ contains
 
          if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
-            dS = dXdS(ns) * dS * 0.1
+            dS = dXdS(ns)*dS
+            dS = sign(min(5e-2_pr, abs(dS)), dS)
+            ! dS = sign(5e-2_pr, dS)
             dXdS = dXdS/dXdS(ns)
             exit
          end if
@@ -669,8 +671,7 @@ contains
 
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
-
-      dS = sign(min(dS, 0.01_pr, sqrt(abs((X(ns)+1e-15)/5))), dS)
+      dS = dS * 3./its
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

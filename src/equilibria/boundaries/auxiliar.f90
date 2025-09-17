@@ -3,6 +3,7 @@ module yaeos__equilibria_boundaries_auxiliar
    !! This module contains the auxiliar functions and subroutines
    !! used in the phase-boundaries calculations.
    use yaeos__constants, only: R, pr
+   use yaeos__math, only: interpol
    implicit none
 contains
    subroutine get_z(alpha, z_0, z_inj, z, dzda)
@@ -23,7 +24,7 @@ contains
    end subroutine get_z
 
    subroutine detect_critical(&
-         nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc&
+      nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc&
       )
       !! # detect_critical
       !! Detect if the system is close to a critical point.
@@ -34,6 +35,7 @@ contains
       !! \(l\) phase are similar (equal in the critical point). This can be used
       !! to detect if the system is close to a critical point and force a jump
       !! above it.
+      use yaeos__math, only: interpol
       integer, intent(in) :: nc
       !! Number of components in the mixture.
       integer, intent(in) :: np
@@ -62,7 +64,7 @@ contains
       !! If true, a critical point was found.
       real(pr) :: Xc(size(X))
       !! Vector of variables at the critical point.
-      
+
       character(len=14) :: incipient_kind
       integer :: i, lb, ub
       integer :: ncomp
@@ -71,7 +73,7 @@ contains
       real(pr) :: lnKold(nc), lnK(nc)
 
       real(pr) :: limit
-         
+
       found_critical = .false.
 
       limit = 0.01 + nc * (0.1 - 0.01)/(20. - 2)
@@ -90,8 +92,15 @@ contains
             X = X + dXdS * dS
          end do
 
+         ! if (maxval(abs(X(lb:ub))) < 0.1) then
+         !    ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
+         !    dS = dXdS(ns)*dS
+         !    dS = sign(min(5e-2_pr, abs(dS)), dS)
+         !    dXdS = dXdS/dXdS(ns)
+         ! end if
+
          Xnew = X + dXdS * dS
-         
+
          lnKold = Xold(lb:ub)
          lnK = Xnew(lb:ub)
 
@@ -103,19 +112,23 @@ contains
             incipient_kind = kind_w
             kind_w = kinds_x(i)
             kinds_x(i) = incipient_kind
-            
+
             ! 0 = a*Xnew(ns) + (1-a)*X(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(lnK - lnKold), dim=1)
-            a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
-            Xc = a * Xnew + (1-a)*Xold
+            ! a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
+            ! Xc = a * Xnew + (1-a)*Xold
+            Xc = interpol(lnKold(ncomp), lnK(ncomp), Xold, Xnew, 0.0_pr)
 
             if (nc == 2 .and. binary_stop) then
                dS=0
                return
             end if
 
-            dS = sign(max(abs(dS), sqrt(abs(X(ns))/10), 0.01), dS)
-            X = Xc + 0.5*dS*dXdS
+            X = Xc + 2*dXdS*dS
+            ! do while(maxval(abs(X(lb:ub))) < 1e-1_pr)
+            !    X = X + dS * dXdS
+            ! end do
+            S = X(ns)
             return
          end if
       end do
