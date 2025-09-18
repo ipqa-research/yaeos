@@ -72,7 +72,12 @@ contains
 
       real(pr) :: lnKold(nc), lnK(nc)
 
+      real(pr) :: T, P
+
       real(pr) :: limit
+
+      T = exp(X(np*nc+np+2))
+      P = exp(X(np*nc+np+1))
 
       found_critical = .false.
 
@@ -124,10 +129,10 @@ contains
                return
             end if
 
-            X = Xc + 2*dXdS*dS
-            ! do while(maxval(abs(X(lb:ub))) < 1e-1_pr)
-            !    X = X + dS * dXdS
-            ! end do
+            X = Xc ! + 2*dXdS*dS
+            do while(maxval(abs(X(lb:ub))) < 1e-2_pr)
+               X = X + dS * dXdS
+            end do
             S = X(ns)
             return
          end if
