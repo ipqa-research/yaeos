@@ -134,7 +134,7 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 10
+      integer :: max_iterations = 100
       !! Maximum number of iterations to solve the point.
       integer :: number_of_points
       !! Number of points to calculate.
