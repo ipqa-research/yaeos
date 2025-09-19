@@ -334,7 +334,7 @@ contains
    subroutine levenberg_marquardt(&
       fun, tol, X, F, info &
       )
-      use minpack_module, only: lmdif1
+      use minpack_module, only: lmdif1, lmdif
       use yaeos__auxiliar, only: optval
       use yaeos__math_linalg, only: solve_system
 
@@ -359,8 +359,44 @@ contains
 
       m = size(F)
       n = size(X)
-      lwa = size(F) * size(X) + 5 * size(X) + size(F)
+      lwa = size(F) * size(X) + 5 * size(X) + size(F) + 10
       call lmdif1(fun, m, n, X, F, tol, Info, Iwa, Wa, Lwa)
+      ! call lmdif(fun, m, n, x, F, tol, tol, Gtol, 1000, Epsfcn=1e-5_pr, Diag, Mode, Factor, Nprint, Info, Nfev, Fjac, Ldfjac, Ipvt, Qtf, Wa1, Wa2, Wa3, Wa4)
+
    end subroutine levenberg_marquardt
+
+   subroutine powel_hybrid(&
+      fun, tol, X, F, info &
+      )
+      use minpack_module, only: hybrd1
+      use yaeos__auxiliar, only: optval
+      use yaeos__math_linalg, only: solve_system
+
+      interface
+         subroutine fun(n, x, fvec, iflag)
+            import pr
+            integer, intent(in) :: n
+            real(pr), intent(in) :: x(n)
+            real(pr), intent(out) :: fvec(n)
+            integer, intent(in out) :: iflag
+         end subroutine fun
+      end interface
+
+      real(pr), intent(in) :: tol
+      real(pr), intent(in out) :: X(:)  !! Variables vector
+      real(pr), intent(out) :: F(:) !! Function values at solved point
+      integer, intent(out) :: info
+
+      integer :: m, n, iwa(size(x))
+      integer :: lwa
+      real(pr) :: wa((size(X)*(3*size(X)+13))/2 + 5)
+
+      m = size(F)
+      n = size(X)
+      lwa = size(F) * size(X) + 5 * size(X) + size(F)
+      lwa = (n*(3*n+13))/2 + 5
+      call hybrd1(fun, n, x, F, tol, info, Wa, Lwa)
+   contains
+   end subroutine powel_hybrid
 
 end module yaeos__math
