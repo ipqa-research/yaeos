@@ -43,8 +43,8 @@ module yaeos_c
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
-   public :: gibbs_residual_vt, entropy_residual_vt
-   public :: Cv_residual_vt, Cp_residual_vt
+   public :: gibbs_residual_vt, helmholtz_residual_vt, entropy_residual_vt
+   public :: Cv_residual_vt, Cp_residual_vt, internal_energy_residual_vt
 
    ! Phase equilibria
    public :: flash, flash_vt, flash_grid, solve_mp_flash
@@ -535,18 +535,18 @@ contains
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
-   subroutine residual_helmholtz(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+   subroutine helmholtz_residual_vt(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
       real(c_double), intent(out) :: ar
-      real(c_double), optional, intent(out) :: &
+      real(c_double), optional, intent(inout) :: &
          ArT, ArV, ArTV, ArV2, ArT2, Arn(size(n)), ArVn(size(n)), ArTn(size(n)), Arn2(size(n), size(n))
 
       call ar_models(id)%model%residual_helmholtz(&
          n=n, V=V, T=T, &
          Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
          ArV2=ARV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
-   end subroutine residual_helmholtz
+   end subroutine helmholtz_residual_vt
 
    subroutine lnphi_vt(id, n, v, t, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
@@ -630,6 +630,17 @@ contains
          n=n, V=V, T=T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn &
          )
    end subroutine entropy_residual_vt
+
+   subroutine internal_energy_residual_vt(id, n, V, T, Ur, UrT, UrV, Urn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: Ur
+      real(c_double), optional, intent(in out) :: UrT, UrV, Urn(size(n))
+
+      call ar_models(id)%model%internal_energy_residual_vt(&
+         n=n, V=V, T=T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn &
+         )
+   end subroutine internal_energy_residual_vt
 
    subroutine Cv_residual_vt(id, n, V, T, Cv)
       integer(c_int), intent(in) :: id
@@ -1486,7 +1497,7 @@ contains
 
       type(GeneralizedIsoZLine) :: line
       integer :: i, l
-      
+
       call convert_kind(kinds_x, kx)
       call convert_kind(kind_w, kw)
 

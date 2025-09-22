@@ -77,6 +77,135 @@ def test_same_as_caleb_vt():
         assert np.allclose(dpdn_exp[idx] / nt, der4["dn"])
 
     # =========================================================================
+    # Residual helholtz VT
+    # =========================================================================
+    for idx, model in enumerate(models):
+        a = model.helmholtz_residual_vt(n, v, t)
+
+        ad1, der1 = model.helmholtz_residual_vt(n, v, t, dv=True)
+        ad2, der2 = model.helmholtz_residual_vt(n, v, t, dt=True)
+        ad3, der3 = model.helmholtz_residual_vt(n, v, t, dn=True)
+        ad4, der4 = model.helmholtz_residual_vt(n, v, t, dtv=True)
+        ad5, der5 = model.helmholtz_residual_vt(n, v, t, dv2=True)
+        ad6, der6 = model.helmholtz_residual_vt(n, v, t, dt2=True)
+        ad7, der7 = model.helmholtz_residual_vt(n, v, t, dvn=True)
+        ad8, der8 = model.helmholtz_residual_vt(n, v, t, dtn=True)
+        ad9, der9 = model.helmholtz_residual_vt(n, v, t, dn2=True)
+
+        ad10, der10 = model.helmholtz_residual_vt(
+            n,
+            v,
+            t,
+            dv=True,
+            dt=True,
+            dn=True,
+            dtv=True,
+            dv2=True,
+            dt2=True,
+            dvn=True,
+            dtn=True,
+            dn2=True,
+        )
+
+        assert np.isclose(a, ad1)
+        assert np.isclose(a, ad2)
+        assert np.isclose(a, ad3)
+        assert np.isclose(a, ad4)
+        assert np.isclose(a, ad5)
+        assert np.isclose(a, ad6)
+        assert np.isclose(a, ad7)
+        assert np.isclose(a, ad8)
+        assert np.isclose(a, ad9)
+        assert np.isclose(a, ad10)
+
+        assert np.isclose(der1["dv"], der10["dv"])
+        assert np.isclose(der2["dt"], der10["dt"])
+        assert np.allclose(der3["dn"], der10["dn"])
+        assert np.isclose(der4["dtv"], der10["dtv"])
+        assert np.isclose(der5["dv2"], der10["dv2"])
+        assert np.isclose(der6["dt2"], der10["dt2"])
+        assert np.allclose(der7["dvn"], der10["dvn"])
+        assert np.allclose(der8["dtn"], der10["dtn"])
+        assert np.allclose(der9["dn2"], der10["dn2"])
+
+        # Caleb doesn't have Ar, here I test it with thermodynamic identities
+        ur = model.internal_energy_residual_vt(n, v, t)
+        sr = model.entropy_residual_vt(n, v, t)
+        hr = model.enthalpy_residual_vt(n, v, t)
+        p = model.pressure(n, v, t)
+        ln_phi = model.lnphi_vt(n, v, t)
+        
+        r = 0.08314462618  # L bar / K / mol
+        
+        z = p * v / (nt * r * t)
+        
+        dp = model.pressure(n, v, t, dt=True, dv=True, dn=True)[1]
+        
+        dpdt = dp["dt"]
+        dpdv = dp["dv"]
+        dpdn = dp["dn"]
+        
+        dsr = model.entropy_residual_vt(n, v, t, dt=True, dn=True)[1]
+        
+        dsdt = dsr["dt"]
+        dsdn = dsr["dn"]
+
+        # Ar
+        assert np.isclose(a, ur - t * sr)
+        
+        # Sr = - dArdT (V,n) 
+        assert np.isclose(-der10["dt"], sr)
+        
+        # -Hr/T = -Ar/T + dArdT(V,n) + V/T dArdV(T,n)
+        assert np.isclose(
+            -hr / t,
+            -a / t + der10["dt"] + v / t * der10["dv"],
+        )
+        
+        # R T ln_phi = dAr/dni - RT ln(Z)
+        assert np.allclose(r * t * ln_phi, der10["dn"] - r * t * np.log(z))
+        
+        # dP/dt = -dAr/dVdT(n) +  n R / V
+        assert np.isclose(
+            dpdt,
+            -der10["dtv"] + nt * r / v,
+        )
+        
+        # dP/dV = -dAr/dV^2(n,T) - n R T / V^2
+        assert np.isclose(
+            dpdv,
+            -der10["dv2"] - nt * r * t / v**2,
+        )
+        
+        # dP/dni = -dAr/dVdni(T,V) + R T / V
+        assert np.allclose(
+            dpdn,
+            -der10["dvn"] + r * t / v,
+        )
+        
+        # dSr/dT = -dAr/dT^2(V,n)
+        assert np.isclose(
+            dsdt,
+            -der10["dt2"],
+        )
+        
+        # dSr/dTn = -dAr/dTdn(V,n)
+        assert np.allclose(
+            dsdn,
+            -der10["dtn"],
+        )
+        
+        # dn2 numerica
+        def da_dn2(n, v, t):
+            return model.helmholtz_residual_vt(n, v, t, dn=True)[1]["dn"]
+        
+        epsilon = 1e-6
+        
+        dn2_exp = approx_fprime(n, da_dn2, epsilon, v, t)
+        
+        assert np.allclose(dn2_exp, der10["dn2"])
+
+    # =========================================================================
     # Residual enthalpy VT
     # =========================================================================
     h_exp = [-0.08233139437821592, -0.08233139437821592, -0.08244045745725088]
@@ -119,6 +248,51 @@ def test_same_as_caleb_vt():
         assert np.isclose(dhdv_exp[idx], der4["dv"])  # Caleb is permole
         assert np.isclose(dhdt_exp[idx], der4["dt"] / nt, atol=2e-8)
         assert np.allclose(dhdn_exp, der4["dn"])
+
+    # =========================================================================
+    # Residual internal energy VT
+    # =========================================================================
+    u_exp = [
+        -0.051194127185983505,
+        -0.051194127185983505,
+        -0.052306154483456456,
+    ]
+
+    for idx, model in enumerate(models):
+        ui = model.internal_energy_residual_vt(n, v, t)
+
+        def u_v(v, n, t):
+            return model.internal_energy_residual_vt(n, v[0], t)
+
+        def u_t(t, n, v):
+            return model.internal_energy_residual_vt(n, v, t[0])
+
+        dudn_exp = approx_fprime(
+            n, model.internal_energy_residual_vt, 1e-4, v, t
+        )
+        dudv_exp = approx_fprime([v], u_v, 1e-4, n, t)
+        dudt_exp = approx_fprime([t], u_t, 1e-4, n, v)
+
+        ud1, der1 = model.internal_energy_residual_vt(n, v, t, dv=True)
+        ud2, der2 = model.internal_energy_residual_vt(n, v, t, dt=True)
+        ud3, der3 = model.internal_energy_residual_vt(n, v, t, dn=True)
+        ud4, der4 = model.internal_energy_residual_vt(
+            n, v, t, dv=True, dt=True, dn=True
+        )
+
+        assert np.isclose(ui, ud1)
+        assert np.isclose(ui, ud2)
+        assert np.isclose(ui, ud3)
+        assert np.isclose(ui, ud4)
+
+        assert np.isclose(der1["dv"], der4["dv"])
+        assert np.isclose(der2["dt"], der4["dt"])
+        assert np.allclose(der3["dn"], der4["dn"])
+
+        assert np.isclose(u_exp[idx], ui / nt, atol=3e-6)
+        assert np.allclose(dudn_exp, der4["dn"])
+        assert np.isclose(dudv_exp, der4["dv"])
+        assert np.isclose(dudt_exp, der4["dt"])
 
     # =========================================================================
     # Residual entropy VT

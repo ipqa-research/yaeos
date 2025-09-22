@@ -1,13 +1,13 @@
 Equations of State (EoS)
 ========================
 
+
 .. toctree::
    :maxdepth: 4
 
-   1_bulk_properties.ipynb
-   instantiate_model.ipynb
-   more_calculations.ipynb
-   cubic_eos.ipynb
-   gerg2008.ipynb
-   gpec.ipynb
-   fitting.ipynb
+   bulk_properties.ipynb
+   cubic_eos/cubic_eos.rst
+   multifluid_eos/multifluid_eos.rst
+   phase_equilibrium/phase_equilibrium.rst
+   gpec/gpec.rst
+   fitting/fitting.rst
