@@ -20,6 +20,23 @@ KINDS = {
     "PT": ["PT", "liquid-liquid"],
     "CP": ["critical", "CP"],
 }
+        
+
+# =============================================================================
+# Default error functions
+# -----------------------------------------------------------------------------
+def _pressure_error(Pexp, Pmodel):
+    return (Pexp - Pmodel) ** 2 / Pexp
+
+
+def _temperature_error(Texp, Tmodel):
+    return (Texp - Tmodel) ** 2 / Texp
+
+
+def _composition_error(zexp, zmodel):
+    return np.abs(np.log(zmodel[0] / zexp[0])) + np.abs(
+        np.log(zmodel[1] / zexp[1])
+    )
 
 
 class BinaryFitter:
@@ -51,6 +68,23 @@ class BinaryFitter:
         - weight: float, optional, the weight of the data point (default is 1)
     verbose : bool, optional
         If True, print the objective function value and the optimization
+    pressure_error : Callable, optional
+        A function `f(Pexp, Pmodel)`that calculates the pressure error between 
+        the experimental and model values. 
+        The function should take the experimental and model
+        values as arguments and return the error. If None, the default function
+        is used.
+    temperature_error : Callable, optional
+        A function `f(Texp, Tmodel)`that calculates the temperature error
+        between the experimental and model values. 
+        The function should take the experimental and model
+        values as arguments and return the error. If None, the default function
+        is used.
+    composition_error : Callable, optional
+        A function `f(zexp, zmodel)`that calculates the composition error
+        between the experimental and model values.  The function should take
+        the experimental and model for mixture composition as arguments and
+        return the error. If None, the default function is used.
 
     Attributes
     ----------
@@ -73,12 +107,31 @@ class BinaryFitter:
         model_setter_args: tuple,
         data: pd.DataFrame,
         verbose: bool = False,
+        pressure_error: Callable = None,
+        temperature_error: Callable = None,
+        composition_error: Callable = None,
     ) -> None:
         self.get_model = model_setter
         self.get_model_args = model_setter_args
         self.data = data
         self.verbose = verbose
         self.evaluations = {"fobj": [], "x": []}
+
+        if pressure_error is not None:
+            self.pressure_error = pressure_error
+        else:
+            self.pressure_error = _pressure_error
+
+        if temperature_error is not None:
+            self.temperature_error = temperature_error
+        else:
+            self.temperature_error = _temperature_error
+
+        if composition_error is not None:
+            self.composition_error = composition_error
+        else:
+            self.composition_error = _composition_error
+
 
     def objective_function(self, x_values) -> float:
         """
@@ -96,23 +149,11 @@ class BinaryFitter:
             squared relative errors between the experimental data and the model
             predictions.
         """
-
-        def pressure_error(Pexp, Pmodel):
-            return (Pexp - Pmodel) ** 2 / Pexp
-
-        def temperature_error(Texp, Tmodel):
-            return (Texp - Tmodel) ** 2 / Texp
-
-        def composition_error(zexp, zmodel):
-            return np.abs(np.log(zmodel[0] / zexp[0])) + np.abs(
-                np.log(zmodel[1] / zexp[1])
-            )
-
-        def temperature_error(Texp, Tmodel):
-            return (Texp - Tmodel) ** 2 / Texp
-
         model: ArModel = self.get_model(x_values, *self.get_model_args)
         data = self.data
+
+        residuals = []
+        objective_function_contributions = []
 
         # =====================================================================
         # Calculate the critical line starting from the heavy component
@@ -138,7 +179,6 @@ class BinaryFitter:
 
             try:
                 w = row["weight"]
-
                 if np.isnan(w) or w is None:
                     w = 1
             except KeyError:
@@ -153,7 +193,8 @@ class BinaryFitter:
                 sat = model.saturation_pressure(
                     x, kind="bubble", temperature=t, p0=p
                 )
-                error_i += pressure_error(p, sat["P"])
+                error_i += self.pressure_error(p, sat["P"])
+                residual = p - sat["P"]
 
             # =================================================================
             # Bubble point - Temperature
@@ -162,7 +203,8 @@ class BinaryFitter:
                 sat = model.saturation_temperature(
                     x, kind="bubble", pressure=p, t0=t
                 )
-                error_i += temperature_error(t, sat["T"])
+                error_i += self.temperature_error(t, sat["T"])
+                residual = t - sat["T"]
 
             # =================================================================
             # Dew point - Pressure
@@ -171,8 +213,8 @@ class BinaryFitter:
                 sat = model.saturation_pressure(
                     y, kind="dew", temperature=t, p0=p
                 )
-
-                error_i += pressure_error(p, sat["P"])
+                error_i += self.pressure_error(p, sat["P"])
+                residual = p - sat["P"]
 
             # =================================================================
             # Dew point - Temperature
@@ -181,8 +223,8 @@ class BinaryFitter:
                 sat = model.saturation_temperature(
                     y, kind="dew", pressure=p, t0=t
                 )
-
-                error_i += pressure_error(p, sat["P"])
+                error_i += self.temperature_error(t, sat["T"])
+                residual = t - sat["T"]
 
             # =================================================================
             # PT or Liquid-liquid equilibrium
@@ -190,16 +232,21 @@ class BinaryFitter:
             elif row["kind"] in KINDS["PT"]:
                 x1, y1 = solve_pt(model, row["P"], row["T"], row["kind"])
 
+                residual = []
                 if np.isnan(x[0]):
-                    error_i += composition_error(y, [y1, 1 - y1])
+                    error_i += self.composition_error(y, [y1, 1 - y1])
+                    residual.append(y[0] - y1)
 
                 elif np.isnan(y[0]):
-                    error_i += composition_error(x, [x1, 1 - x1])
+                    error_i += self.composition_error(x, [x1, 1 - x1])
+                    residual.append(x[0] - x1)
 
                 else:
-                    error_i += composition_error(
+                    error_i += self.composition_error(
                         x, [x1, 1 - x1]
-                    ) + composition_error(y, [y1, 1 - y1])
+                    ) + self.composition_error(y, [y1, 1 - y1])
+                    residual.append(x[0] - x1)
+                    residual.append(y[0] - y1)
 
             # =================================================================
             # Critical point error is calculated by finding the nearest
@@ -219,11 +266,16 @@ class BinaryFitter:
                     cl["P"][nearest],
                     cl["a"][nearest],
                 )
-                error_i += temperature_error(cp["T"], t_cl)
-                error_i += pressure_error(cp["P"], p_cl)
-                error_i += composition_error(
+                error_i += self.temperature_error(cp["T"], t_cl)
+                error_i += self.pressure_error(cp["P"], p_cl)
+                error_i += self.composition_error(
                     [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
                 )
+                residual = [
+                    cp["T"] - t_cl,
+                    cp["P"] - p_cl,
+                    cp["x1"] - x1,
+                ]
 
             else:
                 raise ValueError(f"{row['kind']} is not a valid data kind.")
@@ -231,6 +283,9 @@ class BinaryFitter:
             if np.isnan(error_i) or np.isinf(error_i):
                 # TODO make more robust PT solver to avoid infs
                 error_i = row["P"]
+
+            objective_function_contributions.append(error_i / len(data))
+            residuals.append(residual)
 
             err += error_i * w
 
@@ -241,13 +296,17 @@ class BinaryFitter:
 
         self.evaluations["fobj"].append(err)
         self.evaluations["x"].append(x_values)
+        self.evaluations["residuals"] = residuals
+        self.evaluations["contributions"] = objective_function_contributions
 
         if self.verbose:
             print(err, x_values)
 
         return err
 
-    def fit(self, x0, bounds, method="Nelder-Mead"):
+    def fit(
+        self, x0, bounds=None, method="Nelder-Mead", optimizer_options=None
+        ):
         """Fit the model to the data.
 
         Fit the model to the data using the objective function defined in
@@ -269,7 +328,8 @@ class BinaryFitter:
         None
         """
         sol = minimize(
-            self.objective_function, x0=x0, bounds=bounds, method=method
+            self.objective_function, x0=x0, bounds=bounds, method=method,
+            options=optimizer_options
         )
         self._solution = sol
 
@@ -277,3 +337,12 @@ class BinaryFitter:
     def solution(self):
         """Return the optimization solution."""
         return self._solution
+
+    @property
+    def model(self):
+        """Return the model with the fitted parameters."""
+        if not hasattr(self, "_solution"):
+            raise ValueError(
+                "You must fit the model before getting the model."
+            )
+        return self.get_model(self._solution.x, *self.get_model_args)
