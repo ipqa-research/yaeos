@@ -99,6 +99,52 @@ class QMR(CubicMixRule):
         """
         yaeos_c.set_qmr(ar_model_id, self.kij, self.lij)
 
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = ""
+
+        kij_c = ""
+        lij_c = ""
+
+        for i in range(len(self.kij)):
+            kij_c += f"kij({i + 1}, :) = ["
+            lij_c += f"lij({i + 1}, :) = ["
+
+            for j in range(len(self.kij)):
+                if j < len(self.kij) - 1:
+                    kij_c += f"{self.kij[i][j]}_pr, "
+                    lij_c += f"{self.lij[i][j]}_pr, "
+                else:
+                    kij_c += f"{self.kij[i][j]}_pr]\n"
+                    lij_c += f"{self.lij[i][j]}_pr]\n"
+
+        fcode += kij_c + "\n"
+        fcode += lij_c + "\n"
+        fcode += "mixrule = QMR(k=kij, l=lij)\n\n"
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+
+        fcode = (
+            "type(QMR) :: mixrule"
+            "\n"
+            "real(pr) :: kij(nc, nc), lij(nc, nc)\n\n"
+        )
+
+        return fcode
+
 
 class QMRTD(CubicMixRule):
     r"""Quadratic mixing rule, with temperature dependence.
@@ -165,6 +211,64 @@ class QMRTD(CubicMixRule):
             lij=self.lij,
         )
 
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = ""
+
+        kij0_c = ""
+        kijinf_c = ""
+        lij_c = ""
+        t_ref_c = ""
+
+        for i in range(len(self.kij_0)):
+            kij0_c += f"kij_0({i + 1}, :) = ["
+            kijinf_c += f"kij_inf({i + 1}, :) = ["
+            lij_c += f"lij({i + 1}, :) = ["
+            t_ref_c += f"t_ref({i + 1}, :) = ["
+
+            for j in range(len(self.kij_0)):
+                if j < len(self.kij_0) - 1:
+                    kij0_c += f"{self.kij_0[i][j]}_pr, "
+                    kijinf_c += f"{self.kij_inf[i][j]}_pr, "
+                    lij_c += f"{self.lij[i][j]}_pr, "
+                    t_ref_c += f"{self.t_ref[i][j]}_pr, "
+                else:
+                    kij0_c += f"{self.kij_0[i][j]}_pr]\n"
+                    kijinf_c += f"{self.kij_inf[i][j]}_pr]\n"
+                    lij_c += f"{self.lij[i][j]}_pr]\n"
+                    t_ref_c += f"{self.t_ref[i][j]}_pr]\n"
+
+        fcode += kij0_c + "\n"
+        fcode += kijinf_c + "\n"
+        fcode += lij_c + "\n"
+        fcode += t_ref_c + "\n"
+
+        fcode += "mixrule = QMRTD(k=kij_inf, k0=kij_0, Tref=t_ref, l=lij)\n\n"
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+
+        fcode = (
+            "type(QMRTD) :: mixrule"
+            "\n"
+            "real(pr) :: kij_inf(nc, nc), kij_0(nc, nc), lij(nc, nc)\n"
+            "real(pr) :: t_ref(nc, nc)\n\n"
+        )
+
+        return fcode
+
 
 class MHV(CubicMixRule):
     """Modified Huron-Vidal mixing rule.
@@ -215,6 +319,8 @@ class MHV(CubicMixRule):
         self.q = q
         self.lij = np.array(lij, order="F")
 
+        self._have_lij = True if lij is not None else False
+
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set modified Huron-Vidal mix rule method.
 
@@ -224,6 +330,66 @@ class MHV(CubicMixRule):
             ID of the cubic EoS model
         """
         yaeos_c.set_mhv(ar_model_id, self.ge.id, self.q)
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = ""
+
+        fcode += self.ge._model_params_as_str()
+
+        lij_c = ""
+
+        if self._have_lij:
+            for i in range(self.ge.nc):
+                lij_c += f"lij({i + 1}, :) = ["
+
+                for j in range(self.ge.nc):
+                    if j < self.ge.nc - 1:
+                        lij_c += f"{self.lij[i][j]}_pr, "
+                    else:
+                        lij_c += f"{self.lij[i][j]}_pr]\n"
+
+            fcode += lij_c + "\n"
+
+        if self._have_lij:
+            # TODO: include lij in MHV
+            fcode += (
+                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b)\n\n"
+            )
+        else:
+            fcode += (
+                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, bi=ar_model%b)\n\n"
+            )
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        fcode = ""
+
+        fcode += self.ge._model_params_declaration_as_str()
+
+        # Just in case all possible replaces
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n\n", "")
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n", "")
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}", "")
+
+        fcode += "type(MHV) :: mixrule" "\n"
+
+        if self._have_lij:
+            fcode += "real(pr) :: lij(nc, nc)\n\n"
+
+        return fcode
 
 
 class HV(CubicMixRule):
@@ -271,6 +437,44 @@ class HV(CubicMixRule):
             ID of the cubic EoS model
         """
         yaeos_c.set_hv(ar_model_id, self.ge.id)
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = ""
+
+        fcode += self.ge._model_params_as_str()
+
+        fcode += (
+            "mixrule = HV(ge=ge_model, "
+            "bi=ar_model%b, del1=ar_model%del1)\n\n"
+        )
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        fcode = ""
+
+        fcode += self.ge._model_params_declaration_as_str()
+
+        # Just in case all possible replaces
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n\n", "")
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n", "")
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}", "")
+
+        fcode += "type(HV) :: mixrule" "\n"
+
+        return fcode
 
 
 class HVNRTL(CubicMixRule):
@@ -320,3 +524,23 @@ class HVNRTL(CubicMixRule):
         yaeos_c.set_hvnrtl(
             ar_model_id, self.alpha, self.gji, self.use_kij, self.kij
         )
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        # TODO
+        return ""
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        # TODO
+        return ""

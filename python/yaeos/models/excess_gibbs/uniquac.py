@@ -115,3 +115,94 @@ class UNIQUAC(GeModel):
         self.id = yaeos_c.uniquac(
             qs, rs, self.aij, self.bij, self.cij, self.dij, self.eij
         )
+
+        self.nc = len(self.qs)
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = ""
+
+        aij_c = ""
+        bij_c = ""
+        cij_c = ""
+        dij_c = ""
+        eij_c = ""
+
+        qs_c = "qs = ["
+        rs_c = "rs = ["
+
+        for i in range(self.nc):
+            if i < self.nc - 1:
+                qs_c += f"{self.qs[i]}_pr, "
+                rs_c += f"{self.rs[i]}_pr, "
+            else:
+                qs_c += f"{self.qs[i]}_pr"
+                rs_c += f"{self.rs[i]}_pr"
+
+        qs_c += "]\n"
+        rs_c += "]\n\n"
+
+        for i in range(self.nc):
+            aij_c += f"aij({i + 1}, :) = ["
+            bij_c += f"bij({i + 1}, :) = ["
+            cij_c += f"cij({i + 1}, :) = ["
+            dij_c += f"dij({i + 1}, :) = ["
+            eij_c += f"eij({i + 1}, :) = ["
+
+            for j in range(self.nc):
+                if j < self.nc - 1:
+                    aij_c += f"{self.aij[i, j]}_pr, "
+                    bij_c += f"{self.bij[i, j]}_pr, "
+                    cij_c += f"{self.cij[i, j]}_pr, "
+                    dij_c += f"{self.dij[i, j]}_pr, "
+                    eij_c += f"{self.eij[i, j]}_pr, "
+                else:
+                    aij_c += f"{self.aij[i, j]}_pr"
+                    bij_c += f"{self.bij[i, j]}_pr"
+                    cij_c += f"{self.cij[i, j]}_pr"
+                    dij_c += f"{self.dij[i, j]}_pr"
+                    eij_c += f"{self.eij[i, j]}_pr"
+
+            aij_c += "]\n"
+            bij_c += "]\n"
+            cij_c += "]\n"
+            dij_c += "]\n"
+            eij_c += "]\n"
+
+        fcode += qs_c
+        fcode += rs_c
+
+        fcode += aij_c + "\n"
+        fcode += bij_c + "\n"
+        fcode += cij_c + "\n"
+        fcode += dij_c + "\n"
+        fcode += eij_c + "\n"
+
+        fcode += "ge_model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)\n"
+        fcode += "\n"
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        fcode = (
+            f"integer, parameter :: nc={self.nc}\n"
+            "\n"
+            "type(UNIQUAC) :: ge_model\n"
+            "\n"
+            "real(pr) :: qs(nc), rs(nc)\n"
+            "real(pr) :: aij(nc,nc), bij(nc,nc), cij(nc,nc)\n"
+            "real(pr) :: dij(nc,nc), eij(nc,nc)\n\n"
+        )
+
+        return fcode
