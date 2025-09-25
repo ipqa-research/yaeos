@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from yaeos import NRTL, UNIFACDortmund, UNIFACPSRK, UNIFACVLE, UNIQUAC
+from yaeos.core import GeModel
 
 
 data_path = (
@@ -132,7 +133,7 @@ def test_same_as_fortran():
         values = [v.strip() for v in values]
 
         model_name = values[0]
-        model = models[model_name]
+        model: GeModel = models[model_name]
 
         thermoprops = [float(v) for v in values[1:]]
 
@@ -152,7 +153,9 @@ def test_same_as_fortran():
 
         lngamma = thermoprops[28:31]
         dlngamma_dt = thermoprops[31:34]
-        dlngamma_dn = np.reshape(thermoprops[34:], (3, 3))
+        dlngamma_dn = np.reshape(thermoprops[34:43], (3, 3))
+
+        cpe = thermoprops[43]
 
         # Test GE
         ge_v, derivatives = model.excess_gibbs(
@@ -198,5 +201,10 @@ def test_same_as_fortran():
         assert np.allclose(lngamma, lngamma_v, rtol=1e-10)
         assert np.allclose(dlngamma_dt, derivatives["dt"], rtol=1e-10)
         assert np.allclose(dlngamma_dn, derivatives["dn"], rtol=1e-10)
+
+        # Test Cpe
+        cpe_i = model.excess_cp(n, temp)
+
+        assert np.isclose(cpe, cpe_i)
 
     data_path.unlink()

@@ -39,6 +39,7 @@ module yaeos_c
    public :: excess_gibbs_ge
    public :: excess_enthalpy_ge
    public :: excess_entropy_ge
+   public :: excess_cp_ge
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
@@ -287,6 +288,18 @@ contains
          )
    end subroutine excess_entropy_ge
 
+   subroutine excess_cp_ge(id, n, T, Cpe)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: Cpe
+      !! Excess heat capacity
+
+      call ge_models(id)%model%excess_Cp(n, T, Cpe=Cpe)
+   end subroutine excess_cp_ge
+
    ! ==========================================================================
    !  Ar Models
    ! --------------------------------------------------------------------------
@@ -531,7 +544,7 @@ contains
 
       call ar_models(id)%model%residual_helmholtz(&
          n=n, V=V, T=T, &
-         Ar=Ar,  ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
          ArV2=ARV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
    end subroutine residual_helmholtz
 
@@ -545,7 +558,8 @@ contains
          dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
 
       call ar_models(id)%model%lnphi_vt(&
-         n, V, T, P, lnphi, dlnPhidP, dlnphidT, dlnPhidn &
+         n=n, V=V, T=T, P=P, lnPhi=lnphi, dlnPhidP=dlnphidp, &
+         dlnPhidT=dlnphidt, dlnPhidn=dlnphidn &
          )
    end subroutine lnphi_vt
 
@@ -591,7 +605,7 @@ contains
       real(c_double), optional, intent(in out) :: HrT, HrV, Hrn(size(n))
 
       call ar_models(id)%model%enthalpy_residual_vt(&
-         n, V, T, Hr, HrT, HrV, Hrn &
+         n=n, V=V, T=T, Hr=Hr, HrT=HrT, HrV=HrV, Hrn=Hrn &
          )
    end subroutine enthalpy_residual_vt
 
@@ -602,7 +616,7 @@ contains
       real(c_double), optional, intent(in out) :: GrT, GrV, Grn(size(n))
 
       call ar_models(id)%model%gibbs_residual_vt(&
-         n, V, T, Gr, GrT, GrV, Grn &
+         n=n, V=V, T=T, Gr=Gr, GrT=GrT, GrV=GrV, Grn=Grn &
          )
    end subroutine gibbs_residual_vt
 
@@ -613,7 +627,7 @@ contains
       real(c_double), optional, intent(in out) :: SrT, SrV, Srn(size(n))
 
       call ar_models(id)%model%entropy_residual_vt(&
-         n, V, T, Sr, SrT, SrV, Srn &
+         n=n, V=V, T=T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn &
          )
    end subroutine entropy_residual_vt
 
@@ -622,9 +636,7 @@ contains
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: Cv
 
-      call ar_models(id)%model%cv_residual_vt(&
-         n, V, T, Cv &
-         )
+      call ar_models(id)%model%cv_residual_vt(n=n, V=V, T=T, Cv=Cv)
    end subroutine Cv_residual_vt
 
    subroutine Cp_residual_vt(id, n, V, T, Cp)
@@ -632,7 +644,7 @@ contains
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: CP
 
-      call ar_models(id)%model%cp_residual_vt(n, V, T, Cp)
+      call ar_models(id)%model%cp_residual_vt(n=n, V=V, T=T, Cp=CP)
    end subroutine Cp_residual_vt
 
    ! ==========================================================================
