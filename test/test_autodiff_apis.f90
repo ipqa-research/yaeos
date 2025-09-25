@@ -85,6 +85,20 @@ contains
       call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
       call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
       call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+
+      call eos%residual_helmholtz( &
+         z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
+         ArT2=ArT2, ArVn=ArVn, ArTn=ArTn &
+         )
+      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
+      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
+      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
+      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
+      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
+      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
+      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
+      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+
    end subroutine test_pr76_hd
 
    subroutine test_pr76_tape(error)

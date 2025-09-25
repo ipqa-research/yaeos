@@ -135,11 +135,12 @@ class BinaryFitter:
             # -----------------------------------------------------------------
             if row["kind"] == "critical":
                 cp = row
-                distances = (
-                    (cp["T"] - cl["T"]) ** 2
-                    + ((cp["P"] - cl["P"]) ** 2)
-                    + ((cp["x1"] - cl["a"]) ** 2)
+                distances = (cp["T"] - cl["T"]) ** 2 + (
+                    (cp["P"] - cl["P"]) ** 2
                 )
+
+                if not np.isnan(cp["x1"]):
+                    distances += (cp["x1"] - cl["a"]) ** 2
                 nearest = np.argmin(distances)
                 t_cl, p_cl, x1 = (
                     cl["T"][nearest],
@@ -148,9 +149,10 @@ class BinaryFitter:
                 )
                 error_i += temperature_error(cp["T"], t_cl)
                 error_i += pressure_error(cp["P"], p_cl)
-                error_i += composition_error(
-                    [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
-                )
+                if not np.isnan(cp["x1"]):
+                    error_i += composition_error(
+                        [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
+                    )
 
             if np.isnan(error_i):
                 error_i = row["P"]
@@ -165,7 +167,7 @@ class BinaryFitter:
         self.evaluations["x"].append(x_values)
 
         if self.verbose:
-            print(err, x_values)
+            print(len(self.evaluations["fobj"]), err, x_values)
         return err
 
     def fit(self, x0, bounds, method="Nelder-Mead"):
@@ -196,4 +198,5 @@ class BinaryFitter:
 
     @property
     def solution(self):
+        """Return the optimization solution."""
         return self._solution

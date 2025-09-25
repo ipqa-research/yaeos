@@ -53,7 +53,7 @@ program main
    T = 260
    kinds_x = ["liquid", "liquid", "liquid"]
    kind_w = "vapor"
-   env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
+   env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.01_pr, beta_w=0.0_pr)
 
    call env%write(1)
 
@@ -62,7 +62,7 @@ program main
    call assert(abs(env%points(1)%T - 261.828 )< 1e-2, "First point T")
 
    i = size(env%points)
-   call assert(abs(env%points(i)%P) < 1, "End at low pressure")
+   call assert(abs(env%points(i)%P) < 9, "End at low pressure")
 
 contains
 

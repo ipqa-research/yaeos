@@ -100,7 +100,7 @@ contains
                if (AT .gt. AVAP) V = VVAP
             end if
           case default
-            write(error_unit, *) "ERROR [VCALC]: Wrong specification"
+            write(error_unit, *) "ERROR [VCALC]: Wrong specification", root_type
             error stop 1
          end select
       end if

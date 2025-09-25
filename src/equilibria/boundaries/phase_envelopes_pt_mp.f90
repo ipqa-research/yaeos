@@ -67,9 +67,9 @@ contains
       !! we are calculating a phase boundary.
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:) 
+      real(pr), intent(in) :: z(:)
       !! Mixture global composition.
-      integer, intent(in) :: np 
+      integer, intent(in) :: np
       !! Number of main phases.
       character(len=14), intent(in) :: kinds_x(np)
       !! Kind of the main phases.
@@ -134,7 +134,7 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 10
+      integer :: max_iterations = 100
       !! Maximum number of iterations to solve the point.
       integer :: number_of_points
       !! Number of points to calculate.
@@ -192,7 +192,7 @@ contains
       w_kind = kind_w
 
       allocate(env_points(0), pt_envelope%Tc(0), pt_envelope%Pc(0))
-      
+
       F = 1
       its = 0
       X0 = X
@@ -224,22 +224,11 @@ contains
          ! variables.
          call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
-         ! If the point did not converge, stop the calculation
-         if (&
-            any(isnan(F)) .or. its > max_iterations &
-            .or. exp(X(nc*np+np+1)) < 1e-5 &
-            .or. P > max_P &
-            ) exit
-
          ! Attach the new point to the envelope.
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
             kinds_x=x_kinds, kind_w=w_kind, iters=its, ns=ns &
             )
-         env_points = [env_points, point]
-
-         ! Update the specification for the next point.
-         call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
@@ -256,6 +245,19 @@ contains
             pt_envelope%Pc = [pt_envelope%Pc, Pc]
          end if
 
+         ! Update the specification for the next point.
+         call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
+
+         ! If the point did not converge, stop the calculation
+         if (&
+            any(isnan(F)) .or. its > max_iterations &
+            .or. exp(X(nc*np+np+1)) < 1e-5 &
+            .or. P > max_P  &
+            .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
+            .or. abs(dS) <= 1e-14 &
+            ) exit
+
+         env_points = [env_points, point]
 
          ! Next point estimation.
          dX = dXdS * dS
@@ -263,16 +265,38 @@ contains
          do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
             dX = dX/2
          end do
-         
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
-            dX = dX/2
-         end do
-         
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 1 &
-            .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 1)
-            dX = dX*2
-         end do
-         
+
+         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
+         !    dX = dX/2
+         ! end do
+
+         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
+         !    .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
+         !    dX = dX*1.1
+         ! end do
+
+         ! dejavu: block
+         !    !! Getting too close to a local minima in the envelope, which can
+         !    !! be hard to select corrects steps.
+         !    real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
+         !    if (i > 4) then
+         !       dPdT_1 = (P - env_points(i-1)%P) / (T - env_points(i-1)%T)
+         !       dPdT_2 = (P - env_points(i-2)%P) / (T - env_points(i-2)%T)
+         !       dT2 = (T - env_points(i-1)%T) * (env_points(i-2)%T - env_points(i-3)%T)
+
+         !       d2PdT2 = (P - 2*env_points(i-1)%P + env_points(i-2)%P) / dT2
+
+         !       if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
+         !          ns = iT
+         !          dS = dXdS(ns) * dS
+         !          dXdS = dXdS/dXdS(ns)
+         !          do while(abs(exp(X(iT) + dXdS(iT) * dS) - T) > 1)
+         !             dS = 0.9 * dS
+         !          end do
+         !       end if
+         !    end if
+         ! end block dejavu
+
          X_last_converged = X
          X = X + dX
          S = X(ns)
@@ -493,13 +517,13 @@ contains
       real(pr), intent(in) :: dXdS(size(X))
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
-      integer, intent(in) :: max_iterations 
+      integer, intent(in) :: max_iterations
       !! Maximum number of iterations to solve the point
-      integer, intent(out) :: iters 
+      integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
 
-      integer :: i
+      integer :: i, l
       integer :: iT
       integer :: iP
       integer :: iBetas(np)
@@ -531,23 +555,36 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do while(abs(dX(iT)) > 0.1)
+         do l=1,np
+            if (maxval(abs(X(l:nc*l))) < 1e-1) then
+               do while(maxval(abs(dX(l:nc*l))) > 1e-1)
+                  dX = dX/2
+               end do
+            end if
+         end do
+
+         do while(abs(exp(X(iT)) - exp(X(iT) + dX(iT))) > 10)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.1)
+         do while(abs(dX(iP)) > 0.25)
             dX = dX/2
          end do
 
-         if (.not. any(X(iBetas) == 0)) then
-            do while(maxval(abs(dX(iBetas)/X(iBetas))) > 0.5)
-               dX = dX/2
-            end do
-         end if
+         do i=1,np
+            if (X(iBetas(i)) /= 0) then
+               do while(abs(dX(iBetas(i))/X(iBetas(i))) > 0.5)
+                  dX = dX/2
+               end do
+            end if
+         end do
 
          if (maxval(abs(F)) < 1e-9_pr) exit
-
-         X = X + dX
+         !if (iters < 3) then
+         !   X = X + 0.1 * dX
+         !else
+            X = X + dX
+         ! end if
       end do
    end subroutine solve_point
 
@@ -601,7 +638,7 @@ contains
       integer :: iBetas(np)
 
       real(pr) :: dT, dP
-      
+
       iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = size(X) - 1
       iT = size(X)
@@ -624,7 +661,9 @@ contains
 
          if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
-            dS = dXdS(ns) * dS
+            dS = dXdS(ns)*dS
+            dS = sign(min(5e-2_pr, abs(dS)), dS)
+            ! dS = sign(5e-2_pr, dS)
             dXdS = dXdS/dXdS(ns)
             exit
          end if
@@ -632,16 +671,7 @@ contains
 
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
-
-      do while(maxval(abs(dXdS(:nc*np)*dS)) > 0.1_pr)
-         dS = dS/2
-      end do
-
-      do while(abs(dXdS(iT)*dS) < 1e-2 .and. abs(dXdS(iP)*dS) < 1e-2)
-         dS = dS*1.1
-      end do
-
-      ! dS = sign(min(dS, 0.01_pr, sqrt(abs(X(ns)/5))), dS)
+      dS = dS * 3./its
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

@@ -19,8 +19,8 @@ from yaeos.models.excess_gibbs import (
 )
 from yaeos.models.residual_helmholtz.cubic_eos import (
     HV,
-    MHV,
     HVNRTL,
+    MHV,
     PSRK,
     PengRobinson76,
     PengRobinson78,
