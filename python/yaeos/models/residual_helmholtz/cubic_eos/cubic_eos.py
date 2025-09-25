@@ -47,7 +47,7 @@ class CubicEoS(ArModel):
         self.tc = critical_temperatures
         self.pc = critical_pressures
         self.w = acentric_factors
-        self.mixrule = None
+        self.mixrule: CubicMixRule = None
 
     def set_mixrule(self, mixrule: CubicMixRule) -> None:
         """Set the mixing rule for the EoS.
@@ -67,13 +67,19 @@ class CubicEoS(ArModel):
         representation of the model parameters. This string should be valid
         Fortran code that assigns the model variables.
         """
-        fcode = (
+        fcode = ""
+
+        fcode += (
             f"tc = [{', '.join(str(t) + '_pr' for t in self.tc)}]\n"
             f"pc = [{', '.join(str(p) + '_pr' for p in self.pc)}]\n"
             f"w = [{', '.join(str(w) + '_pr' for w in self.w)}]\n"
             "\n"
-            f"model = {self.name}(tc, pc, w)"
+            f"ar_model = {self.name}(tc, pc, w)\n\n"
         )
+
+        if self.mixrule:
+            fcode += self.mixrule._model_params_as_str()
+            fcode += "\ncall ar_model%set_mixrule(mixrule)\n\n"
 
         return fcode
 
@@ -87,10 +93,13 @@ class CubicEoS(ArModel):
         fcode = (
             f"integer, parameter :: nc={self.nc}\n"
             "\n"
-            "class(ArModel), allocatable :: model\n"
+            "type(CubicEoS) :: ar_model\n"
             "\n"
-            f"real(pr) :: tc(nc), pc(nc), w(nc)\n"
+            f"real(pr) :: tc(nc), pc(nc), w(nc)\n\n"
         )
+
+        if self.mixrule:
+            fcode += self.mixrule._model_params_declaration_as_str()
 
         return fcode
 
@@ -158,8 +167,6 @@ class PengRobinson76(CubicEoS):
         if mixrule:
             mixrule.set_mixrule(self.id)
 
-        self._fname = "PengRobinson76"
-
 
 class PengRobinson78(CubicEoS):
     """Peng-Robinson 1978 cubic equation of state.
@@ -223,8 +230,6 @@ class PengRobinson78(CubicEoS):
         self.mixrule = mixrule
         if mixrule:
             mixrule.set_mixrule(self.id)
-
-        self._fname = "PengRobinson78"
 
 
 class SoaveRedlichKwong(CubicEoS):

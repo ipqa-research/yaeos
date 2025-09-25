@@ -108,6 +108,7 @@ class PTEnvelope:
             for j in range(self.number_of_phases):
                 label = f"x_{i + 1}^{j + 1}"
                 df[label] = self.main_phases_compositions[:, j, i]
+
             df[f"w_{i + 1}"] = self.reference_phase_compositions[:, i]
 
         for i in range(self.number_of_phases):
@@ -328,6 +329,7 @@ class PXEnvelope:
             for j in range(self.number_of_phases):
                 label = f"x_{i + 1}^{j + 1}"
                 df[label] = self.main_phases_compositions[:, j, i]
+
             df[f"w_{i + 1}"] = self.reference_phase_compositions[:, i]
 
         for i in range(self.number_of_phases):
@@ -436,19 +438,19 @@ class TXEnvelope:
     global_composition_i : np.ndarray
         The global composition at the point where :math:`\alpha = 1`.
     main_phases_compositions : np.ndarray
-        The compositions of the main phases along the envelope.
-        Shape is (n_points, n_phases, n_components).
+        The compositions of the main phases along the envelope. Shape is
+        (n_points, n_phases, n_components).
     reference_phase_compositions : np.ndarray
-        The compositions of the reference phase along the envelope.
-        Shape is (n_points, n_components).
+        The compositions of the reference phase along the envelope. Shape is
+        (n_points, n_components).
     main_phases_molar_fractions : np.ndarray
-        The molar fractions of the main phases along the envelope.
-        Shape is (n_points, n_phases).
+        The molar fractions of the main phases along the envelope. Shape is
+        (n_points, n_phases).
     temperatures : np.ndarray
         The temperatures along the envelope. [K]
     alphas : np.ndarray
-        The molar fraction of the `global_composition_i`, :math:`\alpha`.
-        Shape is (n_points,).
+        The molar fraction of the `global_composition_i`, :math:`\alpha`. Shape
+        is (n_points,).
     iterations : np.ndarray
         The number of iterations taken to compute the envelope at each point.
         Shape is (n_points,).
@@ -464,15 +466,13 @@ class TXEnvelope:
         The molar fractions of the `global_composition_i` at the critical
         points, :math:`\alpha`.  Shape is (n_critical_points,).
     df : pd.DataFrame
-        A DataFrame containing the data of the envelope. The columns are:
-        - 'alpha': Molar fraction of the `global_composition_i`.
-        - 'T': Temperatures along the envelope.
-        - 'x_i^j': Compositions of the main phases, where `i`
-        is the component index and `j` is the phase index.
-        - 'w_i': Compositions of the reference phase, where `i` is the
-        component index.
-        - 'beta^j': Molar fractions of the main phases, where `j`
-        is the phase index.
+        A DataFrame containing the data of the envelope. The columns are: -
+        'alpha': Molar fraction of the `global_composition_i`. - 'T':
+        Temperatures along the envelope. - 'x_i^j': Compositions of the main
+        phases, where `i` is the component index and `j` is the phase index. -
+        'w_i': Compositions of the reference phase, where `i` is the component
+        index. - 'beta^j': Molar fractions of the main phases, where `j` is the
+        phase index.
     """
 
     def __init__(
@@ -524,6 +524,7 @@ class TXEnvelope:
             for j in range(self.number_of_phases):
                 label = f"x_{i + 1}^{j + 1}"
                 df[label] = self.main_phases_compositions[:, j, i]
+
             df[f"w_{i + 1}"] = self.reference_phase_compositions[:, i]
 
         for i in range(self.number_of_phases):
