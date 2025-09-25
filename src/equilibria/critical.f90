@@ -192,13 +192,13 @@ contains
          use yaeos__math_continuation, only: full_newton
          real(pr) :: X(4), dX(4), dS, F(4), dF(4,4), dFdS(4), dXdS(4)
          real(pr) :: u_new(size(z0)), l1, Si
+         real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
 
          integer :: its, real_its
 
          if (exp(X(4)) > max_P) then
             max_P = exp(X(4)) + 100
          end if
-
 
          X = X0
          dS = dS0
@@ -214,8 +214,9 @@ contains
 
             do while(&
                (maxval(abs(dX)) > 1e-5 &
-               .or. maxval(abs(F)) > 1e-5) &
+               .or. maxval(abs(F)) > 1e-7) &
                .and. real_its < 500)
+
 
                its = its + 1
                real_its = real_its + 1
@@ -239,7 +240,6 @@ contains
             if (real_its == 500) exit
             if (any(isnan(X))) exit
             if (exp(X(spec_CP%P)) > max_P) exit
-
 
             a = get_a(X(1))
             V = exp(X(2))
@@ -272,8 +272,26 @@ contains
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
             ns = maxloc(abs(dXdS), dim=1)
-            dS = dXdS(ns)*dS
+            dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
+
+            dS = sign(max(abs(dS), 1e-2_pr), dS)
+            if (i > 4) then
+               dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
+               dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
+               dT2 = (T - critical_line%T(i-1)) * (critical_line%T(i-2) - critical_line%T(i-3))
+
+               d2PdT2 = (P - 2*critical_line%P(i-1) + critical_line%P(i-2)) / dT2
+
+               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
+                  ns = spec_CP%T
+                  dS = dXdS(ns) * dS
+                  dXdS = dXdS/dXdS(ns)
+                  do while(abs(exp(X(3) + dXdS(3) * dS) - T) > 1)
+                     dS = 0.9 * dS
+                  end do
+               end if
+            end if
 
             ! dS = sign(min(abs(dS * 3./its), dS0), dS)
             ! ==============================================================
@@ -308,6 +326,7 @@ contains
 
       real(pr) :: y_cep(size(z0)), V_cep
       real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
+      integer :: its
 
       found = .false.
       y_cep = 0
@@ -316,15 +335,17 @@ contains
       call stability_check(model, z0, zi, Pc, Vc, Tc, a, found, y_cep, V_cep)
 
       if (found) then
+         its = 0
          Fcep = 1
          Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(a)]
          do while(maxval(abs(Fcep)) > 1e-5)
+            its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dXcep = solve_system(dFcep, -Fcep)
 
-            do while(abs(dXcep(2+4)) > 0.01)
-               dXcep(2+4) = dXcep(2+4)/2
+            do while(maxval(abs(dXcep)) > 0.1)
+               dXcep = dXcep/2
             end do
             Xcep = Xcep + dXcep
          end do
@@ -362,7 +383,7 @@ contains
 
       real(pr) :: z(2)
       real(pr) :: y(2), dy
-      real(pr) :: fug_z(2), fug_y(2), P
+      real(pr) :: fug_z(2), fug_y(2), P, mintpd
       integer :: istab, istab0
       real(pr) :: tpd
 

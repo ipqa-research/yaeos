@@ -243,7 +243,7 @@ contains
             Xold=X_last_converged, X=X, dXdS=dXdS, ns=ns, dS=dS, S=S, found_critical=found_critical, Xc=Xc &
             )
          if (found_critical) then
-            ac = exp(Xc(ia))
+            ac = Xc(ia)
             Tc = exp(Xc(iT))
             tx_envelope%Tc = [tx_envelope%Tc, Tc]
             tx_envelope%ac = [tx_envelope%ac, ac]

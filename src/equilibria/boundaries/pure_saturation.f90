@@ -54,9 +54,14 @@ contains
       real(pr) :: Vx, Vy, T, P
 
       real(pr) :: dXdS(4), dS, S, dFdS(4)
-      real(pr) :: F(4), dF(4,4)
+      real(pr) :: F(4), dF(4,4), dX(4)
       integer :: its, nc
       integer :: points
+
+      integer :: iT, iP
+
+      iP = 3
+      iT = 4
 
       nc = size(model)
       Tc = model%components%Tc(component)
@@ -73,7 +78,7 @@ contains
 
       ns = 1
       S = log(0.95)
-      dS = -0.15
+      dS = -0.001
       allocate(pt%T(0), pt%P(0), pt%Vx(0), pt%Vy(0))
 
       ! ========================================================================
@@ -92,7 +97,7 @@ contains
          do while (exp(X(4)) - exp(X(4) + dXdS(4)*dS) < 3 .and. ((Tc - T) > 10 .or. (Pc - P) > 2))
             dS = dS*1.5
          end do
-         
+
          ds = sign(max(dS, 0.01_pr), dS)
 
          Vx = exp(X(1))
@@ -109,8 +114,24 @@ contains
             pt%Vy = [pt%Vy, Vy]
             points = points + 1
          end if
-         
-         X = X + dXdS*dS
+
+         dX = dXdS*dS
+         do while(abs(exp(X(iT)) - exp(X(iT) + dX(iT))) > 10)
+            dS = dS/2
+            dX = dXdS*dS
+         end do
+
+         do while(abs(exp(X(iP)) - exp(X(iP) + dX(iP))) > 5)
+            dS = dS/2
+            dX = dXdS*dS
+         end do
+
+         do while(abs((exp(X(2)) - exp(X(2) + dX(2))) / exp(X(2))) > 0.1)
+            dS = dS/2
+            dX = dXdS*dS
+         end do
+
+         X = X + dX
          S = X(ns)
       end do
 
@@ -208,6 +229,12 @@ contains
          if (any(isnan(F))) exit
          dX = solve_system(dF, -F)
          Xnew = X + dX
+
+         do while(abs(exp(Xnew(4)) - exp(X(4))) > 1)
+            dX = dX/4
+            Xnew = X + dX
+         end do
+
          X = Xnew
       end do
 

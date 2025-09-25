@@ -15,5 +15,5 @@ module yaeos
    use yaeos__substance
    use yaeos__models
    use yaeos__equilibria
-   character(len=*), parameter :: version="4.1.0" !! This version.
+   character(len=*), parameter :: version="4.3.0" !! This version.
 end module
