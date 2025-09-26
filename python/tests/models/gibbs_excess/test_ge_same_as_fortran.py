@@ -41,6 +41,84 @@ alphaij = np.array(
 nrtl_model = yaeos.NRTL(aij, bij, alphaij)
 models_list.append(nrtl_model)
 
+# =============================================================================
+# UNIFACLV
+# -----------------------------------------------------------------------------
+groups = [{1: 2}, {1: 1, 2: 1, 14: 1}, {28: 1}]
+
+unifac_model = yaeos.UNIFACVLE(groups)
+
+models_list.append(unifac_model)
+
+# =============================================================================
+# UNIFACDortmund
+# -----------------------------------------------------------------------------
+groups = [{1: 2}, {1: 1, 2: 1, 14: 1}, {28: 1}]
+
+unifac_dortmund_model = yaeos.UNIFACDortmund(groups)
+
+models_list.append(unifac_dortmund_model)
+
+# =============================================================================
+# UNIFACPSRK
+# -----------------------------------------------------------------------------
+groups = [{1: 2}, {1: 1, 2: 1, 14: 1}, {28: 1}]
+
+unifac_psrk_model = yaeos.UNIFACPSRK(groups)
+
+models_list.append(unifac_psrk_model)
+
+# =============================================================================
+# UNIQUAC
+# -----------------------------------------------------------------------------
+a = np.array(
+    [
+        [0.0, -75.46, -60.15],
+        [120.20, 0.0, 44.22],
+        [120.20, 33.21, 0.0],
+    ]
+)
+
+b = np.array(
+    [
+        [0.0, -0.10062, 0.2566],
+        [0.44835, 0.0, -0.01325],
+        [0.44835, 0.124, 0.0],
+    ]
+)
+
+c = np.array(
+    [
+        [0.0, -0.0008052, 0.00021],
+        [0.0004704, 0.0, -0.00033],
+        [0.0004704, -0.000247, 0.0],
+    ]
+)
+
+d = np.array(
+    [
+        [0.0, -0.001, 0.0002],
+        [-0.001, 0.0, 0.0002],
+        [-0.001, 0.0002, 0.0],
+    ]
+)
+
+e = np.array(
+    [
+        [0.0, -0.00001, 0.00001],
+        [-0.00001, 0.0, 0.00001],
+        [-0.00001, 0.00001, 0.0],
+    ]
+)
+
+rs = np.array([0.92, 2.1055, 1.5])
+qs = np.array([1.4, 1.972, 1.4])
+
+uniquac_model = yaeos.UNIQUAC(qs, rs, a, b, c, d, e)
+
+models_list.append(uniquac_model)
+
+
 # ! ===========================================================================
 # ! Evaluate all termoprops fortran code
 # ! ---------------------------------------------------------------------------
@@ -51,6 +129,7 @@ eval_thermoprops : block
     real(pr) :: He, HeT, Hen(nc)
     real(pr) :: Se, SeT, Sen(nc)
     real(pr) :: lngamma(nc), dlngammadT(nc), dlngammadn(nc, nc)
+    real(pr) :: Cpe
 
     integer :: i
 
@@ -59,6 +138,8 @@ eval_thermoprops : block
 
     ! ! GE
     call ge_model%excess_gibbs(n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2)
+    
+    print *, "=== FORTRAN OUTPUT START ==="
 
     ! Scalars
     write(*,'(f0.12)') Ge
@@ -105,6 +186,12 @@ eval_thermoprops : block
     do i=1,nc
         write(*,'(*(f0.12,:,","))') dlngammadn(i,:)
     end do
+    
+    ! ! Cpe
+    call ge_model%excess_Cp(n, T, Cpe=Cpe)
+
+    ! Scalars
+    write(*,'(f0.12)') Cpe
 end block eval_thermoprops
 """  # noqa
 
@@ -137,7 +224,17 @@ def test_ge_same_as_fortran(ge_model: GeModel):
         text=True,  # strings instead bytes
     )
 
-    lines = result.stdout.splitlines()[1:-1]
+    # Search output start
+    lines = result.stdout.splitlines()
+
+    start_idx = 0
+    for i, line in enumerate(lines):
+        if "=== FORTRAN OUTPUT START ===" in line:
+            start_idx = i + 1
+            break
+
+    # Actual output lines
+    lines = lines[start_idx:]
 
     # Get values
     # Ge
@@ -183,11 +280,16 @@ def test_ge_same_as_fortran(ge_model: GeModel):
         [float(x) for x in lines[18].split(",")], dtype=float
     )
 
+    # Cpe
+    cpe_f = float(lines[19])
+
     # Start testing
     n = np.array([4.0, 10.15, 12.1])
     t = 298.15
 
+    # =========================================================================
     # Ge
+    # -------------------------------------------------------------------------
     ge, ge_d = ge_model.excess_gibbs(
         n, t, dt=True, dt2=True, dn=True, dtn=True, dn2=True
     )
@@ -213,7 +315,7 @@ def test_ge_same_as_fortran(ge_model: GeModel):
 
     ge_i, ge_d = ge_model.excess_gibbs(n, t, dn=True)
     assert np.isclose(ge_i, ge_f)
-    # assert np.allclose(ge_d["dn"], getn_f)
+    assert np.allclose(ge_d["dn"], gen_f)
 
     ge_i, ge_d = ge_model.excess_gibbs(n, t, dtn=True)
     assert np.isclose(ge_i, ge_f)
@@ -222,3 +324,72 @@ def test_ge_same_as_fortran(ge_model: GeModel):
     ge_i, ge_d = ge_model.excess_gibbs(n, t, dn2=True)
     assert np.isclose(ge_i, ge_f)
     assert np.allclose(ge_d["dn2"], gen2_f)
+
+    # =========================================================================
+    # He
+    # -------------------------------------------------------------------------
+    he, he_d = ge_model.excess_enthalpy(n, t, dt=True, dn=True)
+
+    assert np.isclose(he, he_f)
+    assert np.isclose(he_d["dt"], het_f)
+    assert np.allclose(he_d["dn"], hen_f)
+
+    # He individuals
+    he_i = ge_model.excess_enthalpy(n, t)
+    assert np.isclose(he_i, he_f)
+
+    he_i, he_d = ge_model.excess_enthalpy(n, t, dt=True)
+    assert np.isclose(he_i, he_f)
+    assert np.isclose(he_d["dt"], het_f)
+
+    he_i, he_d = ge_model.excess_enthalpy(n, t, dn=True)
+    assert np.isclose(he_i, he_f)
+    assert np.allclose(he_d["dn"], hen_f)
+
+    # =========================================================================
+    # Se
+    # -------------------------------------------------------------------------
+    se, se_d = ge_model.excess_entropy(n, t, dt=True, dn=True)
+
+    assert np.isclose(se, se_f)
+    assert np.isclose(se_d["dt"], set_f)
+    assert np.allclose(se_d["dn"], sen_f)
+
+    # se individuals
+    se_i = ge_model.excess_entropy(n, t)
+    assert np.isclose(se_i, se_f)
+
+    se_i, se_d = ge_model.excess_entropy(n, t, dt=True)
+    assert np.isclose(se_i, se_f)
+    assert np.isclose(se_d["dt"], set_f)
+
+    se_i, se_d = ge_model.excess_entropy(n, t, dn=True)
+    assert np.isclose(se_i, se_f)
+    assert np.allclose(se_d["dn"], sen_f)
+
+    # =========================================================================
+    # gamma
+    # -------------------------------------------------------------------------
+    gamma, gamma_d = ge_model.ln_gamma(n, t, dt=True, dn=True)
+
+    assert np.allclose(gamma, gam_f)
+    assert np.allclose(gamma_d["dt"], gamt_f)
+    assert np.allclose(gamma_d["dn"], gamn_f)
+
+    # gamma individuals
+    gamma_i = ge_model.ln_gamma(n, t)
+    assert np.allclose(gamma_i, gam_f)
+
+    gamma_i, gamma_d = ge_model.ln_gamma(n, t, dt=True)
+    assert np.allclose(gamma_i, gam_f)
+    assert np.allclose(gamma_d["dt"], gamt_f)
+
+    gamma_i, gamma_d = ge_model.ln_gamma(n, t, dn=True)
+    assert np.allclose(gamma_i, gam_f)
+    assert np.allclose(gamma_d["dn"], gamn_f)
+
+    # =========================================================================
+    # Cpe
+    # -------------------------------------------------------------------------
+    cpe = ge_model.excess_cp(n, t)
+    assert np.isclose(cpe, cpe_f)
