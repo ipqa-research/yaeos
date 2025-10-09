@@ -4,7 +4,7 @@ ArModel and GeModel abstract classes definition. Also, the implementation of
 the models' thermoprops methods.
 """
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Union
 from warnings import warn
 
@@ -59,6 +59,17 @@ def adjust_root_kind(number_of_phases, kinds_x=None, kind_w=None):
 
 class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
+
+    @abstractmethod
+    def size(self) -> int:
+        """Get number of components in the model.
+
+        Raises
+        ------
+        NotImplementedError
+            Abstract error, this method must be implemented in the subclass
+        """
+        raise NotImplementedError
 
     def ln_gamma(
         self, moles, temperature: float, dt: bool = False, dn: bool = False
@@ -420,6 +431,17 @@ class GeModel(ABC):
 
 class ArModel(ABC):
     """Residual Helmholtz (Ar) model abstract class."""
+
+    @abstractmethod
+    def size(self) -> int:
+        """Get number of components in the model.
+
+        Raises
+        ------
+        NotImplementedError
+            Abstract error, this method must be implemented in the subclass
+        """
+        raise NotImplementedError
 
     def lnphi_vt(
         self,

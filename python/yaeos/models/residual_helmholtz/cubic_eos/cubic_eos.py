@@ -42,6 +42,16 @@ class CubicEoS(ArModel):
         self.pc = critical_pressures
         self.w = acentric_factors
 
+    def size(self) -> int:
+        """Get the number of components.
+
+        Returns
+        -------
+        int
+            Number of components
+        """
+        return self.nc
+
     def set_mixrule(self, mixrule: CubicMixRule) -> None:
         """Set the mixing rule for the EoS.
 

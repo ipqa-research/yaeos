@@ -1,5 +1,7 @@
 """Non-random two-liquid model (NRTL) module."""
 
+import numpy as np
+
 from yaeos.core import GeModel
 from yaeos.lib import yaeos_c
 
@@ -43,7 +45,17 @@ class NRTL(GeModel):
     """
 
     def __init__(self, a, b, c) -> None:
-        self.a = a
-        self.b = b
-        self.c = c
+        self.a = np.array(a, order="F")
+        self.b = np.array(b, order="F")
+        self.c = np.array(c, order="F")
         self.id = yaeos_c.nrtl(a, b, c)
+
+    def size(self) -> int:
+        """Get the number of components.
+
+        Returns
+        -------
+        int
+            Number of components
+        """
+        return self.a.shape[0]

@@ -115,3 +115,14 @@ class UNIQUAC(GeModel):
         self.id = yaeos_c.uniquac(
             qs, rs, self.aij, self.bij, self.cij, self.dij, self.eij
         )
+        self.nc = nc
+
+    def size(self) -> int:
+        """Get the number of components.
+
+        Returns
+        -------
+        int
+            Number of components
+        """
+        return self.nc
