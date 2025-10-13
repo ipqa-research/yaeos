@@ -339,12 +339,13 @@ contains
       end associate
    end subroutine set_qmrtd
 
-   subroutine set_mhv(ar_id, ge_id, q)
+   subroutine set_mhv(ar_id, ge_id, q, lij)
       !! Michelsen's Modified Huron-Vidal 1 with constant `q_1` parameter
       use yaeos, only: MHV, CubicEoS
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
       real(c_double), intent(in) :: q
+      real(c_double), intent(in) :: lij(:, :)
 
       type(MHV) :: mixrule
 
@@ -353,7 +354,7 @@ contains
 
       select type(ar_model)
        class is(CubicEoS)
-         mixrule = MHV(ge=ge_model, b=ar_model%b, q=q)
+         mixrule = MHV(ge=ge_model, b=ar_model%b, q=q, lij=lij)
          deallocate(ar_model%mixrule)
          ar_model%mixrule = mixrule
       end select
