@@ -129,7 +129,9 @@ contains
                return
             end if
 
-            X = Xc ! + 2*dXdS*dS
+            ! Start from the critical point and then do small steps until there
+            ! we are a bit far from it.
+            X = Xc
             do while(maxval(abs(X(lb:ub))) < 1e-2_pr)
                X = X + dS * dXdS
             end do
