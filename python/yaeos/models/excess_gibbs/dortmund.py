@@ -37,9 +37,21 @@ class UNIFACDortmund(GeModel):
 
     def __init__(self, molecules: List[dict]) -> None:
 
+        self.molecules = molecules
+
         (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
             molecules
         )
         self.id = yaeos_c.unifac_dortmund(
             ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
         )
+
+    def size(self) -> int:
+        """Get the number of components.
+
+        Returns
+        -------
+        int
+            Number of components
+        """
+        return len(self.molecules)

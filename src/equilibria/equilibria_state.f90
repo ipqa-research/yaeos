@@ -60,12 +60,21 @@ module yaeos__equilibria_equilibrium_state
 contains
 
    type(MPEquilibriumState) function MPEquilibriumState_from_X(nc, np, z, kinds_x, kind_w, X)
-      integer, intent(in) :: nc
-      integer, intent(in) :: np
-      real(pr), intent(in) :: z(nc)
-      character(len=14), intent(in) :: kinds_x(np)
-      character(len=14), intent(in) :: kind_w
-      real(pr), intent(in) :: X(nc*np+np+1+2)
+      !! # `MPEquilibriumState_from_X`
+      !!
+      !! Function to create a `MPEquilibriumState` from the vector of variables
+      !! `X` used in the multiphase generalized isopleths methods.
+      integer, intent(in) :: nc !! Number of components
+      integer, intent(in) :: np !! Number of phases - 1
+      real(pr), intent(in) :: z(nc) !! Global composition
+      character(len=14), intent(in) :: kinds_x(np) !! Kinds of the main phases
+      character(len=14), intent(in) :: kind_w !! Kind of the reference phase
+      real(pr), intent(in) :: X(nc*np+np+1+2) 
+      !! Vector of variables.
+      !! The first `nc*np` elements are the equilibrium constants for each
+      !! phase and component, the next `np+1` elements are the mole fractions
+      !! of the main phases (\(\beta^l\)), and the last two elements are 
+      !! \(\lnP\) and \(\lnT\).
 
       integer :: l, lb, ub
 
@@ -78,7 +87,8 @@ contains
          ub = nc*np
          K(l, :) = exp(X(lb:ub))
       end do
-      betas = exp(X(np*nc+1 : np*nc+np+1))
+
+      betas = X(np*nc+1 : np*nc+np+1)
       P = exp(X(nc*np+np+1 + 1))
       T = exp(X(nc*np+np+1 + 2))
 

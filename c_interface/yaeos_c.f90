@@ -389,12 +389,13 @@ contains
       end associate
    end subroutine set_qmrtd
 
-   subroutine set_mhv(ar_id, ge_id, q)
+   subroutine set_mhv(ar_id, ge_id, q, lij)
       !! Michelsen's Modified Huron-Vidal 1 with constant `q_1` parameter
       use yaeos, only: MHV, CubicEoS
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
       real(c_double), intent(in) :: q
+      real(c_double), intent(in) :: lij(:, :)
 
       type(MHV) :: mixrule
 
@@ -403,7 +404,7 @@ contains
 
       select type(ar_model)
        class is(CubicEoS)
-         mixrule = MHV(ge=ge_model, b=ar_model%b, q=q)
+         mixrule = MHV(ge=ge_model, b=ar_model%b, q=q, lij=lij)
          deallocate(ar_model%mixrule)
          ar_model%mixrule = mixrule
       end select
@@ -1535,6 +1536,8 @@ contains
       ws_stab, &
       x_ls, ws, betas, Ts, Ps, w_more_stable, found_unstability, max_points &
       )
+      !! Calculates a generalized isopleth line for a given model and conditions.
+      !! This subroutine computes the generalized isopleth line for a given model and conditions,
       use yaeos, only: GeneralizedIsoZLine, create_generalized_isoz_line
       integer(c_int), intent(in) :: id
       integer(c_int), intent(in) :: nc
@@ -1584,9 +1587,7 @@ contains
       w_more_stable = makenan()
 
       do i=1,min(size(line%points), max_points)
-         do l=1,np
-            x_ls(i, np, :) = line%points(i)%x_l(l, :)
-         end do
+         x_ls(i, :, :) = line%points(i)%x_l(:, :)
          ws(i, :) = line%points(i)%w
          Ts(i) = line%points(i)%T
          Ps(i) = line%points(i)%P
@@ -1628,11 +1629,12 @@ contains
    end subroutine convert_kind
 
    subroutine convert_gerg_components(string, numeric)
+      !! Converts a string representation of a component to its numeric identifier
       use yaeos, only: G2008Components
       use iso_fortran_env, only: error_unit
 
-      character(len=*), intent(in) :: string
-      integer(c_int), intent(out) :: numeric
+      character(len=*), intent(in) :: string !! String representation of the component
+      integer(c_int), intent(out) :: numeric !! Numeric identifier for the component
 
       select case (string)
        case ("methane", "C1", "CH4", "nC1")

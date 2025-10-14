@@ -400,6 +400,8 @@ class PXEnvelope:
                 alphas=self.alphas[key],
                 iterations=self.iterations[key],
                 specified_variable=self.specified_variable[key],
+                main_phases_kinds=self.main_phases_kinds[key],
+                reference_phase_kinds=self.reference_phase_kinds[key],
                 critical_pressures=self.critical_pressures,
                 critical_alphas=self.critical_alphas,
             )

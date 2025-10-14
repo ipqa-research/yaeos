@@ -7,7 +7,7 @@ methods.
 Here you will find all the methods that are available for the models in yaeos.
 """
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Union
 from warnings import warn
 
@@ -47,21 +47,32 @@ def adjust_root_kind(number_of_phases: int, kinds_x=None, kind_w=None):
         kind_w_out : str
             Kind of the test phase
     """
-    if kinds_x:
-        kinds_x_out = [root_kinds[kind] for kind in kinds_x]
-    else:
+    if kinds_x is None:
         kinds_x_out = [root_kinds["stable"] for _ in range(number_of_phases)]
-
-    if kind_w:
-        kind_w_out = root_kinds[kind_w]
     else:
+        kinds_x_out = [root_kinds[kind] for kind in kinds_x]
+
+    if kind_w is None:
         kind_w_out = root_kinds["stable"]
+    else:
+        kind_w_out = root_kinds[kind_w]
 
     return kinds_x_out, kind_w_out
 
 
 class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
+
+    @abstractmethod
+    def size(self) -> int:
+        """Get number of components in the model.
+
+        Raises
+        ------
+        NotImplementedError
+            Abstract error, this method must be implemented in the subclass
+        """
+        raise NotImplementedError
 
     def ln_gamma(
         self, moles, temperature: float, dt: bool = False, dn: bool = False
@@ -576,6 +587,17 @@ class ArModel(ABC):
                 },
             )
         return res
+
+    @abstractmethod
+    def size(self) -> int:
+        """Get number of components in the model.
+
+        Raises
+        ------
+        NotImplementedError
+            Abstract error, this method must be implemented in the subclass
+        """
+        raise NotImplementedError
 
     def lnphi_vt(
         self,
@@ -2906,8 +2928,8 @@ class ArModel(ABC):
         x_ls, ws, betas, ts, ps, w_more_stable, found_unstability = (
             yaeos_c.generalized_isopleth(
                 id=self.id,
-                kinds_x=2,
-                kind_w=1,
+                kinds_x=kinds_x,
+                kind_w=kind_w,
                 z=z,
                 x_l0=x_l0,
                 w0=w0,
@@ -2920,19 +2942,67 @@ class ArModel(ABC):
                 s0=s0,
                 ds0=ds0,
                 ws_stab=ws_stability,
-                max_points=100,
+                max_points=max_points,
             )
         )
 
+        msk = ~np.isnan(ts)
         return {
-            "x": x_ls,
-            "w": ws,
-            "betas": betas,
-            "T": ts,
-            "P": ps,
+            "x": x_ls[msk],
+            "w": ws[msk],
+            "betas": betas[msk],
+            "T": ts[msk],
+            "P": ps[msk],
             "w_more_stable": w_more_stable,
             "found_unstability": found_unstability,
         }
+
+    def precipitation_line_from_env(
+            self, env: PTEnvelope, spec_value, spec="P", ds0=1e-5,
+            ws_stability=None, max_points=100
+            ) -> dict:
+        """Calculate precipitation line from a PTEnvelope.
+        """
+        phases = env.number_of_phases
+        z = env.global_composition
+
+        x_l0 = env["x"][-1]
+        w0 = env["w"][-1]
+
+        betas0 = [*env.main_phases_molar_fractions[-1], 1e-15]
+
+        if spec == "P":
+            spec_variable = phases * len(z) + phases + 1 + 1
+            p0 = spec_value
+            spec_variable_value = np.log(p0)
+            loc = np.argmin(np.abs(env["P"] - p0))
+            t0 = env["T"][loc]
+        elif spec == "T":
+            spec_variable = phases * len(z) + phases + 1 + 2
+            t0 = spec_value
+            spec_variable_value = np.log(t0)
+            loc = np.argmin(np.abs(env["T"] - t0))
+            p0 = env["P"][loc]
+        else:
+            raise ValueError(
+                "spec must be either 'P' or 'T', got: {}".format(spec)
+            )
+
+        ns0 = phases * len(z) + phases + 1
+        s0 = betas0[-1]
+        kinds_x = env.main_phases_kinds[loc, :]
+        kind_w = env.reference_phase_kinds[loc]
+
+        prec = self.generalized_isopleth(
+            z, kinds_x=kinds_x, kind_w=kind_w,
+            spec_variable=spec_variable,
+            spec_variable_value=spec_variable_value,
+            x_l0=x_l0, w0=w0, betas0=betas0, t0=t0, p0=p0,
+            ns0=ns0, s0=s0, ds0=ds0, max_points=max_points,
+            ws_stability=ws_stability
+        )
+
+        return prec
 
     # =========================================================================
     # Stability analysis

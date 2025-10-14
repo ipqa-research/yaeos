@@ -95,10 +95,10 @@ contains
          K(1, :) = x_l(1, :) / w_stab
 
          beta0 = z(maxloc(w_stab, dim=1))
-         beta0 = 0.0001
+         beta0 = 1e-5
          betas = [1-beta0, beta0]
 
-         X = [log(K(1, :)), betas, log(P), log(T)]
+         X = [log(K(1, :)), log(betas), log(P), log(T)]
          F = X
          call solve_mp_flash_point(&
             model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
@@ -107,7 +107,7 @@ contains
 
          K(1, :) = exp(X(:nc))
 
-         betas = X(np*nc+1 : np*nc+np+1)
+         betas = exp(X(np*nc+1 : np*nc+np+1))
 
          w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
          x_l(1, :) = K(1, :) * w
@@ -128,17 +128,17 @@ contains
 
             betas = [betas, 0.5_pr]
 
-            X = [log(K(1, :)), log(K(2, :)), betas, log(P), log(T)]
+            X = [log(K(1, :)), log(K(2, :)), log(betas), log(P), log(T)]
             F = X
             call solve_mp_flash_point(&
-               model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
+               model, z, np, kinds_x(:2), kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
                less_phases, beta_0_index, iters &
                )
 
             K(1, :) = exp(X(:nc))
             K(2, :) = exp(X(nc+1:2*nc))
 
-            betas = X(np*nc+1 : np*nc+np+1)
+            betas = exp(X(np*nc+1 : np*nc+np+1))
             w = z/(matmul(betas(:np), K(:np, :)) + betas(np+1))
             x_l(1, :) = K(1, :) * w
             x_l(2, :) = K(2, :) * w
@@ -220,8 +220,8 @@ contains
          K(l, :) = exp(X(lb:ub))
       end do
 
-      betas = X(np*nc + 1:np*nc + np)
-      beta_w = X(np*nc + np + 1)
+      betas =  exp(X(np*nc + 1:np*nc + np))
+      beta_w = exp(X(np*nc + np + 1))
       P = exp(X(np*nc + np + 2))
       T = exp(X(np*nc + np + 3))
 
@@ -278,11 +278,12 @@ contains
 
       do l=1,np
          ! Save the derivatives of w wrt beta and K of the incipient phase
-         dwdb(l, :) = -z * K(l, :)/denom**2
+         ! dwdb(l, :) = -z * K(l, :)/denom**2
+         dwdb(l, :) = -z * K(l, :)/denom**2 * betas(l)
          dwdlnK(l, :) = -K(l, :) * betas(l)*z/denom**2
       end do
 
-      dwdbw = -z / denom**2
+      dwdbw = -z / denom**2 * beta_w
 
       do l=1,np
          do phase=1,np
@@ -354,7 +355,8 @@ contains
          end do
 
          ! Derivatives of sum(beta)==1
-         df(nc * np + np + 1, np*nc + l) = 1
+         df(nc * np + np + 1, np*nc + l) = betas(l)
+         ! df(nc * np + np + 1, np*nc + l) = 1
       end do
 
       do j=1,np
@@ -373,7 +375,7 @@ contains
       end do
 
 
-      df(nc * np + np + 1, np*nc + np + 1) = 1
+      df(nc * np + np + 1, np*nc + np + 1) = beta_w ! 1
 
       df(nc * np + np + 2, ns1) = 1
       df(nc * np + np + 3, ns2) = 1
@@ -384,7 +386,7 @@ contains
       less_phases, beta_0_index, iters &
       )
       !! Function to solve the multiphase flash problem.
-      use yaeos__math, only: solve_system
+      use yaeos__math, only: solve_system, levenberg_marquardt
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of x phases.
@@ -406,13 +408,16 @@ contains
 
       integer :: nc !! Number of components
       integer :: iBetas(np+1) !! Index of the betas in the vector X
-      integer :: i
+      integer :: i, info
 
       nc = size(z)
       iBetas = [(i, i=nc*np+1,nc*np+np+1)]
 
       less_phases = .false.
+      ! call levenberg_marquardt(lmsolve, 1e-10_pr, X, F, info)
 
+      open(1, file="X.dat", status="replace")
+      open(2, file="dX.dat", status="replace")
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
 
@@ -420,15 +425,35 @@ contains
 
          dX = solve_system(df, -F)
 
+
          do while(maxval(abs(dX)) > 1)
             dX = dX/2
          end do
 
-         do while(any(abs(X(iBetas) + dX(iBetas)) > 1))
-            X(iBetas) = X(iBetas) / 2
+         do i=1,np+1
+            ! do while(abs(dX(iBetas(i))/X(iBetas(i))) > 0.1_pr)
+            !    dX(iBetas(i)) = dX(iBetas(i))/2
+            ! end do
          end do
 
+
+
+         write(1, *) X
+         write(2, *) dX
+
          X = X + dX
+
+
       end do
+      close(1)
+      close(2)
+   contains
+      subroutine lmsolve(n, m, xvec, fvec, info)
+         integer, intent(in) :: n, m
+         real(pr), intent(in) :: xvec(n)
+         real(pr), intent(out) :: fvec(m)
+         integer, intent(in out) :: info
+         call pt_F_NP(model, z, np, kinds_x, kind_w, xvec, ns1, S1, ns2, S2, Fvec, df)
+      end subroutine lmsolve
    end subroutine solve_mp_flash_point
 end module yaeos__equilibria_multiphase_flash

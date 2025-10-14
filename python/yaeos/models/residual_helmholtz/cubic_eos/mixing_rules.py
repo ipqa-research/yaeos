@@ -191,9 +191,11 @@ class MHV(CubicMixRule):
     """
 
     def __init__(self, ge: GeModel, q: float, lij=None) -> None:
+        nc = ge.size()
         self.ge = ge
         self.q = q
-        self.lij = np.array(lij, order="F")
+        if lij is None:
+            self.lij = np.zeros((nc, nc), order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set modified Huron-Vidal mix rule method.
@@ -203,7 +205,9 @@ class MHV(CubicMixRule):
         ar_model_id : int
             ID of the cubic EoS model
         """
-        yaeos_c.set_mhv(ar_model_id, self.ge.id, self.q)
+        yaeos_c.set_mhv(
+            ar_id=ar_model_id, ge_id=self.ge.id, q=self.q, lij=self.lij
+        )
 
 
 class HV(CubicMixRule):

@@ -255,11 +255,12 @@ class BinaryFitter:
             # -----------------------------------------------------------------
             elif row["kind"] in KINDS["CP"]:
                 cp = row
-                distances = (
-                    (cp["T"] - cl["T"]) ** 2
-                    + ((cp["P"] - cl["P"]) ** 2)
-                    + ((cp["x1"] - cl["a"]) ** 2)
+                distances = (cp["T"] - cl["T"]) ** 2 + (
+                    (cp["P"] - cl["P"]) ** 2
                 )
+
+                if not np.isnan(cp["x1"]):
+                    distances += (cp["x1"] - cl["a"]) ** 2
                 nearest = np.argmin(distances)
                 t_cl, p_cl, x1 = (
                     cl["T"][nearest],
@@ -300,8 +301,7 @@ class BinaryFitter:
         self.evaluations["contributions"] = objective_function_contributions
 
         if self.verbose:
-            print(err, x_values)
-
+            print(len(self.evaluations["fobj"]), err, x_values)
         return err
 
     def fit(
