@@ -20,7 +20,7 @@ KINDS = {
     "PT": ["PT", "liquid-liquid"],
     "CP": ["critical", "CP"],
 }
-        
+
 
 # =============================================================================
 # Default error functions
