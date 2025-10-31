@@ -1,4 +1,8 @@
 program main
+   !! This test checks the calculation of a three-phase line. Starting from
+   !! a critical end point obtained from a LL critical line.
+   !! It corresponds to a isoamyl alcohol/water mixture modeled with the PSRK
+   !! Equation of State.
    use yaeos
    use yaeos__equilibria_binaries
    use yaeos__models_ge_group_contribution_unifac, only: Groups
@@ -21,7 +25,6 @@ program main
    integer :: ns
 
    integer :: i
-
 
    type(Groups) :: molecules(2)
 
