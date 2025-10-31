@@ -92,7 +92,7 @@ contains
       class(ArModel), intent(in) :: model
       type(EquilibriumState), intent(in) :: cep
 
-      real(pr) :: X(7)
+      real(pr) :: X(7), dX(7)
       real(pr) :: dFdS(7), F(7), dF(7, 7)
       integer :: ns
       real(pr) ::  dS, S, dXdS(7)
@@ -158,17 +158,22 @@ contains
          call model%pressure([x1, 1-x1], Vx, T, P)
 
          dXdS = solve_system(dF, -dFdS)
-         ns = -1
-         dS = -0.001
-         print *, iters, T, P
+         dS = dS * 2. / iters
 
+         ! Specification of vapor volume at low pressures.
          if (P < 1) then
-            ns = -1
-            dS = -1e-5
+            ns = 7
+            dXdS = dXdS / dXdS(ns)
+            dS = -0.01
          end if
+         
+         dX = dXdS * dS
+         
+         do while(abs(exp(X(7) + dX(7)) - exp(X(7))) < 5 .and. abs(S) > 0.1)
+            dX = dX * 2
+         end do
 
-         X = X + dXdS * dS
-
+         X = X + dX
 
          if (ns == 0) then
             S = exp(X(2)) - exp(X(1))
@@ -369,6 +374,5 @@ contains
          if (any(isnan(F))) error stop
       end do
    end subroutine three_phase_line_F_solve
-
 
 end module yaeos__equilibria_binaries
