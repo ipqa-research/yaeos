@@ -7,14 +7,21 @@ contains
    function solve_system(a, b) result(x)
       !! Solve a linear sytem AX = b
       use iso_fortran_env, only: error_unit
+      ! use stdlib_linalg, only: solve, linalg_state_type
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: a(size(b), size(b))
       integer, parameter :: dp = selected_real_kind(15)
+      ! type(linalg_state_type) :: err
 
       real(pr) :: x(size(b))
 
       real(dp) :: a_lapack(size(b), size(b)), b_lapack(size(b))
       integer :: n, nrhs, lda, ipiv(size(b)), ldb, info
+      ! real(pr), allocatable :: xtmp(:)
+      
+      ! xtmp = solve(a=a, b=b, overwrite_a=.true., err=err)
+      ! xtmp = solve(a, b)
+      ! x = xtmp
 
       interface
          subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
@@ -192,7 +199,7 @@ contains
       ! call eigh(&
       !    A=A, lambda=eigenvalues, vectors=eigenvectors, err=stat  &
       ! )
-      
+
       ! if (.not. stat%ok()) then
       !    write(*, *) stat%print_msg()
       ! end if

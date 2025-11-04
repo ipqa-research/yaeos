@@ -8,13 +8,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: [3.9]
         toolchain:
           - {compiler: gcc, version: 10}
           - {compiler: gcc, version: 14}
           - {compiler: intel, version: '2024.2'}
           # - {compiler: intel, version: '2023.2'}
+        exclude:
+          - os: windows-latest
+            toolchain: {compiler: gcc, version: 14}
+          - os: windows-latest
+            toolchain: {compiler: "intel", version: '2024.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -22,11 +27,12 @@ jobs:
         submodules: false
 
     - name: Setup Fortran Compiler
+      if: ${{ matrix.os != 'windows-latest' }}
       uses: fortran-lang/setup-fortran@v1
       id: setup-fortran
       with:
         compiler: ${{ matrix.toolchain.compiler }}
-        version: ${{ matrix.toolchain.version }}
+        version: ${{ matrix.toolchain.version }}    
 
     - name: Install Python
       uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
@@ -42,19 +48,38 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+        # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       run: |
+        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
         python -m pip install --upgrade pip
         pip install ford numpy matplotlib gcovr numpy scipy coverage
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
+
+    - name: Set up MSYS2
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        update: true
+        install: >
+          git
+          mingw-w64-x86_64-gcc-fortran
+          mingw-w64-x86_64-lapack 
+          mingw-w64-x86_64-fpm
+
+    - name: Run tests without coverage on Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      shell: msys2 {0}
+      run: |
+        fpm test --profile release --flag "-g" --c-compiler gcc
 
     - name: Run tests without coverage
-      if: ${{ env.FC != 'gfortran' }}
+      if: ${{ env.FC != 'gfortran' && matrix.os != 'windows-latest' }}
       run: |
         fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests with coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: ${{ env.FC != 'gfortran' && matrix.os != 'windows-latest' }}
       run: |
         fpm test --profile release --flag "-g -coverage" --compiler ${{ env.FC }} --c-compiler gcc
         bash ci/ci.sh
@@ -120,7 +145,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest] #, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest, windows-latest] #, windows-latest, macos-13, macos-14]
     
     steps:
       - uses: actions/checkout@v4
@@ -128,11 +153,6 @@ jobs:
       # Used to host cibuildwheel
       - uses: actions/setup-python@v5
       
-      - name: Install 
-        run: |
-          sudo apt install gfortran-14
-          sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
-
       # Install fpm for Windows
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v7
@@ -149,11 +169,15 @@ jobs:
 
         # to supply options, put them in 'env', like:
         env:
-          # CIBW_BUILD_VERBOSITY: 3
+          CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
           CIBW_BEFORE_TEST: pip install pytest
           CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+#          CIBW_ENVIRONMENT_WINDOWS: >
+#            FPM_FC=gcc
+#            CC=gcc
+#            CXX=g++
 
       - uses: actions/upload-artifact@v4
         with:
