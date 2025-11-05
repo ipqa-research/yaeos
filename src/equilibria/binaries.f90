@@ -92,13 +92,13 @@ contains
       class(ArModel), intent(in) :: model
       type(EquilibriumState), intent(in) :: cep
 
-      real(pr) :: X(7)
+      real(pr) :: X(7), dX(7)
       real(pr) :: dFdS(7), F(7), dF(7, 7)
       integer :: ns
       real(pr) ::  dS, S, dXdS(7)
 
       real(pr) :: T, P, Vx, Vy, Vw
-      real(pr) :: x1, y1, w1
+      real(pr) :: x1, y1, w1, x_aux(2)
 
       real(pr), allocatable :: Ts(:), Ps(:)
 
@@ -107,6 +107,15 @@ contains
 
       dFdS = 0
       dFdS(7) = -1
+
+      x_aux(1) = cep%x(1) + 1e-9_pr
+      x_aux(2) = 1 - x_aux(1)
+      call model%volume(x_aux, cep%P, cep%T, Vx, root_type="liquid")
+      
+      x_aux(1) = cep%x(1) - 1e-9_pr
+      x_aux(2) = 1 - x_aux(1)
+      call model%volume(x_aux, cep%P, cep%T, Vy, root_type="liquid")
+
 
       X = log([&
          CEP%x(1)+1e-9, &
@@ -127,7 +136,7 @@ contains
          S = X(ns)
       end if
 
-      dS = 0.001
+      dS = 0.0001
 
       points = 0
       F = 0
@@ -158,17 +167,22 @@ contains
          call model%pressure([x1, 1-x1], Vx, T, P)
 
          dXdS = solve_system(dF, -dFdS)
-         ns = -1
-         dS = -0.001
-         print *, iters, T, P
+         dS = dS * 2. / iters
 
+         ! Specification of vapor volume at low pressures.
          if (P < 1) then
-            ns = -1
-            dS = -1e-5
+            ns = 7
+            dXdS = dXdS / dXdS(ns)
+            dS = -0.01
          end if
 
-         X = X + dXdS * dS
+         dX = dXdS * dS
 
+         do while(abs(exp(X(7) + dX(7)) - exp(X(7))) < 5 .and. abs(S) > 0.1)
+            dX = dX * 2
+         end do
+
+         X = X + dX
 
          if (ns == 0) then
             S = exp(X(2)) - exp(X(1))
@@ -336,39 +350,55 @@ contains
       real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
       integer, optional, intent(out) :: iters !! Number of iterations performed
 
-      integer :: i
+      integer :: i, j, k
       integer :: max_tries
       real(kind=pr) :: tol
       real(kind=pr) :: res_norm
       real(kind=pr) :: dX(size(X))
       real(kind=pr) :: Xold(size(X))
 
+      real(kind=pr) :: Fold(size(F))
+
+      real(pr) :: H(size(F)), dH(size(F), size(X)), t, X0(size(X))
+
       tol = 1e-9_pr
       max_tries = 50
+      F = 10
 
-      do i = 1, max_tries
-         call three_phase_line_F(model, X, ns, S, F, dF)
+      do j=2,10,2
+         t = real(j, pr) / 10._pr
+         X0 = X
 
-         res_norm = maxval(abs(F))
+         do i = 1, max_tries
+            Fold = F
+            call three_phase_line_F(model, X, ns, S, F, dF)
 
-         if (res_norm < tol) exit
+            H = t * F + (1 - t) * (X - X0)
+            dH = t * dF
+            do k=1,size(F)
+               dH(k, k) = dH(k, k) + (1 - t) 
+            end do
 
-         Xold = X
+            res_norm = maxval(abs(H))
 
-         ! Solve the linear system dF * dX = -F
-         dX = solve_system(dF, -F)
+            Xold = X
 
-         do while (maxval(abs(dX/X)) > 0.1)
-            dX = dX / 2
+            ! Solve the linear system dF * dX = -F
+            ! dX = solve_system(dF, -F)
+            dX = solve_system(dH, -H)
+            if (res_norm < tol) exit
+
+            ! do while (maxval(abs(dX/X)) > 1)
+            !    dX = dX / 2
+            ! end do
+
+            X = Xold + dX
+
+            if (present(iters)) iters = i
+
+            if (any(isnan(F))) error stop
          end do
-
-         X = Xold + dX
-
-         if (present(iters)) iters = i
-
-         if (any(isnan(F))) error stop
       end do
    end subroutine three_phase_line_F_solve
-
 
 end module yaeos__equilibria_binaries
