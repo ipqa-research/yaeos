@@ -122,6 +122,6 @@ class GERG2008(ArModel):
         self.id = yaeos_c.multifluid_gerg2008(ids)
         self.size = len(names)
 
-    def size(self):
+    def size(self) -> int:
         """Return the number of components in the model."""
         return self.size
