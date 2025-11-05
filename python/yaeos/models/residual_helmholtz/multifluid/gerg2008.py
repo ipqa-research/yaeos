@@ -120,3 +120,8 @@ class GERG2008(ArModel):
                 f"{', '.join(self._possible_components.keys())}"
             )
         self.id = yaeos_c.multifluid_gerg2008(ids)
+        self.size = len(names)
+
+    def size(self):
+        """Return the number of components in the model."""
+        return self.size
