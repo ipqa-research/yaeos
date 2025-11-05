@@ -408,7 +408,7 @@ contains
       call eos%internal_energy_residual_vt(&
          z, v, t, Ur, UrT=UrT, UrV=UrV, Urn=Urn &
          )
-      
+
       ! UrT_num
       call eos%internal_energy_residual_vt(z, v, t + delta_t, Ur_delta_t)
 

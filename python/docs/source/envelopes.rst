@@ -1,5 +1,5 @@
 Envelopes Module
-===========
+================
 
 .. automodule:: yaeos.envelopes
     :members:

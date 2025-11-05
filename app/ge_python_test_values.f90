@@ -11,7 +11,7 @@ program ge_test_values
 
    ! Properties
    real(pr) :: Ge, GeT, GeT2, Gen(nc), GeTn(nc), Gen2(nc, nc)
-   real(pr) :: He, HeT, Hen(nc)
+   real(pr) :: He, HeT, Hen(nc), Cpe
    real(pr) :: Se, SeT, Sen(nc)
    real(pr) :: lngamma(nc), dlngamma_dT(nc), dlngamma_dn(nc, nc)
 
@@ -132,6 +132,8 @@ program ge_test_values
       n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
       )
 
+   call nrtl_model%excess_Cp(n, T, Cpe=Cpe)
+
    write(file, *) "NRTL", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
       Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
@@ -142,7 +144,8 @@ program ge_test_values
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
       dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
-      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3), ",", &
+      Cpe
 
    ! ==========================================================================
    ! UNIFAC
@@ -163,6 +166,8 @@ program ge_test_values
       n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
       )
 
+   call unifac_model%excess_Cp(n, T, Cpe=Cpe)
+
    write(file, *) "UNIFAC", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
       Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
@@ -173,7 +178,8 @@ program ge_test_values
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
       dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
-      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3), ",", &
+      Cpe
 
    ! ==========================================================================
    ! PSRK
@@ -194,6 +200,8 @@ program ge_test_values
       n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
       )
 
+   call psrk_model%excess_Cp(n, T, Cpe=Cpe)
+
    write(file, *) "PSRK", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
       Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
@@ -204,7 +212,8 @@ program ge_test_values
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
       dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
-      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3), ",", &
+      Cpe
 
    ! ==========================================================================
    ! Dortmund
@@ -225,6 +234,8 @@ program ge_test_values
       n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
       )
 
+   call dortmund_model%excess_Cp(n, T, Cpe=Cpe)
+
    write(file, *) "Dortmund", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
       Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
@@ -235,7 +246,8 @@ program ge_test_values
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
       dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
-      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3), ",", &
+      Cpe
 
    ! ==========================================================================
    ! UNIQUAC
@@ -256,6 +268,8 @@ program ge_test_values
       n, T, lngamma=lngamma, dlngammadT=dlngamma_dT, dlngammadn=dlngamma_dn&
       )
 
+   call uniquac_model%excess_Cp(n, T, Cpe=Cpe)
+
    write(file, *) "UNIQUAC", ",", Ge, ",", GeT, ",", GeT2, ",", Gen(1), ",", &
       Gen(2), ",", Gen(3), ",", GeTn(1), ",", GeTn(2), ",", GeTn(3), ",", &
       Gen2(1, 1), ",", Gen2(1, 2), ",", Gen2(1, 3), ",", Gen2(2, 1), ",", &
@@ -266,7 +280,8 @@ program ge_test_values
       dlngamma_dT(1), ",", dlngamma_dT(2), ",", dlngamma_dT(3), ",", &
       dlngamma_dn(1, 1), ",", dlngamma_dn(1, 2), ",", dlngamma_dn(1, 3), ",", &
       dlngamma_dn(2, 1), ",", dlngamma_dn(2, 2), ",", dlngamma_dn(2, 3), ",", &
-      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3)
+      dlngamma_dn(3, 1), ",", dlngamma_dn(3, 2), ",", dlngamma_dn(3, 3), ",", &
+      Cpe
 
    ! Close file
    close(file)

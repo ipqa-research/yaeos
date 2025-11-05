@@ -10,4 +10,6 @@ Excess Gibbs Models
 
    nrtl
    unifacvle
+   unifac_dortmund
+   psrk_unifac
    uniquac
