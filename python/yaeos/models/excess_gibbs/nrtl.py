@@ -9,6 +9,9 @@ from yaeos.lib import yaeos_c
 class NRTL(GeModel):
     """Non-random two-liquid model (NRTL) class.
 
+    Please refer to the `yaeos` user documentation for an in-depth look at the
+    model's information: https://ipqa-research.github.io/yaeos/page/index.html
+
     Parameters
     ----------
     a : array_like

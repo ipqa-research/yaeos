@@ -1,10 +1,21 @@
 ---
-title: UNIFAC-LV
+title: UNIFAC Models
 ---
 
 [TOC]
 
-# UNIFAC
+# UNIFAC Models Equations
+
+## Introduction
+
+In this sections we will describe the equations and its derivatives of UNIFAC
+models.
+
+Each UNIFAC model is differentiated by the list of available functional groups,
+the interaction parameters between functional groups, the value of the exponent
+\(d\) in the combinatorial term, and the function of temperature used in the
+residual term. Check the section of each model for more specific details of
+each model. Let's begin:
 
 [[UNIFAC]] (UNIQUAC Functional-group Activity Coefficients) is an Excess Gibbs
 free energy model used to estimate activity coefficients in non-ideal mixtures.
@@ -23,9 +34,7 @@ Being:
 
 Each substance of a mixture modeled with [[UNIFAC]] must be represented by a
 list a functional groups and other list with the ocurrence of each functional
-group on the substance. The list of the functional groups culd be accesed on
-the DDBST web page:
-[https://www.ddbst.com/published-parameters-unifac.html](https://www.ddbst.com/published-parameters-unifac.html)
+group on the substance.
 
 ## Combinatorial term derivatives
 
@@ -33,7 +42,7 @@ Combinatorial term has two parameters \(z\) and \(d\) that could be modified.
 The \(z\) parameter is always set to 10, and the \(d\) parameter is set to 1
 for the Classic Liquid-Vapor UNIFAC model and the PSRK-UNIFAC model, and 3/4
 for the Dortmund-UNIFAC model. Both could be changed (they are attributes of
-the UNIFAC objects).
+the UNIFAC objects (`z` and `d` respectively)).
 
 Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
 The subroutine uses the Flory-Huggins and Staverman-Guggenheim
@@ -90,14 +99,19 @@ $$
 $$
 
 ### Fredenslund et al. (UNIFAC)
+
+The complete combinatorial term is given by the sum of the Flory-Huggins and
+Staverman-Guggenheim terms:
+
 $$
    \frac{G^{E,\text{UNIFAC}}}{RT} =
    \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
 $$
 
 ## Residual terms derivatives
-Evaluate the UNIFAC residual term. The residual Gibbs excess energy
-and its derivatives are evaluated as:
+Evaluate the UNIFAC residual term. Check the temperature function \(E_{jk}\).
+This temperature function is different for each UNIFAC model. The residual
+Gibbs excess energy and its derivatives are evaluated as:
 
 $$
  \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
@@ -242,6 +256,11 @@ $$
 $$
 
 ## Examples
+
+On each specific UNIFAC model section we will give more examples of each
+specific model. Here we leave a simple example for the classic Liquid-Vapor
+UNIFAC model.
+
 ### Calculating activity coefficients
 We can instantiate a [[UNIFAC]] model with a mixture ethanol-water and evaluate
 the logarithm of activity coefficients of the model for a 0.5 mole fraction of
