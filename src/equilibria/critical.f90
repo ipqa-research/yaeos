@@ -272,38 +272,34 @@ contains
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
             ns = maxloc(abs(dXdS), dim=1)
-            dS = dXdS(ns)*dS * 3./its
+            dS = dXdS(ns)*dS !* 3./its
             dXdS = dXdS/dXdS(ns)
 
-            dS = sign(max(abs(dS), 1e-2_pr), dS)
+            dX = dXdS * dS
+
+            ! ==============================================================
+            ! Based on derivatives check if we are near the minimum of a
+            ! type3 line. Specify volume in this case to assure convergence
+            ! --------------------------------------------------------------
             if (i > 4) then
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
                dT2 = (T - critical_line%T(i-1)) * (critical_line%T(i-2) - critical_line%T(i-3))
-
                d2PdT2 = (P - 2*critical_line%P(i-1) + critical_line%P(i-2)) / dT2
 
-               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
-                  ns = spec_CP%T
+               P = exp(X(4) + dX(4))
+               T = exp(X(3) + dX(3))
+               dPdT_1 = (P - exp(X(4))) / (T - exp(X(3)))
+
+               if (abs(dPdT_1) < 1 .and. d2PdT2 > 0.01) then
+                  ns = spec_CP%V
                   dS = dXdS(ns) * dS
                   dXdS = dXdS/dXdS(ns)
-                  do while(abs(exp(X(3) + dXdS(3) * dS) - T) > 1)
-                     dS = 0.9 * dS
-                  end do
+                  dX = dXdS * dS
                end if
             end if
 
-            ! dS = sign(min(abs(dS * 3./its), dS0), dS)
-            ! ==============================================================
-            ! Avoid big steps in pressure
-            ! --------------------------------------------------------------
-            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 20)
-            !    dS = dS * 0.9
-            ! end do
-
-            ! Next step
-            z = a * zi  + (1-a)*z0
-            X = X + dXdS*dS
+            X = X + dX
          end do
       end block solve_points
 
