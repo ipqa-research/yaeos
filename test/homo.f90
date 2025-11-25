@@ -11,6 +11,8 @@ program main
    call homotopy(sub=foo, x=X, tol=1e-8_8, max_its=50, its=its)
 
    call foo(X, F, J)
+   print *, "Iterations:", its
+   print *, "Final X:", X
    print *, "Final F:", F
 
 contains
