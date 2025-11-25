@@ -27,9 +27,9 @@ module yaeos__models_ge_nrtlhv
       real(pr), allocatable :: alpha(:, :) 
          !! \( \alpha \) matrix
       real(pr), allocatable :: gji0(:, :) 
-         !! \( g_{ij} \) matrix
+         !! \( g_{ij}^0 \) matrix
       real(pr), allocatable :: gjiT(:, :) 
-         !! \( g_{ij} \) matrix
+         !! \( g_{ij}^T \) matrix
    contains
       procedure :: excess_gibbs => excess_gibbs
    end type NRTLHV
