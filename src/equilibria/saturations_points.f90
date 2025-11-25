@@ -205,6 +205,8 @@ contains
 
       logical :: is_incipient(size(n))
 
+      real(pr) :: T1, T2, f1, f2
+
       ! =======================================================================
       ! Handle arguments
       ! -----------------------------------------------------------------------
@@ -220,6 +222,7 @@ contains
          y = y0
       else
          y = z * k_wilson(model, T, P)
+         y = y/sum(y)
       end if
       iterations = optval(max_iters, max_iterations)
 
@@ -249,31 +252,6 @@ contains
       ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      do its=1, 5
-         y = k*z
-         where (.not. is_incipient)
-            y = 0
-         endwhere
-
-         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
-         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
-
-         k = exp(lnfug_z - lnfug_y)
-         f = sum(z*k) - 1
-         step = f/sum(T * z * k * (dlnphi_dt_z - dlnphi_dt_y))
-
-         if (.not. ieee_is_finite(step) .or. ieee_is_nan(step)) exit
-
-         do while (T - step < 0)
-            if (isnan(step)) step = 10
-            step = step/2
-         end do
-
-         t = t - step
-
-         if (abs(step) < tol .and. abs(f) < tol) exit
-      end do
-      ! ========================================================================
       its = iters_first_step
       if (its >= iters_first_step) then
          block

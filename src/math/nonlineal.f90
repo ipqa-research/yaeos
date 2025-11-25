@@ -20,19 +20,34 @@ contains
       real(pr), intent(in) :: tol
       integer, intent(in) :: max_its
       integer, intent(out) :: its
+      real(pr) :: t
 
       real(pr) :: F(size(X)), J(size(X), size(X)), dX(size(X))
+      real(pr) :: F2(size(X)), J2(size(X), size(X))
 
+      call sub(x, F, J)
       do its = 1, max_its
-         call sub(x, F, J)
-         if (maxval(abs(F)) < tol) exit
          dX = solve_system(J, -F)
+         if (maxval(abs(F)) < tol) exit
+        
+         t = 1
+         ! call sub(x + dX, F2, J2)
+         ! do while(maxval(abs(F2)) > maxval(abs(F)) .and. t > 0.01)
+         !     t = t*0.7
+         !     call sub(X + t*dX, F2, J2)
+         ! end do
+         ! 
+         ! if (t < 0.01) t = 2
          X = X + dX
-         write(1, *) its, maxval(abs(F))
+         
+         call sub(x, F, J)
+         ! write(2, *) its, sum(F**2)
+         ! write(1, *) its, maxval(abs(F))
       end do
    end subroutine newton
 
    subroutine homotopy(sub, x, tol, max_its, its)
+       use yaeos__math, only: powel_hybrid
       procedure(to_solve) :: sub
       real(pr), intent(in out) :: x(:)
       real(pr), intent(in) :: tol
@@ -47,16 +62,19 @@ contains
       real(pr) :: X0(size(X))
       integer :: i, nt
 
-      nt = 5
-      dt = 1.0_pr/real(nt, pr)
+      integer :: info
 
+      nt = 10
+      dt = 1.0_pr/real(nt, pr)
 
       do i=0,nt
          t = dt*i
          X0 = X
-         call newton(wrap, X, tol, 15, its)
-         call wrap(X, H, dH)
-         print *,  t, maxval(abs(H))
+         call newton(wrap, X, tol, 50, its)
+         ! call powel_hybrid(fun, tol, X, h, info)
+         ! call wrap(X, H, dH)
+
+         print *,  t, maxval(abs(H)), maxval(abs(F))
          print *, " ====== "
       end do
    contains
@@ -68,27 +86,30 @@ contains
          real(pr) :: F(size(X)), dF(size(X), size(X))
          real(pr) :: G(size(X)), dG(size(X), size(X))
          real(pr) :: diag(size(X), size(X)), id(size(X), size(X))
-         integer :: i
+         integer :: i, j
 
-         G = 0
+
          G = X - X0
-         do i=1,size(X)
-            dG(i, i) = 1
+         dG = 0
+         do i=1,size(x)
+             dG(i, i) = 1
          end do
-
          call sub(X, F, dF)
 
-         print *, G
-
-         H = t * F + (1-t) * G
-         dH = t * dF + (1-t) * dG
-
-         ! H = (t * F + (1-t) * G)**2
-
-         ! do i=1,size(X)
-         !    diag(i, i) = H(i)
-         ! end do
-         ! dH = 2 * diag * (t * dF + (1-t) * dG)
+         H = (t * F + (1-t) * G)**2
+         dG = t * dF + (1-t) * dG
+         
+         print *, t, sum(H), sum(F**2), sum(G**2)
       end subroutine wrap
+      
+     subroutine fun(n, x, fvec, iflag)
+        integer, intent(in) :: n
+        real(pr), intent(in) :: x(n)
+        real(pr), intent(out) :: fvec(n)
+        integer, intent(in out) :: iflag
+        call wrap(X, FVEC, dH)
+     end subroutine fun
+
+
    end subroutine homotopy
 end module yaeos__math_nonlinearsolvers
