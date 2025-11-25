@@ -195,7 +195,14 @@ contains
    end subroutine nrtl_hv_tdep
 
    elemental subroutine nrtl_hv_tdep_linear(T, A, B, tau, dtaudt, dtaudt2)
-      !! Temperature dependent parameters for NRTL model
+      !! # `nrtl_hv_tdep_linear`
+      !! 
+      !! # Description
+      !! Temperature dependent parameters for NRTL model. The temperature
+      !! dependence is linear: 
+      !!
+      !! \[\tau_{ij} = A_{ij} + \frac{B_{ij}}{T}\]
+      !!
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: A !! Interaction parameters
       real(pr), intent(in) :: B !! Interaction parameters

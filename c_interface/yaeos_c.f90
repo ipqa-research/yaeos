@@ -412,15 +412,17 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_mhv
 
-   subroutine set_hvnrtl(ar_id, alpha, gji, use_kij, kij)
+   subroutine set_hvnrtl(ar_id, alpha, gji0, gjiT, use_kij, kij)
       !! Huron-Vidal NRTL mixing rule
       use yaeos, only: fHV_NRTL => HV_NRTL, init_hvnrtl, CubicEoS
       integer(c_int), intent(in) :: ar_id
       !! id in the `ArModels` list.
       real(c_double), intent(in) :: alpha(:, :)
       !! \(\alpha_{ij}\) matrix
-      real(c_double), intent(in) :: gji(:, :)
-      !! \(g_{ji}\) matrix
+      real(c_double), intent(in) :: gji0(:, :)
+      !! \(g_{ji}^0\) matrix
+      real(c_double), intent(in) :: gjiT(:, :)
+      !! \(g_{ji}^T\) matrix
       logical, intent(in) :: use_kij(:, :)
       !! Matrix to indicate if \(k_{ij}\) is used
       real(c_double), intent(in) :: kij(:, :)
@@ -432,9 +434,10 @@ contains
 
       select type(ar_model)
        class is(CubicEoS)
-         mixrule = init_hvnrtl(b=ar_model%b, &
-            del1=ar_model%del1, alpha=alpha, gji=gji, use_kij=use_kij, &
-            kij=kij)
+         mixrule = init_hvnrtl(&
+         b=ar_model%b, del1=ar_model%del1, &
+         alpha=alpha, gji0=gji0, gjiT=gjiT, &
+         use_kij=use_kij, kij=kij)
          deallocate(ar_model%mixrule)
          ar_model%mixrule = mixrule
       end select
