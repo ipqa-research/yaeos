@@ -280,9 +280,9 @@ class HVNRTL(CubicMixRule):
     alpha : matrix_like
         NRTL alpha parameters matrix
     gji : matrix_like
-        NRTL gij parameters matrix
+        NRTL gij parameters matrix; specifically, gji represents the constant term \( g_{ji}^0 \) in the temperature-dependent interaction parameters formula.
     gjiT: matrix_like
-        NRTL gij temperature coefficient parameters matrix
+        NRTL gij temperature coefficient parameters matrix; specifically, gjiT represents the temperature coefficient \( g_{ji}^T \) in the temperature-dependent interaction parameters formula.
     use_kij : matrix_like
         Boolean matrix indicating whether to use kij parameters
     kij : matrix_like
