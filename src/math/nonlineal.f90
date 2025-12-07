@@ -31,18 +31,9 @@ contains
          if (maxval(abs(F)) < tol) exit
         
          t = 1
-         ! call sub(x + dX, F2, J2)
-         ! do while(maxval(abs(F2)) > maxval(abs(F)) .and. t > 0.01)
-         !     t = t*0.7
-         !     call sub(X + t*dX, F2, J2)
-         ! end do
-         ! 
-         ! if (t < 0.01) t = 2
-         X = X + dX
+         X = X + t * dX
          
          call sub(x, F, J)
-         ! write(2, *) its, sum(F**2)
-         ! write(1, *) its, maxval(abs(F))
       end do
    end subroutine newton
 
@@ -71,11 +62,7 @@ contains
          t = dt*i
          X0 = X
          call newton(wrap, X, tol, 50, its)
-         ! call powel_hybrid(fun, tol, X, h, info)
-         ! call wrap(X, H, dH)
-
-         print *,  t, maxval(abs(H)), maxval(abs(F))
-         print *, " ====== "
+         call wrap(X, H, dH)
       end do
    contains
       subroutine wrap(X, H, dH)
@@ -96,10 +83,9 @@ contains
          end do
          call sub(X, F, dF)
 
-         H = (t * F + (1-t) * G)**2
-         dG = t * dF + (1-t) * dG
+         H = t * F + (1-t) * G
+         dH = t * dF + (1-t) * dG
          
-         print *, t, sum(H), sum(F**2), sum(G**2)
       end subroutine wrap
       
      subroutine fun(n, x, fvec, iflag)
@@ -109,7 +95,5 @@ contains
         integer, intent(in out) :: iflag
         call wrap(X, FVEC, dH)
      end subroutine fun
-
-
    end subroutine homotopy
 end module yaeos__math_nonlinearsolvers
