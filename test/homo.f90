@@ -1,19 +1,18 @@
 program main
    use yaeos__math_nonlinearsolvers, only: homotopy, newton
+   use testing_aux, only: test_title, assert
    implicit none
    real(8) :: X(3), F(3), J(3,3)
    integer :: its
 
    X = [0.5_8, 0.5_8, 0.5_8]
 
+   write(*, *) test_title("Testing homotopy solver")
 
-   ! call newton(sub=foo, x=X, tol=1e-8_8, max_its=50, its=its)
    call homotopy(sub=foo, x=X, tol=1e-8_8, max_its=50, its=its)
 
    call foo(X, F, J)
-   print *, "Iterations:", its
-   print *, "Final X:", X
-   print *, "Final F:", F
+   call assert(maxval(abs(F)) < 1e-8_8, "Homotopy solver did not converge sufficiently")
 
 contains
 
