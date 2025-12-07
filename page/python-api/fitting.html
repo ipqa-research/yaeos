@@ -59,8 +59,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Fitting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.BinaryFitter"><code class="docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.objective_function"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.objective_function()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.fit"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.objective_function"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.objective_function()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.solution"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.solution</span></code></a></li>
 </ul>
 </li>
@@ -101,7 +101,7 @@
 parameters to experimental data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BinaryFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_setter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_setter_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BinaryFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_setter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_setter_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>BinaryFitter class.</p>
 <p>This class is used to fit binary interaction parameters to experimental
@@ -127,17 +127,6 @@ critical)
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.objective_function">
-<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.objective_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.objective_function" title="Link to this definition"></a></dt>
-<dd><p>Objective function to minimize when fitting interaction parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x_values</strong> (<em>array-like</em>) – The interaction parameters to fit.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Nelder-Mead'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.fit" title="Link to this definition"></a></dt>
 <dd><p>Fit the model to the data.</p>
@@ -159,9 +148,20 @@ The optimization result is stored in the <cite>.solution</cite> property. Which<
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.objective_function">
+<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.objective_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.objective_function" title="Link to this definition"></a></dt>
+<dd><p>Objective function to minimize when fitting interaction parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_values</strong> (<em>array-like</em>) – The interaction parameters to fit.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.solution">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solution</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.solution" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solution</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.solution" title="Link to this definition"></a></dt>
 <dd><p>Return the optimization solution.</p>
 </dd></dl>
 

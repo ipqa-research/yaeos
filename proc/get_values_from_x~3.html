@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">28 statements</a>
+                 title=" 0.3% of total for procedures.">33 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_pt_mp.f90"> Source File</a>
+              <a href="../src/phase_envelopes_px_mp.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_mp.f90.html'>phase_envelopes_pt_mp.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_mp.f90.html'>phase_envelopes_px_mp.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_px.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_px</a></li>
             <li class="breadcrumb-item active" aria-current="page">get_values_from_X</li>
           </ol>
         </nav>
@@ -135,10 +135,13 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-k~13">K</a>
             <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-i~69">i</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-lb~8">lb</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-nc~59">nc</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-ub~8">ub</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-l~8">l</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-lb~10">lb</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-nc~50">nc</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-ub~10">ub</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~3.html#variable-z~38">z</a>
         </div>
       </div>
     </div>
@@ -168,7 +171,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)  
+    <h2>private  subroutine get_values_from_X(X, np, z0, zi, beta_w, x_l, w, betas, P, alpha)  
 </h2>
     
 
@@ -176,7 +179,7 @@
 <p>Extract the values of the variables from the vector X.</p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/ptenvelmp.html'>PTEnvelMP</a></p>
+    <p><a href='../type/pxenvelmp.html'>PXEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -191,7 +194,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~35"></span>
+              <span class="anchor" id="variable-x~46"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -206,7 +209,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~14"></span>
+              <span class="anchor" id="variable-np~16"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -221,7 +224,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~33"></span>
+              <span class="anchor" id="variable-z0~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -229,14 +232,29 @@
               
             </td>
             <td>::</td>
-            <td><strong>z</strong>(:)</td>
+            <td><strong>z0</strong>(:)</td>
             <td>
-                <p>Mixture composition.</p>
+                <p>Initial mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~7"></span>
+              <span class="anchor" id="variable-zi~20"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
+            <td>
+                <p>Second mixture composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta_w~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -246,12 +264,12 @@
             <td>::</td>
             <td><strong>beta_w</strong></td>
             <td>
-                <p>Fraction of the reference phase.</p>
+                <p>Reference phase beta.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l~9"></span>
+              <span class="anchor" id="variable-x_l~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -259,14 +277,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>x_l</strong>(np,size(z))</td>
+            <td><strong>x_l</strong>(np,size(z0))</td>
             <td>
                 <p>Mole fractions of the main phases.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~20"></span>
+              <span class="anchor" id="variable-w~16"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -274,14 +292,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>w</strong>(size(z))</td>
+            <td><strong>w</strong>(size(z0))</td>
             <td>
                 <p>Mole fractions of the incipient phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~9"></span>
+              <span class="anchor" id="variable-betas~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -296,7 +314,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~33"></span>
+              <span class="anchor" id="variable-p~43"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -311,7 +329,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~60"></span>
+              <span class="anchor" id="variable-alpha~17"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -319,9 +337,10 @@
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>alpha</strong></td>
             <td>
-                <p>Temperature [K].</p>
+                <p>
+<script type="math/tex">alpha</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -344,6 +363,23 @@
     <tbody>
         <tr>
             <td>
+              <span class="anchor" id="variable-k~13"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>K</strong>(np,size(z0))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-i~69"></span>
               integer,
             </td>
@@ -361,7 +397,24 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lb~8"></span>
+              <span class="anchor" id="variable-l~8"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Phase index.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lb~10"></span>
               integer,
             </td>
               <td>private</td>
@@ -378,7 +431,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~59"></span>
+              <span class="anchor" id="variable-nc~50"></span>
               integer,
             </td>
               <td>private</td>
@@ -395,7 +448,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~8"></span>
+              <span class="anchor" id="variable-ub~10"></span>
               integer,
             </td>
               <td>private</td>
@@ -408,6 +461,23 @@
                 <td></td>
             <td>
                 <p>Upper bound of each phase.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~38"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(size(z0))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
             </td>
         </tr>
     </tbody>
@@ -443,7 +513,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-08-06 02:37 +0000             </p>
+ on 2025-12-07 22:38 +0000             </p>
           </div>
         </div>
         <br>
