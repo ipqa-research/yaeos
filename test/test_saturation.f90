@@ -118,7 +118,7 @@ contains
       type(EquilibriumState) :: bubble
 
       real(pr) :: x(nc)  = [0.4, 0.6]
-      real(pr) :: y(nc) = [0.84203837140677695, 0.15796162859550475]
+      real(pr) :: y(nc) = [0.84230325312571430, 0.15819060946721245]
       real(pr) :: P = 12.124711835829961
 
       real(pr) :: n(nc), t
