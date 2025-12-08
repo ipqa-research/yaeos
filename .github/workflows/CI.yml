@@ -1,9 +1,9 @@
 name: CI
-on: [push]
+on: [push, pull_request, release]
 
 
 jobs:
-  Build:
+  tests_and_coverage:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -12,14 +12,9 @@ jobs:
         python-version: [3.9]
         toolchain:
           - {compiler: gcc, version: 10}
-          - {compiler: gcc, version: 11}
-          - {compiler: gcc, version: 12}
-          - {compiler: gcc, version: 13}
-          # - {compiler: intel-classic, version: '2024.1'}
-          - {compiler: intel, version: '2024.1'}
-          - {compiler: intel, version: '2023.2'}
-          # - {compiler: nvidia-hpc, version: '23.11'}
-          # - {compiler: intel-classic, version: '2023.2'}
+          - {compiler: gcc, version: 14}
+          # - {compiler: intel, version: '2024.2'}
+          # - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -42,32 +37,26 @@ jobs:
       uses: ts-graphviz/setup-graphviz@v1
 
     - name: Setup Fortran Package Manager
-      uses: fortran-lang/setup-fpm@v4
+      uses: fortran-lang/setup-fpm@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install Python dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr numpy scipy
+        pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
-    - name: Install NLopt
-      run:
-        sudo apt-get install libnlopt-dev
-
-        # - name: Compile
-        #   run: fpm build --profile release --compiler ${{ env.FC }} --c-compiler gcc
-    
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
       run: |
-        fpm test --profile debug --compiler ${{ env.FC }} --c-compiler gcc
+        fpm test --profile release --flag "-g" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests with coverage
       if: ${{ env.FC == 'gfortran' }}
       run: |
-        fpm test --profile debug --flag -coverage --compiler ${{ env.FC }} --c-compiler gcc
+        fpm test --profile release --flag "-g -coverage" --compiler ${{ env.FC }} --c-compiler gcc
         bash ci/ci.sh
 
     - name: Coverage
@@ -76,7 +65,120 @@ jobs:
 
     - name: Upload coverage reports to Codecov
       if: ${{ env.FC == 'gfortran' }}
-      uses: codecov/codecov-action@v4.0.1
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: ipqa-research/yaeos
+        files: "coverage.xml"
+
+  Python-API:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+        toolchain:
+          - {compiler: gcc, version: 14}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: false
+
+    - name: Install Python
+      uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libnlopt-dev pandoc libblas-dev liblapack-dev
+    
+    - name: install tox
+      run: |
+        pip install tox tox-gh-actions
+    
+    - name: Setup Fortran Compiler
+      uses: fortran-lang/setup-fortran@v1
+      id: setup-fortran
+      with:
+        compiler: ${{ matrix.toolchain.compiler }}
+        version: ${{ matrix.toolchain.version }}
+
+    - name: Run tox
+      run: |
+        cd python # && tox -r
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    needs: 
+      - tests_and_coverage
+      - Python-API
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest] #, windows-latest, macos-13, macos-14]
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      # Used to host cibuildwheel
+      - uses: actions/setup-python@v5
+      
+      - name: Install 
+        run: |
+          sudo apt install gfortran-14
+          sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
+
+      # Install fpm for Windows
+      - name: Install fpm
+        uses: fortran-lang/setup-fpm@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # CiBuildWheel
+      - name: Install dependencies
+        run: |
+          python -m pip install cibuildwheel
+
+      - name: Build wheels
+        run: python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
+
+        # to supply options, put them in 'env', like:
+        env:
+          # CIBW_BUILD_VERBOSITY: 3
+          CIBW_BUILD_FRONTEND: build
+          # MACOSX_DEPLOYMENT_TARGET: "13.0"
+          CIBW_BEFORE_TEST: pip install pytest
+          CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+ 
+  publish_to_testpypi:
+    name: Publish Python 🐍 wheels 🛞 to PyPI
+    if: github.event_name == 'release'
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://test.pypi.org/p/yaeos
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        path: dist/
+        pattern: cibw-wheels-*
+        merge-multiple: true
+    - run: ls -R dist
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true

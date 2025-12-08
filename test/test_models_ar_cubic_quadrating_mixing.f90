@@ -13,16 +13,17 @@ contains
 
       testsuite = [ &
                   new_unittest("QMR_RKPR", test_QMR_RKPR), &
+                  new_unittest("QMRTD", test_QMR_KTDEP), &
                   new_unittest("MHV_SRK", test_MHV_SRK) &
                   ]
    end subroutine collect_suite
 
    subroutine test_QMR_RKPR(error)
       use yaeos__constants, only: pr
-      use yaeos__models_ar_cubic_quadratic_mixing, only: QMR_RKPR
+      use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
       type(error_type), allocatable, intent(out) :: error
 
-      type(QMR_RKPR) :: mixrule
+      type(QMR) :: mixrule
 
       integer, parameter :: n = 3
       real(pr) :: del1(3) = [0.2, 0.5, 0.6]
@@ -43,6 +44,34 @@ contains
       call check(error, allclose([dD1ij], [dD1ij_val], absolute_tolerance))
 
    end subroutine test_QMR_RKPR
+
+   subroutine test_QMR_KTDEP(error)
+      use yaeos__models_ar_cubic_quadratic_mixing, only: QMRTD
+      use yaeos, only: CubicEoS
+      use fixtures_models, only: binary_PR78
+      type(error_type), allocatable, intent(out) :: error
+      type(QMRTD) :: mixrule
+      type(CubicEoS) :: model
+      integer, parameter :: nc=2
+      real(pr) :: k0(nc, nc), kinf(nc, nc), Tref(nc, nc), k02(nc, nc), k01(nc,nc)
+      real(pr) :: a(nc), dadt(nc), dadt2(nc)
+
+      real(pr) :: T
+
+      integer :: i
+
+
+      k0   = reshape([0, 1, 1, 0], [nc, nc])
+      kinf = reshape([0, 2, 2, 0], [nc, nc])
+      Tref = reshape([190, 310, 310, 310], [nc, nc])
+      mixrule = QMRTD(k0=k0, k=kinf, Tref=Tref)
+
+      model = binary_PR78()
+
+      T = 250
+      call model%alpha%alpha(T/model%components%Tc, a, dadt, dadt2)
+      call mixrule%aij(T, a, dadt, dadt2, k0, kinf, tref)
+   end subroutine
 
    subroutine test_MHV_SRK(error)
       use yaeos__constants, only: pr
