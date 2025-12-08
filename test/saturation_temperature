@@ -1,0 +1,59 @@
+program main
+   use testing_aux, only: test_title, assert
+   
+   use yaeos, only: pr, CubicEoS, PengRobinson76, EquilibriumState, saturation_temperature, HV_NRTL, Groups, PSRK
+   use fixtures_models, only: binary_PR76
+   implicit none
+   type(CubicEoS) :: model, model_psrk
+   type(EquilibriumState) :: sat
+   type(HV_NRTL) :: mr
+   logical :: use_kij(3, 3)
+   real(pr) :: z(3), gji(3,3), alpha(3,3), kij(3,3), Tc(3), Pc(3), w(3), P
+   real(pr) :: y0(3)
+
+   type(Groups) :: molecules(3)
+
+   write(*, *) test_title("Convergence of low P saturation point")
+
+   molecules(1)%groups_ids = [117]
+   molecules(1)%number_of_groups = [1]
+
+   molecules(2)%groups_ids = [15]
+   molecules(2)%number_of_groups = [1]
+
+   molecules(3)%groups_ids = [62]
+   molecules(3)%number_of_groups = [1]
+
+   gji = 0
+   gji(1, 2) = 20.53672267_pr
+   gji(1, 3) = 471.015777_pr
+   gji(2, 1) = 246.93953975_pr
+   gji(2, 3) = -50.0_pr
+   gji(3, 1) = 36.584873_pr
+   gji(3, 2) = 37.5912979_pr
+
+   alpha = 0
+   alpha(1, 2) = 0.4_pr
+   alpha(1, 3) = 0.193694337_pr
+   alpha(2, 1) = 0.4_pr
+   alpha(2, 3) = 0.05_pr
+   alpha(3, 1) = 0.193694337_pr
+   alpha(3, 2) = 0.05_pr
+
+   use_kij = .false.
+   kij = 0.0_pr
+
+   Tc = [304.21, 512.5 , 720.  ]
+   Pc = [73.83, 80.84, 82.  ]
+   w = [0.223621, 0.565831, 0.506776]
+
+   model = PSRK(Tc, Pc, w, molecules=molecules)
+
+
+   sat = saturation_temperature(model, n=[0.22_pr, 0.624_pr, 0.156_pr], P=0.0000001_pr, kind="dew", t0=300._pr)
+
+   call assert(sat%kind == "dew", "Point must converge")
+   call assert(abs(sat%T - 222._pr) < 1._pr, "Temperature must be close to initial guess")
+
+
+end program main

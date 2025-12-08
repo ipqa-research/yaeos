@@ -103,8 +103,8 @@ contains
       use_kij(1, 2) = .true.
       use_kij(2, 1) = .true.
 
-      ge = NRTLHV(b=model_kij%b, alpha=alpha, gij=gji)
-      mixrule = init_hvnrtl(b=model_kij%b, del1=model_kij%del1, alpha=alpha, gji=gji, use_kij=use_kij, kij=kij)
+      ge = NRTLHV(b=model_kij%b, alpha=alpha, gji0=gji, gjiT=0*gji)
+      mixrule = init_hvnrtl(b=model_kij%b, del1=model_kij%del1, alpha=alpha, gji0=gji, gjiT=0*gji, use_kij=use_kij, kij=kij)
 
       call model_kij%residual_helmholtz(n, V, T, Ar=Ar1)
 

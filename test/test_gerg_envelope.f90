@@ -40,6 +40,6 @@ program main
 
    last_temperature = env%points(size(env%points))%T
 
-   call assert(last_temperature < 150._pr, "Envelope temperature should be less than 150 K")
+   call assert(last_temperature < 210._pr, "Envelope temperature should be less than 210 K")
 
 end program

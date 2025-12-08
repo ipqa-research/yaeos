@@ -2,9 +2,23 @@ module yaeos__equilibria_binaries
    !! Module with routines particular to binary mixtures.
    use yaeos__constants, only: pr
    use yaeos__models, only: ArModel
+   use yaeos__equilibria_equilibrium_state, only: EquilibriumState
+   use yaeos__math, only: solve_system
 
    private
-   public :: find_llcl
+   public :: find_llcl, three_phase_line_F_solve, three_phase_line_F
+   public :: BinaryThreePhase, binary_llv_from_cep
+
+   type :: BinaryThreePhase
+      real(pr), allocatable :: x1(:)
+      real(pr), allocatable :: y1(:)
+      real(pr), allocatable :: w1(:)
+      real(pr), allocatable :: Vx(:)
+      real(pr), allocatable :: Vy(:)
+      real(pr), allocatable :: Vw(:)
+      real(pr), allocatable :: T(:)
+      real(pr), allocatable :: P(:)
+   end type BinaryThreePhase
 
 contains
 
@@ -45,8 +59,8 @@ contains
             a = real(i, pr) / 51.
             z = a * zi + (1 - a) * z0
             call model%lnphi_pt(&
-                  z, P=P, T=T, V=V, lnPhi=lnPhi, dlnphidn=dlnphidn, root_type=&
-                  "liquid")
+               z, P=P, T=T, V=V, lnPhi=lnPhi, dlnphidn=dlnphidn, root_type=&
+               "liquid")
             lambdas(i) = 1 - dlnphidn(1, 2)
 
             as(i) = a
@@ -60,17 +74,301 @@ contains
             do while (lambdas(i) > 0)
                T = T - 1
                call model%lnphi_pt(z, P=P, T=T, V=V, lnPhi=lnPhi, dlnphidn=&
-                     dlnphidn, root_type="liquid")
+                  dlnphidn, root_type="liquid")
                lambdas(i) = 1 - dlnphidn(1, 2)
             end do
          else
             do while (lambdas(i) < 0)
                T = T + 1
                call model%lnphi_pt(z, P=P, T=T, V=V, lnPhi=lnPhi, dlnphidn=&
-                     dlnphidn, root_type="liquid")
+                  dlnphidn, root_type="liquid")
                lambdas(i) = 1 - dlnphidn(1, 2)
             end do
          end if
       end do
    end subroutine find_llcl
+
+   type(BinaryThreePhase) function binary_llv_from_cep(model, cep) result(llv)
+      class(ArModel), intent(in) :: model
+      type(EquilibriumState), intent(in) :: cep
+
+      real(pr) :: X(7)
+      real(pr) :: dFdS(7), F(7), dF(7, 7)
+      integer :: ns
+      real(pr) ::  dS, S, dXdS(7)
+
+      real(pr) :: T, P, Vx, Vy, Vw
+      real(pr) :: x1, y1, w1
+
+      real(pr), allocatable :: Ts(:), Ps(:)
+
+      integer :: points
+      integer :: iters
+
+      dFdS = 0
+      dFdS(7) = -1
+
+      X = log([&
+         CEP%x(1)+1e-9, &
+         cep%x(1)-1e-9, &
+         cep%y(1), &
+         cep%Vx+1e-9, &
+         cep%Vx-1e-9, &
+         cep%Vy, &
+         cep%T &
+         ])
+      T = 1000
+      ns = 0
+      if (ns == 0) then
+         S = exp(X(2)) - exp(X(1))
+      else if (ns == -1) then
+         S = X(4) - X(5)
+      else
+         S = X(ns)
+      end if
+
+      dS = 0.001
+
+      points = 0
+      F = 0
+      allocate(llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), llv%Vx(0), llv%Vy(0), llv%Vw(0))
+      do while(T > 100 .and. maxval(abs(F)) < 1e-6)
+         points = points + 1
+         call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
+
+         x1 = exp(X(1))
+         y1 = exp(X(2))
+         w1 = exp(X(3))
+         Vx = exp(X(4))
+         Vy = exp(X(5))
+         Vw = exp(X(6))
+         T = exp(X(7))
+
+         if (maxval(abs(F)) < 1e-6) then
+            llv%T = [llv%T, T]
+            llv%P = [llv%P, P]
+            llv%x1 = [llv%x1, x1]
+            llv%y1 = [llv%y1, y1]
+            llv%w1 = [llv%w1, w1]
+            llv%Vx = [llv%Vx, Vx]
+            llv%Vy = [llv%Vy, Vy]
+            llv%Vw = [llv%Vw, Vw]
+         end if
+
+         call model%pressure([x1, 1-x1], Vx, T, P)
+
+         dXdS = solve_system(dF, -dFdS)
+         ns = -1
+         dS = -0.001
+         print *, iters, T, P
+
+         if (P < 1) then
+            ns = -1
+            dS = -1e-5
+         end if
+
+         X = X + dXdS * dS
+
+
+         if (ns == 0) then
+            S = exp(X(2)) - exp(X(1))
+         else if (ns == -1) then
+            S = X(4) - X(5)
+         else
+            S = X(ns)
+         end if
+      end do
+   end function binary_llv_from_cep
+
+   subroutine three_phase_line_F(model, Xvars, ns, S, F, dF)
+      use yaeos__math, only: derivative_dxk_dni
+      class(ArModel), intent(in) :: model
+      real(kind=pr), intent(in) :: Xvars(:) !! Input vector
+      integer, intent(in) :: ns !! Specified variable index
+      real(pr), intent(in) :: S !! Specified variable value
+      real(kind=pr), intent(out) :: F(:) !! Function vector
+      real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
+
+      real(pr) :: x1, y1, w1
+      real(pr) :: vx, vy, vw, T
+      real(pr) :: x(2), y(2), w(2)
+      real(pr) :: Px, Py, Pw
+      real(pr) :: isofug_1(2), isofug_2(2)
+      real(pr) :: Peq_1, Peq_2
+
+      real(pr) :: lnf_x(2), lnf_y(2), lnf_w(2)
+      real(pr) :: dlnfxdn(2, 2), dlnfydn(2, 2), dlnfwdn(2, 2)
+      real(pr) :: dlnfxdv(2), dlnfydv(2), dlnfwdv(2)
+      real(pr) :: dlnfxdP(2), dlnfydP(2), dlnfwdP(2)
+      real(pr) :: dlnfxdT(2), dlnfydT(2), dlnfwdT(2)
+
+
+      real(pr) :: dPxdN(2), dPydN(2), dPwdN(2)
+      real(pr) :: dPxdV, dPydV, dPwdV
+      real(pr) :: dPxdT, dPydT, dPwdT
+      real(pr) :: dxdn(2, 2)
+
+      x1 = exp(XVars(1))
+      y1 = exp(XVars(2))
+      w1 = exp(XVars(3))
+      vx = exp(Xvars(4))
+      vy = exp(Xvars(5))
+      vw = exp(Xvars(6))
+      T =  exp(Xvars(7))
+
+      x = [x1, 1-x1]
+      y = [y1, 1-y1]
+      w = [w1, 1-w1]
+
+      call model%lnfug_vt(&
+         x, Vx, T, Px, lnf_x, &
+         dlnfxdV, dlnfxdT, dlnfxdn, &
+         dPxdV, dPxdT, dPxdn &
+         )
+      call model%lnfug_vt(&
+         y, Vy, T, Py, lnf_y, &
+         dlnfydV, dlnfydT, dlnfydn, &
+         dPydV, dPydT, dPydn &
+         )
+      call model%lnfug_vt(&
+         w, Vw, T, Pw, lnf_w, &
+         dlnfwdV, dlnfwdT, dlnfwdn, &
+         dPwdV, dPwdT, dPwdn &
+         )
+
+
+      ! Calculate isofugacity coefficients
+      isofug_1 = lnf_x - lnf_w
+      isofug_2 = lnf_y - lnf_w
+      Peq_1 = Px - Pw
+      Peq_2 = Py - Pw
+
+      F(1:2) = isofug_1
+      F(3:4) = isofug_2
+      F(5) = Peq_1
+      F(6) = Peq_2
+
+      if (ns == 0) then
+         F(7) = y1 - x1 - S
+      else if (ns == -1) then
+         F(7) = log(vx / vy) - S
+      else
+         F(7) = Xvars(ns) - S
+      end if
+
+      df = 0
+
+      df(1, 1) = dlnfxdn(1, 1) - dlnfxdn(1, 2)
+      df(2, 1) = dlnfxdn(2, 1) - dlnfxdn(2, 2)
+      df(3:4, 1) = 0
+      df(5, 1) = dPxdN(1) - dPxdN(2)
+      df(6, 1) = 0
+
+      ! Derivatives wrt y1
+      df(1:2, 2) = 0
+      df(3, 2) = dlnfydn(1, 1) - dlnfydn(1, 2)
+      df(4, 2) = dlnfydn(2, 1) - dlnfydn(2, 2)
+      df(5, 2) = 0
+      df(6, 2) = dPydN(1) - dPydN(2)
+
+      ! Derivatives wrt w1
+      df(1, 3) =  - (dlnfwdn(1, 1) - dlnfwdn(1, 2))
+      df(2, 3) =  - (dlnfwdn(2, 1) - dlnfwdn(2, 2))
+      df(3, 3) =  - (dlnfwdn(1, 1) - dlnfwdn(1, 2))
+      df(4, 3) =  - (dlnfwdn(2, 1) - dlnfwdn(2, 2))
+      df(5, 3) = -( dPwdN(1) - dPwdN(2))
+      df(6, 3) = -( dPwdN(1) - dPwdN(2))
+
+      ! Derivatives wrt vx
+      df(1, 4) = dlnfxdv(1)
+      df(2, 4) = dlnfxdv(2)
+      df(3:4, 4) = 0
+      df(5, 4) = dPxdV
+      df(6, 4) = 0
+
+      ! Derivatives wrt vy
+      df(1:2, 5) = 0
+      df(3, 5) = dlnfydv(1)
+      df(4, 5) = dlnfydv(2)
+      df(5, 5) = 0
+      df(6, 5) = dPydV
+
+      ! Derivatives wrt vw
+      df(1, 6) = -dlnfwdv(1)
+      df(2, 6) = -dlnfwdv(2)
+      df(3, 6) = -dlnfwdv(1)
+      df(4, 6) = -dlnfwdv(2)
+      df(5, 6) = -dPwdV
+      df(6, 6) = -dPwdV
+
+      ! Derivatives wrt T
+      df(1:2, 7) = dlnfxdT - dlnfwdT
+      df(3:4, 7) = dlnfydT - dlnfwdT
+      df(5, 7) = dPxdT - dPwdT
+      df(6, 7) = dPydT - dPwdT
+
+      if (ns == 0) then
+         df(7, 1) = -1
+         df(7, 2) = 1
+      else if (ns == -1) then
+         df(7, 4) = 1/vx
+         df(7, 5) = -1/vy
+      else
+         df(7, ns) = 1
+      end if
+
+      df(:, 1) = df(:, 1) * x1
+      df(:, 2) = df(:, 2) * y1
+      df(:, 3) = df(:, 3) * w1
+      df(:, 4) = df(:, 4) * vx
+      df(:, 5) = df(:, 5) * vy
+      df(:, 6) = df(:, 6) * vw
+      df(:, 7) = df(:, 7) * T
+   end subroutine three_phase_line_F
+
+   subroutine three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
+      use yaeos__math, only: solve_system
+      class(ArModel), intent(in) :: model
+      real(kind=pr), intent(in out) :: X(:) !! Input/output vector
+      integer, intent(in) :: ns !! Specified variable index
+      real(pr), intent(in) :: S !! Specified variable value
+      real(kind=pr), intent(out) :: F(:) !! Function vector
+      real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
+      integer, optional, intent(out) :: iters !! Number of iterations performed
+
+      integer :: i
+      integer :: max_tries
+      real(kind=pr) :: tol
+      real(kind=pr) :: res_norm
+      real(kind=pr) :: dX(size(X))
+      real(kind=pr) :: Xold(size(X))
+
+      tol = 1e-9_pr
+      max_tries = 50
+
+      do i = 1, max_tries
+         call three_phase_line_F(model, X, ns, S, F, dF)
+
+         res_norm = maxval(abs(F))
+
+         if (res_norm < tol) exit
+
+         Xold = X
+
+         ! Solve the linear system dF * dX = -F
+         dX = solve_system(dF, -F)
+
+         do while (maxval(abs(dX/X)) > 0.1)
+            dX = dX / 2
+         end do
+
+         X = Xold + dX
+
+         if (present(iters)) iters = i
+
+         if (any(isnan(F))) error stop
+      end do
+   end subroutine three_phase_line_F_solve
+
+
 end module yaeos__equilibria_binaries

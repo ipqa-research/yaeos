@@ -1,4 +1,4 @@
-"""Envelopes.
+"""Envelopes Module.
 
 This module contains the classes that wrap the data structures used to
 represent different kinds of phase envelopes.
@@ -53,6 +53,7 @@ class PTEnvelope:
         Shape is (n_points, n_phases).
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
+
         - 'T': Temperatures along the envelope.
         - 'P': Pressures along the envelope.
         - 'x_i^j': Compositions of the main phases, where `i` is the component
@@ -277,6 +278,7 @@ class PXEnvelope:
         component index.
         - 'beta^j': Molar fractions of the main phases, where `j`
         is the phase index.
+
     """
 
     def __init__(
@@ -398,6 +400,8 @@ class PXEnvelope:
                 alphas=self.alphas[key],
                 iterations=self.iterations[key],
                 specified_variable=self.specified_variable[key],
+                main_phases_kinds=self.main_phases_kinds[key],
+                reference_phase_kinds=self.reference_phase_kinds[key],
                 critical_pressures=self.critical_pressures,
                 critical_alphas=self.critical_alphas,
             )

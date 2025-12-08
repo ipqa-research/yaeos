@@ -9,3 +9,4 @@ Residual Helmholtz Models
    :maxdepth: 1
 
    cubic_eos/init
+   multifluid/init

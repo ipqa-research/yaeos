@@ -12,6 +12,14 @@ module yaeos_c
    !! object `x_model` and right after that the `extend_x_models_list` procedure
    !! is called. This procedure searches for the first `free_x_models` id and
    !! allocates the singleton model there, returning the `id` of the procedure.
+   !!
+   !! ## System of units
+   !! This interface uses the same system of units as the `yaeos` module,
+   !! which is:
+   !!
+   !! - Pressure: bar
+   !! - Volume: L
+   !! - Temperature: K
    use iso_c_binding, only: c_double, c_int, c_int64_t
    use yaeos, only: ArModel, GeModel
    implicit none
@@ -39,11 +47,12 @@ module yaeos_c
    public :: excess_gibbs_ge
    public :: excess_enthalpy_ge
    public :: excess_entropy_ge
+   public :: excess_cp_ge
 
    ! Thermoprops
    public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
-   public :: gibbs_residual_vt, entropy_residual_vt
-   public :: Cv_residual_vt, Cp_residual_vt
+   public :: gibbs_residual_vt, helmholtz_residual_vt, entropy_residual_vt
+   public :: Cv_residual_vt, Cp_residual_vt, internal_energy_residual_vt
 
    ! Phase equilibria
    public :: flash, flash_vt, flash_grid, solve_mp_flash
@@ -75,12 +84,16 @@ module yaeos_c
    class(GeModel), allocatable :: ge_model !! Singleton to hold temporal GeModels
 
    ! Containers of models
-   integer, parameter :: max_models  = 1000000
+   integer, parameter :: max_models  = 1000000 !! Maximum number of models
    logical :: free_ar_model(max_models) = .true.
+   !! List to store the availability of ArModel ids
    logical :: free_ge_model(max_models) = .true.
+   !! List to store the availability of GeModel ids
 
    class(ArModelContainer), allocatable :: ar_models(:)
+   !! List of allocated ArModels
    class(GeModelContainer), allocatable :: ge_models(:)
+   !! List of allocated GeModels
 
 
 contains
@@ -138,6 +151,10 @@ contains
 
    ! Dortmund
    subroutine unifac_dortmund(id, nc, ngs, g_ids, g_v)
+      !! # `unifac_dortmund`
+      !! Create a UNIFAC Dortmund model and store it in the list of
+      !! `GeModels`. It will output the `id` where the model is stored in the
+      !! `GeModels` list.
       use yaeos, only: UNIFAC, setup_dortmund, Groups
       integer(c_int), intent(out) :: id !! Saved model id
       integer(c_int), intent(in) :: nc !! Number of components
@@ -169,6 +186,11 @@ contains
    end subroutine unifac_psrk
 
    subroutine setup_groups(nc, ngs, g_ids, g_v, molecules)
+      !! Helper subroutine to setup the groups of a list of molecules.
+      !! It receives the number of components, a vector with the
+      !! number of groups at each molecule, a matrix with the ids of the
+      !! groups and a matrix with the number of groups for each molecule.
+      !! It outputs a vector of `Groups` with the information of each molecule.
       use yaeos, only: Groups
       integer(c_int), intent(in) :: nc !! Number of components
       integer(c_int), intent(in) :: ngs(nc) !! Number of groups at each molecule
@@ -186,8 +208,10 @@ contains
    subroutine extend_ge_models_list(id)
       !! Find the first available model container and allocate the model
       !! there. Then return the found id.
-      integer(c_int), intent(out) :: id
+      integer(c_int), intent(out) :: id !! Saved model id
+
       integer :: i
+
       if (.not. allocated(ge_models)) allocate(ge_models(max_models))
 
       ! Find the first not allocated model
@@ -210,7 +234,9 @@ contains
 
    ! Ge Thermoprops
    subroutine excess_gibbs_ge(id, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !! Compute the excess Gibbs energy for a given model
       integer(c_int), intent(in) :: id
+      !! id in the `GeModels` list.
       real(c_double), intent(in) :: n(:)
       !! Moles vector
       real(c_double), intent(in) :: T
@@ -235,6 +261,7 @@ contains
 
    subroutine ln_gamma_ge(id, n, T, lngamma, dlngamma_dt, dlngamma_dn)
       integer(c_int), intent(in) :: id
+      !! id in the `GeModels` list.
       real(c_double), intent(in) :: n(:)
       !! Moles vector
       real(c_double), intent(in) :: T
@@ -252,6 +279,7 @@ contains
    end subroutine ln_gamma_ge
 
    subroutine excess_enthalpy_ge(id, n, T, He, HeT, Hen)
+      !! Compute the excess enthalpy for a given model
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:)
       !! Moles vector
@@ -270,7 +298,9 @@ contains
    end subroutine excess_enthalpy_ge
 
    subroutine excess_entropy_ge(id, n, T, Se, SeT, Sen)
+      !! Compute the excess entropy for a given model
       integer(c_int), intent(in) :: id
+      !! id in the `GeModels` list.
       real(c_double), intent(in) :: n(:)
       !! Moles vector
       real(c_double), intent(in) :: T
@@ -287,13 +317,27 @@ contains
          )
    end subroutine excess_entropy_ge
 
+   subroutine excess_cp_ge(id, n, T, Cpe)
+      !! Compute the excess heat capacity for a given model
+      integer(c_int), intent(in) :: id
+      !! id in the `GeModels` list.
+      real(c_double), intent(in) :: n(:)
+      !! Moles vector
+      real(c_double), intent(in) :: T
+      !! Temperature [K]
+      real(c_double), intent(out) :: Cpe
+      !! Excess heat capacity
+
+      call ge_models(id)%model%excess_Cp(n, T, Cpe=Cpe)
+   end subroutine excess_cp_ge
+
    ! ==========================================================================
    !  Ar Models
    ! --------------------------------------------------------------------------
    subroutine extend_ar_models_list(id)
       !! Find the first available model container and allocate the model
       !! there. Then return the found id.
-      integer(c_int), intent(out) :: id
+      integer(c_int), intent(out) :: id !! Saved model id
       integer :: i
       if (.not. allocated(ar_models)) allocate(ar_models(max_models))
 
@@ -311,7 +355,7 @@ contains
 
    subroutine make_available_ar_models_list(id)
       !! Make the ArModel id available for allocation
-      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: id !! id in the `ArModels` list.
       free_ar_model(id) = .true.
    end subroutine make_available_ar_models_list
 
@@ -319,8 +363,14 @@ contains
    !  Cubic Mixing rules
    ! --------------------------------------------------------------------------
    subroutine set_qmrtd(ar_id, kij_0, kij_inf, t_star, lij)
+      !! # `set_qmrtd`
+      !! Set the Quadratic Mixing Rule with Temperature Dependent `k_ij` (QMRTD)
+      !! to a cubic equation of state. The expression of the `k_ij` parameter is:
+      !! \[ 
+      !! k_{ij} = k_{ij}^{\infty} + k_{ij}^0 \exp {\frac{-T}{T^*_{ij}}}
+      !! \]
       use yaeos, only: QMRTD, CubicEoS
-      integer(c_int), intent(in) :: ar_id
+      integer(c_int), intent(in) :: ar_id !! 
       real(c_double), intent(in) :: kij_0(:, :)
       real(c_double), intent(in) :: kij_inf(:, :)
       real(c_double), intent(in) :: t_star(:, :)
@@ -339,12 +389,13 @@ contains
       end associate
    end subroutine set_qmrtd
 
-   subroutine set_mhv(ar_id, ge_id, q)
+   subroutine set_mhv(ar_id, ge_id, q, lij)
       !! Michelsen's Modified Huron-Vidal 1 with constant `q_1` parameter
       use yaeos, only: MHV, CubicEoS
       integer(c_int), intent(in) :: ar_id
       integer(c_int), intent(in) :: ge_id
       real(c_double), intent(in) :: q
+      real(c_double), intent(in) :: lij(:, :)
 
       type(MHV) :: mixrule
 
@@ -353,7 +404,7 @@ contains
 
       select type(ar_model)
        class is(CubicEoS)
-         mixrule = MHV(ge=ge_model, b=ar_model%b, q=q)
+         mixrule = MHV(ge=ge_model, b=ar_model%b, q=q, lij=lij)
          deallocate(ar_model%mixrule)
          ar_model%mixrule = mixrule
       end select
@@ -361,14 +412,21 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_mhv
 
-   subroutine set_hvnrtl(ar_id, alpha, gji, use_kij, kij)
+   subroutine set_hvnrtl(ar_id, alpha, gji0, gjiT, use_kij, kij)
       !! Huron-Vidal NRTL mixing rule
       use yaeos, only: fHV_NRTL => HV_NRTL, init_hvnrtl, CubicEoS
       integer(c_int), intent(in) :: ar_id
+      !! id in the `ArModels` list.
       real(c_double), intent(in) :: alpha(:, :)
-      real(c_double), intent(in) :: gji(:, :)
+      !! \(\alpha_{ij}\) matrix
+      real(c_double), intent(in) :: gji0(:, :)
+      !! \(g_{ji}^0\) matrix
+      real(c_double), intent(in) :: gjiT(:, :)
+      !! \(g_{ji}^T\) matrix
       logical, intent(in) :: use_kij(:, :)
+      !! Matrix to indicate if \(k_{ij}\) is used
       real(c_double), intent(in) :: kij(:, :)
+      !! \(k_{ij}\) matrix
 
       type(fHV_NRTL) :: mixrule
 
@@ -376,9 +434,10 @@ contains
 
       select type(ar_model)
        class is(CubicEoS)
-         mixrule = init_hvnrtl(b=ar_model%b, &
-            del1=ar_model%del1, alpha=alpha, gji=gji, use_kij=use_kij, &
-            kij=kij)
+         mixrule = init_hvnrtl(&
+         b=ar_model%b, del1=ar_model%del1, &
+         alpha=alpha, gji0=gji0, gjiT=gjiT, &
+         use_kij=use_kij, kij=kij)
          deallocate(ar_model%mixrule)
          ar_model%mixrule = mixrule
       end select
@@ -389,8 +448,8 @@ contains
    subroutine set_hv(ar_id, ge_id)
       !! Huron-Vidal Mixing rule
       use yaeos, only: HV, CubicEoS
-      integer(c_int), intent(in) :: ar_id
-      integer(c_int), intent(in) :: ge_id
+      integer(c_int), intent(in) :: ar_id !! id in the `ArModels` list.
+      integer(c_int), intent(in) :: ge_id !! id in the `GeModels` list.
 
       associate(&
          ar_model => ar_models(ar_id)%model,&
@@ -404,19 +463,30 @@ contains
    end subroutine set_hv
 
    subroutine set_qmr(ar_id, kij, lij)
+      !! # `set_qmr`
+      !! Set the Quadratic Mixing Rule (QMR) to a cubic equation of state.
+      !!
+      !! ## Description
+      !! With the `id` of a previously created cubic equation of state that is
+      !! in the list of `ArModels`, this procedure will set the mixing rule of
+      !! that model to the Quadratic Mixing Rule (QMR) with the provided
+      !! binary interaction parameters matrices `kij` and `lij`.
       use yaeos, only: QMR, CubicEoS
-      integer(c_int), intent(in) :: ar_id
-      real(c_double) :: kij(:, :)
-      real(c_double) :: lij(:, :)
+      integer(c_int), intent(in) :: ar_id !! id in the `ArModels` list.
+      real(c_double) :: kij(:, :) !! \(k_{ij}\) matrix
+      real(c_double) :: lij(:, :) !! \(l_{ij}\) matrix
 
       type(QMR) :: mixrule
 
       ar_model = ar_models(ar_id)%model
 
+      ! Using a selector to determine that the model is a CubicEoS
       select type(ar_model)
        class is(CubicEoS)
          mixrule = QMR(k=kij, l=lij)
+         ! Remove the previous mixing rule in the model
          deallocate(ar_model%mixrule)
+         ! Put the new mixing rule
          ar_model%mixrule = mixrule
       end select
 
@@ -427,18 +497,30 @@ contains
    !  Cubic EoS implementations
    ! --------------------------------------------------------------------------
    subroutine pr76(tc, pc, w, id)
+      !! # `pr76`
+      !! Create a Peng-Robinson 1976 equation of state model and store it in
+      !! the list of `ArModels`. It will output the `id` where the model is
+      !! stored in the `ArModels` list.
       use yaeos, only: PengRobinson76
-      real(c_double), intent(in) :: tc(:), pc(:), w(:)
-      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: tc(:) !! Critical temperatures [K]
+      real(c_double), intent(in) :: pc(:) !! Critical pressures [bar]
+      real(c_double), intent(in) :: w(:) !! Acentric factors
+      integer(c_int), intent(out) :: id !! Saved model id
 
       ar_model = PengRobinson76(tc, pc, w)
       call extend_ar_models_list(id)
    end subroutine pr76
 
    subroutine pr78(tc, pc, w, id)
+      !! # `pr78`
+      !! Create a Peng-Robinson 1978 equation of state model and store it in
+      !! the list of `ArModels`. It will output the `id` where the model is
+      !! stored in the `ArModels` list.
       use yaeos, only: PengRobinson78
-      real(c_double), intent(in) :: tc(:), pc(:), w(:)
-      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: tc(:) !! Critical temperatures [K]
+      real(c_double), intent(in) :: pc(:) !! Critical pressures [bar]
+      real(c_double), intent(in) :: w(:) !! Acentric factors
+      integer(c_int), intent(out) :: id !! Saved model id
 
       ar_model = PengRobinson78(tc, pc, w)
       call extend_ar_models_list(id)
@@ -522,18 +604,18 @@ contains
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
-   subroutine residual_helmholtz(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+   subroutine helmholtz_residual_vt(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
       real(c_double), intent(out) :: ar
-      real(c_double), optional, intent(out) :: &
+      real(c_double), optional, intent(inout) :: &
          ArT, ArV, ArTV, ArV2, ArT2, Arn(size(n)), ArVn(size(n)), ArTn(size(n)), Arn2(size(n), size(n))
 
       call ar_models(id)%model%residual_helmholtz(&
          n=n, V=V, T=T, &
-         Ar=Ar,  ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
          ArV2=ARV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
-   end subroutine residual_helmholtz
+   end subroutine helmholtz_residual_vt
 
    subroutine lnphi_vt(id, n, v, t, lnphi, dlnphidp, dlnphidt, dlnphidn)
       integer(c_int), intent(in) :: id
@@ -545,7 +627,8 @@ contains
          dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
 
       call ar_models(id)%model%lnphi_vt(&
-         n, V, T, P, lnphi, dlnPhidP, dlnphidT, dlnPhidn &
+         n=n, V=V, T=T, P=P, lnPhi=lnphi, dlnPhidP=dlnphidp, &
+         dlnPhidT=dlnphidt, dlnPhidn=dlnphidn &
          )
    end subroutine lnphi_vt
 
@@ -591,7 +674,7 @@ contains
       real(c_double), optional, intent(in out) :: HrT, HrV, Hrn(size(n))
 
       call ar_models(id)%model%enthalpy_residual_vt(&
-         n, V, T, Hr, HrT, HrV, Hrn &
+         n=n, V=V, T=T, Hr=Hr, HrT=HrT, HrV=HrV, Hrn=Hrn &
          )
    end subroutine enthalpy_residual_vt
 
@@ -602,7 +685,7 @@ contains
       real(c_double), optional, intent(in out) :: GrT, GrV, Grn(size(n))
 
       call ar_models(id)%model%gibbs_residual_vt(&
-         n, V, T, Gr, GrT, GrV, Grn &
+         n=n, V=V, T=T, Gr=Gr, GrT=GrT, GrV=GrV, Grn=Grn &
          )
    end subroutine gibbs_residual_vt
 
@@ -613,18 +696,27 @@ contains
       real(c_double), optional, intent(in out) :: SrT, SrV, Srn(size(n))
 
       call ar_models(id)%model%entropy_residual_vt(&
-         n, V, T, Sr, SrT, SrV, Srn &
+         n=n, V=V, T=T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn &
          )
    end subroutine entropy_residual_vt
+
+   subroutine internal_energy_residual_vt(id, n, V, T, Ur, UrT, UrV, Urn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), V, T
+      real(c_double), intent(out) :: Ur
+      real(c_double), optional, intent(in out) :: UrT, UrV, Urn(size(n))
+
+      call ar_models(id)%model%internal_energy_residual_vt(&
+         n=n, V=V, T=T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn &
+         )
+   end subroutine internal_energy_residual_vt
 
    subroutine Cv_residual_vt(id, n, V, T, Cv)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: Cv
 
-      call ar_models(id)%model%cv_residual_vt(&
-         n, V, T, Cv &
-         )
+      call ar_models(id)%model%cv_residual_vt(n=n, V=V, T=T, Cv=Cv)
    end subroutine Cv_residual_vt
 
    subroutine Cp_residual_vt(id, n, V, T, Cp)
@@ -632,7 +724,7 @@ contains
       real(c_double), intent(in) :: n(:), V, T
       real(c_double), intent(out) :: CP
 
-      call ar_models(id)%model%cp_residual_vt(n, V, T, Cp)
+      call ar_models(id)%model%cp_residual_vt(n=n, V=V, T=T, Cp=CP)
    end subroutine Cp_residual_vt
 
    ! ==========================================================================
@@ -1447,6 +1539,8 @@ contains
       ws_stab, &
       x_ls, ws, betas, Ts, Ps, w_more_stable, found_unstability, max_points &
       )
+      !! Calculates a generalized isopleth line for a given model and conditions.
+      !! This subroutine computes the generalized isopleth line for a given model and conditions,
       use yaeos, only: GeneralizedIsoZLine, create_generalized_isoz_line
       integer(c_int), intent(in) :: id
       integer(c_int), intent(in) :: nc
@@ -1474,7 +1568,7 @@ contains
 
       type(GeneralizedIsoZLine) :: line
       integer :: i, l
-      
+
       call convert_kind(kinds_x, kx)
       call convert_kind(kind_w, kw)
 
@@ -1538,11 +1632,12 @@ contains
    end subroutine convert_kind
 
    subroutine convert_gerg_components(string, numeric)
+      !! Converts a string representation of a component to its numeric identifier
       use yaeos, only: G2008Components
       use iso_fortran_env, only: error_unit
 
-      character(len=*), intent(in) :: string
-      integer(c_int), intent(out) :: numeric
+      character(len=*), intent(in) :: string !! String representation of the component
+      integer(c_int), intent(out) :: numeric !! Numeric identifier for the component
 
       select case (string)
        case ("methane", "C1", "CH4", "nC1")

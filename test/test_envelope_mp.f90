@@ -53,7 +53,7 @@ program main
    T = 260
    kinds_x = ["liquid", "liquid", "liquid"]
    kind_w = "vapor"
-   env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.1_pr, beta_w=0.0_pr)
+   env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.001_pr, beta_w=0.0_pr)
 
    call env%write(1)
 

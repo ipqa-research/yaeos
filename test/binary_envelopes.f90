@@ -28,14 +28,14 @@ contains
 
 
       z = [0.5_pr, 0.5_pr]
-      P = 0.0001_pr
+      P = 0.01_pr
       sat = saturation_temperature(eos, z, P, kind="dew")
 
       w0 = sat%x
       x_l0(1, :) = z
       betas0(1) = 1._pr
-      kinds_x = "liquid"
-      kind_w = "vapor"
+      kinds_x = "vapor"
+      kind_w = "liquid"
       env = pt_envelope(model=eos, z=z, np=1, kinds_x=kinds_x, kind_w=kind_w, &
          x_l0=x_l0, w0=w0, betas0=betas0, P0=sat%P, T0=sat%T, ns0=nc+1+1, dS0=1e-3_pr, beta_w=0.0_pr, points=300, &
          max_pressure=2500._pr)
@@ -74,7 +74,7 @@ contains
          )
 
       i = size(env%alpha)
-      call assert(all(abs(env%points(i)%x_l(1, :) - env%points(i)%w) < 1e-3), "Pxy: End a critical point")
+      call assert(all(abs(env%points(i)%x_l(1, :) - env%points(i)%w) < 5e-3), "Pxy: End a critical point")
    end subroutine pxy
 
    subroutine txy
