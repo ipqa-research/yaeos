@@ -15,6 +15,24 @@ contains
       alpha, &
       tau, dtaudt, dtaudt2, &
       Ge, Gen, GeT, GeT2, GeTn, Gen2)
+      !! # `nrtl_hv_ge`
+      !! # Description
+      !! This subroutine calculates the excess Gibbs energy \(G^E\) and its
+      !! derivatives for a mixture using the NRTL model modified by Huron and Vidal.
+      !! The NRTL model accounts for non-ideal interactions between components
+      !! in a mixture.
+      !! The expression for the excess Gibbs energy is:
+      !!
+      !! \[
+      !!   G^E(n, T) = 
+      !!   R T \sum_i n_i \frac{\sum_j n_j b_j E_{ji}\tau_{ji}}{\sum_j n_j b_j E_{ji}}
+      !! \]
+      !!
+      !! With:
+      !! \[
+      !!   E_{ij} = \exp(-\alpha_{ij} \tau_{ij})
+      !! \]
+      !!
       real(pr), intent(in) :: n(:) !! Number of moles vector.
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: b(:) !! \(b\) parameter
@@ -42,8 +60,10 @@ contains
 
       real(pr) :: Dn(size(n))
 
-      real(pr) :: xi(size(n), size(n)), theta(size(n), size(n)), omega(size(n), size(n)), eta(size(n), size(n))
-      real(pr) :: xiT(size(n)), etaT(size(n), size(n)), thetaT(size(n)), omegaT(size(n), size(n))
+      real(pr) :: xi(size(n), size(n)), theta(size(n), size(n)) 
+      real(pr) :: omega(size(n), size(n)), eta(size(n), size(n))
+      real(pr) :: xiT(size(n)), etaT(size(n), size(n)), thetaT(size(n))
+      real(pr) :: omegaT(size(n), size(n))
       real(pr) :: xiTT(size(n)), thetaTT(size(n))
 
       real(pr) :: denom
@@ -68,13 +88,13 @@ contains
       dEdT2 = -alpha * (dtaudt2 * E + dtaudt * dEdT)
 
       do i=1,nc
-         xi(:, i)     = E(:, i) * b * tau(:, i) * n
-         eta(:, i)    = E(:, i) * b * tau(:, i)
-         theta(:, i)  = E(:, i) * b * n
-         omega(:, i)  = E(:, i) * b
+         xi(:, i) = E(:, i) * b * tau(:, i) * n
+         eta(:, i) = E(:, i) * b * tau(:, i)
+         theta(:, i) = E(:, i) * b * n
+         omega(:, i) = E(:, i) * b
 
-         xiT(i)    = sum(b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i)))
-         etaT(:, i)   = b * (dEdT(:, i) * tau(:, i) + E(:, i) * dtaudt(:, i))
+         xiT(i) = sum(b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i)))
+         etaT(:, i)  = b * (dEdT(:, i) * tau(:, i) + E(:, i) * dtaudt(:, i))
          thetaT(i) = sum(dEdT(:, i) * b * n)
          omegaT(:, i) = dEdT(:, i) * b
 
@@ -100,7 +120,6 @@ contains
             aux_Ge = aux_Ge + n(i) * sum(xi(:, i) / sum(theta(:, i)))
          end do
       end if
-
 
       ! ==============================================================
       ! Derivatives wrt number of moles
