@@ -436,11 +436,6 @@ contains
             ! end do
          end do
 
-
-
-         write(1, *) X
-         write(2, *) dX
-
          X = X + dX
 
 
