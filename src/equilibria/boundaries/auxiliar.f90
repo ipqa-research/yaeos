@@ -87,15 +87,15 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
          ! TODO: In many cases this makes more damage than good.
-         do while(maxval(abs(X(lb:ub))) < min(limit, 0.05_pr))
-            if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
-               ! Reached to a critical point in a Txy/Pxy calculation for a
-               ! binary system, stop the calculation.
-               dS=0
-               return
-            end if
-            X = X + dXdS * dS
-         end do
+         ! do while(maxval(abs(X(lb:ub))) < min(limit, 0.05_pr))
+         !    if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
+         !       ! Reached to a critical point in a Txy/Pxy calculation for a
+         !       ! binary system, stop the calculation.
+         !       dS=0
+         !       return
+         !    end if
+         !    X = X + dXdS * dS
+         ! end do
 
          ! if (maxval(abs(X(lb:ub))) < 0.1) then
          !    ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
@@ -129,11 +129,11 @@ contains
                return
             end if
 
-            ! Start from the critical point and then do small steps until there
+            ! Start from the critical point and then do small steps until
             ! we are a bit far from it.
             X = Xc
             do while(maxval(abs(X(lb:ub))) < 1e-2_pr)
-               X = X + dS * dXdS
+               X = X + dS * dXdS * 0.1
             end do
             S = X(ns)
             return
