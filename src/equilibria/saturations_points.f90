@@ -252,7 +252,27 @@ contains
       ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      its = iters_first_step
+      iters_first_step = 100
+      f = 10
+      its = 0
+      do while(abs(f) > tol .and. its < iters_first_step)
+         its = its + 1
+         y = k*z
+         call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
+         call model%lnphi_pt(z, P, T, vz, main, lnPhi=lnfug_z, dlnphidt=dlnphi_dt_z)
+
+         k = exp(lnfug_z - lnfug_y)
+         f = sum(z*k) - 1
+         step = f/sum(z * k * (dlnphi_dt_z - dlnphi_dt_y))
+
+         if (T - step < 50) then
+            T = 100 + abs(step)
+         end if
+
+         T = T - step
+         if (abs(step) < tol .and. abs(f) < tol) exit
+      end do
+
       if (its >= iters_first_step) then
          block
             real(pr) :: X(size(n)+2), S
