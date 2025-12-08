@@ -1,0 +1,1139 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../../../../favicon.png">
+
+    <title>UNIFAC-LV &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../../../css/local.css" rel="stylesheet">
+    <link href="../../../../css/pygments.css" rel="stylesheet">
+    <script src="../../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>UNIFAC-LV</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Gibbs Excess Models</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>UNIFAC Models</a></li>
+              <li class="breadcrumb-item active" aria-current="page">UNIFAC-LV</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../../index.html">Using yaeos</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../nrtl.html">NRTL</a>
+              <a class="nav-link" href="index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="psrk.html">UNIFAC-PSRK</a>
+              <a class="nav-link active disabled" href="unifaclv.html">UNIFAC-LV</a>
+
+                </nav>
+              <a class="nav-link" href="../uniquac.html">UNIQUAC</a>
+
+                </nav>
+              <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#liquid-vapor-unifac">Liquid-Vapor UNIFAC</a><ul>
+<li><a href="#model-description">Model description</a></li>
+<li><a href="#subgroups-list">Subgroups list</a></li>
+<li><a href="#using-ugropy-to-retrieve-unifac-subgroups">Using ugropy to retrieve UNIFAC subgroups</a></li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#calculating-activity-coefficients">Calculating activity coefficients</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="liquid-vapor-unifac">Liquid-Vapor UNIFAC</h1>
+<h2 id="model-description">Model description</h2>
+<p>This is the original and classic Liquid-Vapor UNIFAC model. In this model, the
+parameters are defined as:
+<script type="math/tex; mode=display">
+    z = 10
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+    d = 1
+</script>
+</p>
+<p>The temperature function <script type="math/tex">E_{jk}</script> is defined with a single temperature 
+constant <script type="math/tex">a_{jk}</script> coefficient as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+    E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right) = \text{exp} \left(- \frac{a_{jk}}{T} \right)
+</script>
+</p>
+<h2 id="subgroups-list">Subgroups list</h2>
+<p>The list of the functional groups and its interaction parameters could be 
+accessed on the DDBST web page:
+<a href="https://www.ddbst.com/published-parameters-unifac.html">https://www.ddbst.com/published-parameters-unifac.html</a></p>
+<p>We reproduce here the list of functional groups. To instantiate a UNIFAC model
+you must define which functional groups are used in a molecule by the Subgroup
+Number column.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Subgroup number</th>
+<th style="text-align: center;">Subgroup Name</th>
+<th style="text-align: center;">Maingroup</th>
+<th style="text-align: center;">R</th>
+<th style="text-align: center;">Q</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">CH3</td>
+<td style="text-align: center;">[1]CH2</td>
+<td style="text-align: center;">0.9011</td>
+<td style="text-align: center;">0.848</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">CH2</td>
+<td style="text-align: center;">[1]CH2</td>
+<td style="text-align: center;">0.6744</td>
+<td style="text-align: center;">0.54</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">CH</td>
+<td style="text-align: center;">[1]CH2</td>
+<td style="text-align: center;">0.4469</td>
+<td style="text-align: center;">0.228</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">[1]CH2</td>
+<td style="text-align: center;">0.2195</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">CH2=CH</td>
+<td style="text-align: center;">[2]C=C</td>
+<td style="text-align: center;">1.3454</td>
+<td style="text-align: center;">1.176</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">CH=CH</td>
+<td style="text-align: center;">[2]C=C</td>
+<td style="text-align: center;">1.1167</td>
+<td style="text-align: center;">0.867</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">CH2=C</td>
+<td style="text-align: center;">[2]C=C</td>
+<td style="text-align: center;">1.1173</td>
+<td style="text-align: center;">0.988</td>
+</tr>
+<tr>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">CH=C</td>
+<td style="text-align: center;">[2]C=C</td>
+<td style="text-align: center;">0.8886</td>
+<td style="text-align: center;">0.676</td>
+</tr>
+<tr>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">ACH</td>
+<td style="text-align: center;">[3]ACH</td>
+<td style="text-align: center;">0.5313</td>
+<td style="text-align: center;">0.4</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">AC</td>
+<td style="text-align: center;">[3]ACH</td>
+<td style="text-align: center;">0.3652</td>
+<td style="text-align: center;">0.12</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">ACCH3</td>
+<td style="text-align: center;">[4]ACCH2</td>
+<td style="text-align: center;">1.2663</td>
+<td style="text-align: center;">0.968</td>
+</tr>
+<tr>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">ACCH2</td>
+<td style="text-align: center;">[4]ACCH2</td>
+<td style="text-align: center;">1.0396</td>
+<td style="text-align: center;">0.66</td>
+</tr>
+<tr>
+<td style="text-align: center;">13</td>
+<td style="text-align: center;">ACCH</td>
+<td style="text-align: center;">[4]ACCH2</td>
+<td style="text-align: center;">0.8121</td>
+<td style="text-align: center;">0.348</td>
+</tr>
+<tr>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">OH</td>
+<td style="text-align: center;">[5]OH</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1.2</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;">CH3OH</td>
+<td style="text-align: center;">[6]CH3OH</td>
+<td style="text-align: center;">1.4311</td>
+<td style="text-align: center;">1.432</td>
+</tr>
+<tr>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">H2O</td>
+<td style="text-align: center;">[7]H2O</td>
+<td style="text-align: center;">0.92</td>
+<td style="text-align: center;">1.4</td>
+</tr>
+<tr>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;">ACOH</td>
+<td style="text-align: center;">[8]ACOH</td>
+<td style="text-align: center;">0.8952</td>
+<td style="text-align: center;">0.68</td>
+</tr>
+<tr>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">CH3CO</td>
+<td style="text-align: center;">[9]CH2CO</td>
+<td style="text-align: center;">1.6724</td>
+<td style="text-align: center;">1.488</td>
+</tr>
+<tr>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;">CH2CO</td>
+<td style="text-align: center;">[9]CH2CO</td>
+<td style="text-align: center;">1.4457</td>
+<td style="text-align: center;">1.18</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">HCO</td>
+<td style="text-align: center;">[10]HCO</td>
+<td style="text-align: center;">0.998</td>
+<td style="text-align: center;">0.948</td>
+</tr>
+<tr>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;">CH3COO</td>
+<td style="text-align: center;">[11]CCOO</td>
+<td style="text-align: center;">1.9031</td>
+<td style="text-align: center;">1.728</td>
+</tr>
+<tr>
+<td style="text-align: center;">22</td>
+<td style="text-align: center;">CH2COO</td>
+<td style="text-align: center;">[11]CCOO</td>
+<td style="text-align: center;">1.6764</td>
+<td style="text-align: center;">1.42</td>
+</tr>
+<tr>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;">HCOO</td>
+<td style="text-align: center;">[12]HCOO</td>
+<td style="text-align: center;">1.242</td>
+<td style="text-align: center;">1.188</td>
+</tr>
+<tr>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">CH3O</td>
+<td style="text-align: center;">[13]CH2O</td>
+<td style="text-align: center;">1.145</td>
+<td style="text-align: center;">1.088</td>
+</tr>
+<tr>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;">CH2O</td>
+<td style="text-align: center;">[13]CH2O</td>
+<td style="text-align: center;">0.9183</td>
+<td style="text-align: center;">0.78</td>
+</tr>
+<tr>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">CHO</td>
+<td style="text-align: center;">[13]CH2O</td>
+<td style="text-align: center;">0.6908</td>
+<td style="text-align: center;">0.468</td>
+</tr>
+<tr>
+<td style="text-align: center;">27</td>
+<td style="text-align: center;">THF</td>
+<td style="text-align: center;">[13]CH2O</td>
+<td style="text-align: center;">0.9183</td>
+<td style="text-align: center;">1.1</td>
+</tr>
+<tr>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;">CH3NH2</td>
+<td style="text-align: center;">[14]CNH2</td>
+<td style="text-align: center;">1.5959</td>
+<td style="text-align: center;">1.544</td>
+</tr>
+<tr>
+<td style="text-align: center;">29</td>
+<td style="text-align: center;">CH2NH2</td>
+<td style="text-align: center;">[14]CNH2</td>
+<td style="text-align: center;">1.3692</td>
+<td style="text-align: center;">1.236</td>
+</tr>
+<tr>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">CHNH2</td>
+<td style="text-align: center;">[14]CNH2</td>
+<td style="text-align: center;">1.1417</td>
+<td style="text-align: center;">0.924</td>
+</tr>
+<tr>
+<td style="text-align: center;">31</td>
+<td style="text-align: center;">CH3NH</td>
+<td style="text-align: center;">[15]CNH</td>
+<td style="text-align: center;">1.4337</td>
+<td style="text-align: center;">1.244</td>
+</tr>
+<tr>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;">CH2NH</td>
+<td style="text-align: center;">[15]CNH</td>
+<td style="text-align: center;">1.207</td>
+<td style="text-align: center;">0.936</td>
+</tr>
+<tr>
+<td style="text-align: center;">33</td>
+<td style="text-align: center;">CHNH</td>
+<td style="text-align: center;">[15]CNH</td>
+<td style="text-align: center;">0.9795</td>
+<td style="text-align: center;">0.624</td>
+</tr>
+<tr>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">CH3N</td>
+<td style="text-align: center;">[16] (C)3N</td>
+<td style="text-align: center;">1.1865</td>
+<td style="text-align: center;">0.94</td>
+</tr>
+<tr>
+<td style="text-align: center;">35</td>
+<td style="text-align: center;">CH2N</td>
+<td style="text-align: center;">[16] (C)3N</td>
+<td style="text-align: center;">0.9597</td>
+<td style="text-align: center;">0.632</td>
+</tr>
+<tr>
+<td style="text-align: center;">36</td>
+<td style="text-align: center;">ACNH2</td>
+<td style="text-align: center;">[17]ACNH2</td>
+<td style="text-align: center;">1.06</td>
+<td style="text-align: center;">0.816</td>
+</tr>
+<tr>
+<td style="text-align: center;">37</td>
+<td style="text-align: center;">C5H5N</td>
+<td style="text-align: center;">[18]PYRIDINE</td>
+<td style="text-align: center;">2.9993</td>
+<td style="text-align: center;">2.113</td>
+</tr>
+<tr>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">C5H4N</td>
+<td style="text-align: center;">[18]PYRIDINE</td>
+<td style="text-align: center;">2.8332</td>
+<td style="text-align: center;">1.833</td>
+</tr>
+<tr>
+<td style="text-align: center;">39</td>
+<td style="text-align: center;">C5H3N</td>
+<td style="text-align: center;">[18]PYRIDINE</td>
+<td style="text-align: center;">2.667</td>
+<td style="text-align: center;">1.553</td>
+</tr>
+<tr>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">CH3CN</td>
+<td style="text-align: center;">[19]CCN</td>
+<td style="text-align: center;">1.8701</td>
+<td style="text-align: center;">1.724</td>
+</tr>
+<tr>
+<td style="text-align: center;">41</td>
+<td style="text-align: center;">CH2CN</td>
+<td style="text-align: center;">[19]CCN</td>
+<td style="text-align: center;">1.6434</td>
+<td style="text-align: center;">1.416</td>
+</tr>
+<tr>
+<td style="text-align: center;">42</td>
+<td style="text-align: center;">COOH</td>
+<td style="text-align: center;">[20]COOH</td>
+<td style="text-align: center;">1.3013</td>
+<td style="text-align: center;">1.224</td>
+</tr>
+<tr>
+<td style="text-align: center;">43</td>
+<td style="text-align: center;">HCOOH</td>
+<td style="text-align: center;">[20]COOH</td>
+<td style="text-align: center;">1.528</td>
+<td style="text-align: center;">1.532</td>
+</tr>
+<tr>
+<td style="text-align: center;">44</td>
+<td style="text-align: center;">CH2CL</td>
+<td style="text-align: center;">[21]CCL</td>
+<td style="text-align: center;">1.4654</td>
+<td style="text-align: center;">1.264</td>
+</tr>
+<tr>
+<td style="text-align: center;">45</td>
+<td style="text-align: center;">CHCL</td>
+<td style="text-align: center;">[21]CCL</td>
+<td style="text-align: center;">1.238</td>
+<td style="text-align: center;">0.952</td>
+</tr>
+<tr>
+<td style="text-align: center;">46</td>
+<td style="text-align: center;">CCL</td>
+<td style="text-align: center;">[21]CCL</td>
+<td style="text-align: center;">1.0106</td>
+<td style="text-align: center;">0.724</td>
+</tr>
+<tr>
+<td style="text-align: center;">47</td>
+<td style="text-align: center;">CH2CL2</td>
+<td style="text-align: center;">[22]CCL2</td>
+<td style="text-align: center;">2.2564</td>
+<td style="text-align: center;">1.988</td>
+</tr>
+<tr>
+<td style="text-align: center;">48</td>
+<td style="text-align: center;">CHCL2</td>
+<td style="text-align: center;">[22]CCL2</td>
+<td style="text-align: center;">2.0606</td>
+<td style="text-align: center;">1.684</td>
+</tr>
+<tr>
+<td style="text-align: center;">49</td>
+<td style="text-align: center;">CCL2</td>
+<td style="text-align: center;">[22]CCL2</td>
+<td style="text-align: center;">1.8016</td>
+<td style="text-align: center;">1.448</td>
+</tr>
+<tr>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">CHCL3</td>
+<td style="text-align: center;">[23]CCL3</td>
+<td style="text-align: center;">2.87</td>
+<td style="text-align: center;">2.41</td>
+</tr>
+<tr>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">CCL3</td>
+<td style="text-align: center;">[23]CCL3</td>
+<td style="text-align: center;">2.6401</td>
+<td style="text-align: center;">2.184</td>
+</tr>
+<tr>
+<td style="text-align: center;">52</td>
+<td style="text-align: center;">CCL4</td>
+<td style="text-align: center;">[24]CCL4</td>
+<td style="text-align: center;">3.39</td>
+<td style="text-align: center;">2.91</td>
+</tr>
+<tr>
+<td style="text-align: center;">53</td>
+<td style="text-align: center;">ACCL</td>
+<td style="text-align: center;">[25]ACCL</td>
+<td style="text-align: center;">1.1562</td>
+<td style="text-align: center;">0.844</td>
+</tr>
+<tr>
+<td style="text-align: center;">54</td>
+<td style="text-align: center;">CH3NO2</td>
+<td style="text-align: center;">[26]CNO2</td>
+<td style="text-align: center;">2.0086</td>
+<td style="text-align: center;">1.868</td>
+</tr>
+<tr>
+<td style="text-align: center;">55</td>
+<td style="text-align: center;">CH2NO2</td>
+<td style="text-align: center;">[26]CNO2</td>
+<td style="text-align: center;">1.7818</td>
+<td style="text-align: center;">1.56</td>
+</tr>
+<tr>
+<td style="text-align: center;">56</td>
+<td style="text-align: center;">CHNO2</td>
+<td style="text-align: center;">[26]CNO2</td>
+<td style="text-align: center;">1.5544</td>
+<td style="text-align: center;">1.248</td>
+</tr>
+<tr>
+<td style="text-align: center;">57</td>
+<td style="text-align: center;">ACNO2</td>
+<td style="text-align: center;">[27]ACNO2</td>
+<td style="text-align: center;">1.4199</td>
+<td style="text-align: center;">1.104</td>
+</tr>
+<tr>
+<td style="text-align: center;">58</td>
+<td style="text-align: center;">CS2</td>
+<td style="text-align: center;">[28]CS2</td>
+<td style="text-align: center;">2.057</td>
+<td style="text-align: center;">1.65</td>
+</tr>
+<tr>
+<td style="text-align: center;">59</td>
+<td style="text-align: center;">CH3SH</td>
+<td style="text-align: center;">[29]CH3SH</td>
+<td style="text-align: center;">1.877</td>
+<td style="text-align: center;">1.676</td>
+</tr>
+<tr>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">CH2SH</td>
+<td style="text-align: center;">[29]CH3SH</td>
+<td style="text-align: center;">1.651</td>
+<td style="text-align: center;">1.368</td>
+</tr>
+<tr>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">FURFURAL</td>
+<td style="text-align: center;">[30]FURFURAL</td>
+<td style="text-align: center;">3.168</td>
+<td style="text-align: center;">2.484</td>
+</tr>
+<tr>
+<td style="text-align: center;">62</td>
+<td style="text-align: center;">DOH</td>
+<td style="text-align: center;">[31]DOH</td>
+<td style="text-align: center;">2.4088</td>
+<td style="text-align: center;">2.248</td>
+</tr>
+<tr>
+<td style="text-align: center;">63</td>
+<td style="text-align: center;">I</td>
+<td style="text-align: center;">[32]I</td>
+<td style="text-align: center;">1.264</td>
+<td style="text-align: center;">0.992</td>
+</tr>
+<tr>
+<td style="text-align: center;">64</td>
+<td style="text-align: center;">BR</td>
+<td style="text-align: center;">[33]BR</td>
+<td style="text-align: center;">0.9492</td>
+<td style="text-align: center;">0.832</td>
+</tr>
+<tr>
+<td style="text-align: center;">65</td>
+<td style="text-align: center;">CH=-C</td>
+<td style="text-align: center;">[34]C=-C</td>
+<td style="text-align: center;">1.292</td>
+<td style="text-align: center;">1.088</td>
+</tr>
+<tr>
+<td style="text-align: center;">66</td>
+<td style="text-align: center;">C=-C</td>
+<td style="text-align: center;">[34]C=-C</td>
+<td style="text-align: center;">1.0613</td>
+<td style="text-align: center;">0.784</td>
+</tr>
+<tr>
+<td style="text-align: center;">67</td>
+<td style="text-align: center;">DMSO</td>
+<td style="text-align: center;">[35]DMSO</td>
+<td style="text-align: center;">2.8266</td>
+<td style="text-align: center;">2.472</td>
+</tr>
+<tr>
+<td style="text-align: center;">68</td>
+<td style="text-align: center;">ACRY</td>
+<td style="text-align: center;">[36]ACRY</td>
+<td style="text-align: center;">2.3144</td>
+<td style="text-align: center;">2.052</td>
+</tr>
+<tr>
+<td style="text-align: center;">69</td>
+<td style="text-align: center;">CL-(C=C)</td>
+<td style="text-align: center;">[37]CLCC</td>
+<td style="text-align: center;">0.791</td>
+<td style="text-align: center;">0.724</td>
+</tr>
+<tr>
+<td style="text-align: center;">70</td>
+<td style="text-align: center;">C=C</td>
+<td style="text-align: center;">[2]C=C</td>
+<td style="text-align: center;">0.6605</td>
+<td style="text-align: center;">0.485</td>
+</tr>
+<tr>
+<td style="text-align: center;">71</td>
+<td style="text-align: center;">ACF</td>
+<td style="text-align: center;">[38]ACF</td>
+<td style="text-align: center;">0.6948</td>
+<td style="text-align: center;">0.524</td>
+</tr>
+<tr>
+<td style="text-align: center;">72</td>
+<td style="text-align: center;">DMF</td>
+<td style="text-align: center;">[39]DMF</td>
+<td style="text-align: center;">3.0856</td>
+<td style="text-align: center;">2.736</td>
+</tr>
+<tr>
+<td style="text-align: center;">73</td>
+<td style="text-align: center;">HCON(CH2)2</td>
+<td style="text-align: center;">[39]DMF</td>
+<td style="text-align: center;">2.6322</td>
+<td style="text-align: center;">2.12</td>
+</tr>
+<tr>
+<td style="text-align: center;">74</td>
+<td style="text-align: center;">CF3</td>
+<td style="text-align: center;">[40]CF2</td>
+<td style="text-align: center;">1.406</td>
+<td style="text-align: center;">1.38</td>
+</tr>
+<tr>
+<td style="text-align: center;">75</td>
+<td style="text-align: center;">CF2</td>
+<td style="text-align: center;">[40]CF2</td>
+<td style="text-align: center;">1.0105</td>
+<td style="text-align: center;">0.92</td>
+</tr>
+<tr>
+<td style="text-align: center;">76</td>
+<td style="text-align: center;">CF</td>
+<td style="text-align: center;">[40]CF2</td>
+<td style="text-align: center;">0.615</td>
+<td style="text-align: center;">0.46</td>
+</tr>
+<tr>
+<td style="text-align: center;">77</td>
+<td style="text-align: center;">COO</td>
+<td style="text-align: center;">[41]COO</td>
+<td style="text-align: center;">1.38</td>
+<td style="text-align: center;">1.2</td>
+</tr>
+<tr>
+<td style="text-align: center;">78</td>
+<td style="text-align: center;">SIH3</td>
+<td style="text-align: center;">[42]SIH2</td>
+<td style="text-align: center;">1.6035</td>
+<td style="text-align: center;">1.2632</td>
+</tr>
+<tr>
+<td style="text-align: center;">79</td>
+<td style="text-align: center;">SIH2</td>
+<td style="text-align: center;">[42]SIH2</td>
+<td style="text-align: center;">1.4443</td>
+<td style="text-align: center;">1.0063</td>
+</tr>
+<tr>
+<td style="text-align: center;">80</td>
+<td style="text-align: center;">SIH</td>
+<td style="text-align: center;">[42]SIH2</td>
+<td style="text-align: center;">1.2853</td>
+<td style="text-align: center;">0.7494</td>
+</tr>
+<tr>
+<td style="text-align: center;">81</td>
+<td style="text-align: center;">SI</td>
+<td style="text-align: center;">[42]SIH2</td>
+<td style="text-align: center;">1.047</td>
+<td style="text-align: center;">0.4099</td>
+</tr>
+<tr>
+<td style="text-align: center;">82</td>
+<td style="text-align: center;">SIH2O</td>
+<td style="text-align: center;">[43]SIO</td>
+<td style="text-align: center;">1.4838</td>
+<td style="text-align: center;">1.0621</td>
+</tr>
+<tr>
+<td style="text-align: center;">83</td>
+<td style="text-align: center;">SIHO</td>
+<td style="text-align: center;">[43]SIO</td>
+<td style="text-align: center;">1.303</td>
+<td style="text-align: center;">0.7639</td>
+</tr>
+<tr>
+<td style="text-align: center;">84</td>
+<td style="text-align: center;">SIO</td>
+<td style="text-align: center;">[43]SIO</td>
+<td style="text-align: center;">1.1044</td>
+<td style="text-align: center;">0.4657</td>
+</tr>
+<tr>
+<td style="text-align: center;">85</td>
+<td style="text-align: center;">NMP</td>
+<td style="text-align: center;">[44]NMP</td>
+<td style="text-align: center;">3.981</td>
+<td style="text-align: center;">3.2</td>
+</tr>
+<tr>
+<td style="text-align: center;">86</td>
+<td style="text-align: center;">CCL3F</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">3.0356</td>
+<td style="text-align: center;">2.644</td>
+</tr>
+<tr>
+<td style="text-align: center;">87</td>
+<td style="text-align: center;">CCL2F</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">2.2287</td>
+<td style="text-align: center;">1.916</td>
+</tr>
+<tr>
+<td style="text-align: center;">88</td>
+<td style="text-align: center;">HCCL2F</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">2.406</td>
+<td style="text-align: center;">2.116</td>
+</tr>
+<tr>
+<td style="text-align: center;">89</td>
+<td style="text-align: center;">HCCLF</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">1.6493</td>
+<td style="text-align: center;">1.416</td>
+</tr>
+<tr>
+<td style="text-align: center;">90</td>
+<td style="text-align: center;">CCLF2</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">1.8174</td>
+<td style="text-align: center;">1.648</td>
+</tr>
+<tr>
+<td style="text-align: center;">91</td>
+<td style="text-align: center;">HCCLF2</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">1.967</td>
+<td style="text-align: center;">1.828</td>
+</tr>
+<tr>
+<td style="text-align: center;">92</td>
+<td style="text-align: center;">CCLF3</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">2.1721</td>
+<td style="text-align: center;">2.1</td>
+</tr>
+<tr>
+<td style="text-align: center;">93</td>
+<td style="text-align: center;">CCL2F2</td>
+<td style="text-align: center;">[45]CCLF</td>
+<td style="text-align: center;">2.6243</td>
+<td style="text-align: center;">2.376</td>
+</tr>
+<tr>
+<td style="text-align: center;">94</td>
+<td style="text-align: center;">AMH2</td>
+<td style="text-align: center;">[46]CON(AM)</td>
+<td style="text-align: center;">1.4515</td>
+<td style="text-align: center;">1.248</td>
+</tr>
+<tr>
+<td style="text-align: center;">95</td>
+<td style="text-align: center;">AMHCH3</td>
+<td style="text-align: center;">[46]CON(AM)</td>
+<td style="text-align: center;">2.1905</td>
+<td style="text-align: center;">1.796</td>
+</tr>
+<tr>
+<td style="text-align: center;">96</td>
+<td style="text-align: center;">AMHCH2</td>
+<td style="text-align: center;">[46]CON(AM)</td>
+<td style="text-align: center;">1.9637</td>
+<td style="text-align: center;">1.488</td>
+</tr>
+<tr>
+<td style="text-align: center;">97</td>
+<td style="text-align: center;">AM(CH3)2</td>
+<td style="text-align: center;">[46]CON(AM)</td>
+<td style="text-align: center;">2.8589</td>
+<td style="text-align: center;">2.428</td>
+</tr>
+<tr>
+<td style="text-align: center;">98</td>
+<td style="text-align: center;">AMCH3CH2</td>
+<td style="text-align: center;">[46]CON(AM)</td>
+<td style="text-align: center;">2.6322</td>
+<td style="text-align: center;">2.12</td>
+</tr>
+<tr>
+<td style="text-align: center;">99</td>
+<td style="text-align: center;">AM(CH2)2</td>
+<td style="text-align: center;">[46]CON(AM)</td>
+<td style="text-align: center;">2.4054</td>
+<td style="text-align: center;">1.812</td>
+</tr>
+<tr>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">C2H5O2</td>
+<td style="text-align: center;">[47]OCCOH</td>
+<td style="text-align: center;">2.1226</td>
+<td style="text-align: center;">1.904</td>
+</tr>
+<tr>
+<td style="text-align: center;">101</td>
+<td style="text-align: center;">C2H4O2</td>
+<td style="text-align: center;">[47]OCCOH</td>
+<td style="text-align: center;">1.8952</td>
+<td style="text-align: center;">1.592</td>
+</tr>
+<tr>
+<td style="text-align: center;">102</td>
+<td style="text-align: center;">CH3S</td>
+<td style="text-align: center;">[48]CH2S</td>
+<td style="text-align: center;">1.613</td>
+<td style="text-align: center;">1.368</td>
+</tr>
+<tr>
+<td style="text-align: center;">103</td>
+<td style="text-align: center;">CH2S</td>
+<td style="text-align: center;">[48]CH2S</td>
+<td style="text-align: center;">1.3863</td>
+<td style="text-align: center;">1.06</td>
+</tr>
+<tr>
+<td style="text-align: center;">104</td>
+<td style="text-align: center;">CHS</td>
+<td style="text-align: center;">[48]CH2S</td>
+<td style="text-align: center;">1.1589</td>
+<td style="text-align: center;">0.748</td>
+</tr>
+<tr>
+<td style="text-align: center;">105</td>
+<td style="text-align: center;">MORPH</td>
+<td style="text-align: center;">[49]MORPH</td>
+<td style="text-align: center;">3.474</td>
+<td style="text-align: center;">2.796</td>
+</tr>
+<tr>
+<td style="text-align: center;">106</td>
+<td style="text-align: center;">C4H4S</td>
+<td style="text-align: center;">[50]THIOPHEN</td>
+<td style="text-align: center;">2.8569</td>
+<td style="text-align: center;">2.14</td>
+</tr>
+<tr>
+<td style="text-align: center;">107</td>
+<td style="text-align: center;">C4H3S</td>
+<td style="text-align: center;">[50]THIOPHEN</td>
+<td style="text-align: center;">2.6908</td>
+<td style="text-align: center;">1.86</td>
+</tr>
+<tr>
+<td style="text-align: center;">108</td>
+<td style="text-align: center;">C4H2S</td>
+<td style="text-align: center;">[50]THIOPHEN</td>
+<td style="text-align: center;">2.5247</td>
+<td style="text-align: center;">1.58</td>
+</tr>
+<tr>
+<td style="text-align: center;">109</td>
+<td style="text-align: center;">NCO</td>
+<td style="text-align: center;">[51]NCO</td>
+<td style="text-align: center;">1.0567</td>
+<td style="text-align: center;">0.732</td>
+</tr>
+<tr>
+<td style="text-align: center;">118</td>
+<td style="text-align: center;">(CH2)2SU</td>
+<td style="text-align: center;">[55]SULFONES</td>
+<td style="text-align: center;">2.6869</td>
+<td style="text-align: center;">2.12</td>
+</tr>
+<tr>
+<td style="text-align: center;">119</td>
+<td style="text-align: center;">CH2CHSU</td>
+<td style="text-align: center;">[55]SULFONES</td>
+<td style="text-align: center;">2.4595</td>
+<td style="text-align: center;">1.808</td>
+</tr>
+<tr>
+<td style="text-align: center;">178</td>
+<td style="text-align: center;">IMIDAZOL</td>
+<td style="text-align: center;">[84]IMIDAZOL</td>
+<td style="text-align: center;">2.026</td>
+<td style="text-align: center;">0.868</td>
+</tr>
+<tr>
+<td style="text-align: center;">179</td>
+<td style="text-align: center;">BTI</td>
+<td style="text-align: center;">[85]BTI</td>
+<td style="text-align: center;">5.774</td>
+<td style="text-align: center;">4.932</td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-ugropy-to-retrieve-unifac-subgroups">Using <code>ugropy</code> to retrieve UNIFAC subgroups</h2>
+<p>There is the possibility of using another library of our group
+<a href="https://github.com/ipqa-research/ugropy"><code>ugropy</code></a> to retrieve the UNIFAC 
+subgroups and not suffer the pain of typing the subgroup numbers and
+parameters by hand. The next Python snippet shows how you can use it.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ugropy</span> <span class="kn">import</span> <span class="n">unifac</span><span class="p">,</span> <span class="n">writers</span>
+
+
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;toluene&quot;</span><span class="p">,</span> <span class="s2">&quot;acetone&quot;</span><span class="p">]</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">unifac</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">subgroups</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+
+<span class="n">fortran_code</span> <span class="o">=</span> <span class="n">writers</span><span class="o">.</span><span class="n">to_yaeos</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">unifac</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">fortran_code</span><span class="p">)</span>
+</code></pre></div>
+
+<p>And you will obtain:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__models_ge_group_contribution_unifac</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div>
+
+<h2 id="examples">Examples</h2>
+<p>Here is an example of a fully instantiated UNIFACLV model. Please check the
+<code>Gibbs Excess Models</code> section in the user documentation to learn all the things
+you can do with this model.</p>
+<p>Notice that here we are using the <a href="../../../../proc/setup_unifac.html">setup_unifac</a> function to instantiate the
+model.</p>
+<h3 id="calculating-activity-coefficients">Calculating activity coefficients</h3>
+<p>We can instantiate a <a href="../../../../type/unifac.html">UNIFAC</a> model with a mixture ethanol-water and evaluate
+the logarithm of activity coefficients of the model for a 0.5 mole fraction of
+each, and a temperature of 298.0 K.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
+<span class="k">use </span><span class="n">yaeos__models_ge_group_contribution_unifac</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span>
+
+<span class="c">! Variables declarations</span>
+<span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c">! Variables instances</span>
+<span class="c">! Ethanol definition [CH3, CH2, OH]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span><span class="w"> </span><span class="c">! Subgroups ids</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c">! Subgroups occurrences</span>
+
+<span class="c">! Water definition [H2O]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c">! Model setup</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
+<span class="c">! Calculate ln_gammas</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">([</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="p">],</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span>
+</code></pre></div>
+
+<h2 id="references">References</h2>
+<ol>
+<li>Fredenslund, A., Jones, R. L., &amp; Prausnitz, J. M. (1975). Group‐contribution
+estimation of activity coefficients in nonideal liquid mixtures. AIChE Journal,
+21(6), 1086–1099.
+<a href="https://doi.org/10.1002/aic.690210607">https://doi.org/10.1002/aic.690210607</a></li>
+<li>Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., &amp; Rasmussen, P. (1979).
+Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and Extension.
+Industrial &amp; Engineering Chemistry Process Design and Development, 18(4),
+714–722.
+<a href="https://doi.org/10.1021/i260072a024">https://doi.org/10.1021/i260072a024</a></li>
+<li>Gmehling, J., Rasmussen, P., &amp; Fredenslund, A. (1982). Vapor-liquid
+equilibriums by UNIFAC group contribution. Revision and extension. 2.
+Industrial &amp; Engineering Chemistry Process Design and Development, 21(1),
+118–127.
+<a href="https://doi.org/10.1021/i200016a021">https://doi.org/10.1021/i200016a021</a></li>
+<li>Macedo, E. A., Weidlich, U., Gmehling, J., &amp; Rasmussen, P. (1983).
+Vapor-liquid equilibriums by UNIFAC group contribution. Revision and extension.</li>
+<li>Industrial &amp; Engineering Chemistry Process Design and Development, 22(4),
+676–678.
+<a href="https://doi.org/10.1021/i200023a023">https://doi.org/10.1021/i200023a023</a></li>
+<li>Tiegs, D., Rasmussen, P., Gmehling, J., &amp; Fredenslund, A. (1987).
+Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
+extension. Industrial &amp; Engineering Chemistry Research, 26(1), 159–161.
+<a href="https://doi.org/10.1021/ie00061a030">https://doi.org/10.1021/ie00061a030</a></li>
+<li>Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &amp; Gmehling, J.
+(1991). Vapor-liquid equilibria by UNIFAC group contribution. 5. Revision and
+extension. Industrial &amp; Engineering Chemistry Research, 30 (10), 2352–2355.
+<a href="https://doi.org/10.1021/ie00058a017">https://doi.org/10.1021/ie00058a017</a></li>
+<li>Wittig, R., Lohmann, J., &amp; Gmehling, J. (2003). Vapor−Liquid Equilibria by
+UNIFAC Group Contribution. 6. Revision and Extension. Industrial &amp; Engineering
+Chemistry Research, 42(1), 183–188.
+<a href="https://doi.org/10.1021/ie020506l">https://doi.org/10.1021/ie020506l</a></li>
+</ol>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-12-08 18:19 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,164 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitting Equations of State &mdash; yaeos 4.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a17b270f"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Fitting interaction parameters of binary systems" href="fitting_tutorial.html" />
+    <link rel="prev" title="Binary Systems Diagrams" href="../gpec/gpec_tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Fitting Equations of State</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fitting_tutorial.html">Fitting interaction parameters of binary systems</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tutorial_tree.html">Tutorial</a></li>
+          <li class="breadcrumb-item"><a href="../equations_of_state.html">Equations of State (EoS)</a></li>
+      <li class="breadcrumb-item active">Fitting Equations of State</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/tutorial/equations_of_state/fitting/fitting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fitting-equations-of-state">
+<h1>Fitting Equations of State<a class="headerlink" href="#fitting-equations-of-state" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fitting_tutorial.html">Fitting interaction parameters of binary systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fitting_tutorial.html#Data-structure">Data structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting_tutorial.html#Default-model-prediction">Default model prediction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fitting_tutorial.html#Calculation-of-Pxy-diagrams">Calculation of Pxy diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fitting_tutorial.html#Definition-of-the-optimization-problem">Definition of the optimization problem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fitting_tutorial.html#Model-setter-function">Model setter function</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fitting_tutorial.html#Optimization-result">Optimization result</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fitting_tutorial.html#Obtain-the-fitted-model">Obtain the fitted model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitting_tutorial.html#Make-predictions">Make predictions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fitting_tutorial.html#Another-example">Another example</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../gpec/gpec_tutorial.html" class="btn btn-neutral float-left" title="Binary Systems Diagrams" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fitting_tutorial.html" class="btn btn-neutral float-right" title="Fitting interaction parameters of binary systems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

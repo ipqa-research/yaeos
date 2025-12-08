@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
 </ul>
 
@@ -90,8 +91,12 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">argrelmax</span><span class="p">,</span> <span class="n">argrelmin</span>
 
-<span class="k">def</span> <span class="nf">binary_isofugacity_x1y1pt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
+
+
+<span class="k">def</span> <span class="nf">binary_isofugacity_x1y1pt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Isofugacity evaluation at a given P and T.&quot;&quot;&quot;</span>
     <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span>
 
@@ -108,8 +113,35 @@
 
 <div class="viewcode-block" id="solve_pt">
 <a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.solve_pt">[docs]</a>
-<span class="k">def</span> <span class="nf">solve_pt</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve a point at a given P and T.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">solve_pt</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve a point at a given P and T.</span>
+
+<span class="sd">    This function solves a point at a given pressure and temperature. That is,</span>
+<span class="sd">    solve the composition of two phases in equilibrium at T and P. The function</span>
+<span class="sd">    handles liquid-vapor or liquid-liquid.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : ArModel</span>
+<span class="sd">        yaeos ArModel object.</span>
+<span class="sd">    pressure : float</span>
+<span class="sd">        Pressure [bar].</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Temperature [K].</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        Kind of phase equilibrium calculation. Options are:</span>
+<span class="sd">        - &quot;liquid-liquid&quot;: liquid-liquid equilibrium calculation.</span>
+<span class="sd">        - &quot;PT&quot;: pressure-temperature calculation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple[float, float]</span>
+<span class="sd">        x1, y1: Mole fractions of component 1 (light component) in both phases.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">x10</span><span class="p">,</span> <span class="n">y10</span> <span class="o">=</span> <span class="n">find_init_binary_ll</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -130,17 +162,31 @@
 
 
 
-<span class="k">def</span> <span class="nf">find_init_binary_ll</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find initial guess for a binary liquid-liquid system.&quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">argrelmin</span><span class="p">,</span> <span class="n">argrelmax</span>
+<span class="k">def</span> <span class="nf">find_init_binary_ll</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find initial guess for a binary liquid-liquid system.</span>
 
-    <span class="p">(</span>
-        <span class="n">p</span><span class="p">,</span>
-        <span class="n">t</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">pressure</span><span class="p">,</span>
-        <span class="n">temperature</span><span class="p">,</span>
-    <span class="p">)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : ArModel</span>
+<span class="sd">        yaeos ArModel object.</span>
+<span class="sd">    pressure : float</span>
+<span class="sd">        Pressure [bar].</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Temperature [K].</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        Kind of phase equilibrium calculation. Options are:</span>
+<span class="sd">        - &quot;liquid-liquid&quot;: liquid-liquid equilibrium calculation.</span>
+<span class="sd">        - &quot;PT&quot;: pressure-temperature calculation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple[float, float]</span>
+<span class="sd">        x1, y1: Initial guess for mole fractions of component 1 (light</span>
+<span class="sd">        component) in both phases.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span>
 
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;liquid-liquid&quot;</span><span class="p">:</span>
         <span class="n">root</span> <span class="o">=</span> <span class="s2">&quot;liquid&quot;</span>
@@ -155,6 +201,7 @@
             <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">zs</span>
         <span class="p">]</span>
     <span class="p">)</span>
+
     <span class="n">phis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">phis</span><span class="p">)</span>
     <span class="n">fug_1</span> <span class="o">=</span> <span class="n">zs</span> <span class="o">*</span> <span class="n">phis</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span>
 

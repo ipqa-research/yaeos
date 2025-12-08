@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">41 statements</a>
+                 title=" 0.3% of total for procedures.">39 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/volume.f90"> Source File</a>
+              <a href="../src/phase_envelopes_tx_mp.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/volume.f90.html'>volume.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_solvers.html'>yaeos__models_solvers</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_tx_mp.f90.html'>phase_envelopes_tx_mp.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,13 +135,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-ar~3">Ar</a>
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-arv~3">ArV</a>
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-arv2~3">ArV2</a>
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-b~2">B</a>
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-del">del</a>
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-der">der</a>
-            <a class="list-group-item" href="../proc/solve_point~3.html#variable-totn~2">totn</a>
+            <a class="list-group-item" href="../proc/solve_point~3.html#variable-x0~7">X0</a>
+            <a class="list-group-item" href="../proc/solve_point~3.html#variable-dx~8">dX</a>
+            <a class="list-group-item" href="../proc/solve_point~3.html#variable-it~2">iT</a>
+            <a class="list-group-item" href="../proc/solve_point~3.html#variable-ia~2">ia</a>
+            <a class="list-group-item" href="../proc/solve_point~3.html#variable-nc~29">nc</a>
         </div>
       </div>
     </div>
@@ -171,11 +169,31 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)  
+    <h2>private  subroutine solve_point(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
 </h2>
-    
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
 
 
+    <h1 id="solve_point">solve_point</h1>
+<p>Solve a point in the multiphase envelope.</p>
+<h1 id="description">Description</h1>
+<p>This subroutine solves a point of the system of equations for a
+multiphase isobaric line. It uses the Newton-Raphson method,.</p>
+
+    <h3>Type Bound</h3>
+    <p><a href='../type/txenvelmp.html'>TXEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -190,7 +208,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~4"></span>
+              <span class="anchor" id="variable-model~30"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -198,14 +216,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>eos</strong></td>
+            <td><strong>model</strong></td>
             <td>
-                
+                <p>Model to use for the calculations.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~8"></span>
+              <span class="anchor" id="variable-z0~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -213,14 +231,44 @@
               
             </td>
             <td>::</td>
-            <td><strong>n</strong>(:)</td>
+            <td><strong>z0</strong>(:)</td>
             <td>
-                
+                <p>Initial mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~14"></span>
+              <span class="anchor" id="variable-zi~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
+            <td>
+                <p>Second mixture composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-np~5"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>np</strong></td>
+            <td>
+                <p>Number of main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~30"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -230,12 +278,12 @@
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-                <p>Objective pressure [bar]</p>
+                <p>Presure [bar].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~15"></span>
+              <span class="anchor" id="variable-beta_w~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -243,59 +291,44 @@
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>beta_w</strong></td>
             <td>
-                <p>Temperature [K]</p>
+                <p>Fraction of the reference (incipient) phase</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~5"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-kinds_x~6"></span>
+              character(len=14),
             </td>
-<td>intent(out)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>V</strong></td>
+            <td><strong>kinds_x</strong>(np)</td>
             <td>
-                <p>Obtained volume [L]</p>
+                <p>Kinds of the main phases</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pcalc"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-kind_w~6"></span>
+              character(len=14),
             </td>
-<td>intent(out)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>Pcalc</strong></td>
+            <td><strong>kind_w</strong></td>
             <td>
-                <p>Calculated pressure at V [bar]</p>
+                <p>Kind of the reference phase</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zeta~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ZETA</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-zetmin~2"></span>
+              <span class="anchor" id="variable-x~33"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -303,29 +336,59 @@
               
             </td>
             <td>::</td>
-            <td><strong>ZETMIN</strong></td>
+            <td><strong>X</strong>(:)</td>
             <td>
-                
+                <p>Vector of variables</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zetmax~2"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-ns~31"></span>
+              integer,
             </td>
-<td>intent(inout)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>ZETMAX</strong></td>
+            <td><strong>ns</strong></td>
+            <td>
+                <p>Number of specification</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~27"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>S</strong></td>
+            <td>
+                <p>Specification value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dxds~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dXdS</strong>(size(X))</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-at~2"></span>
+              <span class="anchor" id="variable-f~20"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -333,14 +396,29 @@
               
             </td>
             <td>::</td>
-            <td><strong>AT</strong></td>
+            <td><strong>F</strong>(size(X))</td>
             <td>
-                
+                <p>Vector of functions valuated</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iter~2"></span>
+              <span class="anchor" id="variable-df~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>df</strong>(size(X),size(X))</td>
+            <td>
+                <p>Jacobian matrix</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iters~7"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -348,9 +426,24 @@
               
             </td>
             <td>::</td>
-            <td><strong>iter</strong></td>
+            <td><strong>iters</strong></td>
             <td>
-                
+                <p>Number of iterations needed to converge the point.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iterations~6"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iterations</strong></td>
+            <td>
+                <p>Maximum number of iterations to solve the point.</p>
             </td>
         </tr>
     </tbody>
@@ -373,15 +466,15 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~3"></span>
+              <span class="anchor" id="variable-x0~7"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Ar</strong></td>
+            <td><strong>X0</strong>(size(X))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -390,15 +483,15 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~3"></span>
+              <span class="anchor" id="variable-dx~8"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>ArV</strong></td>
+            <td><strong>dX</strong>(size(X))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -407,87 +500,53 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~3"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-it~2"></span>
+              integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>ArV2</strong></td>
+            <td><strong>iT</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Index of the temperature variable in the vector X</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~2"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-ia~2"></span>
+              integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>B</strong></td>
+            <td><strong>ia</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Index of the <script type="math/tex">alpha</script> variable in the vector X</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-nc~29"></span>
+              integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>del</strong></td>
+            <td><strong>nc</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-der"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>der</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-totn~2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>totn</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
+                <p>Number of components in the mixture.</p>
             </td>
         </tr>
     </tbody>
@@ -523,7 +582,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-12-07 22:38 +0000             </p>
+ on 2025-12-08 18:19 +0000             </p>
           </div>
         </div>
         <br>

@@ -3,7 +3,7 @@
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 4
    :caption: Tutorial
 
    tutorial/tutorial_tree
@@ -14,16 +14,16 @@
    :caption: API documentation
    
    core
-   envelopes
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 4
 
    models/init
 
 .. toctree::
    :maxdepth: 5
 
+   envelopes
    fitting
 
 Indices and tables

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting started &mdash; yaeos 4.3.0 documentation</title>
+  <title>Getting Started &mdash; yaeos 4.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -25,7 +25,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Instantiate a model" href="instantiate_model.html" />
+    <link rel="next" title="Equations of State (EoS)" href="equations_of_state/equations_of_state.html" />
     <link rel="prev" title="Tutorial" href="tutorial_tree.html" /> 
 </head>
 
@@ -51,17 +51,20 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="tutorial_tree.html">Tutorial</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Getting started</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Local-Installation">Local Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Building-from-source">Building from source</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Setting-a-Google-Colab-to-use-yaeos">Setting a Google Colab to use yaeos</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Using-This-Documentation">Using This Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Installation-Instructions">Installation Instructions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Local-Installation">Local Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Building-from-source">Building from source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Setting-a-Google-Colab-to-use-yaeos">Setting a Google Colab to use yaeos</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="instantiate_model.html">Instantiate a model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cubic_eos.html#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fitting.html">Fitting interaction parameters of binary systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Installation-For-Developers">Installation For Developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Yaeos-units">Yaeos units</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/equations_of_state.html">Equations of State (EoS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
 </ul>
@@ -73,6 +76,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fitting.html">Fitting</a></li>
 </ul>
 
@@ -91,7 +95,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="tutorial_tree.html">Tutorial</a></li>
-      <li class="breadcrumb-item active">Getting started</li>
+      <li class="breadcrumb-item active">Getting Started</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/tutorial/getting_started.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,17 +105,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Getting-started">
-<h1>Getting started<a class="headerlink" href="#Getting-started" title="Link to this heading"></a></h1>
+  <section id="Getting-Started">
+<h1>Getting Started<a class="headerlink" href="#Getting-Started" title="Link to this heading"></a></h1>
+<section id="Using-This-Documentation">
+<h2>Using This Documentation<a class="headerlink" href="#Using-This-Documentation" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> is a Fortran library of thermodynamic equations of state (EOS). If you’re reading this, you’re probably looking to use <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> from Python.</p>
+<p>Under the hood, all thermodynamic models are implemented in Fortran. The Python API provides simple functions that call these Fortran routines through a <code class="docutils literal notranslate"><span class="pre">C</span></code> interface (compiled using <code class="docutils literal notranslate"><span class="pre">numpy.f2py</span></code>).</p>
+<p>If you’re only interested in using <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> from Python, that’s totally fine — but keep in mind the following:</p>
+<blockquote>
+<div><p>The documentation is divided into two parts: <strong>Python-side</strong> and <strong>Fortran-side</strong>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>The Python tutorial and API reference contain everything you need to work with the Python interface.</p>
+<p>However, <strong>the Fortran documentation provides additional technical details for each model</strong>, such as mathematical expressions, derivatives, and bibliographic references. These may be useful if you want to understand the models more deeply.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Start with the Python documentation.</strong> Refer to the Fortran documentation only if you want to explore a model’s theory, equations, or parameters meaning in more detail.</p>
+<p><a class="reference external" href="https://ipqa-research.github.io/yaeos/page/index.html">Fortran User Documentation</a></p>
+</div></blockquote>
+</section>
+<section id="Installation-Instructions">
+<h2>Installation Instructions<a class="headerlink" href="#Installation-Instructions" title="Link to this heading"></a></h2>
 <section id="Local-Installation">
-<h2>Local Installation<a class="headerlink" href="#Local-Installation" title="Link to this heading"></a></h2>
-<p>To install the last version of <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> uploaded to PyPI simply do:</p>
+<h3>Local Installation<a class="headerlink" href="#Local-Installation" title="Link to this heading"></a></h3>
+<p>To install the last version of <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> uploaded to <a class="reference external" href="https://pypi.org/project/yaeos/">PyPI</a> simply do:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>yaeos
 </pre></div>
 </div>
 </section>
 <section id="Building-from-source">
-<h2>Building from source<a class="headerlink" href="#Building-from-source" title="Link to this heading"></a></h2>
+<h3>Building from source<a class="headerlink" href="#Building-from-source" title="Link to this heading"></a></h3>
 <p>To build <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> from source you can clone the repository and install it with pip. The system dependencies are:</p>
 <ul class="simple">
 <li><p>LAPACK</p></li>
@@ -125,7 +148,7 @@ pip<span class="w"> </span>install<span class="w"> </span>.
 </div>
 </section>
 <section id="Setting-a-Google-Colab-to-use-yaeos">
-<h2>Setting a Google Colab to use yaeos<a class="headerlink" href="#Setting-a-Google-Colab-to-use-yaeos" title="Link to this heading"></a></h2>
+<h3>Setting a Google Colab to use yaeos<a class="headerlink" href="#Setting-a-Google-Colab-to-use-yaeos" title="Link to this heading"></a></h3>
 <p>To install <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> on Google Colab you can do the following command to install the last version uploaded to PyPI:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>%pip<span class="w"> </span>install<span class="w"> </span>yaeos
 </pre></div>
@@ -142,14 +165,28 @@ except:
 <span class="w">  </span><span class="nv">IN_COLAB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>False
 
 <span class="k">if</span><span class="w"> </span>IN_COLAB:
-<span class="w">  </span>!git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ipqa-research/yaeos.git
-<span class="w">  </span>%cd<span class="w"> </span>yaeos
-<span class="w">  </span>!git<span class="w"> </span>checkout<span class="w"> </span>dev
-<span class="w">  </span>%pip<span class="w"> </span>install<span class="w"> </span>./python
-<span class="w">  </span>%cd<span class="w"> </span>..
-<span class="w">  </span>%rm<span class="w"> </span>-r<span class="w"> </span>yaeos
+<span class="w">  </span>%pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;git+https://github.com/ipqa-research/yaeos.git@dev#subdirectory=python&#39;</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="Installation-For-Developers">
+<h2>Installation For Developers<a class="headerlink" href="#Installation-For-Developers" title="Link to this heading"></a></h2>
+<p>If you want to contribute to <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>, you may want to install the Python API in development mode. This lets you edit the code and test your changes without having to reinstall the package every time you modify the Python code.</p>
+<p>To do this, run the following:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ipqa-research/yaeos.git
+<span class="nb">cd</span><span class="w"> </span>yaeos/python
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-build.txt
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-build-isolation
+</pre></div>
+</div>
+</section>
+<section id="Yaeos-units">
+<h2>Yaeos units<a class="headerlink" href="#Yaeos-units" title="Link to this heading"></a></h2>
+<p>In thermodynamics, the units of evaluated properties are defined by the value of the ideal gas constant <code class="docutils literal notranslate"><span class="pre">R</span></code>. In <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>, we use the value of <code class="docutils literal notranslate"><span class="pre">R</span></code> as:</p>
+<p><span class="math notranslate nohighlight">\(R = 0.08314462618 \frac{bar \; L}{K \; mol}\)</span></p>
+<p>Because of that, pressure must be specified as bar <span class="math notranslate nohighlight">\([bar]\)</span>, volume as liters <span class="math notranslate nohighlight">\([L]\)</span>, temperature as Kelvin <span class="math notranslate nohighlight">\([K]\)</span> and number of moles as moles <span class="math notranslate nohighlight">\([mol]\)</span>. The returns of the properties will be in the same units as the inputs. Energetic properties as enthalpy, entropy, etc. will have unit of <span class="math notranslate nohighlight">\([bar \; L]\)</span>, which equals to centijoules <span class="math notranslate nohighlight">\([cJ]\)</span>.</p>
 </section>
 </section>
 
@@ -158,7 +195,7 @@ except:
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="tutorial_tree.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="instantiate_model.html" class="btn btn-neutral float-right" title="Instantiate a model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="equations_of_state/equations_of_state.html" class="btn btn-neutral float-right" title="Equations of State (EoS)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

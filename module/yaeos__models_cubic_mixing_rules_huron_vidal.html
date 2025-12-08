@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.2% of total for modules and submodules.">276 statements</a>
+                 title=" 2.1% of total for modules and submodules.">278 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -227,12 +227,12 @@ polar compounds containing mixtures.</p>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__models_ge_nrtlhv.html'>yaeos__models_ge_nrtlhv</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ar_cubic_quadratic_mixing.html'>yaeos__models_ar_cubic_quadratic_mixing</a></li>
-                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ar_cubic_mixing_base.html'>yaeos__models_ar_cubic_mixing_base</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar_cubic_quadratic_mixing.html'>yaeos__models_ar_cubic_quadratic_mixing</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar_cubic_mixing_base.html'>yaeos__models_ar_cubic_mixing_base</a></li>
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge_nrtlhv.html'>yaeos__models_ge_nrtlhv</a></li>
               </ul>
             </li>
         </ul>
@@ -256,7 +256,7 @@ polar compounds containing mixtures.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    public  function <a href='../proc/init_hvnrtl.html'>init_hvnrtl</a>(b, del1, alpha, gji, use_kij, kij) result(mixrule)  
+    public  function <a href='../proc/init_hvnrtl.html'>init_hvnrtl</a>(b, del1, alpha, gji0, gjiT, use_kij, kij) result(mixrule)  
 
     </h3>
     
@@ -299,7 +299,7 @@ are set to:
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~12"></span>
+              <span class="anchor" id="variable-b~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -314,7 +314,7 @@ are set to:
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del1~7"></span>
+              <span class="anchor" id="variable-del1~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -329,7 +329,7 @@ are set to:
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~29"></span>
+              <span class="anchor" id="variable-alpha~38"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -344,7 +344,7 @@ are set to:
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gji"></span>
+              <span class="anchor" id="variable-gji0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -352,7 +352,22 @@ are set to:
               
             </td>
             <td>::</td>
-            <td><strong>gji</strong>(:,:)</td>
+            <td><strong>gji0</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gjit~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gjiT</strong>(:,:)</td>
             <td>
 
             </td>
@@ -428,7 +443,7 @@ are set to:
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~19"></span>
+              <span class="anchor" id="variable-ge~21"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -443,7 +458,7 @@ are set to:
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~13"></span>
+              <span class="anchor" id="variable-b~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -458,7 +473,7 @@ are set to:
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~2"></span>
+              <span class="anchor" id="variable-q~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -530,7 +545,7 @@ are set to:
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~5"></span>
+              <span class="anchor" id="variable-bi~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -547,7 +562,7 @@ are set to:
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del1~4"></span>
+              <span class="anchor" id="variable-del1~5"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -607,7 +622,7 @@ are set to:
           <tbody>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/hv.html#boundprocedure-bmix~5'>Bmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixhv.html'>BmixHV</a></td>
+  <strong><a href='../type/hv.html#boundprocedure-bmix~7'>Bmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixhv.html'>BmixHV</a></td>
                   <td></td>
               </tr>
               <tr>
@@ -617,7 +632,7 @@ are set to:
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/hv.html#boundprocedure-dmix~2'>Dmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixhv~2.html'>DmixHV</a></td>
+  <strong><a href='../type/hv.html#boundprocedure-dmix~3'>Dmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixhv~2.html'>DmixHV</a></td>
                   <td></td>
               </tr>
           </tbody>
@@ -651,7 +666,7 @@ and Vidal.</p><a href="../type/hv_nrtl.html" class="pull-right"><emph>Read more&
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~7"></span>
+              <span class="anchor" id="variable-bi~8"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -668,7 +683,7 @@ and Vidal.</p><a href="../type/hv_nrtl.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del1~5"></span>
+              <span class="anchor" id="variable-del1~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -766,7 +781,7 @@ and Vidal.</p><a href="../type/hv_nrtl.html" class="pull-right"><emph>Read more&
                     
                     function
                     <strong><a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/init_hvnrtl.html'>init_hvnrtl</a></strong>
-                    (b, del1, alpha, gji, use_kij, kij)
+                    (b, del1, alpha, gji0, gjiT, use_kij, kij)
                   </td>
                   <td><p>This is the Huron-Vidal mixing rule that includes the NRTL model
 modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
@@ -780,7 +795,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
           <tbody>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/hv_nrtl.html#boundprocedure-bmix~7'>Bmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixhvnrtl.html'>BmixHVNRTL</a></td>
+  <strong><a href='../type/hv_nrtl.html#boundprocedure-bmix~9'>Bmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixhvnrtl.html'>BmixHVNRTL</a></td>
                   <td></td>
               </tr>
               <tr>
@@ -790,7 +805,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/hv_nrtl.html#boundprocedure-dmix~4'>Dmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixhvnrtl.html'>DmixHVNRTL</a></td>
+  <strong><a href='../type/hv_nrtl.html#boundprocedure-dmix~5'>Dmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixhvnrtl.html'>DmixHVNRTL</a></td>
                   <td></td>
               </tr>
           </tbody>
@@ -858,7 +873,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~10"></span>
+              <span class="anchor" id="variable-l~15"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -875,7 +890,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q"></span>
+              <span class="anchor" id="variable-q~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -892,7 +907,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~8"></span>
+              <span class="anchor" id="variable-b~12"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -909,7 +924,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~6"></span>
+              <span class="anchor" id="variable-bi~7"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -926,7 +941,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbi~7"></span>
+              <span class="anchor" id="variable-dbi~10"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -943,7 +958,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbij~7"></span>
+              <span class="anchor" id="variable-dbij~10"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -986,7 +1001,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
           <tbody>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/mhv.html#boundprocedure-bmix~6'>Bmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixmhv.html'>BmixMHV</a></td>
+  <strong><a href='../type/mhv.html#boundprocedure-bmix~8'>Bmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixmhv.html'>BmixMHV</a></td>
                   <td></td>
               </tr>
               <tr>
@@ -996,7 +1011,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/mhv.html#boundprocedure-dmix~3'>Dmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixmhv.html'>DmixMHV</a></td>
+  <strong><a href='../type/mhv.html#boundprocedure-dmix~4'>Dmix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixmhv.html'>DmixMHV</a></td>
                   <td></td>
               </tr>
           </tbody>
@@ -1010,7 +1025,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
         <section>
           <h2>Functions</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-init_hvnrtl"></span> <h3>public  function <a href='../proc/init_hvnrtl.html'>init_hvnrtl</a>(b, del1, alpha, gji, use_kij, kij) result(mixrule)  
+    <div class="card-header codesum"><span class="anchor" id="proc-init_hvnrtl"></span> <h3>public  function <a href='../proc/init_hvnrtl.html'>init_hvnrtl</a>(b, del1, alpha, gji0, gjiT, use_kij, kij) result(mixrule)  
 </h3></div>
     <div class="card-body">
           
@@ -1030,7 +1045,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~12"></span>
+              <span class="anchor" id="variable-b~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1045,7 +1060,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-del1~7"></span>
+              <span class="anchor" id="variable-del1~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1060,7 +1075,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~29"></span>
+              <span class="anchor" id="variable-alpha~38"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1075,7 +1090,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gji"></span>
+              <span class="anchor" id="variable-gji0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1083,7 +1098,22 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
               
             </td>
             <td>::</td>
-            <td><strong>gji</strong>(:,:)</td>
+            <td><strong>gji0</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gjit~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gjiT</strong>(:,:)</td>
             <td>
 
             </td>
@@ -1150,7 +1180,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~19"></span>
+              <span class="anchor" id="variable-ge~21"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1165,7 +1195,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~13"></span>
+              <span class="anchor" id="variable-b~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1180,7 +1210,7 @@ modified by Huron and Vidal.</p><a href="../proc/init_hvnrtl.html" class="pull-r
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~2"></span>
+              <span class="anchor" id="variable-q~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1246,7 +1276,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~54"></span>
+              <span class="anchor" id="variable-self~63"></span>
               class(<a href='../type/mhv.html'>MHV</a>),
             </td>
 <td>intent(in)</td>
@@ -1261,7 +1291,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~74"></span>
+              <span class="anchor" id="variable-n~93"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1276,7 +1306,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~85"></span>
+              <span class="anchor" id="variable-t~112"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1291,7 +1321,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ai~7"></span>
+              <span class="anchor" id="variable-ai~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1306,7 +1336,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt~6"></span>
+              <span class="anchor" id="variable-daidt~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1321,7 +1351,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt2~6"></span>
+              <span class="anchor" id="variable-daidt2~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1336,7 +1366,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d~9"></span>
+              <span class="anchor" id="variable-d~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1351,7 +1381,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt~9"></span>
+              <span class="anchor" id="variable-dddt~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1366,7 +1396,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt2~9"></span>
+              <span class="anchor" id="variable-dddt2~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1381,7 +1411,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddi~9"></span>
+              <span class="anchor" id="variable-ddi~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1396,7 +1426,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddidt~6"></span>
+              <span class="anchor" id="variable-ddidt~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1411,7 +1441,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddij~9"></span>
+              <span class="anchor" id="variable-ddij~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1451,7 +1481,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~47"></span>
+              <span class="anchor" id="variable-self~56"></span>
               class(<a href='../type/hv.html'>HV</a>),
             </td>
 <td>intent(in)</td>
@@ -1466,7 +1496,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~67"></span>
+              <span class="anchor" id="variable-n~86"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1481,7 +1511,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~8"></span>
+              <span class="anchor" id="variable-bi~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1496,238 +1526,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~9"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>B</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dbi~8"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dBi</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dbij~8"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dBij</strong>(:,:)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-bmixhvnrtl"></span> <h3>private  subroutine <a href='../proc/bmixhvnrtl.html'>BmixHVNRTL</a>(self, n, bi, B, dBi, dBij)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Quadratinc mixing rule for the repulsive parameter.</p><a href="../proc/bmixhvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~50"></span>
-              class(<a href='../type/hv_nrtl.html'>HV_NRTL</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n~70"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-bi~10"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>bi</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~10"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>B</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dbi~9"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dBi</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dbij~9"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dBij</strong>(:,:)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-bmixmhv"></span> <h3>private  subroutine <a href='../proc/bmixmhv.html'>BmixMHV</a>(self, n, bi, B, dBi, dBij)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Quadratinc mixing rule for the repulsive parameter, using
-<script type="math/tex"> b_{ij} = \frac{b_i + b_j}{2} (1 - l_{ij}) </script> as a combining rule.</p><a href="../proc/bmixmhv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~53"></span>
-              class(<a href='../type/mhv.html'>MHV</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n~73"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-bi~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>bi</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~12"></span>
+              <span class="anchor" id="variable-b~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1778,6 +1577,237 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-bmixhvnrtl"></span> <h3>private  subroutine <a href='../proc/bmixhvnrtl.html'>BmixHVNRTL</a>(self, n, bi, B, dBi, dBij)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Quadratinc mixing rule for the repulsive parameter.</p><a href="../proc/bmixhvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~59"></span>
+              class(<a href='../type/hv_nrtl.html'>HV_NRTL</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~89"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bi~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>B</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbi~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbij~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-bmixmhv"></span> <h3>private  subroutine <a href='../proc/bmixmhv.html'>BmixMHV</a>(self, n, bi, B, dBi, dBij)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Quadratinc mixing rule for the repulsive parameter, using
+<script type="math/tex"> b_{ij} = \frac{b_i + b_j}{2} (1 - l_{ij}) </script> as a combining rule.</p><a href="../proc/bmixmhv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~62"></span>
+              class(<a href='../type/mhv.html'>MHV</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~92"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bi~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>B</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbi~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbij~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-d1mixhv"></span> <h3>private  subroutine <a href='../proc/d1mixhv.html'>D1MixHV</a>(self, n, d1i, D1, dD1i, dD1ij)  
 </h3></div>
     <div class="card-body">
@@ -1797,7 +1827,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~48"></span>
+              <span class="anchor" id="variable-self~57"></span>
               class(<a href='../type/hv.html'>HV</a>),
             </td>
 <td>intent(in)</td>
@@ -1812,7 +1842,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~68"></span>
+              <span class="anchor" id="variable-n~87"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1827,7 +1857,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1i~3"></span>
+              <span class="anchor" id="variable-d1i~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1842,237 +1872,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1~6"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>D1</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dd1i~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dD1i</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dd1ij~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dD1ij</strong>(:,:)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-d1mixhvnrtl"></span> <h3>private  subroutine <a href='../proc/d1mixhvnrtl.html'>D1MixHVNRTL</a>(self, n, d1i, D1, dD1i, dD1ij)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~51"></span>
-              class(<a href='../type/hv_nrtl.html'>HV_NRTL</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n~71"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-d1i~5"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>d1i</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-d1~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>D1</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dd1i~8"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dD1i</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dd1ij~8"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dD1ij</strong>(:,:)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-d1mixmhv"></span> <h3>private  subroutine <a href='../proc/d1mixmhv.html'>D1MixMHV</a>(self, n, d1i, D1, dD1i, dD1ij)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~55"></span>
-              class(<a href='../type/mhv.html'>MHV</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n~75"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-d1i~6"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>d1i</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-d1~9"></span>
+              <span class="anchor" id="variable-d1~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2123,6 +1923,236 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-d1mixhvnrtl"></span> <h3>private  subroutine <a href='../proc/d1mixhvnrtl.html'>D1MixHVNRTL</a>(self, n, d1i, D1, dD1i, dD1ij)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~60"></span>
+              class(<a href='../type/hv_nrtl.html'>HV_NRTL</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~90"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1i~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D1</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1i~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1ij~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1ij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-d1mixmhv"></span> <h3>private  subroutine <a href='../proc/d1mixmhv.html'>D1MixMHV</a>(self, n, d1i, D1, dD1i, dD1ij)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~64"></span>
+              class(<a href='../type/mhv.html'>MHV</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~94"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1i~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D1</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1i~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1ij~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1ij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-dmixhv~2"></span> <h3>private  subroutine <a href='../proc/dmixhv~2.html'>DmixHV</a>(self, n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)  
 </h3></div>
     <div class="card-body">
@@ -2142,7 +2172,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~49"></span>
+              <span class="anchor" id="variable-self~58"></span>
               class(<a href='../type/hv.html'>HV</a>),
             </td>
 <td>intent(in)</td>
@@ -2157,7 +2187,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~69"></span>
+              <span class="anchor" id="variable-n~88"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -2172,212 +2202,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~83"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ai~5"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ai</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-daidt~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>daidt</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-daidt2~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>daidt2</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-d~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>D</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dddt~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dDdT</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dddt2~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dDdT2</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ddi~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dDi</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ddidt~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dDidT</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ddij~7"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dDij</strong>(:,:)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-dmixhvnrtl"></span> <h3>private  subroutine <a href='../proc/dmixhvnrtl.html'>DmixHVNRTL</a>(self, n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-self~52"></span>
-              class(<a href='../type/hv_nrtl.html'>HV_NRTL</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-n~72"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>n</strong>(:)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~84"></span>
+              <span class="anchor" id="variable-t~110"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -2437,7 +2262,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d~8"></span>
+              <span class="anchor" id="variable-d~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2452,7 +2277,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt~8"></span>
+              <span class="anchor" id="variable-dddt~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2467,7 +2292,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt2~8"></span>
+              <span class="anchor" id="variable-dddt2~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2482,7 +2307,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddi~8"></span>
+              <span class="anchor" id="variable-ddi~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2497,7 +2322,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddidt~5"></span>
+              <span class="anchor" id="variable-ddidt~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2512,7 +2337,212 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddij~8"></span>
+              <span class="anchor" id="variable-ddij~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-dmixhvnrtl"></span> <h3>private  subroutine <a href='../proc/dmixhvnrtl.html'>DmixHVNRTL</a>(self, n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~61"></span>
+              class(<a href='../type/hv_nrtl.html'>HV_NRTL</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~91"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~111"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ai~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ai</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt2~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt2</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddt~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdT</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddt2~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdT2</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddi~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDi</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddidt~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDidT</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddij~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2555,7 +2585,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-12-07 22:38 +0000             </p>
+ on 2025-12-08 18:19 +0000             </p>
           </div>
         </div>
         <br>

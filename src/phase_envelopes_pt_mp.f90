@@ -134,7 +134,7 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 10
+      integer :: max_iterations = 100
       !! Maximum number of iterations to solve the point.
       integer :: number_of_points
       !! Number of points to calculate.
@@ -251,7 +251,6 @@ contains
          ! If the point did not converge, stop the calculation
          if (&
             any(isnan(F)) .or. its > max_iterations &
-            .or. exp(X(nc*np+np+1)) < 1e-5 &
             .or. P > max_P  &
             .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
@@ -262,7 +261,7 @@ contains
          ! Next point estimation.
          dX = dXdS * dS
 
-         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
+         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 15)
             dX = dX/2
          end do
 
@@ -270,32 +269,29 @@ contains
             dX = dX/2
          end do
 
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
-            .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
-            dX = dX*1.1
-         end do
+         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
+         !    .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
+         !    dX = dX*1.1
+         ! end do
 
-         ! dejavu: block
-         !    !! Getting too close to a local minima in the envelope, which can
-         !    !! be hard to select corrects steps.
-         !    real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
-         !    if (i > 4) then
-         !       dPdT_1 = (P - env_points(i-1)%P) / (T - env_points(i-1)%T)
-         !       dPdT_2 = (P - env_points(i-2)%P) / (T - env_points(i-2)%T)
-         !       dT2 = (T - env_points(i-1)%T) * (env_points(i-2)%T - env_points(i-3)%T)
+         dejavu: block
+            !! Getting too close to a local minima in the envelope, which can
+            !! be hard to select corrects steps.
+            real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
+            if (i > 4) then
+               dPdT_1 = (P - env_points(i-1)%P) / (T - env_points(i-1)%T)
+               dPdT_2 = (P - env_points(i-2)%P) / (T - env_points(i-2)%T)
+               dT2 = (T - env_points(i-1)%T) * (env_points(i-2)%T - env_points(i-3)%T)
 
-         !       d2PdT2 = (P - 2*env_points(i-1)%P + env_points(i-2)%P) / dT2
+               d2PdT2 = (P - 2*env_points(i-1)%P + env_points(i-2)%P) / dT2
 
-         !       if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
-         !          ns = iT
-         !          dS = dXdS(ns) * dS
-         !          dXdS = dXdS/dXdS(ns)
-         !          do while(abs(exp(X(iT) + dXdS(iT) * dS) - T) > 1)
-         !             dS = 0.9 * dS
-         !          end do
-         !       end if
-         !    end if
-         ! end block dejavu
+               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
+                  do while(abs(exp(X(iT) + dX(iT)) - exp(X(iT))) > 5)
+                     dX = 0.5 * dX
+                  end do
+               end if
+            end if
+         end block dejavu
 
          X_last_converged = X
          X = X + dX
@@ -563,11 +559,11 @@ contains
             end if
          end do
 
-         do while(abs(dX(iT)) > 0.5)
+         do while(abs(exp(X(iT)) - exp(X(iT) + dX(iT))) > 10)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.25)
+         do while(abs(exp(X(iP)) - exp(X(iP) + dX(iP))) > 10)
             dX = dX/2
          end do
 
@@ -580,11 +576,7 @@ contains
          end do
 
          if (maxval(abs(F)) < 1e-9_pr) exit
-         if (iters < 3) then
-            X = X + 0.1 * dX
-         else
-            X = X + dX
-         end if
+         X = X + dX
       end do
    end subroutine solve_point
 
@@ -661,7 +653,9 @@ contains
 
          if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
-            dS = dXdS(ns) * dS * 0.1
+            dS = dXdS(ns)*dS
+            dS = sign(min(5e-2_pr, abs(dS)), dS)
+            ! dS = sign(5e-2_pr, dS)
             dXdS = dXdS/dXdS(ns)
             exit
          end if
@@ -669,8 +663,7 @@ contains
 
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
-
-      dS = sign(min(dS, 0.01_pr, sqrt(abs((X(ns)+1e-15)/5))), dS)
+      !dS = dS * 5./its
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

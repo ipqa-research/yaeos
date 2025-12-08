@@ -20,11 +20,13 @@
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Getting started" href="getting_started.html" />
-    <link rel="prev" title="yaeos Python bindings" href="../index.html" /> 
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="yaeos Python API" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,12 +51,9 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="instantiate_model.html">Instantiate a model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cubic_eos.html#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fitting.html">Fitting interaction parameters of binary systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/equations_of_state.html">Equations of State (EoS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
 </ul>
@@ -66,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fitting.html">Fitting</a></li>
 </ul>
 
@@ -97,12 +97,131 @@
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="instantiate_model.html">Instantiate a model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="more_calculations.html">More calculations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cubic_eos.html#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting interaction parameters of binary systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#Using-This-Documentation">Using This Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#Installation-Instructions">Installation Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html#Local-Installation">Local Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html#Building-from-source">Building from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html#Setting-a-Google-Colab-to-use-yaeos">Setting a Google Colab to use yaeos</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#Installation-For-Developers">Installation For Developers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#Yaeos-units">Yaeos units</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="equations_of_state/equations_of_state.html">Equations of State (EoS)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/bulk_properties.html">Bulk Properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/bulk_properties.html#Example-model">Example model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/bulk_properties.html#Properties-function-of-Volume-and-Temperature-\left(V,-T-\right)">Properties function of Volume and Temperature <span class="math notranslate nohighlight">\(\left(V, T \right)\)</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Pressure">Pressure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Logarithm-of-fugacity-coefficients-ln-\,-\phi(\vec{n},V,T)">Logarithm of fugacity coefficients <span class="math notranslate nohighlight">\(ln \, \phi(\vec{n},V,T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-Helmholtz-free-energy-A^r(\vec{n},V,T)">Residual Helmholtz free energy <span class="math notranslate nohighlight">\(A^r(\vec{n},V,T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-Gibbs-free-energy-G^r(\vec{n},-V,-T)">Residual Gibbs free energy <span class="math notranslate nohighlight">\(G^r(\vec{n}, V, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-enthalpy-H^r(\vec{n},-V,-T)">Residual enthalpy <span class="math notranslate nohighlight">\(H^r(\vec{n}, V, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-internal-energy-U^r(\vec{n},-V,-T)">Residual internal energy <span class="math notranslate nohighlight">\(U^r(\vec{n}, V, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-entropy-S^r(\vec{n},-V,-T)">Residual entropy <span class="math notranslate nohighlight">\(S^r(\vec{n}, V, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-heat-capacity-at-constant-volume-C_V^r(\vec{n},-V,-T)">Residual heat capacity at constant volume <span class="math notranslate nohighlight">\(C_V^r(\vec{n}, V, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Residual-heat-capacity-at-constant-pressure-C_P^r(\vec{n},-V,-T)">Residual heat capacity at constant pressure <span class="math notranslate nohighlight">\(C_P^r(\vec{n}, V, T)\)</span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/bulk_properties.html#Properties-function-of-Pressure-and-Temperature-\left(P,-T-\right)">Properties function of Pressure and Temperature <span class="math notranslate nohighlight">\(\left(P, T \right)\)</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Volume">Volume</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/bulk_properties.html#Logarithm-of-fugacity-coefficients-ln-\,-\phi(\vec{n},P,T)">Logarithm of fugacity coefficients <span class="math notranslate nohighlight">\(ln \, \phi(\vec{n},P,T)\)</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_eos.html">Cubic Equations of State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html">Generic Cubic Equation of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html#Peng-Robinson-(1976)">Peng-Robinson (1976)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html#Peng-Robinson-(1978)">Peng-Robinson (1978)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html#Soave-Redlich-Kwong">Soave-Redlich-Kwong</a></li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html#RKPR">RKPR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html#Predictive-Soave-Redlich-Kwong-(PSRK)">Predictive Soave-Redlich-Kwong (PSRK)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_models.html#Using-ugropy-to-retrieve-PSRK-functional-groups">Using <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> to retrieve PSRK functional groups</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_mixing_rules.html">Mixing Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_mixing_rules.html#Quadratic-mixing-rule-(QMR)">Quadratic mixing rule (QMR)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_mixing_rules.html#QMRTD:-QMR-with-temperature-dependence-of-k_{ij}">QMRTD: QMR with temperature dependence of <span class="math notranslate nohighlight">\(k_{ij}\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_mixing_rules.html#Huron-Vidal-mixing-rule">Huron-Vidal mixing rule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_mixing_rules.html#Modified-Huron-Vidal-mixing-rule-(MHV)">Modified Huron-Vidal mixing rule (MHV)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/cubic_eos/cubic_mixing_rules.html#Huron-Vidal-Coupled-with-NRTL-Mixing-Rule">Huron-Vidal Coupled with NRTL Mixing Rule</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/multifluid_eos/gerg2008.html">Gerg2008</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/multifluid_eos/gerg2008.html#Things-to-be-careful-about">Things to be careful about</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html">More calculations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Calculating-an-isotherm">Calculating an isotherm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/gpec/gpec_tutorial.html">Binary Systems Diagrams</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/gpec/gpec_tutorial.html#Global-Phase-Equilibria-Diagram-(GPED)">Global Phase Equilibria Diagram (GPED)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="equations_of_state/fitting/fitting.html">Fitting Equations of State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="equations_of_state/fitting/fitting_tutorial.html">Fitting interaction parameters of binary systems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/fitting/fitting_tutorial.html#Data-structure">Data structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/fitting/fitting_tutorial.html#Default-model-prediction">Default model prediction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/fitting/fitting_tutorial.html#Definition-of-the-optimization-problem">Definition of the optimization problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/fitting/fitting_tutorial.html#Optimization-result">Optimization result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="equations_of_state/fitting/fitting_tutorial.html#Another-example">Another example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gibbs_excess/gibbs_excess.html">Excess Gibbs models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gibbs_excess/bulk_properties.html">Bulk properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Example-model">Example model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Properties-of-Excess-Gibbs-Models">Properties of Excess Gibbs Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Excess-Gibbs-free-energy-G^{E}(\vec{n},-T)">Excess Gibbs free energy <span class="math notranslate nohighlight">\(G^{E}(\vec{n}, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Logarithm-of-activity-coefficients-ln-\,-\gamma(\vec{n},T)">Logarithm of activity coefficients <span class="math notranslate nohighlight">\(ln \, \gamma(\vec{n},T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Excess-enthalpy-H^{E}(\vec{n},-T)">Excess enthalpy <span class="math notranslate nohighlight">\(H^{E}(\vec{n}, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Excess-entropy-S^{E}(\vec{n},-T)">Excess entropy <span class="math notranslate nohighlight">\(S^{E}(\vec{n}, T)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/bulk_properties.html#Excess-heat-capacity-C_p^{E}(\vec{n},-T)">Excess heat capacity <span class="math notranslate nohighlight">\(C_p^{E}(\vec{n}, T)\)</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gibbs_excess/models/ge_models.html">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gibbs_excess/models/nrtl.html">NRTL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gibbs_excess/models/uniquac.html">UNIQUAC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gibbs_excess/models/unifac_models.html">UNIFAC models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/models/unifac_models.html#Combinatorial-term">Combinatorial term</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/models/unifac_models.html#Residual-term">Residual term</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/models/unifac_models.html#Using-ugropy-to-retrieve-UNIFAC-functional-groups">Using <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> to retrieve UNIFAC functional groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/models/unifac_models.html#Liquid-Vapor-UNIFAC">Liquid-Vapor UNIFAC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/models/unifac_models.html#PSRK-UNIFAC">PSRK UNIFAC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gibbs_excess/models/unifac_models.html#Dortmund-UNIFAC">Dortmund UNIFAC</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -111,8 +230,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="yaeos Python bindings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="yaeos Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk properties &mdash; yaeos 4.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a17b270f"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Models" href="models/ge_models.html" />
+    <link rel="prev" title="Excess Gibbs models" href="gibbs_excess.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../equations_of_state/equations_of_state.html">Equations of State (EoS)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="gibbs_excess.html">Excess Gibbs models</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Bulk properties</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Example-model">Example model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Properties-of-Excess-Gibbs-Models">Properties of Excess Gibbs Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="models/ge_models.html">Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial_tree.html">Tutorial</a></li>
+          <li class="breadcrumb-item"><a href="gibbs_excess.html">Excess Gibbs models</a></li>
+      <li class="breadcrumb-item active">Bulk properties</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorial/gibbs_excess/bulk_properties.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Bulk-properties">
+<h1>Bulk properties<a class="headerlink" href="#Bulk-properties" title="Link to this heading"></a></h1>
+<p>Excess properties are properties of mixtures which quantify the non-ideal behavior of real mixtures. They are defined as the difference between the value of the property in a real mixture and the value that would exist in an ideal solution under the same conditions.</p>
+<div class="math notranslate nohighlight">
+\[G^E = G - G^{I,S} = \Delta G_{mix}\]</div>
+<div class="math notranslate nohighlight">
+\[H^E = H - H^{I,S} = \Delta H_{mix}\]</div>
+<div class="math notranslate nohighlight">
+\[S^E = H - H^{I,S} = \Delta S_{mix}\]</div>
+<p>Gibbs excess models are defined in terms of a mathematical expression that describes the excess Gibbs energy of a mixture as a function of the composition of the components in the mixture and temperature. Then, the other excess properties can be derived from the excess Gibbs energy derivatives.</p>
+<section id="Example-model">
+<h2>Example model<a class="headerlink" href="#Example-model" title="Link to this heading"></a></h2>
+<p>First, we are going the import the <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> library and instantiate a UNIFACLV model with two components. Later in this tutorial you will learn got to instantiate different models, but for now we will use this one as an example.</p>
+<p><strong>The important thing to understand is that all the Excess Gibbs models can evaluate the thermodynamic properties explained in this section.</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="c1"># UNIFAC functional groups: n-hexane - toluene</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span>              <span class="c1"># Functional groups of each molecule</span>
+    <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>       <span class="c1"># {&quot;CH3&quot;: 2, &quot;CH2&quot;: 4}</span>
+    <span class="p">{</span><span class="mi">9</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>      <span class="c1"># {&quot;ACH&quot;: 5, &quot;ACCH3&quot;: 1}</span>
+<span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Properties-of-Excess-Gibbs-Models">
+<h2>Properties of Excess Gibbs Models<a class="headerlink" href="#Properties-of-Excess-Gibbs-Models" title="Link to this heading"></a></h2>
+<p>All the properties of Excess Gibbs models are evaluated from the Excess Gibbs <span class="math notranslate nohighlight">\(G^{E}(\vec{n}, T)\)</span> function. If you want to know how each bulk property is calculated, please refer to the <a class="reference external" href="https://ipqa-research.github.io/yaeos/page/index.html">Fortran User Documentation</a></p>
+<p>We can obtain different bulk properties from a <span class="math notranslate nohighlight">\(G^{E}(\vec{n}, T)\)</span> model specifying the number of moles, and temperature. But also, derivatives could be obtained if asked for.</p>
+<p>All not asked derivatives will be set as <code class="docutils literal notranslate"><span class="pre">None</span></code>. The derivatives are returned as a Python dictionary with the keys <code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">dn</span></code>, etc. respectively. The compositional derivatives are always returned as <code class="docutils literal notranslate"><span class="pre">Numpy</span></code> arrays.</p>
+<section id="Excess-Gibbs-free-energy-G^{E}(\vec{n},-T)">
+<h3>Excess Gibbs free energy <span class="math notranslate nohighlight">\(G^{E}(\vec{n}, T)\)</span><a class="headerlink" href="#Excess-Gibbs-free-energy-G^{E}(\vec{n},-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate excess Gibbs [bar L]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+28.2282850182722
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial G^{E}(\vec{n}, T)}{\partial T}\right)_{\vec{n}} \quad
+\left(\frac{\partial G^{E}(\vec{n}, T)}{\partial n_i}\right)_{T, n_{j \neq i}}
+\left(\frac{\partial^2 G^{E}(\vec{n}, T)}{\partial T^2}\right)_{\vec{n}} \quad\]</div>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial^2 G^{E}(\vec{n}, T)}{\partial n_i \partial T}\right)_{n_{j \neq i}}
+\left(\frac{\partial^2 G^{E}(\vec{n}, T)}{\partial n_i \partial n_j}\right)_{T, n_{k \neq i,j}} \quad\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all derivatives</span>
+<span class="n">Ge</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dt2</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn2</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Excess Gibbs: &quot;</span><span class="p">,</span> <span class="n">Ge</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Excess Gibbs:  28.2282850182722
+Derivatives:  {&#39;dt&#39;: 0.028783083761225278, &#39;dt2&#39;: -3.7129021802873095e-05, &#39;dn&#39;: array([4.31577166, 1.82753306]), &#39;dtn&#39;: array([0.00247121, 0.00314971]), &#39;dn2&#39;: array([[-0.84169974,  0.56113316],
+       [ 0.56113316, -0.37408877]])}
+</pre></div></div>
+</div>
+</section>
+<section id="Logarithm-of-activity-coefficients-ln-\,-\gamma(\vec{n},T)">
+<h3>Logarithm of activity coefficients <span class="math notranslate nohighlight">\(ln \, \gamma(\vec{n},T)\)</span><a class="headerlink" href="#Logarithm-of-activity-coefficients-ln-\,-\gamma(\vec{n},T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># natural logarithm of activity coefficients</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.17122481, 0.07250592])
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial ln \, \gamma_i}{\partial T}\right)_{\vec{n}} \quad
+\left(\frac{\partial ln \, \gamma_i}{\partial n_j}\right)_{T, n_{k \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all derivatives</span>
+<span class="n">ln_gamma</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ln gamma: &quot;</span><span class="p">,</span> <span class="n">ln_gamma</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ln gamma:  [0.17122481 0.07250592]
+Derivatives:  {&#39;dt&#39;: array([-0.00046678, -0.00011421]), &#39;dn&#39;: array([[-0.03339377,  0.02226251],
+       [ 0.02226251, -0.01484167]])}
+</pre></div></div>
+</div>
+</section>
+<section id="Excess-enthalpy-H^{E}(\vec{n},-T)">
+<h3>Excess enthalpy <span class="math notranslate nohighlight">\(H^{E}(\vec{n}, T)\)</span><a class="headerlink" href="#Excess-enthalpy-H^{E}(\vec{n},-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">excess_enthalpy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Excess enthalpy [bar L]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+19.50269317605676
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial H^{E}(\vec{n}, T)}{\partial T}\right)_{\vec{n}} \quad
+\left(\frac{\partial H^{E}(\vec{n}, T)}{\partial n_i}\right)_{T, n_{i \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all derivatives</span>
+<span class="n">He</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">excess_enthalpy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Excess enthalpy &quot;</span><span class="p">,</span> <span class="n">He</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Excess enthalpy  19.50269317605676
+Derivatives:  {&#39;dt&#39;: 0.011255662959540978, &#39;dn&#39;: array([3.56662377, 0.87269968])}
+</pre></div></div>
+</div>
+</section>
+<section id="Excess-entropy-S^{E}(\vec{n},-T)">
+<h3>Excess entropy <span class="math notranslate nohighlight">\(S^{E}(\vec{n}, T)\)</span><a class="headerlink" href="#Excess-entropy-S^{E}(\vec{n},-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">excess_entropy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Excess entropy [bar L / K]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-0.028783083761225278
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial S^{E}(\vec{n}, T)}{\partial T}\right)_{\vec{n}} \quad
+\left(\frac{\partial S^{E}(\vec{n}, T)}{\partial n_i}\right)_{T, n_{i \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all derivatives</span>
+<span class="n">Se</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">excess_entropy</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Excess entropy &quot;</span><span class="p">,</span> <span class="n">Se</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Excess entropy  -0.028783083761225278
+Derivatives:  {&#39;dt&#39;: 3.7129021802873095e-05, &#39;dn&#39;: array([-0.00247121, -0.00314971])}
+</pre></div></div>
+</div>
+</section>
+<section id="Excess-heat-capacity-C_p^{E}(\vec{n},-T)">
+<h3>Excess heat capacity <span class="math notranslate nohighlight">\(C_p^{E}(\vec{n}, T)\)</span><a class="headerlink" href="#Excess-heat-capacity-C_p^{E}(\vec{n},-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">excess_cp</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Excess entropy [bar L / K]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.011255662959540978
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gibbs_excess.html" class="btn btn-neutral float-left" title="Excess Gibbs models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models/ge_models.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

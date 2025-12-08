@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equilibrium calculations \((G^E \text{models})\) &mdash; yaeos 4.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a17b270f"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Equilibrium calculations <span class="math notranslate nohighlight">\((G^E \text{models})\)</span></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorial/gibbs_excess/equilibrium_calcs.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Equilibrium-calculations-(G^E-\text{models})">
+<h1>Equilibrium calculations <span class="math notranslate nohighlight">\((G^E \text{models})\)</span><a class="headerlink" href="#Equilibrium-calculations-(G^E-\text{models})" title="Link to this heading"></a></h1>
+<p>Different equilibrium calculations could be performed with the <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> Excess Gibbs models.</p>
+<p>Let’s instantiate an example model.</p>
+<section id="Example-model">
+<h2>Example model<a class="headerlink" href="#Example-model" title="Link to this heading"></a></h2>
+<p>As always, all the described methods are available for all Excess Gibbs models. But we are going to use an ethanol-hexane-water mixture modeled with UNIFAC as example:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="n">functional_groups</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>    <span class="c1"># ethanol groups</span>
+    <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>           <span class="c1"># n-hexane groups</span>
+    <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>                <span class="c1"># water group</span>
+<span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">functional_groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Flash-\gamma-\text{-}-\gamma">
+<h2>Flash <span class="math notranslate nohighlight">\(\gamma \text{-} \gamma\)</span><a class="headerlink" href="#Flash-\gamma-\text{-}-\gamma" title="Link to this heading"></a></h2>
+<div class="math notranslate nohighlight">
+\[y_{i} \gamma_{i}^{y} = x_{i} \gamma_{i}^{x}\]</div>
+<p>Liquid-liquid flash calculation with the <span class="math notranslate nohighlight">\(\gamma \text{-} \gamma\)</span> approach could be performed as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">+</span> <span class="mf">273.15</span>             <span class="c1"># Temperature [K]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>   <span class="c1"># Moles of each substance [mol]</span>
+
+<span class="c1"># IMPORTANT: flash calculations are performed specifying mole fractions</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>             <span class="c1"># Mole fraction of eac substance [-]</span>
+
+
+<span class="n">flash</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">flash_t</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+<span class="n">flash</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;x&#39;: array([0.03080572, 0.96735068, 0.0018436 ]),
+ &#39;y&#39;: array([0.31604605, 0.01086864, 0.67308532]),
+ &#39;T&#39;: 303.15,
+ &#39;beta&#39;: 0.5931639638170902}
+</pre></div></div>
+</div>
+<p>The result of the flash calculation is returned as a Python dictionary with the keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: mole fractions of phase <span class="math notranslate nohighlight">\(x\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: mole fractions of phase <span class="math notranslate nohighlight">\(y\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code>: temperature in Kelvin that was specified</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta</span></code>: mole fraction of phase <span class="math notranslate nohighlight">\(y\)</span></p></li>
+</ul>
+<p>We can calculate the activities on each phase to check that are equal:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="n">flash</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span>
+
+<span class="n">ln_gammas_x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="n">ln_gammas_y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+<span class="n">gammas_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_gammas_x</span><span class="p">)</span>
+<span class="n">gammas_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_gammas_y</span><span class="p">)</span>
+
+<span class="n">activities_x</span> <span class="o">=</span> <span class="n">gammas_x</span> <span class="o">*</span> <span class="n">x</span>
+<span class="n">activities_y</span> <span class="o">=</span> <span class="n">gammas_y</span> <span class="o">*</span> <span class="n">y</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">activities_x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">activities_y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0.46710663 0.97593751 0.87010966]
+[0.46710662 0.9759375  0.87010961]
+</pre></div></div>
+</div>
+<p>As shown the activities in both phases are equals, the flash calculation was satisfactory.</p>
+<p>We can use the <code class="docutils literal notranslate"><span class="pre">beta</span></code> value to obtain the moles of each phase:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nty</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>         <span class="c1"># Total moles of phase y</span>
+<span class="n">ntx</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>   <span class="c1"># total moles of phase x</span>
+
+<span class="n">ny</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">nty</span>  <span class="c1"># moles vector of phase y</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ntx</span>  <span class="c1"># moles vector of phase x</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mixutre: ethanol-hexane-water&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global mole vector: &quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase y mole vector: &quot;</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase x mole vector: &quot;</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mixutre: ethanol-hexane-water
+Global mole vector:  [ 5 10 10]
+Phase y mole vector:  [4.68667812 0.16117207 9.9812489 ]
+Phase x mole vector:  [0.31332188 9.83882793 0.0187511 ]
+</pre></div></div>
+</div>
+<p>There is an additional parameter to the <code class="docutils literal notranslate"><span class="pre">flash_t</span></code>, <code class="docutils literal notranslate"><span class="pre">k0</span></code>, which allows to provide an initialization to the flash calculation with:</p>
+<div class="math notranslate nohighlight">
+\[k_{0} = \frac{y}{x}\]</div>
+<p>The complete documentation of the <code class="docutils literal notranslate"><span class="pre">flash_t</span></code> can be accessed with:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">flash_t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Help on method flash_t in module yaeos.core:
+
+flash_t(z, temperature: float, k0=None) -&gt; dict method of yaeos.models.excess_gibbs.unifac.UNIFACVLE instance
+    Two-phase split with specification of temperature and pressure.
+
+    Parameters
+    ----------
+    z : array_like
+        Global mole fractions
+    temperature : float
+        Temperature [K]
+    k0 : array_like, optional
+        Initial guess for the split, by default None (will use stability
+        analysis)
+
+    Returns
+    -------
+    dict
+        Flash result dictionary with keys:
+            - x: &#34;phase 1&#34; mole fractions
+            - y: &#34;phase 2&#34; mole fractions
+            - T: temperature [K]
+            - beta: &#34;phase 2&#34; fraction
+
+</pre></div></div>
+</div>
+</section>
+<section id="Stability-analysis">
+<h2>Stability analysis<a class="headerlink" href="#Stability-analysis" title="Link to this heading"></a></h2>
+<p>It’s possible to perform stability analysis by <code class="docutils literal notranslate"><span class="pre">tm</span></code> minimization proposed by Michelsen.</p>
+<p>Let’s check with an example:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">+</span> <span class="mf">273.15</span>             <span class="c1"># Temperature [K]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>   <span class="c1"># Moles vector [mol]</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># global mole fractions</span>
+
+
+<span class="n">tm_min</span><span class="p">,</span> <span class="n">tm_all_min</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_analysis</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">tm_min</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;w&#39;: array([2.07328795e-02, 1.47170347e-04, 9.79119950e-01]), &#39;tm&#39;: -0.5172683567506908}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tm_all_min</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;tm&#39;: array([-0.51726836, -0.38462711, -0.51726836]), &#39;w&#39;: array([[2.07328795e-02, 1.47170347e-04, 9.79119950e-01],
+       [6.54275506e-03, 9.92256323e-01, 1.20092189e-03],
+       [2.07328782e-02, 1.47170324e-04, 9.79119951e-01]])}
+</pre></div></div>
+</div>
+<p>Three minimization were performed, starting from near pure compositions of each compound.</p>
+<p>The first output <code class="docutils literal notranslate"><span class="pre">tm_min</span></code>, provide the value and composition of the lowest of the all found minimums.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">tm</span></code> value of <code class="docutils literal notranslate"><span class="pre">tm_min</span></code> is negative, the phase of composition <code class="docutils literal notranslate"><span class="pre">z</span></code> is considered unstable. If you check the used composition, is the same used in the flash <span class="math notranslate nohighlight">\(\gamma \text{-} \gamma\)</span> tutorial. There, was shown that a flash calculation converges under the same conditions. The stability analysis in this case:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tm_min</span><span class="p">[</span><span class="s2">&quot;tm&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-0.5172683567506908
+</pre></div></div>
+</div>
+<p>has a negative value, confirming that the system was truly unstable.</p>
+<p>In the second output <code class="docutils literal notranslate"><span class="pre">tm_all_min</span></code> are listed all the found minimums. You can check that the <code class="docutils literal notranslate"><span class="pre">tm_min</span></code> is also listed there and repeated. Different initialization could converge to the same minimum.</p>
+<p>You can check in the minimums list that there is another minimum with value -0.38462711. We can use the composition of the two found minimums as initialization of a flash calculation:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">tm_all_min</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tm_all_min</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">k0</span> <span class="o">=</span> <span class="n">y</span> <span class="o">/</span> <span class="n">x</span>
+
+<span class="n">flash</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">flash_t</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">k0</span><span class="p">)</span>
+
+<span class="n">flash</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;x&#39;: array([0.03080571, 0.96735068, 0.0018436 ]),
+ &#39;y&#39;: array([0.31604605, 0.01086864, 0.67308532]),
+ &#39;T&#39;: 303.15,
+ &#39;beta&#39;: 0.5931639641540031}
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

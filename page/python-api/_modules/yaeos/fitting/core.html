@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
 </ul>
 
@@ -85,11 +86,43 @@
   <h1>Source code for yaeos.fitting.core</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Yaeos fitting core module.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
 
+<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
 <span class="kn">from</span> <span class="nn">yaeos.fitting.solvers</span> <span class="kn">import</span> <span class="n">solve_pt</span>
+
+
+<span class="n">KINDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;zT1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleP&quot;</span><span class="p">,</span> <span class="s2">&quot;bubble&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zP1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleT&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zT0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dewP&quot;</span><span class="p">,</span> <span class="s2">&quot;dew&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zP0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dewT&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;PT&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PT&quot;</span><span class="p">,</span> <span class="s2">&quot;liquid-liquid&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;CP&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span> <span class="s2">&quot;CP&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># Default error functions</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">_pressure_error</span><span class="p">(</span><span class="n">Pexp</span><span class="p">,</span> <span class="n">Pmodel</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Pexp</span> <span class="o">-</span> <span class="n">Pmodel</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">Pexp</span>
+
+
+<span class="k">def</span> <span class="nf">_temperature_error</span><span class="p">(</span><span class="n">Texp</span><span class="p">,</span> <span class="n">Tmodel</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Texp</span> <span class="o">-</span> <span class="n">Tmodel</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">Texp</span>
+
+
+<span class="k">def</span> <span class="nf">_composition_error</span><span class="p">(</span><span class="n">zexp</span><span class="p">,</span> <span class="n">zmodel</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zmodel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">zexp</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zmodel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">zexp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="BinaryFitter">
@@ -103,7 +136,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    model_setter : callable</span>
+<span class="sd">    model_setter : Callable</span>
 <span class="sd">        A function that returns a model object. The function should take the</span>
 <span class="sd">        optimization parameters as the first argument and any other arguments</span>
 <span class="sd">        as the following arguments.</span>
@@ -114,46 +147,103 @@
 <span class="sd">        The DataFrame should have the following columns:</span>
 <span class="sd">        - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,</span>
 <span class="sd">        critical)</span>
-<span class="sd">        - x1: float, the mole fraction of component 1</span>
-<span class="sd">        - y1: float, the mole fraction of component 1</span>
+<span class="sd">        - x1: float, the mole fraction of component 1 (lightest component) in</span>
+<span class="sd">        heavy phase.</span>
+<span class="sd">        - y1: float, the mole fraction of component 1 (lightest component) in</span>
+<span class="sd">        light phase.</span>
 <span class="sd">        - T: float, the temperature in K</span>
 <span class="sd">        - P: float, the pressure in bar</span>
+<span class="sd">        - weight: float, optional, the weight of the data point (default is 1)</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, print the objective function value and the optimization</span>
+<span class="sd">    pressure_error : Callable, optional</span>
+<span class="sd">        A function `f(Pexp, Pmodel)`that calculates the pressure error between </span>
+<span class="sd">        the experimental and model values. </span>
+<span class="sd">        The function should take the experimental and model</span>
+<span class="sd">        values as arguments and return the error. If None, the default function</span>
+<span class="sd">        is used.</span>
+<span class="sd">    temperature_error : Callable, optional</span>
+<span class="sd">        A function `f(Texp, Tmodel)`that calculates the temperature error</span>
+<span class="sd">        between the experimental and model values. </span>
+<span class="sd">        The function should take the experimental and model</span>
+<span class="sd">        values as arguments and return the error. If None, the default function</span>
+<span class="sd">        is used.</span>
+<span class="sd">    composition_error : Callable, optional</span>
+<span class="sd">        A function `f(zexp, zmodel)`that calculates the composition error</span>
+<span class="sd">        between the experimental and model values.  The function should take</span>
+<span class="sd">        the experimental and model for mixture composition as arguments and</span>
+<span class="sd">        return the error. If None, the default function is used.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    get_model : Callable</span>
+<span class="sd">        The function that returns the model object from the optimization</span>
+<span class="sd">        parameters and the model_setter_args.</span>
+<span class="sd">    get_model_args : tuple</span>
+<span class="sd">        The arguments to pass to the model_setter function.</span>
+<span class="sd">    data : pandas.DataFrame</span>
+<span class="sd">        The experimental data.</span>
+<span class="sd">    evaluations : dict</span>
+<span class="sd">        A dictionary with the evaluations of the objective function. The keys</span>
+<span class="sd">        are &#39;fobj&#39;, and &#39;x&#39;. &#39;fobj&#39; is the objective function value,</span>
+<span class="sd">        &#39;x&#39; is the optimization parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_setter</span><span class="p">,</span> <span class="n">model_setter_args</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_model</span> <span class="o">=</span> <span class="n">model_setter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_args</span> <span class="o">=</span> <span class="n">model_setter_args</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_setter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">model_setter_args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">pressure_error</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">temperature_error</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">composition_error</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span> <span class="o">=</span> <span class="n">model_setter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_model_args</span> <span class="o">=</span> <span class="n">model_setter_args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fobj&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;cl&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fobj&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+        <span class="k">if</span> <span class="n">pressure_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span> <span class="o">=</span> <span class="n">pressure_error</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span> <span class="o">=</span> <span class="n">_pressure_error</span>
+
+        <span class="k">if</span> <span class="n">temperature_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temperature_error</span> <span class="o">=</span> <span class="n">temperature_error</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temperature_error</span> <span class="o">=</span> <span class="n">_temperature_error</span>
+
+        <span class="k">if</span> <span class="n">composition_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span> <span class="o">=</span> <span class="n">composition_error</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span> <span class="o">=</span> <span class="n">_composition_error</span>
+
 
 <div class="viewcode-block" id="BinaryFitter.objective_function">
 <a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.objective_function">[docs]</a>
-    <span class="k">def</span> <span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Objective function to minimize when fitting interaction parameters.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x_values : array-like</span>
-<span class="sd">            The interaction parameters to fit.</span>
+<span class="sd">            The interaction parameters to fit, 1D array-like.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The value of the objective function, which is the sum of the</span>
+<span class="sd">            squared relative errors between the experimental data and the model</span>
+<span class="sd">            predictions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">pressure_error</span><span class="p">(</span><span class="n">Pexp</span><span class="p">,</span> <span class="n">Pmodel</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">Pexp</span> <span class="o">-</span> <span class="n">Pmodel</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">Pexp</span>
-
-        <span class="k">def</span> <span class="nf">composition_error</span><span class="p">(</span><span class="n">zexp</span><span class="p">,</span> <span class="n">zmodel</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zmodel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">zexp</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zmodel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">zexp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="p">)</span>
-
-        <span class="k">def</span> <span class="nf">temperature_error</span><span class="p">(</span><span class="n">Texp</span><span class="p">,</span> <span class="n">Tmodel</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">Texp</span> <span class="o">-</span> <span class="n">Tmodel</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">Texp</span>
-
-        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_model_args</span><span class="p">)</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_model_args</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">residuals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">objective_function_contributions</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># =====================================================================</span>
         <span class="c1"># Calculate the critical line starting from the heavy component</span>
@@ -179,50 +269,81 @@
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="ow">or</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span>
 
             <span class="n">error_i</span> <span class="o">=</span> <span class="mi">0</span>
 
             <span class="c1"># =================================================================</span>
-            <span class="c1"># Bubble point</span>
+            <span class="c1"># Bubble point - Pressure</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bubble&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zT1&quot;</span><span class="p">]:</span>
                 <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
                     <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
                 <span class="p">)</span>
-                <span class="n">error_i</span> <span class="o">+=</span> <span class="n">pressure_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+                <span class="n">residual</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
 
             <span class="c1"># =================================================================</span>
-            <span class="c1"># Dew points</span>
+            <span class="c1"># Bubble point - Temperature</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;dew&quot;</span><span class="p">:</span>
-                <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
-                    <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zP1&quot;</span><span class="p">]:</span>
+                <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t</span>
                 <span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_error</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span>
+                <span class="n">residual</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span>
 
-                <span class="n">error_i</span> <span class="o">+=</span> <span class="n">pressure_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+            <span class="c1"># =================================================================</span>
+            <span class="c1"># Dew point - Pressure</span>
+            <span class="c1"># -----------------------------------------------------------------</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zT0&quot;</span><span class="p">]:</span>
+                <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
+                <span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+                <span class="n">residual</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
 
-            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;PT&quot;</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;liquid-liquid&quot;</span><span class="p">:</span>
+            <span class="c1"># =================================================================</span>
+            <span class="c1"># Dew point - Temperature</span>
+            <span class="c1"># -----------------------------------------------------------------</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zP0&quot;</span><span class="p">]:</span>
+                <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t</span>
+                <span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_error</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span>
+                <span class="n">residual</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span>
+
+            <span class="c1"># =================================================================</span>
+            <span class="c1"># PT or Liquid-liquid equilibrium</span>
+            <span class="c1"># -----------------------------------------------------------------</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;PT&quot;</span><span class="p">]:</span>
                 <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">solve_pt</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">])</span>
 
+                <span class="n">residual</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                    <span class="n">error_i</span> <span class="o">+=</span> <span class="n">composition_error</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y1</span><span class="p">])</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y1</span><span class="p">])</span>
+                    <span class="n">residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                    <span class="n">error_i</span> <span class="o">+=</span> <span class="n">composition_error</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">])</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">])</span>
+                    <span class="n">residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">error_i</span> <span class="o">+=</span> <span class="n">composition_error</span><span class="p">(</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span>
                         <span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">]</span>
-                    <span class="p">)</span> <span class="o">+</span> <span class="n">composition_error</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y1</span><span class="p">])</span>
+                    <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y1</span><span class="p">])</span>
+                    <span class="n">residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span>
+                    <span class="n">residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
 
             <span class="c1"># =================================================================</span>
             <span class="c1"># Critical point error is calculated by finding the nearest</span>
             <span class="c1"># critical point in the critical line to the given critical</span>
             <span class="c1"># point in the data.</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;CP&quot;</span><span class="p">]:</span>
                 <span class="n">cp</span> <span class="o">=</span> <span class="n">row</span>
                 <span class="n">distances</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span>
                     <span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
@@ -236,15 +357,27 @@
                     <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="n">nearest</span><span class="p">],</span>
                     <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">][</span><span class="n">nearest</span><span class="p">],</span>
                 <span class="p">)</span>
-                <span class="n">error_i</span> <span class="o">+=</span> <span class="n">temperature_error</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">t_cl</span><span class="p">)</span>
-                <span class="n">error_i</span> <span class="o">+=</span> <span class="n">pressure_error</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">p_cl</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]):</span>
-                    <span class="n">error_i</span> <span class="o">+=</span> <span class="n">composition_error</span><span class="p">(</span>
-                        <span class="p">[</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]],</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">]</span>
-                    <span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_error</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">t_cl</span><span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">p_cl</span><span class="p">)</span>
+                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]],</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">residual</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_cl</span><span class="p">,</span>
+                    <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p_cl</span><span class="p">,</span>
+                    <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="p">,</span>
+                <span class="p">]</span>
 
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">error_i</span><span class="p">):</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a valid data kind.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">error_i</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">error_i</span><span class="p">):</span>
+                <span class="c1"># TODO make more robust PT solver to avoid infs</span>
                 <span class="n">error_i</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+
+            <span class="n">objective_function_contributions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_i</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">residuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+
             <span class="n">err</span> <span class="o">+=</span> <span class="n">error_i</span> <span class="o">*</span> <span class="n">w</span>
 
         <span class="c1"># =====================================================================</span>
@@ -254,6 +387,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;fobj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;residuals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">residuals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;contributions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">objective_function_contributions</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s2">&quot;fobj&quot;</span><span class="p">]),</span> <span class="n">err</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>
@@ -262,7 +397,9 @@
 
 <div class="viewcode-block" id="BinaryFitter.fit">
 <a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span> <span class="n">optimizer_options</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model to the data.</span>
 
 <span class="sd">        Fit the model to the data using the objective function defined in</span>
@@ -284,7 +421,8 @@
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">optimizer_options</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span> <span class="o">=</span> <span class="n">sol</span></div>
 
@@ -292,7 +430,16 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the optimization solution.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model with the fitted parameters.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_solution&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;You must fit the model before getting the model.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_solution</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_model_args</span><span class="p">)</span></div>
 
 </pre></div>
 

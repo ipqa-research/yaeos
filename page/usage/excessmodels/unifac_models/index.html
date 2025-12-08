@@ -1,0 +1,549 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../../../../favicon.png">
+
+    <title>UNIFAC Models &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../../../css/local.css" rel="stylesheet">
+    <link href="../../../../css/pygments.css" rel="stylesheet">
+    <script src="../../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>UNIFAC Models</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Gibbs Excess Models</a></li>
+              <li class="breadcrumb-item active" aria-current="page">UNIFAC Models</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../../index.html">Using yaeos</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../nrtl.html">NRTL</a>
+              <a class="nav-link active disabled" href="index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="psrk.html">UNIFAC-PSRK</a>
+              <a class="nav-link" href="unifaclv.html">UNIFAC-LV</a>
+
+                </nav>
+              <a class="nav-link" href="../uniquac.html">UNIQUAC</a>
+
+                </nav>
+              <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+
+                </nav>
+              <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#unifac-models-equations">UNIFAC Models Equations</a><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#combinatorial-term-derivatives">Combinatorial term derivatives</a><ul>
+<li><a href="#flory-huggins">Flory-Huggins</a></li>
+<li><a href="#staverman-guggenheim">Staverman-Guggenheim</a></li>
+<li><a href="#fredenslund-et-al-unifac">Fredenslund et al. (UNIFAC)</a></li>
+</ul>
+</li>
+<li><a href="#residual-terms-derivatives">Residual terms derivatives</a><ul>
+<li><a href="#the-compositional-derivatives">The compositional derivatives:</a></li>
+<li><a href="#the-temperature-derivatives">The temperature derivatives:</a></li>
+<li><a href="#temperature-compositional-cross-derivative">Temperature-compositional cross derivative:</a></li>
+</ul>
+</li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#calculating-activity-coefficients">Calculating activity coefficients</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<h1 id="unifac-models-equations">UNIFAC Models Equations</h1>
+<h2 id="introduction">Introduction</h2>
+<p>In this sections we will describe the equations and its derivatives of UNIFAC
+models.</p>
+<p>Each UNIFAC model is differentiated by the list of available functional groups,
+the interaction parameters between functional groups, the value of the exponent
+<script type="math/tex">d</script> in the combinatorial term, and the function of temperature used in the
+residual term. Check the section of each model for more specific details of
+each model. Let&rsquo;s begin:</p>
+<p><a href="../../../../type/unifac.html">UNIFAC</a> (UNIQUAC Functional-group Activity Coefficients) is an Excess Gibbs
+free energy model used to estimate activity coefficients in non-ideal mixtures.
+It is particularly useful for predicting the phase behavior of chemical
+mixtures, including liquid-liquid equilibrium (LLE) and vapor-liquid
+equilibrium (VLE). In this model the Excess Gibbs free energy is calculated
+from the contribution of a combinatorial term and a residual term.</p>
+<p>
+<script type="math/tex; mode=display"> \frac{G^E}{RT} = \frac{G^{E,r}}{RT} + \frac{G^{E,c}}{RT} </script>
+</p>
+<p>Being:</p>
+<ul>
+<li>
+<p>Combinatorial: Accounts for the size and shape of the molecules.</p>
+</li>
+<li>
+<p>Residual: Accounts for the energy interactions between different functional groups.</p>
+</li>
+</ul>
+<p>Each substance of a mixture modeled with <a href="../../../../type/unifac.html">UNIFAC</a> must be represented by a
+list a functional groups and other list with the ocurrence of each functional
+group on the substance.</p>
+<h2 id="combinatorial-term-derivatives">Combinatorial term derivatives</h2>
+<p>Combinatorial term has two parameters <script type="math/tex">z</script> and <script type="math/tex">d</script> that could be modified.
+The <script type="math/tex">z</script> parameter is always set to 10, and the <script type="math/tex">d</script> parameter is set to 1
+for the Classic Liquid-Vapor UNIFAC model and the PSRK-UNIFAC model, and 3/4
+for the Dortmund-UNIFAC model. Both could be changed (they are attributes of
+the UNIFAC objects (<code>z</code> and <code>d</code> respectively)).</p>
+<p>Calculate the UNIFAC combinatorial term of reduced Gibbs excess energy.
+The subroutine uses the Flory-Huggins and Staverman-Guggenheim
+combinatory terms as follows:</p>
+<h3 id="flory-huggins">Flory-Huggins</h3>
+<p>
+<script type="math/tex; mode=display">
+   G^{E,FH} =
+   RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i^d
+   - n \, \text{ln} \, \sum_j^{NC} n_j r_j^d
+   + n \, \text{ln} \, n \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{dG^{E,FH}}{dn_i} =
+   RT \left(\text{ln} \, r_i^d - \text{ln} \, \sum_j^{NC} n_j r_j^d
+   + \text{ln} \, n + 1 - \frac{n r_i^d}{\displaystyle
+   \sum_j^{NC} n_j r_j^d} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{d^2G^{E,FH}}{dn_i dn_j} =
+   RT \left(- \frac{r_i^d + r_j^d}{\displaystyle \sum_l^{NC} n_l r_l^d}
+   + \frac{1}{n} + \frac{n r_i^d r_j^d}{\displaystyle \left(\sum_l^{NC}
+   n_l r_l^d \right)^2} \right)
+</script>
+</p>
+<h3 id="staverman-guggenheim">Staverman-Guggenheim</h3>
+<p>
+<script type="math/tex; mode=display">
+   \frac{G^{E,SG}}{RT} =
+   \frac{z}{2} \sum_i^{NC} n_i q_i
+   \left(\text{ln} \frac{q_i}{r_i}
+   - \text{ln} \, \sum_j^{NC} n_j q_j
+   + \text{ln} \, \sum_j^{NC} n_j r_j \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{1}{RT}\frac{dG^{E,SG}}{dn_i} =
+   \frac{z}{2} q_i \left(
+   - \text{ln} \, \left(
+   \frac{r_i \sum_j^{NC} n_j q_j}{\displaystyle q_i \sum_j^{NC}
+   n_j r_j} \right) - 1 + \frac{\displaystyle r_i \sum_j^{NC} n_j
+   q_j}{\displaystyle q_i \sum_j^{NC} n_j r_j} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{1}{RT}\frac{d^2G^{E,SG}}{dn_i dn_j} =
+   \frac{z}{2} \left(- \frac{q_i q_j}{\displaystyle \sum_l^{NC} n_lq_l}
+   + \frac{q_i r_j + q_j r_i}{\displaystyle \sum_l^{NC} n_l r_l}
+   - \frac{\displaystyle r_i r_j \sum_l^{NC} n_l q_l}
+   {\left(\displaystyle \sum_l^{NC} n_l r_l \right)^2} \right)
+</script>
+</p>
+<h3 id="fredenslund-et-al-unifac">Fredenslund et al. (UNIFAC)</h3>
+<p>The complete combinatorial term is given by the sum of the Flory-Huggins and
+Staverman-Guggenheim terms:</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{G^{E,\text{UNIFAC}}}{RT} =
+   \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}
+</script>
+</p>
+<h2 id="residual-terms-derivatives">Residual terms derivatives</h2>
+<p>Evaluate the UNIFAC residual term. Check the temperature function <script type="math/tex">E_{jk}</script>.
+This temperature function is different for each UNIFAC model. The residual
+Gibbs excess energy and its derivatives are evaluated as:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
+ (\Lambda_k - \Lambda_k^i)
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
+ {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}
+</script>
+</p>
+<p>In the UNIFAC model, the <script type="math/tex">\Theta_j^i </script> values are calculated assuming
+that the molecule &ldquo;i&rdquo; is pure, hence only the subgroups of the molecule
+&ldquo;i&rdquo; must be considered for the calculation. On the other hand, for the
+<script type="math/tex">\Theta_j </script> values, all the system&rsquo;s subgroups are considered.</p>
+<h3 id="the-compositional-derivatives">The compositional derivatives:</h3>
+<p>
+<script type="math/tex; mode=display">
+ \frac{1}{R T} \frac{\partial G^{E,R}}{\partial n_\alpha} =
+ - \sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\Lambda_k -
+ \Lambda_k^\alpha \right) - \sum_i^{\mathrm{NC}} n_i
+ \sum_k^{\mathrm{NG}} v_k^i Q_k
+ \frac{\partial \Lambda_k}{\partial n_\alpha}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{1}{R T} \frac{\partial^2 G^{E,R}}{\partial n_
+ \alpha \partial n_\beta} = -\sum_k^{\mathrm{NG}} Q_k \left(v_k^\alpha
+ \frac{\partial \Lambda_k}{\partial n_\beta} + v_k^\beta
+ \frac{\partial \Lambda_k}{\partial n_\alpha}\right)
+ - \sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i\right) Q_k
+ \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \Lambda_k}{\partial n_\alpha}
+ = \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}}
+ {\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+ E_{j k}} - \frac{\sum_m^{\mathrm{NG}} v_m^\alpha Q_m}
+ {\sum_l^{\mathrm{NC}} n_l \sum_m^{\mathrm{NG}} v_m^l Q_m}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial n_\beta}
+ = - \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j E_{j k}\right)
+ \left(\sum_j^{\mathrm{NG}} v_j^\beta Q_j E_{j k}\right)}
+ {\left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+ E_{j k}\right)^2} + \frac{\left(\sum_m^{\mathrm{NG}} v_m^\alpha
+ Q_m\right)\left(\sum_m^{\mathrm{NG}} v_m^\beta Q_m\right)}
+ {\left(\sum_l^{\mathrm{NC}} n_l
+ \sum_m^{\mathrm{NG}} v_m^l Q_m\right)^2}
+</script>
+</p>
+<h3 id="the-temperature-derivatives">The temperature derivatives:</h3>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial\left(\frac{G^{E, R}}{R T}\right)}{\partial T} =
+ -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+ \left(\frac{\partial \Lambda_k}{\partial T}
+ -\frac{\partial \Lambda_k^i}{\partial T}\right)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2\left(\frac{G^{E,R}}{R T}\right)}{\partial T^2} =
+ -\sum_i^{\mathrm{NC}} n_i \sum_k^{\mathrm{NG}} v_k^i Q_k
+ \left(\frac{\partial^2 \Lambda_k}{\partial T^2} -
+ \frac{\partial^2 \Lambda_k^i}{\partial T^2}\right)
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \Lambda_k}{\partial T} =
+ \frac{\sum_{j}^{NG} \Theta_j \frac{d E_{jk}}{dT}}
+ {\sum_{j}^{NG} \Theta_j E_{jk}}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \Lambda_k^i}{\partial T} =
+ \frac{\sum_{j}^{NG} \Theta_j^i \frac{d E_{jk}}{dT}}
+ {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k}{\partial T^2} =
+ \frac{\sum_{j}^{NG} \Theta_j \frac{d^2 E_{jk}}{dT^2}}
+ {\sum_{j}^{NG} \Theta_j E_{jk}}
+ - \left(\frac{\partial \Lambda_k}{\partial T} \right)^2
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k^i}{\partial T^2} =
+ \frac{\sum_{j}^{NG} \Theta_j^i \frac{d^2 E_{jk}}{dT^2}}
+ {\sum_{j}^{NG} \Theta_j^i E_{jk}}
+ - \left(\frac{\partial \Lambda_k^i}{\partial T} \right)^2
+</script>
+</p>
+<h3 id="temperature-compositional-cross-derivative">Temperature-compositional cross derivative:</h3>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial \left(\frac{G^{E, R}}{R T} \right)}
+ {\partial n_\alpha \partial T}=
+ -\sum_k^{\mathrm{NG}} v_k^\alpha Q_k \left(\frac{\partial \Lambda_k}
+ {\partial T} - \frac{\partial \Lambda_k^\alpha}{\partial T}\right)
+ -\sum_k^{\mathrm{NG}} \left(\sum_i^{\mathrm{NC}} n_i v_k^i \right)
+ Q_k \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T}
+</script>
+</p>
+<p>With:</p>
+<p>
+<script type="math/tex; mode=display">
+ \frac{\partial^2 \Lambda_k}{\partial n_\alpha \partial T} =
+ \frac{\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \frac{\partial
+ \tilde{E}_{j k}}{\partial T}}{\sum_l^{\mathrm{NC}} n_l
+ \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}} -
+ \frac{\left(\sum_j^{\mathrm{NG}} v_j^\alpha Q_j \tilde{E}_{j k}\right)
+ \left(\sum_l^{\mathrm{NC}} n_l \sum_j^{\mathrm{NG}} v_j^l Q_j
+ \frac{\partial \tilde{E}_{j k}}{\partial T}\right)}
+ {\left(\sum_l^{\mathrm{NC}} n_l
+ \sum_j^{\mathrm{NG}} v_j^l Q_j \tilde{E}_{j k}\right)^2}
+</script>
+</p>
+<h2 id="examples">Examples</h2>
+<p>On each specific UNIFAC model section we will give more examples of each
+specific model. Here we leave a simple example for the classic Liquid-Vapor
+UNIFAC model.</p>
+<h3 id="calculating-activity-coefficients">Calculating activity coefficients</h3>
+<p>We can instantiate a <a href="../../../../type/unifac.html">UNIFAC</a> model with a mixture ethanol-water and evaluate
+the logarithm of activity coefficients of the model for a 0.5 mole fraction of
+each, and a temperature of 298.0 K.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
+<span class="k">use </span><span class="n">yaeos__models_ge_group_contribution_unifac</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span>
+
+<span class="c">! Variables declarations</span>
+<span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c">! Variables instances</span>
+<span class="c">! Ethanol definition [CH3, CH2, OH]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span><span class="w"> </span><span class="c">! Subgroups ids</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c">! Subgroups occurrences</span>
+
+<span class="c">! Water definition [H2O]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c">! Model setup</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
+<span class="c">! Calculate ln_gammas</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">([</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="p">],</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span>
+</code></pre></div>
+
+<p>You will obtain:</p>
+<div class="codehilite"><pre><span></span><code>&gt;&gt;&gt; 0.18534142000449058    0.40331395945417559
+</code></pre></div>
+
+<h1 id="references">References</h1>
+<ol>
+<li><a href="https://www.ddbst
+.com/published-parameters-unifac.html">Dortmund Data Bank Software &amp; Separation Technology</a></li>
+<li>Fredenslund, A., Jones, R. L., &amp; Prausnitz, J. M. (1975). Group‐contribution
+estimation of activity coefficients in nonideal liquid mixtures. AIChE Journal,
+21(6), 1086–1099.
+<a href="https://doi.org/10.1002/aic.690210607">https://doi.org/10.1002/aic.690210607</a></li>
+<li>Skjold-Jorgensen, S., Kolbe, B., Gmehling, J., &amp; Rasmussen, P. (1979).
+Vapor-Liquid Equilibria by UNIFAC Group Contribution. Revision and Extension.
+Industrial &amp; Engineering Chemistry Process Design and Development, 18(4),
+714–722.
+<a href="https://doi.org/10.1021/i260072a024">https://doi.org/10.1021/i260072a024</a></li>
+<li>Gmehling, J., Rasmussen, P., &amp; Fredenslund, A. (1982). Vapor-liquid
+equilibriums by UNIFAC group contribution. Revision and extension. 2.
+Industrial &amp; Engineering Chemistry Process Design and Development, 21(1),
+118–127.
+<a href="https://doi.org/10.1021/i200016a021">https://doi.org/10.1021/i200016a021</a></li>
+<li>Macedo, E. A., Weidlich, U., Gmehling, J., &amp; Rasmussen, P. (1983).
+Vapor-liquid equilibriums by UNIFAC group contribution. Revision and extension.</li>
+<li>Industrial &amp; Engineering Chemistry Process Design and Development, 22(4),
+676–678.
+<a href="https://doi.org/10.1021/i200023a023">https://doi.org/10.1021/i200023a023</a></li>
+<li>Tiegs, D., Rasmussen, P., Gmehling, J., &amp; Fredenslund, A. (1987).
+Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
+extension. Industrial &amp; Engineering Chemistry Research, 26(1), 159–161.
+<a href="https://doi.org/10.1021/ie00061a030">https://doi.org/10.1021/ie00061a030</a></li>
+<li>Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., &amp; Gmehling, J.
+(1991). Vapor-liquid equilibria by UNIFAC group contribution. 5. Revision and
+extension. Industrial &amp; Engineering Chemistry Research, 30 (10), 2352–2355.
+<a href="https://doi.org/10.1021/ie00058a017">https://doi.org/10.1021/ie00058a017</a></li>
+<li>Wittig, R., Lohmann, J., &amp; Gmehling, J. (2003). Vapor−Liquid Equilibria by
+UNIFAC Group Contribution. 6. Revision and Extension. Industrial &amp; Engineering
+Chemistry Research, 42(1), 183–188.
+<a href="https://doi.org/10.1021/ie020506l">https://doi.org/10.1021/ie020506l</a></li>
+<li><a href="https://github.com/termotools/thermopack">SINTEF - Thermopack</a></li>
+</ol>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2025 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-12-08 18:19 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

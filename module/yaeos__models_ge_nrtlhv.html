@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for modules and submodules.">29 statements</a>
+                 title=" 0.2% of total for modules and submodules.">30 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -156,7 +156,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__models_ge_nrtlhv.html#proc-excess_gibbs~2">excess_gibbs</a>
+            <a class="list-group-item" href="../module/yaeos__models_ge_nrtlhv.html#proc-excess_gibbs">excess_gibbs</a>
         </div>
       </div>
     </div>
@@ -182,8 +182,8 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
                   <li class="list-inline-item"><a href='yaeos__autodiff.html'>yaeos__autodiff</a></li>
               </ul>
             </li>
@@ -226,7 +226,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~6"></span>
+              <span class="anchor" id="variable-alpha~5"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -278,7 +278,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gij"></span>
+              <span class="anchor" id="variable-gji0"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -286,12 +286,30 @@
               allocatable
             </td>
             <td>::</td>
-            <td><strong>gij</strong>(:,:)</td>
+            <td><strong>gji0</strong>(:,:)</td>
                 <td></td>
                 <td></td>
             <td>
 <p>
-<script type="math/tex"> g_{ij} </script> matrix</p>
+<script type="math/tex"> g_{ij}^0 </script> matrix</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gjit"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>gjiT</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>
+<script type="math/tex"> g_{ij}^T </script> matrix</p>
             </td>
         </tr>
     </tbody>
@@ -303,6 +321,11 @@
         <h4>Type-Bound Procedures</h4>
         <table class="table table-striped varlist">
           <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/gemodel.html#boundprocedure-excess_cp'>excess_Cp</a></strong></td>
+                  <td></td>
+              </tr>
               <tr>
                 <td>  procedure, public ::
   <strong><a href='../type/gemodel.html#boundprocedure-excess_enthalpy'>excess_enthalpy</a></strong></td>
@@ -335,7 +358,7 @@
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-excess_gibbs~2"></span> <h3>public  subroutine <a href='../proc/excess_gibbs~2.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    <div class="card-header codesum"><span class="anchor" id="proc-excess_gibbs"></span> <h3>public  subroutine <a href='../proc/excess_gibbs.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h3></div>
     <div class="card-body">
           
@@ -354,7 +377,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~5"></span>
+              <span class="anchor" id="variable-self~6"></span>
               class(<a href='../type/nrtlhv.html'>NRTLHV</a>),
             </td>
 <td>intent(in)</td>
@@ -369,7 +392,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~23"></span>
+              <span class="anchor" id="variable-n~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -384,7 +407,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~32"></span>
+              <span class="anchor" id="variable-t~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -399,7 +422,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~3"></span>
+              <span class="anchor" id="variable-ge~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -414,7 +437,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~2"></span>
+              <span class="anchor" id="variable-get~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -431,7 +454,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~2"></span>
+              <span class="anchor" id="variable-get2~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -448,7 +471,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~2"></span>
+              <span class="anchor" id="variable-gen~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -465,7 +488,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~2"></span>
+              <span class="anchor" id="variable-getn~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -480,7 +503,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~2"></span>
+              <span class="anchor" id="variable-gen2~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -523,7 +546,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-12-07 22:38 +0000             </p>
+ on 2025-12-08 18:19 +0000             </p>
           </div>
         </div>
         <br>

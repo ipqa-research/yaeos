@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../fitting.html">Fitting</a></li>
 </ul>
 
@@ -83,7 +84,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for yaeos.envelopes</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Envelopes.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Envelopes Module.</span>
 
 <span class="sd">This module contains the classes that wrap the data structures used to</span>
 <span class="sd">represent different kinds of phase envelopes.</span>
@@ -99,7 +100,7 @@
 
 
 <div class="viewcode-block" id="PTEnvelope">
-<a class="viewcode-back" href="../../core%20copy.html#yaeos.envelopes.PTEnvelope">[docs]</a>
+<a class="viewcode-back" href="../../envelopes.html#yaeos.envelopes.PTEnvelope">[docs]</a>
 <span class="k">class</span> <span class="nc">PTEnvelope</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;PTEnvelope.</span>
 
@@ -140,6 +141,7 @@
 <span class="sd">        Shape is (n_points, n_phases).</span>
 <span class="sd">    df : pd.DataFrame</span>
 <span class="sd">        A DataFrame containing the data of the envelope. The columns are:</span>
+
 <span class="sd">        - &#39;T&#39;: Temperatures along the envelope.</span>
 <span class="sd">        - &#39;P&#39;: Pressures along the envelope.</span>
 <span class="sd">        - &#39;x_i^j&#39;: Compositions of the main phases, where `i` is the component</span>
@@ -203,7 +205,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
 
 <div class="viewcode-block" id="PTEnvelope.plot">
-<a class="viewcode-back" href="../../core%20copy.html#yaeos.envelopes.PTEnvelope.plot">[docs]</a>
+<a class="viewcode-back" href="../../envelopes.html#yaeos.envelopes.PTEnvelope.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the envelope.</span>
 
@@ -321,7 +323,7 @@
 
 
 <div class="viewcode-block" id="PXEnvelope">
-<a class="viewcode-back" href="../../core%20copy.html#yaeos.envelopes.PXEnvelope">[docs]</a>
+<a class="viewcode-back" href="../../envelopes.html#yaeos.envelopes.PXEnvelope">[docs]</a>
 <span class="k">class</span> <span class="nc">PXEnvelope</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;PXEnvelope.</span>
 
@@ -370,6 +372,7 @@
 <span class="sd">        component index.</span>
 <span class="sd">        - &#39;beta^j&#39;: Molar fractions of the main phases, where `j`</span>
 <span class="sd">        is the phase index.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -429,7 +432,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
 
 <div class="viewcode-block" id="PXEnvelope.plot">
-<a class="viewcode-back" href="../../core%20copy.html#yaeos.envelopes.PXEnvelope.plot">[docs]</a>
+<a class="viewcode-back" href="../../envelopes.html#yaeos.envelopes.PXEnvelope.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the envelope.</span>
 
@@ -494,6 +497,8 @@
                 <span class="n">alphas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
                 <span class="n">iterations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
                 <span class="n">specified_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">specified_variable</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">main_phases_kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_phases_kinds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="n">reference_phase_kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_phase_kinds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
                 <span class="n">critical_pressures</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">critical_pressures</span><span class="p">,</span>
                 <span class="n">critical_alphas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">critical_alphas</span><span class="p">,</span>
             <span class="p">)</span>
@@ -520,7 +525,7 @@
 
 
 <div class="viewcode-block" id="TXEnvelope">
-<a class="viewcode-back" href="../../core%20copy.html#yaeos.envelopes.TXEnvelope">[docs]</a>
+<a class="viewcode-back" href="../../envelopes.html#yaeos.envelopes.TXEnvelope">[docs]</a>
 <span class="k">class</span> <span class="nc">TXEnvelope</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;TXEnvelope.</span>
 
@@ -631,7 +636,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
 
 <div class="viewcode-block" id="TXEnvelope.plot">
-<a class="viewcode-back" href="../../core%20copy.html#yaeos.envelopes.TXEnvelope.plot">[docs]</a>
+<a class="viewcode-back" href="../../envelopes.html#yaeos.envelopes.TXEnvelope.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the envelope.</span>
 

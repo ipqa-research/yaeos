@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos Python bindings &mdash; yaeos 4.3.0 documentation</title>
+  <title>yaeos Python API &mdash; yaeos 4.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -20,6 +20,8 @@
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -57,6 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
 </ul>
 
@@ -74,7 +77,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">yaeos Python bindings</li>
+      <li class="breadcrumb-item active">yaeos Python API</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,94 +87,96 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="yaeos-python-bindings">
-<h1>yaeos Python bindings<a class="headerlink" href="#yaeos-python-bindings" title="Link to this heading"></a></h1>
+  <section id="yaeos-python-api">
+<h1>yaeos Python API<a class="headerlink" href="#yaeos-python-api" title="Link to this heading"></a></h1>
+<p align="center">
+  <img src="https://github.com/ipqa-research/yaeos/blob/main/media/logo.png?raw=true" alt="logo" width="500"/>
+</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> Python API is on and early stage of development. So the API will
-change with time.</p>
-<section id="supported-operative-systems">
-<h2>Supported operative systems<a class="headerlink" href="#supported-operative-systems" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Linux</p></li>
-</ul>
-</section>
-<section id="supported-python-versions">
-<h2>Supported Python versions<a class="headerlink" href="#supported-python-versions" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Python &gt;= 3.10, &lt; 3.13</p></li>
-</ul>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p>To install the last version of <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> Python API, you can use <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">yaeos</span>
-</pre></div>
-</div>
-<section id="for-developers-the-editable-installation-is-done-by">
-<h3>For developers, the editable installation is done by<a class="headerlink" href="#for-developers-the-editable-installation-is-done-by" title="Link to this heading"></a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">python</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">-</span><span class="n">build</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">build</span><span class="o">-</span><span class="n">isolation</span>
-</pre></div>
-</div>
-</section>
-<section id="building-from-source">
-<h3>Building from source<a class="headerlink" href="#building-from-source" title="Link to this heading"></a></h3>
-<p>To build <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> from source you can clone the repository and install it with
-pip. The system dependencies are:</p>
-<ul class="simple">
-<li><p>LAPACK</p></li>
-<li><p>Fortran compiler</p></li>
-</ul>
-<p>To build and install do:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ipqa-research/yaeos.git
-<span class="nb">cd</span><span class="w"> </span>yaeos/python
-pip<span class="w"> </span>install<span class="w"> </span>.
-</pre></div>
-</div>
-</section>
-<section id="setting-a-google-colab-to-use-yaeos">
-<h3>Setting a Google Colab to use yaeos<a class="headerlink" href="#setting-a-google-colab-to-use-yaeos" title="Link to this heading"></a></h3>
-<p>To install <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> on Google Colab you can do the following command to install
-the last version uploaded to PyPI:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>%pip<span class="w"> </span>install<span class="w"> </span>yaeos
-</pre></div>
-</div>
-<p>To check if the installation worked correctly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">320</span><span class="p">,</span> <span class="mi">375</span><span class="p">]),</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">]),</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>
-<span class="p">)</span>
-
-<span class="n">model</span><span class="o">.</span><span class="n">lnphi_vt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]),</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">303.15</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>You will get:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([</span><span class="mf">0.47647471</span><span class="p">,</span> <span class="mf">0.35338115</span><span class="p">])</span>
-</pre></div>
-</div>
-</section>
+change with time. The supported operative system is Linux, and the supported
+Python versions are 3.10, 3.11, 3.12 and 3.13.</p>
+<section id="important-advice">
+<h2>Important advice<a class="headerlink" href="#important-advice" title="Link to this heading"></a></h2>
+<p>Since <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> is written in Fortran, Python users can have some little issues
+understanding and finding things in the documentation. Please, <strong>we recommend
+looking at the “Getting Started - Using This Documentation” section of the
+<a class="reference external" href="https://ipqa-research.github.io/yaeos/page/python-api/tutorial/tutorial_tree.html">Tutorial</a>
+down below</strong>, there you will understand how to use this documentation.</p>
 </section>
 </section>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/tutorial_tree.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/tutorial_tree.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Using-This-Documentation">Using This Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Installation-Instructions">Installation Instructions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Local-Installation">Local Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Building-from-source">Building from source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Setting-a-Google-Colab-to-use-yaeos">Setting a Google Colab to use yaeos</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Installation-For-Developers">Installation For Developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Yaeos-units">Yaeos units</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/equations_of_state/equations_of_state.html">Equations of State (EoS)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html">Bulk Properties</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Example-model">Example model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Properties-function-of-Volume-and-Temperature-\left(V,-T-\right)">Properties function of Volume and Temperature <span class="math notranslate nohighlight">\(\left(V, T \right)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Properties-function-of-Pressure-and-Temperature-\left(P,-T-\right)">Properties function of Pressure and Temperature <span class="math notranslate nohighlight">\(\left(P, T \right)\)</span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_eos.html">Cubic Equations of State</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html">Generic Cubic Equation of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Peng-Robinson-(1976)">Peng-Robinson (1976)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Peng-Robinson-(1978)">Peng-Robinson (1978)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Soave-Redlich-Kwong">Soave-Redlich-Kwong</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#RKPR">RKPR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Predictive-Soave-Redlich-Kwong-(PSRK)">Predictive Soave-Redlich-Kwong (PSRK)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_mixing_rules.html">Mixing Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/multifluid_eos/gerg2008.html">Gerg2008</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html">More calculations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/gpec/gpec_tutorial.html">Binary Systems Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/fitting/fitting.html">Fitting Equations of State</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/fitting/fitting_tutorial.html">Fitting interaction parameters of binary systems</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/gibbs_excess/gibbs_excess.html">Excess Gibbs models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html">Bulk properties</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html#Example-model">Example model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html#Properties-of-Excess-Gibbs-Models">Properties of Excess Gibbs Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/gibbs_excess/models/ge_models.html">Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/nrtl.html">NRTL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/uniquac.html">UNIQUAC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/unifac_models.html">UNIFAC models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="core.html#yaeos.core.adjust_root_kind"><code class="docutils literal notranslate"><span class="pre">adjust_root_kind()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#yaeos.core.GeModel"><code class="docutils literal notranslate"><span class="pre">GeModel</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#yaeos.core.ArModel"><code class="docutils literal notranslate"><span class="pre">ArModel</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -179,56 +184,22 @@ the last version uploaded to PyPI:</p>
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="models/residual_helmholtz/init.html">Residual Helmholtz Models</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/init.html">Cubic Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html">Cubic EoS</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS"><code class="docutils literal notranslate"><span class="pre">CubicEoS</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson76"><code class="docutils literal notranslate"><span class="pre">PengRobinson76</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PengRobinson78"><code class="docutils literal notranslate"><span class="pre">PengRobinson78</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong"><code class="docutils literal notranslate"><span class="pre">SoaveRedlichKwong</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR"><code class="docutils literal notranslate"><span class="pre">RKPR</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.PSRK"><code class="docutils literal notranslate"><span class="pre">PSRK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html">Cubic EoS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html">Mixing Rules</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html">Mixing Rules (Cubic EoS)</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><code class="docutils literal notranslate"><span class="pre">CubicMixRule</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMR"><code class="docutils literal notranslate"><span class="pre">QMR</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD"><code class="docutils literal notranslate"><span class="pre">QMRTD</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV"><code class="docutils literal notranslate"><span class="pre">MHV</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV"><code class="docutils literal notranslate"><span class="pre">HV</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL"><code class="docutils literal notranslate"><span class="pre">HVNRTL</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="models/residual_helmholtz/multifluid/init.html">Multifluid Equations of State</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/multifluid/gerg2008.html">GERG 2008</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="models/excess_gibbs/init.html">Excess Gibbs Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/nrtl.html">NRTL</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/nrtl.html#yaeos.models.excess_gibbs.nrtl.NRTL"><code class="docutils literal notranslate"><span class="pre">NRTL</span></code></a><ul>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/nrtl.html#yaeos.models.excess_gibbs.nrtl.NRTL.a"><code class="docutils literal notranslate"><span class="pre">NRTL.a</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/nrtl.html#yaeos.models.excess_gibbs.nrtl.NRTL.b"><code class="docutils literal notranslate"><span class="pre">NRTL.b</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/nrtl.html#yaeos.models.excess_gibbs.nrtl.NRTL.c"><code class="docutils literal notranslate"><span class="pre">NRTL.c</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/nrtl.html#yaeos.models.excess_gibbs.nrtl.NRTL.id"><code class="docutils literal notranslate"><span class="pre">NRTL.id</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/unifacvle.html">UNIFACVLE</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/unifacvle.html#yaeos.models.excess_gibbs.unifac.UNIFACVLE"><code class="docutils literal notranslate"><span class="pre">UNIFACVLE</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/uniquac.html">UNIQUAC</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC"><code class="docutils literal notranslate"><span class="pre">UNIQUAC</span></code></a><ul>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.qs"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.qs</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.rs"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.rs</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.aij"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.aij</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.bij"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.bij</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.cij"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.cij</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.dij"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.dij</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="models/excess_gibbs/uniquac.html#yaeos.models.excess_gibbs.uniquac.UNIQUAC.eij"><code class="docutils literal notranslate"><span class="pre">UNIQUAC.eij</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/nrtl.html">NRTL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/unifacvle.html">UNIFACVLE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/unifac_dortmund.html">UNIFAC Dortmund</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/psrk_unifac.html">UNIFAC PSRK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/uniquac.html">UNIQUAC</a></li>
 </ul>
 </li>
 </ul>
@@ -237,17 +208,8 @@ the last version uploaded to PyPI:</p>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fitting.html#yaeos.fitting.BinaryFitter"><code class="docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="fitting.html#yaeos.fitting.BinaryFitter.fit"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="fitting.html#yaeos.fitting.BinaryFitter.objective_function"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.objective_function()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="fitting.html#yaeos.fitting.BinaryFitter.solution"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.solution</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="fitting.html#yaeos.fitting.fit_kij_lij"><code class="docutils literal notranslate"><span class="pre">fit_kij_lij()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fitting.html#yaeos.fitting.solve_pt"><code class="docutils literal notranslate"><span class="pre">solve_pt()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
 </ul>
 </div>
 <section id="indices-and-tables">

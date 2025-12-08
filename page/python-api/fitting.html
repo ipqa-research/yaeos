@@ -23,7 +23,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="UNIQUAC" href="models/excess_gibbs/uniquac.html" /> 
+    <link rel="prev" title="Envelopes Module" href="envelopes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,17 +57,8 @@
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Fitting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.BinaryFitter"><code class="docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.fit"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.objective_function"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.objective_function()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#yaeos.fitting.BinaryFitter.solution"><code class="docutils literal notranslate"><span class="pre">BinaryFitter.solution</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.fit_kij_lij"><code class="docutils literal notranslate"><span class="pre">fit_kij_lij()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#yaeos.fitting.solve_pt"><code class="docutils literal notranslate"><span class="pre">solve_pt()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fitting</a></li>
 </ul>
 
         </div>
@@ -101,7 +92,7 @@
 parameters to experimental data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BinaryFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_setter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_setter_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BinaryFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_setter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_setter_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">composition_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>BinaryFitter class.</p>
 <p>This class is used to fit binary interaction parameters to experimental
@@ -110,7 +101,7 @@ between the experimental data and the model predictions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_setter</strong> (<em>callable</em>) – A function that returns a model object. The function should take the
+<li><p><strong>model_setter</strong> (<em>Callable</em>) – A function that returns a model object. The function should take the
 optimization parameters as the first argument and any other arguments
 as the following arguments.</p></li>
 <li><p><strong>model_setter_args</strong> (<em>tuple</em>) – A tuple with the arguments to pass to the model_setter function.</p></li>
@@ -118,17 +109,81 @@ as the following arguments.</p></li>
 The DataFrame should have the following columns:
 - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
 critical)
-- x1: float, the mole fraction of component 1
-- y1: float, the mole fraction of component 1
+- x1: float, the mole fraction of component 1 (lightest component) in
+heavy phase.
+- y1: float, the mole fraction of component 1 (lightest component) in
+light phase.
 - T: float, the temperature in K
-- P: float, the pressure in bar</p></li>
+- P: float, the pressure in bar
+- weight: float, optional, the weight of the data point (default is 1)</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, print the objective function value and the optimization</p></li>
+<li><p><strong>pressure_error</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A function <a href="#id1"><span class="problematic" id="id2">`</span></a>f(Pexp, Pmodel)`that calculates the pressure error between
+the experimental and model values.
+The function should take the experimental and model
+values as arguments and return the error. If None, the default function
+is used.</p></li>
+<li><p><strong>temperature_error</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A function <a href="#id3"><span class="problematic" id="id4">`</span></a>f(Texp, Tmodel)`that calculates the temperature error
+between the experimental and model values.
+The function should take the experimental and model
+values as arguments and return the error. If None, the default function
+is used.</p></li>
+<li><p><strong>composition_error</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A function <a href="#id5"><span class="problematic" id="id6">`</span></a>f(zexp, zmodel)`that calculates the composition error
+between the experimental and model values.  The function should take
+the experimental and model for mixture composition as arguments and
+return the error. If None, the default function is used.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.get_model">
+<span class="sig-name descname"><span class="pre">get_model</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.get_model" title="Link to this definition"></a></dt>
+<dd><p>The function that returns the model object from the optimization
+parameters and the model_setter_args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.get_model_args">
+<span class="sig-name descname"><span class="pre">get_model_args</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.get_model_args" title="Link to this definition"></a></dt>
+<dd><p>The arguments to pass to the model_setter function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.data" title="Link to this definition"></a></dt>
+<dd><p>The experimental data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.evaluations">
+<span class="sig-name descname"><span class="pre">evaluations</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.evaluations" title="Link to this definition"></a></dt>
+<dd><p>A dictionary with the evaluations of the objective function. The keys
+are ‘fobj’, and ‘x’. ‘fobj’ is the objective function value,
+‘x’ is the optimization parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Nelder-Mead'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.fit" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Nelder-Mead'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.fit" title="Link to this definition"></a></dt>
 <dd><p>Fit the model to the data.</p>
 <p>Fit the model to the data using the objective function defined in
 the objective_function method. The optimization is performed using
@@ -148,13 +203,27 @@ The optimization result is stored in the <cite>.solution</cite> property. Which<
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.model">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#yaeos.fitting.BinaryFitter.model" title="Link to this definition"></a></dt>
+<dd><p>Return the model with the fitted parameters.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.fitting.BinaryFitter.objective_function">
-<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.objective_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.objective_function" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_values</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/yaeos/fitting/core.html#BinaryFitter.objective_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.BinaryFitter.objective_function" title="Link to this definition"></a></dt>
 <dd><p>Objective function to minimize when fitting interaction parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x_values</strong> (<em>array-like</em>) – The interaction parameters to fit.</p>
+<dd class="field-odd"><p><strong>x_values</strong> (<em>array-like</em>) – The interaction parameters to fit, 1D array-like.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the objective function, which is the sum of the
+squared relative errors between the experimental data and the model
+predictions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -175,8 +244,29 @@ The optimization result is stored in the <cite>.solution</cite> property. Which<
 
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.fitting.solve_pt">
-<span class="sig-name descname"><span class="pre">solve_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/fitting/solvers.html#solve_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.solve_pt" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">solve_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><span class="pre">ArModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/fitting/solvers.html#solve_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.solve_pt" title="Link to this definition"></a></dt>
 <dd><p>Solve a point at a given P and T.</p>
+<p>This function solves a point at a given pressure and temperature. That is,
+solve the composition of two phases in equilibrium at T and P. The function
+handles liquid-vapor or liquid-liquid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><em>ArModel</em></a>) – yaeos ArModel object.</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar].</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K].</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – Kind of phase equilibrium calculation. Options are:
+- “liquid-liquid”: liquid-liquid equilibrium calculation.
+- “PT”: pressure-temperature calculation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>x1, y1: Mole fractions of component 1 (light component) in both phases.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[float, float]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -185,7 +275,7 @@ The optimization result is stored in the <cite>.solution</cite> property. Which<
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="models/excess_gibbs/uniquac.html" class="btn btn-neutral float-left" title="UNIQUAC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="envelopes.html" class="btn btn-neutral float-left" title="Envelopes Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

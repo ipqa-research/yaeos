@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generic Cubic Equation of State &mdash; yaeos 4.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a17b270f"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Mixing Rules" href="cubic_mixing_rules.html" />
+    <link rel="prev" title="Cubic Equations of State" href="cubic_eos.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Generic Cubic Equation of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Peng-Robinson-(1976)">Peng-Robinson (1976)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Peng-Robinson-(1978)">Peng-Robinson (1978)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Soave-Redlich-Kwong">Soave-Redlich-Kwong</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#RKPR">RKPR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Predictive-Soave-Redlich-Kwong-(PSRK)">Predictive Soave-Redlich-Kwong (PSRK)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cubic_mixing_rules.html">Mixing Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tutorial_tree.html">Tutorial</a></li>
+          <li class="breadcrumb-item"><a href="../equations_of_state.html">Equations of State (EoS)</a></li>
+          <li class="breadcrumb-item"><a href="cubic_eos.html">Cubic Equations of State</a></li>
+      <li class="breadcrumb-item active">Generic Cubic Equation of State</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/tutorial/equations_of_state/cubic_eos/cubic_models.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Generic-Cubic-Equation-of-State">
+<h1>Generic Cubic Equation of State<a class="headerlink" href="#Generic-Cubic-Equation-of-State" title="Link to this heading"></a></h1>
+<p>Our Cubic Equations of State are implemented based on the generic Cubic Equation:</p>
+<div class="math notranslate nohighlight">
+\[P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V + \delta_1 b)(V - \delta_2 b)}\]</div>
+<p>Almost all cubic equations of state use the Quadratic mixing rule with all its parameters set to zero by default. Check the “Mixing Rules” section of the Cubic Equations of State tutorial for more information about different mixing rules and how to change them.</p>
+<p>Here we give a minimum example of how to set all the parameters of the available cubic equations of state. Check out for all the sections of the “Equations of State (EoS)” tutorial to learn all you can do with the Cubic Equations of State.</p>
+</section>
+<section id="Peng-Robinson-(1976)">
+<h1>Peng-Robinson (1976)<a class="headerlink" href="#Peng-Robinson-(1976)" title="Link to this heading"></a></h1>
+<p>The Peng-Robinson (1976) EoS uses the following <span class="math notranslate nohighlight">\(\alpha\)</span> function and correlation for <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\alpha(T_r) = \left(1 + k (1 - \sqrt{T_r})\right)^2\]</div>
+<div class="math notranslate nohighlight">
+\[k = 0.37464 + 1.54226 \, \omega - 0.26993 \, \omega^2\]</div>
+<div class="math notranslate nohighlight">
+\[a_c = 0.45723553  \frac{R^2 T_c^2}{P_c}\]</div>
+<div class="math notranslate nohighlight">
+\[b = 0.07779607 \frac{R T_c}{P_c}\]</div>
+<div class="math notranslate nohighlight">
+\[\delta_1 = 1 + \sqrt{2}\]</div>
+<div class="math notranslate nohighlight">
+\[\delta_2 = 1 - \sqrt{2}\]</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
+<span class="n">Pcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">21.1</span><span class="p">]</span>         <span class="c1"># Critical pressures [bar]</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.492328</span><span class="p">]</span>  <span class="c1"># Acentric factors [-]</span>
+
+
+<span class="c1"># Setting a Peng-Robinson 1976 cubic equation of state</span>
+<span class="c1"># By default, the Quadratic mixing rule is used with all parameters set to zero</span>
+<span class="n">model_pr76</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">Tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">Pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">ws</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># Moles vector [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>       <span class="c1"># Temperature [K]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">10.0</span>         <span class="c1"># Pressure [bar]</span>
+
+
+<span class="c1"># Calculate a stable volume root [L]</span>
+<span class="n">model_pr76</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.739232789370789
+</pre></div></div>
+</div>
+</section>
+<section id="Peng-Robinson-(1978)">
+<h1>Peng-Robinson (1978)<a class="headerlink" href="#Peng-Robinson-(1978)" title="Link to this heading"></a></h1>
+<p>The Peng-Robinson (1978) EoS is an improved version of the original Peng-Robinson (1976) equation for heavier components. This equation ensures a monotonically increasing <span class="math notranslate nohighlight">\(k\)</span> as the values of <span class="math notranslate nohighlight">\(\omega\)</span> increases. It uses the following <span class="math notranslate nohighlight">\(\alpha\)</span> function and correlation for <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\alpha(T_r) = \left(1 + k (1 - \sqrt{T_r})\right)^2\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}k =
+\begin{cases}
+0.37464 + 1.54226 \, \omega - 0.26992 \, \omega^2 &amp; \text{if} \quad \omega \leq 0.491 \\
+0.37464 + 1.48503 \, \omega - 0.16442 \, \omega^2 + 0.016666 \, \omega^3 &amp; \text{if} \quad \omega &gt; 0.491
+\end{cases}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[a_c = 0.45723553  \frac{R^2 T_c^2}{P_c}\]</div>
+<div class="math notranslate nohighlight">
+\[b = 0.07779607  \frac{R T_c}{P_c}\]</div>
+<div class="math notranslate nohighlight">
+\[\delta_1 = 1 + \sqrt{2}\]</div>
+<div class="math notranslate nohighlight">
+\[\delta_2 = 1 - \sqrt{2}\]</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
+<span class="n">Pcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">21.1</span><span class="p">]</span>         <span class="c1"># Critical pressures [bar]</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.492328</span><span class="p">]</span>  <span class="c1"># Acentric factors [-]</span>
+
+
+<span class="c1"># Setting a Peng-Robinson 1978 cubic equation of state</span>
+<span class="c1"># By default, the Quadratic mixing rule is used with all parameters set to zero</span>
+<span class="n">model_pr78</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PengRobinson78</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">Tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">Pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">ws</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># Moles vector [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>       <span class="c1"># Temperature [K]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">10.0</span>         <span class="c1"># Pressure [bar]</span>
+
+
+<span class="c1"># Calculate a stable volume root [L]</span>
+<span class="n">model_pr78</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.7375354121831335
+</pre></div></div>
+</div>
+</section>
+<section id="Soave-Redlich-Kwong">
+<h1>Soave-Redlich-Kwong<a class="headerlink" href="#Soave-Redlich-Kwong" title="Link to this heading"></a></h1>
+<p>The Soave-Redlich-Kwong EoS uses the following <span class="math notranslate nohighlight">\(\alpha\)</span> function and its respective correlation for <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2\]</div>
+<div class="math notranslate nohighlight">
+\[k = 0.48 + 1.574 \omega - 0.175 \omega^2\]</div>
+<div class="math notranslate nohighlight">
+\[a_c = 0.427480  \frac{R^2 T_c^2}{P_c}\]</div>
+<div class="math notranslate nohighlight">
+\[b_c = 0.086640  \frac{R T_c}{P_c}\]</div>
+<div class="math notranslate nohighlight">
+\[\delta_1 = 1\]</div>
+<div class="math notranslate nohighlight">
+\[\delta_2 = 0\]</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
+<span class="n">Pcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">21.1</span><span class="p">]</span>         <span class="c1"># Critical pressures [bar]</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.492328</span><span class="p">]</span>  <span class="c1"># Acentric factors [-]</span>
+
+
+<span class="c1"># Setting a Soave-Redlich-Kwong cubic equation of state</span>
+<span class="c1"># By default, the Quadratic mixing rule is used with all parameters set to zero</span>
+<span class="n">model_srk</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">SoaveRedlichKwong</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">Tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">Pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">ws</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># Moles vector [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>       <span class="c1"># Temperature [K]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">10.0</span>         <span class="c1"># Pressure [bar]</span>
+
+
+<span class="c1"># Calculate a stable volume root [L]</span>
+<span class="n">model_pr78</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.7375354121831335
+</pre></div></div>
+</div>
+</section>
+<section id="RKPR">
+<h1>RKPR<a class="headerlink" href="#RKPR" title="Link to this heading"></a></h1>
+<p>The RKPR EoS extends the classical formulation of Cubic Equations of State by freeing the parameter <span class="math notranslate nohighlight">\(\delta_1\)</span> and setting <span class="math notranslate nohighlight">\(\delta_2 = \frac{1+\delta_1}{1-\delta_1}\)</span>. This extra degree provides extra ways of implementing the equation in comparison of other Cubic EoS (like Peng-Robinson and Soave-Redlich-Kwong) which are limited to definition of their critical constants.</p>
+<p>Besides that extra parameter, the RKPR includes another <span class="math notranslate nohighlight">\(\alpha\)</span> function:</p>
+<div class="math notranslate nohighlight">
+\[\alpha(T_r) = \left(\frac{3}{2+T_r}\right)^k\]</div>
+<p>These two extra parameters can be provided as arguments. But, if they are not provided they will be calculated by the following correlations:</p>
+<div class="math notranslate nohighlight">
+\[\delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ {d_6}\]</div>
+<div class="math notranslate nohighlight">
+\[k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C{_0)}\]</div>
+<p>In this implementation, the <span class="math notranslate nohighlight">\(k\)</span> constants (if not provided) will also be readjusted to assure that <span class="math notranslate nohighlight">\(\omega = -log_{10}\left(P_r^{sat}\right) - 1\)</span> at <span class="math notranslate nohighlight">\(T_r = 0.7\)</span>.</p>
+<p>It is also possible to include the parameters as optional arguments.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">Tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">])</span>      <span class="c1"># Critical temperatures [K]</span>
+<span class="n">Pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">21.1</span><span class="p">])</span>         <span class="c1"># Critical pressures [bar]</span>
+<span class="n">Vcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0986</span><span class="p">,</span> <span class="mf">0.625</span><span class="p">])</span>       <span class="c1"># Critical volumes [L/mol]</span>
+
+<span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.492328</span><span class="p">]</span>  <span class="c1"># Acentric factors [-]</span>
+
+<span class="n">R</span> <span class="o">=</span> <span class="mf">0.08314462618</span> <span class="c1"># Gas constant [L bar / (K mol)]</span>
+
+
+<span class="c1"># From critical properties we can calculate the critical compressibility factors</span>
+<span class="n">Zcs</span> <span class="o">=</span> <span class="n">Pcs</span> <span class="o">*</span> <span class="n">Vcs</span> <span class="o">/</span> <span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">Tcs</span><span class="p">)</span>
+
+
+<span class="c1"># Setting a RKPR cubic equation of state</span>
+<span class="c1"># By default, the Quadratic mixing rule is used with all parameters set to zero</span>
+<span class="n">model_rkpr</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">RKPR</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">Tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">Pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">ws</span><span class="p">,</span>
+    <span class="n">critical_z</span><span class="o">=</span><span class="n">Zcs</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># Moles vector [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>       <span class="c1"># Temperature [K]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">10.0</span>         <span class="c1"># Pressure [bar]</span>
+
+
+<span class="c1"># Calculate a stable volume root [L]</span>
+<span class="n">model_rkpr</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.6847435404812918
+</pre></div></div>
+</div>
+</section>
+<section id="Predictive-Soave-Redlich-Kwong-(PSRK)">
+<h1>Predictive Soave-Redlich-Kwong (PSRK)<a class="headerlink" href="#Predictive-Soave-Redlich-Kwong-(PSRK)" title="Link to this heading"></a></h1>
+<p>The <span class="math notranslate nohighlight">\(\alpha\)</span> function of the PSRK EoS is the Mathias-Copeman alpha function:</p>
+<div class="math notranslate nohighlight">
+\[\alpha_i(T_r) = \left[1+c_{1, i}\left(1-\sqrt{T_{r, i}}\right)+c_{2,
+i}\left(1-\sqrt{T_{r, i}}\right)^2 + c_{3,i}\left(1-\sqrt{T_{r,
+i}}\right)^3\right]^2\]</div>
+<p>The <span class="math notranslate nohighlight">\(c_{1,i}\)</span>, <span class="math notranslate nohighlight">\(c_{2,i}\)</span>, and <span class="math notranslate nohighlight">\(c_{3,i}\)</span> parameters are specific to each component and are determined from vapor pressure experimental data. If not provided, the PSRK EOS will use the same <span class="math notranslate nohighlight">\(\alpha\)</span> as the Soave-Redlich-Kwong EoS.</p>
+<p>The mixing rule is the modified Huron-Vidal mixing rule (MHV) with <span class="math notranslate nohighlight">\(u=1.1\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\frac{a(T)}{b R T}=\sum x_i \frac{a_{i i}(T)}{b_i R T}+\frac{\frac{G_0^{\mathrm{E}}}{R T}+\sum x_i \ln \frac{b}{b_i}}{\ln \frac{u}{u+1}}\]</div>
+<div class="math notranslate nohighlight">
+\[b = \sum_i x_i b_i\]</div>
+<p>As shown, the MHV mixing rule is dependent of excess Gibbs free energy the <span class="math notranslate nohighlight">\(G_0^{\mathrm{E}}\)</span>. This is calculated from the PSRK-UNIFAC model. For that the functional groups of each molecule must be provided.</p>
+<p>Checkout the Fortran side documentation of the PSRK-UNIFAC model to check the functional groups available:</p>
+<p><a class="reference external" href="https://ipqa-research.github.io/yaeos/page/index.html">https://ipqa-research.github.io/yaeos/page/index.html</a></p>
+<p>Groups are assigned as dictionaries. For example, n-hexane has two “CH3” groups and four “CH2” groups. The subgroups id of “CH3” and “CH2” are 1 and 2, respectively. So, the functional groups of n-hexane must be defined as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n_hexane_groups</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="c1"># methane - n-decane</span>
+<span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
+<span class="n">Pcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">21.1</span><span class="p">]</span>         <span class="c1"># Critical pressures [bar]</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.492328</span><span class="p">]</span>  <span class="c1"># Acentric factors [-]</span>
+
+<span class="c1"># Mathias-Copeman alpha parameters</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.49258</span><span class="p">,</span> <span class="mf">1.2407</span><span class="p">]</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.34943</span><span class="p">]</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.7327</span><span class="p">]</span>
+
+<span class="c1"># Functional groups of PSRK-UNIFAC</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">118</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">8</span><span class="p">}]</span>
+
+
+<span class="n">model_psrk</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PSRK</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="n">Tcs</span><span class="p">,</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="n">Pcs</span><span class="p">,</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="n">ws</span><span class="p">,</span>
+    <span class="n">molecules</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
+    <span class="n">c1</span><span class="o">=</span><span class="n">c1</span><span class="p">,</span>
+    <span class="n">c2</span><span class="o">=</span><span class="n">c2</span><span class="p">,</span>
+    <span class="n">c3</span><span class="o">=</span><span class="n">c3</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># Moles vector [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>       <span class="c1"># Temperature [K]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">10.0</span>         <span class="c1"># Pressure [bar]</span>
+
+
+<span class="c1"># Calculate a stable volume root [L]</span>
+<span class="n">model_psrk</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.9855806068142714
+</pre></div></div>
+</div>
+<section id="Using-ugropy-to-retrieve-PSRK-functional-groups">
+<h2>Using <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> to retrieve PSRK functional groups<a class="headerlink" href="#Using-ugropy-to-retrieve-PSRK-functional-groups" title="Link to this heading"></a></h2>
+<p>Our research group has another Python package called <code class="docutils literal notranslate"><span class="pre">ugropy</span></code></p>
+<p><a class="reference external" href="https://github.com/ipqa-research/ugropy">https://github.com/ipqa-research/ugropy</a></p>
+<p>That package can be used to retrieve the functional groups of a molecule by its SMILES, or name. Here it’s a little example of how to use it. Please refer to the <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> documentation for more information.</p>
+<p>The package can be installed with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ugropy
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ugropy</span> <span class="k">as</span> <span class="nn">ug</span>
+
+<span class="c1"># Obtain the functional groups of the PSRK model</span>
+<span class="n">methane_groups</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">psrk</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="s2">&quot;methane&quot;</span><span class="p">)</span>
+
+<span class="n">decane_groups</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">psrk</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="s2">&quot;decane&quot;</span><span class="p">)</span>
+
+<span class="c1"># Visualize the functional groups:</span>
+<span class="n">methane_groups</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/.local/lib/python3.12/site-packages/ugropy/core/get_rdkit_object.py:78: PubChemPyDeprecationWarning: canonical_smiles is deprecated: Use connectivity_smiles instead
+  if pcp_object.canonical_smiles:
+/home/runner/.local/lib/python3.12/site-packages/ugropy/core/get_rdkit_object.py:79: PubChemPyDeprecationWarning: canonical_smiles is deprecated: Use connectivity_smiles instead
+  chem_object = Chem.MolFromSmiles(pcp_object.canonical_smiles)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_models_18_1.svg" src="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_models_18_1.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">decane_groups</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_models_19_0.svg" src="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_models_19_0.svg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the functional groups list ready to use in yaeos PSRK!</span>
+
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">methane_groups</span><span class="o">.</span><span class="n">subgroups_num</span><span class="p">,</span> <span class="n">decane_groups</span><span class="o">.</span><span class="n">subgroups_num</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{118: 1}, {1: 2, 2: 8}]
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cubic_eos.html" class="btn btn-neutral float-left" title="Cubic Equations of State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cubic_mixing_rules.html" class="btn btn-neutral float-right" title="Mixing Rules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

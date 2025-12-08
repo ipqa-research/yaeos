@@ -1,0 +1,741 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Properties &mdash; yaeos 4.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a17b270f"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Cubic Equations of State" href="cubic_eos/cubic_eos.html" />
+    <link rel="prev" title="Equations of State (EoS)" href="equations_of_state.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Bulk Properties</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Example-model">Example model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Properties-function-of-Volume-and-Temperature-\left(V,-T-\right)">Properties function of Volume and Temperature <span class="math notranslate nohighlight">\(\left(V, T \right)\)</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Properties-function-of-Pressure-and-Temperature-\left(P,-T-\right)">Properties function of Pressure and Temperature <span class="math notranslate nohighlight">\(\left(P, T \right)\)</span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fitting/fitting.html">Fitting Equations of State</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial_tree.html">Tutorial</a></li>
+          <li class="breadcrumb-item"><a href="equations_of_state.html">Equations of State (EoS)</a></li>
+      <li class="breadcrumb-item active">Bulk Properties</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tutorial/equations_of_state/bulk_properties.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Bulk-Properties">
+<h1>Bulk Properties<a class="headerlink" href="#Bulk-Properties" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> is a library based on Equation-of-State calculations. An Equation of State (EOS) is a mathematical model that describes the relationship between thermodynamic properties of a system, typically pressure (P), volume (V), and temperature (T). These equations are fundamental in physics, chemistry, and engineering, especially in thermodynamics and fluid mechanics.</p>
+<p>EOS models are used to predict phase behavior, thermodynamic properties, and equilibrium conditions of gases, liquids, solids, and mixtures. They are widely applied in areas such as chemical engineering, petroleum engineering, and material science. From the ideal gas law, to cubic equations of state and SAFT, to more complex models, EOS are essential tools for the study and design of processes.</p>
+<p>The classic way of defining an EOS is though a mathematical equation that express the pressure as a function of the volume and temperature. For example, the Van der Waals EOS is defined as:</p>
+<div class="math notranslate nohighlight">
+\[P = \frac{RT}{v - b} - \frac{a}{v^2}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(P\)</span> is the pressure, <span class="math notranslate nohighlight">\(v\)</span> is the molar volume, <span class="math notranslate nohighlight">\(T\)</span> is the temperature, <span class="math notranslate nohighlight">\(R\)</span> is the gas constant, and <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are parameters that depend on the substance. For mixtures, the <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> parameters are calculated from the pure components parameters using a mixing rule.</p>
+<p>The modern way of defining an EOS is through a mathematical model that express the residual Helmholtz free energy as a function of the mole number vector, volume and temperature. This approach is more general and allows for a more flexible definition of the EOS in the context of implementing it in code. All thermodynamic properties can be calculated from the residual Helmholtz free energy and its derivatives. <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> is based on this approach.</p>
+<div class="math notranslate nohighlight">
+\[A^{r}(\vec{n}, V, T) = -\int_{\infty}^{V} \left(P(\vec{n},V,T) - \frac{nRT}{V} \right) dV\]</div>
+<p>If you want to know how each bulk property is calculated from the residual Helmholtz free energy, please refer to the <a class="reference external" href="https://ipqa-research.github.io/yaeos/page/index.html">Fortran User Documentation</a></p>
+<section id="Example-model">
+<h2>Example model<a class="headerlink" href="#Example-model" title="Link to this heading"></a></h2>
+<p>First, we are going the import the <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> library and instantiate a Peng-Robinson (1976) model with two components. Later in this tutorial you will learn got to instantiate different models, but for now we will use this one as an example.</p>
+<p><strong>The important thing to understand is that all the EoS can evaluate the thermodynamic properties explained in this section.</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="c1"># Model parameters</span>
+<span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">320</span><span class="p">,</span> <span class="mi">375</span><span class="p">]</span>      <span class="c1"># critical temperatures [K]</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span>        <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">]</span>  <span class="c1"># acentric factors [-]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Properties-function-of-Volume-and-Temperature-\left(V,-T-\right)">
+<h2>Properties function of Volume and Temperature <span class="math notranslate nohighlight">\(\left(V, T \right)\)</span><a class="headerlink" href="#Properties-function-of-Volume-and-Temperature-\left(V,-T-\right)" title="Link to this heading"></a></h2>
+<p>We can obtain different bulk properties from a <span class="math notranslate nohighlight">\(A^r(\vec{n}, V, T)\)</span> model specifying the number of moles, volume and temperature. But also, derivatives could be obtained if asked for.</p>
+<p>All not asked derivatives will be set as <code class="docutils literal notranslate"><span class="pre">None</span></code>. The derivatives are returned as a Python dictionary with the keys <code class="docutils literal notranslate"><span class="pre">dv</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and <code class="docutils literal notranslate"><span class="pre">dn</span></code>, etc. respectively. The compositional derivatives are always returned as <code class="docutils literal notranslate"><span class="pre">Numpy</span></code> arrays.</p>
+<p>The following properties can be calculated:</p>
+<section id="Pressure">
+<h3>Pressure<a class="headerlink" href="#Pressure" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate pressure [bar]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+56.000067835576885
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial P}{\partial V}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial P}{\partial T}\right)_{V, \vec{n}} \quad
+\left(\frac{\partial P}{\partial n_i}\right)_{V, T, n_{j \neq i}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all derivatives</span>
+<span class="n">pressure</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pressure: &quot;</span><span class="p">,</span> <span class="n">pressure</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pressure:  56.000067835576885
+Derivatives:  {&#39;dv&#39;: -647.5628198115064, &#39;dt&#39;: 2.900736382506016, &#39;dn&#39;: array([78.64160081, 50.87096316])}
+</pre></div></div>
+</div>
+</section>
+<section id="Logarithm-of-fugacity-coefficients-ln-\,-\phi(\vec{n},V,T)">
+<h3>Logarithm of fugacity coefficients <span class="math notranslate nohighlight">\(ln \, \phi(\vec{n},V,T)\)</span><a class="headerlink" href="#Logarithm-of-fugacity-coefficients-ln-\,-\phi(\vec{n},V,T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">lnphi_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([-1.12084851, -1.61086   ])
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial ln \, \hat{\phi}_i}{\partial T}\right)_{P, \vec{n}} \quad
+\left(\frac{\partial ln \, \hat{\phi}_i}{\partial P}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial ln \, \hat{\phi}_i}{\partial n_j}\right)_{P, T, n_{k \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">lnphi</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logarithm of Fugacity Coefficients: &quot;</span><span class="p">,</span> <span class="n">lnphi</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Logarithm of Fugacity Coefficients:  [-1.12084851 -1.61086   ]
+Derivatives:  {&#39;dt&#39;: array([0.01380036, 0.01926589]), &#39;dp&#39;: array([-0.0129884 , -0.01470769]), &#39;dn&#39;: array([[-0.00904545,  0.00904545],
+       [ 0.00904545, -0.00904545]])}
+</pre></div></div>
+</div>
+<p>You can evaluate fugacity by simply:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>  <span class="c1"># Calculate pressure [bar]</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>            <span class="c1"># Calculate mole fractions</span>
+
+<span class="n">fugacities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">lnphi</span><span class="p">)</span> <span class="o">*</span> <span class="n">z</span> <span class="o">*</span> <span class="n">p</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fugacities: &quot;</span><span class="p">,</span> <span class="n">fugacities</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fugacities:  [9.12809679 5.59204872]
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-Helmholtz-free-energy-A^r(\vec{n},V,T)">
+<h3>Residual Helmholtz free energy <span class="math notranslate nohighlight">\(A^r(\vec{n},V,T)\)</span><a class="headerlink" href="#Residual-Helmholtz-free-energy-A^r(\vec{n},V,T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">helmholtz_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual Helmholtz energy [bar L]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-519.8710586930237
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial A^{r}_{(\vec{n}, V, T)}}{\partial V}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial A^{r}_{(\vec{n}, V, T)}}{\partial T}\right)_{V, \vec{n}} \quad
+\left(\frac{\partial A^{r}_{(\vec{n}, V, T)}}{\partial n_i}\right)_{V, T, n_{j \neq i}} \quad\]</div>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial^2 A^{r}_{(\vec{n}, V, T)}}{\partial V \partial T}\right)_{ \vec{n}} \quad
+\left(\frac{\partial^2 A^{r}_{(\vec{n}, V, T)}}{\partial V^2}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial^2 A^{r}_{(\vec{n}, V, T)}}{\partial T^2}\right)_{V, \vec{n}} \quad\]</div>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial^2 A^{r}_{(\vec{n}, V, T)}}{\partial n_i \partial n_j}\right)_{V, T, n_{k \neq i,j}} \quad
+\left(\frac{\partial^2 A^{r}_{(\vec{n}, V, T)}}{\partial V \partial n_i}\right)_{T, n_{j \neq i}} \quad
+\left(\frac{\partial^2 A^{r}_{(\vec{n}, V, T)}}{\partial T \partial n_i}\right)_{V, n_{j \neq i}} \quad\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">Ar</span> <span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">helmholtz_residual_vt</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dvn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn2</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dv2</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dt2</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual Helmholtz free energy: &quot;</span><span class="p">,</span> <span class="n">Ar</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Residual Helmholtz free energy:  -519.8710586930237
+Derivatives:  {&#39;dt&#39;: 1.746237812013294, &#39;dv&#39;: 193.43381070442314, &#39;dn&#39;: array([-65.21921351, -77.44176037]), &#39;dtv&#39;: -2.069290120706016, &#39;dv2&#39;: 398.1289412715064, &#39;dt2&#39;: -0.0021897892913883494, &#39;dvn&#39;: array([-53.69821295, -25.9275753 ]), &#39;dtn&#39;: array([0.39595811, 0.36714748]), &#39;dn2&#39;: array([[6.8304639 , 3.90917869],
+       [3.90917869, 1.27633637]])}
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-Gibbs-free-energy-G^r(\vec{n},-V,-T)">
+<h3>Residual Gibbs free energy <span class="math notranslate nohighlight">\(G^r(\vec{n}, V, T)\)</span><a class="headerlink" href="#Residual-Gibbs-free-energy-G^r(\vec{n},-V,-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">gibbs_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual Gibbs energy [bar L]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-713.3048693974467
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial G^{r}_{(\vec{n}, V, T)}}{\partial T}\right)_{V, \vec{n}} \quad
+\left(\frac{\partial G^{r}_{(\vec{n}, V, T)}}{\partial V}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial G^{r}_{(\vec{n}, V, T)}}{\partial n_j}\right)_{V, T, n_{i \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">Gr</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">gibbs_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual Gibbs Energy: &quot;</span><span class="p">,</span> <span class="n">Gr</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Residual Gibbs Energy:  -713.3048693974467
+Derivatives:  {&#39;dt&#39;: 3.81552793271931, &#39;dv&#39;: -398.1289412715064, &#39;dn&#39;: array([-11.52100055, -51.51418507])}
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-enthalpy-H^r(\vec{n},-V,-T)">
+<h3>Residual enthalpy <span class="math notranslate nohighlight">\(H^r(\vec{n}, V, T)\)</span><a class="headerlink" href="#Residual-enthalpy-H^r(\vec{n},-V,-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">enthalpy_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual enthalpy [bar L]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-1237.176213001435
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial H^{r}_{(\vec{n}, V, T)}}{\partial T}\right)_{V, \vec{n}} \quad
+\left(\frac{\partial H^{r}_{(\vec{n}, V, T)}}{\partial V}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial H^{r}_{(\vec{n}, V, T)}}{\partial n_j}\right)_{V, T, n_{i \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">Hr</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">enthalpy_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual Enthalpy: &quot;</span><span class="p">,</span> <span class="n">Hr</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Residual Enthalpy:  -1237.176213001435
+Derivatives:  {&#39;dt&#39;: 2.7262269081225208, &#39;dv&#39;: 222.65809494029838, &#39;dn&#39;: array([-130.30843347, -161.65842812])}
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-internal-energy-U^r(\vec{n},-V,-T)">
+<h3>Residual internal energy <span class="math notranslate nohighlight">\(U^r(\vec{n}, V, T)\)</span><a class="headerlink" href="#Residual-internal-energy-U^r(\vec{n},-V,-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">internal_energy_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual internal energy [bar L]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-1043.7424022970117
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial U^{r}_{(\vec{n}, V, T)}}{\partial V}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial U^{r}_{(\vec{n}, V, T)}}{\partial T}\right)_{V, \vec{n}} \quad
+\left(\frac{\partial U^{r}_{(\vec{n}, V, T)}}{\partial n_i}\right)_{V, T, n_{j \neq i}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">Ur</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">internal_energy_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual Internal Energy: &quot;</span><span class="p">,</span> <span class="n">Ur</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Residual Internal Energy:  -1043.7424022970117
+Derivatives:  {&#39;dt&#39;: 0.6569367874165049, &#39;dv&#39;: 814.2208469162279, &#39;dn&#39;: array([-184.00664642, -187.58600342])}
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-entropy-S^r(\vec{n},-V,-T)">
+<h3>Residual entropy <span class="math notranslate nohighlight">\(S^r(\vec{n}, V, T)\)</span><a class="headerlink" href="#Residual-entropy-S^r(\vec{n},-V,-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">entropy_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual entropy [bar L / K]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+-1.746237812013294
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial S^{r}_{(\vec{n}, V, T)}}{\partial T}\right)_{V, \vec{n}} \quad
+\left(\frac{\partial S^{r}_{(\vec{n}, V, T)}}{\partial V}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial S^{r}_{(\vec{n}, V, T)}}{\partial n_j}\right)_{V, T, n_{i \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">Sr</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">entropy_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual Entropy: &quot;</span><span class="p">,</span> <span class="n">Sr</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Residual Entropy:  -1.746237812013294
+Derivatives:  {&#39;dt&#39;: 0.0021897892913883494, &#39;dv&#39;: 2.069290120706016, &#39;dn&#39;: array([-0.39595811, -0.36714748])}
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-heat-capacity-at-constant-volume-C_V^r(\vec{n},-V,-T)">
+<h3>Residual heat capacity at constant volume <span class="math notranslate nohighlight">\(C_V^r(\vec{n}, V, T)\)</span><a class="headerlink" href="#Residual-heat-capacity-at-constant-volume-C_V^r(\vec{n},-V,-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">cv_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual heat capacity [bar L / K]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.6569367874165049
+</pre></div></div>
+</div>
+</section>
+<section id="Residual-heat-capacity-at-constant-pressure-C_P^r(\vec{n},-V,-T)">
+<h3>Residual heat capacity at constant pressure <span class="math notranslate nohighlight">\(C_P^r(\vec{n}, V, T)\)</span><a class="headerlink" href="#Residual-heat-capacity-at-constant-pressure-C_P^r(\vec{n},-V,-T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># volume [L]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">cp_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1"># Calculate residual heat capacity [bar L / K]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+3.72361653132665
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Properties-function-of-Pressure-and-Temperature-\left(P,-T-\right)">
+<h2>Properties function of Pressure and Temperature <span class="math notranslate nohighlight">\(\left(P, T \right)\)</span><a class="headerlink" href="#Properties-function-of-Pressure-and-Temperature-\left(P,-T-\right)" title="Link to this heading"></a></h2>
+<p>We can obtain different bulk properties from a <span class="math notranslate nohighlight">\(A^r\)</span> model specifying the number of moles, pressure and temperature. But also, derivatives could be obtained if asked for.</p>
+<p>All not asked derivatives will be set as <code class="docutils literal notranslate"><span class="pre">None</span></code>. The derivatives are returned as a Python dictionary with the keys <code class="docutils literal notranslate"><span class="pre">dp</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and <code class="docutils literal notranslate"><span class="pre">dn</span></code>, etc. respectively. The compositional derivatives are always returned as <code class="docutils literal notranslate"><span class="pre">Numpy</span></code> arrays.</p>
+<p>When we are calculating properties with pressure as specified variable, we have to ask for a specific volume root. The possible roots are:</p>
+<ul class="simple">
+<li><p>“liquid”</p></li>
+<li><p>“vapor”</p></li>
+<li><p>“stable” (default if not specified)</p></li>
+</ul>
+<p>The “stable” root refers to the stable phase of the system. If this options is set, both liquid and vapor roots will be calculated and the phase with the lower residual Gibbs free energy <span class="math notranslate nohighlight">\((G^{r}_{(\vec{n},P,T)})\)</span> will be returned as the stable phase.</p>
+<p>The following properties can be calculated:</p>
+<section id="Volume">
+<h3>Volume<a class="headerlink" href="#Volume" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># pressure [bar]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">volume_liquid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">)</span>
+<span class="n">volume_vapor</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">)</span>
+<span class="n">volume_stable</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Volume (liquid) in liters: &quot;</span><span class="p">,</span> <span class="n">volume_liquid</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Volume (vapor) in liters: &quot;</span><span class="p">,</span> <span class="n">volume_vapor</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Volume (stable phase) in liters: &quot;</span><span class="p">,</span> <span class="n">volume_stable</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Volume (liquid) in liters:  1.1546008756262833
+Volume (vapor) in liters:  245.62683294458913
+Volume (stable phase) in liters:  245.62683294458913
+</pre></div></div>
+</div>
+</section>
+<section id="Logarithm-of-fugacity-coefficients-ln-\,-\phi(\vec{n},P,T)">
+<h3>Logarithm of fugacity coefficients <span class="math notranslate nohighlight">\(ln \, \phi(\vec{n},P,T)\)</span><a class="headerlink" href="#Logarithm-of-fugacity-coefficients-ln-\,-\phi(\vec{n},P,T)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">1.0</span>         <span class="c1"># pressure [bar]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">300.0</span>       <span class="c1"># temperature [K]</span>
+
+<span class="n">ln_phi_l</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">)</span>
+<span class="n">ln_phi_v</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;vapor&quot;</span><span class="p">)</span>
+<span class="n">ln_phi_s</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logarithm of fugacity coefficients (liquid): &quot;</span><span class="p">,</span> <span class="n">ln_phi_l</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logarithm of fugacity coefficients (vapor): &quot;</span><span class="p">,</span> <span class="n">ln_phi_v</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logarithm of fugacity coefficients (stable phase): &quot;</span><span class="p">,</span> <span class="n">ln_phi_s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Logarithm of fugacity coefficients (liquid):  [2.6074475  2.24385923]
+Logarithm of fugacity coefficients (vapor):  [-0.01507129 -0.01531375]
+Logarithm of fugacity coefficients (stable phase):  [-0.01507129 -0.01531375]
+</pre></div></div>
+</div>
+<p>You can obtain the next derivatives <strong>(on the specified volume root)</strong>:</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial ln \, \hat{\phi}_i}{\partial T}\right)_{P, \vec{n}} \quad
+\left(\frac{\partial ln \, \hat{\phi}_i}{\partial P}\right)_{T, \vec{n}} \quad
+\left(\frac{\partial ln \, \hat{\phi}_i}{\partial n_j}\right)_{P, T, n_{k \neq j}}\]</div>
+<p>Ask for derivatives as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asking for all the derivatives</span>
+<span class="n">ln_phi_s</span><span class="p">,</span> <span class="n">derivatives</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Displaying results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logarithm of fugacity coefficients (stable phase): &quot;</span><span class="p">,</span> <span class="n">ln_phi_s</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Derivatives: &quot;</span><span class="p">,</span> <span class="n">derivatives</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Logarithm of fugacity coefficients (stable phase):  [-0.01507129 -0.01531375]
+Derivatives:  {&#39;dt&#39;: array([0.00013302, 0.00013235]), &#39;dp&#39;: array([-0.01513287, -0.01539262]), &#39;dn&#39;: array([[-8.47067747e-08,  8.47067748e-08],
+       [ 8.47067748e-08, -8.47067747e-08]])}
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="equations_of_state.html" class="btn btn-neutral float-left" title="Equations of State (EoS)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cubic_eos/cubic_eos.html" class="btn btn-neutral float-right" title="Cubic Equations of State" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

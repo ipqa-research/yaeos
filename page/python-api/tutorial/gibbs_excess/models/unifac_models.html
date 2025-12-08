@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNIFAC models &mdash; yaeos 4.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a17b270f"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Core Module" href="../../../core.html" />
+    <link rel="prev" title="UNIQUAC" href="uniquac.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../equations_of_state/equations_of_state.html">Equations of State (EoS)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../gibbs_excess.html">Excess Gibbs models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk properties</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ge_models.html">Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="nrtl.html">NRTL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">UNIFAC models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tutorial_tree.html">Tutorial</a></li>
+          <li class="breadcrumb-item"><a href="../gibbs_excess.html">Excess Gibbs models</a></li>
+          <li class="breadcrumb-item"><a href="ge_models.html">Models</a></li>
+      <li class="breadcrumb-item active">UNIFAC models</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/tutorial/gibbs_excess/models/unifac_models.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="UNIFAC-models">
+<h1>UNIFAC models<a class="headerlink" href="#UNIFAC-models" title="Link to this heading"></a></h1>
+<p>UNIFAC (UNIQUAC Functional-group Activity Coefficients) is an Excess Gibbs free energy model used to estimate activity coefficients in non-ideal mixtures. It is particularly useful for predicting the phase behavior of chemical mixtures, including liquid-liquid equilibrium (LLE) and vapor-liquid equilibrium (VLE). In this model the Excess Gibbs free energy is calculated from the contribution of a combinatorial term and a residual term.</p>
+<div class="math notranslate nohighlight">
+\[\frac{G^E}{RT} = \frac{G^{E,r}}{RT} + \frac{G^{E,c}}{RT}\]</div>
+<p>Being:</p>
+<ul class="simple">
+<li><p>Combinatorial: Accounts for the size and shape of the molecules.</p></li>
+<li><p>Residual: Accounts for the energy interactions between different functional groups.</p></li>
+</ul>
+<p>Each substance of a mixture modeled with UNIFAC must be represented by a list a functional groups and other list with the ocurrence of each functional group on the substance.</p>
+<section id="Combinatorial-term">
+<h2>Combinatorial term<a class="headerlink" href="#Combinatorial-term" title="Link to this heading"></a></h2>
+<p>Combinatorial term has two parameters (z) and (d). The (z) parameter is always set to 10, and the (d) parameter is set to 1 for the Classic Liquid-Vapor UNIFAC model and the PSRK-UNIFAC model, and 3/4 for the Dortmund-UNIFAC model.</p>
+<section id="Flory-Huggins">
+<h3>Flory-Huggins<a class="headerlink" href="#Flory-Huggins" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[G^{E,FH} =
+RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i^d
+- n \, \text{ln} \, \sum_j^{NC} n_j r_j^d
++ n \, \text{ln} \, n \right)\]</div>
+</section>
+<section id="Staverman-Guggenheim">
+<h3>Staverman-Guggenheim<a class="headerlink" href="#Staverman-Guggenheim" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[\frac{G^{E,SG}}{RT} =
+\frac{z}{2} \sum_i^{NC} n_i q_i
+\left(\text{ln} \frac{q_i}{r_i}
+- \text{ln} \, \sum_j^{NC} n_j q_j
++ \text{ln} \, \sum_j^{NC} n_j r_j \right)\]</div>
+</section>
+<section id="Fredenslund-et-al.-(UNIFAC)">
+<h3>Fredenslund et al. (UNIFAC)<a class="headerlink" href="#Fredenslund-et-al.-(UNIFAC)" title="Link to this heading"></a></h3>
+<p>The complete combinatorial term is given by the sum of the Flory-Huggins and Staverman-Guggenheim terms:</p>
+<div class="math notranslate nohighlight">
+\[\frac{G^{E,\text{UNIFAC}}}{RT} =
+\frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}\]</div>
+</section>
+</section>
+<section id="Residual-term">
+<h2>Residual term<a class="headerlink" href="#Residual-term" title="Link to this heading"></a></h2>
+<p>Evaluate the UNIFAC residual term. Check the temperature function <span class="math notranslate nohighlight">\(E_{jk}\)</span>. This temperature function is different for each UNIFAC model. The residual Gibbs excess energy and its derivatives are evaluated as:</p>
+<div class="math notranslate nohighlight">
+\[\frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
+(\Lambda_k - \Lambda_k^i)\]</div>
+<p>With:</p>
+<div class="math notranslate nohighlight">
+\[\Lambda_k = \text{ln} \, \sum_{j}^{NG} \Theta_j E_{jk}\]</div>
+<div class="math notranslate nohighlight">
+\[\Lambda_k^i = \text{ln} \, \sum_{j}^{NG} \Theta_j^i E_{jk}\]</div>
+<div class="math notranslate nohighlight">
+\[E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right)\]</div>
+<div class="math notranslate nohighlight">
+\[\Theta_j = \frac{Q_j \displaystyle \sum_{l}^{NC} n_l v_j^l}
+{\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}\]</div>
+<div class="math notranslate nohighlight">
+\[\Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}\]</div>
+</section>
+<section id="Using-ugropy-to-retrieve-UNIFAC-functional-groups">
+<h2>Using <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> to retrieve UNIFAC functional groups<a class="headerlink" href="#Using-ugropy-to-retrieve-UNIFAC-functional-groups" title="Link to this heading"></a></h2>
+<p>Our research group has another Python package called <code class="docutils literal notranslate"><span class="pre">ugropy</span></code></p>
+<p><a class="reference external" href="https://github.com/ipqa-research/ugropy">https://github.com/ipqa-research/ugropy</a></p>
+<p>That package can be used to retrieve the functional groups of a molecule by its SMILES, or name. Here it’s a little example of how to use it. Please refer to the <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> documentation for more information.</p>
+<p>The package can be installed with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ugropy
+</pre></div>
+</div>
+</section>
+<section id="Liquid-Vapor-UNIFAC">
+<h2>Liquid-Vapor UNIFAC<a class="headerlink" href="#Liquid-Vapor-UNIFAC" title="Link to this heading"></a></h2>
+<p>This is the original and classic Liquid-Vapor UNIFAC model. In this model, the parameters are defined as:</p>
+<div class="math notranslate nohighlight">
+\[z = 10\]</div>
+<div class="math notranslate nohighlight">
+\[d = 1\]</div>
+<p>The temperature function <span class="math notranslate nohighlight">\(E_{jk}\)</span> is defined with a single temperature constant <span class="math notranslate nohighlight">\(a_{jk}\)</span> coefficient as follows:</p>
+<div class="math notranslate nohighlight">
+\[E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right) = \text{exp} \left(- \frac{a_{jk}}{T} \right)\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="c1"># UNIFAC functional groups: n-hexane - toluene</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span>              <span class="c1"># Functional groups of each molecule</span>
+    <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>       <span class="c1"># {&quot;CH3&quot;: 2, &quot;CH2&quot;: 4}</span>
+    <span class="p">{</span><span class="mi">9</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>      <span class="c1"># {&quot;ACH&quot;: 5, &quot;ACCH3&quot;: 1}</span>
+<span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.17122481, 0.07250592])
+</pre></div></div>
+</div>
+<p>You can retrieve the UNIFACVLE groups with <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> as:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ugropy</span> <span class="k">as</span> <span class="nn">ug</span>
+
+
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hexane&quot;</span><span class="p">,</span> <span class="s2">&quot;toluene&quot;</span><span class="p">]</span>
+
+<span class="n">ugropy_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">ug</span><span class="o">.</span><span class="n">unifac</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">subgroups_num</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ugropy_groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/.local/lib/python3.12/site-packages/ugropy/core/get_rdkit_object.py:78: PubChemPyDeprecationWarning: canonical_smiles is deprecated: Use connectivity_smiles instead
+  if pcp_object.canonical_smiles:
+/home/runner/.local/lib/python3.12/site-packages/ugropy/core/get_rdkit_object.py:79: PubChemPyDeprecationWarning: canonical_smiles is deprecated: Use connectivity_smiles instead
+  chem_object = Chem.MolFromSmiles(pcp_object.canonical_smiles)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{1: 2, 2: 4}, {9: 5, 11: 1}]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">ugropy_groups</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.17122481, 0.07250592])
+</pre></div></div>
+</div>
+</section>
+<section id="PSRK-UNIFAC">
+<h2>PSRK UNIFAC<a class="headerlink" href="#PSRK-UNIFAC" title="Link to this heading"></a></h2>
+<p>This is the Predictive Soave-Redlich-Kwong (PSRK) UNIFAC model. In this model, the parameters are defined as:</p>
+<div class="math notranslate nohighlight">
+\[z = 10\]</div>
+<div class="math notranslate nohighlight">
+\[d = 1\]</div>
+<p>The temperature function <span class="math notranslate nohighlight">\(E_{jk}\)</span> is defined with a quadratic temperature function as follows:</p>
+<div class="math notranslate nohighlight">
+\[E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right) =
+\text{exp} \left(- \frac{a_{jk} + b_{jk} T + c_{jk} T^2}{T} \right)\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="c1"># PSRK functional groups: n-hexane - toluene</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span>              <span class="c1"># Functional groups of each molecule</span>
+    <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>       <span class="c1"># {&quot;CH3&quot;: 2, &quot;CH2&quot;: 4}</span>
+    <span class="p">{</span><span class="mi">9</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>      <span class="c1"># {&quot;ACH&quot;: 5, &quot;ACCH3&quot;: 1}</span>
+<span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACPSRK</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.17122481, 0.07250592])
+</pre></div></div>
+</div>
+<p>You can retrieve the PSRK groups with <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> as:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ugropy</span> <span class="k">as</span> <span class="nn">ug</span>
+
+
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hexane&quot;</span><span class="p">,</span> <span class="s2">&quot;toluene&quot;</span><span class="p">]</span>
+
+<span class="n">ugropy_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">ug</span><span class="o">.</span><span class="n">psrk</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">subgroups_num</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ugropy_groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{1: 2, 2: 4}, {9: 5, 11: 1}]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACPSRK</span><span class="p">(</span><span class="n">ugropy_groups</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.17122481, 0.07250592])
+</pre></div></div>
+</div>
+</section>
+<section id="Dortmund-UNIFAC">
+<h2>Dortmund UNIFAC<a class="headerlink" href="#Dortmund-UNIFAC" title="Link to this heading"></a></h2>
+<p>This is the Dortmund modified UNIFAC model. In this model, the parameters are defined as:</p>
+<div class="math notranslate nohighlight">
+\[z = \frac{3}{4}\]</div>
+<div class="math notranslate nohighlight">
+\[d = 1\]</div>
+<p>The temperature function <span class="math notranslate nohighlight">\(E_{jk}\)</span> is defined with a quadratic temperature function as follows:</p>
+<div class="math notranslate nohighlight">
+\[E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right) =
+\text{exp} \left(- \frac{a_{jk} + b_{jk} T + c_{jk} T^2}{T} \right)\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+
+
+<span class="c1"># PSRK functional groups: n-hexane - toluene</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span>              <span class="c1"># Functional groups of each molecule</span>
+    <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>       <span class="c1"># {&quot;CH3&quot;: 2, &quot;CH2&quot;: 4}</span>
+    <span class="p">{</span><span class="mi">9</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>      <span class="c1"># {&quot;ACH&quot;: 5, &quot;ACCH3&quot;: 1}</span>
+<span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACDortmund</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>  <span class="c1"># number of moles [mol]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">303.15</span>      <span class="c1"># temperature [K]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.19827923, 0.08808743])
+</pre></div></div>
+</div>
+<p>You can retrieve the Dortmund UNIFAC groups with <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> as:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ugropy</span> <span class="k">as</span> <span class="nn">ug</span>
+
+
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hexane&quot;</span><span class="p">,</span> <span class="s2">&quot;toluene&quot;</span><span class="p">]</span>
+
+<span class="n">ugropy_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">ug</span><span class="o">.</span><span class="n">dortmund</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">subgroups_num</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ugropy_groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{1: 2, 2: 4}, {9: 5, 11: 1}]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">UNIFACDortmund</span><span class="p">(</span><span class="n">ugropy_groups</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.19827923, 0.08808743])
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="uniquac.html" class="btn btn-neutral float-left" title="UNIQUAC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../core.html" class="btn btn-neutral float-right" title="Core Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

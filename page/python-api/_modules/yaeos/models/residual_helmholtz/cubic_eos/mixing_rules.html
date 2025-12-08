@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../fitting.html">Fitting</a></li>
 </ul>
 
@@ -296,9 +297,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ge</span><span class="p">:</span> <span class="n">GeModel</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lij</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ge</span> <span class="o">=</span> <span class="n">ge</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MHV.set_mixrule">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.set_mixrule">[docs]</a>
@@ -310,7 +313,9 @@
 <span class="sd">        ar_model_id : int</span>
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_mhv</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span></div>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_mhv</span><span class="p">(</span>
+            <span class="n">ar_id</span><span class="o">=</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="n">ge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">lij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -394,17 +399,30 @@
 <span class="sd">        NRTL alpha parameters matrix</span>
 <span class="sd">    gji : matrix_like</span>
 <span class="sd">        NRTL gij parameters matrix</span>
+<span class="sd">    gjiT: matrix_like</span>
+<span class="sd">        NRTL gij temperature coefficient parameters matrix</span>
 <span class="sd">    use_kij : matrix_like</span>
 <span class="sd">        Boolean matrix indicating whether to use kij parameters</span>
 <span class="sd">    kij : matrix_like</span>
 <span class="sd">        kij binary interaction parameters matrix</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">gji</span><span class="p">,</span> <span class="n">use_kij</span><span class="p">,</span> <span class="n">kij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">gji</span><span class="p">,</span> <span class="n">gjiT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_kij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kij</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">gji</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gji</span> <span class="o">=</span> <span class="n">gji</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">use_kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gjiT</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gjiT</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">use_kij</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">use_kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HVNRTL.set_mixrule">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.set_mixrule">[docs]</a>
@@ -417,7 +435,9 @@
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_hvnrtl</span><span class="p">(</span>
-            <span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kij</span>
+            <span class="n">ar_id</span><span class="o">=</span><span class="n">ar_model_id</span><span class="p">,</span> 
+            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">gji0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">,</span> <span class="n">gjit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">,</span>
+            <span class="n">use_kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">,</span> <span class="n">kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span>
         <span class="p">)</span></div>
 </div>
 

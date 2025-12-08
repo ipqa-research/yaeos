@@ -1,212 +1,133 @@
-module yaeos__models_ge_base
-   !! Base module for excess Gibbs energy models in YAEOS
-   !! This module provides implementations of excess Gibbs energy models
-   !! using only Fortran native types.
+module yaeos__models_ar_genericcubic_base
    use yaeos__constants, only: pr, R
+   implicit none
+
 contains
 
-   ! ==========================================================================
-   ! NRTL Model, modified by Huron and vidal
-   ! --------------------------------------------------------------------------
+   subroutine GenericCubic_Ar(&
+      n, V, T, &
+      B, dBi, dBij, &
+      D, dDi, dDij, dDidT, dDdT, dDdT2, &
+      D1, dD1i, dD1ij, &
+      Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
+      )
+      !! Residual Helmholtz Energy for a generic Cubic Equation of State.
+      !!
+      !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
+      !! defined by Michelsen and Møllerup:
+      !!
+      !! \[
+      !!   P = \frac{RT}{V-B} 
+      !!       - \frac{D(T)}{(V+B \delta_1)(V+B\delta_2)}
+      !! \]
+      !!
+      !! This routine assumes that the \(\delta_1\) is not a constant parameter
+      !! (as it uses to be in classical Cubic EoS) to be compatible with the
+      !! three parameter EoS RKPR where \(delta_1\) is not a constant and
+      !! has its own mixing rule.
+      use yaeos__constants, only: R
+      real(pr), intent(in) :: n(:) !! Number of moles
+      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: t !! Temperature [K]
 
-   subroutine nrtl_hv_ge(&
-      n, T, &
-      b, &
-      alpha, &
-      tau, dtaudt, dtaudt2, &
-      Ge, Gen, GeT, GeT2, GeTn, Gen2)
-      real(pr), intent(in) :: n(:) !! Number of moles vector.
-      real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: b(:) !! \(b\) parameter
-      real(pr), intent(in) :: alpha(:, :) !! \(alpha\) matrix
-      real(pr), intent(in) :: tau(:, :) !! \(\tau\) matrix
-      real(pr), intent(in) :: dtaudt(:, :)
-      !! First derivative of \(\tau\) with respect to temperature
-      real(pr), intent(in) :: dtaudt2(:, :)
-      !! Second derivative of \(\tau\) with respect to temperature
-      real(pr), optional, intent(out) :: Ge
-      !! Excess Gibbs energy
-      real(pr), optional, intent(out) :: Gen(:)
-      !! Excess Gibbs energy derivative with repect to number of moles
-      real(pr), optional, intent(out) :: GeT
-      !! Excess Gibbs energy derivative with respect to temperature
-      real(pr), optional, intent(out) :: GeT2
-      !! Excess Gibbs energy second derivative with respect to temperature
-      real(pr), optional, intent(out) :: GeTn(:)
-      !! Excess Gibbs energy derivative with respect to temperature and number of moles
-      real(pr), optional, intent(out) :: Gen2(:, :)
-      !! Excess Gibbs energy second derivative with respect to number of moles
+      real(pr), intent(in) :: B !! Repulsive parameter [L]
+      real(pr), intent(in) :: dBi(size(n)) !! \(dB/dn_i\)
+      real(pr), intent(in) :: dBij(size(n), size(n)) !! \(d^2B/dn_{ij}\)
 
-      real(pr) :: E(size(n), size(n)), U, D
-      real(pr) :: dEdT(size(n), size(n)), dEdT2(size(n), size(n))
+      real(pr), intent(in) :: D !! Attractive parameter 
+      real(pr), intent(in) :: dDi(size(n)) !! \(dD/dn_i\)
+      real(pr), intent(in) :: dDij(size(n), size(n)) !! \(d^2D/dn_{ij}\)
+      real(pr), intent(in) :: dDidT(size(n)) !! \(d^2D/dTdn_i\)
+      real(pr), intent(in) :: dDdT !! \(\frac{dD}{dT}\)
+      real(pr), intent(in) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
 
-      real(pr) :: Dn(size(n))
+      real(pr), intent(in) :: D1 !! \(\delta_1\) parameter
+      real(pr), intent(in) :: dD1i(size(n)) !! \(d\delta_1/dn_i\)
+      real(pr), intent(in) :: dD1ij(size(n), size(n)) !! \(d^2\delta_1/dn_{ij}\)
 
-      real(pr) :: xi(size(n), size(n)), theta(size(n), size(n)), omega(size(n), size(n)), eta(size(n), size(n))
-      real(pr) :: xiT(size(n)), etaT(size(n), size(n)), thetaT(size(n)), omegaT(size(n), size(n))
-      real(pr) :: xiTT(size(n)), thetaTT(size(n))
+      real(pr), optional, intent(out) :: ar !! Residual Helmholtz
+      real(pr), optional, intent(out) :: arv !! \(\frac{dAr}{dV}\)
+      real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
+      real(pr), optional, intent(out) :: artv !! \(\frac{d^2Ar}{dTdV}\)
+      real(pr), optional, intent(out) :: arv2 !! \(\frac{d^2Ar}{dV^2}\)
+      real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
+      real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
+      real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVdn_i}\)
+      real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTdn_i}\)
+      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
 
-      real(pr) :: denom
 
-      integer :: i, j, k, l, nc
+      real(pr) :: totn
+      real(pr) :: auxD2, fD1, fBD1, fVD1, fD1D1
+      real(pr) d2
 
-      logical :: p_ge, p_get, p_get2, p_gent, p_gen2, p_gen
-      real(pr) :: aux_Ge, aux_Gen(size(n)), aux_GeT, aux_GeTn(size(n))
+      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
 
-      integer :: m
+      integer :: i, j, nc
 
       nc = size(n)
-      p_ge = present(Ge)
-      p_get = present(GeT)
-      p_gen = present(Gen)
-      p_get2 = present(GeT2)
-      p_gent = present(GeTn)
-      p_gen2 = present(Gen2)
+      TOTN = sum(n)
 
-      E = exp(-alpha * tau)
-      dEdT = - alpha * dtaudt * E
-      dEdT2 = -alpha * (dtaudt2 * E + dtaudt * dEdT)
+      ! Delta 2 parameter is calculated from Delta 1
+      D2 = (1._pr - D1)/(1._pr + D1)
 
-      do i=1,nc
-         xi(:, i)     = E(:, i) * b * tau(:, i) * n
-         eta(:, i)    = E(:, i) * b * tau(:, i)
-         theta(:, i)  = E(:, i) * b * n
-         omega(:, i)  = E(:, i) * b
+      ! ========================================================================
+      ! Main functions defined by Møllerup
+      ! The f's and g's used here are for Ar, not F (reduced Ar)
+      ! This requires to multiply by R all g, f
+      ! ------------------------------------------------------------------------
+      f = log((V + D1*B)/(V + D2*B))/B/(D1 - D2)
+      g = R*log(1 - B/V)
+      fv = -1/((V + D1*B)*(V + D2*B))
+      fB = -(f + V*fv)/B
+      gv = R*B/(V*(V - B))
+      fv2 = (-1/(V + D1*B)**2 + 1/(V + D2*B)**2)/B/(D1 - D2)
+      gv2 = R*(1/V**2 - 1/(V - B)**2)
 
-         xiT(i)    = sum(b * n * (dEdT(:, i) * tau(:, i) + E(:, i)*dtaudt(:, i)))
-         etaT(:, i)   = b * (dEdT(:, i) * tau(:, i) + E(:, i) * dtaudt(:, i))
-         thetaT(i) = sum(dEdT(:, i) * b * n)
-         omegaT(:, i) = dEdT(:, i) * b
+      ! DERIVATIVES OF f WITH RESPECT TO DELTA1
+      auxD2 = (1 + 2/(1 + D1)**2)
+      fD1 = (1/(V + D1*B) + 2/(V + D2*B)/(1 + D1)**2) - f*auxD2
+      fD1 = fD1/(D1 - D2)
+      fBD1 = -(fB*auxD2 + D1/(V + D1*B)**2 + 2*D2/(V + D2*B)**2/(1 + D1)**2)
+      fBD1 = fBD1/(D1 - D2)
+      fVD1 = -(fV*auxD2 + 1/(V + D1*B)**2 + 2/(V + D2*B)**2/(1 + D1)**2)/(D1 - D2)
+      fD1D1 = 4*(f - 1/(V + D2*B))/(1 + D1)**3 + B*(-1/(V + D1*B)**2 &
+            + 4/(V + D2*B)**2/(1 + D1)**4) - 2*fD1*(1 + 2/(1 + D1)**2)
+            fD1D1 = fD1D1/(D1 - D2)
 
-         xiTT(i) = sum(&
-            b * n * &
-            (dEdT2(:, i) * tau(:, i) &
-            + 2 * dEdT(:, i) * dtaudt(:, i) &
-            + E(:, i) * dtaudt2(:, i)))
-         thetaTT(i) = sum(b * n * (dEdT2(:, i)))
-      end do
+      AUX = R*T/(V - B)
+      FFB = TOTN*AUX - D*fB
+      FFBV = -TOTN*AUX/(V - B) + D*(2*fv + V*fv2)/B
+      FFBB = TOTN*AUX/(V - B) - D*(2*f + 4*V*fv + V**2*fv2)/B**2
 
-      do i=1,nc
-         Dn(i) = sum(theta(:, i))
-      end do
+      ! ========================================================================
+      ! Reduced Helmholtz Energy and derivatives
+      ! ------------------------------------------------------------------------
+      if (present(Ar)) Ar = -TOTN*g*T - D*f
+      if (present(ArV)) ArV = -TOTN*gv*T - D*fv
+      if (present(ArV2)) ArV2 = -TOTN*gv2*T - D*fv2
 
-      ! ==============================================================
-      ! Calculate the excess Gibbs energy
-      ! It is also needed to calculate the derivatives wrt T
-      ! --------------------------------------------------------------
-      if (p_ge .or. p_get .or. p_get2) then
-         aux_Ge = 0
-         do i=1,nc
-            aux_Ge = aux_Ge + n(i) * sum(xi(:, i) / sum(theta(:, i)))
-         end do
-      end if
+      if (present(Arn))  Arn(:)  = -g*T + FFB*dBi(:) - f*dDi(:) - D*fD1 * dD1i(:)
+      if (present(ArVn)) ArVn(:) = -gv*T + FFBV*dBi(:) - fv*dDi(:) - D*fVD1*dD1i(:)
+      if (present(ArTn)) ArTn(:) = -g + (TOTN*AUX/T - dDdT*fB)*dBi(:) - f*dDidT(:) - dDdT*fD1*dD1i(:)
 
-
-      ! ==============================================================
-      ! Derivatives wrt number of moles
-      ! --------------------------------------------------------------
-      if (p_gen .or. p_gent) then
-         aux_Gen = 0.0
-         do i=1,nc
-            aux_Gen(i) = sum(xi(:, i)) / sum(theta(:, i))
-            do k=1,nc
-               aux_Gen(i) = aux_Gen(i) + n(k) * (&
-                  eta(i, k)/sum(theta(:, k)) &
-                  - omega(i, k) * sum(xi(:, k))/sum(theta(:,k))**2 &
-                  )
+      if (present(Arn2)) then
+         do i = 1, nc
+            do j = 1, i
+               Arn2(i, j) = AUX*(dBi(i) + dBi(j)) - fB*(dBi(i)*dDi(j) + dBi(j)*dDi(i)) &
+                  + FFB*dBij(i, j) + FFBB*dBi(i)*dBi(j) - f*dDij(i, j)
+               Arn2(i, j) = Arn2(i, j) - D*fBD1*(dBi(i)*dD1i(j) + dBi(j)*dD1i(i)) &
+                        - fD1*(dDi(i)*dD1i(j) + dDi(j)*dD1i(i)) &
+                        - D*fD1*dD1ij(i, j) - D*fD1D1*dD1i(i)*dD1i(j)
+               Arn2(j, i) = Arn2(i, j)
             end do
          end do
       end if
 
-      if (p_gen2) then
-         Gen2 = 0.0
-         do i=1,nc
-            do j=1,nc
-               Gen2(i, j) = &
-                  - omega(j, i) * sum(xi(:, i)) / sum(theta(:, i))**2 &
-                  - omega(i, j) * sum(xi(:, j)) / sum(theta(:, j))**2 &
-                  + eta(j, i) / sum(theta(:, i)) &
-                  + eta(i, j) / sum(theta(:, j))
+      ! TEMPERATURE DERIVATIVES
+      if (present(ArT))  ArT = -TOTN*g - dDdT*f
+      if (present(ArTV)) ArTV = -TOTN*gv - dDdT*fV
+      if (present(ArT2)) ArT2 = -dDdT2*f
+   end subroutine GenericCubic_Ar
 
-               do k=1,nc
-                  denom = sum(theta(:, k))
-                  Gen2(i, j) = Gen2(i, j) + &
-                     2 * n(k) * omega(i, k) * omega(j, k) * sum(xi(:, k)) / denom**3 &
-                     - n(k) * omega(i, k) * eta(j, k) / denom**2 &
-                     - n(k) * omega(j, k) * eta(i, k) / denom**2
-               end do
-            end do
-         end do
-      end if
-
-      if (p_genT) then
-         do i=1,nc
-            aux_GeTn(i) = xiT(i)/Dn(i) - sum(xi(:, i)) * thetaT(i)/Dn(i)**2
-            do k=1,nc
-               aux_GeTn(i) = aux_GeTn(i) + n(k) * (&
-                  etaT(i, k)/Dn(k) - eta(i, k) * thetaT(k) / Dn(k)**2 &
-                  - (omega(i, k) * xiT(k) + omegaT(i, k) * sum(xi(:, k))) / Dn(k)**2 &
-                  + 2 * thetaT(k) * omega(i, k) * sum(xi(:, k)) / Dn(k)**3 &
-                  )
-            end do
-         end do
-      end if
-
-      ! ==============================================================
-      ! Derivatives wrt temperature
-      ! --------------------------------------------------------------
-      if (p_get .or. p_get2) then
-         aux_GeT = 0
-         do i=1,nc
-            aux_GeT = aux_GeT + n(i) * (xiT(i)/sum(theta(:, i)) - sum(xi(:, i))*(thetaT(i))/Dn(i)**2)
-         end do
-      end if
-
-      if (p_get2) then
-         GeT2 = 0
-         do i=1,nc
-            GeT2 = GeT2 + n(i) * (&
-               xiTT(i)/Dn(i) - 2*xiT(i)*thetaT(i)/Dn(i)**2 &
-               - sum(xi(:, i))*thetaTT(i)/Dn(i)**2 + 2*sum(xi(:, i))*thetaT(i)**2/Dn(i)**3)
-         end do
-      end if
-
-      if (present(Ge))   Ge   = aux_Ge * R * T
-      if (present(Gen))  Gen  = aux_Gen * R * T
-      if (present(GeTn)) GeTn = (R*T*aux_Gen)/T + R * T * aux_GeTn
-      if (present(Gen2)) Gen2 = Gen2 * R * T
-      if(present(GeT))   GeT  = aux_GeT * R * T + (aux_Ge * R * T) / T
-      if(present(Get2))  GeT2 = -(aux_Ge*R*T)/T**2 + (aux_GeT * R * T + (aux_Ge*R*T) / T)/T + R * aux_GeT + R*T * GeT2
-   end subroutine nrtl_hv_ge
-
-   elemental subroutine nrtl_hv_tdep(T, gij, tau, dtaudt, dtaudt2)
-      !! Temperature dependent parameters for NRTL model
-      real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: gij !! Interaction parameters
-      real(pr), intent(out) :: tau !! \(\tau\) matrix
-      real(pr), intent(out) :: dtaudt
-      !! First derivative of \(\tau\) with respect to temperature
-      real(pr), intent(out) :: dtaudt2
-      !! Second derivative of \(\tau\) with respect to temperature
-
-      tau = gij/(R*T)
-      dtaudt = -gij/(R*T**2)
-      dtaudt2 = 2*gij/(R*T**3)
-   end subroutine nrtl_hv_tdep
-
-   elemental subroutine nrtl_hv_tdep_linear(T, A, B, tau, dtaudt, dtaudt2)
-      !! Temperature dependent parameters for NRTL model
-      real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: A !! Interaction parameters
-      real(pr), intent(in) :: B !! Interaction parameters
-      real(pr), intent(out) :: tau !! \(\tau\) matrix
-      real(pr), intent(out) :: dtaudt
-      !! First derivative of \(\tau\) with respect to temperature
-      real(pr), intent(out) :: dtaudt2
-      !! Second derivative of \(\tau\) with respect to temperature
-
-      tau = A + B/T
-      dtaudt = -B/(T**2)
-      dtaudt2 = 2*B/(T**3)
-   end subroutine nrtl_hv_tdep_linear
-end module yaeos__models_ge_base
+end module
