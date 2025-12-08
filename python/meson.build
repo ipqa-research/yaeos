@@ -35,6 +35,7 @@ incdir_f2py = run_command(py,
 
 
 # fpm
+fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
 if get_option('debug')
   fflags = '-g -fPIC -Og'
 else

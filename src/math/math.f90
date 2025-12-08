@@ -351,7 +351,7 @@ contains
       real(pr), intent(in) :: tol
       real(pr), intent(in out) :: X(:)  !! Variables vector
       real(pr), intent(out) :: F(:) !! Function values at solved point
-      integer, intent(out) :: info
+      integer, intent(in out) :: info
 
       integer :: m, n, iwa(size(x))
       integer :: lwa

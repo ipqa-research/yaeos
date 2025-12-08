@@ -1,3 +1,93 @@
+module nonlinear_solvers
+   use yaeos__constants, only: dp => pr
+   use yaeos__math_linalg, only: solve_system
+   implicit none
+contains
+
+   !============================================================
+   !  Damped Newton solver with Armijo backtracking
+   !  Single callback: fun(x, f, J)
+   !============================================================
+   subroutine newton_solve(fun, x, tol, max_iter, its, info)
+      implicit none
+
+      ! ------ Interface to user-supplied function ------
+      interface
+         subroutine fun(x, f, J)
+            import dp
+            real(dp), intent(in)  :: x(:)
+            real(dp), intent(out) :: f(:)
+            real(dp), intent(out) :: J(:,:)
+         end subroutine fun
+      end interface
+
+      ! ------ Arguments ------
+      real(dp), intent(inout) :: x(:)
+      real(dp), intent(in)    :: tol
+      integer, intent(in)     :: max_iter
+      integer, intent(out)    :: its
+      integer, intent(out)    :: info    ! 0 = converged, 1 = not
+
+      ! ------ Local variables ------
+      integer :: n, k
+      real(dp) :: f_norm, phi_x, phi_trial, grad_phi_p, alpha
+      real(dp) :: f(size(X)), J(size(X),size(X)), dx(size(X)), xtrial(size(X)), ftrial(size(X)), Jp(size(X))
+
+      n = size(x)
+
+      ! Assume failure until success
+      info = 1
+
+      ! ---------- Main Newton iteration ----------
+      do its = 1, max_iter
+
+         ! Evaluate f and J at current point
+         call fun(x, f, J)
+         f_norm = maxval(abs(f))
+
+         if (f_norm < tol) then
+            info = 0
+            return
+         end if
+
+         ! Solve: J dx = -f   (replace with your solver)
+         dx = solve_system(J, -f)
+
+         ! Merit function φ = 1/2 ||f||^2
+         phi_x = 0.5_dp * dot_product(f, f)
+
+         ! Directional derivative φ' = fᵀ (J dx)
+         Jp = matmul(J, dx)
+         grad_phi_p = dot_product(f, Jp)
+
+         ! If not descent, flip direction
+         if (grad_phi_p > 0._dp) then
+            dx = -dx
+            Jp = -Jp
+            grad_phi_p = -grad_phi_p
+         end if
+
+         ! ------------ Armijo backtracking ------------
+         alpha = 1.0_dp
+
+         do
+            xtrial = x + alpha * dx
+            call fun(xtrial, ftrial, J)   ! J not needed but required by interface
+
+            phi_trial = 0.5_dp * dot_product(ftrial, ftrial)
+
+            if (phi_trial <= phi_x + 1e-4_dp * alpha * grad_phi_p) exit
+
+            alpha = alpha * 0.5_dp
+            if (alpha < 1e-8_dp) exit
+         end do
+
+         ! Update
+         x = x + alpha * dx
+      end do
+   end subroutine newton_solve
+end module nonlinear_solvers
+
 module yaeos__m_s_sp
    !! Module to calculate saturation points
    use yaeos__constants, only: pr
@@ -186,7 +276,9 @@ contains
    end subroutine saturation_TP
 
    subroutine solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
+      use nonlinear_solvers, only: newton_solve
       use yaeos__math, only: solve_system
+      use yaeos__math_nonlinearsolvers, only: newton, homotopy
       class(ArModel), intent(in) :: model
       character(len=*), intent(in) :: kind
       real(pr), intent(in) :: z(:)
@@ -204,28 +296,33 @@ contains
       real(pr) :: dFdS(size(X))
       real(pr) :: dx(size(X))
 
+      real(pr) :: t
+      real(pr) :: G(size(X))
+      real(pr) :: dG(size(X), size(X))
+      real(pr) :: H(size(X))
+      real(pr) :: dH(size(X), size(X))
+      real(pr) :: X0(size(X))
+
+      real(pr) :: alpha, phi_x, phi_ax, grad_phi_p, Jp(size(X))
+      real(pr) :: Xnew(size(X))
+      integer :: info
+
       nc = size(X) - 2
 
-      its = 0
-      dX = 1
-      do while (its < max_iterations)
-         its = its + 1
-         call saturation_TP(model=model, z=z, kind=kind, X=X, ns=ns, S=S, F=F, dF=dF, dFdS=dFdS)
+      ! call homotopy(sub=wrap, x=X, tol=tol, max_its=max_iterations, its=its)
+      call newton(sub=wrap, x=X, tol=tol, max_its=max_iterations, its=its)
 
-         dX = solve_system(dF, -F)
-         
-         do while (abs(dX(nc+1)) > 0.1)
-            dX(nc+1) = dX(nc+1) / 2
-         end do
-         
-         do while (abs(dX(nc+2)) > 0.1)
-            dX(nc+2) = dX(nc+2) / 2
-         end do
-
-         X = X + dX
-         if (all(abs(F) < tol)) exit
-      end do
-
+      ! call newton_solve(fun=wrap, x=X, tol=1e-7_pr, max_iter=20, its=its, info=info)
+      call wrap(X, F, dF)
+      ! print *, F
+      ! print *, its, maxval(abs(F))
+   contains
+      subroutine wrap(X, F, J)
+         real(pr), intent(in) :: X(:)
+         real(pr), intent(out) :: F(:)
+         real(pr), intent(out) :: J(:, :)
+         call saturation_TP(model, kind, z, X, ns, S=S, F=F, dF=J, dFdS=dFdS)
+      end subroutine
    end subroutine solve_TP
 
    subroutine solve_VxVyT(model, z, X, ns, S, tol, max_iterations, its)
@@ -240,7 +337,7 @@ contains
       integer, intent(out) :: its
 
       real(pr) :: dPdVz, dPdVy
-      
+
       integer :: nc
       real(pr) :: F(size(X))
       real(pr) :: dF(size(X), size(X))

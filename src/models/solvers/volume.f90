@@ -30,7 +30,7 @@ contains
    subroutine volume_michelsen(eos, n, P, T, V, root_type, max_iters, V0)
       !! Volume solver at a given pressure.
       !!
-      !! Obtain the volume using the method described by Michelsen and Møllerup.
+      !! Obtain the volume using the method described by Michelsen and Mollerup.
       !! While \(P(V, T)\) can be obtained with a simple Newton method, a better
       !! approach is solving \(P(B/V, T)\) where \(B\) is the EoS covolume.
       !! This method is easier to solve because:
@@ -128,9 +128,7 @@ contains
       pcalc = 2*p
       B = eos%get_v0(n, p, t)
       totn = sum(n)
-      do while(&
-         abs(DEL) > 1.e-10_pr .and. abs(Pcalc - P)/P > 1.e-10 &
-         )
+      do while(abs(Pcalc - P) > 1.e-12_pr .and. abs(DEL) > 1.e-12_pr)
          V = B/ZETA
          iter = iter + 1
 
@@ -153,7 +151,11 @@ contains
          DER = (ArV2*V**2 + TOTN*R*T)/B
 
          DEL = -(Pcalc - P)/DER
-         ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
+         if (iter > 10) then
+            ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)/2.
+         else
+            ZETA = ZETA + max(min(DEL, 0.1_pr), -.1_pr)
+         end if
 
          if (ZETA .gt. ZETMAX .or. ZETA .lt. ZETMIN) then
             ZETA = 0.5_pr*(ZETMAX + ZETMIN)

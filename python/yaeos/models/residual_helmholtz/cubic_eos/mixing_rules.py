@@ -281,17 +281,30 @@ class HVNRTL(CubicMixRule):
         NRTL alpha parameters matrix
     gji : matrix_like
         NRTL gij parameters matrix
+    gjiT: matrix_like
+        NRTL gij temperature coefficient parameters matrix
     use_kij : matrix_like
         Boolean matrix indicating whether to use kij parameters
     kij : matrix_like
         kij binary interaction parameters matrix
     """
 
-    def __init__(self, alpha, gji, use_kij, kij) -> None:
+    def __init__(self, alpha, gji, gjiT=None, use_kij=None, kij=None) -> None:
+        nc = np.shape(gji)[0]
         self.alpha = alpha
         self.gji = gji
-        self.use_kij = np.array(use_kij, order="F")
-        self.kij = np.array(kij, order="F")
+
+        if gjiT is None:
+            self.gjiT = np.zeros((nc, nc), order="F")
+        else:
+            self.gjiT = np.array(gjiT, order="F")
+        
+        if use_kij is None and kij is None:
+            self.use_kij = np.zeros((nc, nc), dtype=bool, order="F")
+            self.kij = np.zeros((nc, nc), order="F")
+        else:
+            self.use_kij = np.array(use_kij, order="F")
+            self.kij = np.array(kij, order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set modified Huron-Vidal mix rule method.
@@ -302,5 +315,7 @@ class HVNRTL(CubicMixRule):
             ID of the cubic EoS model
         """
         yaeos_c.set_hvnrtl(
-            ar_model_id, self.alpha, self.gji, self.use_kij, self.kij
+            ar_id=ar_model_id, 
+            alpha=self.alpha, gji0=self.gji, gjit=self.gjiT,
+            use_kij=self.use_kij, kij=self.kij
         )
