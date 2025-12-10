@@ -70,7 +70,7 @@ contains
       !!
       !! # References
       !! 1. Thermodynamic Models: Fundamental and Computational Aspects, Michael L.
-      !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
+      !! Michelsen, Jorgen M. Møllerup. Tie-Line Publications, Denmark (2004)
       !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
       class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
@@ -78,7 +78,7 @@ contains
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(in) :: d(:) !! \(d_i\) vector
-      real(pr), optional, intent(out) :: dtpd(:)
+      real(pr), optional, intent(out) :: dtpd(:) !! First derivative of \(tm\)
 
       real(pr) :: di(size(z)), vz, vw
       real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
@@ -117,6 +117,8 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
+      use yaeos__math, only: solve_system
+      use stdlib_linalg, only: eye
       class(BaseModel), target :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -130,13 +132,18 @@ contains
       real(pr) :: lnphi_z(size(z)), di(size(z))
 
       real(pr) :: lnphi_w(size(w))
+      real(pr) :: dlnphi_dw(size(w), size(w))
       real(pr) :: dw(size(w)), mins(size(w)), ws(size(w), size(w)), V
-      integer :: i, j
+      integer :: i, j, k, l
 
       integer :: nc, stat
       integer :: max_iters, iters
 
+      real(pr) :: grad(size(w)), H(size(w), size(w)), identity(size(w), size(w))
+      real(pr) :: rel_error, tpd
+
       nc = size(z)
+      identity = eye(nc)
 
       dx = 0.001_pr
 
@@ -162,22 +169,33 @@ contains
          ! w = w/sum(w)
          w = 1
          w(i) = 1000
+         w = w/sum(w)
          dw = 100
-         do while(maxval(abs(dw)) > 1e-8 .and. abs(mins(i)) > 1e-4 .and. iters < max_iters)
+         rel_error = 100
+         do while(maxval(abs(dw/w)) > 1e-8 .and. abs(mins(i)) > 1e-4 .and. iters < max_iters .and. rel_error > 1e-3)
             iters = iters + 1
             select type (model)
              class is (ArModel)
-               call model%lnphi_pt(w, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_w)
+               call model%lnphi_pt(w, T=T, P=P, V=V, root_type="stable", lnPhi=lnPhi_w, dlnPhidn=dlnphi_dw)
              class is (GeModel)
-               call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w)
+               call model%ln_activity_coefficient(w, T=T, lngamma=lnPhi_w, dlnGammadn=dlnphi_dw)
             end select
 
-            dw = exp(di - lnphi_w) - w
-            do while(any(dw + w < 0))
-               dw = dw/2
+            tpd = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
+            rel_error = abs(tpd - mins(i))/abs(mins(i) + 1e-10_pr)
+            mins(i) = tpd
+            grad = log(w) + lnphi_w - di
+
+            do j=1,nc
+               H(j, :) = dlnphi_dw(j, :) 
+               H(j, j) = H(j, j) + 1.0_pr/w(j)
             end do
 
-            mins(i) = 1 + sum(w * (log(w) + lnPhi_w - di - 1))
+            dw = solve_system(H, -grad)
+            do while(any(w + dw < 0))
+               dw = dw / 2.0_pr
+            end do
+            print *, mins(i), w
             w = w + dw
          end do
          w = w/sum(w)
