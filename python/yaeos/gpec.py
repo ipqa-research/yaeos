@@ -209,10 +209,14 @@ class GPEC:
         -------
         list
             A list containing the calculated Pxy phase diagrams.
+            - Starting from the almost pure second component.
+            - Starting from the almost pure first component. If below its Tc.
+            - Starting from liquid-liquid critical line, if it exists.
         """
         psat_1, psat_2 = self._pures
+        critical_temperatures = self._model.critical_temperatures
 
-        px_12 = px_21 = px_iso = None
+        px_12 = px_21 = px_ll = None
 
         # Below saturation temperature of light component
         loc = np.argmin(abs(psat_2["T"] - temperature))
@@ -228,7 +232,53 @@ class GPEC:
             max_points=MAX_POINTS,
         )
 
-        pxs = [px_12, px_21, px_iso]
+        # Below saturation temperature of heavy component
+        if temperature < self._model.critical_temperatures[0]:
+            loc = np.argmin(abs(psat_1["T"] - temperature))
+            p0 = psat_1["P"][loc]
+            px_12 = self._model.phase_envelope_px(
+                self._z0,
+                self._zi,
+                temperature=temperature,
+                kind="bubble",
+                p0=p0,
+                a0=1-a0,
+                ds0=-1e-3,
+                max_points=MAX_POINTS,
+            )
+        
+        if self._cl_ll:
+            loc = np.argmin(abs(self._cl_ll["P"] - pressure))
+            p0, t = self._cl_ll["P"][loc], self._cl_ll["T"][loc]
+            if abs(t - temperature) < 1 or temperature > self_cl_cep["T"]:
+                
+                a = self._cl_ll["a"][loc]
+                z = a * self._zi + (1 - a) * self._z0
+                x_l0 = [z.copy()]
+
+                x_l0[0][0] += 1e-5
+                x_l0[0][1] -= 1e-5
+                w0 = z.copy()
+                w0[0] -= 1e-5
+                w0[1] += 1e-5
+
+                px_ll = self._model.phase_envelope_px_mp(
+                    z0=self._z0,
+                    zi=self._zi,
+                    t=temperature,
+                    kinds_x=["liquid"],
+                    kind_w="liquid",
+                    x_l0=x_l0,
+                    w0=w0,
+                    betas0=[1],
+                    p0=p0,
+                    alpha0=a + 1e-5,
+                    ns0=len(z) + 3,
+                    ds0=1e-4,
+                    max_points=MAX_POINTS,
+                )
+
+        pxs = [px_12, px_21, px_ll]
 
         return pxs
 
