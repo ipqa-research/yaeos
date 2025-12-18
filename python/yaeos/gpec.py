@@ -233,7 +233,7 @@ class GPEC:
         )
 
         # Below saturation temperature of heavy component
-        if temperature < self._model.critical_temperatures[0]:
+        if temperature < critical_temperatures[1]:
             loc = np.argmin(abs(psat_1["T"] - temperature))
             p0 = psat_1["P"][loc]
             px_12 = self._model.phase_envelope_px(
