@@ -1,39 +1,57 @@
-module yaeos__equilibria_auxiliar
-   !! Auxiliar functions used for phase-equilibria calculation.
+module yaeos__auxiliar
    use yaeos__constants, only: pr
-   use yaeos__models_base, only: BaseModel
    implicit none
+
+   interface optval
+      module procedure optval_integer, optval_real, optval_character
+   end interface optval
 
 contains
 
-   function k_wilson(model, T, P) result(K)
-      !! # K_wilson
-      !!
-      !! ## Description
-      !! K-factors regression done by Wilson, used for initialization.
-      class(BaseModel), intent(in) :: model
-      real(pr), intent(in) :: T
-      real(pr), intent(in) :: P
-      real(pr)  :: K(size(model%components%pc))
+   integer function optval_integer(val, default)
+      !! Set a value to a default if it is not defined
+      integer, optional, intent(in) :: val
+      integer, intent(in) :: default
 
-      K = (model%components%Pc/P) &
-         * exp(5.373_pr*(1 + model%components%w)&
-         * (1 - model%components%Tc/T))
-   end function k_wilson
+      if (present(val)) then
+         optval_integer = val
+      else
+         optval_integer = default
+      end if
+   end function optval_integer
 
-   real(pr) function P_wilson(model, z, T) result(P)
-      !! # P_wilson
-      !!
-      !! ## Description
-      !! Calculate the pressure at a given T of a mixture using the Wilson
-      !! equation.
-      class(BaseModel), intent(in) :: model !! Model of the mixture.
-      real(pr), intent(in) :: z(:) !! Mole fractions of the components.
-      real(pr), intent(in) :: T !! Temperature [K].
+   real(pr) function optval_real(val, default)
+      !! Set a value to a default if it is not defined
+      real(pr), optional, intent(in) :: val
+      real(pr), intent(in) :: default
 
-      P = 1.0_pr/sum(&
-         z*model%components%Pc &
-         * exp(5.373_pr &
-         * (1 + model%components%w)*(1 - model%components%Tc/T)))
-   end function P_wilson
-end module yaeos__equilibria_auxiliar
+      if (present(val)) then
+         optval_real = val
+      else
+         optval_real = default
+      end if
+   end function optval_real
+
+   function optval_character(val, default)
+      !! Set a value to a default if it is not defined
+      character(len=*), optional, intent(in) :: val
+      character(len=*), intent(in) :: default
+      character(len=:), allocatable :: optval_character
+
+      if (present(val)) then
+         optval_character = val
+      else
+         optval_character = default
+      end if
+   end function optval_character
+
+   subroutine sort(array, idx)
+      use stdlib_sorting, only: std => sort
+      !! Sort an array and return the indexes
+      real(pr), intent(in out) :: array(:)
+      integer, optional, intent(out) :: idx(:)
+
+      call std(array)
+
+   end subroutine sort
+end module yaeos__auxiliar
