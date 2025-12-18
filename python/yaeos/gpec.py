@@ -214,7 +214,7 @@ class GPEC:
             - Starting from liquid-liquid critical line, if it exists.
         """
         psat_1, psat_2 = self._pures
-        critical_temperatures = self._model.critical_temperatures
+        critical_temperatures = max(psat_1["T"]), max(psat_2["T"])
 
         px_12 = px_21 = px_ll = None
 
