@@ -302,7 +302,7 @@ contains
       call move_alloc(env_points, pt_envelope%points)
    end function pt_envelope
 
-   subroutine pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF)
+   subroutine pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model !! Model to use.
@@ -316,6 +316,8 @@ contains
       real(pr), intent(in)  :: S !! Specification value.
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated.
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix.
+      real(pr), intent(out) :: Vw
+      real(pr), intent(out) :: Vl(np)
 
       ! X variables
       real(pr) :: K(np, size(z))
@@ -326,15 +328,18 @@ contains
       ! Main phases variables
       real(pr) :: moles(size(z))
 
-      real(pr) :: Vl(np)
       real(pr), dimension(np, size(z)) :: x_l, lnphi_l, dlnphi_dt_l, dlnphi_dp_l
       real(pr), dimension(np, size(z), size(z)) :: dlnphi_dn_l
+      real(pr) :: dpdv_l(np), dpdn_l(np, size(z))
 
       real(pr) :: lnphi(size(z)), dlnphi_dt(size(z)), dlnphi_dp(size(z))
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn
+      real(pr) :: dpdv_w, dpdn_w(size(z))
+
+      real(pr) :: dPdV, dPdN(size(z)), dVdn(size(z)), dVdT, dVdP
+      real(pr) ::  dVwdn(size(z)), dVwdT, dVwdP
 
       ! Incipient phase variables
-      real(pr) :: Vw
       real(pr), dimension(size(z)) :: w, lnphi_w, dlnphi_dt_w, dlnphi_dp_w
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn_w
 
@@ -351,6 +356,7 @@ contains
       integer :: i, j, l, phase, nc
       integer :: lb, ub
       integer :: idx_1, idx_2
+      integer :: nv !! Specified volume for ln(V(nv)/Vw)
 
       nc = size(z)
 
@@ -380,19 +386,23 @@ contains
       ! ------------------------------------------------------------------------
       call model%lnphi_pt(&
          w, P, T, V=Vw, root_type=kind_w, lnphi=lnphi_w, &
-         dlnphidp=dlnphi_dp_w, dlnphidt=dlnphi_dt_w, dlnphidn=dlnphi_dn_w &
+         dlnphidp=dlnphi_dp_w, dlnphidt=dlnphi_dt_w, dlnphidn=dlnphi_dn_w, &
+         dPdV=dpdv_w, dPdN=dpdn_w &
          )
 
       do l=1,np
          x_l(l, :) = K(l, :)*w
          call model%lnphi_pt(&
             x_l(l, :), P, T, V=Vl(l), root_type=kinds_x(l), lnphi=lnphi, &
-            dlnphidp=dlnphi_dp, dlnphidt=dlnphi_dt, dlnphidn=dlnphi_dn &
+            dlnphidp=dlnphi_dp, dlnphidt=dlnphi_dt, dlnphidn=dlnphi_dn, &
+            dPdV=dpdv, dPdN=dPdN &
             )
          lnphi_l(l, :) = lnphi
          dlnphi_dn_l(l, :, :) = dlnphi_dn
          dlnphi_dt_l(l, :) = dlnphi_dt
          dlnphi_dp_l(l, :) = dlnphi_dp
+         dpdv_l(l) = dpdv
+         dpdn_l(l, :) = dPdN
       end do
 
       ! ========================================================================
@@ -407,7 +417,13 @@ contains
          F(nc * np + l) = sum(x_l(l, :) - w)
       end do
       F(nc * np + np + 1) = sum(betas) + beta_w - 1
-      F(nc * np + np + 2) = X(ns) - S
+
+      if (ns < 0) then
+         nv = abs(ns)
+         F(nc * np + np + 2) = log(Vl(nv)/Vw) - S
+      else
+         F(nc * np + np + 2) = X(ns) - S
+      endif
 
 
       ! ========================================================================
@@ -495,6 +511,17 @@ contains
          df(nc * np + np + 1, np*nc + l) = 1
       end do
 
+      if (ns < 0) then
+         nv = abs(ns)
+
+         do l=1,np
+            do i=1,nc
+            end do
+         end do
+
+
+      end if
+
       df(nc * np + np + 2, ns) = 1
    end subroutine pt_F_NP
 
@@ -518,6 +545,8 @@ contains
       integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
+      real(pr) :: Vw !! Reference phase volume
+      real(pr) :: Vl(np) !! Main phases volumes
 
       integer :: i, l
       integer :: iT
@@ -541,7 +570,7 @@ contains
       iBetas = [(i, i=np*nc+1, np*nc+np)]
 
       do iters=1,max_iterations
-         call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF)
+         call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
 
          if (any(isnan(F)) .and. can_solve) then
             X = X - 0.9 * dX
