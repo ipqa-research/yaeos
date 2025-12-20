@@ -33,7 +33,7 @@ module yaeos__models_ar_genericcubic
       !!
       !! \[
       !!   P = \frac{RT}{V-B}
-      !!       - \frac{D(T_r)}{(V+B\Delta_1)(V+B\Delta_2)}
+      !!       - \frac{D(T_r)}{(V+B\delta_1)(V+B\delta_2)}
       !! \]
       class(CubicMixRule), allocatable :: mixrule
       !! # CubicMixRule derived type.
