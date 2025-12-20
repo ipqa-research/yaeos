@@ -49,7 +49,9 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
 
 contains
    type(PXEnvelMP) function px_envelope(&
-      model, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, dS0, beta_w, points, kinds_x, kind_w &
+      model, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, &
+      ns0, dS0, beta_w, points, kinds_x, kind_w, &
+      max_pressure &
       )
       !! # `px_envelope`
       !! Calculation of a multiphase Px envelope.
@@ -95,6 +97,7 @@ contains
       character(len=14), optional, intent(in) :: kind_w
       ! integer, optional, intent(in) :: kinds_x(np)
       ! integer, optional, intent(in) :: kind_w
+      real(pr), optional, intent(in) :: max_pressure
 
       type(MPPoint), allocatable :: env_points(:)
       real(pr), allocatable :: alphas(:)
@@ -136,11 +139,14 @@ contains
 
       integer :: ia, iP
 
+      real(pr) :: Pmax
+
       nc = size(z0)
       ia = nc*np+np+2
       iP = nc*np+np+1
 
       number_of_points = optval(points, 1000)
+      Pmax = optval(max_pressure, 5000._pr)
 
       if (present(kinds_x) .and. present(kind_w)) then
          x_kinds = kinds_x
@@ -203,6 +209,9 @@ contains
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
             iters=its, ns=ns, kinds_x=x_kinds, kind_w=w_kind &
             )
+
+         if (P > Pmax) exit
+
          env_points = [env_points, point]
          alphas = [alphas, alpha]
 
@@ -233,7 +242,7 @@ contains
 
          ! Next point estimation.
          dX = dXdS * dS
-         
+
          X_last_converged = X
          X = X + dX
          S = X(ns)
