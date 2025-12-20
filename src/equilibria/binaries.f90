@@ -369,6 +369,4 @@ contains
          if (any(isnan(F))) error stop
       end do
    end subroutine three_phase_line_F_solve
-
-
 end module yaeos__equilibria_binaries
