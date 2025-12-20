@@ -166,6 +166,8 @@ contains
 
       real(pr) :: Tc !! Critical temperature [K]
       real(pr) :: Pc !! Critical pressure [bar]
+      real(pr) :: Vl(np) !! Molar volumes of the main phases [L/mol]
+      real(pr) :: Vw !! Molar volume of the reference phase [L/mol]
 
       nc = size(z)
       iP = np*nc + np + 1
@@ -198,13 +200,13 @@ contains
       X0 = X
       call solve_point(&
          model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
-         F, dF, its, 1000 &
+         F, dF, Vl, Vw, its, 1000 &
          )
       do i=1,number_of_points
          X0 = X
          call solve_point(&
             model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
-            F, dF, its, max_iterations &
+            F, dF, Vl, Vw, its, max_iterations &
             )
 
          ! The point might not converge, in this case we try again with an
@@ -213,10 +215,12 @@ contains
          do while(i > 1 .and. its >= max_iterations .and. inner < 10)
             inner = inner + 1
             X = X0 - (1 - real(inner, pr) / 10._pr) * dX
-            S = X(ns)
+            if (ns > 0) then
+               S = X(ns)
+            end if
             call solve_point(&
                model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
-               F, dF, its, max_iterations&
+               F, dF, Vl, Vw, its, max_iterations &
                )
          end do
 
@@ -246,7 +250,7 @@ contains
          end if
 
          ! Update the specification for the next point.
-         call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
+         call update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
 
          ! If the point did not converge, stop the calculation
          if (&
@@ -261,7 +265,7 @@ contains
          ! Next point estimation.
          dX = dXdS * dS
 
-         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 15)
+         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
             dX = dX/2
          end do
 
@@ -269,33 +273,11 @@ contains
             dX = dX/2
          end do
 
-         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) < 3 &
-         !    .and. abs(exp(X(iT))  - exp(X(iT) + dX(iT))) < 3)
-         !    dX = dX*1.1
-         ! end do
-
-         dejavu: block
-            !! Getting too close to a local minima in the envelope, which can
-            !! be hard to select corrects steps.
-            real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
-            if (i > 4) then
-               dPdT_1 = (P - env_points(i-1)%P) / (T - env_points(i-1)%T)
-               dPdT_2 = (P - env_points(i-2)%P) / (T - env_points(i-2)%T)
-               dT2 = (T - env_points(i-1)%T) * (env_points(i-2)%T - env_points(i-3)%T)
-
-               d2PdT2 = (P - 2*env_points(i-1)%P + env_points(i-2)%P) / dT2
-
-               if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
-                  do while(abs(exp(X(iT) + dX(iT)) - exp(X(iT))) > 5)
-                     dX = 0.5 * dX
-                  end do
-               end if
-            end if
-         end block dejavu
-
          X_last_converged = X
          X = X + dX
-         S = X(ns)
+         if (ns > 0) then
+            S = X(ns)
+         end if
       end do
 
       ! This moves the locally saved points to the output variable.
@@ -330,13 +312,13 @@ contains
 
       real(pr), dimension(np, size(z)) :: x_l, lnphi_l, dlnphi_dt_l, dlnphi_dp_l
       real(pr), dimension(np, size(z), size(z)) :: dlnphi_dn_l
-      real(pr) :: dpdv_l(np), dpdn_l(np, size(z))
+      real(pr) :: dpdv_l(np), dpdn_l(np, size(z)), dpdt_l(np), dPdT
 
       real(pr) :: lnphi(size(z)), dlnphi_dt(size(z)), dlnphi_dp(size(z))
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn
-      real(pr) :: dpdv_w, dpdn_w(size(z))
+      real(pr) :: dpdv_w, dpdn_w(size(z)), dpdT_w
 
-      real(pr) :: dPdV, dPdN(size(z)), dVdn(size(z)), dVdT, dVdP
+      real(pr) :: dPdV, dPdN(size(z))
       real(pr) ::  dVwdn(size(z)), dVwdT, dVwdP
 
       ! Incipient phase variables
@@ -387,7 +369,7 @@ contains
       call model%lnphi_pt(&
          w, P, T, V=Vw, root_type=kind_w, lnphi=lnphi_w, &
          dlnphidp=dlnphi_dp_w, dlnphidt=dlnphi_dt_w, dlnphidn=dlnphi_dn_w, &
-         dPdV=dpdv_w, dPdN=dpdn_w &
+         dPdV=dpdv_w, dPdN=dpdn_w, dPdT=dPdT_w &
          )
 
       do l=1,np
@@ -395,14 +377,17 @@ contains
          call model%lnphi_pt(&
             x_l(l, :), P, T, V=Vl(l), root_type=kinds_x(l), lnphi=lnphi, &
             dlnphidp=dlnphi_dp, dlnphidt=dlnphi_dt, dlnphidn=dlnphi_dn, &
-            dPdV=dpdv, dPdN=dPdN &
+            dPdV=dpdv, dPdN=dPdN, dPdT=dpdt &
             )
          lnphi_l(l, :) = lnphi
          dlnphi_dn_l(l, :, :) = dlnphi_dn
          dlnphi_dt_l(l, :) = dlnphi_dt
          dlnphi_dp_l(l, :) = dlnphi_dp
+
          dpdv_l(l) = dpdv
          dpdn_l(l, :) = dPdN
+         dpdt_l(l) = dpdt
+
       end do
 
       ! ========================================================================
@@ -511,23 +496,64 @@ contains
          df(nc * np + np + 1, np*nc + l) = 1
       end do
 
-      if (ns < 0) then
-         nv = abs(ns)
+      block
+         real(pr) :: dVwdlnKl(np, size(z))
+         real(pr) :: dVnvdlnKl(np, size(z))
+         real(pr) :: dVwdb(np)
+         real(pr) :: dVnvdb(np)
 
-         do l=1,np
-            do i=1,nc
+
+         real(pr) :: dVnvdn(size(z)), dVnvdP, dVnvdT
+         real(pr) :: Vnv
+         integer :: spec_eq
+
+         if (ns < 0) then
+            spec_eq = nc * np + np + 2
+            nv = abs(ns)
+
+            Vnv = Vl(nv)
+            dVwdn = dpdn_w / dpdv_w
+            dVwdP = 1.0_pr / dpdv_w
+            dVwdT = dPdT_w / dpdv_w
+
+            dVnvdn = dpdn_l(nv, :) / dpdv_l(nv)
+            dVnvdP = 1.0_pr / dpdv_l(nv)
+            dVnvdT = dPdT_l(nv) / dpdv_l(nv)
+
+            do l=1,np
+               dVwdlnKl(l, :) = dVwdn * dwdlnK(l, :)
+               dVnvdlnKl(l, :) = dVnvdn * dx_l_dlnK(nv, l, :)
+               dVwdb(l) = sum(dVwdn * dwdb(l, :))
+               dVnvdb(l) = sum(dVnvdn * K(nv, :) * dwdb(l, :))
             end do
-         end do
 
+            do l=1,np
+               lb = (l-1) * nc
 
-      end if
+               ! wrt lnK^l_i
+               do i=1,nc
+                  df(spec_eq, lb + i) = &
+                     dVwdlnKl(l, i) / Vw - dVnvdlnKl(l, i) / Vnv
+               end do
 
-      df(nc * np + np + 2, ns) = 1
+               ! wrt beta
+               lb = np * nc + l
+               df(spec_eq, lb) = &
+                  dVwdb(l) / Vw - dVnvdb(l) / Vnv
+            end do
+            df(spec_eq, nc * np + np + 1) = Vw / Vnv * P * (1 / Vw * dVnvdP - Vnv / Vw**2 * dVwdP)
+            df(spec_eq, nc * np + np + 2) = -Vw / Vnv * T * (1 / Vw * dVnvdT - Vnv / Vw**2 * dVwdT)
+         else
+            df(nc * np + np + 2, ns) = 1
+         end if
+      end block
+
    end subroutine pt_F_NP
 
-   subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, dF, iters, max_iterations)
+   subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, dF, Vl, Vw, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
+      use stdlib_linalg, only: eye
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases
@@ -540,22 +566,28 @@ contains
       real(pr), intent(in) :: dXdS(size(X))
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
+      real(pr), intent(out) :: Vw !! Reference phase volume
+      real(pr), intent(out) :: Vl(np) !! Main phases volumes
       integer, intent(in) :: max_iterations
       !! Maximum number of iterations to solve the point
       integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
-      real(pr) :: Vw !! Reference phase volume
-      real(pr) :: Vl(np) !! Main phases volumes
-
-      integer :: i, l
-      integer :: iT
-      integer :: iP
-      integer :: iBetas(np)
-      integer :: nc
+      integer :: i
+      integer :: l !! Phase index
+      integer :: iT !! Temperature index
+      integer :: iP !! Pressure index
+      integer :: iBetas(np) !! Indices of the betas in X
+      integer :: nc !! Number of components
 
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
+
+
+      ! Homotopy solving
+      real(pr) :: H(size(X)), dH(size(X), size(X))
+      real(pr) :: G(size(X)), dG(size(X), size(X))
+      real(pr) :: t
 
       logical :: can_solve
 
@@ -580,36 +612,40 @@ contains
 
          dX = solve_system(dF, -F)
 
-         do l=1,np
-            if (maxval(abs(X(l:nc*l))) < 1e-1) then
-               do while(maxval(abs(dX(l:nc*l))) > 1e-1)
-                  dX = dX/2
-               end do
-            end if
-         end do
-
-         do while(abs(exp(X(iT)) - exp(X(iT) + dX(iT))) > 10)
-            dX = dX/2
-         end do
-
-         do while(abs(exp(X(iP)) - exp(X(iP) + dX(iP))) > 10)
-            dX = dX/2
-         end do
-
-         do i=1,np
-            if (X(iBetas(i)) /= 0) then
-               do while(abs(dX(iBetas(i))/X(iBetas(i))) > 0.5)
-                  dX = dX/2
-               end do
-            end if
-         end do
-
          if (maxval(abs(F)) < 1e-9_pr) exit
          X = X + dX
+         if (iters == 10) then
+            ! If after 10 iterations it is not converging try fixed-point
+            ! homotopy. Homotopy consist of solving a modified version of the
+            ! system of equations that is easier to solve, and gradually
+            ! transforming it into the original system.
+            ! The function to solve is defined as:
+            ! ! \[
+            ! H = t F + (1-t) G
+            ! \]
+            ! Where \( G = X - X_0 \) is a simple function that has a known
+            ! solution at \( X = X_0 \), and \( t \)
+            ! goes from 0 to 1 in 10 steps.
+            X0 = X
+            H = 10
+            do i=0,10
+               do while(maxval(abs(H)) > 1e-9_pr)
+                  t = real(i, pr)/10._pr
+                  call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
+                  G = (X - X0)
+                  dG = eye(size(X))
+                  H = t * F + (1-t) * G
+                  dH = t * dF + (1-t) * dG
+                  dX = solve_system(dH, -H)
+                  X = X + dX
+               end do
+            end do
+         end if
+
       end do
    end subroutine solve_point
 
-   subroutine update_specification(its, nc, np, X, dF, dXdS, ns, dS)
+   subroutine update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
       !! # update_specification
       !! Change the specified variable for the next step.
       !!
@@ -644,13 +680,20 @@ contains
       !! Sensitivity of the variables wrt the specification.
       integer, intent(in out) :: ns
       !! Number of the specified variable.
+      real(pr), intent(in out) :: S
+      !! Specified value.
       real(pr), intent(in out) :: dS
       !! Step size of the specification for the next point.
+      real(pr), intent(in) :: Vl(:)
+      !! Molar volumes of the main phases [L/mol].
+      real(pr), intent(in) :: Vw
+      !! Molar volume of the reference phase [L/mol].
 
       real(pr) :: dFdS(size(X))
       !! Sensitivity of the functions wrt the specification.
 
       integer :: i
+      integer :: l !! Phase index
       integer :: lb !! Lower bound of each phase
       integer :: ub !! Upper bound of each phase
 
@@ -676,23 +719,22 @@ contains
       ! this can be related to criticality and it is useful to force the
       ! specification of compositions.
       ! ------------------------------------------------------------------------
-      do i=1,np
-         lb = (i-1)*nc + 1
-         ub = i*nc
+      dS = dXdS(ns)*dS
+      dXdS = dXdS/dXdS(ns)
 
-         if (maxval(abs(X(lb:ub))) < 0.1) then
-            ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
+      dS = dS * 3./its
+      dS = sign(min(sqrt(abs(X(ns)/10)), abs(dS)), dS)
+      do l=1,np
+         lb = (l-1)*nc + 1
+         ub = l*nc
+         if (abs(log(Vl(l)/Vw)) < 0.15 .and. maxval(abs(X(lb:ub))) < 0.05) then
+            ns = maxloc(abs(dXdS(lb:ub)), dim=1) + lb - 1
             dS = dXdS(ns)*dS
-            dS = sign(min(5e-2_pr, abs(dS)), dS)
-            ! dS = sign(5e-2_pr, dS)
             dXdS = dXdS/dXdS(ns)
+            dS = sign(0.001_pr, dS)
             exit
          end if
       end do
-
-      dS = dXdS(ns)*dS
-      dXdS = dXdS/dXdS(ns)
-      !dS = dS * 5./its
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)

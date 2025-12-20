@@ -31,6 +31,7 @@ program main
    type(PXEnvelMP) :: px
    character(len=14) :: kinds_x(np)
    character(len=14) :: kind_w
+   real(pr) :: Vl(np), Vw
 
 
    print *, test_title("Multi-phase PX envelope test")
@@ -74,7 +75,7 @@ program main
    call pt%solve_point(&
       model, z, np=np, beta_w=0.0_pr, kinds_x=kinds_x, kind_w=kind_w, &
       X=X, ns=ns, S=S, dXdS=dXdS, &
-      F=F, dF=dF, iters=iters, max_iterations=100)
+      F=F, dF=dF, Vl=Vl, Vw=Vw, iters=iters, max_iterations=100)
    P = exp(X(3*nc+np+1))
    T = exp(X(3*nc+np+2))
    betas = X(3*nc+1:3*nc+np)
