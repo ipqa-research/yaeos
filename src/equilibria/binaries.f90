@@ -144,9 +144,8 @@ contains
       else
          S = X(ns)
       end if
-
-      S = 1e-4
-      dS = 0.01
+      S = log(0.9999_pr)
+      dS = 0.001
 
       points = 0
       F = 0
