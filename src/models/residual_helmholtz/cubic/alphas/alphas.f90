@@ -23,7 +23,6 @@ module yaeos__models_ar_cubic_alphas
       procedure :: alpha => alpha_rkpr
    end type AlphaRKPR
 
-
    type, extends(AlphaFunction) :: AlphaMathiasCopeman
       !! Mathias Copeman \(\alpha\) function.
       real(pr), allocatable :: c1(:)

@@ -61,7 +61,7 @@ module yaeos_c
    public :: pure_saturation_line
    public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
    public :: generalized_isopleth
-   public :: critical_point, critical_line, find_llcl
+   public :: critical_point, critical_line, find_llcl, binary_llv_from_cep
    public :: stability_zpt, tm
    public :: stability_zt_ge
 
@@ -366,11 +366,11 @@ contains
       !! # `set_qmrtd`
       !! Set the Quadratic Mixing Rule with Temperature Dependent `k_ij` (QMRTD)
       !! to a cubic equation of state. The expression of the `k_ij` parameter is:
-      !! \[ 
+      !! \[
       !! k_{ij} = k_{ij}^{\infty} + k_{ij}^0 \exp {\frac{-T}{T^*_{ij}}}
       !! \]
       use yaeos, only: QMRTD, CubicEoS
-      integer(c_int), intent(in) :: ar_id !! 
+      integer(c_int), intent(in) :: ar_id !!
       real(c_double), intent(in) :: kij_0(:, :)
       real(c_double), intent(in) :: kij_inf(:, :)
       real(c_double), intent(in) :: t_star(:, :)
@@ -435,9 +435,9 @@ contains
       select type(ar_model)
        class is(CubicEoS)
          mixrule = init_hvnrtl(&
-         b=ar_model%b, del1=ar_model%del1, &
-         alpha=alpha, gji0=gji0, gjiT=gjiT, &
-         use_kij=use_kij, kij=kij)
+            b=ar_model%b, del1=ar_model%del1, &
+            alpha=alpha, gji0=gji0, gjiT=gjiT, &
+            use_kij=use_kij, kij=kij)
          deallocate(ar_model%mixrule)
          ar_model%mixrule = mixrule
       end select
@@ -875,6 +875,59 @@ contains
          CEP_T = makenan()
       end if
    end subroutine critical_line
+
+   subroutine binary_llv_from_cep(id, x, y, Vx, Vy, Tcep, Pcep, &
+      x1s, y1s, w1s, Vxs, Vys, Vws, Ts, Ps)
+      use yaeos__constants, only: pr
+      use yaeos__equilibria, only: &
+         fbinary_llv_from_cep => binary_llv_from_cep, BinaryThreePhase, EquilibriumState
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: x(2)
+      real(c_double), intent(in) :: y(2)
+      real(c_double), intent(in) :: Vx
+      real(c_double), intent(in) :: Vy
+      real(c_double), intent(in) :: Tcep
+      real(c_double), intent(in) :: Pcep
+      real(c_double), intent(out) :: x1s(1000)
+      real(c_double), intent(out) :: y1s(1000)
+      real(c_double), intent(out) :: w1s(1000)
+      real(c_double), intent(out) :: Vxs(1000)
+      real(c_double), intent(out) :: Vys(1000)
+      real(c_double), intent(out) :: Vws(1000)
+      real(c_double), intent(out) :: Ts(1000)
+      real(c_double), intent(out) :: Ps(1000)
+      type(BinaryThreePhase) :: btp
+      type(EquilibriumState) :: cep
+      integer :: points
+      
+      x1s = makenan()
+      y1s = makenan()
+      w1s = makenan()
+      Vxs = makenan()
+      Vys = makenan()
+      Vws = makenan()
+      Ts = makenan()
+      Ps = makenan()
+
+      cep = EquilibriumState( &
+         kind="CEP", x=x, y=y, P=Pcep, T=Tcep, Vx=Vx, Vy=Vy, beta=0._pr&
+      )
+
+      btp = fbinary_llv_from_cep(&
+         model=ar_models(id)%model, cep=cep &
+         )
+
+      points = size(btp%x1)
+
+      Ts(1:points) = btp%T
+      Ps(1:points) = btp%P
+      Vxs(1:points) = btp%Vx
+      Vys(1:points) = btp%Vy
+      Vws(1:points) = btp%Vw
+      x1s(1:points) = btp%x1
+      y1s(1:points) = btp%y1
+      w1s(1:points) = btp%w1
+   end subroutine binary_llv_from_cep
 
    subroutine find_llcl(id, z0, zi, P, Tstart, a, T, V)
       use yaeos__equilibria, only: ffind_llcl => find_llcl

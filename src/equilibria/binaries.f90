@@ -10,14 +10,19 @@ module yaeos__equilibria_binaries
    public :: BinaryThreePhase, binary_llv_from_cep
 
    type :: BinaryThreePhase
-      real(pr), allocatable :: x1(:)
-      real(pr), allocatable :: y1(:)
-      real(pr), allocatable :: w1(:)
-      real(pr), allocatable :: Vx(:)
-      real(pr), allocatable :: Vy(:)
-      real(pr), allocatable :: Vw(:)
-      real(pr), allocatable :: T(:)
-      real(pr), allocatable :: P(:)
+      !! # `BinaryThreePhase`
+      !! Structure to hold the results of a binary LLV line calculation.
+      !! # Description
+      !! This structure holds the results of a binary LLV line calculation.
+      !! Pressures are calculated using the composition of the liquid phase `x`.
+      real(pr), allocatable :: x1(:) !! Mole fraction of component 1 in liquid phase x
+      real(pr), allocatable :: y1(:) !! Mole fraction of component 1 in liquid phase y
+      real(pr), allocatable :: w1(:) !! Mole fraction of component 1 in vapor phase w
+      real(pr), allocatable :: Vx(:) !! Volume of liquid phase x [L/mol]
+      real(pr), allocatable :: Vy(:) !! Volume of liquid phase y [L/mol]
+      real(pr), allocatable :: Vw(:) !! Volume of vapor phase w [L/mol]
+      real(pr), allocatable :: T(:) !! Temperature [K]
+      real(pr), allocatable :: P(:) !! Pressure [bar]
    end type BinaryThreePhase
 
 contains
@@ -39,7 +44,7 @@ contains
       !! equilibrium in binary mixtures, The Journal of Supercritical Fluids 39
       !!  (2007) 287–295. https://doi.org/10.1016/j.supflu.2006.03.011.
       implicit none
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
       real(kind=pr), intent(in) :: P !! Pressure [bar]
       real(kind=pr), intent(in) :: z0(2) !! Mole fractions of original fluid
       real(kind=pr), intent(in) :: zi(2) !! Mole fractions of new fluid
@@ -89,8 +94,21 @@ contains
    end subroutine find_llcl
 
    type(BinaryThreePhase) function binary_llv_from_cep(model, cep) result(llv)
-      class(ArModel), intent(in) :: model
-      type(EquilibriumState), intent(in) :: cep
+      !! # `binary_llv_from_cep`
+      !! Calculate the LLV line from a converged critical end point (CEP).
+      !!
+      !! # Description
+      !! From a converged critical end point (CEP) of a binary mixture, this
+      !! function calculates the three-phase line (LLV) by solving the
+      !! corresponding system of equations (defined at [[three_phase_line_F]])
+      !! at each point.
+      !! To trace the whole line a continuation method is used to obtain good
+      !! initial guesses for each point. 
+      !! The specification used to trace the line is initially the difference
+      !! between the mole fractions of the two liquid phases, and then it is
+      !! switched to temperature.
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
+      type(EquilibriumState), intent(in) :: cep !! Converged critical end point.
 
       real(pr) :: X(7)
       real(pr) :: dFdS(7), F(7), dF(7, 7)
@@ -109,15 +127,15 @@ contains
       dFdS(7) = -1
 
       X = log([&
-         CEP%x(1)+1e-9, &
-         cep%x(1)-1e-9, &
+         CEP%x(1), &
+         cep%x(1), &
          cep%y(1), &
-         cep%Vx+1e-9, &
-         cep%Vx-1e-9, &
+         cep%Vx, &
+         cep%Vx, &
          cep%Vy, &
          cep%T &
          ])
-      T = 1000
+      T = HUGE(1._pr)
       ns = 0
       if (ns == 0) then
          S = exp(X(2)) - exp(X(1))
@@ -127,12 +145,14 @@ contains
          S = X(ns)
       end if
 
-      dS = 0.001
+      S = 1e-3
+      dS = 0.01
 
       points = 0
       F = 0
+      P = 10
       allocate(llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), llv%Vx(0), llv%Vy(0), llv%Vw(0))
-      do while(T > 100 .and. maxval(abs(F)) < 1e-6)
+      do while(T > 100 .and. P > 1e-8_pr .and. maxval(abs(F)) < 1e-9)
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
 
@@ -143,8 +163,9 @@ contains
          Vy = exp(X(5))
          Vw = exp(X(6))
          T = exp(X(7))
-
-         if (maxval(abs(F)) < 1e-6) then
+         call model%pressure([x1, 1-x1], Vx, T, P)
+         
+         if (maxval(abs(F)) < 1e-9 .and. P > 0) then
             llv%T = [llv%T, T]
             llv%P = [llv%P, P]
             llv%x1 = [llv%x1, x1]
@@ -155,20 +176,32 @@ contains
             llv%Vw = [llv%Vw, Vw]
          end if
 
-         call model%pressure([x1, 1-x1], Vx, T, P)
+
+         ns = -1
+         dS = -0.01 * 3. / real(iters, pr)
 
          dXdS = solve_system(dF, -dFdS)
-         ns = -1
-         dS = -0.001
-         print *, iters, T, P
 
-         if (P < 1) then
-            ns = -1
-            dS = -1e-5
+         if (T < llv%T(1) - 10) then
+            ns = 7
+            dS = -0.01 * 3. / real(iters, pr)
+            dXdS = dXdS / dXdS(ns)
          end if
 
-         X = X + dXdS * dS
+         ! if (P < 1) then
+         !    ns = -1
+         !    dS = -1e-5
+         ! end if
 
+         do while(&
+              abs(Vx - exp(X(4) + dS*dXdS(4))) > 0.5*Vx&
+              .or. abs(Vy - exp(X(5) + dS*dXdS(5))) > 0.5*Vy&
+              .or. abs(Vw - exp(X(6) + dS*dXdS(6))) > 0.5*Vw&
+            )
+            dS = dS/2
+         end do
+
+         X = X + dXdS * dS
 
          if (ns == 0) then
             S = exp(X(2)) - exp(X(1))
@@ -181,17 +214,48 @@ contains
    end function binary_llv_from_cep
 
    subroutine three_phase_line_F(model, Xvars, ns, S, F, dF)
+      !! # `three_phase_line_F`
+      !!
+      !! # Description
+      !! Calculate the function vector and Jacobian for the three-phase
+      !! line (LLV) of a binary mixture. Phases are defined as `x`, `y` and `w`.
+      !! Which are two liquid phases and one vapor phase respectively.
+      !!
+      !! The system of equations is defined as:
+      !! \[
+      !! \begin{align*}
+      !! & \ln \phi_i^{(x)} - \ln \phi_i^{(w)} = 0 \\
+      !! & \ln \phi_i^{(y)} - \ln \phi_i^{(w)} = 0 \\
+      !! & P^{(x)} - P^{(w)} = 0 \\
+      !! & P^{(y)} - P^{(w)} = 0 \\
+      !! & \text{specification} 
+      !! \begin{cases}
+      !! y_1 - x_1 - S = 0 & \text{if } ns = 0 \\
+      !! \ln v_x - \ln v_y - S = 0 & \text{if } ns = -1 \\
+      !! X_{ns} - S = 0 & \text{otherwise}
+      !! \end{cases}
+      !! \end{align*}
+      !! \]
+      !!
+      !! # References
+      !! [1] M. Cismondi, M.L. Michelsen, Global phase equilibrium
+      !! calculations:
+      !! Critical lines, critical end points and liquid–liquid–vapour
+      !! equilibrium in binary mixtures, The Journal of Supercritical Fluids 39
+      !!  (2007) 287–295. https://doi.org/10.1016/j.supflu.2006.03.011.
       use yaeos__math, only: derivative_dxk_dni
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
       real(kind=pr), intent(in) :: Xvars(:) !! Input vector
       integer, intent(in) :: ns !! Specified variable index
       real(pr), intent(in) :: S !! Specified variable value
       real(kind=pr), intent(out) :: F(:) !! Function vector
       real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
 
+      ! Variables describing the three phases
       real(pr) :: x1, y1, w1
       real(pr) :: vx, vy, vw, T
       real(pr) :: x(2), y(2), w(2)
+      
       real(pr) :: Px, Py, Pw
       real(pr) :: isofug_1(2), isofug_2(2)
       real(pr) :: Peq_1, Peq_2
@@ -276,8 +340,8 @@ contains
       df(2, 3) =  - (dlnfwdn(2, 1) - dlnfwdn(2, 2))
       df(3, 3) =  - (dlnfwdn(1, 1) - dlnfwdn(1, 2))
       df(4, 3) =  - (dlnfwdn(2, 1) - dlnfwdn(2, 2))
-      df(5, 3) = -( dPwdN(1) - dPwdN(2))
-      df(6, 3) = -( dPwdN(1) - dPwdN(2))
+      df(5, 3) = - (dPwdN(1) - dPwdN(2))
+      df(6, 3) = - (dPwdN(1) - dPwdN(2))
 
       ! Derivatives wrt vx
       df(1, 4) = dlnfxdv(1)
@@ -317,6 +381,7 @@ contains
          df(7, ns) = 1
       end if
 
+      ! Multiply by variable values due to log-transform
       df(:, 1) = df(:, 1) * x1
       df(:, 2) = df(:, 2) * y1
       df(:, 3) = df(:, 3) * w1
@@ -327,8 +392,16 @@ contains
    end subroutine three_phase_line_F
 
    subroutine three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
+      !! # `three_phase_line_F_solve`
+      !!
+      !! # Description
+      !! Solve the system of equations defined in `three_phase_line_F` using
+      !! a Newton-Raphson method.
+      !! It will make a maximum of 50 iterations to converge. With a tolerance
+      !! of 1e-9 in the maximum absolute value of the function vector or the 
+      !! step vector.
       use yaeos__math, only: solve_system
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
       real(kind=pr), intent(in out) :: X(:) !! Input/output vector
       integer, intent(in) :: ns !! Specified variable index
       real(pr), intent(in) :: S !! Specified variable value
@@ -344,21 +417,23 @@ contains
       real(kind=pr) :: Xold(size(X))
 
       tol = 1e-9_pr
-      max_tries = 50
+      max_tries = 100
 
+      dX = 10
+      F = 10
       do i = 1, max_tries
          call three_phase_line_F(model, X, ns, S, F, dF)
 
          res_norm = maxval(abs(F))
 
-         if (res_norm < tol) exit
+         if (res_norm < tol .or. maxval(abs(dX)) < 1e-9) exit
 
          Xold = X
 
          ! Solve the linear system dF * dX = -F
          dX = solve_system(dF, -F)
 
-         do while (maxval(abs(dX/X)) > 0.1)
+         do while (maxval(abs(dX)) > 0.1)
             dX = dX / 2
          end do
 
@@ -369,6 +444,4 @@ contains
          if (any(isnan(F))) error stop
       end do
    end subroutine three_phase_line_F_solve
-
-
 end module yaeos__equilibria_binaries
