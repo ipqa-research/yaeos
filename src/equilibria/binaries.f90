@@ -127,8 +127,8 @@ contains
       dFdS(7) = -1
 
       X = log([&
-         CEP%x(1), &
-         cep%x(1), &
+         CEP%x(1)-1e-9, &
+         cep%x(1)+1e-9, &
          cep%y(1), &
          cep%Vx, &
          cep%Vx, &
@@ -145,7 +145,7 @@ contains
          S = X(ns)
       end if
 
-      S = 1e-3
+      S = 1e-4
       dS = 0.01
 
       points = 0
