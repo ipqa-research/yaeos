@@ -299,7 +299,7 @@ class GPEC:
         if self._cl_ll:
             loc = np.argmin(abs(self._cl_ll["T"] - temperature))
             p0, t = self._cl_ll["P"][loc], self._cl_ll["T"][loc]
-            if abs(t - temperature) < 1 or temperature > self._cep_ll["T"]:
+            if abs(t - temperature) < 1:
 
                 a = self._cl_ll["a"][loc]
                 z = a * self._zi + (1 - a) * self._z0
