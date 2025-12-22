@@ -10,14 +10,19 @@ module yaeos__equilibria_binaries
    public :: BinaryThreePhase, binary_llv_from_cep
 
    type :: BinaryThreePhase
-      real(pr), allocatable :: x1(:)
-      real(pr), allocatable :: y1(:)
-      real(pr), allocatable :: w1(:)
-      real(pr), allocatable :: Vx(:)
-      real(pr), allocatable :: Vy(:)
-      real(pr), allocatable :: Vw(:)
-      real(pr), allocatable :: T(:)
-      real(pr), allocatable :: P(:)
+      !! # `BinaryThreePhase`
+      !! Structure to hold the results of a binary LLV line calculation.
+      !! # Description
+      !! This structure holds the results of a binary LLV line calculation.
+      !! Pressures are calculated using the composition of the liquid phase `x`.
+      real(pr), allocatable :: x1(:) !! Mole fraction of component 1 in liquid phase x
+      real(pr), allocatable :: y1(:) !! Mole fraction of component 1 in liquid phase y
+      real(pr), allocatable :: w1(:) !! Mole fraction of component 1 in vapor phase w
+      real(pr), allocatable :: Vx(:) !! Volume of liquid phase x [L/mol]
+      real(pr), allocatable :: Vy(:) !! Volume of liquid phase y [L/mol]
+      real(pr), allocatable :: Vw(:) !! Volume of vapor phase w [L/mol]
+      real(pr), allocatable :: T(:) !! Temperature [K]
+      real(pr), allocatable :: P(:) !! Pressure [bar]
    end type BinaryThreePhase
 
 contains
@@ -39,7 +44,7 @@ contains
       !! equilibrium in binary mixtures, The Journal of Supercritical Fluids 39
       !!  (2007) 287–295. https://doi.org/10.1016/j.supflu.2006.03.011.
       implicit none
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
       real(kind=pr), intent(in) :: P !! Pressure [bar]
       real(kind=pr), intent(in) :: z0(2) !! Mole fractions of original fluid
       real(kind=pr), intent(in) :: zi(2) !! Mole fractions of new fluid
@@ -89,8 +94,21 @@ contains
    end subroutine find_llcl
 
    type(BinaryThreePhase) function binary_llv_from_cep(model, cep) result(llv)
-      class(ArModel), intent(in) :: model
-      type(EquilibriumState), intent(in) :: cep
+      !! # `binary_llv_from_cep`
+      !! Calculate the LLV line from a converged critical end point (CEP).
+      !!
+      !! # Description
+      !! From a converged critical end point (CEP) of a binary mixture, this
+      !! function calculates the three-phase line (LLV) by solving the
+      !! corresponding system of equations (defined at [[three_phase_line_F]])
+      !! at each point.
+      !! To trace the whole line a continuation method is used to obtain good
+      !! initial guesses for each point. 
+      !! The specification used to trace the line is initially the difference
+      !! between the mole fractions of the two liquid phases, and then it is
+      !! switched to temperature.
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
+      type(EquilibriumState), intent(in) :: cep !! Converged critical end point.
 
       real(pr) :: X(7)
       real(pr) :: dFdS(7), F(7), dF(7, 7)
@@ -193,17 +211,48 @@ contains
    end function binary_llv_from_cep
 
    subroutine three_phase_line_F(model, Xvars, ns, S, F, dF)
+      !! # `three_phase_line_F`
+      !!
+      !! # Description
+      !! Calculate the function vector and Jacobian for the three-phase
+      !! line (LLV) of a binary mixture. Phases are defined as `x`, `y` and `w`.
+      !! Which are two liquid phases and one vapor phase respectively.
+      !!
+      !! The system of equations is defined as:
+      !! \[
+      !! \begin{align*}
+      !! & \ln \phi_i^{(x)} - \ln \phi_i^{(w)} = 0 \\
+      !! & \ln \phi_i^{(y)} - \ln \phi_i^{(w)} = 0 \\
+      !! & P^{(x)} - P^{(w)} = 0 \\
+      !! & P^{(y)} - P^{(w)} = 0 \\
+      !! & \text{specification} 
+      !! \begin{cases}
+      !! y_1 - x_1 - S = 0 & \text{if } ns = 0 \\
+      !! \ln v_x - \ln v_y - S = 0 & \text{if } ns = -1 \\
+      !! X_{ns} - S = 0 & \text{otherwise}
+      !! \end{cases}
+      !! \end{align*}
+      !! \]
+      !!
+      !! # References
+      !! [1] M. Cismondi, M.L. Michelsen, Global phase equilibrium
+      !! calculations:
+      !! Critical lines, critical end points and liquid–liquid–vapour
+      !! equilibrium in binary mixtures, The Journal of Supercritical Fluids 39
+      !!  (2007) 287–295. https://doi.org/10.1016/j.supflu.2006.03.011.
       use yaeos__math, only: derivative_dxk_dni
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
       real(kind=pr), intent(in) :: Xvars(:) !! Input vector
       integer, intent(in) :: ns !! Specified variable index
       real(pr), intent(in) :: S !! Specified variable value
       real(kind=pr), intent(out) :: F(:) !! Function vector
       real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
 
+      ! Variables describing the three phases
       real(pr) :: x1, y1, w1
       real(pr) :: vx, vy, vw, T
       real(pr) :: x(2), y(2), w(2)
+      
       real(pr) :: Px, Py, Pw
       real(pr) :: isofug_1(2), isofug_2(2)
       real(pr) :: Peq_1, Peq_2
@@ -288,8 +337,8 @@ contains
       df(2, 3) =  - (dlnfwdn(2, 1) - dlnfwdn(2, 2))
       df(3, 3) =  - (dlnfwdn(1, 1) - dlnfwdn(1, 2))
       df(4, 3) =  - (dlnfwdn(2, 1) - dlnfwdn(2, 2))
-      df(5, 3) = -( dPwdN(1) - dPwdN(2))
-      df(6, 3) = -( dPwdN(1) - dPwdN(2))
+      df(5, 3) = - (dPwdN(1) - dPwdN(2))
+      df(6, 3) = - (dPwdN(1) - dPwdN(2))
 
       ! Derivatives wrt vx
       df(1, 4) = dlnfxdv(1)
@@ -340,8 +389,16 @@ contains
    end subroutine three_phase_line_F
 
    subroutine three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
+      !! # `three_phase_line_F_solve`
+      !!
+      !! # Description
+      !! Solve the system of equations defined in `three_phase_line_F` using
+      !! a Newton-Raphson method.
+      !! It will make a maximum of 50 iterations to converge. With a tolerance
+      !! of 1e-9 in the maximum absolute value of the function vector or the 
+      !! step vector.
       use yaeos__math, only: solve_system
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! Thermodynamic model to use
       real(kind=pr), intent(in out) :: X(:) !! Input/output vector
       integer, intent(in) :: ns !! Specified variable index
       real(pr), intent(in) :: S !! Specified variable value
