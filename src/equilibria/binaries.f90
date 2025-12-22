@@ -182,7 +182,6 @@ contains
 
          X = X + dXdS * dS
 
-         print *, iters, T, P, maxval(abs(F))
          if (ns == 0) then
             S = exp(X(2)) - exp(X(1))
          else if (ns == -1) then
