@@ -61,7 +61,7 @@ module yaeos_c
    public :: pure_saturation_line
    public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
    public :: generalized_isopleth
-   public :: critical_point, critical_line, find_llcl
+   public :: critical_point, critical_line, find_llcl, binary_llv_from_cep
    public :: stability_zpt, tm
    public :: stability_zt_ge
 

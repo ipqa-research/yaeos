@@ -118,7 +118,10 @@ class GPEC:
         )
 
         self._cl21 = cl
-        self._cep21 = cep
+        if np.isnan(cep["T"]):
+            self._cep21 = None
+        else:
+            self._cep21 = cep
 
         # Check if the critical line did not reach to the pure first component.
         # if not, calculate the critical line starting from the almost pure
@@ -141,7 +144,11 @@ class GPEC:
             )
 
             self._cl12 = cl
-            self._cep12 = cep
+
+            if np.isnan(cep["T"]):
+                self._cep12 = None
+            else:
+                self._cep12 = cep
         else:
             self._cl12 = None
             self._cep12 = None
@@ -167,10 +174,21 @@ class GPEC:
 
         if len(cl["a"]) > 0:
             self._cl_ll = cl
-            self._cep_ll = cep
         else:
             self._cl_ll = None
+
+        if np.isnan(cep["T"]):
             self._cep_ll = None
+        else:
+            self._cep_ll = cep
+
+        # Calculate the three-phase lines from the critical endpoints
+        if self._cep12:
+            self._llv_12 = model.binary_llv_from_cep(self._cep12)
+        if self._cep21:
+            self._llv_21 = model.binary_llv_from_cep(self._cep21)
+        if self._cep_ll:
+            self._llv_ll = model.binary_llv_from_cep(self._cep_ll)
 
     def plot_gped(self):
         """Plot the global phase equilibria diagram (GPED).
@@ -187,7 +205,17 @@ class GPEC:
             plt.plot(self._cl12["T"], self._cl12["P"], color="black")
         if self._cl_ll:
             plt.plot(self._cl_ll["T"], self._cl_ll["P"], color="black")
+        if self._cep12:
+            plt.plot(self._llv_12["T"], self._llv_12["P"], color="purple", linestyle="--")
+        if self._cep21:
+            plt.plot(self._llv_21["T"], self._llv_21["P"], color="purple", linestyle="--")
+        if self._cep_ll:
+            plt.plot(self._llv_ll["T"], self._llv_ll["P"], color="purple", linestyle="--")
 
+        plt.plot([], [], color="green", label="Pure saturation pressure")
+        plt.plot([], [], color="black", label="Critical line")
+        plt.plot([], [], color="purple", linestyle="--", label="Three-phase line")
+        plt.legend(frameon=False)
         plt.xlabel("Temperature (K)")
         plt.ylabel("Pressure (bar)")
 
