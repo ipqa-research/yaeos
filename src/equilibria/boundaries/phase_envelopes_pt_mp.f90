@@ -265,11 +265,7 @@ contains
          ! Next point estimation.
          dX = dXdS * dS
 
-         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
-            dX = dX/2
-         end do
-
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
+         do while(abs(T  - (exp(X(iT) + dX(iT)))) > 7)
             dX = dX/2
          end do
 
@@ -574,7 +570,6 @@ contains
       !! Number of iterations to solve the current point
 
       integer :: i
-      integer :: l !! Phase index
       integer :: iT !! Temperature index
       integer :: iP !! Pressure index
       integer :: iBetas(np) !! Indices of the betas in X
@@ -582,12 +577,6 @@ contains
 
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
-
-
-      ! Homotopy solving
-      real(pr) :: H(size(X)), dH(size(X), size(X))
-      real(pr) :: G(size(X)), dG(size(X), size(X))
-      real(pr) :: t
 
       logical :: can_solve
 
@@ -612,36 +601,8 @@ contains
 
          dX = solve_system(dF, -F)
 
-         if (maxval(abs(F)) < 1e-9_pr) exit
+         if (maxval(abs(F)) < 1e-9_pr .or. maxval(abs(dX)) < 1e-7) exit
          X = X + dX
-         if (iters == 10) then
-            ! If after 10 iterations it is not converging try fixed-point
-            ! homotopy. Homotopy consist of solving a modified version of the
-            ! system of equations that is easier to solve, and gradually
-            ! transforming it into the original system.
-            ! The function to solve is defined as:
-            ! ! \[
-            ! H = t F + (1-t) G
-            ! \]
-            ! Where \( G = X - X_0 \) is a simple function that has a known
-            ! solution at \( X = X_0 \), and \( t \)
-            ! goes from 0 to 1 in 10 steps.
-            X0 = X
-            H = 10
-            do i=0,10
-               do while(maxval(abs(H)) > 1e-9_pr)
-                  t = real(i, pr)/10._pr
-                  call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
-                  G = (X - X0)
-                  dG = eye(size(X))
-                  H = t * F + (1-t) * G
-                  dH = t * dF + (1-t) * dG
-                  dX = solve_system(dH, -H)
-                  X = X + dX
-               end do
-            end do
-         end if
-
       end do
    end subroutine solve_point
 
@@ -727,11 +688,12 @@ contains
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
-         if (abs(log(Vl(l)/Vw)) < 0.15 .and. maxval(abs(X(lb:ub))) < 0.05) then
+         if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = maxloc(abs(dXdS(lb:ub)), dim=1) + lb - 1
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
-            dS = sign(0.001_pr, dS)
+            ! dS = sign(max(0.001_pr, sqrt(abs(X(ns)/10))), dS)
+            dS = sign(0.005_pr, dS)
             exit
          end if
       end do

@@ -24,7 +24,8 @@ contains
    end subroutine get_z
 
    subroutine detect_critical(&
-      nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc&
+      nc, np, point, kinds_x, kind_w, binary_stop, &
+      Xold, X, dXdS, ns, dS, S, found_critical, Xc &
       )
       !! # detect_critical
       !! Detect if the system is close to a critical point.
@@ -87,15 +88,9 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
          ! TODO: In many cases this makes more damage than good.
-         ! do while(maxval(abs(X(lb:ub))) < min(limit, 0.05_pr))
-         !    if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
-         !       ! Reached to a critical point in a Txy/Pxy calculation for a
-         !       ! binary system, stop the calculation.
-         !       dS=0
-         !       return
-         !    end if
-         !    X = X + dXdS * dS
-         ! end do
+         do while(maxval(abs(X(lb:ub))) < 0.01_pr)
+            X = X + dXdS * dS
+         end do
 
          Xnew = X + dXdS * dS
 
@@ -125,7 +120,11 @@ contains
 
             ! Start from the critical point and then do small steps until
             ! we are a bit far from it.
-            X = Xc + sign(0.001_pr, dS) * dXdS
+            X = Xc
+            do while(maxval(abs(X(lb:ub))) < 0.1_pr)
+               X = X + dXdS * (dS * 0.1_pr)
+            end do
+
             if (ns > 0) then
                S = X(ns)
             end if
