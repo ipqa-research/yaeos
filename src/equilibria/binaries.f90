@@ -117,7 +117,7 @@ contains
          cep%Vy, &
          cep%T &
          ])
-      T = 1000
+      T = HUGE(1._pr)
       ns = 0
       if (ns == 0) then
          S = exp(X(2)) - exp(X(1))
@@ -127,12 +127,13 @@ contains
          S = X(ns)
       end if
 
-      dS = 0.001
+      dS = 0.01
 
       points = 0
       F = 0
+      P = 10
       allocate(llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), llv%Vx(0), llv%Vy(0), llv%Vw(0))
-      do while(T > 100 .and. maxval(abs(F)) < 1e-6)
+      do while(maxval(abs(F)) < 1e-9 .and. P > 0)
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
 
@@ -143,8 +144,9 @@ contains
          Vy = exp(X(5))
          Vw = exp(X(6))
          T = exp(X(7))
-
-         if (maxval(abs(F)) < 1e-6) then
+         call model%pressure([x1, 1-x1], Vx, T, P)
+         
+         if (maxval(abs(F)) < 1e-9 .and. P > 0) then
             llv%T = [llv%T, T]
             llv%P = [llv%P, P]
             llv%x1 = [llv%x1, x1]
@@ -155,21 +157,32 @@ contains
             llv%Vw = [llv%Vw, Vw]
          end if
 
-         call model%pressure([x1, 1-x1], Vx, T, P)
+
+         ns = -1
+         dS = -0.01 * 3. / real(iters, pr)
 
          dXdS = solve_system(dF, -dFdS)
-         ns = -1
-         dS = -0.001
-         print *, iters, T, P
 
-         if (P < 1) then
-            ns = -1
-            dS = -1e-5
+         if (T < llv%T(1) - 10) then
+            ns = 7
+            dS = -0.01 * 3. / real(iters, pr)
+            dXdS = dXdS / dXdS(ns)
          end if
+
+         ! Avoid large steps in volume, since they can lead to indeterminations
+         ! Probably a better way could be avoiding reaching to the co-volume.
+         ! But equations like GERG do not have a co-volume value.
+         do while(&
+              abs(Vx - exp(X(4) + dS*dXdS(4))) > 0.5*Vx&
+              .or. abs(Vy - exp(X(5) + dS*dXdS(5))) > 0.5*Vy&
+              .or. abs(Vw - exp(X(6) + dS*dXdS(6))) > 0.5*Vw&
+            )
+            dS = dS/2
+         end do
 
          X = X + dXdS * dS
 
-
+         print *, iters, T, P, maxval(abs(F))
          if (ns == 0) then
             S = exp(X(2)) - exp(X(1))
          else if (ns == -1) then
@@ -317,6 +330,7 @@ contains
          df(7, ns) = 1
       end if
 
+      ! Multiply by variable values due to log-transform
       df(:, 1) = df(:, 1) * x1
       df(:, 2) = df(:, 2) * y1
       df(:, 3) = df(:, 3) * w1
@@ -346,19 +360,20 @@ contains
       tol = 1e-9_pr
       max_tries = 50
 
+      dX = 10
       do i = 1, max_tries
          call three_phase_line_F(model, X, ns, S, F, dF)
 
          res_norm = maxval(abs(F))
 
-         if (res_norm < tol) exit
+         if (res_norm < tol .or. maxval(abs(dX)) < 1e-9) exit
 
          Xold = X
 
          ! Solve the linear system dF * dX = -F
          dX = solve_system(dF, -F)
 
-         do while (maxval(abs(dX/X)) > 0.1)
+         do while (maxval(abs(dX)) > 0.1)
             dX = dX / 2
          end do
 
