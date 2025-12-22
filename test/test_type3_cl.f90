@@ -7,8 +7,7 @@ program main
    real(pr) :: z0(nc), zi(nc), TC(nc), PC(nc), w(nc), kij(nc, nc)
    real(pr) :: T, P, S
    type(CriticalLine) :: cl
-   integer :: last
-
+   integer :: i, last
 
    write(*, *) test_title("DEJA VU")
    
@@ -21,11 +20,9 @@ program main
    kij = reshape([0.0_pr, 0.08_pr, 0.08_pr, 0.0_pr], [nc, nc])
    eos = PengRobinson76(Tc, Pc, w, kij=kij)
 
-   cl = critical_line(eos, a0=1e-2_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=1e-2_pr, ds0=1e-1_pr)
+   cl = critical_line(eos, a0=1e-2_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=1e-2_pr, ds0=1e-2_pr, maxP=3000._pr)
 
-   last = size(cl%T)
-
+   last = size(cl%a)
    call assert(cl%P(last) > 2000, "Critical line pressure should be greater than 2000 bar")
-
 
 end program main
