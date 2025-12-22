@@ -152,7 +152,7 @@ contains
       F = 0
       P = 10
       allocate(llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), llv%Vx(0), llv%Vy(0), llv%Vw(0))
-      do while(T > 100 .and. P > 1e-3_pr .and. maxval(abs(F)) < 1e-9)
+      do while(T > 100 .and. P > 1e-8_pr .and. maxval(abs(F)) < 1e-9)
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
 
