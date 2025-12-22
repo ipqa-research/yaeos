@@ -151,7 +151,7 @@ contains
       F = 0
       P = 10
       allocate(llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), llv%Vx(0), llv%Vy(0), llv%Vw(0))
-      do while(maxval(abs(F)) < 1e-9 .and. P > 0)
+      do while(T > 100 .and. P > 1e-3_pr .and. maxval(abs(F)) < 1e-9)
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
 
@@ -187,9 +187,11 @@ contains
             dXdS = dXdS / dXdS(ns)
          end if
 
-         ! Avoid large steps in volume, since they can lead to indeterminations
-         ! Probably a better way could be avoiding reaching to the co-volume.
-         ! But equations like GERG do not have a co-volume value.
+         ! if (P < 1) then
+         !    ns = -1
+         !    dS = -1e-5
+         ! end if
+
          do while(&
               abs(Vx - exp(X(4) + dS*dXdS(4))) > 0.5*Vx&
               .or. abs(Vy - exp(X(5) + dS*dXdS(5))) > 0.5*Vy&
@@ -417,6 +419,7 @@ contains
       max_tries = 50
 
       dX = 10
+      F = 10
       do i = 1, max_tries
          call three_phase_line_F(model, X, ns, S, F, dF)
 
