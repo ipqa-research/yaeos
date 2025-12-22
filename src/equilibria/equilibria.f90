@@ -23,7 +23,7 @@ module yaeos__equilibria
       critical_line, CriticalLine, critical_point, spec_CP
 
    use yaeos__equilibria_binaries, only: &
-      find_llcl
+      find_llcl, BinaryThreePhase, binary_llv_from_cep
 
    ! Extra
    use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
