@@ -123,17 +123,29 @@ contains
       integer :: points
       integer :: iters
 
+      real(pr) :: delta
+
       dFdS = 0
       dFdS(7) = -1
 
+      delta = 0.025 * cep%x(1)
+      x1 = cep%x(1) + delta
+      y1 = cep%x(1) - delta
+      w1 = cep%y(1)
+      T = cep%T
+      P = cep%P
+      call model%volume([x1, 1 - x1], P, T, Vx, root_type="liquid")
+      call model%volume([y1, 1 - y1], P, T, Vy, root_type="liquid")
+      Vw = cep%Vy
+
       X = log([&
-         CEP%x(1)-1e-9, &
-         cep%x(1)+1e-9, &
-         cep%y(1), &
-         cep%Vx, &
-         cep%Vx, &
-         cep%Vy, &
-         cep%T &
+         x1, &
+         y1, &
+         w1, &
+         Vx, &
+         Vy, &
+         Vw, &
+         T &
          ])
       T = HUGE(1._pr)
       ns = 0
@@ -144,13 +156,19 @@ contains
       else
          S = X(ns)
       end if
-      S = log(0.9999_pr)
-      dS = 0.001
+      S = y1 - x1 - 2*delta
+      dS = 0.0001
+
+      ns = -1
+      S = exp(X(4)) - exp(X(5))
+      dS = 1e-11
 
       points = 0
       F = 0
       P = 10
-      allocate(llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), llv%Vx(0), llv%Vy(0), llv%Vw(0))
+      allocate(&
+         llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), &
+         llv%Vx(0), llv%Vy(0), llv%Vw(0))
       do while(T > 100 .and. P > 1e-8_pr .and. maxval(abs(F)) < 1e-9)
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
@@ -174,7 +192,6 @@ contains
             llv%Vy = [llv%Vy, Vy]
             llv%Vw = [llv%Vw, Vw]
          end if
-
 
          ns = -1
          dS = -0.01 * 3. / real(iters, pr)
@@ -416,7 +433,7 @@ contains
       real(kind=pr) :: Xold(size(X))
 
       tol = 1e-9_pr
-      max_tries = 100
+      max_tries = 1000
 
       dX = 10
       F = 10
@@ -424,7 +441,6 @@ contains
          call three_phase_line_F(model, X, ns, S, F, dF)
 
          res_norm = maxval(abs(F))
-
          if (res_norm < tol .or. maxval(abs(dX)) < 1e-9) exit
 
          Xold = X
