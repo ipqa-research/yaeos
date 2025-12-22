@@ -127,11 +127,11 @@ contains
       dFdS(7) = -1
 
       X = log([&
-         CEP%x(1)+1e-9, &
-         cep%x(1)-1e-9, &
+         CEP%x(1), &
+         cep%x(1), &
          cep%y(1), &
-         cep%Vx+1e-9, &
-         cep%Vx-1e-9, &
+         cep%Vx, &
+         cep%Vx, &
          cep%Vy, &
          cep%T &
          ])
@@ -145,6 +145,7 @@ contains
          S = X(ns)
       end if
 
+      S = 1e-3
       dS = 0.01
 
       points = 0
@@ -416,7 +417,7 @@ contains
       real(kind=pr) :: Xold(size(X))
 
       tol = 1e-9_pr
-      max_tries = 50
+      max_tries = 100
 
       dX = 10
       F = 10
