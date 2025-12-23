@@ -69,14 +69,14 @@ class BinaryFitter:
     verbose : bool, optional
         If True, print the objective function value and the optimization
     pressure_error : Callable, optional
-        A function `f(Pexp, Pmodel)`that calculates the pressure error between 
-        the experimental and model values. 
+        A function `f(Pexp, Pmodel)`that calculates the pressure error between
+        the experimental and model values.
         The function should take the experimental and model
         values as arguments and return the error. If None, the default function
         is used.
     temperature_error : Callable, optional
         A function `f(Texp, Tmodel)`that calculates the temperature error
-        between the experimental and model values. 
+        between the experimental and model values.
         The function should take the experimental and model
         values as arguments and return the error. If None, the default function
         is used.
@@ -131,7 +131,6 @@ class BinaryFitter:
             self.composition_error = composition_error
         else:
             self.composition_error = _composition_error
-
 
     def objective_function(self, x_values) -> float:
         """
@@ -306,7 +305,7 @@ class BinaryFitter:
 
     def fit(
         self, x0, bounds=None, method="Nelder-Mead", optimizer_options=None
-        ):
+    ):
         """Fit the model to the data.
 
         Fit the model to the data using the objective function defined in
@@ -328,8 +327,11 @@ class BinaryFitter:
         None
         """
         sol = minimize(
-            self.objective_function, x0=x0, bounds=bounds, method=method,
-            options=optimizer_options
+            self.objective_function,
+            x0=x0,
+            bounds=bounds,
+            method=method,
+            options=optimizer_options,
         )
         self._solution = sol
 

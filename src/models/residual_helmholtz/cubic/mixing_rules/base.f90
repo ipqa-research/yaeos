@@ -170,6 +170,26 @@ contains
       Ge, GeT, GeT2, Gen, GeTn, Gen2, &
       D, dDdT, dDdT2, dDi, dDidT, dDij &
       )
+      !! # `DmixHV`
+      !! Attractive parameter calculation for the Huron-Vidal mixing rule.
+      !! 
+      !! # Description
+      !! This subroutine calculates the attractive parameter \(D\) and its
+      !! derivatives for a mixture using the Huron-Vidal mixing rule.
+      !! The Huron-Vidal mixing rule combines the pure component parameters
+      !! using an excess Gibbs energy model.
+      !! The expression of the attractive parameter is:
+      !!
+      !! \[
+      !!   D(n, T) = 
+      !!     B\left(\sum_i n_i\frac{a_i}{b_i} 
+      !!     - \frac{G^E}{\Lambda}\right)
+      !! \]
+      !!
+      !! # Examples
+      !!
+      !! # References
+      !!
       real(pr), intent(in) :: T, n(:)
       real(pr), intent(in) :: bi(:) !! Covolume parameter
       real(pr), intent(in) :: B !! mixture covolume parameter

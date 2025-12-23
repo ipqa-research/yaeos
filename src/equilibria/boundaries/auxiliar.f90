@@ -97,13 +97,6 @@ contains
          !    X = X + dXdS * dS
          ! end do
 
-         ! if (maxval(abs(X(lb:ub))) < 0.1) then
-         !    ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
-         !    dS = dXdS(ns)*dS
-         !    dS = sign(min(5e-2_pr, abs(dS)), dS)
-         !    dXdS = dXdS/dXdS(ns)
-         ! end if
-
          Xnew = X + dXdS * dS
 
          lnKold = Xold(lb:ub)
@@ -120,6 +113,7 @@ contains
 
             ! 0 = a*Xnew(ns) + (1-a)*X(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(lnK - lnKold), dim=1)
+
             ! a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
             ! Xc = a * Xnew + (1-a)*Xold
             Xc = interpol(lnKold(ncomp), lnK(ncomp), Xold, Xnew, 0.0_pr)
@@ -131,11 +125,10 @@ contains
 
             ! Start from the critical point and then do small steps until
             ! we are a bit far from it.
-            X = Xc
-            do while(maxval(abs(X(lb:ub))) < 1e-2_pr)
-               X = X + dS * dXdS * 0.1
-            end do
-            S = X(ns)
+            X = Xc + sign(0.001_pr, dS) * dXdS
+            if (ns > 0) then
+               S = X(ns)
+            end if
             return
          end if
       end do
