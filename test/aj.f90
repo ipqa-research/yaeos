@@ -156,15 +156,12 @@ program test_lm
    min_tl = sqrt(sum((o-g)**2))
    zs2 = 0
 
-   open(1, file="aj.dat")
    do while(min_tl > 0.01)
       mins_tl = 100
       contacts: do i=1,ncontacts
          zs2(1, :) = G
          tl = 10
 
-         !$OMP PARALLEL DO PRIVATE(j, zi, z0, z, info, beta0, beta, K, yy, xx, tl_old, tl, X, F) &
-         !$OMP& default(shared)
          do j=1,2*i-1,2
             zi = zs1(j, :)
             z0 = zs1(j+1, :)
@@ -174,45 +171,27 @@ program test_lm
 
             ! call solve_flash(model, nc, z, P, T, K0, beta0, K, beta, info, X, F)
             fr = flash_no_beta_limits(model, z, T, beta0=beta0, P_SPEC=P, k0=K0, iters=info)
+            call exit
             K = fr%y/fr%x
             beta = fr%beta
-            print *, fr
             yy = z * K / (1 + beta*(K - 1))
             xx = yy/K
 
             zs2(j+1, :) = xx
             zs2(j+2, :) = yy
-
-            ! print *, i, j
-            ! print "(A,x,*(F6.4,x))", "z ", z, beta
-            ! print "(A,x,*(F6.4,x))", "x ", xx
-            ! print "(A,x,*(F6.4,x))", "y ", yy
-            ! print *, ""
-            ! print *, "zi", zi
-            ! print *, "z0", z0
-            ! print *, ""
-            ! print "(I1,',',I1,',',*(E14.5,','))", i, j, transpose(zs2)
-
-
             tl_old = tl
             tl = sqrt(sum((xx-yy)**2))
             if (i == ncontacts) print *, tl
             if (tl < minval(mins_tl)) mins_tl(j) = tl
          end do
-         !$OMP END PARALLEL DO
 
          min_tl = minval(mins_tl)
 
          zs2(2*i+2, :) = O
-         ! print "(A,x,*(4(F6.4,x),'|'))", "z1", transpose(zs1)
-         ! print "(A,x,*(4(F6.4,x),'|'))", "z2", transpose(zs2)
-         ! print *, ""
          zs1 = zs2
       end do contacts
 
-      print *, P, i, min_tl
       P = P + 10 * min_tl
       call exit
    end do
-   close(1)
 end program test_lm
