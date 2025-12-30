@@ -258,6 +258,7 @@ contains
             .or. P > max_P  &
             .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
+            .or. (T < 100._pr .and. P < 1e-2_pr) &
             ) exit
 
          env_points = [env_points, point]
@@ -723,15 +724,13 @@ contains
       dXdS = dXdS/dXdS(ns)
 
       dS = dS * 3./its
-      dS = sign(min(sqrt(abs(X(ns)/10)), abs(dS)), dS)
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
-         if (abs(log(Vl(l)/Vw)) < 0.15 .and. maxval(abs(X(lb:ub))) < 0.05) then
+         if (maxval(abs(X(lb:ub))) < 0.2) then
             ns = maxloc(abs(dXdS(lb:ub)), dim=1) + lb - 1
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
-            dS = sign(0.001_pr, dS)
             exit
          end if
       end do

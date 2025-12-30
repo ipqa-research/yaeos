@@ -24,7 +24,8 @@ contains
    end subroutine get_z
 
    subroutine detect_critical(&
-      nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc&
+      nc, np, point, kinds_x, kind_w, binary_stop, Xold, &
+      X, dXdS, ns, dS, S, found_critical, Xc&
       )
       !! # detect_critical
       !! Detect if the system is close to a critical point.
@@ -126,6 +127,10 @@ contains
             ! Start from the critical point and then do small steps until
             ! we are a bit far from it.
             X = Xc + sign(0.001_pr, dS) * dXdS
+            do while(maxval(abs(X(lb:ub))) < 0.01_pr)
+               X = X + sign(0.001_pr, dS) * dXdS
+            end do
+
             if (ns > 0) then
                S = X(ns)
             end if
