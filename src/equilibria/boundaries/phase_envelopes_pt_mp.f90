@@ -168,6 +168,7 @@ contains
       real(pr) :: Pc !! Critical pressure [bar]
       real(pr) :: Vl(np) !! Molar volumes of the main phases [L/mol]
       real(pr) :: Vw !! Molar volume of the reference phase [L/mol]
+      integer :: l !! Phase index
 
       nc = size(z)
       iP = np*nc + np + 1
@@ -236,18 +237,31 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
+
+         do l=1,np
+            lb = (l-1)*nc + 1
+            ub = l*nc
+            if (all(X(lb:ub) * X_last_converged(lb:ub) < 0._pr)) then
+               ! Save critical point
+               block
+                  use yaeos__math, only: interpol
+                  Xc = interpol(X_last_converged(ns), X(ns), X_last_converged, X, 0._pr)
+                  Tc = exp(Xc(iT))
+                  Pc = exp(Xc(iP))
+                  pt_envelope%Tc = [pt_envelope%Tc, Tc]
+                  pt_envelope%Pc = [pt_envelope%Pc, Pc]
+               end block
+            end if
+         end do
+         
+         ! detect_critical jumps over the CP, so we save the X_last_converged
+         ! before that
+         X_last_converged = X
+
          call detect_critical(&
             nc, np, i, x_kinds, w_kind, .false., &
             X_last_converged, X, dXdS, ns, dS, S, &
             found_critical, Xc)
-
-         if (found_critical) then
-            ! Save critical point
-            Tc = exp(Xc(iT))
-            Pc = exp(Xc(iP))
-            pt_envelope%Tc = [pt_envelope%Tc, Tc]
-            pt_envelope%Pc = [pt_envelope%Pc, Pc]
-         end if
 
          ! Update the specification for the next point.
          call update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
@@ -274,7 +288,6 @@ contains
             dX = dX/2
          end do
 
-         X_last_converged = X
          X = X + dX
          if (ns > 0) then
             S = X(ns)
@@ -724,6 +737,8 @@ contains
       dXdS = dXdS/dXdS(ns)
 
       dS = dS * 3./its
+      dS = sign(min(abs(dS), 0.1_pr), dS)
+
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
@@ -731,6 +746,7 @@ contains
             ns = maxloc(abs(dXdS(lb:ub)), dim=1) + lb - 1
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
+            dS = sign(0.01_pr, dS)
             exit
          end if
       end do
