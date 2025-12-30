@@ -3252,10 +3252,14 @@ class ArModel(ABC):
                 - P: pressures [bar]
         """
 
-        (x1s, y1s, w1s, vxys, vys, vws, ts, ps
-        ) = yaeos_c.binary_llv_from_cep(
-            self.id, cep["x"], cep["y"], 
-            cep["Vx"], cep["Vy"], cep["T"], cep["P"]
+        (x1s, y1s, w1s, vxys, vys, vws, ts, ps) = yaeos_c.binary_llv_from_cep(
+            self.id,
+            cep["x"],
+            cep["y"],
+            cep["Vx"],
+            cep["Vy"],
+            cep["T"],
+            cep["P"],
         )
 
         msk = ~np.isnan(ts)

@@ -97,6 +97,7 @@ class GPEC:
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
         self._model = model
+        self.type = 0
 
         # Calculate the pure saturation pressures of each component and
         # save it as an internal variable
@@ -123,14 +124,18 @@ class GPEC:
         else:
             self._cep21 = cep
 
+        if (
+            self._cep21 is None
+            and abs(self._cl21["P"] - psats[1]["P"][-1]) < 10
+            and abs(self._cl21["T"] - psats[1]["T"][-1]) < 10
+        ):
+            self.type = 3
+
         # Check if the critical line did not reach to the pure first component.
         # if not, calculate the critical line starting from the almost pure
         # first component. It is important to make small steps because this
         # kind of line can be pretty short.
-        if not np.isnan(cep["T"]) or (
-            abs(cl["T"][-1] - psats[0]["T"][-1]) > 10
-            and abs(cl["P"][-1] - psats[0]["P"][-1] > 10)
-        ):
+        if not np.isnan(cep["T"]) or self.type == 3:
             cl, cep = model.critical_line(
                 z0=self._z0,
                 zi=self._zi,
@@ -172,7 +177,7 @@ class GPEC:
             stability_analysis=stability_analysis,
         )
 
-        if len(cl["a"]) > 0:
+        if len(cl["a"]) > 5:
             self._cl_ll = cl
         else:
             self._cl_ll = None
@@ -181,6 +186,17 @@ class GPEC:
             self._cep_ll = None
         else:
             self._cep_ll = cep
+
+        if self._cl_ll and self._cep12:
+            self.type = 4
+        elif self._cl_ll:
+            self.type = 2
+        elif self._cep21 and self._cep12:
+            self.type = 5
+        elif self.type != 3 and not any(
+            (self._cep12, self._cep21, self._cl_ll)
+        ):
+            self.type = 1
 
         # Calculate the three-phase lines from the critical endpoints
         if self._cep12:
@@ -212,15 +228,32 @@ class GPEC:
         if self._cl_ll:
             plt.plot(self._cl_ll["T"], self._cl_ll["P"], color="black")
         if self._cep12:
-            plt.plot(self._llv_12["T"], self._llv_12["P"], color="purple", linestyle="--")
+            plt.plot(
+                self._llv_12["T"],
+                self._llv_12["P"],
+                color="purple",
+                linestyle="--",
+            )
         if self._cep21:
-            plt.plot(self._llv_21["T"], self._llv_21["P"], color="purple", linestyle="--")
+            plt.plot(
+                self._llv_21["T"],
+                self._llv_21["P"],
+                color="purple",
+                linestyle="--",
+            )
         if self._cep_ll:
-            plt.plot(self._llv_ll["T"], self._llv_ll["P"], color="purple", linestyle="--")
+            plt.plot(
+                self._llv_ll["T"],
+                self._llv_ll["P"],
+                color="purple",
+                linestyle="--",
+            )
 
         plt.plot([], [], color="green", label="Pure saturation pressure")
         plt.plot([], [], color="black", label="Critical line")
-        plt.plot([], [], color="purple", linestyle="--", label="Three-phase line")
+        plt.plot(
+            [], [], color="purple", linestyle="--", label="Three-phase line"
+        )
         plt.legend(frameon=False)
         plt.xlabel("Temperature (K)")
         plt.ylabel("Pressure (bar)")

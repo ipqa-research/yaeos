@@ -134,75 +134,75 @@ def test_same_as_caleb_vt():
         hr = model.enthalpy_residual_vt(n, v, t)
         p = model.pressure(n, v, t)
         ln_phi = model.lnphi_vt(n, v, t)
-        
+
         r = 0.08314462618  # L bar / K / mol
-        
+
         z = p * v / (nt * r * t)
-        
+
         dp = model.pressure(n, v, t, dt=True, dv=True, dn=True)[1]
-        
+
         dpdt = dp["dt"]
         dpdv = dp["dv"]
         dpdn = dp["dn"]
-        
+
         dsr = model.entropy_residual_vt(n, v, t, dt=True, dn=True)[1]
-        
+
         dsdt = dsr["dt"]
         dsdn = dsr["dn"]
 
         # Ar
         assert np.isclose(a, ur - t * sr)
-        
-        # Sr = - dArdT (V,n) 
+
+        # Sr = - dArdT (V,n)
         assert np.isclose(-der10["dt"], sr)
-        
+
         # -Hr/T = -Ar/T + dArdT(V,n) + V/T dArdV(T,n)
         assert np.isclose(
             -hr / t,
             -a / t + der10["dt"] + v / t * der10["dv"],
         )
-        
+
         # R T ln_phi = dAr/dni - RT ln(Z)
         assert np.allclose(r * t * ln_phi, der10["dn"] - r * t * np.log(z))
-        
+
         # dP/dt = -dAr/dVdT(n) +  n R / V
         assert np.isclose(
             dpdt,
             -der10["dtv"] + nt * r / v,
         )
-        
+
         # dP/dV = -dAr/dV^2(n,T) - n R T / V^2
         assert np.isclose(
             dpdv,
             -der10["dv2"] - nt * r * t / v**2,
         )
-        
+
         # dP/dni = -dAr/dVdni(T,V) + R T / V
         assert np.allclose(
             dpdn,
             -der10["dvn"] + r * t / v,
         )
-        
+
         # dSr/dT = -dAr/dT^2(V,n)
         assert np.isclose(
             dsdt,
             -der10["dt2"],
         )
-        
+
         # dSr/dTn = -dAr/dTdn(V,n)
         assert np.allclose(
             dsdn,
             -der10["dtn"],
         )
-        
+
         # dn2 numerica
         def da_dn2(n, v, t):
             return model.helmholtz_residual_vt(n, v, t, dn=True)[1]["dn"]
-        
+
         epsilon = 1e-6
-        
+
         dn2_exp = approx_fprime(n, da_dn2, epsilon, v, t)
-        
+
         assert np.allclose(dn2_exp, der10["dn2"])
 
     # =========================================================================
