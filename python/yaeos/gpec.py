@@ -185,10 +185,16 @@ class GPEC:
         # Calculate the three-phase lines from the critical endpoints
         if self._cep12:
             self._llv_12 = model.binary_llv_from_cep(self._cep12)
+        else:
+            self._llv_12 = None
         if self._cep21:
             self._llv_21 = model.binary_llv_from_cep(self._cep21)
+        else:
+            self._llv_21 = None
         if self._cep_ll:
             self._llv_ll = model.binary_llv_from_cep(self._cep_ll)
+        else:
+            self._llv_ll = None
 
     def plot_gped(self):
         """Plot the global phase equilibria diagram (GPED).
@@ -292,7 +298,7 @@ class GPEC:
                 kind="bubble",
                 p0=p0,
                 a0=1 - x20,
-                ds0=dx20,
+                ds0=-dx20,
                 max_points=MAX_POINTS,
             )
 
