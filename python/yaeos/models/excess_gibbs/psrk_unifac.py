@@ -45,7 +45,7 @@ class UNIFACPSRK(GeModel):
         self.id = yaeos_c.unifac_psrk(
             ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
         )
-    
+
     def size(self) -> int:
         """Get the number of components.
 

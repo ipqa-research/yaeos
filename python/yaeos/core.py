@@ -2958,11 +2958,15 @@ class ArModel(ABC):
         }
 
     def precipitation_line_from_env(
-            self, env: PTEnvelope, spec_value, spec="P", ds0=1e-5,
-            ws_stability=None, max_points=100
-            ) -> dict:
-        """Calculate precipitation line from a PTEnvelope.
-        """
+        self,
+        env: PTEnvelope,
+        spec_value,
+        spec="P",
+        ds0=1e-5,
+        ws_stability=None,
+        max_points=100,
+    ) -> dict:
+        """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
         z = env.global_composition
 
@@ -2994,12 +2998,21 @@ class ArModel(ABC):
         kind_w = env.reference_phase_kinds[loc]
 
         prec = self.generalized_isopleth(
-            z, kinds_x=kinds_x, kind_w=kind_w,
+            z,
+            kinds_x=kinds_x,
+            kind_w=kind_w,
             spec_variable=spec_variable,
             spec_variable_value=spec_variable_value,
-            x_l0=x_l0, w0=w0, betas0=betas0, t0=t0, p0=p0,
-            ns0=ns0, s0=s0, ds0=ds0, max_points=max_points,
-            ws_stability=ws_stability
+            x_l0=x_l0,
+            w0=w0,
+            betas0=betas0,
+            t0=t0,
+            p0=p0,
+            ns0=ns0,
+            s0=s0,
+            ds0=ds0,
+            max_points=max_points,
+            ws_stability=ws_stability,
         )
 
         return prec
@@ -3211,6 +3224,51 @@ class ArModel(ABC):
         )
 
         return a, t, v
+
+    def binary_llv_from_cep(self, cep):
+        """Calculate the binary LLV line from a CEP.
+
+        Parameters
+        ----------
+        cep : dict
+            Dictionary with the keys:
+                - x: phase x compositions
+                - y: phase y compositions
+                - Vx: phase x molar volumes
+                - Vy: phase y molar volumes
+                - T: temperatures [K]
+                - P: pressures [bar]
+        Returns
+        -------
+        dict
+            Dictionary with the keys:
+                - x1: liquid-phase x1 compositions
+                - y1: liquid-phase y1 compositions
+                - w1: vapor-phase w1 compositions
+                - Vxy: liquid-phase x1 and y1 molar volumes
+                - Vy: liquid-phase y1 molar volumes
+                - Vw: vapor-phase w1 molar volumes
+                - T: temperatures [K]
+                - P: pressures [bar]
+        """
+
+        (x1s, y1s, w1s, vxys, vys, vws, ts, ps
+        ) = yaeos_c.binary_llv_from_cep(
+            self.id, cep["x"], cep["y"], 
+            cep["Vx"], cep["Vy"], cep["T"], cep["P"]
+        )
+
+        msk = ~np.isnan(ts)
+        return {
+            "x1": x1s[msk],
+            "y1": y1s[msk],
+            "w1": w1s[msk],
+            "Vxy": vxys[msk],
+            "Vy": vys[msk],
+            "Vw": vws[msk],
+            "T": ts[msk],
+            "P": ps[msk],
+        }
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

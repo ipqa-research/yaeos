@@ -361,7 +361,6 @@ contains
       real(pr), intent(out) :: ArVn(nc) !! dAr2/dVn
       real(pr), intent(out) :: ArTn(nc) !! dAr2/dTn
       real(pr), intent(out) :: Arn2(nc, nc) !! dAr2/dn2
-
       real(pr) :: ArT, ArTT
 
       real(pr) :: Bmix, dBi(nc), dBij(nc, nc)

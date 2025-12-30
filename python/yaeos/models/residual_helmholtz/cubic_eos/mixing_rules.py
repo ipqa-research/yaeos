@@ -298,7 +298,7 @@ class HVNRTL(CubicMixRule):
             self.gjiT = np.zeros((nc, nc), order="F")
         else:
             self.gjiT = np.array(gjiT, order="F")
-        
+
         if use_kij is None and kij is None:
             self.use_kij = np.zeros((nc, nc), dtype=bool, order="F")
             self.kij = np.zeros((nc, nc), order="F")
@@ -315,7 +315,10 @@ class HVNRTL(CubicMixRule):
             ID of the cubic EoS model
         """
         yaeos_c.set_hvnrtl(
-            ar_id=ar_model_id, 
-            alpha=self.alpha, gji0=self.gji, gjit=self.gjiT,
-            use_kij=self.use_kij, kij=self.kij
+            ar_id=ar_model_id,
+            alpha=self.alpha,
+            gji0=self.gji,
+            gjit=self.gjiT,
+            use_kij=self.use_kij,
+            kij=self.kij,
         )
