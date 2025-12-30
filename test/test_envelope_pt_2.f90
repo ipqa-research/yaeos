@@ -71,7 +71,7 @@ contains
       p0 = sat%P
       t0 = sat%T
       ns0 = np*nc+np+2
-      ds0=1e-1_pr
+      ds0=1e-3_pr
       beta_w = 0
       kinds_x = "vapor"
       kind_w = "liquid"
