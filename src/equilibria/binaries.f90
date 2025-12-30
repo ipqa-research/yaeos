@@ -143,11 +143,12 @@ contains
       integer :: iters
 
       real(pr) :: delta
+      real(pr) :: imin
 
       dFdS = 0
       dFdS(10) = -1
 
-      delta = 0.0001 * cep%x(1)
+      delta = 0.025 * minval(cep%x)
       xx(1) = cep%x(1) - delta
       y(1) = cep%x(1) + delta
       w(1) = cep%y(1)
@@ -175,15 +176,8 @@ contains
          ])
       T = HUGE(1._pr)
       ns = 0
-      ! if (ns == 0) then
-      !    S = exp(X(2)) - exp(X(1))
-      ! else if (ns == -1) then
-      !    S = X(4) - X(5)
-      ! else
-      !    S = X(ns)
-      ! end if
-      S = xx(1) - y(1) - delta
-      dS = -0.0001
+      S = y(1) - xx(1)
+      dS = 2*delta
 
       points = 0
       F = 0
@@ -191,10 +185,12 @@ contains
       allocate(&
          llv%T(0), llv%P(0), llv%x1(0), llv%y1(0), llv%w1(0), &
          llv%Vx(0), llv%Vy(0), llv%Vw(0))
-      do while((T > 100 .or. P > 1e-8_pr) .and. maxval(abs(F)) < 1e-9)
+      do while(&
+            maxval(abs(F)) < 1e-9 .and. P > 1e-8 .and. points < 1000 &
+         )
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
-         if (iters >= 100) then
+         if (iters >= 1000) then
             X = X - 0.9 * dXdS * dS 
             S = S - 0.9 * dS
             call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
@@ -223,22 +219,18 @@ contains
 
          dXdS = solve_system(dF, -dFdS)
 
-         ns = llv_vars%y1
-         dS = dXdS(ns) * dS
-         dXdS = dXdS / dXdS(ns)
-
-         ! if (T < llv%T(1) - 10) then
-         !    ns = 7
-         !    dS = dXdS(ns) * dS
-         !    dS = -0.001 * 3. / real(iters, pr)
-         !    ! dS = sign(max(abs(dS), 0.001_pr), dS)
-         !    dXdS = dXdS / dXdS(ns)
-         ! end if
+         if (T < llv%T(1) - 5) then
+            ns = llv_vars%T
+            dS = dXdS(ns) * dS
+            dS = sign(max(abs(dS), 0.001_pr), dS)
+            dXdS = dXdS / dXdS(ns)
+         end if
 
          do while(&
-            abs(Vx - exp(X(llv_vars%Vx) + dS*dXdS(llv_vars%Vx))) > 0.5*Vx&
-            .or. abs(Vy - exp(X(llv_vars%Vy) + dS*dXdS(llv_vars%Vy))) > 0.5*Vy&
-            .or. abs(Vw - exp(X(llv_vars%Vw) + dS*dXdS(llv_vars%Vw))) > 0.5*Vw&
+            abs(Vx - exp(X(llv_vars%Vx) + dS*dXdS(llv_vars%Vx))) > 0.5*Vx &
+            .or. abs(Vy - exp(X(llv_vars%Vy) + dS*dXdS(llv_vars%Vy))) > 0.5*Vy &
+            .or. abs(Vw - exp(X(llv_vars%Vw) + dS*dXdS(llv_vars%Vw))) > 0.5*Vw &
+            .or. abs(T - exp(X(llv_vars%T) + dS*dXdS(llv_vars%T))) > 5 &
             )
             dS = dS/2
          end do
@@ -246,7 +238,7 @@ contains
          X = X + dXdS * dS
 
          if (ns == 0) then
-            S = exp(X(llv_vars%x1)) - exp(X(llv_vars%y1))
+            S = exp(X(llv_vars%y1)) - exp(X(llv_vars%x1))
          else if (ns == -1) then
             S = X(llv_vars%Vx) - X(llv_vars%Vy)
          else

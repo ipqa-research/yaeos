@@ -51,6 +51,7 @@ contains
 
    subroutine methane_co2
       real(pr) :: kij(nc, nc)
+      integer :: i
       Tc = [190.6_pr, 304.1_pr]
       Pc = [46.0_pr, 73.8_pr]
       w = [0.011_pr, 0.225_pr]
