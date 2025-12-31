@@ -5,7 +5,8 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    !! mixture with multiple phases.
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
-   use yaeos__equilibria_boundaries_auxiliar, only: detect_critical
+   use yaeos__equilibria_boundaries_auxiliar, only: &
+      detect_critical, check_critical_jump
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
 
@@ -161,6 +162,7 @@ contains
       real(pr) :: X_last_converged(size(X)) !! Last converged point
       real(pr) :: Xc(size(X)) !! Vector of variables at the critical point
       logical :: found_critical !! If true, a critical point was found
+      logical :: jumped_critical !! If true, a critical point was jumped
 
       character(len=14) :: x_kinds(np), w_kind
 
@@ -237,23 +239,14 @@ contains
 
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
+         call check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+         if (jumped_critical) then
+            Tc = exp(Xc(iT))
+            Pc = exp(Xc(iP))
+            pt_envelope%Tc = [pt_envelope%Tc, Tc]
+            pt_envelope%Pc = [pt_envelope%Pc, Pc]
+         end if
 
-         do l=1,np
-            lb = (l-1)*nc + 1
-            ub = l*nc
-            if (all(X(lb:ub) * X_last_converged(lb:ub) < 0._pr)) then
-               ! Save critical point
-               block
-                  use yaeos__math, only: interpol
-                  Xc = interpol(X_last_converged(ns), X(ns), X_last_converged, X, 0._pr)
-                  Tc = exp(Xc(iT))
-                  Pc = exp(Xc(iP))
-                  pt_envelope%Tc = [pt_envelope%Tc, Tc]
-                  pt_envelope%Pc = [pt_envelope%Pc, Pc]
-               end block
-            end if
-         end do
-         
          ! detect_critical jumps over the CP, so we save the X_last_converged
          ! before that
          X_last_converged = X
@@ -817,4 +810,6 @@ contains
          write(unit, "(*(E15.5,2x))") P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
       end do
    end subroutine write_envelope_PT_MP
+
+
 end module yaeos__equilibria_boundaries_phase_envelopes_mp

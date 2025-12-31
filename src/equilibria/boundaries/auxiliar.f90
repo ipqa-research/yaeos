@@ -138,4 +138,27 @@ contains
          end if
       end do
    end subroutine detect_critical
+
+   subroutine check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+      use yaeos__math, only: interpol
+      integer, intent(in) :: nc !! Number of components
+      integer, intent(in) :: np !! Number of main phases
+      integer, intent(in) :: ns !! Number of the specified variable
+      real(pr), intent(in) :: X(:) !! Current point
+      real(pr), intent(in) :: X_last_converged(:) !! Previously converged point
+      real(pr), intent(out) :: Xc(:) !! Critical point
+      logical, intent(out) :: jumped_critical !! If a critical point was jumped
+
+      integer :: l, lb, ub
+      jumped_critical = .false.
+      do l=1,np
+         lb = (l-1)*nc + 1
+         ub = l*nc
+         if (all(X(lb:ub) * X_last_converged(lb:ub) < 0._pr)) then
+            jumped_critical = .true.
+            Xc = interpol(X_last_converged(ns), X(ns), X_last_converged, X, 0._pr)
+            return
+         end if
+      end do
+   end subroutine check_critical_jump
 end module yaeos__equilibria_boundaries_auxiliar
