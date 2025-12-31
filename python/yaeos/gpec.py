@@ -515,11 +515,13 @@ class GPEC:
                 z = a * self._zi + (1 - a) * self._z0
                 x_l0 = [z.copy()]
 
-                x_l0[0][0] += 1e-5
-                x_l0[0][1] -= 1e-5
+                delta = min([1e-5, 0.025 * a, 0.025 * (1 - a)])
+
+                x_l0[0][0] += delta
+                x_l0[0][1] -= delta
                 w0 = z.copy()
-                w0[0] -= 1e-5
-                w0[1] += 1e-5
+                w0[0] -= delta
+                w0[1] += delta
 
                 tx_ll = self._model.phase_envelope_tx_mp(
                     z0=self._z0,
@@ -531,7 +533,7 @@ class GPEC:
                     w0=w0,
                     betas0=[1],
                     t0=t0,
-                    alpha0=a + 1e-5,
+                    alpha0=a + delta,
                     ns0=len(z) + 3,
                     ds0=dyll0,
                     max_points=MAX_POINTS,
