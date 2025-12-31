@@ -226,14 +226,14 @@ contains
             dXdS = dXdS / dXdS(ns)
          end if
 
-         do while(&
-            abs(Vx - exp(X(llv_vars%Vx) + dS*dXdS(llv_vars%Vx))) > 0.5*Vx &
-            .or. abs(Vy - exp(X(llv_vars%Vy) + dS*dXdS(llv_vars%Vy))) > 0.5*Vy &
-            .or. abs(Vw - exp(X(llv_vars%Vw) + dS*dXdS(llv_vars%Vw))) > 0.5*Vw &
-            .or. abs(T - exp(X(llv_vars%T) + dS*dXdS(llv_vars%T))) > 5 &
-            )
-            dS = dS/2
-         end do
+         ! do while(&
+         !    abs(Vx - exp(X(llv_vars%Vx) + dS*dXdS(llv_vars%Vx))) > 0.5*Vx &
+         !    .or. abs(Vy - exp(X(llv_vars%Vy) + dS*dXdS(llv_vars%Vy))) > 0.5*Vy &
+         !    .or. abs(Vw - exp(X(llv_vars%Vw) + dS*dXdS(llv_vars%Vw))) > 0.5*Vw &
+         !    .or. abs(T - exp(X(llv_vars%T) + dS*dXdS(llv_vars%T))) > 5 &
+         !    )
+         !    dS = dS/2
+         ! end do
 
          X = X + dXdS * dS
 
@@ -501,9 +501,9 @@ contains
          ! Solve the linear system dF * dX = -F
          dX = solve_system(dF, -F)
 
-         do while (maxval(abs(dX)) > 0.1)
-            dX = dX / 2
-         end do
+         ! do while (maxval(abs(dX)) > 0.1)
+         !    dX = dX / 2
+         ! end do
 
          ! if (exp(X(1) + dX(1)) < 0 .or. X(1) + dX(1) > 0) then
          !    dX(1) = log(1e-15_pr) - X(1)
