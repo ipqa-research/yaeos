@@ -90,9 +90,9 @@ class GPEC:
         max_points=10000,
         stability_analysis=True,
         step_21=1e-2,
-        step_12=1e-5,
+        step_12=1e-15,
         x20=0.9999,
-        x10=0.99999,
+        x10=1-1e-10,
     ):
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
@@ -126,8 +126,8 @@ class GPEC:
 
         if (
             self._cep21 is None
-            and abs(self._cl21["P"][-1] - psats[1]["P"][-1]) < 10
-            and abs(self._cl21["T"][-1] - psats[1]["T"][-1]) < 10
+            and abs(self._cl21["P"][-1] - psats[1]["P"][-1]) > 5
+            and abs(self._cl21["T"][-1] - psats[1]["T"][-1]) > 5
         ):
             self.type = 3
 
@@ -146,6 +146,8 @@ class GPEC:
                 stop_pressure=max_pressure,
                 max_points=max_points,
                 stability_analysis=stability_analysis,
+                p0=psats[0]["P"][-1],
+                t0=psats[0]["T"][-1],
             )
 
             self._cl12 = cl
