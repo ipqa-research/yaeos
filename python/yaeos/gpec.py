@@ -508,8 +508,11 @@ class GPEC:
             )
         if self._cl_ll:
             loc = np.argmin(abs(self._cl_ll["P"] - pressure))
-            t0, p = self._cl_ll["T"][loc], self._cl_ll["P"][loc]
-            if abs(p - pressure) < 1 or pressure > psat_1["P"][-1]:
+            t0 = self._cl_ll["T"][loc]
+            if (
+                min(self._cl_ll["P"]) < pressure < max(self._cl_ll["P"]) 
+                or pressure > psat_1["P"][-1]
+            ):
 
                 a = self._cl_ll["a"][loc]
                 z = a * self._zi + (1 - a) * self._z0
