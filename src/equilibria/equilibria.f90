@@ -47,5 +47,6 @@ module yaeos__equilibria
       PXEnvelMP, px_envelope
    use yaeos__equilibria_boundaries_phase_envelopes_mp_tx, only: &
       TXEnvelMP, tx_envelope
-   use yaeos__equilibria_boundaries_generalized_isopleths, only: create_generalized_isoz_line, GeneralizedIsoZLine
+   use yaeos__equilibria_boundaries_generalized_isopleths, only: &
+      create_generalized_isoz_line, GeneralizedIsoZLine
 end module yaeos__equilibria

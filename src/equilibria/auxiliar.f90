@@ -2,6 +2,7 @@ module yaeos__equilibria_auxiliar
    !! Auxiliar functions used for phase-equilibria calculation.
    use yaeos__constants, only: pr
    use yaeos__models_base, only: BaseModel
+   use yaeos__models_ar, only: ArModel
    implicit none
 
 contains
@@ -36,4 +37,5 @@ contains
          * exp(5.373_pr &
          * (1 + model%components%w)*(1 - model%components%Tc/T)))
    end function P_wilson
+
 end module yaeos__equilibria_auxiliar

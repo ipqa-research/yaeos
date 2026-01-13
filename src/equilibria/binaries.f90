@@ -1,7 +1,7 @@
 module yaeos__equilibria_binaries
    !! Module with routines particular to binary mixtures.
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__math, only: solve_system
 
