@@ -116,7 +116,7 @@ contains
 
       real(pr) :: X0(4), T, P, V, a, z(size(z0))
 
-      integer :: i, npoints
+      integer :: i, npoints, nc
 
       real(pr) :: max_P
 
@@ -128,6 +128,7 @@ contains
       ! ========================================================================
       ! Handle the input
       ! ------------------------------------------------------------------------
+      nc = size(z0)
       if (present(max_points)) then
          npoints = max_points
       else
@@ -167,7 +168,7 @@ contains
          call model%volume(n=z, P=P, T=T, V=V, root_type="vapor")
       end if
 
-      X0 = [set_a(a0), log([v, T, P])]
+      X0 = [set_a(nc, a0), log([v, T, P])]
 
       if (present(first_point)) then
          X0 = [&
@@ -176,7 +177,7 @@ contains
       end if
 
       if (ns0 == spec_CP%a) then
-         X0(ns0) = set_a(S0)
+         X0(ns0) = set_a(nc, S0)
       else
          X0(ns0) = S0
       end if
@@ -242,7 +243,7 @@ contains
             if (any(isnan(X))) exit
             if (exp(X(spec_CP%P)) > max_P) exit
 
-            a = get_a(X(1))
+            a = get_a(nc, X(1))
             V = exp(X(2))
             T = exp(X(3))
             P = exp(X(4))
@@ -276,7 +277,9 @@ contains
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
 
-            dS = sign(max(abs(dS), 1e-2_pr), dS)
+            if (i > 20) then
+               dS = sign(max(abs(dS), 1e-2_pr), dS)
+            end if
             if (i > 4) then
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
@@ -327,8 +330,9 @@ contains
 
       real(pr) :: y_cep(size(z0)), V_cep
       real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
-      integer :: its
-
+      integer :: its, inits
+      integer :: nc
+      nc = size(z0)
       found = .false.
       y_cep = 0
       V_cep = 0
@@ -338,14 +342,16 @@ contains
       if (found) then
          its = 0
          Fcep = 1
-         Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(a)]
-         do while(maxval(abs(Fcep)) > 1e-5)
+         Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(nc, a)]
+         do while(maxval(abs(dXcep)) > 1e-7)
             its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dXcep = solve_system(dFcep, -Fcep)
 
-            do while(maxval(abs(dXcep)) > 0.1)
+            inits = 1
+            do while(maxval(abs(dXcep)) > 0.1 .and. inits < 500)
+               inits = inits + 1
                dXcep = dXcep/2
             end do
             Xcep = Xcep + dXcep
@@ -357,7 +363,8 @@ contains
          CEP%T = exp(Xcep(5))
 
          call model%pressure(n=CEP%y, V=CEP%Vy, T=CEP%T, P=CEP%P)
-         CEP%x = zi * get_a(Xcep(6)) + (1-get_a(Xcep(6))) * z0
+         CEP%iters = its
+         CEP%x = zi * get_a(nc, Xcep(6)) + (1-get_a(nc, Xcep(6))) * z0
          CEP%kind = "CEP"
          CEP%beta = 0
       end if
@@ -480,7 +487,7 @@ contains
 
       nc = size(z0)
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
 
       z = a * zi + (1-a)*z0
       n = z + s * u * sqrt(z)
@@ -547,10 +554,12 @@ contains
 
       real(pr), parameter :: eps=1e-4_pr
 
-      integer :: i
+      integer :: i, nc
       real(pr) :: eps_df, F1(4), F2(4), dx(4)
 
-      a = get_a(X(1))
+      nc = size(z0)
+
+      a = get_a(nc, X(1))
       V = exp(X(2))
       T = exp(X(3))
       z = a * zi + (1-a) * z0
@@ -585,6 +594,8 @@ contains
       real(pr) :: dx(4), F1(4), F2(4)
 
       integer :: i
+      integer :: nc
+      nc = size(z0)
 
       ! if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
       !    eps = 1e-3_pr
@@ -592,7 +603,7 @@ contains
       !    eps = 1e-6_pr
       ! end if
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
 
       if (size(zi) == 2) then
          eps = 1e-10
@@ -644,7 +655,7 @@ contains
       Vy = exp(X(nc+1))
       Vc = exp(X(nc+2))
       T = exp(X(nc+3))
-      a = get_a(X(nc+4))
+      a = get_a(nc, X(nc+4))
       z = a * zi + (1-a) * z0
 
       if(any(z < 0) ) return
@@ -687,7 +698,7 @@ contains
 
       integer :: i
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
 
       if (any(a*zi + (1-a)*z0 > 0.99)) then
          eps = 1e-3_pr
@@ -754,20 +765,22 @@ contains
       real(pr) :: z(size(z0)), u_new(size(z0)), l, a
       real(pr) :: Sin
       integer :: i
+      integer :: nc
 
+      nc = size(z0)
 
       ! ========================================================================
       ! Handle the input
       ! ------------------------------------------------------------------------
       if (present(a0)) then
-         X(1) = set_a(a0)
+         X(1) = set_a(nc, a0)
       else if (spec == spec_CP%a) then
-         X(1) = set_a(S)
+         X(1) = set_a(nc, S)
       else
          X(1) = log(0.5_pr)
       end if
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
       z = a*zi + (1-a)*z0
 
       if (present(T0)) then
@@ -793,7 +806,7 @@ contains
 
       ns = spec
       if (ns == spec_CP%a) then
-         Sin = set_a(S)
+         Sin = set_a(nc, S)
          X(ns) = Sin
       else
          Sin = S
@@ -815,7 +828,7 @@ contains
             dX = dX*0.99
          end do
 
-         do while((get_a(X(1) + dX(1)) > 1 .or. get_a(X(1) + dX(1)) < 0) .and. size(z0) == 2)
+         do while((get_a(nc, X(1) + dX(1)) > 1 .or. get_a(nc, X(1) + dX(1)) < 0) .and. nc == 2)
             dX = dX/2
          end do
 
@@ -825,7 +838,7 @@ contains
          critical_point%iters = i
       end do
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
       z = a*zi + (1-a)*z0
       critical_point%x = z
       critical_point%y = z
@@ -837,14 +850,24 @@ contains
       critical_point%kind = "critical"
    end function critical_point
 
-   real(pr) function get_a(X)
+   real(pr) function get_a(nc, X)
+      integer, intent(in) :: nc
       real(pr), intent(in) :: X
-      get_a = X!(X)**2
+      if (nc == 2) then
+         get_a = exp(X)
+      else
+         get_a = X
+      end if
    end function get_a
 
-   real(pr) function set_a(a)
+   real(pr) function set_a(nc, a)
+      integer, intent(in) :: nc
       real(pr), intent(in) :: a
-      set_a = a!sqrt(a)
+      if (nc == 2) then
+         set_a = log(a)
+      else
+         set_a = a
+      end if
    end function set_a
    
    subroutine get_critical_constants(model)
