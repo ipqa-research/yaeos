@@ -1,6 +1,6 @@
 module yaeos__equilibria_critical
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
 
    implicit none
@@ -14,6 +14,7 @@ module yaeos__equilibria_critical
    public :: lambda1
    public :: F_critical
    public :: df_critical
+   public :: get_critical_constants
 
    type :: CriticalLine
       !! # CriticalLine
@@ -834,7 +835,6 @@ contains
       critical_point%T  = exp(X(3))
       call model%pressure(n=z, V=critical_point%Vx, T=critical_point%T, P=critical_point%P)
       critical_point%kind = "critical"
-
    end function critical_point
 
    real(pr) function get_a(X)
@@ -846,4 +846,46 @@ contains
       real(pr), intent(in) :: a
       set_a = a!sqrt(a)
    end function set_a
+   
+   subroutine get_critical_constants(model)
+      !! # `get_critical_constants`
+      !! Calculate the critical constants for each pure component.
+      !!
+      !! # Description
+      !! Calculates the critical temperature, pressure and acentric factor
+      !! for each pure component in the model.
+      !! The critical points are calculated using the `critical_point` function
+      !! from the `yaeos__equilibria_critical` module.
+      !! The acentric factor is calculated using the saturation pressure at
+      !! 0.7 of the critical temperature.
+      !! It updates the `Tc`, `Pc` and `w` attributes of each component in the
+      !! model.
+      !!
+      !! @note
+      !! This subroutine assumes that the pure component constants for each
+      !! component are already allocated.
+      !! @endnote
+      !!
+      class(ArModel), intent(in out) :: model !! Thermodynamic model.
+      real(pr) :: z(size(model%components%Tc)), Psat_i
+      type(EquilibriumState) :: cp
+
+      integer :: i, nc
+
+      nc = size(model%components%Tc)
+      do i=1,nc
+         z = 0
+         z(i) = 1.0_pr
+         cp = critical_point(&
+            model, z, z, spec=1, S=0.5_pr, max_iters=1000, &
+            V0=1._pr, t0=500._pr, a0=0.5_pr, p0=10._pr &
+            )
+         model%components%Tc(i) = cp%T
+         model%components%Pc(i) = cp%P
+
+         Psat_i =  model%Psat_pure(i, 0.7*cp%T)
+         model%components%w(i) = (-1 - log10(Psat_i/cp%P))
+      end do
+   end subroutine get_critical_constants
+
 end module yaeos__equilibria_critical

@@ -90,13 +90,14 @@ class GPEC:
         max_points=10000,
         stability_analysis=True,
         step_21=1e-2,
-        step_12=1e-5,
+        step_12=1e-15,
         x20=0.9999,
-        x10=0.99999,
+        x10=1-1e-10,
     ):
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
         self._model = model
+        self.type = 0
 
         # Calculate the pure saturation pressures of each component and
         # save it as an internal variable
@@ -118,16 +119,23 @@ class GPEC:
         )
 
         self._cl21 = cl
-        self._cep21 = cep
+        if np.isnan(cep["T"]):
+            self._cep21 = None
+        else:
+            self._cep21 = cep
+
+        if (
+            self._cep21 is None
+            and abs(self._cl21["P"][-1] - psats[1]["P"][-1]) > 5
+            and abs(self._cl21["T"][-1] - psats[1]["T"][-1]) > 5
+        ):
+            self.type = 3
 
         # Check if the critical line did not reach to the pure first component.
         # if not, calculate the critical line starting from the almost pure
         # first component. It is important to make small steps because this
         # kind of line can be pretty short.
-        if not np.isnan(cep["T"]) or (
-            abs(cl["T"][-1] - psats[0]["T"][-1]) > 10
-            and abs(cl["P"][-1] - psats[0]["P"][-1] > 10)
-        ):
+        if not np.isnan(cep["T"]) or self.type == 3:
             cl, cep = model.critical_line(
                 z0=self._z0,
                 zi=self._zi,
@@ -138,10 +146,16 @@ class GPEC:
                 stop_pressure=max_pressure,
                 max_points=max_points,
                 stability_analysis=stability_analysis,
+                p0=psats[0]["P"][-1],
+                t0=psats[0]["T"][-1],
             )
 
             self._cl12 = cl
-            self._cep12 = cep
+
+            if np.isnan(cep["T"]):
+                self._cep12 = None
+            else:
+                self._cep12 = cep
         else:
             self._cl12 = None
             self._cep12 = None
@@ -165,12 +179,40 @@ class GPEC:
             stability_analysis=stability_analysis,
         )
 
-        if len(cl["a"]) > 0:
+        if len(cl["a"]) > 5:
             self._cl_ll = cl
-            self._cep_ll = cep
         else:
             self._cl_ll = None
+
+        if np.isnan(cep["T"]):
             self._cep_ll = None
+        else:
+            self._cep_ll = cep
+
+        if self._cl_ll and self._cep12:
+            self.type = 4
+        elif self._cl_ll:
+            self.type = 2
+        elif self._cep21 and self._cep12:
+            self.type = 5
+        elif self.type != 3 and not any(
+            (self._cep12, self._cep21, self._cl_ll)
+        ):
+            self.type = 1
+
+        # Calculate the three-phase lines from the critical endpoints
+        if self._cep12:
+            self._llv_12 = model.binary_llv_from_cep(self._cep12)
+        else:
+            self._llv_12 = None
+        if self._cep21:
+            self._llv_21 = model.binary_llv_from_cep(self._cep21)
+        else:
+            self._llv_21 = None
+        if self._cep_ll:
+            self._llv_ll = model.binary_llv_from_cep(self._cep_ll)
+        else:
+            self._llv_ll = None
 
     def plot_gped(self):
         """Plot the global phase equilibria diagram (GPED).
@@ -187,7 +229,34 @@ class GPEC:
             plt.plot(self._cl12["T"], self._cl12["P"], color="black")
         if self._cl_ll:
             plt.plot(self._cl_ll["T"], self._cl_ll["P"], color="black")
+        if self._cep12:
+            plt.plot(
+                self._llv_12["T"],
+                self._llv_12["P"],
+                color="purple",
+                linestyle="--",
+            )
+        if self._cep21:
+            plt.plot(
+                self._llv_21["T"],
+                self._llv_21["P"],
+                color="purple",
+                linestyle="--",
+            )
+        if self._cep_ll:
+            plt.plot(
+                self._llv_ll["T"],
+                self._llv_ll["P"],
+                color="purple",
+                linestyle="--",
+            )
 
+        plt.plot([], [], color="green", label="Pure saturation pressure")
+        plt.plot([], [], color="black", label="Critical line")
+        plt.plot(
+            [], [], color="purple", linestyle="--", label="Three-phase line"
+        )
+        plt.legend(frameon=False)
         plt.xlabel("Temperature (K)")
         plt.ylabel("Pressure (bar)")
 
@@ -264,14 +333,14 @@ class GPEC:
                 kind="bubble",
                 p0=p0,
                 a0=1 - x20,
-                ds0=dx20,
+                ds0=-dx20,
                 max_points=MAX_POINTS,
             )
 
         if self._cl_ll:
             loc = np.argmin(abs(self._cl_ll["T"] - temperature))
             p0, t = self._cl_ll["P"][loc], self._cl_ll["T"][loc]
-            if abs(t - temperature) < 1 or temperature > self._cep_ll["T"]:
+            if abs(t - temperature) < 1:
 
                 a = self._cl_ll["a"][loc]
                 z = a * self._zi + (1 - a) * self._z0
@@ -441,18 +510,23 @@ class GPEC:
             )
         if self._cl_ll:
             loc = np.argmin(abs(self._cl_ll["P"] - pressure))
-            t0, p = self._cl_ll["T"][loc], self._cl_ll["P"][loc]
-            if abs(p - pressure) < 1 or pressure > psat_1["P"][-1]:
+            t0 = self._cl_ll["T"][loc]
+            if (
+                min(self._cl_ll["P"]) < pressure < max(self._cl_ll["P"]) 
+                or pressure > psat_1["P"][-1]
+            ):
 
                 a = self._cl_ll["a"][loc]
                 z = a * self._zi + (1 - a) * self._z0
                 x_l0 = [z.copy()]
 
-                x_l0[0][0] += 1e-5
-                x_l0[0][1] -= 1e-5
+                delta = min([1e-5, 0.025 * a, 0.025 * (1 - a)])
+
+                x_l0[0][0] += delta
+                x_l0[0][1] -= delta
                 w0 = z.copy()
-                w0[0] -= 1e-5
-                w0[1] += 1e-5
+                w0[0] -= delta
+                w0[1] += delta
 
                 tx_ll = self._model.phase_envelope_tx_mp(
                     z0=self._z0,
@@ -464,7 +538,7 @@ class GPEC:
                     w0=w0,
                     betas0=[1],
                     t0=t0,
-                    alpha0=a + 1e-5,
+                    alpha0=a + delta,
                     ns0=len(z) + 3,
                     ds0=dyll0,
                     max_points=MAX_POINTS,

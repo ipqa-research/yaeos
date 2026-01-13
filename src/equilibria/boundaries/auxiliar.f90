@@ -24,7 +24,8 @@ contains
    end subroutine get_z
 
    subroutine detect_critical(&
-      nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc&
+      nc, np, point, kinds_x, kind_w, binary_stop, Xold, &
+      X, dXdS, ns, dS, S, found_critical, Xc&
       )
       !! # detect_critical
       !! Detect if the system is close to a critical point.
@@ -97,13 +98,6 @@ contains
          !    X = X + dXdS * dS
          ! end do
 
-         ! if (maxval(abs(X(lb:ub))) < 0.1) then
-         !    ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
-         !    dS = dXdS(ns)*dS
-         !    dS = sign(min(5e-2_pr, abs(dS)), dS)
-         !    dXdS = dXdS/dXdS(ns)
-         ! end if
-
          Xnew = X + dXdS * dS
 
          lnKold = Xold(lb:ub)
@@ -120,6 +114,7 @@ contains
 
             ! 0 = a*Xnew(ns) + (1-a)*X(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(lnK - lnKold), dim=1)
+
             ! a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
             ! Xc = a * Xnew + (1-a)*Xold
             Xc = interpol(lnKold(ncomp), lnK(ncomp), Xold, Xnew, 0.0_pr)
@@ -131,13 +126,39 @@ contains
 
             ! Start from the critical point and then do small steps until
             ! we are a bit far from it.
-            X = Xc
-            do while(maxval(abs(X(lb:ub))) < 1e-2_pr)
-               X = X + dS * dXdS * 0.1
+            X = Xc + sign(0.001_pr, dS) * dXdS
+            do while(maxval(abs(X(lb:ub))) < 0.01_pr)
+               X = X + sign(0.001_pr, dS) * dXdS
             end do
-            S = X(ns)
+
+            if (ns > 0) then
+               S = X(ns)
+            end if
             return
          end if
       end do
    end subroutine detect_critical
+
+   subroutine check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+      use yaeos__math, only: interpol
+      integer, intent(in) :: nc !! Number of components
+      integer, intent(in) :: np !! Number of main phases
+      integer, intent(in) :: ns !! Number of the specified variable
+      real(pr), intent(in) :: X(:) !! Current point
+      real(pr), intent(in) :: X_last_converged(:) !! Previously converged point
+      real(pr), intent(out) :: Xc(:) !! Critical point
+      logical, intent(out) :: jumped_critical !! If a critical point was jumped
+
+      integer :: l, lb, ub
+      jumped_critical = .false.
+      do l=1,np
+         lb = (l-1)*nc + 1
+         ub = l*nc
+         if (all(X(lb:ub) * X_last_converged(lb:ub) < 0._pr)) then
+            jumped_critical = .true.
+            Xc = interpol(X_last_converged(ns), X(ns), X_last_converged, X, 0._pr)
+            return
+         end if
+      end do
+   end subroutine check_critical_jump
 end module yaeos__equilibria_boundaries_auxiliar

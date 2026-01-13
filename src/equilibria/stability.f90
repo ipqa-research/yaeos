@@ -30,7 +30,9 @@ module yaeos__equilibria_stability
    !! Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
    !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
    use yaeos__constants, only: pr, r
-   use yaeos__models, only: BaseModel, ArModel, GeModel
+   use yaeos__models_base, only: BaseModel
+   use yaeos__models_ar, only: ArModel
+   use yaeos__models_ge, only: GeModel
    implicit none
 
 contains

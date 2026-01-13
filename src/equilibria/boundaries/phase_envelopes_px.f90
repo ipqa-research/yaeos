@@ -1,7 +1,7 @@
 module yaeos__equilibria_boundaries_phase_envelopes_px
    !! Phase boundaries line on the \(P\alpha\) plane calculation procedures.
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper

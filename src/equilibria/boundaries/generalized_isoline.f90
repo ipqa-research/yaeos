@@ -4,7 +4,7 @@ module yaeos__equilibria_boundaries_generalized_isopleths
    !! This module contains the subroutines to calculate any kind of phase
    !! equilibria lines with constant composition.
    use yaeos__constants, only: pr, R
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: MPEquilibriumState, MPEquilibriumState_from_X
    use yaeos__equilibria_stability, only: tm
    use yaeos__math, only: solve_system

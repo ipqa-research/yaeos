@@ -128,7 +128,7 @@ contains
       pcalc = 2*p
       B = eos%get_v0(n, p, t)
       totn = sum(n)
-      do while(abs(Pcalc - P) > 1.e-12_pr .and. abs(DEL) > 1.e-12_pr)
+      do while(abs(DEL) > 1.e-12_pr .and. iter < 500)
          V = B/ZETA
          iter = iter + 1
 

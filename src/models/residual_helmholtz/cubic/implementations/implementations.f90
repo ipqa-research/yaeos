@@ -1,6 +1,6 @@
 module yaeos__models_ar_cubic_implementations
    use yaeos__constants, only: pr, R
-   use  yaeos__models_ar_genericcubic, only: CubicEoS
+   use yaeos__models_ar_genericcubic, only: CubicEoS
    use yaeos__substance, only: Substances
    implicit none
    !! Implemented Cubic Equations of State.

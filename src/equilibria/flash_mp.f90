@@ -30,7 +30,7 @@ module yaeos__equilibria_multiphase_flash
    !! # References
    !!
    use yaeos__constants, only: pr, R
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: MPEquilibriumState
    implicit none
 
