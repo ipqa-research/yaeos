@@ -20,9 +20,11 @@ Yaeos models module. This module provides the following submodules:
         - HVNRTL: Huron-Vidal NRTL mixing rule
     - Multifluid EoS:
         - GERG2008: GERG2008 Residual contribution
+    - SAFT EoS:
+        - PC-SAFT: PC-SAFT Residual contribution
 """
 
-from . import excess_gibbs, residual_helmholtz
+from yaeos.models import excess_gibbs, residual_helmholtz
 
 
 __all__ = ["excess_gibbs", "residual_helmholtz"]

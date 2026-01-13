@@ -92,7 +92,7 @@ class GPEC:
         step_21=1e-2,
         step_12=1e-5,
         x20=0.9999,
-        x10=1-1e-9,
+        x10=1 - 1e-9,
     ):
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
@@ -326,9 +326,7 @@ class GPEC:
 
         # Below saturation temperature of heavy component and did not reach to
         # pure second component
-        if (
-            temperature < critical_temperatures[1]
-        ):
+        if temperature < critical_temperatures[1]:
             loc = np.argmin(abs(psat_2["T"] - temperature))
             p0 = psat_2["P"][loc]
             px_21 = self._model.phase_envelope_px(

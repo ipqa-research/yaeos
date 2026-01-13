@@ -17,9 +17,12 @@ Yaeos Residual Helmholtz module. This module provides the following submodules:
             - HVNRTL: Huron-Vidal NRTL mixing rule
     - Multifluids Equations of State (Multifluid EoS):
         - GERG2008: GERG2008 Residual contribution
+    - SAFT Equations of State (SAFT EoS):
+        - PC-SAFT: PC-SAFT Residual contribution
 """
 
-from . import cubic_eos
-from . import multifluid
+from yaeos.models.residual_helmholtz import cubic_eos
+from yaeos.models.residual_helmholtz import multifluid
+from yaeos.models.residual_helmholtz import saft
 
-__all__ = ["cubic_eos", "multifluid"]
+__all__ = ["cubic_eos", "multifluid", "saft"]
