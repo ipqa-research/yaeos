@@ -385,7 +385,7 @@ contains
             
             call model%volume(z, P=exp(Xc(nc+2)), T=exp(Xc(nc+1)), V=V, root_type="liquid")
             cp = critical_point(&
-               model, z, z, spec=spec_CP%a, S=0._pr, &
+               model, z, z, spec=spec_CP%a, S=1._pr, &
                max_iters=5000, T0=exp(Xc(nc+1)), P0=exp(Xc(nc+2)), V0=V &
                )
 

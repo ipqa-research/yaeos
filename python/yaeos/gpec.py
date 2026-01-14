@@ -126,8 +126,8 @@ class GPEC:
 
         if (
             self._cep21 is None
-            and abs(self._cl21["P"][-1] - psats[1]["P"][-1]) > 5
-            and abs(self._cl21["T"][-1] - psats[1]["T"][-1]) > 5
+            and abs(self._cl21["P"][-1] - psats[0]["P"][-1]) > 5
+            and abs(self._cl21["T"][-1] - psats[0]["T"][-1]) > 5
         ):
             self.type = 3
 

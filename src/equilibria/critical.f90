@@ -172,7 +172,7 @@ contains
 
       if (present(first_point)) then
          X0 = [&
-            first_point%x(2), &
+            set_a(nc, first_point%x(2)), &
             log([first_point%Vx, first_point%T, first_point%P])]
       end if
 
@@ -273,7 +273,7 @@ contains
             ! --------------------------------------------------------------
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
-            ns = maxloc(abs(dXdS), dim=1)
+            ns = maxloc(abs(dXdS(:3)), dim=1)
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
 
@@ -283,9 +283,9 @@ contains
             if (i > 4) then
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
-               dT2 = (T - critical_line%T(i-1)) * (critical_line%T(i-2) - critical_line%T(i-3))
+               dT2 = (T - critical_line%T(i-1)) *(T - critical_line%T(i-2))
+               d2PdT2 = (dPdT_2 - dPdT_1) / dT2
 
-               d2PdT2 = (P - 2*critical_line%P(i-1) + critical_line%P(i-2)) / dT2
 
                if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
                   ns = spec_CP%T
@@ -308,6 +308,7 @@ contains
             ! Next step
             z = a * zi  + (1-a)*z0
             X = X + dXdS*dS
+            S = S + dS
          end do
       end block solve_points
 
@@ -343,7 +344,8 @@ contains
          its = 0
          Fcep = 1
          Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(nc, a)]
-         do while(maxval(abs(dXcep)) > 1e-7)
+         dXcep = 1
+         do while(maxval(abs(dXcep)) > 1e-8 )
             its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
@@ -869,7 +871,7 @@ contains
          set_a = a
       end if
    end function set_a
-   
+
    subroutine get_critical_constants(model)
       !! # `get_critical_constants`
       !! Calculate the critical constants for each pure component.
