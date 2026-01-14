@@ -236,6 +236,7 @@ contains
                u = u_new
             end do
 
+
             ! ==============================================================
             ! Cases where the line must be stopped
             ! --------------------------------------------------------------
@@ -273,7 +274,12 @@ contains
             ! --------------------------------------------------------------
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
-            ns = maxloc(abs(dXdS(:3)), dim=1)
+            if (ns0 == 4) then
+               ! Points that started as P specification can remain as P
+               ns = maxloc(abs(dXdS), dim=1)
+            else
+             ns = maxloc(abs(dXdS(:3)), dim=1)
+            end if
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
 
@@ -301,7 +307,7 @@ contains
             ! ==============================================================
             ! Avoid big steps in pressure
             ! --------------------------------------------------------------
-            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 20)
+            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 10)
             !    dS = dS * 0.9
             ! end do
 

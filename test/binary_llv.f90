@@ -36,7 +36,7 @@ contains
       call find_llcl(model, z0, zi, P, a, V, T)
       cl = critical_line(&
          model, a, z0, zi, &
-         ns0=spec_CP%P, S0=log(P), ds0=-0.1_pr, v0=V, T0=T, p0=P, stability_analysis=.true.)
+         ns0=spec_CP%P, S0=log(P), ds0=-0.01_pr, v0=V, T0=T, p0=P, stability_analysis=.true.)
       llv = binary_llv_from_cep(model, cl%cep)
 
       points = size(llv%P)
