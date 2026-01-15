@@ -227,6 +227,16 @@ contains
                dF = df_critical(model, X, ns, Si, z0, zi, u)
                dX = solve_system(dF, -F)
 
+               avoid_negative: block
+                  !! Avoid compositions with negative values
+                  real(pr) :: alpha
+                  alpha = get_a(nc, X(1) + dX(1))
+                  do while(any(alpha*zi + (1-alpha)*z0 < 0) )
+                     dX = dX/ 2
+                     alpha = get_a(nc, X(1) + dX(1))
+                  end do
+               end block avoid_negative
+
                do while(abs(maxval(dX(:))) > 0.01)
                   dX = dX/2
                end do
