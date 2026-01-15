@@ -232,6 +232,7 @@ contains
                   real(pr) :: alpha
                   alpha = get_a(nc, X(1) + dX(1))
                   do while(any(alpha*zi + (1-alpha)*z0 < 0) )
+                     print *, "CL: Reducing step to avoid negative compositions", alpha
                      dX = dX/ 2
                      alpha = get_a(nc, X(1) + dX(1))
                   end do
