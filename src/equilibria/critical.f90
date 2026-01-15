@@ -384,13 +384,13 @@ contains
 
             damp = 1
             Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
-            do while(&
+            if ( &
                maxval(abs((Fcep))) < maxval(abs(Fcep_new)) &
-               )
+               ) then
                print *, "damping", maxval(abs(Fcep)), maxval(abs(Fcep_new)), damp
                damp = damp / 2
                Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
-            end do
+            end if
             Xcep = Xcep + damp * dXcep
          end do
 
