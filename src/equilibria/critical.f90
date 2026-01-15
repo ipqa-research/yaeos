@@ -232,7 +232,6 @@ contains
                   real(pr) :: alpha
                   alpha = get_a(nc, X(1) + dX(1))
                   do while(any(alpha*zi + (1-alpha)*z0 < 0) )
-                     print *, "CL: Reducing step to avoid negative compositions", alpha
                      dX = dX/ 2
                      alpha = get_a(nc, X(1) + dX(1))
                   end do
@@ -366,15 +365,11 @@ contains
          Fcep = 1
          Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(nc, a)]
          dXcep = 1
-         do while(maxval(abs(dXcep)) > 1e-8 .and. maxval(abs(Fcep)) > 1e-8)
+         do while(maxval(abs(dXcep)) > 1e-8 .and. maxval(abs(Fcep)) > 1e-5)
             its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dXcep = solve_system(dFcep, -Fcep)
-
-            print *, Xcep
-            print *, Fcep
-            print *, "="
 
             alpha = get_a(nc, Xcep(6) + dXcep(6))
             do while(any(alpha*zi + (1-alpha)*z0 < 0) )
@@ -384,19 +379,19 @@ contains
 
             damp = 1
             Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
-            if ( &
-               maxval(abs((Fcep))) < maxval(abs(Fcep_new)) &
-               ) then
-               print *, "damping", maxval(abs(Fcep)), maxval(abs(Fcep_new)), damp
+            do while (maxval(abs((Fcep))) < maxval(abs(Fcep_new)))
                damp = damp / 2
                Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
-            end if
+               if (damp < 1e-4) then
+                  damp = 1.1
+               end if
+            end do
             Xcep = Xcep + damp * dXcep
          end do
 
          CEP%y = exp(Xcep(:2))
          CEP%Vy = exp(Xcep(3))
-         CEP%Vx =  exp(Xcep(4))
+         CEP%Vx = exp(Xcep(4))
          CEP%T = exp(Xcep(5))
 
          call model%pressure(n=CEP%y, V=CEP%Vy, T=CEP%T, P=CEP%P)
