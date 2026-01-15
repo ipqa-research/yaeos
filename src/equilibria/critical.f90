@@ -278,7 +278,7 @@ contains
                ! Points that started as P specification can remain as P
                ns = maxloc(abs(dXdS), dim=1)
             else
-             ns = maxloc(abs(dXdS(:3)), dim=1)
+               ns = maxloc(abs(dXdS(:3)), dim=1)
             end if
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
@@ -337,12 +337,16 @@ contains
 
       real(pr) :: y_cep(size(z0)), V_cep
       real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
+      real(pr) :: Fcep_new(size(z0)+4)
       integer :: its, inits
       integer :: nc
+      real(pr) :: damp
+      real(pr) :: alpha
       nc = size(z0)
       found = .false.
       y_cep = 0
       V_cep = 0
+
 
       call stability_check(model, z0, zi, Pc, Vc, Tc, a, found, y_cep, V_cep)
 
@@ -351,18 +355,27 @@ contains
          Fcep = 1
          Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(nc, a)]
          dXcep = 1
-         do while(maxval(abs(dXcep)) > 1e-8 )
+         do while(maxval(abs(dXcep)) > 1e-8)
             its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dXcep = solve_system(dFcep, -Fcep)
 
-            inits = 1
-            do while(maxval(abs(dXcep)) > 0.1 .and. inits < 500)
-               inits = inits + 1
-               dXcep = dXcep/2
+            alpha = get_a(nc, Xcep(6) + dXcep(6))
+            do while(any(alpha*zi + (1-alpha)*z0 < 0) )
+               dXcep = dXcep / 2
+               alpha = get_a(nc, Xcep(6) + dXcep(6))
             end do
-            Xcep = Xcep + dXcep
+
+            damp = 1
+            Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
+            do while(&
+               maxval(abs((Fcep))) < maxval(abs(Fcep_new)) &
+               )
+               damp = damp / 2
+               Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
+            end do
+            Xcep = Xcep + damp * dXcep
          end do
 
          CEP%y = exp(Xcep(:2))
@@ -657,8 +670,6 @@ contains
 
       integer, intent(in) :: nc
 
-      ! nc = size(z0)
-
       y = exp(X(:nc))
       Vy = exp(X(nc+1))
       Vc = exp(X(nc+2))
@@ -708,18 +719,19 @@ contains
 
       a = get_a(nc, X(1))
 
-      if (any(a*zi + (1-a)*z0 > 0.99)) then
-         eps = 1e-3_pr
-      else
-         eps = 1e-6_pr
-      end if
-
       eps = 1e-10
 
       df_cep = 0
       do i=1,size(df_cep, 1)
          dx = 0
-         dx(i) = eps
+         if (i <= nc) then
+            dx(i) = min(abs(1e-5_pr * X(i)), eps)
+         else
+            dx(i) = eps
+         end if
+
+
+
          F2 = F_cep(model, nc, X+dx, z0, zi, u)
          F1 = F_cep(model, nc, X-dx, z0, zi, u)
          df_cep(:, i) = (F2 - F1)/(2*eps)
