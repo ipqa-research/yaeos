@@ -54,7 +54,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 toc_object_entries = False
 
 # nbsphinx
-nbsphinx_execute = "always"
+nbsphinx_execute = "never"
 
 autodoc_member_order = "bysource"
 
