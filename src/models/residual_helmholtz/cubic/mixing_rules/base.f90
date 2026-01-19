@@ -111,7 +111,7 @@ contains
       !! Infinite pressure limit parameter \(\Lambda\)
       !!
       !! \[
-      !! \Lambda = \frac{1}{\delta_1 + \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
+      !! \Lambda = \frac{1}{\delta_1 - \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
       !! \]
       integer, intent(in) :: nc
       real(pr), intent(in) :: d1

@@ -268,9 +268,10 @@ class BinaryFitter:
                 )
                 error_i += self.temperature_error(cp["T"], t_cl)
                 error_i += self.pressure_error(cp["P"], p_cl)
-                error_i += self.composition_error(
-                    [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
-                )
+                if not np.isnan(cp["x1"]):
+                    error_i += self.composition_error(
+                        [cp["x1"], 1 - cp["x1"]], [x1, 1 - x1]
+                    )
                 residual = [
                     cp["T"] - t_cl,
                     cp["P"] - p_cl,

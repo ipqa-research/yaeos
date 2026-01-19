@@ -501,17 +501,6 @@ contains
          ! Solve the linear system dF * dX = -F
          dX = solve_system(dF, -F)
 
-         ! do while (maxval(abs(dX)) > 0.1)
-         !    dX = dX / 2
-         ! end do
-
-         ! if (exp(X(1) + dX(1)) < 0 .or. X(1) + dX(1) > 0) then
-         !    dX(1) = log(1e-15_pr) - X(1)
-         ! end if
-         ! if (exp(X(2) + dX(2)) < 0 .or. X(2) + dX(2) > 0) then
-         !    dX(2) = log(1e-15_pr) - X(2)
-         ! end if
-
          X = Xold + dX
 
 

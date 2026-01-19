@@ -32,6 +32,8 @@ module yaeos_c
    public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
    ! Multifluid equations
    public :: multifluid_gerg2008
+   ! SAFT equations
+   public :: pcsaft
 
    ! __del__
    public :: make_available_ar_models_list
@@ -599,6 +601,21 @@ contains
       ar_model = gerg_2008(ids)
       call extend_ar_models_list(id)
    end subroutine multifluid_gerg2008
+
+   ! =========================================================================
+   ! SAFT models
+   ! -------------------------------------------------------------------------
+   subroutine pcsaft(id, m, sigma, epsilon_k, kij)
+      use yaeos, only: init_pcsaft, fPCSAFT => PCSAFT
+      integer(c_int), intent(out) :: id
+      real(c_double), intent(in) :: m(:)
+      real(c_double), intent(in) :: sigma(:)
+      real(c_double), intent(in) :: epsilon_k(:)
+      real(c_double), optional, intent(in) :: kij(:, :)
+      type(fPCSAFT) :: pcsaft_model
+      ar_model = init_pcsaft(m, sigma, epsilon_k, kij)
+      call extend_ar_models_list(id)
+   end subroutine pcsaft
 
 
    ! ==========================================================================

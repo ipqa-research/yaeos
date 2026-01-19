@@ -15,7 +15,7 @@ Implemented models:
 
 """
 
-from .cubic_eos import (
+from yaeos.models.residual_helmholtz.cubic_eos.cubic_eos import (
     CubicEoS,
     PSRK,
     PengRobinson76,
@@ -23,7 +23,14 @@ from .cubic_eos import (
     RKPR,
     SoaveRedlichKwong,
 )
-from .mixing_rules import CubicMixRule, HV, HVNRTL, MHV, QMR, QMRTD
+from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import (
+    CubicMixRule,
+    HV,
+    HVNRTL,
+    MHV,
+    QMR,
+    QMRTD,
+)
 
 
 __all__ = [

@@ -23,7 +23,7 @@ with open(pyproject_path, "r") as f:
 project_version = pyproject_toml["project"]["version"]
 
 project = "yaeos"
-copyright = "2023, Federico E. Benelli"
+copyright = "2026, Federico E. Benelli"
 author = "Federico E. Benelli"
 release = project_version
 
@@ -54,7 +54,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 toc_object_entries = False
 
 # nbsphinx
-nbsphinx_execute = "always"
+nbsphinx_execute = "never"
 
 autodoc_member_order = "bysource"
 

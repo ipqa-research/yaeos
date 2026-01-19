@@ -90,9 +90,9 @@ class GPEC:
         max_points=10000,
         stability_analysis=True,
         step_21=1e-2,
-        step_12=1e-15,
+        step_12=1e-5,
         x20=0.9999,
-        x10=1-1e-10,
+        x10=1 - 1e-9,
     ):
         self._z0 = np.array([0, 1])
         self._zi = np.array([1, 0])
@@ -126,8 +126,8 @@ class GPEC:
 
         if (
             self._cep21 is None
-            and abs(self._cl21["P"][-1] - psats[1]["P"][-1]) > 5
-            and abs(self._cl21["T"][-1] - psats[1]["T"][-1]) > 5
+            and abs(self._cl21["P"][-1] - psats[0]["P"][-1]) > 5
+            and abs(self._cl21["T"][-1] - psats[0]["T"][-1]) > 5
         ):
             self.type = 3
 
@@ -266,7 +266,7 @@ class GPEC:
         x10=0.9999,
         x20=0.9999,
         dx10=1e-3,
-        dx20=-1e-3,
+        dx20=1e-3,
         dxll0=1e-4,
     ):
         """Calculate a Pxy phase diagram.
@@ -299,8 +299,9 @@ class GPEC:
         -------
         list
             A list containing the calculated Pxy phase diagrams.
-            - Starting from the almost pure second component.
+
             - Starting from the almost pure first component. If below its Tc.
+            - Starting from the almost pure second component. If below its Tc.
             - Starting from liquid-liquid critical line, if it exists.
         """
         psat_1, psat_2 = self._pures
@@ -309,21 +310,7 @@ class GPEC:
         px_12 = px_21 = px_ll = None
 
         # Below saturation temperature of light component
-        loc = np.argmin(abs(psat_2["T"] - temperature))
-        p0 = psat_2["P"][loc]
-        px_21 = self._model.phase_envelope_px(
-            self._z0,
-            self._zi,
-            temperature=temperature,
-            kind="bubble",
-            p0=p0,
-            a0=x10,
-            ds0=dx10,
-            max_points=MAX_POINTS,
-        )
-
-        # Below saturation temperature of heavy component
-        if temperature < critical_temperatures[1]:
+        if temperature < critical_temperatures[0]:
             loc = np.argmin(abs(psat_1["T"] - temperature))
             p0 = psat_1["P"][loc]
             px_12 = self._model.phase_envelope_px(
@@ -332,8 +319,24 @@ class GPEC:
                 temperature=temperature,
                 kind="bubble",
                 p0=p0,
-                a0=1 - x20,
-                ds0=-dx20,
+                a0=x10,
+                ds0=-dx10,  # Negative because we go from high to low x1
+                max_points=MAX_POINTS,
+            )
+
+        # Below saturation temperature of heavy component and did not reach to
+        # pure second component
+        if temperature < critical_temperatures[1]:
+            loc = np.argmin(abs(psat_2["T"] - temperature))
+            p0 = psat_2["P"][loc]
+            px_21 = self._model.phase_envelope_px(
+                self._z0,
+                self._zi,
+                temperature=temperature,
+                kind="bubble",
+                p0=p0,
+                a0=1 - x20,  # Because x1 = 1 - x2
+                ds0=dx20,  # Positive because we go from low to high x1
                 max_points=MAX_POINTS,
             )
 
@@ -375,8 +378,8 @@ class GPEC:
     def plot_pxy(
         self,
         temperature,
-        x10=1e-5,
-        x20=1e-5,
+        x10=0.9999,
+        x20=0.9999,
         dx10=1e-3,
         dx20=1e-3,
         dxll0=1e-4,
@@ -435,7 +438,7 @@ class GPEC:
         pressure,
         y10=0.9999,
         y20=0.9999,
-        dy10=-1e-3,
+        dy10=1e-3,
         dy20=1e-3,
         dyll0=1e-4,
     ):
@@ -470,6 +473,7 @@ class GPEC:
         list
             A list containing the calculated Txy envelopes. They are sorted
             in the order of:
+
             - Starting from the almost pure first component.
             - Starting from the almost pure second component.
             - Starting from liquid-liquid critical line if it exists.
@@ -490,7 +494,7 @@ class GPEC:
                 kind="dew",
                 t0=t0,
                 a0=1 - y20,
-                ds0=1e-5,
+                ds0=dy20,
                 max_points=MAX_POINTS,
             )
         if pressure < psat_1["P"][-1]:
@@ -505,14 +509,14 @@ class GPEC:
                 kind="bubble",
                 t0=t0,
                 a0=y10,
-                ds0=dy10,
+                ds0=-dy10,
                 max_points=MAX_POINTS,
             )
         if self._cl_ll:
             loc = np.argmin(abs(self._cl_ll["P"] - pressure))
             t0 = self._cl_ll["T"][loc]
             if (
-                min(self._cl_ll["P"]) < pressure < max(self._cl_ll["P"]) 
+                min(self._cl_ll["P"]) < pressure < max(self._cl_ll["P"])
                 or pressure > psat_1["P"][-1]
             ):
 
@@ -553,7 +557,7 @@ class GPEC:
         pressure,
         y10=0.9999,
         y20=0.9999,
-        dy10=-1e-3,
+        dy10=1e-3,
         dy20=1e-3,
         dyll0=1e-4,
         **plot_kwargs,
