@@ -1,7 +1,7 @@
 module yaeos__equilibria_boundaries_phase_envelopes_pt
    !! Phase boundaries line on the \(PT\) plane calculation procedures.
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_auxiliar, only: k_wilson
    use yaeos__math_continuation, only: &
@@ -385,7 +385,7 @@ contains
             
             call model%volume(z, P=exp(Xc(nc+2)), T=exp(Xc(nc+1)), V=V, root_type="liquid")
             cp = critical_point(&
-               model, z, z, spec=spec_CP%a, S=0._pr, &
+               model, z, z, spec=spec_CP%a, S=1._pr, &
                max_iters=5000, T0=exp(Xc(nc+1)), P0=exp(Xc(nc+2)), V0=V &
                )
 

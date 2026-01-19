@@ -21,6 +21,8 @@ module yaeos__models
    !!       Huron-Vidal mixing rule.
    !! - **GERG2008 Equation of State**:
    !!    - GERG2008 multifluid equation of state
+   !! - **SAFT Equations of State**:
+   !!    - PC-SAFT equation of state
 
    ! Base model structure
    use yaeos__models_base, only: BaseModel
@@ -31,6 +33,10 @@ module yaeos__models
    ! GERG2008
    use yaeos__models_ar_gerg2008, only: &
       Gerg2008, Gerg2008Binary, G2008Components, gerg_2008
+
+   ! PC-SAFT Models
+   use yaeos__models_ar_saft_pcsaft, only: &
+      PcSaft, init_pcsaft
 
    ! Cubic EoS models
    use yaeos__models_ar_genericcubic, only: &

@@ -182,7 +182,6 @@ contains
 
 
          step = fval/df
-
          do while (abs(step) > 0.5 * abs(x))
             step = step/2
          end do

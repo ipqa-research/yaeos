@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.3.0 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a17b270f"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -3168,11 +3168,15 @@
 <div class="viewcode-block" id="ArModel.precipitation_line_from_env">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.precipitation_line_from_env">[docs]</a>
     <span class="k">def</span> <span class="nf">precipitation_line_from_env</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">PTEnvelope</span><span class="p">,</span> <span class="n">spec_value</span><span class="p">,</span> <span class="n">spec</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
-            <span class="n">ws_stability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate precipitation line from a PTEnvelope.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">PTEnvelope</span><span class="p">,</span>
+        <span class="n">spec_value</span><span class="p">,</span>
+        <span class="n">spec</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
+        <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">ws_stability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate precipitation line from a PTEnvelope.&quot;&quot;&quot;</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">number_of_phases</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">global_composition</span>
 
@@ -3204,12 +3208,21 @@
         <span class="n">kind_w</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reference_phase_kinds</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
 
         <span class="n">prec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generalized_isopleth</span><span class="p">(</span>
-            <span class="n">z</span><span class="p">,</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
+            <span class="n">z</span><span class="p">,</span>
+            <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
+            <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
             <span class="n">spec_variable</span><span class="o">=</span><span class="n">spec_variable</span><span class="p">,</span>
             <span class="n">spec_variable_value</span><span class="o">=</span><span class="n">spec_variable_value</span><span class="p">,</span>
-            <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span> <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
-            <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span> <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
-            <span class="n">ws_stability</span><span class="o">=</span><span class="n">ws_stability</span>
+            <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+            <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+            <span class="n">betas0</span><span class="o">=</span><span class="n">betas0</span><span class="p">,</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+            <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+            <span class="n">ns0</span><span class="o">=</span><span class="n">ns0</span><span class="p">,</span>
+            <span class="n">s0</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span>
+            <span class="n">ds0</span><span class="o">=</span><span class="n">ds0</span><span class="p">,</span>
+            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="n">ws_stability</span><span class="o">=</span><span class="n">ws_stability</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">prec</span></div>
@@ -3438,6 +3451,58 @@
         <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span></div>
 
 
+<div class="viewcode-block" id="ArModel.binary_llv_from_cep">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.binary_llv_from_cep">[docs]</a>
+    <span class="k">def</span> <span class="nf">binary_llv_from_cep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cep</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the binary LLV line from a CEP.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cep : dict</span>
+<span class="sd">            Dictionary with the keys:</span>
+<span class="sd">                - x: phase x compositions</span>
+<span class="sd">                - y: phase y compositions</span>
+<span class="sd">                - Vx: phase x molar volumes</span>
+<span class="sd">                - Vy: phase y molar volumes</span>
+<span class="sd">                - T: temperatures [K]</span>
+<span class="sd">                - P: pressures [bar]</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary with the keys:</span>
+<span class="sd">                - x1: liquid-phase x1 compositions</span>
+<span class="sd">                - y1: liquid-phase y1 compositions</span>
+<span class="sd">                - w1: vapor-phase w1 compositions</span>
+<span class="sd">                - Vxy: liquid-phase x1 and y1 molar volumes</span>
+<span class="sd">                - Vy: liquid-phase y1 molar volumes</span>
+<span class="sd">                - Vw: vapor-phase w1 molar volumes</span>
+<span class="sd">                - T: temperatures [K]</span>
+<span class="sd">                - P: pressures [bar]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="p">(</span><span class="n">x1s</span><span class="p">,</span> <span class="n">y1s</span><span class="p">,</span> <span class="n">w1s</span><span class="p">,</span> <span class="n">vxys</span><span class="p">,</span> <span class="n">vys</span><span class="p">,</span> <span class="n">vws</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>
+            <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
+            <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;Vx&quot;</span><span class="p">],</span>
+            <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;Vy&quot;</span><span class="p">],</span>
+            <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+            <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">msk</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">x1s</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;y1&quot;</span><span class="p">:</span> <span class="n">y1s</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;w1&quot;</span><span class="p">:</span> <span class="n">w1s</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;Vxy&quot;</span><span class="p">:</span> <span class="n">vxys</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;Vy&quot;</span><span class="p">:</span> <span class="n">vys</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;Vw&quot;</span><span class="p">:</span> <span class="n">vws</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">ps</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
+        <span class="p">}</span></div>
+
+
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete the model from the available models list (Fortran side).&quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">make_available_ar_models_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
@@ -3451,7 +3516,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+    <p>&#169; Copyright 2026, Federico E. Benelli.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

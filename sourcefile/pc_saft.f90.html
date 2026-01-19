@@ -1,0 +1,1166 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>pc_saft.f90 &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>pc_saft.f90
+      <small>Source File</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 1.7% of total for source files.">227 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/pc_saft.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+            <li class="breadcrumb-item active" aria-current="page">pc_saft.f90</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#mods-0"
+         aria-expanded="false" aria-controls="mods-0">
+         <h4 class="card-header bg-primary text-white">Modules</h4>
+      </a>
+      <div id="mods-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html">yaeos__models_ar_saft_pcsaft</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../sourcefile/pc_saft.f90.html#src">pc_saft.f90</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    <div class="col-md-9" id='text'>
+      
+      <br>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">This file depends on</h3>
+          </div>
+          <div class="card-body">
+            <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: sourcefile~~pc_saft.f90~~EfferentGraph Pages: 1 -->
+<svg id="sourcefilepc_saftf90EfferentGraph" width="641pt" height="215pt"
+ viewBox="0.00 0.00 641.00 215.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph" class="graph" transform="scale(0.58 0.58) rotate(0) translate(4 366.48)">
+<title>sourcefile~~pc_saft.f90~~EfferentGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-366.48 1098,-366.48 1098,4 -4,4"/>
+<!-- sourcefile~pc_saft.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node1" class="node">
+<title>sourcefile~pc_saft.f90</title>
+<polygon fill="none" stroke="black" points="1094,-282.26 1024,-282.26 1024,-258.26 1094,-258.26 1094,-282.26"/>
+<text text-anchor="middle" x="1059" y="-267.86" font-family="Helvetica,sans-Serif" font-size="10.50">pc_saft.f90</text>
+</g>
+<!-- sourcefile~armodel_adiff_api.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node2" class="node">
+<title>sourcefile~armodel_adiff_api.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node2"><a xlink:href="../sourcefile/armodel_adiff_api.f90.html" xlink:title="armodel_adiff_api.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="883,-323.26 754,-323.26 754,-299.26 883,-299.26 883,-323.26"/>
+<text text-anchor="middle" x="818.5" y="-308.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">armodel_adiff_api.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~pc_saft.f90&#45;&gt;sourcefile~armodel_adiff_api.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge1" class="edge">
+<title>sourcefile~pc_saft.f90&#45;&gt;sourcefile~armodel_adiff_api.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M952.5,-311.26C933.46,-314.83 912.62,-316.06 893.21,-316.1"/>
+<polygon fill="#000000" stroke="#000000" points="893.23,-312.6 883.2,-316.02 893.17,-319.6 893.23,-312.6"/>
+</g>
+<!-- sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node3" class="node">
+<title>sourcefile~constants.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node3"><a xlink:href="../sourcefile/constants.f90.html" xlink:title="constants.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="84,-163.26 0,-163.26 0,-139.26 84,-139.26 84,-163.26"/>
+<text text-anchor="middle" x="42" y="-148.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">constants.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~pc_saft.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge2" class="edge">
+<title>sourcefile~pc_saft.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M952.5,-311.26C920.91,-317.83 914.68,-326.11 883,-332.26 791.22,-350.1 766.78,-344.9 673.5,-351.26"/>
+</g>
+<!-- sourcefile~critical.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node4" class="node">
+<title>sourcefile~critical.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node4"><a xlink:href="../sourcefile/critical.f90.html" xlink:title="critical.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="988,-221.26 919,-221.26 919,-197.26 988,-197.26 988,-221.26"/>
+<text text-anchor="middle" x="953.5" y="-206.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">critical.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~pc_saft.f90&#45;&gt;sourcefile~critical.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge3" class="edge">
+<title>sourcefile~pc_saft.f90&#45;&gt;sourcefile~critical.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1037.55,-258.21C1022.24,-249.19 1001.08,-236.71 983.95,-226.62"/>
+<polygon fill="#000000" stroke="#000000" points="985.3,-223.35 974.91,-221.29 981.74,-229.38 985.3,-223.35"/>
+</g>
+<!-- sourcefile~hyperdual.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node5" class="node">
+<title>sourcefile~hyperdual.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node5"><a xlink:href="../sourcefile/hyperdual.f90.html" xlink:title="hyperdual.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="716,-323.26 629,-323.26 629,-299.26 716,-299.26 716,-323.26"/>
+<text text-anchor="middle" x="672.5" y="-308.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~pc_saft.f90&#45;&gt;sourcefile~hyperdual.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge4" class="edge">
+<title>sourcefile~pc_saft.f90&#45;&gt;sourcefile~hyperdual.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1034.93,-282.38C1014.45,-292.41 983.37,-305.85 954.5,-311.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M952.5,-311.26C920.78,-317.21 914.92,-294.98 883,-290.26 826.28,-281.88 810.87,-282.97 754,-290.26 743.36,-291.63 732.12,-293.97 721.52,-296.6"/>
+<polygon fill="#000000" stroke="#000000" points="720.39,-293.28 711.6,-299.2 722.16,-300.05 720.39,-293.28"/>
+</g>
+<!-- sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge6" class="edge">
+<title>sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M787.78,-323.34C759.09,-334.07 714.14,-348.49 673.5,-351.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M671.5,-351.26C622.72,-354.59 609.33,-341.14 561.5,-351.26"/>
+</g>
+<!-- sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~hyperdual.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge7" class="edge">
+<title>sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~hyperdual.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M753.92,-311.26C744.71,-311.26 735.32,-311.26 726.36,-311.26"/>
+<polygon fill="#000000" stroke="#000000" points="726.07,-307.76 716.07,-311.26 726.07,-314.76 726.07,-307.76"/>
+</g>
+<!-- sourcefile~ar_models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node6" class="node">
+<title>sourcefile~ar_models.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node6"><a xlink:href="../sourcefile/ar_models.f90.html" xlink:title="ar_models.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="716.5,-201.26 628.5,-201.26 628.5,-177.26 716.5,-177.26 716.5,-201.26"/>
+<text text-anchor="middle" x="672.5" y="-186.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_models.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge5" class="edge">
+<title>sourcefile~armodel_adiff_api.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M803.17,-299.12C777.94,-277.74 725.44,-233.27 695.56,-207.95"/>
+<polygon fill="#000000" stroke="#000000" points="697.67,-205.15 687.78,-201.36 693.14,-210.49 697.67,-205.15"/>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge9" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M942.81,-196.96C922.88,-172.98 874.49,-121.46 819.5,-111.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M817.5,-111.26C754.57,-99.59 737.3,-106.17 673.5,-111.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M671.5,-111.26C622.76,-115.15 609.69,-117.56 561.5,-109.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M559.5,-109.26C498.82,-98.82 503.96,-49.03 445,-31.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M443,-31.26C324.49,4.45 279.12,15.47 164.5,-31.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M162.5,-31.26C113.3,-50.42 74.33,-101.74 55.44,-130.68"/>
+<polygon fill="#000000" stroke="#000000" points="52.42,-128.9 50.03,-139.22 58.34,-132.65 52.42,-128.9"/>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge8" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M817.5,-111.26C767.59,-102 717.26,-143.59 691.37,-169.61"/>
+<polygon fill="#000000" stroke="#000000" points="688.56,-167.48 684.15,-177.11 693.6,-172.34 688.56,-167.48"/>
+</g>
+<!-- sourcefile~continuation.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node7" class="node">
+<title>sourcefile~continuation.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node7"><a xlink:href="../sourcefile/continuation.f90.html" xlink:title="continuation.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="494,-121.26 394,-121.26 394,-97.26 494,-97.26 494,-121.26"/>
+<text text-anchor="middle" x="444" y="-106.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">continuation.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~continuation.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge10" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~continuation.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M559.5,-109.26C541.65,-106.19 522,-105.3 504.09,-105.44"/>
+<polygon fill="#000000" stroke="#000000" points="504,-101.94 494.06,-105.62 504.12,-108.94 504,-101.94"/>
+</g>
+<!-- sourcefile~equilibria_state.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node8" class="node">
+<title>sourcefile~equilibria_state.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node8"><a xlink:href="../sourcefile/equilibria_state.f90.html" xlink:title="equilibria_state.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="358,-43.26 243,-43.26 243,-19.26 358,-19.26 358,-43.26"/>
+<text text-anchor="middle" x="300.5" y="-28.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">equilibria_state.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~equilibria_state.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge11" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~equilibria_state.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M443,-31.26C419.23,-24.1 392.17,-22.59 368.13,-23.39"/>
+<polygon fill="#000000" stroke="#000000" points="367.86,-19.9 358.03,-23.86 368.18,-26.89 367.86,-19.9"/>
+</g>
+<!-- sourcefile~linalg.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node9" class="node">
+<title>sourcefile~linalg.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node9"><a xlink:href="../sourcefile/linalg.f90.html" xlink:title="linalg.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="331.5,-85.26 269.5,-85.26 269.5,-61.26 331.5,-61.26 331.5,-85.26"/>
+<text text-anchor="middle" x="300.5" y="-70.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linalg.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~linalg.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge12" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~linalg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M443,-31.26C433.15,-28.29 379.94,-45.59 341.67,-58.88"/>
+<polygon fill="#000000" stroke="#000000" points="340.09,-55.73 331.81,-62.34 342.4,-62.34 340.09,-55.73"/>
+</g>
+<!-- sourcefile~math.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node10" class="node">
+<title>sourcefile~math.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node10"><a xlink:href="../sourcefile/math.f90.html" xlink:title="math.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="591,-161.26 530,-161.26 530,-137.26 591,-137.26 591,-161.26"/>
+<text text-anchor="middle" x="560.5" y="-146.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">math.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~math.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge13" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~math.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M671.5,-111.26C644.6,-113.41 615.83,-123.66 594.46,-132.97"/>
+<polygon fill="#000000" stroke="#000000" points="592.88,-129.85 585.2,-137.15 595.76,-136.23 592.88,-129.85"/>
+</g>
+<!-- sourcefile~stability.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node11" class="node">
+<title>sourcefile~stability.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node11"><a xlink:href="../sourcefile/stability.f90.html" xlink:title="stability.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="855,-221.26 782,-221.26 782,-197.26 855,-197.26 855,-221.26"/>
+<text text-anchor="middle" x="818.5" y="-206.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">stability.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~critical.f90&#45;&gt;sourcefile~stability.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge14" class="edge">
+<title>sourcefile~critical.f90&#45;&gt;sourcefile~stability.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M918.94,-209.26C902.73,-209.26 883.02,-209.26 865.44,-209.26"/>
+<polygon fill="#000000" stroke="#000000" points="865.38,-205.76 855.38,-209.26 865.38,-212.76 865.38,-205.76"/>
+</g>
+<!-- sourcefile~hyperdual.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge15" class="edge">
+<title>sourcefile~hyperdual.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M645,-323.29C623.09,-332.64 590.92,-345.04 561.5,-351.26"/>
+</g>
+<!-- sourcefile~ar_models.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge17" class="edge">
+<title>sourcefile~ar_models.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M628.32,-187.5C608.01,-187.12 583.47,-187.31 561.5,-189.26"/>
+</g>
+<!-- sourcefile~ar_models.f90&#45;&gt;sourcefile~math.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge18" class="edge">
+<title>sourcefile~ar_models.f90&#45;&gt;sourcefile~math.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M638.5,-177.26C626.61,-172.94 613.09,-168.02 600.72,-163.52"/>
+<polygon fill="#000000" stroke="#000000" points="601.71,-160.16 591.11,-160.03 599.31,-166.74 601.71,-160.16"/>
+</g>
+<!-- sourcefile~base.f90~2 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node13" class="node">
+<title>sourcefile~base.f90~2</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node13"><a xlink:href="../sourcefile/base.f90~2.html" xlink:title="base.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="589.5,-241.26 531.5,-241.26 531.5,-217.26 589.5,-217.26 589.5,-241.26"/>
+<text text-anchor="middle" x="560.5" y="-226.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">base.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~ar_models.f90&#45;&gt;sourcefile~base.f90~2 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge16" class="edge">
+<title>sourcefile~ar_models.f90&#45;&gt;sourcefile~base.f90~2</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M638.5,-201.26C626.09,-205.77 611.9,-210.93 599.1,-215.59"/>
+<polygon fill="#000000" stroke="#000000" points="597.85,-212.32 589.65,-219.03 600.24,-218.9 597.85,-212.32"/>
+</g>
+<!-- sourcefile~continuation.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge20" class="edge">
+<title>sourcefile~continuation.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M299.5,-113.26C237.36,-118.2 226.83,-151.26 164.5,-151.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M162.5,-151.26C140.12,-151.26 115.39,-151.26 94.26,-151.26"/>
+<polygon fill="#000000" stroke="#000000" points="94.2,-147.76 84.2,-151.26 94.2,-154.76 94.2,-147.76"/>
+</g>
+<!-- sourcefile~continuation.f90&#45;&gt;sourcefile~linalg.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge21" class="edge">
+<title>sourcefile~continuation.f90&#45;&gt;sourcefile~linalg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M395.49,-97.17C378.07,-92.74 358.53,-87.77 341.81,-83.52"/>
+<polygon fill="#000000" stroke="#000000" points="342.35,-80.04 331.8,-80.97 340.63,-86.83 342.35,-80.04"/>
+</g>
+<!-- sourcefile~auxiliar.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node12" class="node">
+<title>sourcefile~auxiliar.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node12"><a xlink:href="../sourcefile/auxiliar.f90.html" xlink:title="auxiliar.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="199,-123.26 128,-123.26 128,-99.26 199,-99.26 199,-123.26"/>
+<text text-anchor="middle" x="163.5" y="-108.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">auxiliar.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~continuation.f90&#45;&gt;sourcefile~auxiliar.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge19" class="edge">
+<title>sourcefile~continuation.f90&#45;&gt;sourcefile~auxiliar.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M393.82,-109.42C366.58,-109.82 332.12,-110.83 301.5,-113.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M299.5,-113.26C269.49,-115.64 235.6,-115.13 209.29,-114.03"/>
+<polygon fill="#000000" stroke="#000000" points="209.39,-110.53 199.24,-113.57 209.07,-117.52 209.39,-110.53"/>
+</g>
+<!-- sourcefile~equilibria_state.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge22" class="edge">
+<title>sourcefile~equilibria_state.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M242.81,-21.88C217.94,-20.1 188.92,-21.31 164.5,-31.26"/>
+</g>
+<!-- sourcefile~linalg.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge24" class="edge">
+<title>sourcefile~linalg.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.33,-62.81C231.08,-49.72 169.49,-29.23 164.5,-31.26"/>
+</g>
+<!-- sourcefile~linalg.f90&#45;&gt;sourcefile~auxiliar.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge23" class="edge">
+<title>sourcefile~linalg.f90&#45;&gt;sourcefile~auxiliar.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.2,-81.79C251.51,-86.77 228.87,-93.14 209.16,-98.69"/>
+<polygon fill="#000000" stroke="#000000" points="208.14,-95.34 199.46,-101.42 210.04,-102.08 208.14,-95.34"/>
+</g>
+<!-- sourcefile~math.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge26" class="edge">
+<title>sourcefile~math.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M299.5,-151.26C239.71,-146.29 224.5,-151.26 164.5,-151.26"/>
+</g>
+<!-- sourcefile~math.f90&#45;&gt;sourcefile~continuation.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge27" class="edge">
+<title>sourcefile~math.f90&#45;&gt;sourcefile~continuation.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M529.72,-138.86C517.35,-134.53 502.73,-129.43 489.16,-124.69"/>
+<polygon fill="#000000" stroke="#000000" points="490.1,-121.31 479.5,-121.31 487.79,-127.92 490.1,-121.31"/>
+</g>
+<!-- sourcefile~math.f90&#45;&gt;sourcefile~linalg.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge28" class="edge">
+<title>sourcefile~math.f90&#45;&gt;sourcefile~linalg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M545.57,-137.23C540.61,-132.88 535.01,-127.9 530,-123.26 513.62,-108.1 514.33,-97.45 494,-88.26 445.11,-66.16 382.1,-65.83 341.74,-68.69"/>
+<polygon fill="#000000" stroke="#000000" points="341.43,-65.2 331.74,-69.5 341.99,-72.18 341.43,-65.2"/>
+</g>
+<!-- sourcefile~math.f90&#45;&gt;sourcefile~auxiliar.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge25" class="edge">
+<title>sourcefile~math.f90&#45;&gt;sourcefile~auxiliar.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M529.65,-151.04C481.55,-153.57 383.93,-157.25 301.5,-151.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M299.5,-151.26C265.8,-148.46 229.11,-137.01 202.49,-127.07"/>
+<polygon fill="#000000" stroke="#000000" points="203.4,-123.67 192.81,-123.36 200.89,-130.21 203.4,-123.67"/>
+</g>
+<!-- sourcefile~stability.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge31" class="edge">
+<title>sourcefile~stability.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M795.37,-197.19C775.71,-187.2 745.86,-173.78 718,-168.26 678.33,-160.41 666.96,-162.01 627,-168.26 596.8,-172.98 591.95,-186.56 561.5,-189.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M559.5,-189.26C418.61,-196.48 382.95,-183 243,-165.26 207.84,-160.8 199.94,-151.26 164.5,-151.26"/>
+</g>
+<!-- sourcefile~stability.f90&#45;&gt;sourcefile~ar_models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge29" class="edge">
+<title>sourcefile~stability.f90&#45;&gt;sourcefile~ar_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M781.9,-204.32C765.25,-202 745.07,-199.2 726.66,-196.64"/>
+<polygon fill="#000000" stroke="#000000" points="727.03,-193.16 716.64,-195.25 726.07,-200.1 727.03,-193.16"/>
+</g>
+<!-- sourcefile~stability.f90&#45;&gt;sourcefile~base.f90~2 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge30" class="edge">
+<title>sourcefile~stability.f90&#45;&gt;sourcefile~base.f90~2</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M781.9,-212.04C734.03,-215.78 649.24,-222.41 599.95,-226.26"/>
+<polygon fill="#000000" stroke="#000000" points="599.4,-222.79 589.71,-227.06 599.95,-229.77 599.4,-222.79"/>
+</g>
+<!-- sourcefile~ge_models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node14" class="node">
+<title>sourcefile~ge_models.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node14"><a xlink:href="../sourcefile/ge_models.f90.html" xlink:title="ge_models.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="718,-281.26 627,-281.26 627,-257.26 718,-257.26 718,-281.26"/>
+<text text-anchor="middle" x="672.5" y="-266.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge_models.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~stability.f90&#45;&gt;sourcefile~ge_models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge32" class="edge">
+<title>sourcefile~stability.f90&#45;&gt;sourcefile~ge_models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M788.36,-221.4C766.4,-230.55 736.08,-243.19 712.11,-253.17"/>
+<polygon fill="#000000" stroke="#000000" points="710.48,-250.06 702.6,-257.14 713.17,-256.52 710.48,-250.06"/>
+</g>
+<!-- sourcefile~auxiliar.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge33" class="edge">
+<title>sourcefile~auxiliar.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M127.94,-122.83C115.74,-126.91 101.83,-131.57 88.85,-135.91"/>
+<polygon fill="#000000" stroke="#000000" points="87.52,-132.67 79.15,-139.16 89.74,-139.31 87.52,-132.67"/>
+</g>
+<!-- sourcefile~substance.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_node15" class="node">
+<title>sourcefile~substance.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~EfferentGraph_node15"><a xlink:href="../sourcefile/substance.f90.html" xlink:title="substance.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="207,-221.26 120,-221.26 120,-197.26 207,-197.26 207,-221.26"/>
+<text text-anchor="middle" x="163.5" y="-206.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">substance.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~base.f90~2&#45;&gt;sourcefile~substance.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge34" class="edge">
+<title>sourcefile~base.f90~2&#45;&gt;sourcefile~substance.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M531.41,-227.84C465.93,-224.52 302.3,-216.24 217.43,-211.94"/>
+<polygon fill="#000000" stroke="#000000" points="217.4,-208.44 207.23,-211.42 217.04,-215.43 217.4,-208.44"/>
+</g>
+<!-- sourcefile~ge_models.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge36" class="edge">
+<title>sourcefile~ge_models.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M642.53,-281.33C637.2,-283.99 631.81,-287 627,-290.26 594.06,-312.57 600.68,-344.37 561.5,-351.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M559.5,-351.26C359.96,-386.37 294.45,-333.28 120,-230.26 94.49,-215.2 71.69,-189.49 57.65,-171.51"/>
+<polygon fill="#000000" stroke="#000000" points="60.31,-169.23 51.48,-163.38 54.74,-173.46 60.31,-169.23"/>
+</g>
+<!-- sourcefile~ge_models.f90&#45;&gt;sourcefile~base.f90~2 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge35" class="edge">
+<title>sourcefile~ge_models.f90&#45;&gt;sourcefile~base.f90~2</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M638.5,-257.26C626.09,-252.75 611.9,-247.59 599.1,-242.94"/>
+<polygon fill="#000000" stroke="#000000" points="600.24,-239.62 589.65,-239.5 597.85,-246.2 600.24,-239.62"/>
+</g>
+<!-- sourcefile~substance.f90&#45;&gt;sourcefile~constants.f90 -->
+<g id="sourcefile~~pc_saft.f90~~EfferentGraph_edge37" class="edge">
+<title>sourcefile~substance.f90&#45;&gt;sourcefile~constants.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M137.74,-197.24C120.11,-188.69 96.22,-177.09 76.83,-167.68"/>
+<polygon fill="#000000" stroke="#000000" points="78.25,-164.48 67.73,-163.26 75.2,-170.78 78.25,-164.48"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var pansourcefilepc_saftf90EfferentGraph = svgPanZoom('#sourcefilepc_saftf90EfferentGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#EfferentGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="EfferentGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="202pt" height="32pt"
+ viewBox="0.00 0.00 201.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 197.5,-28 197.5,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="193.5,-24 88.5,-24 88.5,0 193.5,0 193.5,-24"/>
+<text text-anchor="middle" x="141" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a file to a file which it depends on. A file
+is dependent upon another if the latter must be compiled before the former
+can be.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Files dependent on this one</h3>
+          </div>
+          <div class="card-body">
+            <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: sourcefile~~pc_saft.f90~~AfferentGraph Pages: 1 -->
+<svg id="sourcefilepc_saftf90AfferentGraph" width="286pt" height="32pt"
+ viewBox="0.00 0.00 286.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~pc_saft.f90~~AfferentGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>sourcefile~~pc_saft.f90~~AfferentGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 282,-28 282,4 -4,4"/>
+<!-- sourcefile~pc_saft.f90 -->
+<g id="sourcefile~~pc_saft.f90~~AfferentGraph_node1" class="node">
+<title>sourcefile~pc_saft.f90</title>
+<polygon fill="none" stroke="black" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">pc_saft.f90</text>
+</g>
+<!-- sourcefile~models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~AfferentGraph_node2" class="node">
+<title>sourcefile~models.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~AfferentGraph_node2"><a xlink:href="../sourcefile/models.f90.html" xlink:title="models.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="178,-24 106,-24 106,0 178,0 178,-24"/>
+<text text-anchor="middle" x="142" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">models.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~models.f90&#45;&gt;sourcefile~pc_saft.f90 -->
+<g id="sourcefile~~pc_saft.f90~~AfferentGraph_edge1" class="edge">
+<title>sourcefile~models.f90&#45;&gt;sourcefile~pc_saft.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M105.74,-12C97.61,-12 88.86,-12 80.39,-12"/>
+<polygon fill="#000000" stroke="#000000" points="80.27,-8.5 70.27,-12 80.27,-15.5 80.27,-8.5"/>
+</g>
+<!-- sourcefile~yaeos.f90 -->
+<g id="sourcefile~~pc_saft.f90~~AfferentGraph_node3" class="node">
+<title>sourcefile~yaeos.f90</title>
+<g id="a_sourcefile~~pc_saft.f90~~AfferentGraph_node3"><a xlink:href="../sourcefile/yaeos.f90.html" xlink:title="yaeos.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="278,-24 214,-24 214,0 278,0 278,-24"/>
+<text text-anchor="middle" x="246" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~yaeos.f90&#45;&gt;sourcefile~models.f90 -->
+<g id="sourcefile~~pc_saft.f90~~AfferentGraph_edge2" class="edge">
+<title>sourcefile~yaeos.f90&#45;&gt;sourcefile~models.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M213.84,-12C205.85,-12 197.08,-12 188.52,-12"/>
+<polygon fill="#000000" stroke="#000000" points="188.25,-8.5 178.25,-12 188.25,-15.5 188.25,-8.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#AfferentGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="AfferentGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="202pt" height="32pt"
+ viewBox="0.00 0.00 201.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 197.5,-28 197.5,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="193.5,-24 88.5,-24 88.5,0 193.5,0 193.5,-24"/>
+<text text-anchor="middle" x="141" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a file to a file which it depends on. A file
+is dependent upon another if the latter must be compiled before the former
+can be.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
+<br>
+      <section>
+        <h2><span class="anchor" id="src"></span>Source Code</h2>
+        <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="k">module </span><span class="n">yaeos__models_ar_saft_pcsaft</span>
+<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">   </span><span class="c">!! PC-SAFT Implementation (Gross &amp; Sadowski, 2001)</span>
+<a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">   </span><span class="c">!! Approach: Hard Chain + Dispersion (Placeholder)</span>
+<a id="ln-4" name="ln-4" href="#ln-4"></a>
+<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>
+<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="w">   </span><span class="k">use </span><span class="n">yaeos__adiff_hyperdual_ar_api</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModelAdiff</span>
+<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">   </span><span class="k">use </span><span class="n">hyperdual_mod</span>
+<a id="ln-8" name="ln-8" href="#ln-8"></a>
+<a id="ln-9" name="ln-9" href="#ln-9"></a><span class="w">   </span><span class="k">implicit none</span>
+<a id="ln-10" name="ln-10" href="#ln-10"></a>
+<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="k">   private</span>
+<a id="ln-12" name="ln-12" href="#ln-12"></a>
+<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="k">   public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">PcSaft</span><span class="p">,</span><span class="w"> </span><span class="n">init_pcsaft</span>
+<a id="ln-14" name="ln-14" href="#ln-14"></a>
+<a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">   </span><span class="c">! =========================================================================</span>
+<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">   </span><span class="c">! PC-SAFT UNIVERSAL CONSTANTS (Gross &amp; Sadowski, 2001, Table A1)</span>
+<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">   </span><span class="c">! =========================================================================</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">   </span><span class="c">! A_COEFFS(k, i): k = power of eta (0..6), i = type (0:m=1, 1:m=inf, 2:corr)</span>
+<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">A_COEFFS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">reshape</span><span class="p">([</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">      </span><span class="mf">0.9105631445</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.3084016918</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.0906148351</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">      </span><span class="mf">0.6361281449</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="mf">0.1860531159</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="mf">0.4527842806</span><span class="p">,</span><span class="w">  </span><span class="p">&amp;</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">      </span><span class="mf">2.6861347891</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">2.5030047259</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5962700728</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">      </span><span class="o">-</span><span class="mi">2</span><span class="mf">6.547362491</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="mf">1.419793629</span><span class="w"> </span><span class="p">,</span><span class="o">-</span><span class="mf">1.7241829131</span><span class="p">,&amp;</span>
+<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">      </span><span class="mi">9</span><span class="mf">7.759208784</span><span class="w"> </span><span class="p">,</span><span class="o">-</span><span class="mi">6</span><span class="mf">5.255885330</span><span class="w"> </span><span class="p">,</span><span class="o">-</span><span class="mf">4.1302112531</span><span class="p">,&amp;</span>
+<a id="ln-25" name="ln-25" href="#ln-25"></a><span class="w">      </span><span class="o">-</span><span class="mi">15</span><span class="mf">9.59154087</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="mf">3.318680481</span><span class="w"> </span><span class="p">,</span><span class="mi">1</span><span class="mf">3.776631870</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">      </span><span class="mi">9</span><span class="mf">1.297774084</span><span class="w"> </span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="mf">3.746922930</span><span class="w"> </span><span class="p">,</span><span class="o">-</span><span class="mf">8.6728470368</span><span class="w"> </span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">])</span>
+<a id="ln-27" name="ln-27" href="#ln-27"></a>
+<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">B_COEFFS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">reshape</span><span class="p">([</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">      </span><span class="mf">0.7240946941</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.5755498075</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0976883116</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">      </span><span class="mf">2.2382791861</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6995095521</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.2557574982</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-31" name="ln-31" href="#ln-31"></a><span class="w">      </span><span class="o">-</span><span class="mf">4.0025849485</span><span class="p">,</span><span class="w"> </span><span class="mf">3.8925673390</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">9.1558561530</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">      </span><span class="o">-</span><span class="mi">2</span><span class="mf">1.003576815</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="mf">7.215471648</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="mf">0.642075974</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="w">      </span><span class="mi">2</span><span class="mf">6.855641363</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="mf">2.67226447</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">3</span><span class="mf">8.804430052</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="w">      </span><span class="mi">20</span><span class="mf">6.55133841</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">16</span><span class="mf">1.82646165</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="mf">3.626774077</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-35" name="ln-35" href="#ln-35"></a><span class="w">      </span><span class="o">-</span><span class="mi">35</span><span class="mf">5.60235612</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">16</span><span class="mf">5.20769346</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="mf">9.666905585</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">])</span>
+<a id="ln-36" name="ln-36" href="#ln-36"></a>
+<a id="ln-37" name="ln-37" href="#ln-37"></a>
+<a id="ln-38" name="ln-38" href="#ln-38"></a><span class="w">   </span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">PcSaft</span>
+<a id="ln-39" name="ln-39" href="#ln-39"></a><span class="w">      </span><span class="c">!! # `PcSaft`</span>
+<a id="ln-40" name="ln-40" href="#ln-40"></a><span class="w">      </span><span class="c">!! PC-SAFT Equation of State Model</span>
+<a id="ln-41" name="ln-41" href="#ln-41"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! Number of segments</span>
+<a id="ln-42" name="ln-42" href="#ln-42"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sigma</span><span class="p">(:)</span><span class="w">     </span><span class="c">!! Segment diameter [Angstrom]</span>
+<a id="ln-43" name="ln-43" href="#ln-43"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Energy / k_B [K]</span>
+<a id="ln-44" name="ln-44" href="#ln-44"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,:)</span><span class="w">     </span><span class="c">!! Binary interaction parameters (optional)</span>
+<a id="ln-45" name="ln-45" href="#ln-45"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eps_assoc</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Association energy [K]</span>
+<a id="ln-46" name="ln-46" href="#ln-46"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kap_assoc</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Association volume [A^3]</span>
+<a id="ln-47" name="ln-47" href="#ln-47"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n_sites</span><span class="p">(:)</span><span class="w">   </span><span class="c">!! Number of association sites</span>
+<a id="ln-48" name="ln-48" href="#ln-48"></a><span class="w">   </span><span class="k">contains</span>
+<a id="ln-49" name="ln-49" href="#ln-49"></a><span class="k">      procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Ar_impl</span>
+<a id="ln-50" name="ln-50" href="#ln-50"></a><span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">get_v0_impl</span>
+<a id="ln-51" name="ln-51" href="#ln-51"></a><span class="w">   </span><span class="k">end type </span><span class="n">PcSaft</span>
+<a id="ln-52" name="ln-52" href="#ln-52"></a>
+<a id="ln-53" name="ln-53" href="#ln-53"></a><span class="w">   </span><span class="c">! Module private constants</span>
+<a id="ln-54" name="ln-54" href="#ln-54"></a><span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">PI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.14159265359_pr</span>
+<a id="ln-55" name="ln-55" href="#ln-55"></a><span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">N_AVO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">6.02214076e23_pr</span>
+<a id="ln-56" name="ln-56" href="#ln-56"></a>
+<a id="ln-57" name="ln-57" href="#ln-57"></a><span class="w">   </span><span class="c">! Critical conversion factor:</span>
+<a id="ln-58" name="ln-58" href="#ln-58"></a><span class="w">   </span><span class="c">! Zeta must be dimensionless.</span>
+<a id="ln-59" name="ln-59" href="#ln-59"></a><span class="w">   </span><span class="c">! V comes in Liters. Sigma in Angstroms.</span>
+<a id="ln-60" name="ln-60" href="#ln-60"></a><span class="w">   </span><span class="c">! 1 L = 10^27 A^3.</span>
+<a id="ln-61" name="ln-61" href="#ln-61"></a><span class="w">   </span><span class="c">! rho_num [1/A^3] = (n [mol] * N_AVO) / (V [L] * 10^27)</span>
+<a id="ln-62" name="ln-62" href="#ln-62"></a><span class="w">   </span><span class="c">! Factor = 0.602214...</span>
+<a id="ln-63" name="ln-63" href="#ln-63"></a><span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">UNITS_FACTOR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.000602214086_pr</span>
+<a id="ln-64" name="ln-64" href="#ln-64"></a>
+<a id="ln-65" name="ln-65" href="#ln-65"></a><span class="k">contains</span>
+<a id="ln-66" name="ln-66" href="#ln-66"></a>
+<a id="ln-67" name="ln-67" href="#ln-67"></a><span class="k">   type</span><span class="p">(</span><span class="n">PcSaft</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">init_pcsaft</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<a id="ln-68" name="ln-68" href="#ln-68"></a><span class="w">      </span><span class="k">use </span><span class="n">yaeos__equilibria_critical</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">get_critical_constants</span>
+<a id="ln-69" name="ln-69" href="#ln-69"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(:)</span>
+<a id="ln-70" name="ln-70" href="#ln-70"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sigma</span><span class="p">(:)</span>
+<a id="ln-71" name="ln-71" href="#ln-71"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">(:)</span>
+<a id="ln-72" name="ln-72" href="#ln-72"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,:)</span>
+<a id="ln-73" name="ln-73" href="#ln-73"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span>
+<a id="ln-74" name="ln-74" href="#ln-74"></a><span class="w">      </span><span class="n">model</span><span class="p">%</span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span>
+<a id="ln-75" name="ln-75" href="#ln-75"></a><span class="w">      </span><span class="n">model</span><span class="p">%</span><span class="n">sigma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigma</span>
+<a id="ln-76" name="ln-76" href="#ln-76"></a><span class="w">      </span><span class="n">model</span><span class="p">%</span><span class="n">epsilon_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">epsilon_k</span>
+<a id="ln-77" name="ln-77" href="#ln-77"></a><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">kij</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<a id="ln-78" name="ln-78" href="#ln-78"></a><span class="k">         </span><span class="n">model</span><span class="p">%</span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span>
+<a id="ln-79" name="ln-79" href="#ln-79"></a><span class="w">      </span><span class="k">end if</span>
+<a id="ln-80" name="ln-80" href="#ln-80"></a>
+<a id="ln-81" name="ln-81" href="#ln-81"></a><span class="k">      </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<a id="ln-82" name="ln-82" href="#ln-82"></a><span class="w">      </span><span class="k">allocate</span><span class="p">(</span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">Tc</span><span class="p">(</span><span class="n">nc</span><span class="p">))</span>
+<a id="ln-83" name="ln-83" href="#ln-83"></a><span class="w">      </span><span class="k">allocate</span><span class="p">(</span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">Pc</span><span class="p">(</span><span class="n">nc</span><span class="p">))</span>
+<a id="ln-84" name="ln-84" href="#ln-84"></a><span class="w">      </span><span class="k">allocate</span><span class="p">(</span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">w</span><span class="p">(</span><span class="n">nc</span><span class="p">))</span>
+<a id="ln-85" name="ln-85" href="#ln-85"></a><span class="w">      </span><span class="k">call </span><span class="n">get_critical_constants</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<a id="ln-86" name="ln-86" href="#ln-86"></a><span class="w">   </span><span class="k">end function </span><span class="n">init_pcsaft</span>
+<a id="ln-87" name="ln-87" href="#ln-87"></a>
+<a id="ln-88" name="ln-88" href="#ln-88"></a>
+<a id="ln-89" name="ln-89" href="#ln-89"></a><span class="w">   </span><span class="c">! ====================================================================</span>
+<a id="ln-90" name="ln-90" href="#ln-90"></a><span class="w">   </span><span class="c">! Main Function: Residual Helmholtz Energy</span>
+<a id="ln-91" name="ln-91" href="#ln-91"></a><span class="w">   </span><span class="c">! ====================================================================</span>
+<a id="ln-92" name="ln-92" href="#ln-92"></a><span class="w">   </span><span class="k">function </span><span class="n">Ar_impl</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">ar_total</span><span class="p">)</span>
+<a id="ln-93" name="ln-93" href="#ln-93"></a><span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">PcSaft</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<a id="ln-94" name="ln-94" href="#ln-94"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w">  </span><span class="c">! Moles [mol]</span>
+<a id="ln-95" name="ln-95" href="#ln-95"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span><span class="w">     </span><span class="c">! Volume [L]</span>
+<a id="ln-96" name="ln-96" href="#ln-96"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="w">     </span><span class="c">! Temperature [K]</span>
+<a id="ln-97" name="ln-97" href="#ln-97"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar_total</span><span class="w">          </span><span class="c">! A_res Total [bar L]</span>
+<a id="ln-98" name="ln-98" href="#ln-98"></a>
+<a id="ln-99" name="ln-99" href="#ln-99"></a><span class="w">      </span><span class="c">! Local variables</span>
+<a id="ln-100" name="ln-100" href="#ln-100"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">d</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w">       </span><span class="c">! T-dependent diameter</span>
+<a id="ln-101" name="ln-101" href="#ln-101"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">)</span><span class="w">        </span><span class="c">! Density moments</span>
+<a id="ln-102" name="ln-102" href="#ln-102"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a_hs</span><span class="w">             </span><span class="c">! A_hard_sphere / RT (dimensionless)</span>
+<a id="ln-103" name="ln-103" href="#ln-103"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a_chain</span><span class="w">          </span><span class="c">! A_chain / RT (dimensionless)</span>
+<a id="ln-104" name="ln-104" href="#ln-104"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a_disp</span><span class="w">           </span><span class="c">! A_disp / RT (dimensionless)</span>
+<a id="ln-105" name="ln-105" href="#ln-105"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a_assoc</span><span class="w">          </span><span class="c">! A_assoc / RT (dimensionless)</span>
+<a id="ln-106" name="ln-106" href="#ln-106"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n_tot</span>
+<a id="ln-107" name="ln-107" href="#ln-107"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rho</span><span class="p">,</span><span class="w"> </span><span class="n">eta</span><span class="p">,</span><span class="w"> </span><span class="n">m_ave</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<a id="ln-108" name="ln-108" href="#ln-108"></a>
+<a id="ln-109" name="ln-109" href="#ln-109"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">i</span>
+<a id="ln-110" name="ln-110" href="#ln-110"></a>
+<a id="ln-111" name="ln-111" href="#ln-111"></a><span class="w">      </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-112" name="ln-112" href="#ln-112"></a><span class="w">      </span><span class="n">n_tot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-113" name="ln-113" href="#ln-113"></a><span class="w">      </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_tot</span>
+<a id="ln-114" name="ln-114" href="#ln-114"></a><span class="w">      </span><span class="n">m_ave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">)</span>
+<a id="ln-115" name="ln-115" href="#ln-115"></a>
+<a id="ln-116" name="ln-116" href="#ln-116"></a><span class="w">      </span><span class="c">! 1. Calculate Segment Diameter d(T) [Eq. A.4]</span>
+<a id="ln-117" name="ln-117" href="#ln-117"></a><span class="w">      </span><span class="c">! IMPORTANT: &#39;d&#39; is hyperdual because it depends on T.</span>
+<a id="ln-118" name="ln-118" href="#ln-118"></a><span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<a id="ln-119" name="ln-119" href="#ln-119"></a><span class="w">         </span><span class="n">d</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">sigma</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.12_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">3.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">epsilon_k</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">T</span><span class="p">))</span>
+<a id="ln-120" name="ln-120" href="#ln-120"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-121" name="ln-121" href="#ln-121"></a>
+<a id="ln-122" name="ln-122" href="#ln-122"></a><span class="w">      </span><span class="c">! 2. Calculate Density Moments (Zetas) [Eq. A.5]</span>
+<a id="ln-123" name="ln-123" href="#ln-123"></a><span class="w">      </span><span class="c">! Passing n, V and d.</span>
+<a id="ln-124" name="ln-124" href="#ln-124"></a><span class="w">      </span><span class="k">call </span><span class="n">calculate_zetas</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">)</span>
+<a id="ln-125" name="ln-125" href="#ln-125"></a>
+<a id="ln-126" name="ln-126" href="#ln-126"></a><span class="w">      </span><span class="c">! 3. Calculate Hard Sphere Contribution (Mixture) [Eq. A.6 - A.7]</span>
+<a id="ln-127" name="ln-127" href="#ln-127"></a><span class="w">      </span><span class="n">a_hs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calculate_hard_sphere</span><span class="p">(</span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">n_tot</span><span class="p">)</span>
+<a id="ln-128" name="ln-128" href="#ln-128"></a>
+<a id="ln-129" name="ln-129" href="#ln-129"></a><span class="w">      </span><span class="c">! 4. Calculate Chain Contribution [Eq. A.8 - A.10]</span>
+<a id="ln-130" name="ln-130" href="#ln-130"></a><span class="w">      </span><span class="c">! Requires the radial distribution function (g_hs)</span>
+<a id="ln-131" name="ln-131" href="#ln-131"></a><span class="w">      </span><span class="n">a_chain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calculate_chain</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">n_tot</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">)</span>
+<a id="ln-132" name="ln-132" href="#ln-132"></a>
+<a id="ln-133" name="ln-133" href="#ln-133"></a><span class="w">      </span><span class="c">! 5. Calculate Dispersion Contribution</span>
+<a id="ln-134" name="ln-134" href="#ln-134"></a><span class="w">      </span><span class="c">! We pass self%kij if it exists, otherwise optional</span>
+<a id="ln-135" name="ln-135" href="#ln-135"></a><span class="w">      </span><span class="n">a_disp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-136" name="ln-136" href="#ln-136"></a><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">allocated</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<a id="ln-137" name="ln-137" href="#ln-137"></a><span class="k">         </span><span class="n">a_disp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calculate_dispersion</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">epsilon_k</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="p">)</span>
+<a id="ln-138" name="ln-138" href="#ln-138"></a><span class="w">      </span><span class="k">else</span>
+<a id="ln-139" name="ln-139" href="#ln-139"></a><span class="k">         </span><span class="n">a_disp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calculate_dispersion</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">epsilon_k</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">sigma</span><span class="p">)</span>
+<a id="ln-140" name="ln-140" href="#ln-140"></a><span class="w">      </span><span class="k">end if</span>
+<a id="ln-141" name="ln-141" href="#ln-141"></a>
+<a id="ln-142" name="ln-142" href="#ln-142"></a><span class="w">      </span><span class="c">! 6. Calculate Association (Optional)</span>
+<a id="ln-143" name="ln-143" href="#ln-143"></a><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">allocated</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">eps_assoc</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="nb">allocated</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">kap_assoc</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="nb">allocated</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">n_sites</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<a id="ln-144" name="ln-144" href="#ln-144"></a><span class="k">         </span><span class="n">a_assoc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calculate_association</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">eps_assoc</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">kap_assoc</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">n_sites</span><span class="p">)</span>
+<a id="ln-145" name="ln-145" href="#ln-145"></a><span class="w">      </span><span class="k">else</span>
+<a id="ln-146" name="ln-146" href="#ln-146"></a><span class="k">         </span><span class="n">a_assoc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-147" name="ln-147" href="#ln-147"></a><span class="w">      </span><span class="k">end if</span>
+<a id="ln-148" name="ln-148" href="#ln-148"></a>
+<a id="ln-149" name="ln-149" href="#ln-149"></a><span class="w">      </span><span class="c">! 7. Sum and convert to Energy units [bar * L]</span>
+<a id="ln-150" name="ln-150" href="#ln-150"></a><span class="w">      </span><span class="n">ar_total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n_tot</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a_hs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a_chain</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a_disp</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a_assoc</span><span class="p">)</span>
+<a id="ln-151" name="ln-151" href="#ln-151"></a><span class="w">   </span><span class="k">end function </span><span class="n">Ar_impl</span>
+<a id="ln-152" name="ln-152" href="#ln-152"></a>
+<a id="ln-153" name="ln-153" href="#ln-153"></a><span class="w">   </span><span class="c">! ====================================================================</span>
+<a id="ln-154" name="ln-154" href="#ln-154"></a><span class="w">   </span><span class="c">! Auxiliary Routines (Hard Chain)</span>
+<a id="ln-155" name="ln-155" href="#ln-155"></a><span class="w">   </span><span class="c">! ====================================================================</span>
+<a id="ln-156" name="ln-156" href="#ln-156"></a><span class="w">   </span><span class="k">subroutine </span><span class="n">calculate_zetas</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">)</span>
+<a id="ln-157" name="ln-157" href="#ln-157"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">(:)</span>
+<a id="ln-158" name="ln-158" href="#ln-158"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(:)</span>
+<a id="ln-159" name="ln-159" href="#ln-159"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-160" name="ln-160" href="#ln-160"></a>
+<a id="ln-161" name="ln-161" href="#ln-161"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">i</span>
+<a id="ln-162" name="ln-162" href="#ln-162"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">term</span>
+<a id="ln-163" name="ln-163" href="#ln-163"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rho</span>
+<a id="ln-164" name="ln-164" href="#ln-164"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<a id="ln-165" name="ln-165" href="#ln-165"></a>
+<a id="ln-166" name="ln-166" href="#ln-166"></a><span class="w">      </span><span class="n">rho</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">N_AVO</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.0e27_pr</span><span class="p">)</span><span class="w">  </span><span class="c">! Number density [1/A^3]</span>
+<a id="ln-167" name="ln-167" href="#ln-167"></a><span class="w">      </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-168" name="ln-168" href="#ln-168"></a>
+<a id="ln-169" name="ln-169" href="#ln-169"></a><span class="w">      </span><span class="n">zeta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-170" name="ln-170" href="#ln-170"></a>
+<a id="ln-171" name="ln-171" href="#ln-171"></a><span class="w">      </span><span class="k">do </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span>
+<a id="ln-172" name="ln-172" href="#ln-172"></a><span class="w">         </span><span class="n">zeta</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rho</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">PI</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">6.0_pr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="o">**</span><span class="n">k</span><span class="p">))</span>
+<a id="ln-173" name="ln-173" href="#ln-173"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-174" name="ln-174" href="#ln-174"></a><span class="k">   end subroutine </span><span class="n">calculate_zetas</span>
+<a id="ln-175" name="ln-175" href="#ln-175"></a>
+<a id="ln-176" name="ln-176" href="#ln-176"></a><span class="w">   </span><span class="k">function </span><span class="n">calculate_hard_sphere</span><span class="p">(</span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">n_tot</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<a id="ln-177" name="ln-177" href="#ln-177"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">n_tot</span>
+<a id="ln-178" name="ln-178" href="#ln-178"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span>
+<a id="ln-179" name="ln-179" href="#ln-179"></a>
+<a id="ln-180" name="ln-180" href="#ln-180"></a><span class="w">      </span><span class="c">! Boublik-Mansoori-Carnahan-Starling Equation (Eq. A.6 and A.7)</span>
+<a id="ln-181" name="ln-181" href="#ln-181"></a><span class="w">      </span><span class="c">! A_hs/RT = (1/zeta0) * [ ... ]</span>
+<a id="ln-182" name="ln-182" href="#ln-182"></a><span class="w">      </span><span class="c">! But careful: Gross-Sadowski Eq A.6 is on a molar basis.</span>
+<a id="ln-183" name="ln-183" href="#ln-183"></a><span class="w">      </span><span class="c">! A_hs_total/RT = n_total * a_hs_molar</span>
+<a id="ln-184" name="ln-184" href="#ln-184"></a>
+<a id="ln-185" name="ln-185" href="#ln-185"></a><span class="w">      </span><span class="c">! We implement the expanded form to avoid division by zero if zeta0 is very small,</span>
+<a id="ln-186" name="ln-186" href="#ln-186"></a><span class="w">      </span><span class="c">! although in PC-SAFT zeta0 is never zero if there is mass.</span>
+<a id="ln-187" name="ln-187" href="#ln-187"></a>
+<a id="ln-188" name="ln-188" href="#ln-188"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">term1</span><span class="p">,</span><span class="w"> </span><span class="n">term2</span><span class="p">,</span><span class="w"> </span><span class="n">term3</span><span class="p">,</span><span class="w"> </span><span class="n">one_m_z3</span>
+<a id="ln-189" name="ln-189" href="#ln-189"></a>
+<a id="ln-190" name="ln-190" href="#ln-190"></a><span class="w">      </span><span class="n">one_m_z3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-191" name="ln-191" href="#ln-191"></a>
+<a id="ln-192" name="ln-192" href="#ln-192"></a><span class="w">      </span><span class="n">term1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">3.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">one_m_z3</span>
+<a id="ln-193" name="ln-193" href="#ln-193"></a><span class="w">      </span><span class="n">term2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">one_m_z3</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<a id="ln-194" name="ln-194" href="#ln-194"></a><span class="w">      </span><span class="n">term3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">one_m_z3</span><span class="p">)</span>
+<a id="ln-195" name="ln-195" href="#ln-195"></a>
+<a id="ln-196" name="ln-196" href="#ln-196"></a><span class="w">      </span><span class="c">! Correct formula for TOTAL Free Energy A_hs/RT:</span>
+<a id="ln-197" name="ln-197" href="#ln-197"></a><span class="w">      </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">term1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">term2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">term3</span><span class="p">)</span>
+<a id="ln-198" name="ln-198" href="#ln-198"></a><span class="w">   </span><span class="k">end function </span><span class="n">calculate_hard_sphere</span>
+<a id="ln-199" name="ln-199" href="#ln-199"></a>
+<a id="ln-200" name="ln-200" href="#ln-200"></a><span class="w">   </span><span class="k">function </span><span class="n">calculate_chain</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">n_tot</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<a id="ln-201" name="ln-201" href="#ln-201"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(:),</span><span class="w"> </span><span class="n">n_tot</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">(:),</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-202" name="ln-202" href="#ln-202"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(:)</span>
+<a id="ln-203" name="ln-203" href="#ln-203"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span>
+<a id="ln-204" name="ln-204" href="#ln-204"></a>
+<a id="ln-205" name="ln-205" href="#ln-205"></a><span class="w">      </span><span class="c">! Eq. A.8: A_chain = - sum( x_i * (m_i - 1) * ln(g_ii_hs) )</span>
+<a id="ln-206" name="ln-206" href="#ln-206"></a><span class="w">      </span><span class="c">! In total units: A_chain_total/RT = - sum( n_i * (m_i - 1) * ln(g_ii_hs) )</span>
+<a id="ln-207" name="ln-207" href="#ln-207"></a>
+<a id="ln-208" name="ln-208" href="#ln-208"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<a id="ln-209" name="ln-209" href="#ln-209"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">g_ii</span><span class="p">,</span><span class="w"> </span><span class="n">one_m_z3</span><span class="p">,</span><span class="w"> </span><span class="n">z2_term</span><span class="p">,</span><span class="w"> </span><span class="n">z2_term2</span>
+<a id="ln-210" name="ln-210" href="#ln-210"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">di_2</span>
+<a id="ln-211" name="ln-211" href="#ln-211"></a>
+<a id="ln-212" name="ln-212" href="#ln-212"></a><span class="w">      </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-213" name="ln-213" href="#ln-213"></a><span class="w">      </span><span class="n">one_m_z3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-214" name="ln-214" href="#ln-214"></a>
+<a id="ln-215" name="ln-215" href="#ln-215"></a><span class="w">      </span><span class="c">! Pre-calculate common RDF terms (Eq. A.9)</span>
+<a id="ln-216" name="ln-216" href="#ln-216"></a><span class="w">      </span><span class="c">! g_ij = 1/(1-z3) + (di*dj/(di+dj)) * 3z2/(1-z3)^2 + ...</span>
+<a id="ln-217" name="ln-217" href="#ln-217"></a><span class="w">      </span><span class="c">! For Chain we only need g_ii (di=dj), so di*dj/(di+dj) = di/2</span>
+<a id="ln-218" name="ln-218" href="#ln-218"></a>
+<a id="ln-219" name="ln-219" href="#ln-219"></a><span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<a id="ln-220" name="ln-220" href="#ln-220"></a><span class="w">         </span><span class="c">! Contact RDF g_ii (Eq. A.9 simplified for i=j)</span>
+<a id="ln-221" name="ln-221" href="#ln-221"></a><span class="w">         </span><span class="c">! di*di / (di+di) = di / 2</span>
+<a id="ln-222" name="ln-222" href="#ln-222"></a>
+<a id="ln-223" name="ln-223" href="#ln-223"></a><span class="w">         </span><span class="n">di_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2.0_pr</span>
+<a id="ln-224" name="ln-224" href="#ln-224"></a>
+<a id="ln-225" name="ln-225" href="#ln-225"></a><span class="w">         </span><span class="n">g_ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">one_m_z3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-226" name="ln-226" href="#ln-226"></a><span class="w">            </span><span class="p">(</span><span class="mf">3.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">di_2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">one_m_z3</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-227" name="ln-227" href="#ln-227"></a><span class="w">            </span><span class="p">(</span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">di_2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">one_m_z3</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-228" name="ln-228" href="#ln-228"></a>
+<a id="ln-229" name="ln-229" href="#ln-229"></a><span class="w">         </span><span class="c">! Summation</span>
+<a id="ln-230" name="ln-230" href="#ln-230"></a><span class="w">         </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">g_ii</span><span class="p">)</span>
+<a id="ln-231" name="ln-231" href="#ln-231"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-232" name="ln-232" href="#ln-232"></a>
+<a id="ln-233" name="ln-233" href="#ln-233"></a><span class="k">      </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_tot</span>
+<a id="ln-234" name="ln-234" href="#ln-234"></a>
+<a id="ln-235" name="ln-235" href="#ln-235"></a><span class="w">   </span><span class="k">end function </span><span class="n">calculate_chain</span>
+<a id="ln-236" name="ln-236" href="#ln-236"></a>
+<a id="ln-237" name="ln-237" href="#ln-237"></a><span class="w">   </span><span class="k">function </span><span class="n">calculate_dispersion</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">eps_k</span><span class="p">,</span><span class="w"> </span><span class="n">sig</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<a id="ln-238" name="ln-238" href="#ln-238"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-239" name="ln-239" href="#ln-239"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(:),</span><span class="w"> </span><span class="n">eps_k</span><span class="p">(:),</span><span class="w"> </span><span class="n">sig</span><span class="p">(:)</span>
+<a id="ln-240" name="ln-240" href="#ln-240"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,:)</span>
+<a id="ln-241" name="ln-241" href="#ln-241"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span>
+<a id="ln-242" name="ln-242" href="#ln-242"></a>
+<a id="ln-243" name="ln-243" href="#ln-243"></a><span class="w">      </span><span class="c">! Local variables</span>
+<a id="ln-244" name="ln-244" href="#ln-244"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<a id="ln-245" name="ln-245" href="#ln-245"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n_tot</span><span class="p">,</span><span class="w"> </span><span class="n">rho</span><span class="p">,</span><span class="w"> </span><span class="n">eta</span><span class="p">,</span><span class="w"> </span><span class="n">one_m_eta</span>
+<a id="ln-246" name="ln-246" href="#ln-246"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m_ave</span><span class="p">,</span><span class="w"> </span><span class="n">m2_es3</span><span class="p">,</span><span class="w"> </span><span class="n">m2_e2s3</span><span class="p">,</span><span class="w"> </span><span class="n">I1</span><span class="p">,</span><span class="w"> </span><span class="n">I2</span><span class="p">,</span><span class="w"> </span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<a id="ln-247" name="ln-247" href="#ln-247"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">term</span><span class="p">,</span><span class="w"> </span><span class="n">a_k</span><span class="p">,</span><span class="w"> </span><span class="n">b_k</span>
+<a id="ln-248" name="ln-248" href="#ln-248"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a1_term</span><span class="p">,</span><span class="w"> </span><span class="n">a2_term</span><span class="w"> </span><span class="c">! &lt;--- Separate the terms</span>
+<a id="ln-249" name="ln-249" href="#ln-249"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eps_ij</span><span class="p">,</span><span class="w"> </span><span class="n">sig_ij</span><span class="p">,</span><span class="w"> </span><span class="n">kij_val</span>
+<a id="ln-250" name="ln-250" href="#ln-250"></a>
+<a id="ln-251" name="ln-251" href="#ln-251"></a><span class="w">      </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-252" name="ln-252" href="#ln-252"></a><span class="w">      </span><span class="n">n_tot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-253" name="ln-253" href="#ln-253"></a><span class="w">      </span><span class="n">rho</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n_tot</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">N_AVO</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.0e27_pr</span><span class="p">)</span><span class="w">  </span><span class="c">! Number density [1/A^3]</span>
+<a id="ln-254" name="ln-254" href="#ln-254"></a><span class="w">      </span><span class="n">eta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-255" name="ln-255" href="#ln-255"></a><span class="w">      </span><span class="n">one_m_eta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eta</span>
+<a id="ln-256" name="ln-256" href="#ln-256"></a><span class="w">      </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_tot</span>
+<a id="ln-257" name="ln-257" href="#ln-257"></a>
+<a id="ln-258" name="ln-258" href="#ln-258"></a><span class="w">      </span><span class="c">! 1. Mixture Averages (Same as before)</span>
+<a id="ln-259" name="ln-259" href="#ln-259"></a><span class="w">      </span><span class="n">m_ave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">;</span><span class="w"> </span><span class="n">m2_es3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">;</span><span class="w"> </span><span class="n">m2_e2s3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-260" name="ln-260" href="#ln-260"></a>
+<a id="ln-261" name="ln-261" href="#ln-261"></a><span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<a id="ln-262" name="ln-262" href="#ln-262"></a><span class="w">         </span><span class="n">m_ave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_ave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="c">! Segment average</span>
+<a id="ln-263" name="ln-263" href="#ln-263"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-264" name="ln-264" href="#ln-264"></a>
+<a id="ln-265" name="ln-265" href="#ln-265"></a><span class="k">      do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<a id="ln-266" name="ln-266" href="#ln-266"></a><span class="w">         </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<a id="ln-267" name="ln-267" href="#ln-267"></a><span class="w">            </span><span class="n">sig_ij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">sig</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sig</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+<a id="ln-268" name="ln-268" href="#ln-268"></a><span class="w">            </span><span class="n">kij_val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">kij</span><span class="p">))</span><span class="w"> </span><span class="n">kij_val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<a id="ln-269" name="ln-269" href="#ln-269"></a><span class="w">            </span><span class="n">eps_ij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">eps_k</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eps_k</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">kij_val</span><span class="p">)</span>
+<a id="ln-270" name="ln-270" href="#ln-270"></a>
+<a id="ln-271" name="ln-271" href="#ln-271"></a><span class="w">            </span><span class="n">term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">sig_ij</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-272" name="ln-272" href="#ln-272"></a>
+<a id="ln-273" name="ln-273" href="#ln-273"></a><span class="w">            </span><span class="n">m2_es3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m2_es3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">term</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">eps_ij</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
+<a id="ln-274" name="ln-274" href="#ln-274"></a><span class="w">            </span><span class="n">m2_e2s3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m2_e2s3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">term</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">eps_ij</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<a id="ln-275" name="ln-275" href="#ln-275"></a><span class="w">         </span><span class="k">end do</span>
+<a id="ln-276" name="ln-276" href="#ln-276"></a><span class="k">      end do</span>
+<a id="ln-277" name="ln-277" href="#ln-277"></a>
+<a id="ln-278" name="ln-278" href="#ln-278"></a><span class="w">      </span><span class="c">! 2. Integrals I1 and I2 (Same as before)</span>
+<a id="ln-279" name="ln-279" href="#ln-279"></a><span class="w">      </span><span class="n">I1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">;</span><span class="w"> </span><span class="n">I2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-280" name="ln-280" href="#ln-280"></a><span class="w">      </span><span class="k">do </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span>
+<a id="ln-281" name="ln-281" href="#ln-281"></a><span class="w">         </span><span class="n">a_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A_COEFFS</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">m_ave</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="o">/</span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">A_COEFFS</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-282" name="ln-282" href="#ln-282"></a><span class="w">            </span><span class="p">(</span><span class="n">m_ave</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="o">/</span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">m_ave</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="p">)</span><span class="o">/</span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">A_COEFFS</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+<a id="ln-283" name="ln-283" href="#ln-283"></a><span class="w">         </span><span class="n">b_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B_COEFFS</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">m_ave</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="o">/</span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">B_COEFFS</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-284" name="ln-284" href="#ln-284"></a><span class="w">            </span><span class="p">(</span><span class="n">m_ave</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="o">/</span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">m_ave</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="p">)</span><span class="o">/</span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">B_COEFFS</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+<a id="ln-285" name="ln-285" href="#ln-285"></a>
+<a id="ln-286" name="ln-286" href="#ln-286"></a><span class="w">         </span><span class="n">I1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">I1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a_k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">eta</span><span class="o">**</span><span class="n">k</span><span class="p">)</span>
+<a id="ln-287" name="ln-287" href="#ln-287"></a><span class="w">         </span><span class="n">I2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">I2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b_k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">eta</span><span class="o">**</span><span class="n">k</span><span class="p">)</span>
+<a id="ln-288" name="ln-288" href="#ln-288"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-289" name="ln-289" href="#ln-289"></a>
+<a id="ln-290" name="ln-290" href="#ln-290"></a><span class="w">      </span><span class="c">! 3. Compressibility C1 (Same as before)</span>
+<a id="ln-291" name="ln-291" href="#ln-291"></a><span class="w">      </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">8.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">eta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">eta</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">one_m_eta</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
+<a id="ln-292" name="ln-292" href="#ln-292"></a><span class="w">      </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">C1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">m_ave</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-293" name="ln-293" href="#ln-293"></a><span class="w">         </span><span class="p">(</span><span class="mi">2</span><span class="mf">0.0_pr</span><span class="o">*</span><span class="n">eta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="mf">7.0_pr</span><span class="o">*</span><span class="p">(</span><span class="n">eta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="mf">2.0_pr</span><span class="o">*</span><span class="p">(</span><span class="n">eta</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="o">*</span><span class="p">(</span><span class="n">eta</span><span class="o">**</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-294" name="ln-294" href="#ln-294"></a><span class="w">         </span><span class="p">((</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eta</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eta</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+<a id="ln-295" name="ln-295" href="#ln-295"></a><span class="w">      </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1._pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">C1</span>
+<a id="ln-296" name="ln-296" href="#ln-296"></a>
+<a id="ln-297" name="ln-297" href="#ln-297"></a><span class="w">      </span><span class="c">! ---------------------------------------------------------</span>
+<a id="ln-298" name="ln-298" href="#ln-298"></a><span class="w">      </span><span class="c">! 4. Final Sum</span>
+<a id="ln-299" name="ln-299" href="#ln-299"></a><span class="w">      </span><span class="c">! Eq. A.11 Gross &amp; Sadowski (2001)</span>
+<a id="ln-300" name="ln-300" href="#ln-300"></a><span class="w">      </span><span class="c">! a_res/RT = -2*pi*rho*I1*... - pi*rho*m_ave*C1*I2*...</span>
+<a id="ln-301" name="ln-301" href="#ln-301"></a><span class="w">      </span><span class="c">! ---------------------------------------------------------</span>
+<a id="ln-302" name="ln-302" href="#ln-302"></a>
+<a id="ln-303" name="ln-303" href="#ln-303"></a><span class="w">      </span><span class="c">! 1st order term (Takes 2 * PI)</span>
+<a id="ln-304" name="ln-304" href="#ln-304"></a><span class="w">      </span><span class="n">a1_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">rho</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">I1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m2_es3</span>
+<a id="ln-305" name="ln-305" href="#ln-305"></a>
+<a id="ln-306" name="ln-306" href="#ln-306"></a><span class="w">      </span><span class="c">! 2nd order term (Takes 1 * PI and multiplies by m_ave)</span>
+<a id="ln-307" name="ln-307" href="#ln-307"></a><span class="w">      </span><span class="n">a2_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">rho</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m_ave</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">C1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">I2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m2_e2s3</span>
+<a id="ln-308" name="ln-308" href="#ln-308"></a>
+<a id="ln-309" name="ln-309" href="#ln-309"></a><span class="w">      </span><span class="c">! Sum and make extensive</span>
+<a id="ln-310" name="ln-310" href="#ln-310"></a><span class="w">      </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a1_term</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a2_term</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_tot</span>
+<a id="ln-311" name="ln-311" href="#ln-311"></a>
+<a id="ln-312" name="ln-312" href="#ln-312"></a><span class="w">   </span><span class="k">end function </span><span class="n">calculate_dispersion</span>
+<a id="ln-313" name="ln-313" href="#ln-313"></a>
+<a id="ln-314" name="ln-314" href="#ln-314"></a><span class="w">   </span><span class="k">function </span><span class="n">calculate_association</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">eps_assoc</span><span class="p">,</span><span class="w"> </span><span class="n">kap_assoc</span><span class="p">,</span><span class="w"> </span><span class="n">n_sites</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<a id="ln-315" name="ln-315" href="#ln-315"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">d</span><span class="p">(:)</span>
+<a id="ln-316" name="ln-316" href="#ln-316"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(:),</span><span class="w"> </span><span class="n">eps_assoc</span><span class="p">(:),</span><span class="w"> </span><span class="n">kap_assoc</span><span class="p">(:),</span><span class="w"> </span><span class="n">n_sites</span><span class="p">(:)</span>
+<a id="ln-317" name="ln-317" href="#ln-317"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span>
+<a id="ln-318" name="ln-318" href="#ln-318"></a>
+<a id="ln-319" name="ln-319" href="#ln-319"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span>
+<a id="ln-320" name="ln-320" href="#ln-320"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rho_num</span><span class="p">,</span><span class="w"> </span><span class="n">delta_ij</span>
+<a id="ln-321" name="ln-321" href="#ln-321"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">XA</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">XA_new_calc</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<a id="ln-322" name="ln-322" href="#ln-322"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">delta</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<a id="ln-323" name="ln-323" href="#ln-323"></a><span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sum_term</span><span class="p">,</span><span class="w"> </span><span class="n">g_ij</span><span class="p">,</span><span class="w"> </span><span class="n">d_ij</span><span class="p">,</span><span class="w"> </span><span class="n">eps_mix</span><span class="p">,</span><span class="w"> </span><span class="n">kap_mix</span><span class="p">,</span><span class="w"> </span><span class="n">di_dj_term</span>
+<a id="ln-324" name="ln-324" href="#ln-324"></a>
+<a id="ln-325" name="ln-325" href="#ln-325"></a><span class="w">      </span><span class="c">! Damping factor (0.5 usually works, 0.2 is very safe but slow)</span>
+<a id="ln-326" name="ln-326" href="#ln-326"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ALPHA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span>
+<a id="ln-327" name="ln-327" href="#ln-327"></a>
+<a id="ln-328" name="ln-328" href="#ln-328"></a><span class="w">      </span><span class="c">! Number density [1/A^3] to be consistent with sigma in Angstroms</span>
+<a id="ln-329" name="ln-329" href="#ln-329"></a><span class="w">      </span><span class="n">rho_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">N_AVO</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.0e27_pr</span><span class="p">)</span>
+<a id="ln-330" name="ln-330" href="#ln-330"></a>
+<a id="ln-331" name="ln-331" href="#ln-331"></a><span class="w">      </span><span class="c">! 1. Calculate Delta Matrix (ASSOCIATION STRENGTH)</span>
+<a id="ln-332" name="ln-332" href="#ln-332"></a><span class="w">      </span><span class="c">! WATCH OUT FOR UNITS HERE.</span>
+<a id="ln-333" name="ln-333" href="#ln-333"></a><span class="w">      </span><span class="c">! Delta must have VOLUME units [A^3] to cancel out with rho_num [1/A^3].</span>
+<a id="ln-334" name="ln-334" href="#ln-334"></a>
+<a id="ln-335" name="ln-335" href="#ln-335"></a><span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-336" name="ln-336" href="#ln-336"></a><span class="w">         </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-337" name="ln-337" href="#ln-337"></a><span class="w">            </span><span class="n">d_ij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">d</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+<a id="ln-338" name="ln-338" href="#ln-338"></a>
+<a id="ln-339" name="ln-339" href="#ln-339"></a><span class="w">            </span><span class="c">! Contact RDF (g_hs)</span>
+<a id="ln-340" name="ln-340" href="#ln-340"></a><span class="w">            </span><span class="n">g_ij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-341" name="ln-341" href="#ln-341"></a><span class="w">               </span><span class="p">(</span><span class="mf">3.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">d_ij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="ln-342" name="ln-342" href="#ln-342"></a><span class="w">               </span><span class="p">(</span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">d_ij</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">zeta</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">zeta</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-343" name="ln-343" href="#ln-343"></a>
+<a id="ln-344" name="ln-344" href="#ln-344"></a><span class="w">            </span><span class="c">! Mixing rules (Wolbach &amp; Sandler)</span>
+<a id="ln-345" name="ln-345" href="#ln-345"></a><span class="w">            </span><span class="n">eps_mix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">eps_assoc</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">eps_assoc</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+<a id="ln-346" name="ln-346" href="#ln-346"></a>
+<a id="ln-347" name="ln-347" href="#ln-347"></a><span class="w">            </span><span class="c">! Geometric correction for Kappa (standard PC-SAFT rule)</span>
+<a id="ln-348" name="ln-348" href="#ln-348"></a><span class="w">            </span><span class="n">di_dj_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nb">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">d</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">0.5_pr</span><span class="o">*</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="n">d</span><span class="p">(</span><span class="n">j</span><span class="p">))))</span><span class="o">**</span><span class="mi">3</span>
+<a id="ln-349" name="ln-349" href="#ln-349"></a><span class="w">            </span><span class="n">kap_mix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">kap_assoc</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">kap_assoc</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">di_dj_term</span>
+<a id="ln-350" name="ln-350" href="#ln-350"></a>
+<a id="ln-351" name="ln-351" href="#ln-351"></a><span class="w">            </span><span class="c">! Delta [Angstroms^3]</span>
+<a id="ln-352" name="ln-352" href="#ln-352"></a><span class="w">            </span><span class="c">! IMPORTANT: Multiply by g_ij * sigma_ij^3 * kappa</span>
+<a id="ln-353" name="ln-353" href="#ln-353"></a><span class="w">            </span><span class="c">! Sometimes d_ij^3 or sigma_ij^3 is used. In strict PC-SAFT it is usually sigma_ij^3.</span>
+<a id="ln-354" name="ln-354" href="#ln-354"></a><span class="w">            </span><span class="c">! We will use d_ij as a consistent approximation or sigma if you have access.</span>
+<a id="ln-355" name="ln-355" href="#ln-355"></a><span class="w">            </span><span class="c">! Note: In original Gross-Sadowski they use sigma, not d(T).</span>
+<a id="ln-356" name="ln-356" href="#ln-356"></a><span class="w">            </span><span class="c">! But d(T) is more common in modern implementations. I will use d_ij.</span>
+<a id="ln-357" name="ln-357" href="#ln-357"></a>
+<a id="ln-358" name="ln-358" href="#ln-358"></a><span class="w">            </span><span class="n">delta</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">g_ij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">kap_mix</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">d_ij</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="nb">exp</span><span class="p">(</span><span class="n">eps_mix</span><span class="o">/</span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span>
+<a id="ln-359" name="ln-359" href="#ln-359"></a><span class="w">         </span><span class="k">end do</span>
+<a id="ln-360" name="ln-360" href="#ln-360"></a><span class="k">      end do</span>
+<a id="ln-361" name="ln-361" href="#ln-361"></a>
+<a id="ln-362" name="ln-362" href="#ln-362"></a><span class="w">      </span><span class="c">! 2. Solve XA with Damping</span>
+<a id="ln-363" name="ln-363" href="#ln-363"></a><span class="w">      </span><span class="n">XA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.2_pr</span><span class="w"> </span><span class="c">! Good guess for associated liquids (better than 0.5)</span>
+<a id="ln-364" name="ln-364" href="#ln-364"></a>
+<a id="ln-365" name="ln-365" href="#ln-365"></a><span class="w">      </span><span class="k">do </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="c">! Increased iterations in case alpha is low</span>
+<a id="ln-366" name="ln-366" href="#ln-366"></a>
+<a id="ln-367" name="ln-367" href="#ln-367"></a><span class="w">         </span><span class="n">XA_new_calc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XA</span><span class="w"> </span><span class="c">! Initialize temporary</span>
+<a id="ln-368" name="ln-368" href="#ln-368"></a>
+<a id="ln-369" name="ln-369" href="#ln-369"></a><span class="w">         </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-370" name="ln-370" href="#ln-370"></a><span class="w">            </span><span class="n">sum_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-371" name="ln-371" href="#ln-371"></a><span class="w">            </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-372" name="ln-372" href="#ln-372"></a><span class="w">               </span><span class="c">! rho_j * Sitios_j * XA_j * Delta_ij</span>
+<a id="ln-373" name="ln-373" href="#ln-373"></a><span class="w">               </span><span class="c">! rho_num_total * x_j * ...</span>
+<a id="ln-374" name="ln-374" href="#ln-374"></a><span class="w">               </span><span class="c">! (n(j)/n_total) * rho_num * ...</span>
+<a id="ln-375" name="ln-375" href="#ln-375"></a>
+<a id="ln-376" name="ln-376" href="#ln-376"></a><span class="w">               </span><span class="n">sum_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sum_term</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">rho_num</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_sites</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">XA</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">delta</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<a id="ln-377" name="ln-377" href="#ln-377"></a><span class="w">            </span><span class="k">end do</span>
+<a id="ln-378" name="ln-378" href="#ln-378"></a><span class="k">            </span><span class="n">XA_new_calc</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sum_term</span><span class="p">)</span>
+<a id="ln-379" name="ln-379" href="#ln-379"></a><span class="w">         </span><span class="k">end do</span>
+<a id="ln-380" name="ln-380" href="#ln-380"></a>
+<a id="ln-381" name="ln-381" href="#ln-381"></a><span class="w">         </span><span class="c">! CONVERGENCE CHECK (Before damping)</span>
+<a id="ln-382" name="ln-382" href="#ln-382"></a><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">XA_new_calc</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">f0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">XA</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">f0</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1e-11</span><span class="p">)</span><span class="w"> </span><span class="k">exit</span>
+<a id="ln-383" name="ln-383" href="#ln-383"></a><span class="k">         print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">XA_new_calc</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">f0</span><span class="p">,</span><span class="w"> </span><span class="n">XA</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">f0</span><span class="p">,</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">XA_new_calc</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">f0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">XA</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">f0</span><span class="p">)</span>
+<a id="ln-384" name="ln-384" href="#ln-384"></a>
+<a id="ln-385" name="ln-385" href="#ln-385"></a><span class="w">         </span><span class="c">! APPLY DAMPING (This is what you were missing)</span>
+<a id="ln-386" name="ln-386" href="#ln-386"></a><span class="w">         </span><span class="n">XA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ALPHA</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">XA_new_calc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ALPHA</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">XA</span>
+<a id="ln-387" name="ln-387" href="#ln-387"></a>
+<a id="ln-388" name="ln-388" href="#ln-388"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-389" name="ln-389" href="#ln-389"></a>
+<a id="ln-390" name="ln-390" href="#ln-390"></a><span class="w">      </span><span class="c">! Debug if it doesn&#39;t converge</span>
+<a id="ln-391" name="ln-391" href="#ln-391"></a><span class="w">      </span><span class="c">! if (iter &gt;= 200) print *, &quot;WARNING: Assoc no convergió. Error:&quot;, XA_new_calc(1)%f0 - XA(1)%f0</span>
+<a id="ln-392" name="ln-392" href="#ln-392"></a>
+<a id="ln-393" name="ln-393" href="#ln-393"></a><span class="w">      </span><span class="c">! 3. Calculate Energy</span>
+<a id="ln-394" name="ln-394" href="#ln-394"></a><span class="w">      </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-395" name="ln-395" href="#ln-395"></a><span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-396" name="ln-396" href="#ln-396"></a><span class="w">         </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_sites</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="nb">log</span><span class="p">(</span><span class="n">XA</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="o">*</span><span class="n">XA</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="p">)</span>
+<a id="ln-397" name="ln-397" href="#ln-397"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-398" name="ln-398" href="#ln-398"></a>
+<a id="ln-399" name="ln-399" href="#ln-399"></a><span class="w">      </span><span class="c">! Ensure final extensivity if you didn&#39;t do it before</span>
+<a id="ln-400" name="ln-400" href="#ln-400"></a><span class="w">      </span><span class="c">! (In this formula it is already multiplied by n(i), so &#39;val&#39; is A_total/RT)</span>
+<a id="ln-401" name="ln-401" href="#ln-401"></a>
+<a id="ln-402" name="ln-402" href="#ln-402"></a><span class="w">   </span><span class="k">end function </span><span class="n">calculate_association</span>
+<a id="ln-403" name="ln-403" href="#ln-403"></a>
+<a id="ln-404" name="ln-404" href="#ln-404"></a><span class="w">   </span><span class="c">! ---------------------------------------------------------</span>
+<a id="ln-405" name="ln-405" href="#ln-405"></a><span class="w">   </span><span class="c">! Method get_v0: Volume lower limit (Covolume)</span>
+<a id="ln-406" name="ln-406" href="#ln-406"></a><span class="w">   </span><span class="c">! Represents the physical volume occupied by the segments</span>
+<a id="ln-407" name="ln-407" href="#ln-407"></a><span class="w">   </span><span class="c">! ---------------------------------------------------------</span>
+<a id="ln-408" name="ln-408" href="#ln-408"></a><span class="w">   </span><span class="k">function </span><span class="n">get_v0_impl</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">v0</span><span class="p">)</span>
+<a id="ln-409" name="ln-409" href="#ln-409"></a><span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">PcSaft</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<a id="ln-410" name="ln-410" href="#ln-410"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w">  </span><span class="c">! Moles of each component</span>
+<a id="ln-411" name="ln-411" href="#ln-411"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span><span class="w">     </span><span class="c">! System pressure</span>
+<a id="ln-412" name="ln-412" href="#ln-412"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="w">     </span><span class="c">! System temperature</span>
+<a id="ln-413" name="ln-413" href="#ln-413"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span>
+<a id="ln-414" name="ln-414" href="#ln-414"></a>
+<a id="ln-415" name="ln-415" href="#ln-415"></a><span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<a id="ln-416" name="ln-416" href="#ln-416"></a><span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sum_seg_vol</span>
+<a id="ln-417" name="ln-417" href="#ln-417"></a>
+<a id="ln-418" name="ln-418" href="#ln-418"></a><span class="w">      </span><span class="c">! v0 = (Pi/6) * Sum(n_i * m_i * sigma_i^3) * Factor_Conversion</span>
+<a id="ln-419" name="ln-419" href="#ln-419"></a><span class="w">      </span><span class="c">! This makes zeta_3 = 1 if V = v0.</span>
+<a id="ln-420" name="ln-420" href="#ln-420"></a>
+<a id="ln-421" name="ln-421" href="#ln-421"></a><span class="w">      </span><span class="n">sum_seg_vol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<a id="ln-422" name="ln-422" href="#ln-422"></a><span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="ln-423" name="ln-423" href="#ln-423"></a><span class="w">         </span><span class="n">sum_seg_vol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sum_seg_vol</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">sigma</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<a id="ln-424" name="ln-424" href="#ln-424"></a><span class="w">      </span><span class="k">end do</span>
+<a id="ln-425" name="ln-425" href="#ln-425"></a>
+<a id="ln-426" name="ln-426" href="#ln-426"></a><span class="w">      </span><span class="c">! Note: UNITS_FACTOR must be approx 0.000602214 to convert</span>
+<a id="ln-427" name="ln-427" href="#ln-427"></a><span class="w">      </span><span class="c">! (mol * Ang^3) to Liters.</span>
+<a id="ln-428" name="ln-428" href="#ln-428"></a><span class="w">      </span><span class="c">! Make sure it matches the one used in &#39;calculate_zetas&#39;.</span>
+<a id="ln-429" name="ln-429" href="#ln-429"></a><span class="w">      </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PI</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">6.0_pr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">UNITS_FACTOR</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">sum_seg_vol</span>
+<a id="ln-430" name="ln-430" href="#ln-430"></a>
+<a id="ln-431" name="ln-431" href="#ln-431"></a><span class="w">   </span><span class="k">end function </span><span class="n">get_v0_impl</span>
+<a id="ln-432" name="ln-432" href="#ln-432"></a>
+<a id="ln-433" name="ln-433" href="#ln-433"></a><span class="k">end module </span><span class="n">yaeos__models_ar_saft_pcsaft</span>
+</pre></div>
+
+      </section>
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-01-19 21:20 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

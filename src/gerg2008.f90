@@ -261,7 +261,7 @@ contains
       totnRT = sum(n) * R * T
       select case(root_type)
        case("liquid")
-         Vliq = eos%get_v0(n, P, T) * 1.001_pr
+         call eos%srk%volume(n, P=P, T=T, V=Vliq, root_type="liquid")
          call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
          GrL = Gr
        case("vapor")
@@ -269,11 +269,11 @@ contains
          call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
          GrV = Gr
        case("stable")
-         Vliq = eos%get_v0(n, P, T)*1.00001_pr
+         call eos%srk%volume(n, P=P, T=T, V=Vliq, root_type="liquid")
          call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
          GrL = Gr
 
-         Vvap = R * T / P
+         call eos%srk%volume(n, P=P, T=T, V=Vvap, root_type="vapor")
          call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
          GrV = Gr
       end select

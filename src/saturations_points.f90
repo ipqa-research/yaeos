@@ -1,6 +1,6 @@
 module yaeos__equilibria_saturation_points
    use yaeos__constants, only: pr, R
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_auxiliar, only: k_wilson, P_wilson
    use ieee_arithmetic, only: ieee_is_nan, ieee_is_finite

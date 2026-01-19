@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">34 statements</a>
+                 title=" 0.7% of total for procedures.">85 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
+              <a href="../src/pure_saturation.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/pure_saturation.f90.html'>pure_saturation.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_pure_saturation.html'>yaeos__equilibria_boundaries_pure_saturation</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,8 +135,26 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dx~14">dX</a>
-            <a class="list-group-item" href="../proc/solve_point~6.html#variable-nc~60">nc</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-b~9">B</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-py~4">Py</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-pz">Pz</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-t~77">T</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-vy~15">Vy</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-vz~5">Vz</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-xnew~8">Xnew</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dpdty">dPdTy</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dpdtz">dPdTz</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dpdvy">dPdVy</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dpdvz">dPdVz</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dx~12">dX</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dlnfdt_y">dlnfdt_y</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dlnfdt_z">dlnfdt_z</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dlnfdv_y">dlnfdv_y</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-dlnfdv_z">dlnfdv_z</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-i~76">i</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-lnfug_y~3">lnfug_y</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-lnfug_z~3">lnfug_z</a>
+            <a class="list-group-item" href="../proc/solve_point~6.html#variable-z~47">z</a>
         </div>
       </div>
     </div>
@@ -151,7 +169,18 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/solve_point~6.html#proc-isofugacity">isofugacity</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -166,10 +195,37 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine solve_point(model, z0, zi, T, ns, S, X, F, dF, its, maxits)  
+    <h2>public  subroutine solve_point(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)  
 </h2>
     
 
+    <h1 id="solve-point">Solve point</h1>
+<p>Solve a saturation point for a pure component.</p>
+<h2 id="description">Description</h2>
+<p>The set of equations to solve is:</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+f_1 &= \ln f_{z}(V_z, T) - \ln f_{y}(V_y, T) \\
+f_2 &= \ln \left( \frac{P_z}{P_y} \right) \\
+f_3 &= \ln P_z - \ln P \\
+f_4 &= g(X, ns)
+\end{align*}
+</script>
+</p>
+<p>Where <script type="math/tex">f_4</script> is an specification function defined as:</p>
+<p>
+<script type="math/tex; mode=display">
+g(X, ns) = \left\{
+\begin{array}{lr}
+\ln \left( \frac{V_z}{V_y} \right) - S & \text{if } ns = 1 \text{ or } ns = 2 \\
+X(ns) - S & \text{otherwise}
+\end{array}
+\right\}
+</script>
+</p>
+<p>The vector of variables <script type="math/tex">X</script> is equal to
+<script type="math/tex">[ \ln V_z, \ln V_y, \ln P, \ln T ]</script>.</p>
 
 
     <h3>Arguments</h3>
@@ -185,7 +241,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~36"></span>
+              <span class="anchor" id="variable-model~44"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -195,57 +251,58 @@
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Thermodynamic model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~24"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-ncomp~5"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>z0</strong>(:)</td>
+            <td><strong>ncomp</strong></td>
             <td>
-                
+                <p>Component index</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~24"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-nc~68"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>zi</strong>(:)</td>
+            <td><strong>nc</strong></td>
             <td>
-                
+                <p>Total number of components</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~71"></span>
+              <span class="anchor" id="variable-x~45"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>X</strong>(4)</td>
             <td>
-                
+                <p>Variables <script type="math/tex">[ln V_z, lnV_y, lnP, lnT]</script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~45"></span>
+              <span class="anchor" id="variable-ns~44"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -255,12 +312,12 @@
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-                
+                <p>Variable index to solve. If the</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~36"></span>
+              <span class="anchor" id="variable-s~35"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -270,27 +327,12 @@
             <td>::</td>
             <td><strong>S</strong></td>
             <td>
-                
+                <p>Variable value specified to solve</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~46"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>X</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-f~27"></span>
+              <span class="anchor" id="variable-f~21"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -298,9 +340,9 @@
               
             </td>
             <td>::</td>
-            <td><strong>F</strong>(:)</td>
+            <td><strong>F</strong>(4)</td>
             <td>
-                
+                <p>Function</p>
             </td>
         </tr>
         <tr>
@@ -313,44 +355,377 @@
               
             </td>
             <td>::</td>
-            <td><strong>dF</strong>(:,:)</td>
+            <td><strong>dF</strong>(4,4)</td>
             <td>
-                
+                <p>Jacobian</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~19"></span>
+              <span class="anchor" id="variable-dfds~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dFdS</strong>(4)</td>
+            <td>
+                <p>Derivative of the function with respect to S</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-its~17"></span>
               integer,
             </td>
-<td>intent(inout)</td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>its</strong></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-maxits~2"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>maxits</strong></td>
-            <td>
-                
+                <p>Number of iterations</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~solve_point~6~~CallsGraph Pages: 1 -->
+<svg id="procsolve_point6CallsGraph" width="493pt" height="116pt"
+ viewBox="0.00 0.00 493.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~6~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>proc~~solve_point~6~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 489,-112 489,4 -4,4"/>
+<!-- proc~solve_point~6 -->
+<g id="proc~~solve_point~6~~CallsGraph_node1" class="node">
+<title>proc~solve_point~6</title>
+<polygon fill="none" stroke="black" points="73,-66 0,-66 0,-42 73,-42 73,-66"/>
+<text text-anchor="middle" x="36.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">solve_point</text>
+</g>
+<!-- get_v0 -->
+<g id="proc~~solve_point~6~~CallsGraph_node2" class="node">
+<title>get_v0</title>
+<polygon fill="#777777" stroke="#777777" points="177.5,-108 123.5,-108 123.5,-84 177.5,-84 177.5,-108"/>
+<text text-anchor="middle" x="150.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+</g>
+<!-- proc~solve_point~6&#45;&gt;get_v0 -->
+<g id="proc~~solve_point~6~~CallsGraph_edge1" class="edge">
+<title>proc~solve_point~6&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M69.59,-66.04C83.46,-71.24 99.73,-77.34 113.96,-82.67"/>
+<polygon fill="#000000" stroke="#000000" points="112.84,-85.99 123.43,-86.22 115.3,-79.44 112.84,-85.99"/>
+</g>
+<!-- none~isofugacity -->
+<g id="proc~~solve_point~6~~CallsGraph_node3" class="node">
+<title>none~isofugacity</title>
+<g id="a_proc~~solve_point~6~~CallsGraph_node3"><a xlink:href="../proc/solve_point~6.html#proc-isofugacity" xlink:title="isofugacity">
+<polygon fill="#d9534f" stroke="#d9534f" points="185.5,-66 115.5,-66 115.5,-42 185.5,-42 185.5,-66"/>
+<text text-anchor="middle" x="150.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">isofugacity</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_point~6&#45;&gt;none~isofugacity -->
+<g id="proc~~solve_point~6~~CallsGraph_edge2" class="edge">
+<title>proc~solve_point~6&#45;&gt;none~isofugacity</title>
+<path fill="none" stroke="#000000" d="M73.25,-54C83.33,-54 94.42,-54 104.95,-54"/>
+<polygon fill="#000000" stroke="#000000" points="105.24,-57.5 115.24,-54 105.24,-50.5 105.24,-57.5"/>
+</g>
+<!-- proc~solve_system -->
+<g id="proc~~solve_point~6~~CallsGraph_node4" class="node">
+<title>proc~solve_system</title>
+<g id="a_proc~~solve_point~6~~CallsGraph_node4"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="192,-24 109,-24 109,0 192,0 192,-24"/>
+<text text-anchor="middle" x="150.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_point~6&#45;&gt;proc~solve_system -->
+<g id="proc~~solve_point~6~~CallsGraph_edge3" class="edge">
+<title>proc~solve_point~6&#45;&gt;proc~solve_system</title>
+<path fill="none" stroke="#000000" d="M69.59,-41.96C81.55,-37.48 95.28,-32.33 107.96,-27.58"/>
+<polygon fill="#000000" stroke="#000000" points="109.27,-30.83 117.4,-24.04 106.81,-24.27 109.27,-30.83"/>
+</g>
+<!-- proc~lnfug_vt -->
+<g id="proc~~solve_point~6~~CallsGraph_node6" class="node">
+<title>proc~lnfug_vt</title>
+<g id="a_proc~~solve_point~6~~CallsGraph_node6"><a xlink:href="../proc/lnfug_vt.html" xlink:title="ArModel%lnfug_vt">
+<polygon fill="#d9534f" stroke="#d9534f" points="337,-66 228,-66 228,-42 337,-42 337,-66"/>
+<text text-anchor="middle" x="282.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnfug_vt</text>
+</a>
+</g>
+</g>
+<!-- none~isofugacity&#45;&gt;proc~lnfug_vt -->
+<g id="proc~~solve_point~6~~CallsGraph_edge4" class="edge">
+<title>none~isofugacity&#45;&gt;proc~lnfug_vt</title>
+<path fill="none" stroke="#000000" d="M185.66,-54C195.56,-54 206.71,-54 217.81,-54"/>
+<polygon fill="#000000" stroke="#000000" points="217.96,-57.5 227.96,-54 217.96,-50.5 217.96,-57.5"/>
+</g>
+<!-- none~dgesv -->
+<g id="proc~~solve_point~6~~CallsGraph_node5" class="node">
+<title>none~dgesv</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="309.5,-24 255.5,-24 255.5,0 309.5,0 309.5,-24"/>
+<text text-anchor="middle" x="282.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+</g>
+<!-- proc~solve_system&#45;&gt;none~dgesv -->
+<g id="proc~~solve_point~6~~CallsGraph_edge5" class="edge">
+<title>proc~solve_system&#45;&gt;none~dgesv</title>
+<path fill="none" stroke="#000000" d="M192.28,-12C209.13,-12 228.53,-12 244.92,-12"/>
+<polygon fill="#000000" stroke="#000000" points="245.2,-15.5 255.2,-12 245.2,-8.5 245.2,-15.5"/>
+</g>
+<!-- residual_helmholtz -->
+<g id="proc~~solve_point~6~~CallsGraph_node7" class="node">
+<title>residual_helmholtz</title>
+<polygon fill="#777777" stroke="#777777" points="485,-66 373,-66 373,-42 485,-42 485,-66"/>
+<text text-anchor="middle" x="429" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+</g>
+<!-- proc~lnfug_vt&#45;&gt;residual_helmholtz -->
+<g id="proc~~solve_point~6~~CallsGraph_edge6" class="edge">
+<title>proc~lnfug_vt&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M337.31,-54C345.52,-54 354.08,-54 362.51,-54"/>
+<polygon fill="#000000" stroke="#000000" points="362.7,-57.5 372.7,-54 362.7,-50.5 362.7,-57.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~solve_point~6~~CalledByGraph Pages: 1 -->
+<svg id="procsolve_point6CalledByGraph" width="436pt" height="32pt"
+ viewBox="0.00 0.00 436.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~6~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~solve_point~6~~CalledByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 432,-28 432,4 -4,4"/>
+<!-- proc~solve_point~6 -->
+<g id="proc~~solve_point~6~~CalledByGraph_node1" class="node">
+<title>proc~solve_point~6</title>
+<polygon fill="none" stroke="black" points="428,-24 355,-24 355,0 428,0 428,-24"/>
+<text text-anchor="middle" x="391.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">solve_point</text>
+</g>
+<!-- proc~pure_saturation_line -->
+<g id="proc~~solve_point~6~~CalledByGraph_node2" class="node">
+<title>proc~pure_saturation_line</title>
+<g id="a_proc~~solve_point~6~~CalledByGraph_node2"><a xlink:href="../proc/pure_saturation_line.html" xlink:title="pure_saturation_line">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="319,-24 198,-24 198,0 319,0 319,-24"/>
+<text text-anchor="middle" x="258.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pure_saturation_line</text>
+</a>
+</g>
+</g>
+<!-- proc~pure_saturation_line&#45;&gt;proc~solve_point~6 -->
+<g id="proc~~solve_point~6~~CalledByGraph_edge1" class="edge">
+<title>proc~pure_saturation_line&#45;&gt;proc~solve_point~6</title>
+<path fill="none" stroke="#000000" d="M319.25,-12C327.79,-12 336.46,-12 344.68,-12"/>
+<polygon fill="#000000" stroke="#000000" points="344.8,-15.5 354.8,-12 344.8,-8.5 344.8,-15.5"/>
+</g>
+<!-- proc~refit_rkpr_k -->
+<g id="proc~~solve_point~6~~CalledByGraph_node3" class="node">
+<title>proc~refit_rkpr_k</title>
+<g id="a_proc~~solve_point~6~~CalledByGraph_node3"><a xlink:href="../proc/refit_rkpr_k.html" xlink:title="refit_rkpr_k">
+<polygon fill="#d9534f" stroke="#d9534f" points="162,-24 90,-24 90,0 162,0 162,-24"/>
+<text text-anchor="middle" x="126" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">refit_rkpr_k</text>
+</a>
+</g>
+</g>
+<!-- proc~refit_rkpr_k&#45;&gt;proc~pure_saturation_line -->
+<g id="proc~~solve_point~6~~CalledByGraph_edge2" class="edge">
+<title>proc~refit_rkpr_k&#45;&gt;proc~pure_saturation_line</title>
+<path fill="none" stroke="#000000" d="M162.32,-12C170.18,-12 178.79,-12 187.51,-12"/>
+<polygon fill="#000000" stroke="#000000" points="187.76,-15.5 197.76,-12 187.76,-8.5 187.76,-15.5"/>
+</g>
+<!-- proc~rkpr -->
+<g id="proc~~solve_point~6~~CalledByGraph_node4" class="node">
+<title>proc~rkpr</title>
+<g id="a_proc~~solve_point~6~~CalledByGraph_node4"><a xlink:href="../proc/rkpr.html" xlink:title="RKPR">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">RKPR</text>
+</a>
+</g>
+</g>
+<!-- proc~rkpr&#45;&gt;proc~refit_rkpr_k -->
+<g id="proc~~solve_point~6~~CalledByGraph_edge3" class="edge">
+<title>proc~rkpr&#45;&gt;proc~refit_rkpr_k</title>
+<path fill="none" stroke="#000000" d="M54.25,-12C62.15,-12 71.06,-12 79.83,-12"/>
+<polygon fill="#000000" stroke="#000000" points="79.98,-15.5 89.98,-12 79.98,-8.5 79.98,-15.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <br>
 
 
@@ -368,15 +743,15 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~14"></span>
+              <span class="anchor" id="variable-b~9"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dX</strong>(size(X))</td>
+            <td><strong>B</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -385,15 +760,321 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~60"></span>
-              integer,
+              <span class="anchor" id="variable-py~4"></span>
+              real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>nc</strong></td>
+            <td><strong>Py</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Pz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~77"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vy~15"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vz~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xnew~8"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xnew</strong>(4)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdty"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdTy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdtz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdTz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdvy"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdVy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dpdvz"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dPdVz</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx~12"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dX</strong>(4)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdt_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdt_y</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdt_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdt_z</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdv_y"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdv_y</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnfdv_z"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnfdv_z</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~76"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_y~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_y</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_z~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_z</strong>(nc)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~47"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(nc)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -412,6 +1093,94 @@
     
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-isofugacity"></span> <h3> subroutine <a href='solve_point~6.html#proc-isofugacity'>isofugacity</a>(X, F, dF, dFdS)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~46"></span>
+              real(kind=pr),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(4)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~22"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>F</strong>(4)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df~19"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dF</strong>(4,4)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dfds~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dFdS</strong>(4)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+    </section>    
 
     
     
@@ -426,14 +1195,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2025 MPL
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-12-18 20:57 +0000             </p>
+ on 2026-01-19 21:20 +0000             </p>
           </div>
         </div>
         <br>

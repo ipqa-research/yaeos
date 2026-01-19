@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.3.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=a17b270f"></script>
-      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../../_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -416,7 +416,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gjiT</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">use_kij</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
@@ -435,9 +435,12 @@
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_hvnrtl</span><span class="p">(</span>
-            <span class="n">ar_id</span><span class="o">=</span><span class="n">ar_model_id</span><span class="p">,</span> 
-            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">gji0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">,</span> <span class="n">gjit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">,</span>
-            <span class="n">use_kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">,</span> <span class="n">kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span>
+            <span class="n">ar_id</span><span class="o">=</span><span class="n">ar_model_id</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">gji0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">,</span>
+            <span class="n">gjit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">,</span>
+            <span class="n">use_kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">,</span>
+            <span class="n">kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 
@@ -450,7 +453,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+    <p>&#169; Copyright 2026, Federico E. Benelli.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

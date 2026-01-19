@@ -1,0 +1,1121 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>flash_no_beta_limits &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>flash_no_beta_limits
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.9% of total for procedures.">112 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/flash.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/flash.f90.html'>flash.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_flash.html'>yaeos__equilibria_flash</a></li>
+            <li class="breadcrumb-item active" aria-current="page">flash_no_beta_limits</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-k~19">K</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-p~66">P</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-v~22">V</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-vx~11">Vx</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-vy~19">Vy</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-beta~15">beta</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-bmax~3">bmax</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-bmin~3">bmin</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-dk~2">dK</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-dkold~2">dKold</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-g0~3">g0</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-g1~3">g1</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-lnk~2">lnK</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-lnkold~2">lnKold</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-lnfug_x~2">lnfug_x</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-lnfug_y~6">lnfug_y</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-spec~3">spec</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-x~22">x</a>
+            <a class="list-group-item" href="../proc/flash_no_beta_limits.html#variable-y~30">y</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  function flash_no_beta_limits(model, z, t, beta0, v_spec, p_spec, k0, iters) result(flash)  
+</h2>
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/yaeos__auxiliar.html'>yaeos__auxiliar</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~flash_no_beta_limits~~UsesGraph Pages: 1 -->
+<svg id="procflash_no_beta_limitsUsesGraph" width="530pt" height="32pt"
+ viewBox="0.00 0.00 530.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~flash_no_beta_limits~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~flash_no_beta_limits~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 526,-28 526,4 -4,4"/>
+<!-- proc~flash_no_beta_limits -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_node1" class="node">
+<title>proc~flash_no_beta_limits</title>
+<polygon fill="none" stroke="black" points="522,-24 402,-24 402,0 522,0 522,-24"/>
+<text text-anchor="middle" x="462" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">flash_no_beta_limits</text>
+</g>
+<!-- module~yaeos__auxiliar -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_node2" class="node">
+<title>module~yaeos__auxiliar</title>
+<g id="a_proc~~flash_no_beta_limits~~UsesGraph_node2"><a xlink:href="../module/yaeos__auxiliar.html" xlink:title="yaeos__auxiliar">
+<polygon fill="#337ab7" stroke="#337ab7" points="366,-24 272,-24 272,0 366,0 366,-24"/>
+<text text-anchor="middle" x="319" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__auxiliar</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;module~yaeos__auxiliar -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_edge1" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;module~yaeos__auxiliar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M401.61,-12C393.16,-12 384.49,-12 376.1,-12"/>
+<polygon fill="#000000" stroke="#000000" points="376.04,-8.5 366.04,-12 376.04,-15.5 376.04,-8.5"/>
+</g>
+<!-- module~yaeos__constants -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_node3" class="node">
+<title>module~yaeos__constants</title>
+<g id="a_proc~~flash_no_beta_limits~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="236,-24 130,-24 130,0 236,0 236,-24"/>
+<text text-anchor="middle" x="183" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__auxiliar&#45;&gt;module~yaeos__constants -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_edge2" class="edge">
+<title>module~yaeos__auxiliar&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.88,-12C263.61,-12 254.87,-12 246.23,-12"/>
+<polygon fill="#000000" stroke="#000000" points="246.18,-8.5 236.18,-12 246.18,-15.5 246.18,-8.5"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_node4" class="node">
+<title>iso_fortran_env</title>
+<g id="a_proc~~flash_no_beta_limits~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-24 0,-24 0,0 94,0 94,-24"/>
+<text text-anchor="middle" x="47" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
+<g id="proc~~flash_no_beta_limits~~UsesGraph_edge3" class="edge">
+<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-12C121.45,-12 112.77,-12 104.32,-12"/>
+<polygon fill="#000000" stroke="#000000" points="104.16,-8.5 94.16,-12 104.16,-15.5 104.16,-8.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+
+    <p>Flash algorithm using sucessive substitutions.</p>
+<p>Available specifications:</p>
+<ul>
+<li>TP (with T and P_spec variables)</li>
+<li>TV (with T and V_spec variables)</li>
+</ul>
+<p>This algorithm assumes that the specified T and P/V correspond to
+vapor-liquid separation predicted by the provided model (0</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-model~58"></span>
+              class(<a href='../type/basemodel.html'>BaseModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+                <p>Thermodynamic model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~61"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+                <p>Global composition (molar fractions)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~32"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+                <p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta0~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta0</strong></td>
+            <td>
+                <p>Initial guess for vapor fraction</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v_spec~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v_spec</strong></td>
+            <td>
+                <p>Specified Volume [L/mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p_spec~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>p_spec</strong></td>
+            <td>
+                <p>Specified Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k0~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k0</strong>(:)</td>
+            <td>
+                <p>Initial K factors (y/x)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iters~18"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iters</strong></td>
+            <td>
+                <p>Number of iterations</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-flash~2"></span>
+          type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>)
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~flash_no_beta_limits~~CallsGraph Pages: 1 -->
+<svg id="procflash_no_beta_limitsCallsGraph" width="625pt" height="284pt"
+ viewBox="0.00 0.00 625.00 284.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~flash_no_beta_limits~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 280)">
+<title>proc~~flash_no_beta_limits~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-280 621,-280 621,4 -4,4"/>
+<!-- proc~flash_no_beta_limits -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node1" class="node">
+<title>proc~flash_no_beta_limits</title>
+<polygon fill="none" stroke="black" points="120,-171 0,-171 0,-147 120,-147 120,-171"/>
+<text text-anchor="middle" x="60" y="-156.6" font-family="Helvetica,sans-Serif" font-size="10.50">flash_no_beta_limits</text>
+</g>
+<!-- ln_activity_coefficient -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node2" class="node">
+<title>ln_activity_coefficient</title>
+<polygon fill="#777777" stroke="#777777" points="302,-276 175,-276 175,-252 302,-252 302,-276"/>
+<text text-anchor="middle" x="238.5" y="-261.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ln_activity_coefficient</text>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;ln_activity_coefficient -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge1" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M71.35,-171.29C87.52,-189.68 120.61,-224.21 156,-243 159.7,-244.97 163.6,-246.75 167.6,-248.38"/>
+<polygon fill="#000000" stroke="#000000" points="166.48,-251.7 177.08,-251.89 168.91,-245.14 166.48,-251.7"/>
+</g>
+<!-- lnphi_pt -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node3" class="node">
+<title>lnphi_pt</title>
+<polygon fill="#777777" stroke="#777777" points="266,-234 211,-234 211,-210 266,-210 266,-234"/>
+<text text-anchor="middle" x="238.5" y="-219.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lnphi_pt</text>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;lnphi_pt -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge2" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M85.16,-171C104.1,-180.09 131.3,-192.42 156,-201 170.44,-206.01 186.69,-210.44 200.85,-213.91"/>
+<polygon fill="#000000" stroke="#000000" points="200.21,-217.36 210.75,-216.27 201.83,-210.55 200.21,-217.36"/>
+</g>
+<!-- pressure -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node4" class="node">
+<title>pressure</title>
+<polygon fill="#777777" stroke="#777777" points="267.5,-192 209.5,-192 209.5,-168 267.5,-168 267.5,-192"/>
+<text text-anchor="middle" x="238.5" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pressure</text>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;pressure -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge3" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;pressure</title>
+<path fill="none" stroke="#000000" d="M120.26,-166.05C146.32,-169.15 176.16,-172.7 199.22,-175.45"/>
+<polygon fill="#000000" stroke="#000000" points="198.95,-178.94 209.3,-176.64 199.78,-171.99 198.95,-178.94"/>
+</g>
+<!-- proc~k_wilson -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node5" class="node">
+<title>proc~k_wilson</title>
+<g id="a_proc~~flash_no_beta_limits~~CallsGraph_node5"><a xlink:href="../proc/k_wilson.html" xlink:title="k_wilson">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="267,-150 210,-150 210,-126 267,-126 267,-150"/>
+<text text-anchor="middle" x="238.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">k_wilson</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;proc~k_wilson -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge4" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;proc~k_wilson</title>
+<path fill="none" stroke="#000000" d="M120.26,-151.95C146.49,-148.83 176.56,-145.25 199.68,-142.5"/>
+<polygon fill="#000000" stroke="#000000" points="200.26,-145.96 209.77,-141.3 199.43,-139 200.26,-145.96"/>
+</g>
+<!-- proc~pressure_equality_v_beta_xy -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node6" class="node">
+<title>proc~pressure_equality_v_beta_xy</title>
+<g id="a_proc~~flash_no_beta_limits~~CallsGraph_node6"><a xlink:href="../proc/pressure_equality_v_beta_xy.html" xlink:title="pressure_equality_V_beta_xy">
+<polygon fill="#d9534f" stroke="#d9534f" points="321,-108 156,-108 156,-84 321,-84 321,-108"/>
+<text text-anchor="middle" x="238.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pressure_equality_V_beta_xy</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;proc~pressure_equality_v_beta_xy -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge5" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;proc~pressure_equality_v_beta_xy</title>
+<path fill="none" stroke="#000000" d="M85.16,-147C104.1,-137.91 131.3,-125.58 156,-117 162.31,-114.81 168.96,-112.73 175.63,-110.8"/>
+<polygon fill="#000000" stroke="#000000" points="176.7,-114.13 185.38,-108.07 174.81,-107.39 176.7,-114.13"/>
+</g>
+<!-- proc~solve_rr -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node7" class="node">
+<title>proc~solve_rr</title>
+<g id="a_proc~~flash_no_beta_limits~~CallsGraph_node7"><a xlink:href="../proc/solve_rr.html" xlink:title="solve_rr">
+<polygon fill="#d9534f" stroke="#d9534f" points="266,-66 211,-66 211,-42 266,-42 266,-66"/>
+<text text-anchor="middle" x="238.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_rr</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_no_beta_limits&#45;&gt;proc~solve_rr -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge6" class="edge">
+<title>proc~flash_no_beta_limits&#45;&gt;proc~solve_rr</title>
+<path fill="none" stroke="#000000" d="M71.35,-146.71C87.52,-128.32 120.61,-93.79 156,-75 169.71,-67.72 186.07,-62.87 200.53,-59.68"/>
+<polygon fill="#000000" stroke="#000000" points="201.54,-63.05 210.65,-57.64 200.16,-56.18 201.54,-63.05"/>
+</g>
+<!-- get_v0 -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node8" class="node">
+<title>get_v0</title>
+<polygon fill="#777777" stroke="#777777" points="440,-150 386,-150 386,-126 440,-126 440,-150"/>
+<text text-anchor="middle" x="413" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+</g>
+<!-- proc~pressure_equality_v_beta_xy&#45;&gt;get_v0 -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge7" class="edge">
+<title>proc~pressure_equality_v_beta_xy&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M288.93,-108.04C316.58,-114.77 350.45,-123.01 375.65,-129.15"/>
+<polygon fill="#000000" stroke="#000000" points="374.99,-132.59 385.53,-131.56 376.65,-125.79 374.99,-132.59"/>
+</g>
+<!-- proc~pressure -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node10" class="node">
+<title>proc~pressure</title>
+<g id="a_proc~~flash_no_beta_limits~~CallsGraph_node10"><a xlink:href="../proc/pressure.html" xlink:title="ArModel%pressure">
+<polygon fill="#d9534f" stroke="#d9534f" points="469,-108 357,-108 357,-84 469,-84 469,-108"/>
+<text text-anchor="middle" x="413" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%pressure</text>
+</a>
+</g>
+</g>
+<!-- proc~pressure_equality_v_beta_xy&#45;&gt;proc~pressure -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge8" class="edge">
+<title>proc~pressure_equality_v_beta_xy&#45;&gt;proc~pressure</title>
+<path fill="none" stroke="#000000" d="M321.2,-96C329.65,-96 338.16,-96 346.4,-96"/>
+<polygon fill="#000000" stroke="#000000" points="346.67,-99.5 356.67,-96 346.67,-92.5 346.67,-99.5"/>
+</g>
+<!-- proc~betalimits -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node9" class="node">
+<title>proc~betalimits</title>
+<g id="a_proc~~flash_no_beta_limits~~CallsGraph_node9"><a xlink:href="../proc/betalimits.html" xlink:title="betalimits">
+<polygon fill="#d9534f" stroke="#d9534f" points="445.5,-66 380.5,-66 380.5,-42 445.5,-42 445.5,-66"/>
+<text text-anchor="middle" x="413" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">betalimits</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_rr&#45;&gt;proc~betalimits -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge9" class="edge">
+<title>proc~solve_rr&#45;&gt;proc~betalimits</title>
+<path fill="none" stroke="#000000" d="M266.08,-54C293.88,-54 337.9,-54 370.33,-54"/>
+<polygon fill="#000000" stroke="#000000" points="370.42,-57.5 380.42,-54 370.42,-50.5 370.42,-57.5"/>
+</g>
+<!-- proc~rachford_rice -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node11" class="node">
+<title>proc~rachford_rice</title>
+<g id="a_proc~~flash_no_beta_limits~~CallsGraph_node11"><a xlink:href="../proc/rachford_rice.html" xlink:title="rachford_rice">
+<polygon fill="#d9534f" stroke="#d9534f" points="455,-24 371,-24 371,0 455,0 455,-24"/>
+<text text-anchor="middle" x="413" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">rachford_rice</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_rr&#45;&gt;proc~rachford_rice -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge10" class="edge">
+<title>proc~solve_rr&#45;&gt;proc~rachford_rice</title>
+<path fill="none" stroke="#000000" d="M266.08,-47.53C291.32,-41.38 329.94,-31.98 361.1,-24.39"/>
+<polygon fill="#000000" stroke="#000000" points="362.05,-27.76 370.94,-22 360.39,-20.96 362.05,-27.76"/>
+</g>
+<!-- residual_helmholtz -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_node12" class="node">
+<title>residual_helmholtz</title>
+<polygon fill="#777777" stroke="#777777" points="617,-108 505,-108 505,-84 617,-84 617,-108"/>
+<text text-anchor="middle" x="561" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+</g>
+<!-- proc~pressure&#45;&gt;residual_helmholtz -->
+<g id="proc~~flash_no_beta_limits~~CallsGraph_edge11" class="edge">
+<title>proc~pressure&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M469.2,-96C477.46,-96 486.05,-96 494.51,-96"/>
+<polygon fill="#000000" stroke="#000000" points="494.73,-99.5 504.73,-96 494.73,-92.5 494.73,-99.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~19"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>K</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~66"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~22"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vx~11"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vx</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vy~19"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vy</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta~15"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bmax~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bmax</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bmin~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bmin</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dk~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>dK</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dkold~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>dKold</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g0~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>g0</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g1~3"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>g1</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnk~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>lnK</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnkold~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>lnKold</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_x~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnfug_y~6"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>lnfug_y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-spec~3"></span>
+              character(len=2),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>spec</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Flash specification [PT | VT]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~22"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~30"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              dimension(size(z))
+            </td>
+            <td>::</td>
+            <td><strong>y</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+
+    
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-01-19 21:20 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

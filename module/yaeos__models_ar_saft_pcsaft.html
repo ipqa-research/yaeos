@@ -1,0 +1,1851 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>yaeos__models_ar_saft_pcsaft &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>yaeos__models_ar_saft_pcsaft
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 1.7% of total for modules and submodules.">227 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/pc_saft.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/pc_saft.f90.html'>pc_saft.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">yaeos__models_ar_saft_pcsaft</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#variable-a_coeffs">A_COEFFS</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#variable-b_coeffs">B_COEFFS</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#variable-n_avo">N_AVO</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#variable-pi">PI</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#variable-units_factor">UNITS_FACTOR</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#type-pcsaft">PcSaft</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-init_pcsaft">init_pcsaft</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-ar_impl">Ar_impl</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-calculate_association">calculate_association</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-calculate_chain">calculate_chain</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-calculate_dispersion">calculate_dispersion</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-calculate_hard_sphere">calculate_hard_sphere</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-get_v0_impl">get_v0_impl</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_saft_pcsaft.html#proc-calculate_zetas">calculate_zetas</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <p>PC-SAFT Implementation (Gross &amp; Sadowski, 2001)
+Approach: Hard Chain + Dispersion (Placeholder)</p>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__adiff_hyperdual_ar_api.html'>yaeos__adiff_hyperdual_ar_api</a></li>
+                  <li class="list-inline-item"><a href='hyperdual_mod.html'>hyperdual_mod</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos__models_ar_saft_pcsaft~~UsesGraph Pages: 1 -->
+<svg id="moduleyaeos__models_ar_saft_pcsaftUsesGraph" width="641pt" height="80pt"
+ viewBox="0.00 0.00 641.00 80.48" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph" class="graph" transform="scale(0.57 0.57) rotate(0) translate(4 136)">
+<title>module~~yaeos__models_ar_saft_pcsaft~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-136 1111,-136 1111,4 -4,4"/>
+<!-- module~yaeos__models_ar_saft_pcsaft -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node1" class="node">
+<title>module~yaeos__models_ar_saft_pcsaft</title>
+<polygon fill="none" stroke="black" points="1107,-92 935,-92 935,-68 1107,-68 1107,-92"/>
+<text text-anchor="middle" x="1021" y="-77.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_saft_pcsaft</text>
+</g>
+<!-- module~hyperdual_mod -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node2" class="node">
+<title>module~hyperdual_mod</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node2"><a xlink:href="../module/hyperdual_mod.html" xlink:title="hyperdual_mod">
+<polygon fill="#337ab7" stroke="#337ab7" points="680,-132 584,-132 584,-108 680,-108 680,-132"/>
+<text text-anchor="middle" x="632" y="-117.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~hyperdual_mod -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge1" class="edge">
+<title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~hyperdual_mod</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M957.69,-92.05C938.89,-95.35 918.15,-98.66 899,-101 827.33,-109.76 744.27,-114.9 690.29,-117.57"/>
+<polygon fill="#000000" stroke="#000000" points="690.05,-114.08 680.23,-118.06 690.38,-121.07 690.05,-114.08"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node3" class="node">
+<title>module~yaeos__adiff_hyperdual_ar_api</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node3"><a xlink:href="../module/yaeos__adiff_hyperdual_ar_api.html" xlink:title="yaeos__adiff_hyperdual_ar_api">
+<polygon fill="#337ab7" stroke="#337ab7" points="899,-92 723,-92 723,-68 899,-68 899,-92"/>
+<text text-anchor="middle" x="811" y="-77.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__adiff_hyperdual_ar_api</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__adiff_hyperdual_ar_api -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge2" class="edge">
+<title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__adiff_hyperdual_ar_api</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M934.8,-80C926.33,-80 917.69,-80 909.12,-80"/>
+<polygon fill="#000000" stroke="#000000" points="909.09,-76.5 899.09,-80 909.09,-83.5 909.09,-76.5"/>
+</g>
+<!-- module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node4" class="node">
+<title>module~yaeos__constants</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node4"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="236,-52 130,-52 130,-28 236,-28 236,-52"/>
+<text text-anchor="middle" x="183" y="-37.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge3" class="edge">
+<title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M985.54,-67.94C918.53,-45.59 765.59,0 633,0 633,0 633,0 478,0 386.06,0 362.72,-4.07 272,-19 261.2,-20.78 249.76,-23.14 238.83,-25.64"/>
+<polygon fill="#000000" stroke="#000000" points="237.9,-22.27 228.97,-27.97 239.51,-29.08 237.9,-22.27"/>
+</g>
+<!-- module~hyperdual_mod&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge4" class="edge">
+<title>module~hyperdual_mod&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M601.23,-107.96C571.2,-96.81 523.22,-81.7 480,-80"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~hyperdual_mod -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge5" class="edge">
+<title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~hyperdual_mod</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M756.89,-92C735.8,-96.77 711.49,-102.26 690.02,-107.11"/>
+<polygon fill="#000000" stroke="#000000" points="689.04,-103.75 680.06,-109.37 690.58,-110.58 689.04,-103.75"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge6" class="edge">
+<title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M722.77,-81.86C656.22,-82.83 562.29,-83.23 480,-80"/>
+</g>
+<!-- module~yaeos__models_ar -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node6" class="node">
+<title>module~yaeos__models_ar</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node6"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="687,-52 577,-52 577,-28 687,-28 687,-52"/>
+<text text-anchor="middle" x="632" y="-37.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__models_ar -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge7" class="edge">
+<title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M756.89,-68C737.82,-63.69 716.11,-58.78 696.26,-54.3"/>
+<polygon fill="#000000" stroke="#000000" points="696.9,-50.85 686.37,-52.06 695.36,-57.68 696.9,-50.85"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node5" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node5"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-52 0,-52 0,-28 94,-28 94,-52"/>
+<text text-anchor="middle" x="47" y="-37.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge8" class="edge">
+<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-40C121.45,-40 112.77,-40 104.32,-40"/>
+<polygon fill="#000000" stroke="#000000" points="104.16,-36.5 94.16,-40 104.16,-43.5 104.16,-36.5"/>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge9" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M603.2,-52C573.33,-63.78 524.2,-80 480,-80"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-80C386.06,-80 362.72,-75.93 272,-61 261.2,-59.22 249.76,-56.86 238.83,-54.36"/>
+<polygon fill="#000000" stroke="#000000" points="239.51,-50.92 228.97,-52.03 237.9,-57.73 239.51,-50.92"/>
+</g>
+<!-- module~yaeos__models_base -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node7" class="node">
+<title>module~yaeos__models_base</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node7"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="541,-52 417,-52 417,-28 541,-28 541,-52"/>
+<text text-anchor="middle" x="479" y="-37.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge10" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M576.91,-40C568.58,-40 559.87,-40 551.23,-40"/>
+<polygon fill="#000000" stroke="#000000" points="551.15,-36.5 541.15,-40 551.15,-43.5 551.15,-36.5"/>
+</g>
+<!-- module~yaeos__substance -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node8" class="node">
+<title>module~yaeos__substance</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_node8"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
+<polygon fill="#337ab7" stroke="#337ab7" points="381,-52 272,-52 272,-28 381,-28 381,-52"/>
+<text text-anchor="middle" x="326.5" y="-37.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge11" class="edge">
+<title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M416.79,-40C408.45,-40 399.89,-40 391.51,-40"/>
+<polygon fill="#000000" stroke="#000000" points="391.41,-36.5 381.41,-40 391.41,-43.5 391.41,-36.5"/>
+</g>
+<!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsesGraph_edge12" class="edge">
+<title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.6,-40C263.38,-40 254.84,-40 246.46,-40"/>
+<polygon fill="#000000" stroke="#000000" points="246.35,-36.5 236.35,-40 246.35,-43.5 246.35,-36.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panmoduleyaeos__models_ar_saft_pcsaftUsesGraph = svgPanZoom('#moduleyaeos__models_ar_saft_pcsaftUsesGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+          <div class="card">
+      <h3 class="card-header card-title bg-light">Used by</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph Pages: 1 -->
+<svg id="moduleyaeos__models_ar_saft_pcsaftUsedByGraph" width="400pt" height="32pt"
+ viewBox="0.00 0.00 400.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 396,-28 396,4 -4,4"/>
+<!-- module~yaeos__models_ar_saft_pcsaft -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_node1" class="node">
+<title>module~yaeos__models_ar_saft_pcsaft</title>
+<polygon fill="none" stroke="black" points="172,-24 0,-24 0,0 172,0 172,-24"/>
+<text text-anchor="middle" x="86" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_saft_pcsaft</text>
+</g>
+<!-- module~yaeos__models -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_node2" class="node">
+<title>module~yaeos__models</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_node2"><a xlink:href="../module/yaeos__models.html" xlink:title="yaeos__models">
+<polygon fill="#337ab7" stroke="#337ab7" points="302,-24 208,-24 208,0 302,0 302,-24"/>
+<text text-anchor="middle" x="255" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_saft_pcsaft -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_edge1" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_saft_pcsaft</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M207.92,-12C199.79,-12 191.05,-12 182.14,-12"/>
+<polygon fill="#000000" stroke="#000000" points="182.02,-8.5 172.02,-12 182.02,-15.5 182.02,-8.5"/>
+</g>
+<!-- module~yaeos -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_node3" class="node">
+<title>module~yaeos</title>
+<g id="a_module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_node3"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
+<polygon fill="#337ab7" stroke="#337ab7" points="392,-24 338,-24 338,0 392,0 392,-24"/>
+<text text-anchor="middle" x="365" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos&#45;&gt;module~yaeos__models -->
+<g id="module~~yaeos__models_ar_saft_pcsaft~~UsedByGraph_edge2" class="edge">
+<title>module~yaeos&#45;&gt;module~yaeos__models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M337.86,-12C330.05,-12 321.19,-12 312.23,-12"/>
+<polygon fill="#000000" stroke="#000000" points="312.14,-8.5 302.14,-12 312.14,-15.5 312.14,-8.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsedByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsedByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      <br>
+
+
+        <section>
+          <h2>Variables</h2>
+            <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a_coeffs"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(0:2, 0:6)
+            </td>
+            <td>::</td>
+            <td><strong>A_COEFFS</strong></td>
+<td> =</td>
+                <td>reshape([0.9105631445, -0.3084016918, -0.0906148351, 0.6361281449, 0.1860531159, 0.4527842806, 2.6861347891, -2.5030047259, 0.5962700728, -26.547362491, 21.419793629, -1.7241829131, 97.759208784, -65.255885330, -4.1302112531, -159.59154087, 83.318680481, 13.776631870, 91.297774084, -33.746922930, -8.6728470368], [3, 7])</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b_coeffs"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+              dimension(0:2, 0:6)
+            </td>
+            <td>::</td>
+            <td><strong>B_COEFFS</strong></td>
+<td> =</td>
+                <td>reshape([0.7240946941, -0.5755498075, 0.0976883116, 2.2382791861, 0.6995095521, -0.2557574982, -4.0025849485, 3.8925673390, -9.1558561530, -21.003576815, -17.215471648, 20.642075974, 26.855641363, 192.67226447, -38.804430052, 206.55133841, -161.82646165, 93.626774077, -355.60235612, -165.20769346, -29.666905585], [3, 7])</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_avo"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>N_AVO</strong></td>
+<td> =</td>
+                <td>6.02214076e23_pr</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pi"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>PI</strong></td>
+<td> =</td>
+                <td>3.14159265359_pr</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-units_factor"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>UNITS_FACTOR</strong></td>
+<td> =</td>
+                <td>0.000602214086_pr</td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+        </section>
+        <br>
+
+
+
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-pcsaft"></span>
+      <h3>
+        type, public, extends(<a href='../type/armodeladiff.html'>ArModelAdiff</a>)&nbsp;::&nbsp;
+        <a href='../type/pcsaft.html'>PcSaft</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>PC-SAFT Equation of State Model</p><a href="../type/pcsaft.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-components"></span>
+              type(<a href='../type/substances.html'>Substances</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>components</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Substances contained in the module</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eps_assoc"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>eps_assoc</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Association energy [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-epsilon_k"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>epsilon_k</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Energy / k_B [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kap_assoc"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>kap_assoc</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Association volume [A^3]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kij~8"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>kij</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Binary interaction parameters (optional)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~6"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Number of segments</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_sites"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>n_sites</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Number of association sites</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-name"></span>
+              character(len=:),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>name</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Name of the model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Segment diameter [Angstrom]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/pcsaft.html#boundprocedure-ar~21'>Ar</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/ar_impl.html'>Ar_impl</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-cp_residual_vt'>Cp_residual_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-cv_residual_vt'>Cv_residual_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-psat_pure'>Psat_pure</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-enthalpy_residual_vt'>enthalpy_residual_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-entropy_residual_vt'>entropy_residual_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/pcsaft.html#boundprocedure-get_v0~4'>get_v0</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/get_v0_impl.html'>get_v0_impl</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-gibbs_residual_vt'>gibbs_residual_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-internal_energy_residual_vt'>internal_energy_residual_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-lnfug_vt'>lnfug_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-lnphi_pt'>lnphi_pt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-lnphi_vt'>lnphi_vt</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-pressure'>pressure</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodeladiff.html#boundprocedure-residual_helmholtz~4'>residual_helmholtz</a></strong></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/armodel.html#boundprocedure-volume~4'>volume</a></strong></td>
+                  <td></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-init_pcsaft"></span> <h3>public  function <a href='../proc/init_pcsaft.html'>init_pcsaft</a>(m, sigma, epsilon_k, kij) result(model)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-epsilon_k~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>epsilon_k</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kij~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/pcsaft.html'>PcSaft</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-ar_impl"></span> <h3>private  function <a href='../proc/ar_impl.html'>Ar_impl</a>(self, n, V, T) result(ar_total)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~65"></span>
+              class(<a href='../type/pcsaft.html'>PcSaft</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~95"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~34"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~113"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/hyperdual.html'>hyperdual</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-calculate_association"></span> <h3>private  function <a href='../proc/calculate_association.html'>calculate_association</a>(n, V, T, zeta, d, m, eps_assoc, kap_assoc, n_sites) result(val)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~98"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~37"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~115"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zeta~6"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zeta</strong>(0:3)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d~8"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eps_assoc~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eps_assoc</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kap_assoc~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kap_assoc</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_sites~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_sites</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/hyperdual.html'>hyperdual</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-calculate_chain"></span> <h3>private  function <a href='../proc/calculate_chain.html'>calculate_chain</a>(x, n_tot, m, d, zeta) result(val)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~33"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_tot~6"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_tot</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d~7"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zeta~4"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zeta</strong>(0:3)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/hyperdual.html'>hyperdual</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-calculate_dispersion"></span> <h3>private  function <a href='../proc/calculate_dispersion.html'>calculate_dispersion</a>(n, V, T, zeta, m, eps_k, sig, kij) result(val)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~97"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~36"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~114"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zeta~5"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zeta</strong>(0:3)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eps_k"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eps_k</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sig"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sig</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kij~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/hyperdual.html'>hyperdual</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-calculate_hard_sphere"></span> <h3>private  function <a href='../proc/calculate_hard_sphere.html'>calculate_hard_sphere</a>(zeta, n_tot) result(val)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zeta~3"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zeta</strong>(0:3)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_tot~5"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_tot</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='../type/hyperdual.html'>hyperdual</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_v0_impl"></span> <h3>private  function <a href='../proc/get_v0_impl.html'>get_v0_impl</a>(self, n, P, T) result(v0)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~66"></span>
+              class(<a href='../type/pcsaft.html'>PcSaft</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~99"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~75"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~116"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=pr)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-calculate_zetas"></span> <h3>private  subroutine <a href='../proc/calculate_zetas.html'>calculate_zetas</a>(n, V, m, d, zeta)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~96"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~35"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d~6"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zeta~2"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zeta</strong>(0:3)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-01-19 21:20 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,1031 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>init_pcsaft &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>init_pcsaft
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.2% of total for procedures.">19 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/pc_saft.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/pc_saft.f90.html'>pc_saft.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar_saft_pcsaft.html'>yaeos__models_ar_saft_pcsaft</a></li>
+            <li class="breadcrumb-item active" aria-current="page">init_pcsaft</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/init_pcsaft.html#variable-nc~104">nc</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  function init_pcsaft(m, sigma, epsilon_k, kij) result(model)  
+</h2>
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/yaeos__equilibria_critical.html'>yaeos__equilibria_critical</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~init_pcsaft~~UsesGraph Pages: 1 -->
+<svg id="procinit_pcsaftUsesGraph" width="641pt" height="87pt"
+ viewBox="0.00 0.00 641.00 86.98" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~init_pcsaft~~UsesGraph" class="graph" transform="scale(0.61 0.61) rotate(0) translate(4 139.56)">
+<title>proc~~init_pcsaft~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-139.56 1054,-139.56 1054,4 -4,4"/>
+<!-- proc~init_pcsaft -->
+<g id="proc~~init_pcsaft~~UsesGraph_node1" class="node">
+<title>proc~init_pcsaft</title>
+<polygon fill="none" stroke="black" points="1050,-104 983,-104 983,-80 1050,-80 1050,-104"/>
+<text text-anchor="middle" x="1016.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50">init_pcsaft</text>
+</g>
+<!-- module~yaeos__equilibria_critical -->
+<g id="proc~~init_pcsaft~~UsesGraph_node2" class="node">
+<title>module~yaeos__equilibria_critical</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node2"><a xlink:href="../module/yaeos__equilibria_critical.html" xlink:title="yaeos__equilibria_critical">
+<polygon fill="#337ab7" stroke="#337ab7" points="947,-104 801,-104 801,-80 947,-80 947,-104"/>
+<text text-anchor="middle" x="874" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_critical</text>
+</a>
+</g>
+</g>
+<!-- proc~init_pcsaft&#45;&gt;module~yaeos__equilibria_critical -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge1" class="edge">
+<title>proc~init_pcsaft&#45;&gt;module~yaeos__equilibria_critical</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M982.91,-92C975.08,-92 966.36,-92 957.37,-92"/>
+<polygon fill="#000000" stroke="#000000" points="957.13,-88.5 947.13,-92 957.13,-95.5 957.13,-88.5"/>
+</g>
+<!-- module~yaeos__constants -->
+<g id="proc~~init_pcsaft~~UsesGraph_node3" class="node">
+<title>module~yaeos__constants</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="236,-74 130,-74 130,-50 236,-50 236,-74"/>
+<text text-anchor="middle" x="183" y="-59.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__equilibria_critical&#45;&gt;module~yaeos__constants -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge2" class="edge">
+<title>module~yaeos__equilibria_critical&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M709,-132C579.25,-140.8 545.64,-132.14 417,-113 376.59,-106.99 368.1,-96.56 327.5,-92"/>
+</g>
+<!-- module~yaeos__equilibria_equilibrium_state -->
+<g id="proc~~init_pcsaft~~UsesGraph_node4" class="node">
+<title>module~yaeos__equilibria_equilibrium_state</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node4"><a xlink:href="../module/yaeos__equilibria_equilibrium_state.html" xlink:title="yaeos__equilibria_equilibrium_state">
+<polygon fill="#337ab7" stroke="#337ab7" points="619,-104 417,-104 417,-80 619,-80 619,-104"/>
+<text text-anchor="middle" x="518" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__equilibria_critical&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge3" class="edge">
+<title>module~yaeos__equilibria_critical&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M839.11,-104.04C806.71,-114.67 756.23,-128.93 711,-132"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M709,-132C696.03,-132.88 629.74,-118.18 579.07,-106.36"/>
+<polygon fill="#000000" stroke="#000000" points="579.7,-102.91 569.17,-104.04 578.1,-109.73 579.7,-102.91"/>
+</g>
+<!-- module~yaeos__models_ar -->
+<g id="proc~~init_pcsaft~~UsesGraph_node5" class="node">
+<title>module~yaeos__models_ar</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node5"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="765,-64 655,-64 655,-40 765,-40 765,-64"/>
+<text text-anchor="middle" x="710" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__equilibria_critical&#45;&gt;module~yaeos__models_ar -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge4" class="edge">
+<title>module~yaeos__equilibria_critical&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M824.39,-80C807.17,-75.75 787.61,-70.92 769.64,-66.48"/>
+<polygon fill="#000000" stroke="#000000" points="770.4,-63.06 759.85,-64.06 768.72,-69.86 770.4,-63.06"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="proc~~init_pcsaft~~UsesGraph_node6" class="node">
+<title>iso_fortran_env</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node6"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-74 0,-74 0,-50 94,-50 94,-74"/>
+<text text-anchor="middle" x="47" y="-59.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge5" class="edge">
+<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-62C121.45,-62 112.77,-62 104.32,-62"/>
+<polygon fill="#000000" stroke="#000000" points="104.16,-58.5 94.16,-62 104.16,-65.5 104.16,-58.5"/>
+</g>
+<!-- module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge6" class="edge">
+<title>module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M416.98,-95.85C388.05,-95.92 356.46,-94.99 327.5,-92"/>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge7" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M654.9,-52.85C596.07,-54.39 499.41,-58.74 417,-71 376.59,-77.01 368.14,-96.2 327.5,-92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M325.5,-92C296.86,-88.79 265.46,-82.42 239.53,-76.38"/>
+<polygon fill="#000000" stroke="#000000" points="240.05,-72.91 229.51,-74 238.43,-79.72 240.05,-72.91"/>
+</g>
+<!-- module~yaeos__models_base -->
+<g id="proc~~init_pcsaft~~UsesGraph_node7" class="node">
+<title>module~yaeos__models_base</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node7"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="580,-24 456,-24 456,0 580,0 580,-24"/>
+<text text-anchor="middle" x="518" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge8" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M654.81,-40.59C633.41,-36.09 608.59,-30.86 586.07,-26.12"/>
+<polygon fill="#000000" stroke="#000000" points="586.75,-22.69 576.25,-24.05 585.31,-29.54 586.75,-22.69"/>
+</g>
+<!-- module~yaeos__substance -->
+<g id="proc~~init_pcsaft~~UsesGraph_node8" class="node">
+<title>module~yaeos__substance</title>
+<g id="a_proc~~init_pcsaft~~UsesGraph_node8"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
+<polygon fill="#337ab7" stroke="#337ab7" points="381,-44 272,-44 272,-20 381,-20 381,-44"/>
+<text text-anchor="middle" x="326.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge9" class="edge">
+<title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M456,-18.44C435.26,-20.63 412.05,-23.08 391.11,-25.29"/>
+<polygon fill="#000000" stroke="#000000" points="390.62,-21.82 381.04,-26.35 391.35,-28.78 390.62,-21.82"/>
+</g>
+<!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
+<g id="proc~~init_pcsaft~~UsesGraph_edge10" class="edge">
+<title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.6,-43.43C263.29,-45.19 254.66,-47.02 246.19,-48.82"/>
+<polygon fill="#000000" stroke="#000000" points="245.4,-45.4 236.35,-50.9 246.86,-52.25 245.4,-45.4"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocinit_pcsaftUsesGraph = svgPanZoom('#procinit_pcsaftUsesGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-epsilon_k~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>epsilon_k</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kij~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kij</strong>(:,:)</td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-model~70"></span>
+          type(<a href='../type/pcsaft.html'>PcSaft</a>)
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~init_pcsaft~~CallsGraph Pages: 1 -->
+<svg id="procinit_pcsaftCallsGraph" width="641pt" height="226pt"
+ viewBox="0.00 0.00 641.00 225.75" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~init_pcsaft~~CallsGraph" class="graph" transform="scale(0.58 0.58) rotate(0) translate(4 382)">
+<title>proc~~init_pcsaft~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-382 1092,-382 1092,4 -4,4"/>
+<!-- proc~init_pcsaft -->
+<g id="proc~~init_pcsaft~~CallsGraph_node1" class="node">
+<title>proc~init_pcsaft</title>
+<polygon fill="none" stroke="black" points="67,-137 0,-137 0,-113 67,-113 67,-137"/>
+<text text-anchor="middle" x="33.5" y="-122.6" font-family="Helvetica,sans-Serif" font-size="10.50">init_pcsaft</text>
+</g>
+<!-- proc~get_critical_constants -->
+<g id="proc~~init_pcsaft~~CallsGraph_node2" class="node">
+<title>proc~get_critical_constants</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node2"><a xlink:href="../proc/get_critical_constants.html" xlink:title="get_critical_constants">
+<polygon fill="#d9534f" stroke="#d9534f" points="230,-137 103,-137 103,-113 230,-113 230,-137"/>
+<text text-anchor="middle" x="166.5" y="-122.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_critical_constants</text>
+</a>
+</g>
+</g>
+<!-- proc~init_pcsaft&#45;&gt;proc~get_critical_constants -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge1" class="edge">
+<title>proc~init_pcsaft&#45;&gt;proc~get_critical_constants</title>
+<path fill="none" stroke="#000000" d="M67.22,-125C75.09,-125 83.82,-125 92.73,-125"/>
+<polygon fill="#000000" stroke="#000000" points="92.82,-128.5 102.82,-125 92.82,-121.5 92.82,-128.5"/>
+</g>
+<!-- proc~critical_point -->
+<g id="proc~~init_pcsaft~~CallsGraph_node3" class="node">
+<title>proc~critical_point</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node3"><a xlink:href="../proc/critical_point.html" xlink:title="critical_point">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="365.5,-216 284.5,-216 284.5,-192 365.5,-192 365.5,-216"/>
+<text text-anchor="middle" x="325" y="-201.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">critical_point</text>
+</a>
+</g>
+</g>
+<!-- proc~get_critical_constants&#45;&gt;proc~critical_point -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge2" class="edge">
+<title>proc~get_critical_constants&#45;&gt;proc~critical_point</title>
+<path fill="none" stroke="#000000" d="M191.61,-137.17C218.22,-150.61 261.23,-172.31 290.97,-187.33"/>
+<polygon fill="#000000" stroke="#000000" points="289.61,-190.56 300.12,-191.95 292.77,-184.31 289.61,-190.56"/>
+</g>
+<!-- proc~psat_pure -->
+<g id="proc~~init_pcsaft~~CallsGraph_node4" class="node">
+<title>proc~psat_pure</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node4"><a xlink:href="../proc/psat_pure.html" xlink:title="ArModel%Psat_pure">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="384,-116 266,-116 266,-92 384,-92 384,-116"/>
+<text text-anchor="middle" x="325" y="-101.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%Psat_pure</text>
+</a>
+</g>
+</g>
+<!-- proc~get_critical_constants&#45;&gt;proc~psat_pure -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge3" class="edge">
+<title>proc~get_critical_constants&#45;&gt;proc~psat_pure</title>
+<path fill="none" stroke="#000000" d="M230.25,-116.58C238.6,-115.46 247.18,-114.31 255.62,-113.18"/>
+<polygon fill="#000000" stroke="#000000" points="256.35,-116.61 265.8,-111.81 255.42,-109.67 256.35,-116.61"/>
+</g>
+<!-- proc~df_critical -->
+<g id="proc~~init_pcsaft~~CallsGraph_node6" class="node">
+<title>proc~df_critical</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node6"><a xlink:href="../proc/df_critical.html" xlink:title="df_critical">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="493.5,-256 429.5,-256 429.5,-232 493.5,-232 493.5,-256"/>
+<text text-anchor="middle" x="461.5" y="-241.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">df_critical</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~df_critical -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge4" class="edge">
+<title>proc~critical_point&#45;&gt;proc~df_critical</title>
+<path fill="none" stroke="#000000" d="M365.63,-215.78C382.6,-220.83 402.41,-226.72 419.53,-231.81"/>
+<polygon fill="#000000" stroke="#000000" points="418.67,-235.21 429.25,-234.71 420.66,-228.5 418.67,-235.21"/>
+</g>
+<!-- proc~f_critical -->
+<g id="proc~~init_pcsaft~~CallsGraph_node7" class="node">
+<title>proc~f_critical</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node7"><a xlink:href="../proc/f_critical.html" xlink:title="F_critical">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="625,-218 565,-218 565,-194 625,-194 625,-218"/>
+<text text-anchor="middle" x="595" y="-203.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">F_critical</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~f_critical -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge5" class="edge">
+<title>proc~critical_point&#45;&gt;proc~f_critical</title>
+<path fill="none" stroke="#000000" d="M365.54,-204.3C416.25,-204.67 503.66,-205.33 554.39,-205.7"/>
+<polygon fill="#000000" stroke="#000000" points="554.61,-209.21 564.64,-205.78 554.66,-202.21 554.61,-209.21"/>
+</g>
+<!-- proc~get_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_node8" class="node">
+<title>proc~get_a</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node8"><a xlink:href="../proc/get_a.html" xlink:title="get_a">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="912.5,-260 858.5,-260 858.5,-236 912.5,-236 912.5,-260"/>
+<text text-anchor="middle" x="885.5" y="-245.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_a</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~get_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge6" class="edge">
+<title>proc~critical_point&#45;&gt;proc~get_a</title>
+<path fill="none" stroke="#000000" d="M339.06,-216.07C356.15,-230.95 387.73,-255.45 420,-265 573.84,-310.54 768.9,-275.09 848.36,-256.98"/>
+<polygon fill="#000000" stroke="#000000" points="849.4,-260.33 858.35,-254.66 847.82,-253.51 849.4,-260.33"/>
+</g>
+<!-- proc~lambda1 -->
+<g id="proc~~init_pcsaft~~CallsGraph_node9" class="node">
+<title>proc~lambda1</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node9"><a xlink:href="../proc/lambda1.html" xlink:title="lambda1">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="771,-180 711,-180 711,-156 771,-156 771,-180"/>
+<text text-anchor="middle" x="741" y="-165.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lambda1</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~lambda1 -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge7" class="edge">
+<title>proc~critical_point&#45;&gt;proc~lambda1</title>
+<path fill="none" stroke="#000000" d="M365.64,-200.41C408.42,-196.55 478.53,-190.25 539,-185 595.17,-180.12 660.18,-174.65 700.7,-171.27"/>
+<polygon fill="#000000" stroke="#000000" points="701.03,-174.76 710.7,-170.44 700.45,-167.78 701.03,-174.76"/>
+</g>
+<!-- proc~pressure -->
+<g id="proc~~init_pcsaft~~CallsGraph_node10" class="node">
+<title>proc~pressure</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node10"><a xlink:href="../proc/pressure.html" xlink:title="ArModel%pressure">
+<polygon fill="#d9534f" stroke="#d9534f" points="651,-138 539,-138 539,-114 651,-114 651,-138"/>
+<text text-anchor="middle" x="595" y="-123.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%pressure</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~pressure -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge8" class="edge">
+<title>proc~critical_point&#45;&gt;proc~pressure</title>
+<path fill="none" stroke="#000000" d="M343.48,-191.81C361.71,-179.72 391.56,-161.64 420,-152 454.87,-140.18 495.47,-133.73 528.68,-130.21"/>
+<polygon fill="#000000" stroke="#000000" points="529.14,-133.68 538.74,-129.21 528.44,-126.72 529.14,-133.68"/>
+</g>
+<!-- proc~set_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_node11" class="node">
+<title>proc~set_a</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node11"><a xlink:href="../proc/set_a.html" xlink:title="set_a">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="488.5,-378 434.5,-378 434.5,-354 488.5,-354 488.5,-378"/>
+<text text-anchor="middle" x="461.5" y="-363.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">set_a</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~set_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge9" class="edge">
+<title>proc~critical_point&#45;&gt;proc~set_a</title>
+<path fill="none" stroke="#000000" d="M331.42,-216.05C343.78,-242.4 376.4,-305.93 420,-345 421.73,-346.55 423.59,-348.01 425.53,-349.4"/>
+<polygon fill="#000000" stroke="#000000" points="424.06,-352.61 434.39,-354.95 427.77,-346.67 424.06,-352.61"/>
+</g>
+<!-- proc~solve_system -->
+<g id="proc~~init_pcsaft~~CallsGraph_node12" class="node">
+<title>proc~solve_system</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node12"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="503,-336 420,-336 420,-312 503,-312 503,-336"/>
+<text text-anchor="middle" x="461.5" y="-321.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~solve_system -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge10" class="edge">
+<title>proc~critical_point&#45;&gt;proc~solve_system</title>
+<path fill="none" stroke="#000000" d="M336.55,-216.11C353.21,-234.86 387.11,-271.51 420,-298 423.54,-300.85 427.4,-303.66 431.28,-306.32"/>
+<polygon fill="#000000" stroke="#000000" points="429.44,-309.3 439.72,-311.86 433.28,-303.45 429.44,-309.3"/>
+</g>
+<!-- proc~volume~3 -->
+<g id="proc~~init_pcsaft~~CallsGraph_node13" class="node">
+<title>proc~volume~3</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node13"><a xlink:href="../proc/volume~3.html" xlink:title="ArModel%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="794,-86 688,-86 688,-62 794,-62 794,-86"/>
+<text text-anchor="middle" x="741" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
+</a>
+</g>
+</g>
+<!-- proc~critical_point&#45;&gt;proc~volume~3 -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge11" class="edge">
+<title>proc~critical_point&#45;&gt;proc~volume~3</title>
+<path fill="none" stroke="#000000" d="M337.48,-191.73C354.03,-174.83 386.32,-144.7 420,-129 503.54,-90.06 610.9,-78.42 677.58,-75.1"/>
+<polygon fill="#000000" stroke="#000000" points="678.09,-78.58 687.92,-74.64 677.77,-71.59 678.09,-78.58"/>
+</g>
+<!-- none~diff~3 -->
+<g id="proc~~init_pcsaft~~CallsGraph_node5" class="node">
+<title>none~diff~3</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node5"><a xlink:href="../proc/psat_pure.html#proc-diff~3" xlink:title="diff">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="488.5,-58 434.5,-58 434.5,-34 488.5,-34 488.5,-58"/>
+<text text-anchor="middle" x="461.5" y="-43.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">diff</text>
+</a>
+</g>
+</g>
+<!-- proc~psat_pure&#45;&gt;none~diff~3 -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge12" class="edge">
+<title>proc~psat_pure&#45;&gt;none~diff~3</title>
+<path fill="none" stroke="#000000" d="M353.87,-91.98C374.51,-83.08 402.8,-70.88 425.05,-61.29"/>
+<polygon fill="#000000" stroke="#000000" points="426.7,-64.39 434.49,-57.22 423.92,-57.96 426.7,-64.39"/>
+</g>
+<!-- proc~lnphi_pt -->
+<g id="proc~~init_pcsaft~~CallsGraph_node19" class="node">
+<title>proc~lnphi_pt</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node19"><a xlink:href="../proc/lnphi_pt.html" xlink:title="ArModel%lnphi_pt">
+<polygon fill="#d9534f" stroke="#d9534f" points="649.5,-58 540.5,-58 540.5,-34 649.5,-34 649.5,-58"/>
+<text text-anchor="middle" x="595" y="-43.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
+</a>
+</g>
+</g>
+<!-- none~diff~3&#45;&gt;proc~lnphi_pt -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge13" class="edge">
+<title>none~diff~3&#45;&gt;proc~lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M488.79,-46C500.79,-46 515.57,-46 530.22,-46"/>
+<polygon fill="#000000" stroke="#000000" points="530.3,-49.5 540.3,-46 530.3,-42.5 530.3,-49.5"/>
+</g>
+<!-- proc~df_critical&#45;&gt;proc~f_critical -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge14" class="edge">
+<title>proc~df_critical&#45;&gt;proc~f_critical</title>
+<path fill="none" stroke="#000000" d="M493.66,-234.99C512.03,-229.69 535.43,-222.92 555.02,-217.27"/>
+<polygon fill="#000000" stroke="#000000" points="556.23,-220.56 564.86,-214.42 554.28,-213.83 556.23,-220.56"/>
+</g>
+<!-- proc~df_critical&#45;&gt;proc~get_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge15" class="edge">
+<title>proc~df_critical&#45;&gt;proc~get_a</title>
+<path fill="none" stroke="#000000" d="M493.53,-244.29C569.86,-245.02 766.45,-246.88 848.1,-247.65"/>
+<polygon fill="#000000" stroke="#000000" points="848.35,-251.16 858.38,-247.75 848.42,-244.16 848.35,-251.16"/>
+</g>
+<!-- proc~f_critical&#45;&gt;proc~get_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge16" class="edge">
+<title>proc~f_critical&#45;&gt;proc~get_a</title>
+<path fill="none" stroke="#000000" d="M625.06,-209.36C663.88,-213.95 734.74,-222.68 795,-232 812.53,-234.71 831.92,-238.12 848.15,-241.1"/>
+<polygon fill="#000000" stroke="#000000" points="847.85,-244.6 858.32,-242.98 849.12,-237.72 847.85,-244.6"/>
+</g>
+<!-- proc~f_critical&#45;&gt;proc~lambda1 -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge17" class="edge">
+<title>proc~f_critical&#45;&gt;proc~lambda1</title>
+<path fill="none" stroke="#000000" d="M625.14,-198.31C647,-192.54 677.15,-184.59 701.07,-178.27"/>
+<polygon fill="#000000" stroke="#000000" points="702.13,-181.61 710.9,-175.68 700.34,-174.85 702.13,-181.61"/>
+</g>
+<!-- proc~lambda1&#45;&gt;proc~get_a -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge19" class="edge">
+<title>proc~lambda1&#45;&gt;proc~get_a</title>
+<path fill="none" stroke="#000000" d="M770.34,-180.06C778.57,-184.04 787.38,-188.8 795,-194 812.93,-206.24 812.59,-215.51 831,-227 836.5,-230.43 842.65,-233.48 848.78,-236.11"/>
+<polygon fill="#000000" stroke="#000000" points="847.69,-239.44 858.27,-239.89 850.28,-232.94 847.69,-239.44"/>
+</g>
+<!-- proc~eigen -->
+<g id="proc~~init_pcsaft~~CallsGraph_node17" class="node">
+<title>proc~eigen</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node17"><a xlink:href="../proc/eigen.html" xlink:title="eigen">
+<polygon fill="#d9534f" stroke="#d9534f" points="912.5,-218 858.5,-218 858.5,-194 912.5,-194 912.5,-218"/>
+<text text-anchor="middle" x="885.5" y="-203.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eigen</text>
+</a>
+</g>
+</g>
+<!-- proc~lambda1&#45;&gt;proc~eigen -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge18" class="edge">
+<title>proc~lambda1&#45;&gt;proc~eigen</title>
+<path fill="none" stroke="#000000" d="M771.18,-175.78C793.55,-181.75 824.55,-190.01 848.47,-196.39"/>
+<polygon fill="#000000" stroke="#000000" points="847.67,-199.8 858.24,-199 849.48,-193.04 847.67,-199.8"/>
+</g>
+<!-- proc~lnfug_vt -->
+<g id="proc~~init_pcsaft~~CallsGraph_node18" class="node">
+<title>proc~lnfug_vt</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node18"><a xlink:href="../proc/lnfug_vt.html" xlink:title="ArModel%lnfug_vt">
+<polygon fill="#d9534f" stroke="#d9534f" points="940,-176 831,-176 831,-152 940,-152 940,-176"/>
+<text text-anchor="middle" x="885.5" y="-161.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnfug_vt</text>
+</a>
+</g>
+</g>
+<!-- proc~lambda1&#45;&gt;proc~lnfug_vt -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge20" class="edge">
+<title>proc~lambda1&#45;&gt;proc~lnfug_vt</title>
+<path fill="none" stroke="#000000" d="M771.18,-167.18C785.54,-166.78 803.46,-166.27 820.77,-165.79"/>
+<polygon fill="#000000" stroke="#000000" points="820.97,-169.28 830.87,-165.51 820.77,-162.29 820.97,-169.28"/>
+</g>
+<!-- residual_helmholtz -->
+<g id="proc~~init_pcsaft~~CallsGraph_node20" class="node">
+<title>residual_helmholtz</title>
+<polygon fill="#777777" stroke="#777777" points="1088,-136 976,-136 976,-112 1088,-112 1088,-136"/>
+<text text-anchor="middle" x="1032" y="-121.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+</g>
+<!-- proc~pressure&#45;&gt;residual_helmholtz -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge21" class="edge">
+<title>proc~pressure&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M651.09,-125.75C731.28,-125.38 879.89,-124.69 965.54,-124.3"/>
+<polygon fill="#000000" stroke="#000000" points="965.69,-127.8 975.67,-124.25 965.65,-120.8 965.69,-127.8"/>
+</g>
+<!-- none~dgesv -->
+<g id="proc~~init_pcsaft~~CallsGraph_node16" class="node">
+<title>none~dgesv</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="622,-336 568,-336 568,-312 622,-312 622,-336"/>
+<text text-anchor="middle" x="595" y="-321.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+</g>
+<!-- proc~solve_system&#45;&gt;none~dgesv -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge22" class="edge">
+<title>proc~solve_system&#45;&gt;none~dgesv</title>
+<path fill="none" stroke="#000000" d="M503.03,-324C520.53,-324 540.83,-324 557.82,-324"/>
+<polygon fill="#000000" stroke="#000000" points="557.91,-327.5 567.91,-324 557.91,-320.5 557.91,-327.5"/>
+</g>
+<!-- get_v0 -->
+<g id="proc~~init_pcsaft~~CallsGraph_node14" class="node">
+<title>get_v0</title>
+<polygon fill="#777777" stroke="#777777" points="912.5,-96 858.5,-96 858.5,-72 912.5,-72 912.5,-96"/>
+<text text-anchor="middle" x="885.5" y="-81.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+</g>
+<!-- proc~volume~3&#45;&gt;get_v0 -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge23" class="edge">
+<title>proc~volume~3&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M794.25,-77.67C812.11,-78.92 831.68,-80.29 848.02,-81.44"/>
+<polygon fill="#000000" stroke="#000000" points="848.02,-84.95 858.24,-82.16 848.51,-77.97 848.02,-84.95"/>
+</g>
+<!-- interface~newton -->
+<g id="proc~~init_pcsaft~~CallsGraph_node15" class="node">
+<title>interface~newton</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node15"><a xlink:href="../interface/newton.html" xlink:title="newton">
+<polygon fill="#a7506f" stroke="#a7506f" points="912.5,-54 858.5,-54 858.5,-30 912.5,-30 912.5,-54"/>
+<text text-anchor="middle" x="885.5" y="-39.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+</a>
+</g>
+</g>
+<!-- proc~volume~3&#45;&gt;interface~newton -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge24" class="edge">
+<title>proc~volume~3&#45;&gt;interface~newton</title>
+<path fill="none" stroke="#000000" d="M794.25,-62.27C812.11,-58.26 831.68,-53.86 848.02,-50.19"/>
+<polygon fill="#000000" stroke="#000000" points="849.25,-53.5 858.24,-47.9 847.71,-46.67 849.25,-53.5"/>
+</g>
+<!-- proc~newton_1d -->
+<g id="proc~~init_pcsaft~~CallsGraph_node23" class="node">
+<title>proc~newton_1d</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node23"><a xlink:href="../proc/newton_1d.html" xlink:title="newton_1d">
+<polygon fill="#d9534f" stroke="#d9534f" points="1067,-54 997,-54 997,-30 1067,-30 1067,-54"/>
+<text text-anchor="middle" x="1032" y="-39.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
+</a>
+</g>
+</g>
+<!-- interface~newton&#45;&gt;proc~newton_1d -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge25" class="edge">
+<title>interface~newton&#45;&gt;proc~newton_1d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M912.67,-42C933.31,-42 962.55,-42 986.81,-42"/>
+<polygon fill="#000000" stroke="#000000" points="986.85,-45.5 996.85,-42 986.85,-38.5 986.85,-45.5"/>
+</g>
+<!-- none~dsyev -->
+<g id="proc~~init_pcsaft~~CallsGraph_node21" class="node">
+<title>none~dsyev</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="1059,-218 1005,-218 1005,-194 1059,-194 1059,-218"/>
+<text text-anchor="middle" x="1032" y="-203.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dsyev</text>
+</g>
+<!-- proc~eigen&#45;&gt;none~dsyev -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge26" class="edge">
+<title>proc~eigen&#45;&gt;none~dsyev</title>
+<path fill="none" stroke="#000000" d="M912.67,-206C935.54,-206 968.99,-206 994.5,-206"/>
+<polygon fill="#000000" stroke="#000000" points="994.54,-209.5 1004.54,-206 994.54,-202.5 994.54,-209.5"/>
+</g>
+<!-- proc~lnfug_vt&#45;&gt;residual_helmholtz -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge27" class="edge">
+<title>proc~lnfug_vt&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M929.85,-152C944.72,-147.88 961.54,-143.23 977.14,-138.91"/>
+<polygon fill="#000000" stroke="#000000" points="978.47,-142.17 987.18,-136.13 976.61,-135.43 978.47,-142.17"/>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~volume~3 -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge29" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~volume~3</title>
+<path fill="none" stroke="#000000" d="M649.62,-56.43C658.78,-58.21 668.37,-60.07 677.73,-61.89"/>
+<polygon fill="#000000" stroke="#000000" points="677.29,-65.37 687.77,-63.84 678.62,-58.5 677.29,-65.37"/>
+</g>
+<!-- proc~lnphi_vt -->
+<g id="proc~~init_pcsaft~~CallsGraph_node22" class="node">
+<title>proc~lnphi_vt</title>
+<g id="a_proc~~init_pcsaft~~CallsGraph_node22"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
+<polygon fill="#d9534f" stroke="#d9534f" points="795,-24 687,-24 687,0 795,0 795,-24"/>
+<text text-anchor="middle" x="741" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~lnphi_vt -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge28" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~lnphi_vt</title>
+<path fill="none" stroke="#000000" d="M647.17,-33.92C657.47,-31.49 668.38,-28.91 678.97,-26.41"/>
+<polygon fill="#000000" stroke="#000000" points="680.06,-29.75 688.99,-24.04 678.45,-22.94 680.06,-29.75"/>
+</g>
+<!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
+<g id="proc~~init_pcsaft~~CallsGraph_edge30" class="edge">
+<title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M795.24,-3.36C836.79,0.85 894.85,1.02 940,-21 962.1,-31.78 959.77,-44.54 976,-63 988.24,-76.92 1002.23,-92.43 1013.04,-104.33"/>
+<polygon fill="#000000" stroke="#000000" points="1010.63,-106.89 1019.95,-111.93 1015.81,-102.18 1010.63,-106.89"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocinit_pcsaftCallsGraph = svgPanZoom('#procinit_pcsaftCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~104"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+
+    
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-01-19 21:20 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

@@ -153,7 +153,6 @@ contains
       !! call eos%volume(n, P, T, V, root_type="vapor")
       !! call eos%volume(n, P, T, V, root_type="stable")
       !! ```
-      use yaeos__constants, only: pr, R
       use yaeos__math, only: newton
 
       class(ArModel), intent(in) :: eos !! Model
@@ -642,7 +641,6 @@ contains
       !!    n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn &
       !!    )
       !! ```
-      use yaeos__constants, only: R
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]
@@ -781,7 +779,6 @@ contains
       !!
       !! call eos%Cp_residual_vt(n, V, T, Cp=Cp)
       !! ```
-      use yaeos__constants, only: R
       class(ArModel), intent(in) :: eos !! Model
       real(pr), intent(in) :: n(:) !! Moles number vector
       real(pr), intent(in) :: V !! Volume [L]

@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">39 statements</a>
+                 title=" 0.3% of total for procedures.">34 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_tx_mp.f90"> Source File</a>
+              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_tx_mp.f90.html'>phase_envelopes_tx_mp.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,11 +135,8 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-x0~6">X0</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-dx~6">dX</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-it~3">iT</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-ia~2">ia</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-nc~19">nc</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-dx~4">dX</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-nc~28">nc</a>
         </div>
       </div>
     </div>
@@ -169,31 +166,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine solve_point(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
+    <h2>public  subroutine solve_point(model, z0, zi, T, ns, S, X, F, dF, its, maxits)  
 </h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+    
 
 
-    <h1 id="solve_point">solve_point</h1>
-<p>Solve a point in the multiphase envelope.</p>
-<h1 id="description">Description</h1>
-<p>This subroutine solves a point of the system of equations for a
-multiphase isobaric line. It uses the Newton-Raphson method,.</p>
-
-    <h3>Type Bound</h3>
-    <p><a href='../type/txenvelmp.html'>TXEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -208,7 +185,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~21"></span>
+              <span class="anchor" id="variable-model~10"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -218,12 +195,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                <p>Model to use for the calculations.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~14"></span>
+              <span class="anchor" id="variable-z0~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -233,12 +210,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>z0</strong>(:)</td>
             <td>
-                <p>Initial mixture composition.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~14"></span>
+              <span class="anchor" id="variable-zi~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -248,27 +225,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>zi</strong>(:)</td>
             <td>
-                <p>Second mixture composition.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~7"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>np</strong></td>
-            <td>
-                <p>Number of main phases.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p~18"></span>
+              <span class="anchor" id="variable-t~24"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -276,74 +238,14 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>T</strong></td>
             <td>
-                <p>Presure [bar].</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~5"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>beta_w</strong></td>
-            <td>
-                <p>Fraction of the reference (incipient) phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-kinds_x~8"></span>
-              character(len=14),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>kinds_x</strong>(np)</td>
-            <td>
-                <p>Kinds of the main phases</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-kind_w~8"></span>
-              character(len=14),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>kind_w</strong></td>
-            <td>
-                <p>Kind of the reference phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~27"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>X</strong>(:)</td>
-            <td>
-                <p>Vector of variables</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ns~21"></span>
+              <span class="anchor" id="variable-ns~11"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -353,12 +255,12 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-                <p>Number of specification</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~19"></span>
+              <span class="anchor" id="variable-s~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -368,27 +270,27 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
             <td>::</td>
             <td><strong>S</strong></td>
             <td>
-                <p>Specification value</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~8"></span>
+              <span class="anchor" id="variable-x~10"></span>
               real(kind=pr),
             </td>
-<td>intent(in)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>dXdS</strong>(size(X))</td>
+            <td><strong>X</strong>(:)</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~15"></span>
+              <span class="anchor" id="variable-f~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -396,14 +298,14 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>F</strong>(size(X))</td>
+            <td><strong>F</strong>(:)</td>
             <td>
-                <p>Vector of functions valuated</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~9"></span>
+              <span class="anchor" id="variable-df~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -411,29 +313,29 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>df</strong>(size(X),size(X))</td>
+            <td><strong>dF</strong>(:,:)</td>
             <td>
-                <p>Jacobian matrix</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~7"></span>
+              <span class="anchor" id="variable-its~7"></span>
               integer,
             </td>
-<td>intent(out)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>iters</strong></td>
+            <td><strong>its</strong></td>
             <td>
-                <p>Number of iterations needed to converge the point.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iterations~5"></span>
+              <span class="anchor" id="variable-maxits"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -441,14 +343,396 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
               
             </td>
             <td>::</td>
-            <td><strong>max_iterations</strong></td>
+            <td><strong>maxits</strong></td>
             <td>
-                <p>Maximum number of iterations to solve the point.</p>
+                
             </td>
         </tr>
     </tbody>
   </table>
 
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~solve_point~2~~CallsGraph Pages: 1 -->
+<svg id="procsolve_point2CallsGraph" width="641pt" height="114pt"
+ viewBox="0.00 0.00 641.00 113.75" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~2~~CallsGraph" class="graph" transform="scale(0.83 0.83) rotate(0) translate(4 133)">
+<title>proc~~solve_point~2~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-133 768,-133 768,4 -4,4"/>
+<!-- proc~solve_point~2 -->
+<g id="proc~~solve_point~2~~CallsGraph_node1" class="node">
+<title>proc~solve_point~2</title>
+<polygon fill="none" stroke="black" points="73,-66 0,-66 0,-42 73,-42 73,-66"/>
+<text text-anchor="middle" x="36.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">solve_point</text>
+</g>
+<!-- proc~px_f_three_phases -->
+<g id="proc~~solve_point~2~~CallsGraph_node2" class="node">
+<title>proc~px_f_three_phases</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node2"><a xlink:href="../proc/px_f_three_phases.html" xlink:title="px_F_three_phases">
+<polygon fill="#d9534f" stroke="#d9534f" points="221,-87 109,-87 109,-63 221,-63 221,-87"/>
+<text text-anchor="middle" x="165" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_F_three_phases</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_point~2&#45;&gt;proc~px_f_three_phases -->
+<g id="proc~~solve_point~2~~CallsGraph_edge1" class="edge">
+<title>proc~solve_point~2&#45;&gt;proc~px_f_three_phases</title>
+<path fill="none" stroke="#000000" d="M73.07,-59.91C81.14,-61.25 89.96,-62.71 98.83,-64.18"/>
+<polygon fill="#000000" stroke="#000000" points="98.39,-67.66 108.83,-65.84 99.54,-60.75 98.39,-67.66"/>
+</g>
+<!-- proc~solve_system -->
+<g id="proc~~solve_point~2~~CallsGraph_node3" class="node">
+<title>proc~solve_system</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node3"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="206.5,-45 123.5,-45 123.5,-21 206.5,-21 206.5,-45"/>
+<text text-anchor="middle" x="165" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_point~2&#45;&gt;proc~solve_system -->
+<g id="proc~~solve_point~2~~CallsGraph_edge2" class="edge">
+<title>proc~solve_point~2&#45;&gt;proc~solve_system</title>
+<path fill="none" stroke="#000000" d="M73.07,-48.09C85.54,-46.03 99.78,-43.66 113.24,-41.43"/>
+<polygon fill="#000000" stroke="#000000" points="114.05,-44.84 123.34,-39.75 112.9,-37.93 114.05,-44.84"/>
+</g>
+<!-- proc~get_z -->
+<g id="proc~~solve_point~2~~CallsGraph_node5" class="node">
+<title>proc~get_z</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node5"><a xlink:href="../proc/get_z.html" xlink:title="get_z">
+<polygon fill="#d9534f" stroke="#d9534f" points="338.5,-129 284.5,-129 284.5,-105 338.5,-105 338.5,-129"/>
+<text text-anchor="middle" x="311.5" y="-114.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_z</text>
+</a>
+</g>
+</g>
+<!-- proc~px_f_three_phases&#45;&gt;proc~get_z -->
+<g id="proc~~solve_point~2~~CallsGraph_edge3" class="edge">
+<title>proc~px_f_three_phases&#45;&gt;proc~get_z</title>
+<path fill="none" stroke="#000000" d="M207.41,-87.04C228.53,-93.17 253.97,-100.57 274.3,-106.48"/>
+<polygon fill="#000000" stroke="#000000" points="273.54,-109.9 284.12,-109.33 275.49,-103.18 273.54,-109.9"/>
+</g>
+<!-- proc~lnphi_pt -->
+<g id="proc~~solve_point~2~~CallsGraph_node6" class="node">
+<title>proc~lnphi_pt</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node6"><a xlink:href="../proc/lnphi_pt.html" xlink:title="ArModel%lnphi_pt">
+<polygon fill="#d9534f" stroke="#d9534f" points="366,-87 257,-87 257,-63 366,-63 366,-87"/>
+<text text-anchor="middle" x="311.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
+</a>
+</g>
+</g>
+<!-- proc~px_f_three_phases&#45;&gt;proc~lnphi_pt -->
+<g id="proc~~solve_point~2~~CallsGraph_edge4" class="edge">
+<title>proc~px_f_three_phases&#45;&gt;proc~lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M221.04,-75C229.32,-75 237.92,-75 246.37,-75"/>
+<polygon fill="#000000" stroke="#000000" points="246.57,-78.5 256.57,-75 246.57,-71.5 246.57,-78.5"/>
+</g>
+<!-- none~dgesv -->
+<g id="proc~~solve_point~2~~CallsGraph_node4" class="node">
+<title>none~dgesv</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="338.5,-45 284.5,-45 284.5,-21 338.5,-21 338.5,-45"/>
+<text text-anchor="middle" x="311.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+</g>
+<!-- proc~solve_system&#45;&gt;none~dgesv -->
+<g id="proc~~solve_point~2~~CallsGraph_edge5" class="edge">
+<title>proc~solve_system&#45;&gt;none~dgesv</title>
+<path fill="none" stroke="#000000" d="M206.64,-33C227.82,-33 253.52,-33 274.05,-33"/>
+<polygon fill="#000000" stroke="#000000" points="274.27,-36.5 284.27,-33 274.27,-29.5 274.27,-36.5"/>
+</g>
+<!-- proc~lnphi_vt -->
+<g id="proc~~solve_point~2~~CallsGraph_node7" class="node">
+<title>proc~lnphi_vt</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node7"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
+<polygon fill="#d9534f" stroke="#d9534f" points="510,-108 402,-108 402,-84 510,-84 510,-108"/>
+<text text-anchor="middle" x="456" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~lnphi_vt -->
+<g id="proc~~solve_point~2~~CallsGraph_edge6" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~lnphi_vt</title>
+<path fill="none" stroke="#000000" d="M366.37,-82.94C374.76,-84.17 383.48,-85.46 392.05,-86.72"/>
+<polygon fill="#000000" stroke="#000000" points="391.59,-90.19 402,-88.19 392.61,-83.27 391.59,-90.19"/>
+</g>
+<!-- proc~volume~3 -->
+<g id="proc~~solve_point~2~~CallsGraph_node8" class="node">
+<title>proc~volume~3</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node8"><a xlink:href="../proc/volume~3.html" xlink:title="ArModel%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="509,-66 403,-66 403,-42 509,-42 509,-66"/>
+<text text-anchor="middle" x="456" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~volume~3 -->
+<g id="proc~~solve_point~2~~CallsGraph_edge7" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~volume~3</title>
+<path fill="none" stroke="#000000" d="M366.37,-67.06C375.08,-65.78 384.15,-64.44 393.03,-63.13"/>
+<polygon fill="#000000" stroke="#000000" points="393.55,-66.59 402.94,-61.67 392.53,-59.67 393.55,-66.59"/>
+</g>
+<!-- residual_helmholtz -->
+<g id="proc~~solve_point~2~~CallsGraph_node11" class="node">
+<title>residual_helmholtz</title>
+<polygon fill="#777777" stroke="#777777" points="658,-108 546,-108 546,-84 658,-84 658,-108"/>
+<text text-anchor="middle" x="602" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+</g>
+<!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
+<g id="proc~~solve_point~2~~CallsGraph_edge8" class="edge">
+<title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M510.21,-96C518.41,-96 526.97,-96 535.4,-96"/>
+<polygon fill="#000000" stroke="#000000" points="535.6,-99.5 545.6,-96 535.6,-92.5 535.6,-99.5"/>
+</g>
+<!-- get_v0 -->
+<g id="proc~~solve_point~2~~CallsGraph_node9" class="node">
+<title>get_v0</title>
+<polygon fill="#777777" stroke="#777777" points="629,-66 575,-66 575,-42 629,-42 629,-66"/>
+<text text-anchor="middle" x="602" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+</g>
+<!-- proc~volume~3&#45;&gt;get_v0 -->
+<g id="proc~~solve_point~2~~CallsGraph_edge9" class="edge">
+<title>proc~volume~3&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M509.39,-54C527.6,-54 547.62,-54 564.29,-54"/>
+<polygon fill="#000000" stroke="#000000" points="564.7,-57.5 574.7,-54 564.7,-50.5 564.7,-57.5"/>
+</g>
+<!-- interface~newton -->
+<g id="proc~~solve_point~2~~CallsGraph_node10" class="node">
+<title>interface~newton</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node10"><a xlink:href="../interface/newton.html" xlink:title="newton">
+<polygon fill="#a7506f" stroke="#a7506f" points="629,-24 575,-24 575,0 629,0 629,-24"/>
+<text text-anchor="middle" x="602" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+</a>
+</g>
+</g>
+<!-- proc~volume~3&#45;&gt;interface~newton -->
+<g id="proc~~solve_point~2~~CallsGraph_edge10" class="edge">
+<title>proc~volume~3&#45;&gt;interface~newton</title>
+<path fill="none" stroke="#000000" d="M498.26,-41.96C519.31,-35.83 544.67,-28.43 564.92,-22.52"/>
+<polygon fill="#000000" stroke="#000000" points="566.09,-25.83 574.71,-19.67 564.13,-19.11 566.09,-25.83"/>
+</g>
+<!-- proc~newton_1d -->
+<g id="proc~~solve_point~2~~CallsGraph_node12" class="node">
+<title>proc~newton_1d</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node12"><a xlink:href="../proc/newton_1d.html" xlink:title="newton_1d">
+<polygon fill="#d9534f" stroke="#d9534f" points="764,-24 694,-24 694,0 764,0 764,-24"/>
+<text text-anchor="middle" x="729" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
+</a>
+</g>
+</g>
+<!-- interface~newton&#45;&gt;proc~newton_1d -->
+<g id="proc~~solve_point~2~~CallsGraph_edge11" class="edge">
+<title>interface~newton&#45;&gt;proc~newton_1d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M629.2,-12C644.96,-12 665.42,-12 683.63,-12"/>
+<polygon fill="#000000" stroke="#000000" points="683.75,-15.5 693.75,-12 683.75,-8.5 683.75,-15.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocsolve_point2CallsGraph = svgPanZoom('#procsolve_point2CallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~solve_point~2~~CalledByGraph Pages: 1 -->
+<svg id="procsolve_point2CalledByGraph" width="223pt" height="32pt"
+ viewBox="0.00 0.00 223.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~2~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~solve_point~2~~CalledByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 219,-28 219,4 -4,4"/>
+<!-- proc~solve_point~2 -->
+<g id="proc~~solve_point~2~~CalledByGraph_node1" class="node">
+<title>proc~solve_point~2</title>
+<polygon fill="none" stroke="black" points="215,-24 142,-24 142,0 215,0 215,-24"/>
+<text text-anchor="middle" x="178.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">solve_point</text>
+</g>
+<!-- proc~px_envelope_3ph -->
+<g id="proc~~solve_point~2~~CalledByGraph_node2" class="node">
+<title>proc~px_envelope_3ph</title>
+<g id="a_proc~~solve_point~2~~CalledByGraph_node2"><a xlink:href="../proc/px_envelope_3ph.html" xlink:title="px_envelope_3ph">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="106,-24 0,-24 0,0 106,0 106,-24"/>
+<text text-anchor="middle" x="53" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope_3ph</text>
+</a>
+</g>
+</g>
+<!-- proc~px_envelope_3ph&#45;&gt;proc~solve_point~2 -->
+<g id="proc~~solve_point~2~~CalledByGraph_edge1" class="edge">
+<title>proc~px_envelope_3ph&#45;&gt;proc~solve_point~2</title>
+<path fill="none" stroke="#000000" d="M106.02,-12C114.45,-12 123.14,-12 131.42,-12"/>
+<polygon fill="#000000" stroke="#000000" points="131.65,-15.5 141.65,-12 131.65,-8.5 131.65,-15.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <br>
 
 
@@ -466,24 +750,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x0~6"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>X0</strong>(size(X))</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dx~6"></span>
+              <span class="anchor" id="variable-dx~4"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -500,41 +767,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-it~3"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>iT</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Index of the temperature variable in the vector X</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ia~2"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ia</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Index of the <script type="math/tex">alpha</script> variable in the vector X</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~19"></span>
+              <span class="anchor" id="variable-nc~28"></span>
               integer,
             </td>
               <td>private</td>
@@ -546,7 +779,7 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
                 <td></td>
                 <td></td>
             <td>
-                <p>Number of components in the mixture.</p>
+                
             </td>
         </tr>
     </tbody>
@@ -575,14 +808,14 @@ multiphase isobaric line. It uses the Newton-Raphson method,.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2025 MPL
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-12-18 20:57 +0000             </p>
+ on 2026-01-19 21:20 +0000             </p>
           </div>
         </div>
         <br>

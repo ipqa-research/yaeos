@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.fitting.core &mdash; yaeos 4.3.0 documentation</title>
+  <title>yaeos.fitting.core &mdash; yaeos 4.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a17b270f"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -157,14 +157,14 @@
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, print the objective function value and the optimization</span>
 <span class="sd">    pressure_error : Callable, optional</span>
-<span class="sd">        A function `f(Pexp, Pmodel)`that calculates the pressure error between </span>
-<span class="sd">        the experimental and model values. </span>
+<span class="sd">        A function `f(Pexp, Pmodel)`that calculates the pressure error between</span>
+<span class="sd">        the experimental and model values.</span>
 <span class="sd">        The function should take the experimental and model</span>
 <span class="sd">        values as arguments and return the error. If None, the default function</span>
 <span class="sd">        is used.</span>
 <span class="sd">    temperature_error : Callable, optional</span>
 <span class="sd">        A function `f(Texp, Tmodel)`that calculates the temperature error</span>
-<span class="sd">        between the experimental and model values. </span>
+<span class="sd">        between the experimental and model values.</span>
 <span class="sd">        The function should take the experimental and model</span>
 <span class="sd">        values as arguments and return the error. If None, the default function</span>
 <span class="sd">        is used.</span>
@@ -219,7 +219,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span> <span class="o">=</span> <span class="n">composition_error</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span> <span class="o">=</span> <span class="n">_composition_error</span>
-
 
 <div class="viewcode-block" id="BinaryFitter.objective_function">
 <a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.objective_function">[docs]</a>
@@ -359,9 +358,10 @@
                 <span class="p">)</span>
                 <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_error</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">t_cl</span><span class="p">)</span>
                 <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">p_cl</span><span class="p">)</span>
-                <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]],</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">]</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]):</span>
+                    <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;x1&quot;</span><span class="p">]],</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">]</span>
+                    <span class="p">)</span>
                 <span class="n">residual</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_cl</span><span class="p">,</span>
                     <span class="n">cp</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p_cl</span><span class="p">,</span>
@@ -399,7 +399,7 @@
 <a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span> <span class="n">optimizer_options</span><span class="o">=</span><span class="kc">None</span>
-        <span class="p">):</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model to the data.</span>
 
 <span class="sd">        Fit the model to the data using the objective function defined in</span>
@@ -421,8 +421,11 @@
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">options</span><span class="o">=</span><span class="n">optimizer_options</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span>
+            <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
+            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">optimizer_options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span> <span class="o">=</span> <span class="n">sol</span></div>
 
@@ -450,7 +453,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Federico E. Benelli.</p>
+    <p>&#169; Copyright 2026, Federico E. Benelli.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
