@@ -11,7 +11,6 @@ from scipy.optimize import minimize
 from yaeos.core import ArModel
 from yaeos.fitting.solvers import solve_pt
 
-
 KINDS = {
     "zT1": ["bubbleP", "bubble"],
     "zP1": ["bubbleT"],

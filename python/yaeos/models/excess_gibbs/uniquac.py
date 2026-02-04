@@ -125,9 +125,7 @@ class UNIQUAC(GeModel):
         int
             Number of components
         """
-        return self.nc
-
-        self.nc = len(self.qs)
+        return len(self.qs)
 
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
@@ -147,8 +145,10 @@ class UNIQUAC(GeModel):
         qs_c = "qs = ["
         rs_c = "rs = ["
 
-        for i in range(self.nc):
-            if i < self.nc - 1:
+        nc = self.size()
+
+        for i in range(nc):
+            if i < nc - 1:
                 qs_c += f"{self.qs[i]}_pr, "
                 rs_c += f"{self.rs[i]}_pr, "
             else:
@@ -158,15 +158,15 @@ class UNIQUAC(GeModel):
         qs_c += "]\n"
         rs_c += "]\n\n"
 
-        for i in range(self.nc):
+        for i in range(nc):
             aij_c += f"aij({i + 1}, :) = ["
             bij_c += f"bij({i + 1}, :) = ["
             cij_c += f"cij({i + 1}, :) = ["
             dij_c += f"dij({i + 1}, :) = ["
             eij_c += f"eij({i + 1}, :) = ["
 
-            for j in range(self.nc):
-                if j < self.nc - 1:
+            for j in range(nc):
+                if j < nc - 1:
                     aij_c += f"{self.aij[i, j]}_pr, "
                     bij_c += f"{self.bij[i, j]}_pr, "
                     cij_c += f"{self.cij[i, j]}_pr, "
@@ -207,7 +207,7 @@ class UNIQUAC(GeModel):
         be valid Fortran code that declares the model variables.
         """
         fcode = (
-            f"integer, parameter :: nc={self.nc}\n"
+            f"integer, parameter :: nc={self.size()}\n"
             "\n"
             "type(UNIQUAC) :: ge_model\n"
             "\n"

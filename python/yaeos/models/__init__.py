@@ -26,5 +26,4 @@ Yaeos models module. This module provides the following submodules:
 
 from yaeos.models import excess_gibbs, residual_helmholtz
 
-
 __all__ = ["excess_gibbs", "residual_helmholtz"]

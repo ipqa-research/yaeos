@@ -39,7 +39,7 @@ class UNIFACPSRK(GeModel):
 
         self.molecules = molecules
 
-        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
+        number_of_groups, groups_ids, groups_ammounts = groups_from_dicts(
             molecules
         )
         self.id = yaeos_c.unifac_psrk(
@@ -55,9 +55,6 @@ class UNIFACPSRK(GeModel):
             Number of components
         """
         return len(self.molecules)
-        self.nc = len(molecules)
-        self.g_ids = groups_ids
-        self.g_ammounts = groups_ammounts
 
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
@@ -68,7 +65,7 @@ class UNIFACPSRK(GeModel):
         """
         fcode = ""
 
-        for i in range(self.nc):
+        for i in range(self.size()):
             id_c = f"molecules({i + 1})%groups_ids = ["
             am_c = f"molecules({i + 1})%number_of_groups = ["
 
@@ -103,7 +100,7 @@ class UNIFACPSRK(GeModel):
         be valid Fortran code that declares the model variables.
         """
         fcode = (
-            f"integer, parameter :: nc={self.nc}\n"
+            f"integer, parameter :: nc={self.size()}\n"
             "\n"
             "type(UNIFAC) :: ge_model\n"
             "\n"

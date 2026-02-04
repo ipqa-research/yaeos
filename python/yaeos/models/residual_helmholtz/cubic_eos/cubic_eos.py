@@ -101,7 +101,7 @@ class CubicEoS(ArModel):
         be valid Fortran code that declares the model variables.
         """
         fcode = (
-            f"integer, parameter :: nc={self.nc}\n"
+            f"integer, parameter :: nc={self.size()}\n"
             "\n"
             "type(CubicEoS) :: ar_model\n"
             "\n"
@@ -487,7 +487,7 @@ class PSRK(CubicEoS):
             critical_pressures,
             acentric_factors,
         )
-        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
+        number_of_groups, groups_ids, groups_ammounts = groups_from_dicts(
             molecules
         )
 

@@ -11,5 +11,4 @@ from .psrk_unifac import UNIFACPSRK
 from .unifac import UNIFACVLE
 from .uniquac import UNIQUAC
 
-
 __all__ = ["NRTL", "UNIFACVLE", "UNIFACPSRK", "UNIFACDortmund", "UNIQUAC"]

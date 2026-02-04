@@ -597,7 +597,6 @@ contains
       integer, intent(in) :: ids(:)
       integer(c_int), intent(out) :: id
 
-      integer :: i
       ar_model = gerg_2008(ids)
       call extend_ar_models_list(id)
    end subroutine multifluid_gerg2008
