@@ -215,7 +215,7 @@ contains
    ! ===========================================================================
    ! Huron-Vidal Mixing rule with Huron-Vidal NRTL
    ! ---------------------------------------------------------------------------
-   type(HV_NRTL) function init_hvnrtl(b, del1, alpha, gji, use_kij, kij) result(mixrule)
+   type(HV_NRTL) function init_hvnrtl(b, del1, alpha, gji0, gjiT, use_kij, kij) result(mixrule)
       !! # Huron-Vidal NRTL mixing rule
       !! This is the Huron-Vidal mixing rule that includes the NRTL model
       !! modified by Huron and Vidal.
@@ -245,7 +245,8 @@ contains
       real(pr), intent(in) :: b(:)
       real(pr), intent(in) :: del1(:)
       real(pr), intent(in) :: alpha(:, :)
-      real(pr), intent(in) :: gji(:, :)
+      real(pr), intent(in) :: gji0(:, :)
+      real(pr), intent(in) :: gjiT(:, :)
       logical, intent(in) :: use_kij(:, :)
       real(pr), intent(in) :: kij(:, :)
 
@@ -253,7 +254,7 @@ contains
 
       nc = size(b)
 
-      mixrule%ge = NRTLHV(b=b, alpha=alpha, gij=gji)
+      mixrule%ge = NRTLHV(b=b, alpha=alpha, gji0=gji0, gjiT=gjiT)
       mixrule%bi = b
       mixrule%del1 = del1
       mixrule%use_kij = use_kij
@@ -324,8 +325,9 @@ contains
          do j=1,nc
             if (self%use_kij(i, j)) then
                ge_model%alpha(i, j) = 0
-               ge_model%gij(i, j) = -2 * sqrt(bi(i) * bi(j)) / (bi(i) + bi(j)) * &
+               ge_model%gji0(i, j) = -2 * sqrt(bi(i) * bi(j)) / (bi(i) + bi(j)) * &
                   sqrt(gii(i) * gii(j)) * (1 - self%kij(i, j)) - gii(j)
+               ge_model%gjiT(i, j) = 0
             end if
          end do
       end do

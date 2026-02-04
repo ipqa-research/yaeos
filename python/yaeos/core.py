@@ -64,6 +64,15 @@ class GeModel(ABC):
     """Excess Gibbs (Ge) model abstract class."""
 
     @abstractmethod
+    def size(self) -> int:
+        """Get number of components in the model.
+
+        Raises
+        ------
+        NotImplementedError
+            Abstract error, this method must be implemented in the subclass
+        """
+        raise NotImplementedError
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
 
@@ -476,6 +485,137 @@ class GeModel(ABC):
 class ArModel(ABC):
     """Residual Helmholtz (Ar) model abstract class."""
 
+    def helmholtz_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+        dtv: bool = False,
+        dv2: bool = False,
+        dt2: bool = False,
+        dvn: bool = False,
+        dtn: bool = False,
+        dn2: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual Helmholtz given volume and temperature [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+        dtv : bool, optional
+            Calculate cross temperature and volume derivative, by default False
+        dv2 : bool, optional
+            Calculate volume second derivative, by default False
+        dt2 : bool, optional
+            Calculate temperature second derivative, by default False
+        dvn : bool, optional
+            Calculate cross volume and moles derivative, by default False
+        dtn : bool, optional
+            Calculate cross temperature and moles derivative, by default False
+        dn2 : bool, optional
+            Calculate moles second derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual helholtz free energy or tuple with Residual helholtz free
+            energy and derivatives dictionary if any derivative is asked [bar
+            L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.helmholtz_residual_vt(np.array([5.0, 5.6]), 10.0, 300.0)
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+        dtv = np.array(0, dtype=np.float64) if dtv else None
+        dv2 = np.array(0, dtype=np.float64) if dv2 else None
+        dt2 = np.array(0, dtype=np.float64) if dt2 else None
+        dvn = np.empty(nc, order="F") if dvn else None
+        dtn = np.empty(nc, order="F") if dtn else None
+        dn2 = np.empty((nc, nc), order="F") if dn2 else None
+
+        res = yaeos_c.helmholtz_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            art=dt,
+            arv=dv,
+            arn=dn,
+            artv=dtv,
+            arv2=dv2,
+            art2=dt2,
+            arvn=dvn,
+            artn=dtn,
+            arn2=dn2,
+        )
+
+        all_d_none = all(
+            d is None for d in [dt, dv, dn, dtv, dv2, dt2, dvn, dtn, dn2]
+        )
+
+        if all_d_none:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
+                    "dn": dn,
+                    "dtv": dtv if dtv is None else float(dtv),
+                    "dv2": dv2 if dv2 is None else float(dv2),
+                    "dt2": dt2 if dt2 is None else float(dt2),
+                    "dvn": dvn,
+                    "dtn": dtn,
+                    "dn2": dn2,
+                },
+            )
+        return res
+
+    @abstractmethod
+    def size(self) -> int:
+        """Get number of components in the model.
+
+        Raises
+        ------
+        NotImplementedError
+            Abstract error, this method must be implemented in the subclass
+        """
+        raise NotImplementedError
     @abstractmethod
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
@@ -845,6 +985,12 @@ class ArModel(ABC):
             Volume [L]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
@@ -919,6 +1065,98 @@ class ArModel(ABC):
             )
         return res
 
+    def internal_energy_residual_vt(
+        self,
+        moles,
+        volume: float,
+        temperature: float,
+        dt: bool = False,
+        dv: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual internal energy at volume and temperature [bar L]
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        volume : float
+            Volume [L]
+        temperature : float
+            Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual internal energy or tuple with Residual internal energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =
+            np.array([45.0, 60.0])     # critical pressures [bar] w =
+            np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating residual internal energy only
+
+            print(
+                model.internal_energy_residual_vt(
+                    np.array([5.0, 5.6]), 10.0, 300.0
+                )
+            )
+
+            # Asking for derivatives
+
+            print(
+                model.internal_energy_residual_vt(
+                    np.array([5.0, 5.6]), 10.0, 300.0, dt=True)
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dv = np.array(0, dtype=np.float64) if dv else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.internal_energy_residual_vt(
+            self.id,
+            moles,
+            volume,
+            temperature,
+            urt=dt,
+            urv=dv,
+            urn=dn,
+        )
+
+        if dt is None and dv is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dv": dv if dv is None else float(dv),
+                    "dn": dn,
+                },
+            )
+        return res
+
     def gibbs_residual_vt(
         self,
         moles,
@@ -938,6 +1176,12 @@ class ArModel(ABC):
             Volume [L]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
@@ -1029,12 +1273,18 @@ class ArModel(ABC):
             Volume [L]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dv : bool, optional
+            Calculate volume derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
         Union[float, tuple[float, dict]]
             Residual entropy or tuple with Residual entropy and derivatives
-            dictionary if any derivative is asked [bar L]
+            dictionary if any derivative is asked [bar L / K]
 
         Example
         -------
@@ -3011,6 +3261,55 @@ class ArModel(ABC):
         )
 
         return a, t, v
+
+    def binary_llv_from_cep(self, cep):
+        """Calculate the binary LLV line from a CEP.
+
+        Parameters
+        ----------
+        cep : dict
+            Dictionary with the keys:
+                - x: phase x compositions
+                - y: phase y compositions
+                - Vx: phase x molar volumes
+                - Vy: phase y molar volumes
+                - T: temperatures [K]
+                - P: pressures [bar]
+        Returns
+        -------
+        dict
+            Dictionary with the keys:
+                - x1: liquid-phase x1 compositions
+                - y1: liquid-phase y1 compositions
+                - w1: vapor-phase w1 compositions
+                - Vxy: liquid-phase x1 and y1 molar volumes
+                - Vy: liquid-phase y1 molar volumes
+                - Vw: vapor-phase w1 molar volumes
+                - T: temperatures [K]
+                - P: pressures [bar]
+        """
+
+        (x1s, y1s, w1s, vxys, vys, vws, ts, ps) = yaeos_c.binary_llv_from_cep(
+            self.id,
+            cep["x"],
+            cep["y"],
+            cep["Vx"],
+            cep["Vy"],
+            cep["T"],
+            cep["P"],
+        )
+
+        msk = ~np.isnan(ts)
+        return {
+            "x1": x1s[msk],
+            "y1": y1s[msk],
+            "w1": w1s[msk],
+            "Vxy": vxys[msk],
+            "Vy": vys[msk],
+            "Vw": vws[msk],
+            "T": ts[msk],
+            "P": ps[msk],
+        }
 
     def __del__(self) -> None:
         """Delete the model from the available models list (Fortran side)."""

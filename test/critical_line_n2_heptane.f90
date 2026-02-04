@@ -21,7 +21,7 @@ program main
    z0 = [0, 1]
    zi = [1, 0]
    cl = critical_line(&
-      model, z0=z0, zi=zi, ns0=1, s0=0.9999_pr, a0=0.9999_pr, ds0=-1e-7_pr, &
+      model, z0=z0, zi=zi, ns0=1, s0=0.999999_pr, a0=0.99999_pr, ds0=-1e-5_pr, &
       stability_analysis=.true., max_points=100)
 
    call assert(abs(cl%CEP%T - 126.2) < 0.1, "Critical end point T")

@@ -35,6 +35,7 @@ incdir_f2py = run_command(py,
 
 
 # fpm
+fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
 if get_option('debug')
   fflags = '-g -fPIC -Og'
 else
@@ -157,6 +158,13 @@ cubic_eos_sources = [
   python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'mixing_rules.py'
 ]
 py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos')
+
+#### models.residual_helmholtz.saft
+saft_sources = [
+  python_lib / 'models' / 'residual_helmholtz' / 'saft' / '__init__.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'saft' / 'pcsaft.py',
+]
+py.install_sources(saft_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'saft')
 
 #### models.residual_helmholtz.multifluid
 cubic_eos_sources = [

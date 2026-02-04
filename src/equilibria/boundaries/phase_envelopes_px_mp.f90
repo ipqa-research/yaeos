@@ -7,7 +7,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
-   use yaeos__equilibria_boundaries_auxiliar, only: get_z, detect_critical
+   use yaeos__equilibria_boundaries_auxiliar, only: get_z, detect_critical, check_critical_jump
 
    implicit none
 
@@ -49,7 +49,9 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_px
 
 contains
    type(PXEnvelMP) function px_envelope(&
-      model, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, ns0, dS0, beta_w, points, kinds_x, kind_w &
+      model, z0, zi, np, T, x_l0, w0, betas0, P0, alpha0, &
+      ns0, dS0, beta_w, points, kinds_x, kind_w, &
+      max_pressure &
       )
       !! # `px_envelope`
       !! Calculation of a multiphase Px envelope.
@@ -95,6 +97,7 @@ contains
       character(len=14), optional, intent(in) :: kind_w
       ! integer, optional, intent(in) :: kinds_x(np)
       ! integer, optional, intent(in) :: kind_w
+      real(pr), optional, intent(in) :: max_pressure
 
       type(MPPoint), allocatable :: env_points(:)
       real(pr), allocatable :: alphas(:)
@@ -131,16 +134,20 @@ contains
       real(pr) :: Xold(size(X)) !! Old vector of variables
       real(pr) :: X_last_converged(size(X)) !! Last converged point
       real(pr) :: Xc(size(X)) !! Critical variables
-      logical :: found_critical
+      logical :: found_critical !! If true, a critical point was found
+      logical :: jumped_critical !! If true, a critical point was jumped
       real(pr) :: ac, Pc
 
       integer :: ia, iP
+
+      real(pr) :: Pmax
 
       nc = size(z0)
       ia = nc*np+np+2
       iP = nc*np+np+1
 
       number_of_points = optval(points, 1000)
+      Pmax = optval(max_pressure, 5000._pr)
 
       if (present(kinds_x) .and. present(kind_w)) then
          x_kinds = kinds_x
@@ -203,8 +210,21 @@ contains
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
             iters=its, ns=ns, kinds_x=x_kinds, kind_w=w_kind &
             )
+
+         if (P > Pmax) exit
+
          env_points = [env_points, point]
          alphas = [alphas, alpha]
+
+         call check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+         if (jumped_critical) then
+            ac = Xc(ia)
+            Pc = exp(Xc(iP))
+            px_envelope%Pc = [px_envelope%Pc, Pc]
+            px_envelope%ac = [px_envelope%ac, ac]
+         end if
+
+         X_last_converged = X
 
          ! Update the specification for the next point.
          call update_specification(its, nc, np, X, dF, dXdS, ns, dS)
@@ -212,18 +232,11 @@ contains
          ! Check if the system is close to a critical point, and try to jump
          ! over it.
          call detect_critical(nc, np, i, x_kinds, w_kind, .true., X_last_converged, X, dXdS, ns, dS, S, found_critical, Xc)
-         if (found_critical) then
-            ac = Xc(ia)
-            Pc = exp(Xc(iP))
-            px_envelope%Pc = [px_envelope%Pc, Pc]
-            px_envelope%ac = [px_envelope%ac, ac]
-         end if
 
-
+         ! In binary systems do not make it possible to go beyond z_i = 0 or 1 
          if (nc == 2) then
             alpha = X(ia) + dXdS(ia)*dS
             z = alpha * zi + (1- alpha) * z0
-
             do while((any(z < 0) .or. any(z > 1)) .and. abs(dS) > 0)
                dS = dS/2
                alpha = X(ia) + dXdS(ia)*dS
@@ -233,8 +246,7 @@ contains
 
          ! Next point estimation.
          dX = dXdS * dS
-         
-         X_last_converged = X
+
          X = X + dX
          S = X(ns)
       end do
@@ -597,23 +609,25 @@ contains
       ! this can be related to criticality and it is useful to force the
       ! specification of compositions.
       ! ------------------------------------------------------------------------
+      dS = dXdS(ns) * dS
+      dXdS = dXdS/dXdS(ns)
       do i=1,np
          lb = (i-1)*nc + 1
          ub = i*nc
 
          if (maxval(abs(X(lb:ub))) < 0.1) then
             ns = lb + maxloc(abs(X(lb:ub)), dim=1) - 1
+            dS = dXdS(ns)*dS
+            dXdS = dXdS/dXdS(ns)
+            dS = sign(0.01_pr, dS)
             exit
          end if
       end do
 
-      dS = dXdS(ns) * dS
-      dXdS = dXdS/dXdS(ns)
 
       ! We adapt the step size to the number of iterations, the desired number
       ! of iterations for each point is around 3.
       ! dS = dS * 3._pr/its
-
       do while(maxval(abs(dXdS(:nc*np)*dS)) > 0.1_pr)
          dS = dS/2
       end do

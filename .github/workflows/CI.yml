@@ -9,11 +9,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9]
+        python-version: [3.12]
         toolchain:
           - {compiler: gcc, version: 10}
           - {compiler: gcc, version: 14}
-          - {compiler: intel, version: '2024.2'}
+          # - {compiler: intel, version: '2024.2'}
           # - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
@@ -22,7 +22,7 @@ jobs:
         submodules: false
 
     - name: Setup Fortran Compiler
-      uses: fortran-lang/setup-fortran@v1
+      uses: fortran-lang/setup-fortran@v1.8.1
       id: setup-fortran
       with:
         compiler: ${{ matrix.toolchain.compiler }}
@@ -101,7 +101,7 @@ jobs:
         pip install tox tox-gh-actions
     
     - name: Setup Fortran Compiler
-      uses: fortran-lang/setup-fortran@v1
+      uses: fortran-lang/setup-fortran@v1.8.1
       id: setup-fortran
       with:
         compiler: ${{ matrix.toolchain.compiler }}

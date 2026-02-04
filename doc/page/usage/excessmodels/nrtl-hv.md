@@ -6,7 +6,7 @@ title: NRTL-HV
 
 
 The NRLT model presented by Huron and Vidal is a variation of the original
-non-random two-liquid model. This variation is inteded to be used combined with
+non-random two-liquid model. This variation is intended to be used combined with
 cubic Equations of State, using the Huron-Vidal mixing rule.  The major
 difference with respect to the original NRTL model is that it includes the
 repulsive parameter of the cubic EoS in the expression for the excess Gibbs
@@ -25,13 +25,19 @@ The general expression for the excess Gibbs energy is given by:
 Where the parameters are defined as follows:
 
 \begin{align}
-    \tau_{j, i} & = \frac{g_{j,i} - g_{i,i}}{RT} \\
+    \tau_{j, i}(T) & = \frac{g_{j,i} - g_{i,i}}{RT} \\
     E_{j, i} &= \exp\left(-\alpha_{j, i} \tau_{j, i} \right)
 \end{align}
 
+In this implementation:
+
+\begin{equation}
+g_{j,i} = g_{j,i}^0 + g_{j,i}^T \cdot T
+\end{equation}
+
 Where \(g_{j,i}\) is the interaction parameter between components \(j\) and \(i\),
 which can be a function of temperature, and \(\alpha_{j,i}\) is the non-randomness
-parameters which is ussually symmetric with values between 0 and 0.5.
+parameters which is usually symmetric with values between 0 and 0.5.
 
 ## Derivatives
 

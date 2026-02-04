@@ -27,5 +27,4 @@ program main
 
    call assert(cl%P(last) > 2000, "Critical line pressure should be greater than 2000 bar")
 
-
 end program main

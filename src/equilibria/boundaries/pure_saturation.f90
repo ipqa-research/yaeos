@@ -98,7 +98,7 @@ contains
             dS = dS*1.5
          end do
 
-         ds = sign(max(dS, 0.01_pr), dS)
+         ds = sign(max(abs(dS),0.01_pr), dS)
 
          Vx = exp(X(1))
          Vy = exp(X(2))

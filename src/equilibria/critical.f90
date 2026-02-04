@@ -1,6 +1,6 @@
 module yaeos__equilibria_critical
    use yaeos__constants, only: pr
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
 
    implicit none
@@ -14,6 +14,7 @@ module yaeos__equilibria_critical
    public :: lambda1
    public :: F_critical
    public :: df_critical
+   public :: get_critical_constants
 
    type :: CriticalLine
       !! # CriticalLine
@@ -115,7 +116,7 @@ contains
 
       real(pr) :: X0(4), T, P, V, a, z(size(z0))
 
-      integer :: i, npoints
+      integer :: i, npoints, nc
 
       real(pr) :: max_P
 
@@ -127,6 +128,7 @@ contains
       ! ========================================================================
       ! Handle the input
       ! ------------------------------------------------------------------------
+      nc = size(z0)
       if (present(max_points)) then
          npoints = max_points
       else
@@ -166,16 +168,16 @@ contains
          call model%volume(n=z, P=P, T=T, V=V, root_type="vapor")
       end if
 
-      X0 = [set_a(a0), log([v, T, P])]
+      X0 = [set_a(nc, a0), log([v, T, P])]
 
       if (present(first_point)) then
          X0 = [&
-            first_point%x(2), &
+            set_a(nc, first_point%x(2)), &
             log([first_point%Vx, first_point%T, first_point%P])]
       end if
 
       if (ns0 == spec_CP%a) then
-         X0(ns0) = set_a(S0)
+         X0(ns0) = set_a(nc, S0)
       else
          X0(ns0) = S0
       end if
@@ -225,6 +227,16 @@ contains
                dF = df_critical(model, X, ns, Si, z0, zi, u)
                dX = solve_system(dF, -F)
 
+               avoid_negative: block
+                  !! Avoid compositions with negative values
+                  real(pr) :: alpha
+                  alpha = get_a(nc, X(1) + dX(1))
+                  do while(any(alpha*zi + (1-alpha)*z0 < 0) )
+                     dX = dX/ 2
+                     alpha = get_a(nc, X(1) + dX(1))
+                  end do
+               end block avoid_negative
+
                do while(abs(maxval(dX(:))) > 0.01)
                   dX = dX/2
                end do
@@ -234,6 +246,7 @@ contains
                u = u_new
             end do
 
+
             ! ==============================================================
             ! Cases where the line must be stopped
             ! --------------------------------------------------------------
@@ -241,7 +254,7 @@ contains
             if (any(isnan(X))) exit
             if (exp(X(spec_CP%P)) > max_P) exit
 
-            a = get_a(X(1))
+            a = get_a(nc, X(1))
             V = exp(X(2))
             T = exp(X(3))
             P = exp(X(4))
@@ -271,17 +284,24 @@ contains
             ! --------------------------------------------------------------
             dFdS = [0, 0, 0, -1]
             dXdS = solve_system(dF, -dFdS)
-            ns = maxloc(abs(dXdS), dim=1)
+            if (ns0 == 4) then
+               ! Points that started as P specification can remain as P
+               ns = maxloc(abs(dXdS), dim=1)
+            else
+               ns = maxloc(abs(dXdS(:3)), dim=1)
+            end if
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
 
-            dS = sign(max(abs(dS), 1e-2_pr), dS)
+            if (i > 20) then
+               dS = sign(max(abs(dS), 1e-2_pr), dS)
+            end if
             if (i > 4) then
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
-               dT2 = (T - critical_line%T(i-1)) * (critical_line%T(i-2) - critical_line%T(i-3))
+               dT2 = (T - critical_line%T(i-1)) *(T - critical_line%T(i-2))
+               d2PdT2 = (dPdT_2 - dPdT_1) / dT2
 
-               d2PdT2 = (P - 2*critical_line%P(i-1) + critical_line%P(i-2)) / dT2
 
                if (abs(d2PdT2) > 0.05 .and. abs(dPdT_1) < 1.5) then
                   ns = spec_CP%T
@@ -297,13 +317,14 @@ contains
             ! ==============================================================
             ! Avoid big steps in pressure
             ! --------------------------------------------------------------
-            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 20)
+            ! do while(abs(exp(X(4) + dXdS(4) * dS) - exp(X(4))) > 10)
             !    dS = dS * 0.9
             ! end do
 
             ! Next step
             z = a * zi  + (1-a)*z0
             X = X + dXdS*dS
+            S = S + dS
          end do
       end block solve_points
 
@@ -326,37 +347,56 @@ contains
 
       real(pr) :: y_cep(size(z0)), V_cep
       real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
-      integer :: its
-
+      real(pr) :: Fcep_new(size(z0)+4)
+      integer :: its, inits
+      integer :: nc
+      real(pr) :: damp
+      real(pr) :: alpha
+      nc = size(z0)
       found = .false.
       y_cep = 0
       V_cep = 0
+
 
       call stability_check(model, z0, zi, Pc, Vc, Tc, a, found, y_cep, V_cep)
 
       if (found) then
          its = 0
          Fcep = 1
-         Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(a)]
-         do while(maxval(abs(Fcep)) > 1e-5)
+         Xcep = [log(y_cep), log(V_cep), log(Vc), log(Tc), set_a(nc, a)]
+         dXcep = 1
+         do while(maxval(abs(dXcep)) > 1e-8 .and. maxval(abs(Fcep)) > 1e-5)
             its = its + 1
             Fcep = F_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dFcep = df_cep(model, 2, X=Xcep, z0=z0, zi=zi, u=u)
             dXcep = solve_system(dFcep, -Fcep)
 
-            do while(maxval(abs(dXcep)) > 0.1)
-               dXcep = dXcep/2
+            alpha = get_a(nc, Xcep(6) + dXcep(6))
+            do while(any(alpha*zi + (1-alpha)*z0 < 0) )
+               dXcep = dXcep / 2
+               alpha = get_a(nc, Xcep(6) + dXcep(6))
             end do
-            Xcep = Xcep + dXcep
+
+            damp = 1
+            Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
+            do while (maxval(abs((Fcep))) < maxval(abs(Fcep_new)))
+               damp = damp / 2
+               Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
+               if (damp < 1e-4) then
+                  damp = 1.1
+               end if
+            end do
+            Xcep = Xcep + damp * dXcep
          end do
 
          CEP%y = exp(Xcep(:2))
          CEP%Vy = exp(Xcep(3))
-         CEP%Vx =  exp(Xcep(4))
+         CEP%Vx = exp(Xcep(4))
          CEP%T = exp(Xcep(5))
 
          call model%pressure(n=CEP%y, V=CEP%Vy, T=CEP%T, P=CEP%P)
-         CEP%x = zi * get_a(Xcep(6)) + (1-get_a(Xcep(6))) * z0
+         CEP%iters = its
+         CEP%x = zi * get_a(nc, Xcep(6)) + (1-get_a(nc, Xcep(6))) * z0
          CEP%kind = "CEP"
          CEP%beta = 0
       end if
@@ -479,7 +519,7 @@ contains
 
       nc = size(z0)
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
 
       z = a * zi + (1-a)*z0
       n = z + s * u * sqrt(z)
@@ -546,10 +586,12 @@ contains
 
       real(pr), parameter :: eps=1e-4_pr
 
-      integer :: i
+      integer :: i, nc
       real(pr) :: eps_df, F1(4), F2(4), dx(4)
 
-      a = get_a(X(1))
+      nc = size(z0)
+
+      a = get_a(nc, X(1))
       V = exp(X(2))
       T = exp(X(3))
       z = a * zi + (1-a) * z0
@@ -584,6 +626,8 @@ contains
       real(pr) :: dx(4), F1(4), F2(4)
 
       integer :: i
+      integer :: nc
+      nc = size(z0)
 
       ! if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
       !    eps = 1e-3_pr
@@ -591,7 +635,7 @@ contains
       !    eps = 1e-6_pr
       ! end if
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
 
       if (size(zi) == 2) then
          eps = 1e-10
@@ -637,13 +681,11 @@ contains
 
       integer, intent(in) :: nc
 
-      ! nc = size(z0)
-
       y = exp(X(:nc))
       Vy = exp(X(nc+1))
       Vc = exp(X(nc+2))
       T = exp(X(nc+3))
-      a = get_a(X(nc+4))
+      a = get_a(nc, X(nc+4))
       z = a * zi + (1-a) * z0
 
       if(any(z < 0) ) return
@@ -686,20 +728,21 @@ contains
 
       integer :: i
 
-      a = get_a(X(1))
-
-      if (any(a*zi + (1-a)*z0 > 0.99)) then
-         eps = 1e-3_pr
-      else
-         eps = 1e-6_pr
-      end if
+      a = get_a(nc, X(1))
 
       eps = 1e-10
 
       df_cep = 0
       do i=1,size(df_cep, 1)
          dx = 0
-         dx(i) = eps
+         if (i <= nc) then
+            dx(i) = min(abs(1e-5_pr * X(i)), eps)
+         else
+            dx(i) = eps
+         end if
+
+
+
          F2 = F_cep(model, nc, X+dx, z0, zi, u)
          F1 = F_cep(model, nc, X-dx, z0, zi, u)
          df_cep(:, i) = (F2 - F1)/(2*eps)
@@ -753,20 +796,22 @@ contains
       real(pr) :: z(size(z0)), u_new(size(z0)), l, a
       real(pr) :: Sin
       integer :: i
+      integer :: nc
 
+      nc = size(z0)
 
       ! ========================================================================
       ! Handle the input
       ! ------------------------------------------------------------------------
       if (present(a0)) then
-         X(1) = set_a(a0)
+         X(1) = set_a(nc, a0)
       else if (spec == spec_CP%a) then
-         X(1) = set_a(S)
+         X(1) = set_a(nc, S)
       else
          X(1) = log(0.5_pr)
       end if
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
       z = a*zi + (1-a)*z0
 
       if (present(T0)) then
@@ -792,7 +837,7 @@ contains
 
       ns = spec
       if (ns == spec_CP%a) then
-         Sin = set_a(S)
+         Sin = set_a(nc, S)
          X(ns) = Sin
       else
          Sin = S
@@ -814,7 +859,7 @@ contains
             dX = dX*0.99
          end do
 
-         do while((get_a(X(1) + dX(1)) > 1 .or. get_a(X(1) + dX(1)) < 0) .and. size(z0) == 2)
+         do while((get_a(nc, X(1) + dX(1)) > 1 .or. get_a(nc, X(1) + dX(1)) < 0) .and. nc == 2)
             dX = dX/2
          end do
 
@@ -824,7 +869,7 @@ contains
          critical_point%iters = i
       end do
 
-      a = get_a(X(1))
+      a = get_a(nc, X(1))
       z = a*zi + (1-a)*z0
       critical_point%x = z
       critical_point%y = z
@@ -834,16 +879,67 @@ contains
       critical_point%T  = exp(X(3))
       call model%pressure(n=z, V=critical_point%Vx, T=critical_point%T, P=critical_point%P)
       critical_point%kind = "critical"
-
    end function critical_point
 
-   real(pr) function get_a(X)
+   real(pr) function get_a(nc, X)
+      integer, intent(in) :: nc
       real(pr), intent(in) :: X
-      get_a = X!(X)**2
+      if (nc == 2) then
+         get_a = exp(X)
+      else
+         get_a = X
+      end if
    end function get_a
 
-   real(pr) function set_a(a)
+   real(pr) function set_a(nc, a)
+      integer, intent(in) :: nc
       real(pr), intent(in) :: a
-      set_a = a!sqrt(a)
+      if (nc == 2) then
+         set_a = log(a)
+      else
+         set_a = a
+      end if
    end function set_a
+
+   subroutine get_critical_constants(model)
+      !! # `get_critical_constants`
+      !! Calculate the critical constants for each pure component.
+      !!
+      !! # Description
+      !! Calculates the critical temperature, pressure and acentric factor
+      !! for each pure component in the model.
+      !! The critical points are calculated using the `critical_point` function
+      !! from the `yaeos__equilibria_critical` module.
+      !! The acentric factor is calculated using the saturation pressure at
+      !! 0.7 of the critical temperature.
+      !! It updates the `Tc`, `Pc` and `w` attributes of each component in the
+      !! model.
+      !!
+      !! @note
+      !! This subroutine assumes that the pure component constants for each
+      !! component are already allocated.
+      !! @endnote
+      !!
+      class(ArModel), intent(in out) :: model !! Thermodynamic model.
+      real(pr) :: z(size(model%components%Tc)), Psat_i
+      type(EquilibriumState) :: cp
+
+      integer :: i, nc
+
+      nc = size(model%components%Tc)
+      do i=1,nc
+         z = 0
+         z(i) = 1.0_pr
+         cp = critical_point(&
+            model, z, z, spec=1, S=0.5_pr, max_iters=1000, &
+            V0=1._pr, t0=500._pr, a0=0.5_pr, p0=10._pr &
+            )
+         model%components%Tc(i) = cp%T
+         model%components%Pc(i) = cp%P
+
+         Psat_i =  model%Psat_pure(i, 0.7*cp%T)
+         model%components%w(i) = (-1 - log10(Psat_i/cp%P))
+      end do
+   end subroutine get_critical_constants
+
 end module yaeos__equilibria_critical

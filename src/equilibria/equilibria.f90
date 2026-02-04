@@ -23,7 +23,7 @@ module yaeos__equilibria
       critical_line, CriticalLine, critical_point, spec_CP
 
    use yaeos__equilibria_binaries, only: &
-      find_llcl
+      find_llcl, BinaryThreePhase, binary_llv_from_cep
 
    ! Extra
    use yaeos__equilibria_auxiliar, only: k_wilson, p_wilson
@@ -47,5 +47,6 @@ module yaeos__equilibria
       PXEnvelMP, px_envelope
    use yaeos__equilibria_boundaries_phase_envelopes_mp_tx, only: &
       TXEnvelMP, tx_envelope
-   use yaeos__equilibria_boundaries_generalized_isopleths, only: create_generalized_isoz_line, GeneralizedIsoZLine
+   use yaeos__equilibria_boundaries_generalized_isopleths, only: &
+      create_generalized_isoz_line, GeneralizedIsoZLine
 end module yaeos__equilibria

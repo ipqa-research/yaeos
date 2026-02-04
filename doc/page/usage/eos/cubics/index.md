@@ -26,7 +26,7 @@ following \(\alpha\) function and its respective correlation for \(k\).
 \[ \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 \]
 \[ k = 0.48 + 1.574 \omega - 0.175 \omega^2  \]
 \[ a_c = 0.427480  \frac{R^2 T_c^2}{P_c} \]
-\[ b = 0.086640  \frac{R T_c}{P_c} \]
+\[ b_c = 0.086640  \frac{R T_c}{P_c} \]
 \[ \delta_1 = 1 \]
 \[ \delta_2 = 0 \]
 
@@ -42,13 +42,14 @@ the following \(\alpha\) function and correlation for k.
 \[ \delta_2 = 1 - \sqrt{2} \]
 
 ## PengRobinson78
-Fortran definition: [[PengRobinson78]]. The Peng-Robinson 78 EoS is an
-improved version of the original PengRobinson equation for heavier components. 
-This equation ensures a monotonically increasing \(k\) as the values of 
-\(\omega\) increasises.
-It uses the following \(\alpha\) function and correlation for k.
+Fortran definition: [[PengRobinson78]]. The Peng-Robinson (1978) EoS is an
+improved version of the original Peng-Robinson (1976) equation for heavier
+components. This equation ensures a monotonically increasing \(k\) as the
+values of \(\omega\) increases. It uses the following \(\alpha\) function and
+correlation for k.
 
 \[ \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 \]
+
 \[
 k =
 \begin{cases} 
@@ -56,9 +57,13 @@ k =
 0.37464 + 1.48503 \omega - 0.16442 \omega^2 + 0.016666 \omega^3 & \text{if} \quad \omega > 0.491
 \end{cases}
 \]
+
 \[ a_c = 0.45723553  \frac{R^2 T_c^2}{P_c} \]
+
 \[ b = 0.07779607  \frac{R T_c}{P_c} \]
+
 \[ \delta_1 = 1 + \sqrt{2} \]
+
 \[ \delta_2 = 1 - \sqrt{2} \]
 
 
@@ -71,7 +76,7 @@ freeing the parameter \(\delta_1\) and setting \(\delta_2 =
 implementing the equation in comparison of other Cubic EoS (like PR and SRK)
 which are limited to definition of their critical constants.
 
-Besides that extra parameter, the RKRR includes another \(\alpha\)
+Besides that extra parameter, the RKPR includes another \(\alpha\)
 function:
 
 \[
@@ -81,7 +86,7 @@ function:
 These two extra parameters can be provided as arguments. But, if they are
 not provided they will be calculated by the following correlations:
 
-\[ \delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6 \]
+\[ \delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ {d_6} \]
 \[ k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0) \]
 
 In this implementation, the \(k\) constants (if not provided) will also 

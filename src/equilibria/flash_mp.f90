@@ -30,7 +30,7 @@ module yaeos__equilibria_multiphase_flash
    !! # References
    !!
    use yaeos__constants, only: pr, R
-   use yaeos__models, only: ArModel
+   use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: MPEquilibriumState
    implicit none
 
@@ -435,11 +435,6 @@ contains
             !    dX(iBetas(i)) = dX(iBetas(i))/2
             ! end do
          end do
-
-
-
-         write(1, *) X
-         write(2, *) dX
 
          X = X + dX
 
