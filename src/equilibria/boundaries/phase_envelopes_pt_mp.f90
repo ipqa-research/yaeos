@@ -55,9 +55,9 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
          !! Number of iterations needed to converge the point.
       integer :: ns 
          !! Number of the specified variable.
-      real(pr), allocatable ::  S(:) 
+      real(pr) ::  S 
          !! Specified variable value.
-      real(pr), allocatable :: dS(:) 
+      real(pr) :: dS
          !! Step size of the specification to reach this point.
    end type MPPoint
 
