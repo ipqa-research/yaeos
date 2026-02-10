@@ -301,7 +301,8 @@ class BinaryFitter:
         self.evaluations["contributions"] = objective_function_contributions
 
         if self.verbose:
-            print(len(self.evaluations["fobj"]), err, x_values)
+            print(err, x_values)
+
         return err
 
     def fit(
