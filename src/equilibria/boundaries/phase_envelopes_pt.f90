@@ -6,6 +6,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
    use yaeos__equilibria_auxiliar, only: k_wilson
    use yaeos__math_continuation, only: &
       continuation, continuation_solver, continuation_stopper
+   use yaeos__equilibria_boundaries_phase_envelopes_mp, only: PTEnvelMP, pt_envelope
    implicit none
 
    private
@@ -91,7 +92,12 @@ contains
       !! All the calculated variables that are returned on the continuation
       !! method procedure (unused since each point is saved on the fly)
 
+      integer :: i
+      real(pr) :: x_l0(1, size(z)), w0(size(z))
+      type(PTEnvelMP) :: mp_env
+
       character(len=14) :: kind
+      character(len=14) :: kind_x(1), kind_w
 
       ! ========================================================================
       ! Handle input
@@ -104,12 +110,58 @@ contains
       dS0 = optval(delta_0, 0.1_pr)
 
 
+      x_l0(1,:) = z
       select case(first_point%kind)
        case("bubble", "liquid-liquid")
          X(:nc) = log(first_point%y/z)
+         w0 = first_point%y
+         kind_x = "liquid"
+         kind_w = "vapor"
+         if (first_point%kind == "liquid-liquid") then
+            kind_x(1) = "liquid"
+            kind_w = "liquid"
+         end if
        case("dew")
          X(:nc) = log(first_point%x/z)
+         w0 = first_point%x
+         kind_x = "vapor"
+         kind_w = "liquid"
       end select
+
+      mp_env = pt_envelope(&
+         model=model, z=z, np=1, kinds_x=kind_x, kind_w=kind_w, &
+         x_l0=x_l0, w0=w0, betas0=[1._pr], &
+         P0=first_point%P, T0=first_point%T, ns0=ns+1, &
+         dS0=dS0, beta_w=0.0_pr, points=max_points &
+         )
+
+
+      allocate(envelopes%points(size(mp_env%points)))
+      allocate(envelopes%cps(size(mp_env%Tc)))
+
+      envelopes%points%T = mp_env%points%T
+      envelopes%points%P = mp_env%points%P
+      envelopes%cps%T = mp_env%Tc
+      envelopes%cps%P = mp_env%Pc
+      
+      do i=1, size(mp_env%points)
+         envelopes%points(i)%beta = mp_env%points(i)%betas(1)
+         if (mp_env%points(i)%kinds_x(1) == "liquid") then
+            envelopes%points(i)%x = mp_env%points(i)%x_l(1, :)
+            envelopes%points(i)%y = mp_env%points(i)%w
+            if (mp_env%points(i)%kind_w == "vapor") then
+               envelopes%points(i)%kind = "bubble"
+            else
+               envelopes%points(i)%kind = "liquid-liquid"
+            end if
+         else
+            envelopes%points(i)%x = mp_env%points(i)%x_l(1, :)
+            envelopes%points(i)%y = mp_env%points(i)%w
+            envelopes%points(i)%kind = "dew"
+         end if
+      end do
+
+      return
 
       where(z == 0)
          X(:nc) = 0
@@ -382,7 +434,7 @@ contains
             ncomp = maxloc(abs(Xold(:nc) - Xnew(:nc)), dim=1)
             a = -Xnew(ncomp)/(X(ncomp) - Xnew(ncomp))
             Xc = a * X + (1-a)*Xnew
-            
+
             call model%volume(z, P=exp(Xc(nc+2)), T=exp(Xc(nc+1)), V=V, root_type="liquid")
             cp = critical_point(&
                model, z, z, spec=spec_CP%a, S=1._pr, &
@@ -510,10 +562,10 @@ contains
       fr%T = T
       fr%P = P
       fr%kind = "liquid-liquid"
-      
+
       find_hpl = pt_envelope_2ph( &
          model, z, fr, &
-         specified_variable_0=nc+2, delta_0=-5.0_pr, &
+         specified_variable_0=nc+1, delta_0=-0.1_pr, &
          iterations=1000, points=max_points)
    end function find_hpl
 
