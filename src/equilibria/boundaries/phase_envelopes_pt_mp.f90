@@ -31,18 +31,34 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 
    type :: MPPoint
       !! Multiphase equilibria point.
-      integer :: np !! Number of phases
-      integer :: nc !! Number of components
-      real(pr) :: beta_w !! Fraction of the reference (incipient) phase.
-      real(pr), allocatable :: betas(:) !! Fractions of the main phases.
-      real(pr) :: P !! Pressure [bar]
-      real(pr) :: T !! Temperature [K]
-      real(pr), allocatable :: x_l(:, :) !! Mole fractions of the main phases.
-      real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
-      character(len=14), allocatable :: kinds_x(:) !! Kinds of the main phases.
-      character(len=14) :: kind_w !! Kind of the reference phase.
-      integer :: iters !! Number of iterations needed to converge the point.
-      integer :: ns !! Number of the specified variable.
+      integer :: np 
+         !! Number of phases
+      integer :: nc 
+         !! Number of components
+      real(pr) :: beta_w 
+         !! Fraction of the reference (incipient) phase.
+      real(pr), allocatable :: betas(:)  
+         !! Fractions of the main phases.
+      real(pr) :: P 
+         !! Pressure [bar]
+      real(pr) :: T 
+         !! Temperature [K]
+      real(pr), allocatable :: x_l(:, :) 
+         !! Mole fractions of the main phases.
+      real(pr), allocatable :: w(:) 
+         !! Mole fractions of the incipient phase.
+      character(len=14), allocatable :: kinds_x(:) 
+         !! Kinds of the main phases.
+      character(len=14) :: kind_w 
+         !! Kind of the reference phase.
+      integer :: iters 
+         !! Number of iterations needed to converge the point.
+      integer :: ns 
+         !! Number of the specified variable.
+      real(pr), allocatable ::  S(:) 
+         !! Specified variable value.
+      real(pr), allocatable :: dS(:) 
+         !! Step size of the specification to reach this point.
    end type MPPoint
 
 contains
