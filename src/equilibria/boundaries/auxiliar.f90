@@ -185,7 +185,7 @@ contains
          ub = l*nc
          lnK = X(lb:ub)
 
-         near_critical = (exp(maxval(lnK)))/exp(minval(lnK)) - 1 < 0.2
+         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2
          ! near_critical = maxval(abs(X(lb:ub))) < 0.05_pr
          if (near_critical) then
             return
