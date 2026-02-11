@@ -32,34 +32,34 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 
    type :: MPPoint
       !! Multiphase equilibria point.
-      integer :: np 
-         !! Number of phases
-      integer :: nc 
-         !! Number of components
-      real(pr) :: beta_w 
-         !! Fraction of the reference (incipient) phase.
-      real(pr), allocatable :: betas(:)  
-         !! Fractions of the main phases.
-      real(pr) :: P 
-         !! Pressure [bar]
-      real(pr) :: T 
-         !! Temperature [K]
-      real(pr), allocatable :: x_l(:, :) 
-         !! Mole fractions of the main phases.
-      real(pr), allocatable :: w(:) 
-         !! Mole fractions of the incipient phase.
-      character(len=14), allocatable :: kinds_x(:) 
-         !! Kinds of the main phases.
-      character(len=14) :: kind_w 
-         !! Kind of the reference phase.
-      integer :: iters 
-         !! Number of iterations needed to converge the point.
-      integer :: ns 
-         !! Number of the specified variable.
-      real(pr) ::  S 
-         !! Specified variable value.
+      integer :: np
+      !! Number of phases
+      integer :: nc
+      !! Number of components
+      real(pr) :: beta_w
+      !! Fraction of the reference (incipient) phase.
+      real(pr), allocatable :: betas(:)
+      !! Fractions of the main phases.
+      real(pr) :: P
+      !! Pressure [bar]
+      real(pr) :: T
+      !! Temperature [K]
+      real(pr), allocatable :: x_l(:, :)
+      !! Mole fractions of the main phases.
+      real(pr), allocatable :: w(:)
+      !! Mole fractions of the incipient phase.
+      character(len=14), allocatable :: kinds_x(:)
+      !! Kinds of the main phases.
+      character(len=14) :: kind_w
+      !! Kind of the reference phase.
+      integer :: iters
+      !! Number of iterations needed to converge the point.
+      integer :: ns
+      !! Number of the specified variable.
+      real(pr) ::  S
+      !! Specified variable value.
       real(pr) :: dS
-         !! Step size of the specification to reach this point.
+      !! Step size of the specification to reach this point.
    end type MPPoint
 
 contains
@@ -569,7 +569,6 @@ contains
    subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, dF, Vl, Vw, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
-      use stdlib_linalg, only: eye, inv
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases
@@ -582,70 +581,70 @@ contains
       real(pr), intent(in) :: dXdS(size(X))
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
-      real(pr), intent(out) :: Vw !! Reference phase volume
       real(pr), intent(out) :: Vl(np) !! Main phases volumes
+      real(pr), intent(out) :: Vw !! Reference phase volume
       integer, intent(in) :: max_iterations
       !! Maximum number of iterations to solve the point
       integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
-      integer :: i !!
-      integer :: j !! Inner homotopy iters
-      integer :: l !! Phase index
-      integer :: iT !! Temperature index
-      integer :: iP !! Pressure index
-      integer :: iBetas(np) !! Indices of the betas in X
-      integer :: nc !! Number of components
+      integer :: i, l
+      integer :: iT
+      integer :: iP
+      integer :: iBetas(np)
+      integer :: nc
+
+      real(pr) :: P, T, x_l(np, size(z)), betas(np), w(size(z))
 
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
 
-
-      ! Homotopy solving
-      real(pr) :: H(size(X)), dH(size(X), size(X))
-      real(pr) :: G(size(X)), dG(size(X), size(X))
-
-      real(pr) :: dt
-      real(pr) :: Fold(size(X))
-      real(pr) :: identity_matrix(size(X), size(X))
-
       logical :: can_solve
-
-      real(pr) :: x_l(np, size(z)), w(size(z)), betas(np), P, T
 
       nc = size(z)
       iP = np*nc + np + 1
       iT = np*nc + np + 2
-      iBetas = [(i, i=np*nc+1, np*nc+np)]
 
       X0 = X
 
       can_solve = .true.
 
-      identity_matrix = eye(size(X))
-
-      F = 100
+      iBetas = [(i, i=np*nc+1, np*nc+np)]
 
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
          call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
+         ! print *, iters, maxval(abs(F)), ns, S, T, P
+
          dX = solve_system(dF, -F)
 
-         do while(any(abs(dX) > 0.1 * abs(X)))
+         do l=1,np
+            if (maxval(abs(X(l:nc*l))) < 1e-1) then
+               do while(maxval(abs(dX(l:nc*l))) > 1e-1)
+                  dX = dX/2
+               end do
+            end if
+         end do
+
+         do while(abs(dX(iT)) > 0.5)
             dX = dX/2
          end do
 
-         ! if (iters > 5) dX = dX/2
+         do while(abs(dX(iP)) > 0.25)
+            dX = dX/2
+         end do
 
-         ! do while (iters > 1 .and. norm2(F) > norm2(Fold))
-         !    dX = dX * 0.5
-         !    call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X + dX, ns, S, F, dF, Vl, Vw)
-         ! end do
+         do i=1,np
+            if (X(iBetas(i)) /= 0) then
+               do while(abs(dX(iBetas(i))/X(iBetas(i))) > 0.5)
+                  dX = dX/2
+               end do
+            end if
+         end do
 
-         Fold = F
+         if (maxval(abs(F)) < 1e-9_pr .or. maxval(abs(dX)) < 1.e-7_pr) exit
 
-         if (maxval(abs(F)) < 1e-9_pr .or. maxval(abs(dX)) < 1e-7_pr) exit
          X = X + dX
       end do
    end subroutine solve_point

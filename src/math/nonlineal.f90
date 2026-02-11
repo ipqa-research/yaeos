@@ -10,7 +10,7 @@ module yaeos__math_nonlinearsolvers
          real(pr), intent(out) :: F(:)
          real(pr), intent(out) :: J(:, :)
       end subroutine to_solve
-   end interface
+   end interface to_solve
 
 contains
 
@@ -29,16 +29,20 @@ contains
       do its = 1, max_its
          dX = solve_system(J, -F)
          if (maxval(abs(F)) < tol) exit
-        
+
+         do while(maxval(abs(dX)) > 1)
+            dX = dX/2
+         end do
          t = 1
          X = X + t * dX
-         
+
          call sub(x, F, J)
+         if (any(isnan(F))) call exit
       end do
    end subroutine newton
 
    subroutine homotopy(sub, x, tol, max_its, its)
-       use yaeos__math, only: powel_hybrid
+      use yaeos__math, only: powel_hybrid
       procedure(to_solve) :: sub
       real(pr), intent(in out) :: x(:)
       real(pr), intent(in) :: tol
@@ -61,7 +65,7 @@ contains
       do i=0,nt
          t = dt*i
          X0 = X
-         call newton(wrap, X, tol, 50, its)
+         call newton(wrap, X, tol, 500, its)
          call wrap(X, H, dH)
       end do
    contains
@@ -79,21 +83,21 @@ contains
          G = X - X0
          dG = 0
          do i=1,size(x)
-             dG(i, i) = 1
+            dG(i, i) = 1
          end do
          call sub(X, F, dF)
 
          H = t * F + (1-t) * G
          dH = t * dF + (1-t) * dG
-         
+
       end subroutine wrap
-      
-     subroutine fun(n, x, fvec, iflag)
-        integer, intent(in) :: n
-        real(pr), intent(in) :: x(n)
-        real(pr), intent(out) :: fvec(n)
-        integer, intent(in out) :: iflag
-        call wrap(X, FVEC, dH)
-     end subroutine fun
+
+      subroutine fun(n, x, fvec, iflag)
+         integer, intent(in) :: n
+         real(pr), intent(in) :: x(n)
+         real(pr), intent(out) :: fvec(n)
+         integer, intent(in out) :: iflag
+         call wrap(X, FVEC, dH)
+      end subroutine fun
    end subroutine homotopy
 end module yaeos__math_nonlinearsolvers
