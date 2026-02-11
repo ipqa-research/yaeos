@@ -24,7 +24,9 @@ program main
    sat = saturation_temperature(eos, z, P, kind="dew")
 
    env = pt_envelope_2ph(eos, z, sat)
-   cp = critical_point(eos, z0, zi=0*z0, spec=spec_CP%a, S=0._pr, max_iters=100)
+   ! open(1, file="env_output.txt")
+   ! write(1, *) env
+   ! close(1)
    call assert(abs(env%cps(1)%T - Tc)/Tc < 1e-1, "Critical Temperature")
    call assert(abs(env%cps(1)%P - Pc)/pc < 1e-1, "Critical Pressure")
 
@@ -63,19 +65,21 @@ contains
       z = [0.0987, 0.4023, 0.4990]
       z = z / sum(z)
 
-      sat = saturation_temperature(model, z, 0.01_pr, kind="dew")
+      p0 = 0.01
+      sat = saturation_temperature(model, z, p0, kind="dew", T0=150._pr)
 
       x_l0(1, :) = sat%y
       w0 = sat%x
       betas0(1) = 1
       p0 = sat%P
       t0 = sat%T
-      ns0 = np*nc+np+2
-      ds0=1e-3_pr
+      ns0 = np*nc+np+1
+      ds0=1e-3!log(p0 + 0.5*p0) - log(p0)
       beta_w = 0
       kinds_x = "vapor"
       kind_w = "liquid"
       dew = pt_envelope(model, z, np, kinds_x, kind_w, x_l0, w0, betas0, p0, t0, ns0, ds0, beta_w, max_pressure=1500._pr)
+      ! call dew%write(2)
       idx = size(dew%points)
       call assert(size(dew%Tc) == 2, "Two critical points found")
       call assert(dew%points(idx)%P > 1000._pr, "Envelope should end at high pressure")
