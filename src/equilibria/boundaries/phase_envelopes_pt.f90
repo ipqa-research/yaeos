@@ -565,7 +565,7 @@ contains
 
       find_hpl = pt_envelope_2ph( &
          model, z, fr, &
-         specified_variable_0=nc+1, delta_0=-0.1_pr, &
+         specified_variable_0=nc+1, delta_0=-0.01_pr, &
          iterations=1000, points=max_points)
    end function find_hpl
 
