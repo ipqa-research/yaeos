@@ -55,9 +55,9 @@ program main
         ns0=nc*np+np+2, ds0=1e-2_pr, &
         points=300 &
         )
-   open(1, file="psrkm1.dat", status="replace")
-   call env%write(1)
-   close(1)
+   ! open(1, file="psrkm1.dat", status="replace")
+   ! call env%write(1)
+   ! close(1)
 
 
    z0 = [0., 0.8, 0.2]
@@ -77,9 +77,9 @@ program main
         ns0=nc*np+np+2, ds0=1e-2_pr, &
         points=300 &
         )
-   open(1, file="psrkm2.dat", status="replace")
-   call env%write(1)
-   close(1)
+   ! open(1, file="psrkm2.dat", status="replace")
+   ! call env%write(1)
+   ! close(1)
    
    a = 0.689
    z = a * zi + (1.-a) * z0
@@ -95,7 +95,7 @@ program main
         ns0=nc*np+np+2, ds0=1e-2_pr, &
         points=400 &
         )
-   open(1, file="psrkm3.dat", status="replace")
-   call env%write(1)
-   close(1)
+   ! open(1, file="psrkm3.dat", status="replace")
+   ! call env%write(1)
+   ! close(1)
 end program main
