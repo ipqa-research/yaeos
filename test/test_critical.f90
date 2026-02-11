@@ -37,7 +37,7 @@ program main
    ! Get the full phase envelope of the fluid
    print *, "Calculating PT envelope"
    call tim%timer_start()
-   sat = saturation_temperature(model, z, P=0.00001_pr, kind="dew")
+   sat = saturation_temperature(model, z, P=0.0001_pr, kind="dew")
    env = pt_envelope_2ph(model, z, sat, maximum_pressure=1000._pr)
    call tim%timer_stop()
 
