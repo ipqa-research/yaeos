@@ -76,7 +76,7 @@ contains
       ! Limits
       ZETMIN = 0._pr
       ZETMAX = 1._pr
-      ZETMAX = 1._pr !- 0.01*T/(10000*B)  ! improvement for cases with heavy components
+      ZETMAX = 1._pr - 0.01*T/(10000*B)  ! improvement for cases with heavy components
 
       if (present(V0)) then
          zeta = B/V0
@@ -95,7 +95,7 @@ contains
                AVAP = AT
                ZETA = 0.5_pr
                ZETMAX = 1._pr
-               ZETMAX = 1.D0 !- 0.01*T/(10000*B)  ! improvement for cases with heavy components
+               ZETMAX = 1.D0 - 0.01*T/(10000*B)  ! improvement for cases with heavy components
                call solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
                if (AT .gt. AVAP) V = VVAP
             end if
