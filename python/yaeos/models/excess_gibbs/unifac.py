@@ -39,12 +39,15 @@ class UNIFACVLE(GeModel):
 
         self.molecules = molecules
 
-        number_of_groups, groups_ids, groups_ammounts = groups_from_dicts(
+        number_of_groups, groups_ids, groups_amounts = groups_from_dicts(
             molecules
         )
         self.id = yaeos_c.unifac_vle(
-            ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
+            ngs=number_of_groups, g_ids=groups_ids, g_v=groups_amounts
         )
+
+        self.g_ids = [list(mol.keys()) for mol in molecules]
+        self.g_amounts = [list(mol.values()) for mol in molecules]
 
     def size(self) -> int:
         """Get the number of components.
@@ -69,16 +72,13 @@ class UNIFACVLE(GeModel):
             id_c = f"molecules({i + 1})%groups_ids = ["
             am_c = f"molecules({i + 1})%number_of_groups = ["
 
-            for j in range(len(self.g_ammounts[i])):
-                if self.g_ammounts[i][j] == 0 or self.g_ids[i][j] == 0:
-                    continue
-
-                if j < len(self.g_ammounts) - 1:
+            for j in range(len(self.g_amounts[i])):
+                if j < len(self.g_amounts[i]) - 1:
                     id_c += f"{self.g_ids[i][j]}, "
-                    am_c += f"{self.g_ammounts[i][j]}, "
+                    am_c += f"{self.g_amounts[i][j]}, "
                 else:
                     id_c += f"{self.g_ids[i][j]}"
-                    am_c += f"{self.g_ammounts[i][j]}"
+                    am_c += f"{self.g_amounts[i][j]}"
 
             id_c += "]"
             am_c += "]"

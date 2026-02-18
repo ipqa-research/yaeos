@@ -47,9 +47,14 @@ class PCSAFT(ArModel):
         """Initialize PC-SAFT model."""
         if kij is None:
             kij = [[0.0 for _ in m] for _ in m]
-        self.size = len(m)
+        
+        self.m = m
+        self.sigma = sigma
+        self.epsilon_k = epsilon_k
+        self.kij = kij
+        
         self.id = yaeos_c.pcsaft(m, sigma, epsilon_k, kij)
 
     def size(self) -> int:
         """Return the number of components in the model."""
-        return self.size
+        return len(self.m)

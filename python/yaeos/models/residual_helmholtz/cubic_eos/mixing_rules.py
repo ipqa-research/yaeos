@@ -349,11 +349,11 @@ class MHV(CubicMixRule):
         lij_c = ""
 
         if self._have_lij:
-            for i in range(self.ge.nc):
+            for i in range(self.ge.size()):
                 lij_c += f"lij({i + 1}, :) = ["
 
-                for j in range(self.ge.nc):
-                    if j < self.ge.nc - 1:
+                for j in range(self.ge.size()):
+                    if j < self.ge.size() - 1:
                         lij_c += f"{self.lij[i][j]}_pr, "
                     else:
                         lij_c += f"{self.lij[i][j]}_pr]\n"
@@ -384,12 +384,20 @@ class MHV(CubicMixRule):
         fcode += self.ge._model_params_declaration_as_str()
 
         # Just in case all possible replaces
-        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n\n", "")
-        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n", "")
-        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}", "")
+        fcode = fcode.replace(
+            f"integer, parameter :: nc={self.ge.size()}\n\n", ""
+        )
+        fcode = fcode.replace(
+            f"integer, parameter :: nc={self.ge.size()}\n", ""
+        )
+        fcode = fcode.replace(
+            f"integer, parameter :: nc={self.ge.size()}", ""
+        )
 
+        # Mixrule setup
         fcode += "type(MHV) :: mixrule" "\n"
 
+        # TODO: include lij in MHV
         if self._have_lij:
             fcode += "real(pr) :: lij(nc, nc)\n\n"
 
@@ -472,9 +480,15 @@ class HV(CubicMixRule):
         fcode += self.ge._model_params_declaration_as_str()
 
         # Just in case all possible replaces
-        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n\n", "")
-        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}\n", "")
-        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.nc}", "")
+        fcode = fcode.replace(
+            f"integer, parameter :: nc={self.ge.size()}\n\n", ""
+        )
+        fcode = fcode.replace(
+            f"integer, parameter :: nc={self.ge.size()}\n", ""
+        )
+        fcode = fcode.replace(
+            f"integer, parameter :: nc={self.ge.size()}", ""
+        )
 
         fcode += "type(HV) :: mixrule" "\n"
 
