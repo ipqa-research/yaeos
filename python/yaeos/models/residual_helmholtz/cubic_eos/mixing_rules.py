@@ -390,9 +390,7 @@ class MHV(CubicMixRule):
         fcode = fcode.replace(
             f"integer, parameter :: nc={self.ge.size()}\n", ""
         )
-        fcode = fcode.replace(
-            f"integer, parameter :: nc={self.ge.size()}", ""
-        )
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.size()}", "")
 
         # Mixrule setup
         fcode += "type(MHV) :: mixrule" "\n"
@@ -486,9 +484,7 @@ class HV(CubicMixRule):
         fcode = fcode.replace(
             f"integer, parameter :: nc={self.ge.size()}\n", ""
         )
-        fcode = fcode.replace(
-            f"integer, parameter :: nc={self.ge.size()}", ""
-        )
+        fcode = fcode.replace(f"integer, parameter :: nc={self.ge.size()}", "")
 
         fcode += "type(HV) :: mixrule" "\n"
 

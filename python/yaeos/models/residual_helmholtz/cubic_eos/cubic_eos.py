@@ -420,7 +420,7 @@ class RKPR(CubicEoS):
         if self._k is not None:
             fcode += f"k = [{', '.join(str(k) + '_pr' for k in self._k)}]\n"
         if self._delta_1 is not None:
-            s = ', '.join(str(d) + '_pr' for d in self._delta_1)
+            s = ", ".join(str(d) + "_pr" for d in self._delta_1)
             fcode += f"delta_1 = [{s}]\n"
 
         # EoS setup
@@ -437,7 +437,7 @@ class RKPR(CubicEoS):
             fcode += (
                 f"\nar_model = {name}(tc, pc, w, zc, k=k, delta_1=delta_1)\n\n"
             )
-            
+
         if self.mixrule:
             fcode += self.mixrule._model_params_as_str()
             fcode += "\ncall ar_model%set_mixrule(mixrule)\n\n"
@@ -464,7 +464,7 @@ class RKPR(CubicEoS):
             fcode += "real(pr) :: k(nc)\n"
         if self._delta_1 is not None:
             fcode += "real(pr) :: delta_1(nc)\n\n"
-            
+
         if self.mixrule:
             fcode += self.mixrule._model_params_declaration_as_str()
 
