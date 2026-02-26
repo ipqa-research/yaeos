@@ -2443,7 +2443,7 @@ class ArModel(ABC):
         kinds_x=None,
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
-        stop_pressure=1000,
+        stop_pressure=2500,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -2682,6 +2682,7 @@ class ArModel(ABC):
         env2: PTEnvelope,
         dbeta0=1e-5,
         max_points=MAX_POINTS_ENVELOPES,
+        stop_pressure=2500,
     ) -> list:
         """Calculate PT phase envelopes from a DSP.
 
@@ -2717,6 +2718,14 @@ class ArModel(ABC):
         dsps = []
         locs_1 = []
         locs_2 = []
+
+        if len(temperatures) > 5:
+            warn(
+                """More than 5 intersection points found. 
+                Assuming overlaped lines"""
+            )
+            return dsps, locs_1, locs_2
+
         for t, p in zip(temperatures, pressures):
             env1_loc = (
                 np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
@@ -2731,6 +2740,8 @@ class ArModel(ABC):
             w0 = env1.reference_phase_compositions[env1_loc]
             y0 = env2.reference_phase_compositions[env2_loc]
 
+            # Add to the compositions of the main phases the composition of
+            # the oposite reference phase.
             x_l1 = np.vstack(
                 (env1.main_phases_compositions[env1_loc, :, :], y0)
             )
@@ -2757,6 +2768,7 @@ class ArModel(ABC):
                 kinds_x=[*kinds_x_1, kind_w_2],
                 kind_w=kind_w_1,
                 max_points=max_points,
+                stop_pressure=stop_pressure,
             )
 
             dsp_2 = self.phase_envelope_pt_mp(
@@ -2772,6 +2784,7 @@ class ArModel(ABC):
                 kinds_x=[*kinds_x_2, kind_w_1],
                 kind_w=kind_w_2,
                 max_points=max_points,
+                stop_pressure=stop_pressure,
             )
 
             locs_1.append(env1_loc)
