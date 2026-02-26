@@ -81,6 +81,7 @@ contains
       iters = 0
       line_tracing: do while(iters < max_iters .and. .not. found_unstability)
          i_point = i_point + 1
+
          call solve_generalized_point(model, z, np, kinds_x, kind_w, &
             X, spec_variable, spec_variable_value, ns, S, max_iters, F, dF, &
             iters)
@@ -90,9 +91,9 @@ contains
          dXdS = solve_system(dF, -dFdS)
          ns = maxloc(abs(dXdS), dim=1)
 
-         dS = dXdS(ns) * dS * 3./iters
+         dS = dXdS(ns) * dS ! * 3./iters
 
-         dS = sign(max(0.01, abs(dS)), dS)
+         ! dS = sign(max(0.01, abs(dS)), dS)
          dXdS = dXdS/dXdS(ns)
 
          point = MPEquilibriumState_from_X(nc, np, z, kinds_x, kind_w, X)
@@ -101,10 +102,9 @@ contains
             tms(i) = tm(model, point%w, ws_stab(i, :), point%P, point%T)
          end do
 
-         create_generalized_isoz_line%points = [&
-            create_generalized_isoz_line%points, point &
-            ]
-
+         ! ==============================================================
+         ! Exit conditions
+         ! --------------------------------------------------------------
          if (any(tms < -0.01)) then
             i = minloc(tms, dim=1)
             create_generalized_isoz_line%w_more_stable = ws_stab(i,:)
@@ -121,15 +121,22 @@ contains
             if (i_point > max_points) exit line_tracing
          end if
 
+         ! ==============================================================
+         ! If it did not exit, save the point and estimate the next one
+         ! --------------------------------------------------------------
+         create_generalized_isoz_line%points = [&
+            create_generalized_isoz_line%points, point &
+            ]
+
          dX = dXdS * dS
 
-         do while(&
-            any(abs(dX(ibetas)) > 0.05) &
-            .or. abs(dX(iT)) > 0.05 &
-            .or. abs(dX(iP)) > 0.05 &
-            )
-            dX = dX/2
-         end do
+         ! do while(&
+         !    any(abs(dX(ibetas)) > 0.05) &
+         !    .or. abs(dX(iT)) > 0.05 &
+         !    .or. abs(dX(iP)) > 0.05 &
+         !    )
+         !    dX = dX/2
+         ! end do
 
          X = X + dX
          S = X(ns)
@@ -390,11 +397,11 @@ contains
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
 
-         if (maxval(abs(F)) < 1e-10) exit
+         if (maxval(abs(F)) < 1e-9) exit
 
          dX = solve_system(df, -F)
 
-         do while(maxval(abs(dX)) > 1)
+         do while(maxval(abs(dX)) > 0.5)
             dX = dX/2
          end do
 
