@@ -248,7 +248,7 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
 
-      integer :: max_iters=30
+      integer :: max_iters=500
       real(pr) :: tol=1e-8
 
       real(pr) :: totnRT, GrL, GrV, Gr
@@ -262,19 +262,27 @@ contains
       select case(root_type)
        case("liquid")
          call eos%srk%volume(n, P=P, T=T, V=Vliq, root_type="liquid")
+         Vliq = log(Vliq)
          call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         Vliq = exp(Vliq)
          GrL = Gr
        case("vapor")
          call eos%srk%volume(n=n, P=P, T=T, V=Vvap, root_type="vapor")
+         Vvap = log(Vvap)
          call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         Vvap = exp(Vvap)
          GrV = Gr
        case("stable")
          call eos%srk%volume(n, P=P, T=T, V=Vliq, root_type="liquid")
+         Vliq = log(Vliq)
          call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         Vliq = exp(Vliq)
          GrL = Gr
 
          call eos%srk%volume(n, P=P, T=T, V=Vvap, root_type="vapor")
+         Vvap = log(Vvap)
          call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         Vvap = exp(Vvap)
          GrV = Gr
       end select
 
@@ -291,12 +299,12 @@ contains
          real(pr), intent(in) :: x
          real(pr), intent(out) :: f, df
          real(pr) :: Ar, ArV, ArV2, Pcalc, dPcalcdV, Vin
-         Vin = x
+         Vin = exp(x)
          call eos%residual_helmholtz(n, Vin, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
          Pcalc = totnRT / Vin - ArV
          dPcalcdV = -totnRT / Vin**2 - ArV2
-         f = Pcalc - p
-         df = dPcalcdV
+         f = Pcalc - P
+         df = Vin * dPcalcdV
          Gr = Ar + P * Vin - totnRT - totnRT * log(P*Vin/(R*T))
       end subroutine foo
    end subroutine volume
