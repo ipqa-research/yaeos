@@ -156,13 +156,15 @@ contains
       logical, intent(out) :: jumped_critical !! If a critical point was jumped
 
       integer :: l, lb, ub
+      integer :: ncomp
       jumped_critical = .false.
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
          if (all(X(lb:ub) * X_last_converged(lb:ub) < 0._pr)) then
+            ncomp = maxloc(abs(X(lb:ub) - X_last_converged(lb:ub)), dim=1) + lb - 1
             jumped_critical = .true.
-            Xc = interpol(X_last_converged(ns), X(ns), X_last_converged, X, 0._pr)
+            Xc = interpol(X_last_converged(ncomp), X(ncomp), X_last_converged, X, 0._pr)
             return
          end if
       end do
