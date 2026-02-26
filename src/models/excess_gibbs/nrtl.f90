@@ -1,6 +1,5 @@
 module yaeos__models_ge_NRTL
    use yaeos__models_ge, only: GeModel
-   use yaeos__tapenade_interfaces
    use yaeos__constants, only: pr, R
    implicit none
 
