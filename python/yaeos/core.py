@@ -2036,19 +2036,28 @@ class ArModel(ABC):
                 # Find an initialization for the liquid-liquid envelope
                 # -------------------------------------------------------------
                 ts = []
+                found_liquid_liquid = False
+
                 for i in range(len(z)):
                     w0 = np.zeros_like(z)
                     w0 += 1e-5
                     w0[i] = 1 - np.sum(w0[1:])
-                    for t in np.linspace(1000, 100, 25):
+                    t = t0
+                    tm = 1
+                    while tm > -0.01 and t > 100:
                         tm = self.stability_tm(z, w0, p0, t)
-                        if tm < -0.01:
-                            ts.append(t)
-                            break
-                if len(ts) == 0:
+                        t -= 50
+
+                    ts.append(t)
+
+                    if tm < -0.01:
+                        found_liquid_liquid = True
+
+                if not found_liquid_liquid:
                     warn("No liquid-liquid region found.")
                     return None
-                i = np.argmin(ts)
+
+                i = np.argmax(ts)
                 t0 = ts[i]
                 w0 = np.zeros_like(z)
                 w0 += 1e-5
