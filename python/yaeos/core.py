@@ -3011,15 +3011,11 @@ class ArModel(ABC):
         ds0=1e-5,
         ws_stability=None,
         max_points=100,
+        beta0=1e-15
     ) -> dict:
         """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
         z = env.global_composition
-
-        x_l0 = env["x"][-1]
-        w0 = env["w"][-1]
-
-        betas0 = [*env.main_phases_molar_fractions[-1], 1e-15]
 
         if spec == "P":
             spec_variable = phases * len(z) + phases + 1 + 1
@@ -3037,6 +3033,9 @@ class ArModel(ABC):
             raise ValueError(
                 "spec must be either 'P' or 'T', got: {}".format(spec)
             )
+        x_l0 = env["x"][loc]
+        w0 = env["w"][loc]
+        betas0 = [*env.main_phases_molar_fractions[loc], beta0]
 
         ns0 = phases * len(z) + phases + 1
         s0 = betas0[-1]
