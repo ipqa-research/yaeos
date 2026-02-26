@@ -627,11 +627,11 @@ contains
             end if
          end do
 
-         do while(abs(dX(iT)) > 0.5)
+         do while(abs(dX(iT)) > 1)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.25)
+         do while(abs(dX(iP)) > 1)
             dX = dX/2
          end do
 
@@ -730,13 +730,11 @@ contains
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
-      dS = dS * 3./its
-
       block
          real(pr) :: delmax, updel
          delmax = max(sqrt(abs(X(ns)))/10, 0.1)
-         updel = dS*3/its
-         dS = sign(min(delmax, updel),dS)
+         updel = dS * 3/its
+         dS = sign(min(delmax, updel), dS)
       end block
 
 
