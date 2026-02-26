@@ -152,7 +152,7 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 2000
+      integer :: max_iterations = 10
       !! Maximum number of iterations to solve the point.
       integer :: number_of_points
       !! Number of points to calculate.
@@ -222,6 +222,7 @@ contains
          model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
          F, dF, Vl, Vw, its, 2000 &
          )
+      X_last_converged = 0
       do i=1,number_of_points
          X0 = X
          call solve_point(&
@@ -262,27 +263,29 @@ contains
          call update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
 
          ! Stop criteria
+         if (any(isnan(F)) .or. its > max_iterations) exit
+
+         ! If the point actually converged save it
+         env_points = [env_points, point]
+         
          if (&
-            any(isnan(F)) .or. its > max_iterations &
-            .or. P > max_P  &
+            P > max_P&
             .or. P < 1e-5_pr &
             .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
             .or. (T < 100._pr .and. P < 1e-5_pr) &
-            ) exit
-
-         env_points = [env_points, point]
+         ) exit
 
          ! Next point estimation.
          dX = dXdS * dS
 
-         ! do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
-         !    dX = dX/2
-         ! end do
+         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 10)
+            dX = dX/2
+         end do
 
-         ! do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 50)
-         !    dX = dX/2
-         ! end do
+         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 50)
+            dX = dX/2
+         end do
 
          X = X + dX
          if (ns > 0) then
