@@ -242,7 +242,7 @@ contains
 
          ! Check if we have jumped over a critical point. If we did, save the
          ! CP obtained from interplation.
-         call check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+         call check_critical_jump(nc, np, ns, x_kinds, w_kind, X, X_last_converged, Xc, found_critical, jumped_critical)
          if (jumped_critical) then
             Tc = exp(Xc(iT))
             Pc = exp(Xc(iP))
