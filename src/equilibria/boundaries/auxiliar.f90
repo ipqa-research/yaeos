@@ -145,15 +145,20 @@ contains
       end do
    end subroutine detect_critical
 
-   subroutine check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+   subroutine check_critical_jump(nc, np, ns, kinds_x, kind_w, X, X_last_converged, Xc, found_critical, jumped_critical)
       use yaeos__math, only: interpol
       integer, intent(in) :: nc !! Number of components
       integer, intent(in) :: np !! Number of main phases
       integer, intent(in) :: ns !! Number of the specified variable
+      character(len=14), intent(inout) :: kinds_x(np) !! Kinds of the main phases
+      character(len=14), intent(inout) :: kind_w !! Kind of the incipient phase
       real(pr), intent(in) :: X(:) !! Current point
       real(pr), intent(in) :: X_last_converged(:) !! Previously converged point
       real(pr), intent(out) :: Xc(:) !! Critical point
+      logical, intent(in) :: found_critical !! If a critical point was already found in the current point
       logical, intent(out) :: jumped_critical !! If a critical point was jumped
+
+      character(len=14) :: incipient_kind
 
       integer :: l, lb, ub
       integer :: ncomp
@@ -165,9 +170,18 @@ contains
             ncomp = maxloc(abs(X(lb:ub) - X_last_converged(lb:ub)), dim=1) + lb - 1
             jumped_critical = .true.
             Xc = interpol(X_last_converged(ncomp), X(ncomp), X_last_converged, X, 0._pr)
+            
+            if (jumped_critical .and. .not. found_critical) then
+               incipient_kind = kind_w
+               kind_w = kinds_x(l)
+               kinds_x(l) = incipient_kind
+            end if
+
             return
          end if
       end do
+
+
    end subroutine check_critical_jump
 
    logical function near_critical(nc, np, X)
@@ -187,7 +201,7 @@ contains
          ub = l*nc
          lnK = X(lb:ub)
 
-         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2
+         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.3 .or. maxval(abs(lnK)) < 0.1_pr
          ! near_critical = maxval(abs(X(lb:ub))) < 0.05_pr
          if (near_critical) then
             return
