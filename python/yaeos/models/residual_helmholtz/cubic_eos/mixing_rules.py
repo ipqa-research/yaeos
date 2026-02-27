@@ -564,8 +564,41 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters. This string should be valid
         Fortran code that assigns the model variables.
         """
-        # TODO
-        return ""
+        fcode = ""
+
+        gji0_c = ""
+        gjiT_c = ""
+        use_kij_c = ""
+        kij_c = ""
+
+        for i in range(len(self.gji0)):
+            gji0_c += f"gji0({i + 1}, :) = ["
+            gjiT_c += f"gjiT({i + 1}, :) = ["
+            use_kij_c += f"use_kij({i + 1}, :) = ["
+            kij_c += f"kij({i + 1}, :) = ["
+
+            for j in range(len(self.kij)):
+                if j < len(self.kij) - 1:
+                    kij_c += f"{self.kij[i][j]}_pr, "
+                    gji0_c += f"{self.gji0[i][j]}_pr, "
+                    gjiT_c += f"{self.gjiT[i][j]}_pr, "
+                    use_kij_c += f"{self.use_kij[i][j]}_pr, "
+                else:
+                    kij_c += f"{self.kij[i][j]}_pr]\n"
+                    gji0_c += f"{self.gji0[i][j]}_pr]\n"
+                    gjiT_c += f"{self.gjiT[i][j]}_pr]\n"
+                    use_kij_c += f"{self.use_kij[i][j]}_pr]\n"
+
+        fcode += kij_c + "\n"
+        fcode += gji0_c + "\n"
+        fcode += gjiT_c + "\n"
+        fcode += use_kij_c + "\n"
+
+        fcode += (
+            r"mixrule = HVNRTL(gji0=gji0, gjit=gjiT, b=ar_model%b, "
+            r"use_kij=use_kij, kij=kij)\n\n"
+        )
+        return fcode
 
     def _model_params_declaration_as_str(self) -> str:
         """Return the model parameters declaration as a string.
@@ -574,5 +607,13 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-        # TODO
-        return ""
+
+        fcode = (
+            f"integer, parameter :: nc={self.size()}\n"
+            "\n"
+            "type(HV_NRTL) :: mixrule\n"
+            "\n"
+            "real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc)\n"
+            "logical :: use_kij(nc,nc)\n\n"
+        )
+        return fcode
