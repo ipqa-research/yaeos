@@ -107,7 +107,7 @@ contains
       max_points = optval(points, 500)
       max_iterations = optval(iterations, 100)
       ns = optval(specified_variable_0, nc+1)
-      dS0 = optval(delta_0, 0.1_pr)
+      dS0 = optval(delta_0, 0.01_pr)
 
 
       x_l0(1,:) = z
