@@ -39,12 +39,15 @@ class UNIFACDortmund(GeModel):
 
         self.molecules = molecules
 
-        (number_of_groups, groups_ids, groups_ammounts) = groups_from_dicts(
+        number_of_groups, groups_ids, groups_amounts = groups_from_dicts(
             molecules
         )
         self.id = yaeos_c.unifac_dortmund(
-            ngs=number_of_groups, g_ids=groups_ids, g_v=groups_ammounts
+            ngs=number_of_groups, g_ids=groups_ids, g_v=groups_amounts
         )
+
+        self.g_ids = [list(mol.keys()) for mol in molecules]
+        self.g_amounts = [list(mol.values()) for mol in molecules]
 
     def size(self) -> int:
         """Get the number of components.
@@ -55,9 +58,6 @@ class UNIFACDortmund(GeModel):
             Number of components
         """
         return len(self.molecules)
-        self.nc = len(molecules)
-        self.g_ids = groups_ids
-        self.g_ammounts = groups_ammounts
 
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
@@ -68,20 +68,17 @@ class UNIFACDortmund(GeModel):
         """
         fcode = ""
 
-        for i in range(self.nc):
+        for i in range(self.size()):
             id_c = f"molecules({i + 1})%groups_ids = ["
             am_c = f"molecules({i + 1})%number_of_groups = ["
 
-            for j in range(len(self.g_ammounts[i])):
-                if self.g_ammounts[i][j] == 0 or self.g_ids[i][j] == 0:
-                    continue
-
-                if j < len(self.g_ammounts) - 1:
+            for j in range(len(self.g_amounts[i])):
+                if j < len(self.g_amounts[i]) - 1:
                     id_c += f"{self.g_ids[i][j]}, "
-                    am_c += f"{self.g_ammounts[i][j]}, "
+                    am_c += f"{self.g_amounts[i][j]}, "
                 else:
                     id_c += f"{self.g_ids[i][j]}"
-                    am_c += f"{self.g_ammounts[i][j]}"
+                    am_c += f"{self.g_amounts[i][j]}"
 
             id_c += "]"
             am_c += "]"
@@ -103,7 +100,7 @@ class UNIFACDortmund(GeModel):
         be valid Fortran code that declares the model variables.
         """
         fcode = (
-            f"integer, parameter :: nc={self.nc}\n"
+            f"integer, parameter :: nc={self.size()}\n"
             "\n"
             "type(UNIFAC) :: ge_model\n"
             "\n"

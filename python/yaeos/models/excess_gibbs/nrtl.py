@@ -62,7 +62,6 @@ class NRTL(GeModel):
             Number of components
         """
         return self.a.shape[0]
-        self.nc = len(a)
 
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
@@ -77,13 +76,15 @@ class NRTL(GeModel):
         bij_c = ""
         cij_c = ""
 
-        for i in range(self.nc):
+        nc = self.size()
+
+        for i in range(nc):
             aij_c += f"aij({i + 1}, :) = ["
             bij_c += f"bij({i + 1}, :) = ["
             cij_c += f"cij({i + 1}, :) = ["
 
-            for j in range(self.nc):
-                if j < self.nc - 1:
+            for j in range(nc):
+                if j < nc - 1:
                     aij_c += f"{self.a[i, j]}_pr, "
                     bij_c += f"{self.b[i, j]}_pr, "
                     cij_c += f"{self.c[i, j]}_pr, "
@@ -112,7 +113,7 @@ class NRTL(GeModel):
         be valid Fortran code that declares the model variables.
         """
         fcode = (
-            f"integer, parameter :: nc={self.nc}\n"
+            f"integer, parameter :: nc={self.size()}\n"
             "\n"
             "type(NRTL) :: ge_model\n"
             "\n"

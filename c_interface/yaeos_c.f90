@@ -597,7 +597,6 @@ contains
       integer, intent(in) :: ids(:)
       integer(c_int), intent(out) :: id
 
-      integer :: i
       ar_model = gerg_2008(ids)
       call extend_ar_models_list(id)
    end subroutine multifluid_gerg2008
@@ -606,13 +605,13 @@ contains
    ! SAFT models
    ! -------------------------------------------------------------------------
    subroutine pcsaft(id, m, sigma, epsilon_k, kij)
-      use yaeos, only: init_pcsaft, fPCSAFT => PCSAFT
+      use yaeos, only: init_pcsaft
       integer(c_int), intent(out) :: id
       real(c_double), intent(in) :: m(:)
       real(c_double), intent(in) :: sigma(:)
       real(c_double), intent(in) :: epsilon_k(:)
       real(c_double), optional, intent(in) :: kij(:, :)
-      type(fPCSAFT) :: pcsaft_model
+      
       ar_model = init_pcsaft(m, sigma, epsilon_k, kij)
       call extend_ar_models_list(id)
    end subroutine pcsaft

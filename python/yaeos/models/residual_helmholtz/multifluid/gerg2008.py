@@ -119,9 +119,47 @@ class GERG2008(ArModel):
                 "Valid names are: "
                 f"{', '.join(self._possible_components.keys())}"
             )
+
+        self.ids = ids
         self.id = yaeos_c.multifluid_gerg2008(ids)
-        self.size = len(names)
+        self.nc = len(names)
 
     def size(self) -> int:
         """Return the number of components in the model."""
-        return self.size
+        return self.nc
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+
+        fcode = ""
+
+        fcode += "ids = ["
+        fcode += ", ".join(str(id_) for id_ in self.ids)
+        fcode += "]\n\n"
+
+        fcode += "ar_model = gerg_2008(ids)\n\n"
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+
+        fcode = (
+            f"integer, parameter :: nc={self.size()}\n"
+            "\n"
+            "type(ArModel) :: ar_model\n"
+            "\n"
+            f"integer :: ids(nc)\n\n"
+        )
+
+        return fcode

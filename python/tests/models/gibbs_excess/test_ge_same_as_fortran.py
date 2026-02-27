@@ -9,7 +9,6 @@ import pytest
 import yaeos
 from yaeos.core import GeModel
 
-
 # Path to fortran API app folder
 here = Path(__file__).parent.parent.parent.parent.parent / "app"
 

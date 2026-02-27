@@ -8,5 +8,4 @@ Implemented models:
 
 from yaeos.models.residual_helmholtz.saft.pcsaft import PCSAFT
 
-
 __all__ = ["PCSAFT"]

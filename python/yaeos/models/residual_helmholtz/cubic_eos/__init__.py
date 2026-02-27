@@ -32,7 +32,6 @@ from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import (
     QMRTD,
 )
 
-
 __all__ = [
     "CubicEoS",
     "PengRobinson76",

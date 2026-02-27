@@ -19,7 +19,6 @@ from yaeos.constants import root_kinds
 from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
 from yaeos.lib import yaeos_c
 
-
 MAX_POINTS_ENVELOPES = 1000
 
 
@@ -73,6 +72,8 @@ class GeModel(ABC):
             Abstract error, this method must be implemented in the subclass
         """
         raise NotImplementedError
+
+    @abstractmethod
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
 
@@ -429,7 +430,7 @@ class GeModel(ABC):
                 :math:`w` that minimize the :math:`tm` function `tm:` all
                 values found minima of the :math:`tm` function
         """
-        (w_min, tm_min, all_mins) = yaeos_c.stability_zt_ge(
+        w_min, tm_min, all_mins = yaeos_c.stability_zt_ge(
             id=self.id, z=z, t=temperature
         )
 
@@ -616,6 +617,7 @@ class ArModel(ABC):
             Abstract error, this method must be implemented in the subclass
         """
         raise NotImplementedError
+
     @abstractmethod
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
@@ -3109,7 +3111,7 @@ class ArModel(ABC):
                 :math:`w` that minimize the :math:`tm` function `tm:` all
                 values found minima of the :math:`tm` function
         """
-        (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
+        w_min, tm_min, all_mins = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
 
@@ -3310,7 +3312,7 @@ class ArModel(ABC):
                 - P: pressures [bar]
         """
 
-        (x1s, y1s, w1s, vxys, vys, vws, ts, ps) = yaeos_c.binary_llv_from_cep(
+        x1s, y1s, w1s, vxys, vys, vws, ts, ps = yaeos_c.binary_llv_from_cep(
             self.id,
             cep["x"],
             cep["y"],
