@@ -23,7 +23,7 @@ program main
    P = 0.0001
    sat = saturation_temperature(eos, z, P, kind="dew")
 
-   env = pt_envelope_2ph(eos, z, sat)
+   env = pt_envelope_2ph(eos, z, sat, points=1000)
    ! open(1, file="env_output.txt")
    ! write(1, *) env
    ! close(1)
@@ -74,7 +74,7 @@ contains
       p0 = sat%P
       t0 = sat%T
       ns0 = np*nc+np+1
-      ds0=1e-3!log(p0 + 0.5*p0) - log(p0)
+      ds0=1e-2
       beta_w = 0
       kinds_x = "vapor"
       kind_w = "liquid"
