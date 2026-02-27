@@ -180,8 +180,6 @@ contains
             return
          end if
       end do
-
-
    end subroutine check_critical_jump
 
    logical function near_critical(nc, np, X)
@@ -201,7 +199,7 @@ contains
          ub = l*nc
          lnK = X(lb:ub)
 
-         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.3 .or. maxval(abs(lnK)) < 0.1_pr
+         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.1_pr
          ! near_critical = maxval(abs(X(lb:ub))) < 0.05_pr
          if (near_critical) then
             return
