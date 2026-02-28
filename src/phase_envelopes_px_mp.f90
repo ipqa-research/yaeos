@@ -216,7 +216,7 @@ contains
          env_points = [env_points, point]
          alphas = [alphas, alpha]
 
-         call check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+         call check_critical_jump(nc, np, ns, x_kinds, w_kind, X, X_last_converged, Xc, found_critical, jumped_critical)
          if (jumped_critical) then
             ac = Xc(ia)
             Pc = exp(Xc(iP))

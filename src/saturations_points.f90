@@ -269,6 +269,10 @@ contains
             T = 100 + abs(step)
          end if
 
+         do while(abs(step) > 50)
+            step = step/2
+         end do
+
          T = T - step
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
@@ -278,7 +282,7 @@ contains
             real(pr) :: X(size(n)+2), S
             integer :: ns, nc
             nc = size(n)
-            X(:nc) = log(y/z)
+            X(:nc) = log(k)
             X(nc+1) = log(T)
             X(nc+2) = log(P)
             ns = nc+2

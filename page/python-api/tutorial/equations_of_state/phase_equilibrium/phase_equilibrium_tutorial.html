@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>More calculations &mdash; yaeos 4.4.0 documentation</title>
+  <title>More calculations &mdash; yaeos 4.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -116,7 +116,7 @@
 <h2>Calculating an isotherm<a class="headerlink" href="#Calculating-an-isotherm" title="Link to this heading"></a></h2>
 <p>Let’s create a plot Pressure vs Volume at a given temperature (250 K) for a pure component. Let’s use carbon dioxide.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -183,10 +183,10 @@
 <div class="highlight"><pre>
 {&#39;x&#39;: array([1.]),
  &#39;y&#39;: array([1.]),
- &#39;Vx&#39;: 0.04668949889514571,
- &#39;Vy&#39;: 0.9534768478027397,
+ &#39;Vx&#39;: 0.046689498894771746,
+ &#39;Vy&#39;: 0.9534768436590725,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 17.916706382441067,
+ &#39;P&#39;: 17.916706443476794,
  &#39;beta&#39;: 0.0}
 </pre></div></div>
 </div>
@@ -204,7 +204,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-17.916706382441067  bar
+17.916706443476794  bar
 </pre></div></div>
 </div>
 <p>The DIPPR correlated value for the saturation pressure of CO2 at 250 K is 17.88 bar, so SoaveRedlichKwong is doing a good job in this case.</p>
@@ -213,7 +213,7 @@
 <h3>Mixture<a class="headerlink" href="#Mixture" title="Link to this heading"></a></h3>
 <p>Of course, in thermodynamics there is not only pure compounds, we can also use <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> to calculate the saturation pressure of a mixture. Let’s calculate the saturation pressure of a mixture of 50% CO2 and 50% n-butane at 250 K. But now let’s use <code class="docutils literal notranslate"><span class="pre">PengRobinson78</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -237,7 +237,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%timeit</span>
@@ -250,12 +250,12 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-172 μs ± 4.56 μs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+89.1 μs ± 1.2 μs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 </pre></div></div>
 </div>
 <p>Let’s check our results:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bubble_point</span>
@@ -263,17 +263,17 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;x&#39;: array([0.5, 0.5]),
  &#39;y&#39;: array([0.96800305, 0.03199695]),
- &#39;Vx&#39;: 0.06509074642358813,
- &#39;Vy&#39;: 2.2963934569226736,
+ &#39;Vx&#39;: 0.06509074643563734,
+ &#39;Vy&#39;: 2.296393760912863,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 8.269690420845638,
+ &#39;P&#39;: 8.269689833877358,
  &#39;beta&#39;: 0.0}
 </pre></div></div>
 </div>
@@ -293,10 +293,10 @@
 <div class="highlight"><pre>
 {&#39;x&#39;: array([0.02630095, 0.97369905]),
  &#39;y&#39;: array([0.5, 0.5]),
- &#39;Vx&#39;: 0.08695218910075514,
- &#39;Vy&#39;: 26.11173726290343,
+ &#39;Vx&#39;: 0.08695219353368744,
+ &#39;Vy&#39;: 26.111733762965876,
  &#39;T&#39;: 250.0,
- &#39;P&#39;: 0.7816128221178303,
+ &#39;P&#39;: 0.7816129249566415,
  &#39;beta&#39;: 1.0}
 </pre></div></div>
 </div>
@@ -310,7 +310,7 @@
 <h2>Pxy diagram for a mixture<a class="headerlink" href="#Pxy-diagram-for-a-mixture" title="Link to this heading"></a></h2>
 <p>We can use what we have learned to obtain a Pxy diagram for a mixture. Let’s try it out with the CO2 and n-butane mixture at 250 K.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -357,7 +357,8 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -376,7 +377,7 @@
 <h2>Flash calculation<a class="headerlink" href="#Flash-calculation" title="Link to this heading"></a></h2>
 <p>Flash calculation are also supported by <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>. Let’s calculate a liquid-vapor flash at 250 K for the CO2 and n-butane mixture.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pure compounds properties</span>
@@ -395,17 +396,18 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;x&#39;: array([0.23809283, 0.76190717]),
  &#39;y&#39;: array([0.91415847, 0.08584153]),
- &#39;Vx&#39;: 0.0772038243110709,
- &#39;Vy&#39;: 4.959609854159413,
+ &#39;Vx&#39;: 0.07720382431133598,
+ &#39;Vy&#39;: 4.959609851699399,
  &#39;P&#39;: 4.0,
  &#39;T&#39;: 250.0,
- &#39;beta&#39;: 0.3873990240956161}
+ &#39;beta&#39;: 0.387399024104434}
 </pre></div></div>
 </div>
 <p>The result of the flash calculation is a Python dictionary with the same information as the saturation pressure calculation. We can plot the results in the Pxy diagram that we created before.</p>
@@ -487,7 +489,7 @@
 <h3>Model definition<a class="headerlink" href="#Model-definition" title="Link to this heading"></a></h3>
 <p>We first define a model that will be used for all the possible calculations.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -622,52 +624,52 @@ first saturation point of the envelope of kind: <code class="docutils literal no
     </tr>
     <tr>
       <th>595</th>
-      <td>161.206315</td>
-      <td>0.000945</td>
+      <td>157.212709</td>
+      <td>0.000571</td>
       <td>0.5</td>
-      <td>0.001929</td>
+      <td>0.001599</td>
       <td>0.5</td>
-      <td>0.998071</td>
+      <td>0.998401</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>596</th>
-      <td>161.206294</td>
-      <td>0.000945</td>
+      <td>157.212709</td>
+      <td>0.000571</td>
       <td>0.5</td>
-      <td>0.001929</td>
+      <td>0.001599</td>
       <td>0.5</td>
-      <td>0.998071</td>
+      <td>0.998401</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>597</th>
-      <td>161.206274</td>
-      <td>0.000945</td>
+      <td>157.212709</td>
+      <td>0.000571</td>
       <td>0.5</td>
-      <td>0.001929</td>
+      <td>0.001599</td>
       <td>0.5</td>
-      <td>0.998071</td>
+      <td>0.998401</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>598</th>
-      <td>161.206258</td>
-      <td>0.000945</td>
+      <td>157.212709</td>
+      <td>0.000571</td>
       <td>0.5</td>
-      <td>0.001929</td>
+      <td>0.001599</td>
       <td>0.5</td>
-      <td>0.998071</td>
+      <td>0.998401</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>599</th>
-      <td>161.206235</td>
-      <td>0.000945</td>
+      <td>157.212709</td>
+      <td>0.000571</td>
       <td>0.5</td>
-      <td>0.001929</td>
+      <td>0.001599</td>
       <td>0.5</td>
-      <td>0.998071</td>
+      <td>0.998401</td>
       <td>1.0</td>
     </tr>
   </tbody>
@@ -775,7 +777,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 </div>
 <p>Ussually, it is better to start <span class="math notranslate nohighlight">\(Tx\)</span> envelopes from the light component instead of the heavy one. For this, we can change the initial value of <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">ds0</span></code>, to trace the line from right to left.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
@@ -809,7 +811,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 <section id="Calculation-of-critical-points">
 <h3>Calculation of critical points<a class="headerlink" href="#Calculation-of-critical-points" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculation of the critical point at z = [0.5, 0.5]</span>
@@ -818,22 +820,19 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;x&#39;: [array([0.5, 0.5])],
- &#39;Tc&#39;: 385.9304106198223,
- &#39;Pc&#39;: 68.20061549921013,
- &#39;Vc&#39;: 0.184817799720916}
+{&#39;x&#39;: [array([nan, nan])], &#39;Tc&#39;: nan, &#39;Pc&#39;: nan, &#39;Vc&#39;: nan}
 </pre></div></div>
 </div>
 </section>
 <section id="Calculation-of-critical-lines">
 <h3>Calculation of critical lines<a class="headerlink" href="#Calculation-of-critical-lines" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cl</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span><span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">a0</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
@@ -854,7 +853,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
@@ -865,7 +864,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -891,7 +890,7 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <p>where <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> are the mole numbers of the trial and test phase.</p>
 <p>To show how to use the stability methods, we first define a system a find a region where there is phase equilibria. For this we obtain the critical constants with the <code class="docutils literal notranslate"><span class="pre">chemicals</span></code> library and trace a phase envelope.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -925,7 +924,7 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 </div>
 <p>We can take a point of the phase envelope and calculate the <span class="math notranslate nohighlight">\(tm\)</span> function at pressures sligthly above and slightly below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We take the high pressure point of the envelope closest to 250 K</span>
@@ -955,17 +954,17 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-np.float64(36.64222822635171)
+np.float64(36.741026003871276)
 </pre></div></div>
 </div>
 <p>How would the <code class="docutils literal notranslate"><span class="pre">tm</span></code> function values compare in those three points? To know that, we will sweep on values of <span class="math notranslate nohighlight">\(\mathbf{w_1}\)</span> between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span> and plot the results.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -1004,7 +1003,7 @@ np.float64(36.64222822635171)
 </div>
 <p>What if we have a ternary mixture?</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -1038,7 +1037,7 @@ np.float64(36.64222822635171)
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/ruther/docs/programming/python/virtualenvs/thermo/lib/python3.13/site-packages/yaeos/core.py:1710: UserWarning: No liquid-liquid region found.
+/home/ruther/docs/programming/python/virtualenvs/thermo/lib/python3.13/site-packages/yaeos/core.py:2012: UserWarning: No liquid-liquid region found.
   warn(&#34;No liquid-liquid region found.&#34;)
 </pre></div></div>
 </div>
@@ -1051,7 +1050,7 @@ np.float64(36.64222822635171)
 </div>
 <p>We can make the stability anaylisis sweeping on the composition of two components (using <span class="math notranslate nohighlight">\(1 - w_1 - w_2\)</span> for the remaining one) at a specified <span class="math notranslate nohighlight">\(T\)</span> and <span class="math notranslate nohighlight">\(P\)</span>, and save the results.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-15</span>
@@ -1105,7 +1104,7 @@ np.float64(36.64222822635171)
 </div>
 <p>It is easy to notice that finding a minima by sweeping variables becomes harder and harder as more components are added. Luckily, in <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> there is also the method <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> that will use specific procedures to find the possible minima in an efficient way.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">minima</span><span class="p">,</span> <span class="n">all_found_nimimas</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">stability_analysis</span><span class="p">(</span>
@@ -1116,12 +1115,12 @@ np.float64(36.64222822635171)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;w&#39;: array([0.65460664, 0.13648048, 0.20891288]), &#39;tm&#39;: -0.157933345327393}
+{&#39;w&#39;: array([0.65460664, 0.13648048, 0.20891288]), &#39;tm&#39;: -0.15793334532951642}
 </pre></div></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> method returns a a tuple of dictionaries with two keys:</p>
@@ -1131,7 +1130,7 @@ np.float64(36.64222822635171)
 </ul>
 <p>The first output of the tuple corresponds to the lower minima found, and the second one will a found minima for each initialization. Each initialization begins when starting from a pure component, so it will have the length of number of components.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Comparing the found w_min with the one obtained before by sweeping</span>
@@ -1151,7 +1150,7 @@ np.float64(36.64222822635171)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">minima</span>
@@ -1159,16 +1158,16 @@ np.float64(36.64222822635171)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;w&#39;: array([0.65460664, 0.13648048, 0.20891288]), &#39;tm&#39;: -0.157933345327393}
+{&#39;w&#39;: array([0.65460664, 0.13648048, 0.20891288]), &#39;tm&#39;: -0.15793334532951642}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_found_nimimas</span>
@@ -1176,12 +1175,12 @@ np.float64(36.64222822635171)
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;tm&#39;: array([-1.57933345e-01,  3.52347575e-06,  6.77188995e-06]),
+{&#39;tm&#39;: array([-1.57933345e-01,  3.52347575e-06,  6.77188990e-06]),
  &#39;w&#39;: array([[0.65460664, 0.13648048, 0.20891288],
         [0.20128845, 0.2000327 , 0.59867885],
         [0.19822325, 0.19995198, 0.60182477]])}
@@ -1191,7 +1190,7 @@ np.float64(36.64222822635171)
 <section id="Pure-components-saturation-lines">
 <h2>Pure components saturation lines<a class="headerlink" href="#Pure-components-saturation-lines" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -1212,7 +1211,7 @@ np.float64(36.64222822635171)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">)):</span>
@@ -1244,7 +1243,7 @@ np.float64(36.64222822635171)
 <p>Assymetric systems can have three-phase behaviour. One of the common cases where three-phase behavoir can be expected is when we have a an open two-phase envelope and another two-phase envelope inside, this second envelope is actually an unstable line, but can be used to estimate the start of a three-phase line.</p>
 <p>First let’s start by defining a model and calculating two two-phase envelopes. One starting from a dew point at low pressure and another starting from a bubble point at low temperature. Here it is possible to see the unstable bubble line.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -1293,12 +1292,12 @@ np.float64(36.64222822635171)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(189.99999999999991, 66.37652186635839, &#39;Unstable&#39;)
+Text(189.99999999999991, 66.37652186684838, &#39;Unstable&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1311,7 +1310,7 @@ Text(189.99999999999991, 66.37652186635839, &#39;Unstable&#39;)
 <p>This unstable phase envelope can be used to start a three-phase envelope. First let’s see how a three-phase point is described.</p>
 <p>A three-phase point can be described as the point where three-phases are in equilibrium. We can define this phases with the letters <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. In our case we are defining a saturation line, a line where one of the phases is incipient (it exists with a molar fraction of zero).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">bub</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">bub</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">bub</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -1343,7 +1342,7 @@ Text(189.99999999999991, 66.37652186635839, &#39;Unstable&#39;)
 </div>
 <p>We now can plot the phase diagram including the three-phase envelope, and removing the unstable line.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dew</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;two-phase dew line&quot;</span><span class="p">)</span>

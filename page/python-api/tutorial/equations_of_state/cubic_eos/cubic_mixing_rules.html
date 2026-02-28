@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mixing Rules &mdash; yaeos 4.4.0 documentation</title>
+  <title>Mixing Rules &mdash; yaeos 4.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -139,7 +139,7 @@
 <p>The QMR is the default mixing rule for almost all cubic equations of state. But it is always set with all the interaction parameters equals to zero by default.</p>
 <p>To set the <span class="math notranslate nohighlight">\(k_{ij}\)</span> and <span class="math notranslate nohighlight">\(l_{ij}\)</span> interaction matrix you can do the following:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -175,7 +175,7 @@
 <p>With the model with interaction parameters we can calculate the same things that we have been calculating at this tutorial. But to show that there is a difference, we can calculate a phase envelope and see what happens.</p>
 <p>A liquid-vapor phase envelope (PT) show us all the dew and bubble points of a mixture at fixed composition <span class="math notranslate nohighlight">\(z\)</span>. In the section “Phase Equilibrium Calculations” we will learn more about this.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -185,7 +185,7 @@
 
 <span class="c1"># Initial guesses for the envelope (not too important right now)</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="mf">150.0</span>
-<span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="mf">0.001</span>
 
 <span class="c1"># Envelope with the model with kij and lij</span>
 <span class="n">envelope_kij</span> <span class="o">=</span> <span class="n">model_kij</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">)</span>
@@ -225,7 +225,7 @@
 <div class="math notranslate nohighlight">
 \[k_{ij}(T) = k_{ij}^{\infty} + k_{ij}^{0} \exp{\left(-T/T^{ref}\right)}\]</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -261,7 +261,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -270,7 +270,7 @@
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
@@ -294,7 +294,7 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -314,7 +314,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <h2>Huron-Vidal mixing rule<a class="headerlink" href="#Huron-Vidal-mixing-rule" title="Link to this heading"></a></h2>
 <p>The Huron-Vidal mixing rule allows linking a Cubic Equation of State with an Excess Gibbs model, this can be helpful to predict behaviour of systems with high asymmetry in polarity.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -357,7 +357,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 \[\frac{D}{RTB} = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
 \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)\]</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -390,7 +390,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>Let’s make first an envelope to see the difference and then explain what is happening.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -411,9 +411,9 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <span class="p">)</span>
 
 <span class="c1"># Plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">envelope_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">envelope_hv_nrtl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">envelope_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">envelope_mhv_nrtl</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">envelope</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">envelope</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
+<span class="n">envelope_hv_nrtl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;HV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">envelope_mhv_nrtl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;MHV-NRTL&quot;</span><span class="p">)</span>
+<span class="n">envelope</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without kij and lij&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature [K]&quot;</span><span class="p">)</span>
@@ -424,7 +424,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -451,7 +451,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 <p>Huron and Vidal presented their mixing rule with a modified <span class="math notranslate nohighlight">\(NRTL\)</span> model. This model includes the covolume parameter <span class="math notranslate nohighlight">\(b\)</span> from the cubic EoS. This modification has the characteristic that it can be simplified and use the classic QMR mixing rules for specific binaries in the mixture.</p>
 <p>First we will define a model that uses the <span class="math notranslate nohighlight">\(QMR\)</span> mixing rule</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
@@ -486,7 +486,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>Now we will define a model using the <span class="math notranslate nohighlight">\(NRTLHV\)</span> mixing rule</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span>
@@ -518,7 +518,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
@@ -531,12 +531,12 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7f3dd0c92740&gt;
+&lt;matplotlib.legend.Legend at 0x7ffa19675a90&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -548,7 +548,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>Now let’s modify the <code class="docutils literal notranslate"><span class="pre">use_kij</span></code> matrix, to use the kij values between methane and butane.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">use_kij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -567,7 +567,7 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <p>When we plot the phase envelopes we can se how using the <span class="math notranslate nohighlight">\(k_{ij}\)</span> values for methane-butane the phase diagram become more similar to the one with the classic <span class="math notranslate nohighlight">\(QMR\)</span></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_kij</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;QMR&quot;</span><span class="p">)</span>

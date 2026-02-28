@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 4.4.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 4.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../../../../_static/documentation_options.js?v=5ef59c98"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -86,6 +86,8 @@
   <h1>Source code for yaeos.models.residual_helmholtz.cubic_eos.cubic_eos</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Cubic EoS implementations module.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
 <span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
 <span class="kn">from</span> <span class="nn">yaeos.models.groups</span> <span class="kn">import</span> <span class="n">groups_from_dicts</span>
@@ -116,7 +118,11 @@
 <span class="sd">        Critical pressures vector [bar]</span>
 <span class="sd">    w : array_like</span>
 <span class="sd">        Acentric factors vector</span>
+<span class="sd">    mixrule : CubicMixRule</span>
+<span class="sd">        Cubic Mixing rule object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -129,6 +135,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tc</span> <span class="o">=</span> <span class="n">critical_temperatures</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">critical_pressures</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">acentric_factors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="p">:</span> <span class="n">CubicMixRule</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CubicEoS.size">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.size">[docs]</a>
@@ -155,7 +162,50 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span> <span class="o">=</span> <span class="n">mixrule</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;tc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;pc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;w = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;ar_model = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(tc, pc, w)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">_model_params_as_str</span><span class="p">()</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">call ar_model</span><span class="si">%s</span><span class="s2">et_mixrule(mixrule)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;type(CubicEoS) :: ar_model</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;real(pr) :: tc(nc), pc(nc), w(nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">_model_params_declaration_as_str</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 
 
@@ -414,7 +464,7 @@
 <span class="sd">        rkpr = RKPR(tc, pc, w, zc)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RKPR&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;fRKPR&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -434,6 +484,10 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zc</span> <span class="o">=</span> <span class="n">critical_z</span>
 
+        <span class="c1"># Store the k and delta_1 provided by the user for Fortran code gen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span> <span class="o">=</span> <span class="n">delta_1</span>
+
         <span class="k">match</span> <span class="p">(</span><span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">delta_1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">rkpr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zc</span><span class="p">)</span>
@@ -449,7 +503,78 @@
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span> <span class="o">=</span> <span class="n">mixrule</span>
         <span class="k">if</span> <span class="n">mixrule</span><span class="p">:</span>
-            <span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+            <span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Critical properties and acentric factor</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;tc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;pc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;w = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;zc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">zc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Optional parameters k and delta_1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;k = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_pr&quot;</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span><span class="p">)</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;delta_1 = [</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># EoS setup</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;ar_model = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(tc, pc, w, zc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ar_model = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(tc, pc, w, zc, k=k)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ar_model = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(tc, pc, w, zc, delta_1=delta_1)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ar_model = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">(tc, pc, w, zc, k=k, delta_1=delta_1)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">_model_params_as_str</span><span class="p">()</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">call ar_model</span><span class="si">%s</span><span class="s2">et_mixrule(mixrule)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;type(CubicEoS) :: ar_model</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: tc(nc), pc(nc), w(nc), zc(nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;real(pr) :: k(nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;real(pr) :: delta_1(nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">_model_params_declaration_as_str</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 
 
@@ -528,6 +653,8 @@
 <span class="sd">        &gt;&gt;&gt; [{15: 1}, {1: 1, 2: 1, 14: 1}]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PSRK&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">critical_temperatures</span><span class="p">,</span>
@@ -544,16 +671,28 @@
             <span class="n">critical_pressures</span><span class="p">,</span>
             <span class="n">acentric_factors</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="p">(</span><span class="n">number_of_groups</span><span class="p">,</span> <span class="n">groups_ids</span><span class="p">,</span> <span class="n">groups_ammounts</span><span class="p">)</span> <span class="o">=</span> <span class="n">groups_from_dicts</span><span class="p">(</span>
+        <span class="n">number_of_groups</span><span class="p">,</span> <span class="n">groups_ids</span><span class="p">,</span> <span class="n">groups_amounts</span> <span class="o">=</span> <span class="n">groups_from_dicts</span><span class="p">(</span>
             <span class="n">molecules</span>
         <span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">g_ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g_amounts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">c1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">c1</span> <span class="o">=</span> <span class="mf">0.48</span> <span class="o">+</span> <span class="mf">1.574</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="mf">0.175</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="mf">0.48</span> <span class="o">+</span> <span class="mf">1.574</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="mf">0.175</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">c1</span>
+
         <span class="k">if</span> <span class="n">c2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c2</span> <span class="o">=</span> <span class="n">c2</span>
+
         <span class="k">if</span> <span class="n">c3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">c3</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c3</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c3</span> <span class="o">=</span> <span class="n">c3</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">psrk</span><span class="p">(</span>
             <span class="n">tc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">,</span>
@@ -561,11 +700,78 @@
             <span class="n">w</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span>
             <span class="n">ngs</span><span class="o">=</span><span class="n">number_of_groups</span><span class="p">,</span>
             <span class="n">g_ids</span><span class="o">=</span><span class="n">groups_ids</span><span class="p">,</span>
-            <span class="n">g_v</span><span class="o">=</span><span class="n">groups_ammounts</span><span class="p">,</span>
-            <span class="n">c1</span><span class="o">=</span><span class="n">c1</span><span class="p">,</span>
-            <span class="n">c2</span><span class="o">=</span><span class="n">c2</span><span class="p">,</span>
-            <span class="n">c3</span><span class="o">=</span><span class="n">c3</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">g_v</span><span class="o">=</span><span class="n">groups_amounts</span><span class="p">,</span>
+            <span class="n">c1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span>
+            <span class="n">c2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span>
+            <span class="n">c3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Groups</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
+            <span class="n">id_c</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;molecules(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">)%groups_ids = [&quot;</span>
+            <span class="n">am_c</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;molecules(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">)%number_of_groups = [&quot;</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g_amounts</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g_amounts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">id_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">g_ids</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="n">am_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">g_amounts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">id_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">g_ids</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">am_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">g_amounts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">id_c</span> <span class="o">+=</span> <span class="s2">&quot;]&quot;</span>
+            <span class="n">am_c</span> <span class="o">+=</span> <span class="s2">&quot;]&quot;</span>
+
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="n">id_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">am_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Critical properties and acentric factor</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;tc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;pc = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;w = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Mathias-Copeman parameters</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;c1 = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">c1</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;c2 = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">c2</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;c3 = [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_pr&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">c3</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># EoS setup</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ar_model = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(tc, pc, w, molecules, c1, c2, c3)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;type(CubicEoS) :: ar_model</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: tc(nc), pc(nc), w(nc), c1(nc), c2(nc), c3(nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;type(Groups) :: molecules(nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 </pre></div>
 

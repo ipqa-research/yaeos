@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">21 statements</a>
+                 title=" 0.3% of total for procedures.">32 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -105,7 +105,7 @@
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90~3.html'>auxiliar.f90</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li>
                 <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
             <li class="breadcrumb-item active" aria-current="page">check_critical_jump</li>
           </ol>
@@ -135,9 +135,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-l~17">l</a>
-            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-lb~16">lb</a>
-            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-ub~16">ub</a>
+            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-incipient_kind~2">incipient_kind</a>
+            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-l~10">l</a>
+            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-lb~14">lb</a>
+            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-ncomp~5">ncomp</a>
+            <a class="list-group-item" href="../proc/check_critical_jump.html#variable-ub~14">ub</a>
         </div>
       </div>
     </div>
@@ -167,7 +169,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)  
+    <h2>public  subroutine check_critical_jump(nc, np, ns, kinds_x, kind_w, X, X_last_converged, Xc, found_critical, jumped_critical)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -386,7 +388,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~103"></span>
+              <span class="anchor" id="variable-nc~60"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -401,7 +403,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~28"></span>
+              <span class="anchor" id="variable-np~24"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -416,7 +418,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~55"></span>
+              <span class="anchor" id="variable-ns~35"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -431,7 +433,37 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~65"></span>
+              <span class="anchor" id="variable-kinds_x~17"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kinds_x</strong>(np)</td>
+            <td>
+                <p>Kinds of the main phases</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kind_w~17"></span>
+              character(len=14),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>kind_w</strong></td>
+            <td>
+                <p>Kind of the incipient phase</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~41"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -446,7 +478,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_last_converged~4"></span>
+              <span class="anchor" id="variable-x_last_converged~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -461,7 +493,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xc~10"></span>
+              <span class="anchor" id="variable-xc~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -476,7 +508,22 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-jumped_critical~3"></span>
+              <span class="anchor" id="variable-found_critical~5"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>found_critical</strong></td>
+            <td>
+                <p>If a critical point was already found in the current point</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jumped_critical~2"></span>
               logical,
             </td>
 <td>intent(out)</td>
@@ -622,46 +669,76 @@ implementation in a submodule of an interface in a parent module.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~check_critical_jump~~CalledByGraph Pages: 1 -->
-<svg id="proccheck_critical_jumpCalledByGraph" width="242pt" height="74pt"
- viewBox="0.00 0.00 242.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg id="proccheck_critical_jumpCalledByGraph" width="472pt" height="74pt"
+ viewBox="0.00 0.00 472.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="proc~~check_critical_jump~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
 <title>proc~~check_critical_jump~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 238,-70 238,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 468,-70 468,4 -4,4"/>
 <!-- proc~check_critical_jump -->
 <g id="proc~~check_critical_jump~~CalledByGraph_node1" class="node">
 <title>proc~check_critical_jump</title>
-<polygon fill="none" stroke="black" points="234,-45 116,-45 116,-21 234,-21 234,-45"/>
-<text text-anchor="middle" x="175" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">check_critical_jump</text>
+<polygon fill="none" stroke="black" points="464,-45 346,-45 346,-21 464,-21 464,-45"/>
+<text text-anchor="middle" x="405" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">check_critical_jump</text>
 </g>
 <!-- proc~pt_envelope -->
 <g id="proc~~check_critical_jump~~CalledByGraph_node2" class="node">
 <title>proc~pt_envelope</title>
 <g id="a_proc~~check_critical_jump~~CalledByGraph_node2"><a xlink:href="../proc/pt_envelope.html" xlink:title="pt_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="79,-66 1,-66 1,-42 79,-42 79,-66"/>
-<text text-anchor="middle" x="40" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="309,-66 231,-66 231,-42 309,-42 309,-66"/>
+<text text-anchor="middle" x="270" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
 </a>
 </g>
 </g>
 <!-- proc~pt_envelope&#45;&gt;proc~check_critical_jump -->
 <g id="proc~~check_critical_jump~~CalledByGraph_edge1" class="edge">
 <title>proc~pt_envelope&#45;&gt;proc~check_critical_jump</title>
-<path fill="none" stroke="#000000" d="M79.11,-47.98C87.51,-46.66 96.65,-45.21 105.84,-43.76"/>
-<polygon fill="#000000" stroke="#000000" points="106.46,-47.21 115.79,-42.19 105.37,-40.29 106.46,-47.21"/>
+<path fill="none" stroke="#000000" d="M309.11,-47.98C317.51,-46.66 326.65,-45.21 335.84,-43.76"/>
+<polygon fill="#000000" stroke="#000000" points="336.46,-47.21 345.79,-42.19 335.37,-40.29 336.46,-47.21"/>
 </g>
 <!-- proc~px_envelope -->
 <g id="proc~~check_critical_jump~~CalledByGraph_node3" class="node">
 <title>proc~px_envelope</title>
 <g id="a_proc~~check_critical_jump~~CalledByGraph_node3"><a xlink:href="../proc/px_envelope.html" xlink:title="px_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="80,-24 0,-24 0,0 80,0 80,-24"/>
-<text text-anchor="middle" x="40" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 230,-24 230,0 310,0 310,-24"/>
+<text text-anchor="middle" x="270" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope</text>
 </a>
 </g>
 </g>
 <!-- proc~px_envelope&#45;&gt;proc~check_critical_jump -->
 <g id="proc~~check_critical_jump~~CalledByGraph_edge2" class="edge">
 <title>proc~px_envelope&#45;&gt;proc~check_critical_jump</title>
-<path fill="none" stroke="#000000" d="M80.19,-18.19C88.31,-19.47 97.1,-20.86 105.92,-22.25"/>
-<polygon fill="#000000" stroke="#000000" points="105.45,-25.72 115.87,-23.82 106.54,-18.8 105.45,-25.72"/>
+<path fill="none" stroke="#000000" d="M310.19,-18.19C318.31,-19.47 327.1,-20.86 335.92,-22.25"/>
+<polygon fill="#000000" stroke="#000000" points="335.45,-25.72 345.87,-23.82 336.54,-18.8 335.45,-25.72"/>
+</g>
+<!-- proc~pt_envelope_2ph -->
+<g id="proc~~check_critical_jump~~CalledByGraph_node4" class="node">
+<title>proc~pt_envelope_2ph</title>
+<g id="a_proc~~check_critical_jump~~CalledByGraph_node4"><a xlink:href="../proc/pt_envelope_2ph.html" xlink:title="pt_envelope_2ph">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="194,-66 91,-66 91,-42 194,-42 194,-66"/>
+<text text-anchor="middle" x="142.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_2ph</text>
+</a>
+</g>
+</g>
+<!-- proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope -->
+<g id="proc~~check_critical_jump~~CalledByGraph_edge3" class="edge">
+<title>proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope</title>
+<path fill="none" stroke="#000000" d="M194.18,-54C202.99,-54 212.12,-54 220.85,-54"/>
+<polygon fill="#000000" stroke="#000000" points="220.87,-57.5 230.87,-54 220.87,-50.5 220.87,-57.5"/>
+</g>
+<!-- proc~find_hpl -->
+<g id="proc~~check_critical_jump~~CalledByGraph_node5" class="node">
+<title>proc~find_hpl</title>
+<g id="a_proc~~check_critical_jump~~CalledByGraph_node5"><a xlink:href="../proc/find_hpl.html" xlink:title="find_hpl">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="55,-66 0,-66 0,-42 55,-42 55,-66"/>
+<text text-anchor="middle" x="27.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_hpl</text>
+</a>
+</g>
+</g>
+<!-- proc~find_hpl&#45;&gt;proc~pt_envelope_2ph -->
+<g id="proc~~check_critical_jump~~CalledByGraph_edge4" class="edge">
+<title>proc~find_hpl&#45;&gt;proc~pt_envelope_2ph</title>
+<path fill="none" stroke="#000000" d="M55.28,-54C63.06,-54 71.88,-54 80.85,-54"/>
+<polygon fill="#000000" stroke="#000000" points="80.99,-57.5 90.99,-54 80.99,-50.5 80.99,-57.5"/>
 </g>
 </g>
 </svg>
@@ -761,7 +838,24 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~17"></span>
+              <span class="anchor" id="variable-incipient_kind~2"></span>
+              character(len=14),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>incipient_kind</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~10"></span>
               integer,
             </td>
               <td>public</td>
@@ -778,7 +872,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lb~16"></span>
+              <span class="anchor" id="variable-lb~14"></span>
               integer,
             </td>
               <td>public</td>
@@ -795,7 +889,24 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~16"></span>
+              <span class="anchor" id="variable-ncomp~5"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncomp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ub~14"></span>
               integer,
             </td>
               <td>public</td>
@@ -843,7 +954,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-01-19 21:20 +0000             </p>
+ on 2026-02-28 00:49 +0000             </p>
           </div>
         </div>
         <br>

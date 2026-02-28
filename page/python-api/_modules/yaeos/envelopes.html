@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.envelopes &mdash; yaeos 4.4.0 documentation</title>
+  <title>yaeos.envelopes &mdash; yaeos 4.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../_static/documentation_options.js?v=5ef59c98"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -197,6 +197,7 @@
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_phases</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="n">df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
             <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;w_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_phases</span><span class="p">):</span>
@@ -424,6 +425,7 @@
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_phases</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="n">df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
             <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;w_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_phases</span><span class="p">):</span>
@@ -540,19 +542,19 @@
 <span class="sd">    global_composition_i : np.ndarray</span>
 <span class="sd">        The global composition at the point where :math:`\alpha = 1`.</span>
 <span class="sd">    main_phases_compositions : np.ndarray</span>
-<span class="sd">        The compositions of the main phases along the envelope.</span>
-<span class="sd">        Shape is (n_points, n_phases, n_components).</span>
+<span class="sd">        The compositions of the main phases along the envelope. Shape is</span>
+<span class="sd">        (n_points, n_phases, n_components).</span>
 <span class="sd">    reference_phase_compositions : np.ndarray</span>
-<span class="sd">        The compositions of the reference phase along the envelope.</span>
-<span class="sd">        Shape is (n_points, n_components).</span>
+<span class="sd">        The compositions of the reference phase along the envelope. Shape is</span>
+<span class="sd">        (n_points, n_components).</span>
 <span class="sd">    main_phases_molar_fractions : np.ndarray</span>
-<span class="sd">        The molar fractions of the main phases along the envelope.</span>
-<span class="sd">        Shape is (n_points, n_phases).</span>
+<span class="sd">        The molar fractions of the main phases along the envelope. Shape is</span>
+<span class="sd">        (n_points, n_phases).</span>
 <span class="sd">    temperatures : np.ndarray</span>
 <span class="sd">        The temperatures along the envelope. [K]</span>
 <span class="sd">    alphas : np.ndarray</span>
-<span class="sd">        The molar fraction of the `global_composition_i`, :math:`\alpha`.</span>
-<span class="sd">        Shape is (n_points,).</span>
+<span class="sd">        The molar fraction of the `global_composition_i`, :math:`\alpha`. Shape</span>
+<span class="sd">        is (n_points,).</span>
 <span class="sd">    iterations : np.ndarray</span>
 <span class="sd">        The number of iterations taken to compute the envelope at each point.</span>
 <span class="sd">        Shape is (n_points,).</span>
@@ -568,15 +570,13 @@
 <span class="sd">        The molar fractions of the `global_composition_i` at the critical</span>
 <span class="sd">        points, :math:`\alpha`.  Shape is (n_critical_points,).</span>
 <span class="sd">    df : pd.DataFrame</span>
-<span class="sd">        A DataFrame containing the data of the envelope. The columns are:</span>
-<span class="sd">        - &#39;alpha&#39;: Molar fraction of the `global_composition_i`.</span>
-<span class="sd">        - &#39;T&#39;: Temperatures along the envelope.</span>
-<span class="sd">        - &#39;x_i^j&#39;: Compositions of the main phases, where `i`</span>
-<span class="sd">        is the component index and `j` is the phase index.</span>
-<span class="sd">        - &#39;w_i&#39;: Compositions of the reference phase, where `i` is the</span>
-<span class="sd">        component index.</span>
-<span class="sd">        - &#39;beta^j&#39;: Molar fractions of the main phases, where `j`</span>
-<span class="sd">        is the phase index.</span>
+<span class="sd">        A DataFrame containing the data of the envelope. The columns are: -</span>
+<span class="sd">        &#39;alpha&#39;: Molar fraction of the `global_composition_i`. - &#39;T&#39;:</span>
+<span class="sd">        Temperatures along the envelope. - &#39;x_i^j&#39;: Compositions of the main</span>
+<span class="sd">        phases, where `i` is the component index and `j` is the phase index. -</span>
+<span class="sd">        &#39;w_i&#39;: Compositions of the reference phase, where `i` is the component</span>
+<span class="sd">        index. - &#39;beta^j&#39;: Molar fractions of the main phases, where `j` is the</span>
+<span class="sd">        phase index.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -628,6 +628,7 @@
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_phases</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="n">df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
             <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;w_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_phases</span><span class="p">):</span>

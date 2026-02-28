@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.4.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../../../../_static/documentation_options.js?v=5ef59c98"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -118,7 +118,27 @@
 <span class="sd">            Abstract error, this method must be implemented in the subclass</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-</div>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 
 
@@ -174,7 +194,53 @@
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_qmr</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">kij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">lij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)):</span>
+            <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule = QMR(k=kij, l=lij)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;type(QMR) :: mixrule&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: kij(nc, nc), lij(nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 
 
@@ -246,7 +312,65 @@
             <span class="n">t_star</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span>
             <span class="n">lij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">,</span>
         <span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">kij0_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">kijinf_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">lij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">t_ref_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">)):</span>
+            <span class="n">kij0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij_0(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">kijinf_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij_inf(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">t_ref_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;t_ref(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">kij0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">kijinf_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">t_ref_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">kij0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">kijinf_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">t_ref_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kij0_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kijinf_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">t_ref_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule = QMRTD(k=kij_inf, k0=kij_0, Tref=t_ref, l=lij)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;type(QMRTD) :: mixrule&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: kij_inf(nc, nc), kij_0(nc, nc), lij(nc, nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: t_ref(nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 
 
@@ -303,6 +427,8 @@
         <span class="k">if</span> <span class="n">lij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">lij</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span>
+
 <div class="viewcode-block" id="MHV.set_mixrule">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.set_mixrule">[docs]</a>
     <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -316,7 +442,73 @@
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_mhv</span><span class="p">(</span>
             <span class="n">ar_id</span><span class="o">=</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="n">ge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">lij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span>
         <span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">_model_params_as_str</span><span class="p">()</span>
+
+        <span class="n">lij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
+                <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span><span class="p">:</span>
+            <span class="c1"># TODO: include lij in MHV</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, b=ar_model%b)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, bi=ar_model%b)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">_model_params_declaration_as_str</span><span class="p">()</span>
+
+        <span class="c1"># Just in case all possible replaces</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="n">fcode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="n">fcode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="n">fcode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Mixrule setup</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;type(MHV) :: mixrule&quot;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># TODO: include lij in MHV</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span><span class="p">:</span>
+            <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;real(pr) :: lij(nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 
 
@@ -369,7 +561,49 @@
 <span class="sd">            ID of the cubic EoS model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_hv</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">_model_params_as_str</span><span class="p">()</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="s2">&quot;mixrule = HV(ge=ge_model, &quot;</span>
+            <span class="s2">&quot;bi=ar_model%b, del1=ar_model</span><span class="si">%d</span><span class="s2">el1)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">_model_params_declaration_as_str</span><span class="p">()</span>
+
+        <span class="c1"># Just in case all possible replaces</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="n">fcode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="n">fcode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="n">fcode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;type(HV) :: mixrule&quot;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 
 
@@ -442,7 +676,68 @@
             <span class="n">use_kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">,</span>
             <span class="n">kij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">,</span>
         <span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">gji0_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">gjiT_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">use_kij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">kij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gji0</span><span class="p">)):</span>
+            <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;gji0(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">gjiT_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;gjiT(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;use_kij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gji0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">gjiT_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gji0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">gjiT_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">gji0_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">gjiT_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">use_kij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;mixrule = HVNRTL(gji0=gji0, gjit=gjiT, b=ar_model%b, &quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;use_kij=use_kij, kij=kij)\n\n&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;type(HV_NRTL) :: mixrule</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;logical :: use_kij(nc,nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fcode</span></div>
 
 </pre></div>
 

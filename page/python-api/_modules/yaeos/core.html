@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.4.0 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2f20d6c1"></script>
+      <script src="../../_static/documentation_options.js?v=5ef59c98"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -105,7 +105,6 @@
 <span class="kn">from</span> <span class="nn">yaeos.envelopes</span> <span class="kn">import</span> <span class="n">PTEnvelope</span><span class="p">,</span> <span class="n">PXEnvelope</span><span class="p">,</span> <span class="n">TXEnvelope</span>
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
 
-
 <span class="n">MAX_POINTS_ENVELOPES</span> <span class="o">=</span> <span class="mi">1000</span>
 
 
@@ -167,6 +166,26 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
 
 <div class="viewcode-block" id="GeModel.ln_gamma">
 <a class="viewcode-back" href="../../core.html#yaeos.core.GeModel.ln_gamma">[docs]</a>
@@ -522,7 +541,7 @@
 <span class="sd">                :math:`w` that minimize the :math:`tm` function `tm:` all</span>
 <span class="sd">                values found minima of the :math:`tm` function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="p">(</span><span class="n">w_min</span><span class="p">,</span> <span class="n">tm_min</span><span class="p">,</span> <span class="n">all_mins</span><span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">stability_zt_ge</span><span class="p">(</span>
+        <span class="n">w_min</span><span class="p">,</span> <span class="n">tm_min</span><span class="p">,</span> <span class="n">all_mins</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">stability_zt_ge</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span>
         <span class="p">)</span>
 
@@ -722,6 +741,26 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
 
 <div class="viewcode-block" id="ArModel.lnphi_vt">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.lnphi_vt">[docs]</a>
@@ -2176,19 +2215,28 @@
                 <span class="c1"># Find an initialization for the liquid-liquid envelope</span>
                 <span class="c1"># -------------------------------------------------------------</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">found_liquid_liquid</span> <span class="o">=</span> <span class="kc">False</span>
+
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)):</span>
                     <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
                     <span class="n">w0</span> <span class="o">+=</span> <span class="mf">1e-5</span>
                     <span class="n">w0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w0</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+                    <span class="n">t</span> <span class="o">=</span> <span class="n">t0</span>
+                    <span class="n">tm</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">while</span> <span class="n">tm</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">0.01</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
                         <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_tm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">tm</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">:</span>
-                            <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-                            <span class="k">break</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">t</span> <span class="o">-=</span> <span class="mi">50</span>
+
+                    <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">tm</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">:</span>
+                        <span class="n">found_liquid_liquid</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">found_liquid_liquid</span><span class="p">:</span>
                     <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No liquid-liquid region found.&quot;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="kc">None</span>
-                <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+                <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
                 <span class="n">t0</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
                 <span class="n">w0</span> <span class="o">+=</span> <span class="mf">1e-5</span>
@@ -2589,7 +2637,7 @@
         <span class="n">kinds_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS_ENVELOPES</span><span class="p">,</span>
-        <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PTEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multi-phase envelope.&quot;&quot;&quot;</span>
         <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_l0</span><span class="p">)</span>
@@ -2837,6 +2885,7 @@
         <span class="n">env2</span><span class="p">:</span> <span class="n">PTEnvelope</span><span class="p">,</span>
         <span class="n">dbeta0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS_ENVELOPES</span><span class="p">,</span>
+        <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate PT phase envelopes from a DSP.</span>
 
@@ -2872,6 +2921,14 @@
         <span class="n">dsps</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">locs_1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">locs_2</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;More than 5 intersection points found. </span>
+<span class="sd">                Assuming overlaped lines&quot;&quot;&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">dsps</span><span class="p">,</span> <span class="n">locs_1</span><span class="p">,</span> <span class="n">locs_2</span>
+
         <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">temperatures</span><span class="p">,</span> <span class="n">pressures</span><span class="p">):</span>
             <span class="n">env1_loc</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
@@ -2886,6 +2943,8 @@
             <span class="n">w0</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">]</span>
             <span class="n">y0</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">]</span>
 
+            <span class="c1"># Add to the compositions of the main phases the composition of</span>
+            <span class="c1"># the oposite reference phase.</span>
             <span class="n">x_l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">env1</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">y0</span><span class="p">)</span>
             <span class="p">)</span>
@@ -2912,6 +2971,7 @@
                 <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_1</span><span class="p">,</span> <span class="n">kind_w_2</span><span class="p">],</span>
                 <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_1</span><span class="p">,</span>
                 <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+                <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">dsp_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_envelope_pt_mp</span><span class="p">(</span>
@@ -2927,6 +2987,7 @@
                 <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">kinds_x_2</span><span class="p">,</span> <span class="n">kind_w_1</span><span class="p">],</span>
                 <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_2</span><span class="p">,</span>
                 <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+                <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">locs_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env1_loc</span><span class="p">)</span>
@@ -3175,15 +3236,11 @@
         <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
         <span class="n">ws_stability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">beta0</span><span class="o">=</span><span class="mf">1e-15</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate precipitation line from a PTEnvelope.&quot;&quot;&quot;</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">number_of_phases</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">global_composition</span>
-
-        <span class="n">x_l0</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">w0</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="n">betas0</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">env</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mf">1e-15</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">spec</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span>
             <span class="n">spec_variable</span> <span class="o">=</span> <span class="n">phases</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">phases</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
@@ -3201,6 +3258,9 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;spec must be either &#39;P&#39; or &#39;T&#39;, got: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
             <span class="p">)</span>
+        <span class="n">x_l0</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+        <span class="n">w0</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+        <span class="n">betas0</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">env</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">loc</span><span class="p">],</span> <span class="n">beta0</span><span class="p">]</span>
 
         <span class="n">ns0</span> <span class="o">=</span> <span class="n">phases</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">phases</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">s0</span> <span class="o">=</span> <span class="n">betas0</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -3264,7 +3324,7 @@
 <span class="sd">                :math:`w` that minimize the :math:`tm` function `tm:` all</span>
 <span class="sd">                values found minima of the :math:`tm` function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="p">(</span><span class="n">w_min</span><span class="p">,</span> <span class="n">tm_min</span><span class="p">,</span> <span class="n">all_mins</span><span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">stability_zpt</span><span class="p">(</span>
+        <span class="n">w_min</span><span class="p">,</span> <span class="n">tm_min</span><span class="p">,</span> <span class="n">all_mins</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">stability_zpt</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span>
         <span class="p">)</span>
 
@@ -3480,7 +3540,7 @@
 <span class="sd">                - P: pressures [bar]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="p">(</span><span class="n">x1s</span><span class="p">,</span> <span class="n">y1s</span><span class="p">,</span> <span class="n">w1s</span><span class="p">,</span> <span class="n">vxys</span><span class="p">,</span> <span class="n">vys</span><span class="p">,</span> <span class="n">vws</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span>
+        <span class="n">x1s</span><span class="p">,</span> <span class="n">y1s</span><span class="p">,</span> <span class="n">w1s</span><span class="p">,</span> <span class="n">vxys</span><span class="p">,</span> <span class="n">vys</span><span class="p">,</span> <span class="n">vws</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>
             <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
