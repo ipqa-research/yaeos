@@ -55,7 +55,7 @@ program main
    kind_w = "vapor"
    env = pt_envelope(model, z, np, kinds_x, kind_w, x_l, w, betas, P, T, np*nc+2, 0.001_pr, beta_w=0.0_pr)
 
-   call env%write(1)
+   ! call env%write(1)
 
    call assert(maxval(abs(env%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(env%points(1)%P - 108.015 )< 1e-2, "First point P")

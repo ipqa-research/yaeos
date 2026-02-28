@@ -8,5 +8,4 @@ from yaeos.fitting.core import BinaryFitter
 from yaeos.fitting.model_setters import fit_kij_lij
 from yaeos.fitting.solvers import solve_pt
 
-
 __all__ = ["BinaryFitter", "fit_kij_lij", "solve_pt"]

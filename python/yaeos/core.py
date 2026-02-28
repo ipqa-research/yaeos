@@ -19,7 +19,6 @@ from yaeos.constants import root_kinds
 from yaeos.envelopes import PTEnvelope, PXEnvelope, TXEnvelope
 from yaeos.lib import yaeos_c
 
-
 MAX_POINTS_ENVELOPES = 1000
 
 
@@ -73,6 +72,26 @@ class GeModel(ABC):
             Abstract error, this method must be implemented in the subclass
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        pass
+
+    @abstractmethod
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        pass
 
     def ln_gamma(
         self, moles, temperature: float, dt: bool = False, dn: bool = False
@@ -411,7 +430,7 @@ class GeModel(ABC):
                 :math:`w` that minimize the :math:`tm` function `tm:` all
                 values found minima of the :math:`tm` function
         """
-        (w_min, tm_min, all_mins) = yaeos_c.stability_zt_ge(
+        w_min, tm_min, all_mins = yaeos_c.stability_zt_ge(
             id=self.id, z=z, t=temperature
         )
 
@@ -598,6 +617,26 @@ class ArModel(ABC):
             Abstract error, this method must be implemented in the subclass
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        pass
+
+    @abstractmethod
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        pass
 
     def lnphi_vt(
         self,
@@ -1999,19 +2038,28 @@ class ArModel(ABC):
                 # Find an initialization for the liquid-liquid envelope
                 # -------------------------------------------------------------
                 ts = []
+                found_liquid_liquid = False
+
                 for i in range(len(z)):
                     w0 = np.zeros_like(z)
                     w0 += 1e-5
                     w0[i] = 1 - np.sum(w0[1:])
-                    for t in np.linspace(1000, 100, 25):
+                    t = t0
+                    tm = 1
+                    while tm > -0.01 and t > 100:
                         tm = self.stability_tm(z, w0, p0, t)
-                        if tm < -0.01:
-                            ts.append(t)
-                            break
-                if len(ts) == 0:
+                        t -= 50
+
+                    ts.append(t)
+
+                    if tm < -0.01:
+                        found_liquid_liquid = True
+
+                if not found_liquid_liquid:
                     warn("No liquid-liquid region found.")
                     return None
-                i = np.argmin(ts)
+
+                i = np.argmax(ts)
                 t0 = ts[i]
                 w0 = np.zeros_like(z)
                 w0 += 1e-5
@@ -2397,7 +2445,7 @@ class ArModel(ABC):
         kinds_x=None,
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
-        stop_pressure=1000,
+        stop_pressure=2500,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -2636,6 +2684,7 @@ class ArModel(ABC):
         env2: PTEnvelope,
         dbeta0=1e-5,
         max_points=MAX_POINTS_ENVELOPES,
+        stop_pressure=2500,
     ) -> list:
         """Calculate PT phase envelopes from a DSP.
 
@@ -2671,6 +2720,14 @@ class ArModel(ABC):
         dsps = []
         locs_1 = []
         locs_2 = []
+
+        if len(temperatures) > 5:
+            warn(
+                """More than 5 intersection points found. 
+                Assuming overlaped lines"""
+            )
+            return dsps, locs_1, locs_2
+
         for t, p in zip(temperatures, pressures):
             env1_loc = (
                 np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
@@ -2685,6 +2742,8 @@ class ArModel(ABC):
             w0 = env1.reference_phase_compositions[env1_loc]
             y0 = env2.reference_phase_compositions[env2_loc]
 
+            # Add to the compositions of the main phases the composition of
+            # the oposite reference phase.
             x_l1 = np.vstack(
                 (env1.main_phases_compositions[env1_loc, :, :], y0)
             )
@@ -2711,6 +2770,7 @@ class ArModel(ABC):
                 kinds_x=[*kinds_x_1, kind_w_2],
                 kind_w=kind_w_1,
                 max_points=max_points,
+                stop_pressure=stop_pressure,
             )
 
             dsp_2 = self.phase_envelope_pt_mp(
@@ -2726,6 +2786,7 @@ class ArModel(ABC):
                 kinds_x=[*kinds_x_2, kind_w_1],
                 kind_w=kind_w_2,
                 max_points=max_points,
+                stop_pressure=stop_pressure,
             )
 
             locs_1.append(env1_loc)
@@ -2965,15 +3026,11 @@ class ArModel(ABC):
         ds0=1e-5,
         ws_stability=None,
         max_points=100,
+        beta0=1e-15
     ) -> dict:
         """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
         z = env.global_composition
-
-        x_l0 = env["x"][-1]
-        w0 = env["w"][-1]
-
-        betas0 = [*env.main_phases_molar_fractions[-1], 1e-15]
 
         if spec == "P":
             spec_variable = phases * len(z) + phases + 1 + 1
@@ -2991,6 +3048,9 @@ class ArModel(ABC):
             raise ValueError(
                 "spec must be either 'P' or 'T', got: {}".format(spec)
             )
+        x_l0 = env["x"][loc]
+        w0 = env["w"][loc]
+        betas0 = [*env.main_phases_molar_fractions[loc], beta0]
 
         ns0 = phases * len(z) + phases + 1
         s0 = betas0[-1]
@@ -3051,7 +3111,7 @@ class ArModel(ABC):
                 :math:`w` that minimize the :math:`tm` function `tm:` all
                 values found minima of the :math:`tm` function
         """
-        (w_min, tm_min, all_mins) = yaeos_c.stability_zpt(
+        w_min, tm_min, all_mins = yaeos_c.stability_zpt(
             id=self.id, z=z, p=pressure, t=temperature
         )
 
@@ -3252,7 +3312,7 @@ class ArModel(ABC):
                 - P: pressures [bar]
         """
 
-        (x1s, y1s, w1s, vxys, vys, vws, ts, ps) = yaeos_c.binary_llv_from_cep(
+        x1s, y1s, w1s, vxys, vys, vws, ts, ps = yaeos_c.binary_llv_from_cep(
             self.id,
             cep["x"],
             cep["y"],

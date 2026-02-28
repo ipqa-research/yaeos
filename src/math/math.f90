@@ -392,10 +392,8 @@ contains
 
       m = size(F)
       n = size(X)
-      lwa = size(F) * size(X) + 5 * size(X) + size(F)
       lwa = (n*(3*n+13))/2 + 5
       call hybrd1(fun, n, x, F, tol, info, Wa, Lwa)
-   contains
    end subroutine powel_hybrid
 
 end module yaeos__math

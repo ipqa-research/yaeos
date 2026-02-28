@@ -67,7 +67,9 @@ def test_envelope_pt():
     model = yaeos.PengRobinson76(tc, pc, w, mr)
     z = np.array([0.0987, 0.4023, 0.4990])
     z = z / sum(z)
-    dew = model.phase_envelope_pt(z, kind="dew", p0=0.01, max_points=1500)
+    dew = model.phase_envelope_pt(
+        z, kind="dew", p0=0.1, max_points=1500, ds0=0.01
+    )
 
     assert dew["P"][-1] > 1000
     npt.assert_allclose(dew["Tc"], [275, 218], atol=1)

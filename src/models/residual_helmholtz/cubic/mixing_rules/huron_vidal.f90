@@ -72,7 +72,7 @@ module yaeos__models_cubic_mixing_rules_huron_vidal
       !! model = SoaveRedlichKwong(tc, pc, w)
       !!
       !! ! Use the initialization function to setup
-      !! mixrule = MHV(ge=ge_model, q=-0.593_pr, bi=model%b)
+      !! mixrule = MHV(ge=ge_model, q=-0.593_pr, b=model%b)
       !!
       !! ! Replace the original mixrule on the previously defined model
       !! model%mixrule = mixrule

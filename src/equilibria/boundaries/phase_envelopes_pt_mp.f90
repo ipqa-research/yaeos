@@ -31,18 +31,34 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
 
    type :: MPPoint
       !! Multiphase equilibria point.
-      integer :: np !! Number of phases
-      integer :: nc !! Number of components
-      real(pr) :: beta_w !! Fraction of the reference (incipient) phase.
-      real(pr), allocatable :: betas(:) !! Fractions of the main phases.
-      real(pr) :: P !! Pressure [bar]
-      real(pr) :: T !! Temperature [K]
-      real(pr), allocatable :: x_l(:, :) !! Mole fractions of the main phases.
-      real(pr), allocatable :: w(:) !! Mole fractions of the incipient phase.
-      character(len=14), allocatable :: kinds_x(:) !! Kinds of the main phases.
-      character(len=14) :: kind_w !! Kind of the reference phase.
-      integer :: iters !! Number of iterations needed to converge the point.
-      integer :: ns !! Number of the specified variable.
+      integer :: np
+      !! Number of phases
+      integer :: nc
+      !! Number of components
+      real(pr) :: beta_w
+      !! Fraction of the reference (incipient) phase.
+      real(pr), allocatable :: betas(:)
+      !! Fractions of the main phases.
+      real(pr) :: P
+      !! Pressure [bar]
+      real(pr) :: T
+      !! Temperature [K]
+      real(pr), allocatable :: x_l(:, :)
+      !! Mole fractions of the main phases.
+      real(pr), allocatable :: w(:)
+      !! Mole fractions of the incipient phase.
+      character(len=14), allocatable :: kinds_x(:)
+      !! Kinds of the main phases.
+      character(len=14) :: kind_w
+      !! Kind of the reference phase.
+      integer :: iters
+      !! Number of iterations needed to converge the point.
+      integer :: ns
+      !! Number of the specified variable.
+      real(pr) ::  S
+      !! Specified variable value.
+      real(pr) :: dS
+      !! Step size of the specification to reach this point.
    end type MPPoint
 
 contains
@@ -135,7 +151,7 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 100
+      integer :: max_iterations = 10
       !! Maximum number of iterations to solve the point.
       integer :: number_of_points
       !! Number of points to calculate.
@@ -203,29 +219,15 @@ contains
       X0 = X
       call solve_point(&
          model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
-         F, dF, Vl, Vw, its, 1000 &
+         F, dF, Vl, Vw, its, 2000 &
          )
+      X_last_converged = 0
       do i=1,number_of_points
          X0 = X
          call solve_point(&
             model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
             F, dF, Vl, Vw, its, max_iterations &
             )
-
-         ! The point might not converge, in this case we try again with an
-         ! initial guess closer to the previous (converged) point.
-         inner = 0
-         do while(i > 1 .and. its >= max_iterations .and. inner < 10)
-            inner = inner + 1
-            X = X0 - (1 - real(inner, pr) / 10._pr) * dX
-            if (ns > 0) then
-               S = X(ns)
-            end if
-            call solve_point(&
-               model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
-               F, dF, Vl, Vw, its, max_iterations &
-               )
-         end do
 
          ! Convert the values of the vector of variables into human-friendly
          ! variables.
@@ -234,12 +236,12 @@ contains
          ! Attach the new point to the envelope.
          point = MPPoint(&
             np=np, nc=nc, betas=betas, P=P, T=T, x_l=x_l, w=w, beta_w=beta_w, &
-            kinds_x=x_kinds, kind_w=w_kind, iters=its, ns=ns &
+            kinds_x=x_kinds, kind_w=w_kind, iters=its, ns=ns, S=S, dS=dS &
             )
 
-         ! Check if the system is close to a critical point, and try to jump
-         ! over it.
-         call check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+         ! Check if we have jumped over a critical point. If we did, save the
+         ! CP obtained from interplation.
+         call check_critical_jump(nc, np, ns, x_kinds, w_kind, X, X_last_converged, Xc, found_critical, jumped_critical)
          if (jumped_critical) then
             Tc = exp(Xc(iT))
             Pc = exp(Xc(iP))
@@ -259,25 +261,28 @@ contains
          ! Update the specification for the next point.
          call update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
 
-         ! If the point did not converge, stop the calculation
+         ! Stop criteria
+         if (any(isnan(F)) .or. its > max_iterations) exit
+
+         ! If the point actually converged save it
+         env_points = [env_points, point]
+         
          if (&
-            any(isnan(F)) .or. its > max_iterations &
-            .or. P > max_P  &
+            P > max_P&
+            .or. P < 1e-5_pr &
             .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
-            .or. (T < 100._pr .and. P < 1e-2_pr) &
-            ) exit
-
-         env_points = [env_points, point]
+            .or. (T < 100._pr .and. P < 1e-5_pr) &
+         ) exit
 
          ! Next point estimation.
          dX = dXdS * dS
 
-         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 7)
+         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 10)
             dX = dX/2
          end do
 
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 5)
+         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 50)
             dX = dX/2
          end do
 
@@ -342,7 +347,7 @@ contains
 
       real(pr) :: dx_l_dlnK(np, np, size(z))
 
-      integer :: i, j, l, phase, nc
+      integer :: i, j, l, ik, phase, nc
       integer :: lb, ub
       integer :: idx_1, idx_2
       integer :: nv !! Specified volume for ln(V(nv)/Vw)
@@ -454,6 +459,12 @@ contains
                      dlnphi_dn_l(phase, i, j) * dx_l_dlnK(phase, l, j) &
                      - dlnphi_dn_w(i, j) * dwdlnK(l, j)
 
+                  ! do ik=1, nc
+                  !    df(idx_1, idx_2) = df(idx_1, idx_2) + &
+                  !       dlnphi_dn_l(phase, i, ik) * dx_l_dlnK(phase, l, ik) &
+                  !       - dlnphi_dn_w(i, ik) * dwdlnK(l, ik)
+                  ! end do
+
                   if (i == j .and. phase == l) then
                      df(idx_1, idx_2) = df(idx_1, idx_2) + 1
                   end if
@@ -560,7 +571,6 @@ contains
    subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, dF, Vl, Vw, iters, max_iterations)
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
-      use stdlib_linalg, only: eye
       class(ArModel), intent(in) :: model !! Model to use.
       real(pr), intent(in) :: z(:) !! Mixture global composition.
       integer, intent(in) :: np !! Number of main phases
@@ -573,28 +583,23 @@ contains
       real(pr), intent(in) :: dXdS(size(X))
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
-      real(pr), intent(out) :: Vw !! Reference phase volume
       real(pr), intent(out) :: Vl(np) !! Main phases volumes
+      real(pr), intent(out) :: Vw !! Reference phase volume
       integer, intent(in) :: max_iterations
       !! Maximum number of iterations to solve the point
       integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
-      integer :: i
-      integer :: l !! Phase index
-      integer :: iT !! Temperature index
-      integer :: iP !! Pressure index
-      integer :: iBetas(np) !! Indices of the betas in X
-      integer :: nc !! Number of components
+      integer :: i, l
+      integer :: iT
+      integer :: iP
+      integer :: iBetas(np)
+      integer :: nc
+
+      real(pr) :: P, T, x_l(np, size(z)), betas(np), w(size(z))
 
       real(pr) :: X0(size(X))
       real(pr) :: dX(size(X))
-
-
-      ! Homotopy solving
-      real(pr) :: H(size(X)), dH(size(X), size(X))
-      real(pr) :: G(size(X)), dG(size(X), size(X))
-      real(pr) :: t
 
       logical :: can_solve
 
@@ -610,45 +615,39 @@ contains
 
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
+         call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
-         if (any(isnan(F)) .and. can_solve) then
-            X = X - 0.9 * dX
-            can_solve = .false.
-            cycle
-         end if
+         ! print *, iters, maxval(abs(F)), ns, S, T, P
 
          dX = solve_system(dF, -F)
 
-         if (maxval(abs(F)) < 1e-9_pr) exit
-         X = X + dX
-         if (iters == 10) then
-            ! If after 10 iterations it is not converging try fixed-point
-            ! homotopy. Homotopy consist of solving a modified version of the
-            ! system of equations that is easier to solve, and gradually
-            ! transforming it into the original system.
-            ! The function to solve is defined as:
-            ! ! \[
-            ! H = t F + (1-t) G
-            ! \]
-            ! Where \( G = X - X_0 \) is a simple function that has a known
-            ! solution at \( X = X_0 \), and \( t \)
-            ! goes from 0 to 1 in 10 steps.
-            X0 = X
-            H = 10
-            do i=0,10
-               do while(maxval(abs(H)) > 1e-9_pr)
-                  t = real(i, pr)/10._pr
-                  call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
-                  G = (X - X0)
-                  dG = eye(size(X))
-                  H = t * F + (1-t) * G
-                  dH = t * dF + (1-t) * dG
-                  dX = solve_system(dH, -H)
-                  X = X + dX
+         do l=1,np
+            if (maxval(abs(X(l:nc*l))) < 1e-1) then
+               do while(maxval(abs(dX(l:nc*l))) > 1e-1)
+                  dX = dX/2
                end do
-            end do
-         end if
+            end if
+         end do
 
+         do while(abs(dX(iT)) > 1)
+            dX = dX/2
+         end do
+
+         do while(abs(dX(iP)) > 1)
+            dX = dX/2
+         end do
+
+         do i=1,np
+            if (X(iBetas(i)) /= 0) then
+               do while(abs(dX(iBetas(i))/X(iBetas(i))) > 0.5)
+                  dX = dX/2
+               end do
+            end if
+         end do
+
+         if (maxval(abs(F)) < 1e-9_pr .or. maxval(abs(dX)) < 1.e-7_pr) exit
+
+         X = X + dX
       end do
    end subroutine solve_point
 
@@ -673,6 +672,7 @@ contains
       !!
       !! # References
       !!
+      use yaeos__equilibria_boundaries_auxiliar, only: near_critical
       integer, intent(in) :: its
       !! Iterations to solve the current point.
       integer, intent(in) :: nc
@@ -698,6 +698,9 @@ contains
 
       real(pr) :: dFdS(size(X))
       !! Sensitivity of the functions wrt the specification.
+
+      real(pr) :: cf
+      !! Critical factor, defined by Lingfei Xu & Huazhou Li*
 
       integer :: i
       integer :: l !! Phase index
@@ -729,14 +732,22 @@ contains
       dS = dXdS(ns)*dS
       dXdS = dXdS/dXdS(ns)
 
-      dS = dS * 3./its
-      dS = sign(min(abs(dS), 0.1_pr), dS)
+      block
+         real(pr) :: delmax, updel
+         delmax = max(sqrt(abs(X(ns)))/10, 0.1)
+         updel = dS * 3/its
+         dS = sign(min(delmax, updel), dS)
+      end block
+
+
+      ! dS = sign(max(abs(dS), sqrt(abs(X(ns))/10)), dS)
+      ! dS = sign(min(abs(dS), 0.15_pr), dS)
 
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
-         if (maxval(abs(X(lb:ub))) < 0.2) then
-            ns = maxloc(abs(dXdS(lb:ub)), dim=1) + lb - 1
+         if (near_critical(nc, np, X)) then
+            ns = maxloc(abs(X(lb:ub)), dim=1) + lb - 1
             dS = dXdS(ns)*dS
             dXdS = dXdS/dXdS(ns)
             dS = sign(0.01_pr, dS)
@@ -809,6 +820,10 @@ contains
          x_l = env%points(i)%x_l
          write(unit, "(*(E15.5,2x))") P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
       end do
+
+      ! do i=1,size(env%Tc)
+      !    write(unit, "(*(E15.5,2x))") env%Pc(i), env%Tc(i)
+      ! end do
    end subroutine write_envelope_PT_MP
 
 

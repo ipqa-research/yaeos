@@ -37,6 +37,7 @@ program main
    kind_w = "liquid"
 
    env = pt_envelope(model, z, 1, kinds_x, kind_w, x_l, w, [1._pr], sat%P, sat%T, ns0=nc+3, ds0=1e-3_pr, beta_w=0._pr)
+   ! call env%write(1)
 
    last_temperature = env%points(size(env%points))%T
 

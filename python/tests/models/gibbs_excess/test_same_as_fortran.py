@@ -7,7 +7,6 @@ import pytest
 from yaeos import NRTL, UNIFACDortmund, UNIFACPSRK, UNIFACVLE, UNIQUAC
 from yaeos.core import GeModel
 
-
 data_path = (
     Path(__file__).parent.parent.parent.parent.parent / "ge_test_vals.txt"
 )

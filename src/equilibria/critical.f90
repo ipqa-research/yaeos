@@ -384,6 +384,7 @@ contains
                Fcep_new = F_cep(model, 2, X=Xcep + damp*dXcep, z0=z0, zi=zi, u=u)
                if (damp < 1e-4) then
                   damp = 1.1
+                  exit
                end if
             end do
             Xcep = Xcep + damp * dXcep

@@ -88,15 +88,20 @@ contains
          lb = (i-1)*nc + 1
          ub = i*nc
          ! TODO: In many cases this makes more damage than good.
-         ! do while(maxval(abs(X(lb:ub))) < min(limit, 0.05_pr))
-         !    if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
-         !       ! Reached to a critical point in a Txy/Pxy calculation for a
-         !       ! binary system, stop the calculation.
-         !       dS=0
-         !       return
-         !    end if
-         !    X = X + dXdS * dS
-         ! end do
+         do while(maxval(abs(X(lb:ub))) < min(limit, 0.05_pr))
+            if (nc == 2 .and. maxval(abs(X(lb:ub))) < 1e-6 .and. binary_stop) then
+               ! Reached to a critical point in a Txy/Pxy calculation for a
+               ! binary system, stop the calculation.
+               dS=0
+               return
+            end if
+
+            if (maxval(abs(dXdS(lb:ub)*dS)) > 0.07) then
+               X = X - dXdS * dS / 2._pr
+            else
+               X = X + dXdS * dS
+            end if
+         end do
 
          Xnew = X + dXdS * dS
 
@@ -115,8 +120,8 @@ contains
             ! 0 = a*Xnew(ns) + (1-a)*X(ns) < Interpolation equation to get X(ns) = 0
             ncomp = maxloc(abs(lnK - lnKold), dim=1)
 
-            ! a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
-            ! Xc = a * Xnew + (1-a)*Xold
+            a = -lnKold(ncomp)/(lnK(ncomp) - lnKold(ncomp))
+            Xc = a * Xnew + (1-a)*Xold
             Xc = interpol(lnKold(ncomp), lnK(ncomp), Xold, Xnew, 0.0_pr)
 
             if (nc == 2 .and. binary_stop) then
@@ -127,7 +132,8 @@ contains
             ! Start from the critical point and then do small steps until
             ! we are a bit far from it.
             X = Xc + sign(0.001_pr, dS) * dXdS
-            do while(maxval(abs(X(lb:ub))) < 0.01_pr)
+            ! do while(near_critical(nc, np, X))
+            do while(maxval(abs(X(lb:ub))) < maxval(abs(Xold(lb:ub))))
                X = X + sign(0.001_pr, dS) * dXdS
             end do
 
@@ -139,26 +145,65 @@ contains
       end do
    end subroutine detect_critical
 
-   subroutine check_critical_jump(nc, np, ns, X, X_last_converged, Xc, jumped_critical)
+   subroutine check_critical_jump(nc, np, ns, kinds_x, kind_w, X, X_last_converged, Xc, found_critical, jumped_critical)
       use yaeos__math, only: interpol
       integer, intent(in) :: nc !! Number of components
       integer, intent(in) :: np !! Number of main phases
       integer, intent(in) :: ns !! Number of the specified variable
+      character(len=14), intent(inout) :: kinds_x(np) !! Kinds of the main phases
+      character(len=14), intent(inout) :: kind_w !! Kind of the incipient phase
       real(pr), intent(in) :: X(:) !! Current point
       real(pr), intent(in) :: X_last_converged(:) !! Previously converged point
       real(pr), intent(out) :: Xc(:) !! Critical point
+      logical, intent(in) :: found_critical !! If a critical point was already found in the current point
       logical, intent(out) :: jumped_critical !! If a critical point was jumped
 
+      character(len=14) :: incipient_kind
+
       integer :: l, lb, ub
+      integer :: ncomp
       jumped_critical = .false.
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
          if (all(X(lb:ub) * X_last_converged(lb:ub) < 0._pr)) then
+            ncomp = maxloc(abs(X(lb:ub) - X_last_converged(lb:ub)), dim=1) + lb - 1
             jumped_critical = .true.
-            Xc = interpol(X_last_converged(ns), X(ns), X_last_converged, X, 0._pr)
+            Xc = interpol(X_last_converged(ncomp), X(ncomp), X_last_converged, X, 0._pr)
+            
+            if (jumped_critical .and. .not. found_critical) then
+               incipient_kind = kind_w
+               kind_w = kinds_x(l)
+               kinds_x(l) = incipient_kind
+            end if
+
             return
          end if
       end do
    end subroutine check_critical_jump
+
+   logical function near_critical(nc, np, X)
+      integer, intent(in) :: nc
+      integer, intent(in) :: np
+      real(pr), intent(in) :: X(nc*np+np+2)
+
+      integer :: l !! Phase index
+      integer :: lb, ub
+
+      real(pr) :: cf, lnK(nc)
+
+      near_critical = .false.
+
+      do l=1,np
+         lb = (l-1)*nc + 1
+         ub = l*nc
+         lnK = X(lb:ub)
+
+         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.1_pr
+         ! near_critical = maxval(abs(X(lb:ub))) < 0.05_pr
+         if (near_critical) then
+            return
+         end if
+      end do
+   end function near_critical
 end module yaeos__equilibria_boundaries_auxiliar
