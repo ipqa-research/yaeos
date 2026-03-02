@@ -196,9 +196,9 @@ contains
       model = binary_PR76()
       Psats_val = [260.37450286310201, 30.028551527997834]
 
-         do i=1,2
-            Psats(i) = model%Psat_pure(i, T)
-         end do
-   ! call check(error, maxval(abs(Psats-Psats_val)) < abs_tolerance)
+      do i=1,2
+         Psats(i) = model%Psat_pure(i, T)
+      end do
+      ! call check(error, maxval(abs(Psats-Psats_val)) < abs_tolerance)
    end subroutine test_pure_psat
 end module test_saturation
