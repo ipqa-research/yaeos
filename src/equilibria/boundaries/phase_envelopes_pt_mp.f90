@@ -229,6 +229,16 @@ contains
             F, dF, Vl, Vw, its, max_iterations &
             )
 
+         if (its >= max_iterations) then
+            X = X0 - 0.3*dX
+            S = X(ns)
+            dS = dS/2
+            call solve_point(&
+               model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
+               F, dF, Vl, Vw, its, max_iterations &
+               )
+         end if
+
          ! Convert the values of the vector of variables into human-friendly
          ! variables.
          call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
