@@ -3016,6 +3016,8 @@ class ArModel(ABC):
             "P": ps[msk],
             "w_more_stable": w_more_stable,
             "found_unstability": found_unstability,
+            "kinds_x": kinds_x,
+            "kind_w": kind_w,
         }
 
     def precipitation_line_from_env(
