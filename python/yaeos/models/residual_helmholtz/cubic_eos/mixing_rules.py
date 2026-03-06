@@ -583,11 +583,18 @@ class HVNRTL(CubicMixRule):
                     gji0_c += f"{self.gji0[i][j]}_pr, "
                     gjiT_c += f"{self.gjiT[i][j]}_pr, "
                     use_kij_c += f"{self.use_kij[i][j]}_pr, "
+                    if self.use_kij[i][j]:
+                        use_kij_c += ".true., "
+                    else:
+                        use_kij_c += ".false., "
                 else:
                     kij_c += f"{self.kij[i][j]}_pr]\n"
                     gji0_c += f"{self.gji0[i][j]}_pr]\n"
                     gjiT_c += f"{self.gjiT[i][j]}_pr]\n"
-                    use_kij_c += f"{self.use_kij[i][j]}_pr]\n"
+                    if self.use_kij[i][j]:
+                        use_kij_c += ".true.]\n"
+                    else:
+                        use_kij_c += ".false.]\n"
 
         fcode += kij_c + "\n"
         fcode += gji0_c + "\n"

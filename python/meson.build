@@ -182,6 +182,13 @@ fitting = [
 ]
 py.install_sources(fitting, subdir:python_lib / 'fitting')
 
+#### tools
+tools = [
+  python_lib / 'tools' / '__init__.py',
+  python_lib / 'tools' / 'writers.py',
+]
+py.install_sources(tools, subdir:python_lib / 'tools')
+
 # =============================================================================
 # Extension fortran module
 # -----------------------------------------------------------------------------
