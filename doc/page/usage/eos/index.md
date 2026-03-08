@@ -45,14 +45,14 @@ properties that can be calculated with yaeos using Helmholtz free energy
 models. Additionally, this page serves as a summary of how all these properties
 can be derived from the Helmholtz free energy and its derivatives.
 
-First of all, you might be used to the classic \(P(n,V,T)\) way of defining an
+First of all, you might be used to the classic \(P(\vec{n},V,T)\) way of defining an
 EOS. This is normal since it is the most common way of explaining them in
 undergraduate thermodynamics courses. So, a very reasonable question is: "how
 can I obtain the expression for the residual Helmholtz free energy
-\(A^r(T,V,n)\) from the \(P(n,V,T)\) expression?". The answer is the following:
+\(A^r(T,V,n)\) from the \(P(\vec{n},V,T)\) expression?". The answer is the following:
 
 $$
-A^r(n, V, T) = -\int_{\infty}^{V} \left(P(n,V,T) - \frac{nRT}{V} \right) dV
+A^r(\vec{n}, V, T) = -\int_{\infty}^{V} \left(P(\vec{n},V,T) - \frac{nRT}{V} \right) dV
 $$
 
 We are ready to go now. We leave an example of how to instantiate a
@@ -86,7 +86,27 @@ The examples provided for each property must be treated as a continuation of
 the previous code block (before the end program statement).
 
 # Thermodynamic properties
-## Pressure: \(P(n, V, T)\)
+
+The reference used for the equations of each property is "Thermodynamic Models:
+Fundamentals and Computational Aspects" by Michael L. Michelsen and Jørgen M.
+Mollerup - 2th edition (abbreviated as: MM). For each property, we are going to
+refer to the chapter and equation for a rapid search.
+
+The MM book sometimes express the equations in terms of \(F\) (reduced
+residual Helmholtz free energy):
+
+$$
+    F(\vec{n}, V, T) = \frac{A^r(\vec{n}, V, T)}{RT}
+$$
+
+On this documentation section we are going to express all the properties in
+terms of \(A^r(\vec{n}, V, T)\) so a little algebraic work is required.
+
+## Pressure and volume
+
+### Pressure: \(P(\vec{n}, V, T)\)
+
+**MM - Chapter 2 - Equations 7, 9, 10, and 11**
 
 Pressure can be calculated from the residual Helmholtz free energy as follows:
 
@@ -118,7 +138,7 @@ pressure: block
     V = 0.1_pr     ! Set volume to 0.1 L
 
     ! Calculate pressure and its derivatives
-    call model%pressure(n, V, T, P=P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
+    call model%pressure(\vec{n}, V, T, P=P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
 
     print *, "Pressure: ", P
     print *, "dPdV: ", dPdV
@@ -128,11 +148,11 @@ pressure: block
 end block pressure
 ```
 
-## Volume: \(V(n, P, T)\)
+### Volume: \(V(\vec{n}, P, T)\)
 As you must know, given a temperature and pressure, the volume has not a unique
 solution. In the case of a cubic EOS, there are three possible solutions for
 the volume. For this reason, the volume is calculated iteratively. Provided
-\(n\), \(P\), and \(T\) we fix \(n\) and
+\(\vec{n}\), \(P\), and \(T\) we fix \(\vec{n}\) and
 \(T\) and iterate over the volume until the pressure is the same as the
 input pressure.
 
@@ -148,19 +168,43 @@ volume: block
     P = 1.0_pr     ! Set pressure to 1 bar
 
     ! Calculate different volume roots
-    call model%volume(n, P, T, V=V, root="liquid")
+    call model%volume(\vec{n}, P, T, V=V, root="liquid")
     print *, "Liquid volume: ", V
 
-    call model%volume(n, P, T, V=V, root="vapor")
+    call model%volume(\vec{n}, P, T, V=V, root="vapor")
     print *, "Vapor volume: ", V
 
-    call model%volume(n, P, T, V=V, root="stable")
+    call model%volume(\vec{n}, P, T, V=V, root="stable")
     print *, "Stable volume root: ", V
 
 end block volume
 ```
 
-## Fugacity coefficients (V,T): \(\ln \phi_i (V,T)\)
+## Residual properties at \((\vec{n}, V, T)\)
+
+As you may know, residual properties are the difference between the actual
+property and the ideal gas property at the same temperature and volume (in this
+case). For that, for a generic residual property \(M^r\), we have:
+
+$$
+    M^r(\vec{n},V,T) = M(\vec{n},V,T) - M^{\text{ig}}(\vec{n},V,T)
+$$
+
+Notice that the ideal gas property \(M^{\text{ig}}(\vec{n},V,T)\) is calculated at
+the same volume of the real fluid. If the ideal gas is at the same temperature
+and volume of the real fluid, the ideal gas is not at the same pressure as
+the real fluid. For that, two different residual properties can be calculated:
+
+- \((\vec{n},V,T)\)
+- \((\vec{n},P,T)\)
+
+There is a relation between both residual properties. In this section we are
+going to calculate all the \((\vec{n},V,T)\) residual properties.
+
+### Fugacity coefficients (V,T): \(\ln \phi_i (V,T)\)
+
+**MM - Chapter 2 - Equations 13, 14, 15, and 16**
+
 Natural logarithm of fugacity coefficients specifing \(V\) and \(T\) are
 calculated as follows:
 
@@ -244,7 +288,491 @@ lnphi_vt_p: block
 end block lnphi_vt_p
 ```
 
-## Fugacity coefficients (P,T): \(\ln \phi_i (P,T)\)
+
+
+### Fugacity (V,T): \(\ln f_i (V,T)\)
+
+Alternative way of calculating fugacity directly from the residual Helmholtz
+free energy:
+
+```fortran
+fugacity_vt: block
+    real(pr) :: T, V, lnf(2), dlnfdV(2), dlnfdT(2), dlnfdn(2,2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    call eos%lnfug_vt(&
+      n, V, T, lnf, &
+      dlnfdV, dlnfdT, dlnfdn, &
+      )
+
+end block fugacity_vt
+```
+
+### Residual entropy (V,T): \(S^r(\vec{n},V,T)\)
+
+**MM - Chapter 2 - Equation 17**
+
+We start explaining the residual entropy because it is the easiest property to
+calculate. Also, helps us to understand how to calculate the next properties.
+
+The residual entropy is calculated as follows:
+
+$$
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial S^r}{\partial T} \right)_{V,n} =
+- \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+$$
+
+
+$$
+\left(\frac{\partial S^r}{\partial V} \right)_{T,n} =
+- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+$$
+
+$$
+\left(\frac{\partial S^r}{\partial n_i} \right)_{V,T} =
+- \left(\frac{\partial^2 A^r}{\partial n_i \partial T} \right)_V
+$$
+
+```fortran
+residual_entropy: block
+    real(pr) :: T, V, S, dSdV, dSdT, dSdn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual entropy and its derivatives
+    call eos%residual_entropy(\vec{n}, V, T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn)
+
+    print *, "Residual entropy: ", Sr
+    print *, "SrV: ", SrV
+    print *, "SrT: ", SrT
+    print *, "Srn: ", Srn
+
+end block residual_entropy
+```
+
+### Residual enthalpy (V,T): \(H^r(\vec{n},V,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation XII)**
+
+**MM - Chapter 2 - Equation 20**
+
+The residual enthalpy is calculated as follows:
+
+$$
+H^r(\vec{n},V,T) = H^r(\vec{n},P,T) = A^r(\vec{n},V,T) + T S^r(\vec{n},V,T) + PV - nRT
+$$
+
+We know that pressure can be calculated as:
+
+$$
+P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n} + \frac{nRT}{V}
+$$
+
+Then, we can obtain:
+
+$$
+P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+$$
+PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+And we also know how to calculate residual entropy as:
+
+$$
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+Then, we can obtain the residual enthalpy as:
+
+$$
+H^r = A^r(\vec{n},V,T) - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial H^r}{\partial T} \right)_{V,n} =
+- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+- V \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+$$
+
+$$
+\left(\frac{\partial H^r}{\partial V} \right)_{T,n} =
+- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+$$
+
+$$
+\left(\frac{\partial H^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
+- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+$$
+
+```fortran
+residual_enthalpy: block
+    real(pr) :: T, V, Hr, HrV, HrT, Hrn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual enthalpy and its derivatives
+    call eos%residual_enthalpy(\vec{n}, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn)
+
+    print *, "Residual enthalpy: ", Hr
+    print *, "HrV: ", HrV
+    print *, "HrT: ", HrT
+    print *, "Hrn: ", Hrn
+
+end block residual_enthalpy
+```
+
+### Residual Gibbs free energy (V,T): \(G^r(\vec{n},V,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation VI)**
+
+The residual Gibbs free energy is calculated as follows:
+
+$$
+G^r(\vec{n},V,T) = A^r(\vec{n},V,T) + PV - nRT
+$$
+
+As with residual enthalpy we can easily deduce:
+
+$$
+PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+For that:
+
+$$
+G^r(\vec{n},V,T) = A^r(\vec{n},V,T) - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial G^r}{\partial T} \right)_{V,n} =
+\left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial^2 A^r}{\partial T \partial V} \right)_n
+$$
+
+$$
+\left(\frac{\partial G^r}{\partial V} \right)_{T,n} =
+- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+$$
+
+$$
+\left(\frac{\partial G^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+$$
+
+```fortran
+residual_gibbs: block
+    real(pr) :: T, V, Gr, GrV, GrT, Grn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual Gibbs free energy and its derivatives
+    call eos%residual_gibbs(\vec{n}, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn)
+
+    print *, "Residual Gibbs free energy: ", Gr
+    print *, "GrV: ", GrV
+    print *, "GrT: ", GrT
+    print *, "Grn: ", Grn
+
+end block residual_gibbs
+```
+
+Little check of algebraic transformations:
+
+From **MM - Chapter 2 - Equation 22** we know that:
+
+$$
+    G^r(\vec{n},P,T) = H^r(\vec{n},P,T) - T S^r(\vec{n},P,T)
+$$
+
+From **MM - Chapter 1 - Table 6 (Equations IX, XII, and XIII)** we know that:
+
+$$
+    S^r(\vec{n},P,T) = S^r(\vec{n},V,T) + nR \; ln Z
+$$
+
+$$
+    H^r(\vec{n},P,T) = H^r(\vec{n},V,T)
+$$
+
+$$
+    G^r(\vec{n},P,T) = G^r(\vec{n},V,T) - nRT \; ln Z
+$$
+
+Replacing on the first equation we have:
+
+$$
+G^r(\vec{n},V,T) - nRT \; ln Z = H^r(\vec{n},V,T) - T \left(S^r(\vec{n},V,T) + nR \; ln Z \right)
+$$
+
+Which of course lead us to:
+
+$$
+G^r(\vec{n},V,T) = H^r(\vec{n},V,T) - T S^r(\vec{n},V,T)
+$$
+
+And we have established that:
+
+$$
+G^r(\vec{n},V,T) = A^r(\vec{n},V,T) - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+$$
+S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+$$
+H^r = A^r(\vec{n},V,T) - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+Replacing all the properties in the equation lead us to:
+
+$$ 
+A^r(\vec{n},V,T) - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n} =
+A^r(\vec{n},V,T) - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+- V \left(\frac{\partial A^r}{\partial V} \right)_{T,n} - T \left(
+- \left(\frac{\partial A^r}{\partial T} \right)_{V,n}\right)
+$$
+
+With a very little algebra the equality is satisfied:
+
+$$ 
+A^r(\vec{n},V,T) - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n} =
+A^r(\vec{n},V,T) - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+$$
+
+### Residual internal energy (V,T): \(U^r(\vec{n},V,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation IV)**
+
+The residual internal energy is calculated as follows:
+
+$$
+U^r(\vec{n},V,T) = A^r(\vec{n},V,T) + T S^r(\vec{n},V,T)
+$$
+
+Therefore:
+
+$$
+U^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+$$
+
+And its derivatives:
+
+$$
+\left(\frac{\partial U^r}{\partial T} \right)_{V,n} =
+- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+$$
+
+$$
+\left(\frac{\partial U^r}{\partial V} \right)_{T,n} =
+\left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+$$
+
+$$
+\left(\frac{\partial U^r}{\partial n_i} \right)_{V,T} =
+\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
+- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
+$$
+
+```fortran
+residual_internal_energy: block
+    real(pr) :: T, V, Ur, UrV, UrT, Urn(2)
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual internal energy and its derivatives
+    call eos%internal_energyresidual(\vec{n}, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn)
+
+    print *, "Residual internal energy: ", Ur
+    print *, "UrV: ", UrV
+    print *, "UrT: ", UrT
+    print *, "Urn: ", Urn
+
+end block residual_internal_energy
+```
+
+### Residual constant volume heat capacity (V,T): \(C_V^r(\vec{n},V,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation III)**
+
+The residual constant volume heat capacity is calculated as follows:
+
+$$
+C_V^r(\vec{n},V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
+$$
+
+```fortran
+residual_cv: block
+    real(pr) :: T, V, Cv
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual constant volume heat capacity
+    call eos%residual_cv(\vec{n}, V, T, Cv=Cv)
+
+    print *, "Residual constant volume heat capacity: ", Cv
+
+end block residual_cv
+```
+
+### Residual constant pressure heat capacity (V,T): \(C_P^r(\vec{n},V,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation VII)**
+
+The residual constant pressure heat capacity is calculated as follows:
+
+$$ C_P^r(\vec{n},V,T) = C_V^r(\vec{n},V,T) + T \left(\frac{\partial P}{\partial
+T}\right)_{V,n} \left(\frac{\partial V}{\partial T}\right)_{P,n} - nR $$
+
+From **MM - Chapter 1 - Equation A37** we know that:
+
+$$ 
+\left(\frac{\partial V}{\partial T}\right)_{P,n} = - \frac{\left(\frac{\partial
+    P}{\partial T} \right)_{V,n}}{\left(\frac{\partial P}{\partial V}
+\right)_{T,n}}
+$$
+
+With a direct replacement:
+
+$$
+C_P^r(\vec{n},V,T) = C_V^r(\vec{n},V,T) - T \frac{\left(\frac{\partial P}
+{\partial T} \right)^2_{V,n}}{\left(\frac{\partial P}
+{\partial V} \right)_{T,n}} - nR
+$$
+
+We can replace all the terms to obtain an expression completely expressed in
+terms of residual Helmholtz (\vec{n},V,T).
+
+$$
+C_P^r(\vec{n},V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n} - T
+\; \frac{\left(- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n +
+\frac{nR}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial V^2}
+\right)_{T,n} - \frac{nRT}{V^2}\right)} - nR
+$$
+
+
+```fortran
+residual_cp: block
+    real(pr) :: T, V, Cp
+
+    T = 300.0_pr   ! Set temperature to 300 K
+    V = 1.0_pr     ! Set volume to 1 liter
+
+    ! Calculate residual constant pressure heat capacity
+    call eos%residual_cp(\vec{n}, V, T, Cp=Cp)
+
+    print *, "Residual constant pressure heat capacity: ", Cp
+
+end block residual_cp
+```
+
+## Residual properties at \((\vec{n}, P, T)\)
+
+As explained in the "Residual properties at \((\vec{n}, V, T)\)" section, a residual
+property is the difference between the actual property and the ideal gas
+property. At \((\vec{n}, P, T)\), the difference is made against an ideal gas at
+the same pressure of the real fluid, for that, the real fluid and the ideal
+gas are at different volumes:
+
+$$
+    M^r(\vec{n},P,T) = M(\vec{n},P,T) - M^{ig}(\vec{n},P,T)
+$$
+
+Some properties change because of that, other stays the same. To obtain the
+expression of these properties in term of the \(\vec{n},V,T\) properties we will need
+the derivatives of \(ln \; Z\):
+
+$$
+    ln \; Z = ln \; P + ln \; V - \ln (\vec{n}RT)
+$$
+
+$$
+    \left(\frac{\partial \, ln \; Z}{\partial P}\right)_{T,n} =
+    \frac{1}{P} + \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,n}
+$$
+
+$$
+    \left(\frac{\partial \, ln \; Z}{\partial T}\right)_{P,n} =
+    \frac{1}{V} \left(\frac{\partial V}{\partial T}\right)_{P,n} - \frac{1}{T}
+$$
+
+$$
+    \left(\frac{\partial \, ln \; Z}{\partial n_i}\right)_{P,T} =
+    \frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} 
+    - \frac{1}{n}
+$$
+
+Being \(\vec{n} = \sum_i n_i\)
+
+If desired, all the volume derivatives can be expressed in terms of \(A^r(\vec{n}, V,
+T)\) as:
+
+$$
+    \left(\frac{\partial V}{\partial P}\right)_{T,n} =
+    \frac{1}{\left(\frac{\partial P}{\partial V}\right)_{T,n}} =
+    \frac{1}{-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n} -
+    \frac{nRT}{V^2}}
+$$
+
+From **MM - Chapter 1 - Equation A39**
+
+$$
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} =
+    -\frac{\left(\frac{\partial P}{\partial
+    n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,n}} =
+    \frac{-\left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T +
+    \frac{RT}{V}}{-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n} -
+    \frac{nRT}{V^2}}
+$$
+
+From **MM - Chapter 1 - Equation A36**
+
+$$
+    \left(\frac{\partial V}{\partial T}\right)_{P,n} = -
+    \frac{\left(\frac{\partial P}{\partial T}
+    \right)_{V,n}}{\left(\frac{\partial P}{\partial V} \right)_{T,n}} = -
+    \frac{- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n +
+    \frac{nR}{V}}{-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n} -
+    \frac{nRT}{V^2}}
+$$
+
+Finally, we have to understand the chain rule...
+
+$$
+    \left(\frac{\partial A^r(\vec{n}, V, T)}{\partial T}\right)_{P,n} =
+    \left(\frac{\partial A^r(\vec{n}, V, T)}{\partial T}\right)_{V,n} +
+    \left(\frac{\partial A^r(\vec{n}, V, T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial T}\right)_{P,n}
+$$
+
+
+### Fugacity coefficients (P,T): \(\ln \phi_i (P,T)\)
 
 There is no need for a direct way of calculating natural logarithm the fugacity
 coefficients specifing \(P\) and \(T\) since we can solve volume from those
@@ -298,299 +826,142 @@ end block lnphi_pt_v
 
 ```
 
-## Fugacity (V,T): \(\ln f_i (V,T)\)
+### Residual Helmholtz free energy (P, T): \(A^r(\vec{n}, P, T)\)
 
-Alternative way of calculating fugacity directly from the residual Helmholtz
-free energy:
+**MM - Chapter 1 - Table 6 (Equation VIII)**
 
-```fortran
-fugacity_vt: block
-    real(pr) :: T, V, lnf(2), dlnfdV(2), dlnfdT(2), dlnfdn(2,2)
-
-    T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
-
-    call eos%lnfug_vt(&
-      n, V, T, lnf, &
-      dlnfdV, dlnfdT, dlnfdn, &
-      )
-
-end block fugacity_vt
-```
-
-## Residual entropy (V,T): \(S^r(n,V,T)\)
-
-We start explaining the residual entropy because it is the easiest property to
-calculate. Also, helps us to understand how to calculate the next properties.
-
-The residual entropy is calculated as follows:
+The \(A^r(\vec{n}, P, T)\) can be calculated as follows:
 
 $$
-S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
+    A^r(\vec{n}, P, T) = A^r(\vec{n}, V, T) - nRT \; ln \; Z
 $$
 
 And its derivatives:
 
 $$
-\left(\frac{\partial S^r}{\partial T} \right)_{V,n} =
-- \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
-$$
-
-
-$$
-\left(\frac{\partial S^r}{\partial V} \right)_{T,n} =
-- \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+    \left(\frac{\partial \, A^r(\vec{n},P,T)}{\partial P}\right)_{T,n} =
+    \left(\frac{\partial \, A^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial P}\right)_{T,n} - n R T
+    \left(\frac{1}{P} + \frac{1}{V} \left(\frac{\partial V}{\partial
+    P}\right)_{T,n} \right)
 $$
 
 $$
-\left(\frac{\partial S^r}{\partial n_i} \right)_{V,T} =
-- \left(\frac{\partial^2 A^r}{\partial n_i \partial T} \right)_V
+    \left(\frac{\partial \, A^r(\vec{n},P,T)}{\partial T}\right)_{P,n} =
+    \left(\frac{\partial A^r(\vec{n}, V, T)}{\partial T}\right)_{V,n} +
+    \left(\frac{\partial A^r(\vec{n}, V, T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial T}\right)_{P,n} - nR \; ln \; Z - n R T
+    \left(\frac{1}{V} \left(\frac{\partial V}{\partial T}\right)_{P,n} -
+    \frac{1}{T}\right)
+$$
+
+$$
+    \left(\frac{\partial A^r(\vec{n},P,T)}{\partial n_i}\right)_{P,T} =
+    \left(\frac{\partial A^r(\vec{n},V,T)}{\partial n_i}\right)_{V,T} +
+    \left(\frac{\partial A^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
+    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
+    \frac{1}{n}\right)
 $$
 
 ```fortran
-residual_entropy: block
-    real(pr) :: T, V, S, dSdV, dSdT, dSdn(2)
+ar_pt: block
+    real(pr) :: T, P, Ar, ArP, ArT, Arn(2)
 
     T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
+    P = 1.0_pr     ! Set volume to 1 bar
 
-    ! Calculate residual entropy and its derivatives
-    call eos%residual_entropy(n, V, T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn)
+    call eos%helmholtz_residual_pt(&
+       n, P, T, root_type="stable", Ar=Ar, ArP=ArP, ArT=ArT, Arn=Arn &
+       )
+end block ar_pt
 
-    print *, "Residual entropy: ", Sr
-    print *, "SrV: ", SrV
-    print *, "SrT: ", SrT
-    print *, "Srn: ", Srn
-
-end block residual_entropy
 ```
 
-## Residual enthalpy (V,T): \(H^r(n,V,T)\)
+### Residual entropy (P, T): \(S^r(\vec{n}, P, T)\)
 
-The residual enthalpy is calculated as follows:
+**MM - Chapter 1 - Table 6 (Equation IX)**
 
-$$
-H^r(n,V,T) = H^r(n,P,T) = A^r(n,V,T) + T S^r(n,V,T) + PV - nRT
-$$
-
-We know that pressure can be calculated as:
+The residual entropy at \(\vec{n}, P, T\) can be calculated as follows:
 
 $$
-P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n} + \frac{nRT}{V}
-$$
-
-Then, we can obtain:
-
-$$
-P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
-$$
-
-$$
-PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
-$$
-
-And we also know how to calculate residual entropy as:
-
-$$
-S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
-$$
-
-Then, we can obtain the residual enthalpy as:
-
-$$
-H^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
-- V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
+    S^r(\vec{n}, P, T) = S^r(\vec{n}, V, T) + nR \; \ln \; Z
 $$
 
 And its derivatives:
 
 $$
-\left(\frac{\partial H^r}{\partial T} \right)_{V,n} =
-- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
-- V \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
+    \left(\frac{\partial S^r(\vec{n},P,T)}{\partial P}\right)_{T,n} =
+    \left(\frac{\partial S^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial P}\right)_{T,n} + nR
+    \left(\frac{1}{P} + \frac{1}{V} \left(\frac{\partial V}{\partial
+    P}\right)_{T,n} \right)
 $$
 
 $$
-\left(\frac{\partial H^r}{\partial V} \right)_{T,n} =
-- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
-- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+    \left(\frac{\partial S^r(\vec{n},P,T)}{\partial T}\right)_{P,n} =
+    \left(\frac{\partial S^r(\vec{n},V,T)}{\partial T}\right)_{V,n} +
+    \left(\frac{\partial S^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial T}\right)_{P,n} + nR \left(\frac{1}{V}
+    \left(\frac{\partial V}{\partial T}\right)_{P,n} - \frac{1}{T}\right)
 $$
 
 $$
-\left(\frac{\partial H^r}{\partial n_i} \right)_{V,T} =
-\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
-- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
-- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+    \left(\frac{\partial S^r(\vec{n},P,T)}{\partial n_i}\right)_{P,T} =
+    \left(\frac{\partial S^r(\vec{n},V,T)}{\partial n_i}\right)_{V,T} +
+    \left(\frac{\partial S^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} + R \; ln \; Z + nR
+    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
+    \frac{1}{n}\right)
 $$
 
-```fortran
-residual_enthalpy: block
-    real(pr) :: T, V, Hr, HrV, HrT, Hrn(2)
 
-    T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
+### Residual Enthalpy (P, T): \(H^r(\vec{n}, P, T)\)
 
-    ! Calculate residual enthalpy and its derivatives
-    call eos%residual_enthalpy(n, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn)
+**MM - Chapter 1 - Table 6 (Equation XII)**
 
-    print *, "Residual enthalpy: ", Hr
-    print *, "HrV: ", HrV
-    print *, "HrT: ", HrT
-    print *, "Hrn: ", Hrn
-
-end block residual_enthalpy
-```
-
-## Residual Gibbs free energy (V,T): \(G^r(n,V,T)\)
-
-The residual Gibbs free energy is calculated as follows:
+In this case we have a property that doesn't change its value with the
+specification.
 
 $$
-G^r(n,V,T) = A^r(n,V,T) + PV - nRT
+    H^r(\vec{n},P,T) = H^r(\vec{n},V,T)
 $$
 
-As with residual enthalpy we can easily deduce:
+For that, its derivatives can be obtained as:
 
 $$
-G^r = A^r - V \left(\frac{\partial A^r}{\partial V} \right)_{T,n}
-$$
-
-And its derivatives:
-
-$$
-\left(\frac{\partial G^r}{\partial T} \right)_{V,n} =
-\left(\frac{\partial A^r}{\partial T} \right)_{V,n}
-- V \left(\frac{\partial^2 A^r}{\partial T \partial V} \right)_n
+    \left(\frac{\partial H^r(\vec{n},P,T)}{\partial P}\right)_{T,n} =
+    \left(\frac{\partial H^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial P}{\partial V}\right)^{-1}_{T,n}
 $$
 
 $$
-\left(\frac{\partial G^r}{\partial V} \right)_{T,n} =
-- V \left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,n}
+    \left(\frac{\partial H^r(\vec{n},P,T)}{\partial T}\right)_{P,n} =
+    \left(\frac{\partial H^r(\vec{n},V,T)}{\partial T}\right)_{V,n} +
+    \left(\frac{\partial H^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial T}\right)_{P,n}
 $$
 
 $$
-\left(\frac{\partial G^r}{\partial n_i} \right)_{V,T} =
-\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
-- V \left(\frac{\partial^2 A^r}{\partial V \partial n_i} \right)_T
+    \left(\frac{\partial H^r(\vec{n},P,T)}{\partial n_i}\right)_{P,T} =
+    \left(\frac{\partial H^r(\vec{n},V,T)}{\partial n_i}\right)_{V,T} +
+    \left(\frac{\partial H^r(\vec{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T}
 $$
 
 ```fortran
-residual_gibbs: block
-    real(pr) :: T, V, Gr, GrV, GrT, Grn(2)
+hr_pt: block
+    real(pr) :: T, P, Hr, HrP, HrT, Hrn(2)
 
     T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
+    P = 1.0_pr     ! Set volume to 1 bar
 
-    ! Calculate residual Gibbs free energy and its derivatives
-    call eos%residual_gibbs(n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn)
-
-    print *, "Residual Gibbs free energy: ", Gr
-    print *, "GrV: ", GrV
-    print *, "GrT: ", GrT
-    print *, "Grn: ", Grn
-
-end block residual_gibbs
+    call eos%enthalpy_residual_pt(&
+       n, P, T, root_type="stable", Hr=Hr, HrP=HrP, HrT=HrT, Hrn=Hrn &
+       )
+end block hr_pt
 ```
 
-## Residual internal energy (V,T): \(U^r(n,V,T)\)
-
-The residual internal energy is calculated as follows:
-
-$$
-U^r(n,V,T) = A^r(n,V,T) + T S^r(n,V,T)
-$$
-
-Therefore:
-
-$$
-U^r = A^r - T \left(\frac{\partial A^r}{\partial T} \right)_{V,n}
-$$
-
-And its derivatives:
-
-$$
-\left(\frac{\partial U^r}{\partial T} \right)_{V,n} =
-- T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
-$$
-
-$$
-\left(\frac{\partial U^r}{\partial V} \right)_{T,n} =
-\left(\frac{\partial A^r}{\partial V} \right)_{T,n}
-- T \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_n
-$$
-
-$$
-\left(\frac{\partial U^r}{\partial n_i} \right)_{V,T} =
-\left(\frac{\partial A^r}{\partial n_i} \right)_{V,T}
-- T \left(\frac{\partial^2 A^r}{\partial T \partial n_i} \right)_V
-$$
-
-```fortran
-residual_internal_energy: block
-    real(pr) :: T, V, Ur, UrV, UrT, Urn(2)
-
-    T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
-
-    ! Calculate residual internal energy and its derivatives
-    call eos%internal_energyresidual(n, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn)
-
-    print *, "Residual internal energy: ", Ur
-    print *, "UrV: ", UrV
-    print *, "UrT: ", UrT
-    print *, "Urn: ", Urn
-
-end block residual_internal_energy
-```
-
-## Residual constant volume heat capacity (V,T): \(C_V^r(n,V,T)\)
-
-The residual constant volume heat capacity is calculated as follows:
-
-$$
-C_V^r(n,V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2} \right)_{V,n}
-$$
-
-```fortran
-residual_cv: block
-    real(pr) :: T, V, Cv
-
-    T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
-
-    ! Calculate residual constant volume heat capacity
-    call eos%residual_cv(n, V, T, Cv=Cv)
-
-    print *, "Residual constant volume heat capacity: ", Cv
-
-end block residual_cv
-```
-
-## Residual constant pressure heat capacity (V,T): \(C_P^r(n,V,T)\)
-
-The residual constant pressure heat capacity is calculated as follows:
-
-$$
-C_P^r(n,V,T) = C_V^r(n,V,T) - T \frac{\left(\frac{\partial P}
-{\partial T} \right)^2_{V,n}}{\left(\frac{\partial P}
-{\partial V} \right)_{T,n}} - nR
-$$
-
-
-```fortran
-residual_cp: block
-    real(pr) :: T, V, Cp
-
-    T = 300.0_pr   ! Set temperature to 300 K
-    V = 1.0_pr     ! Set volume to 1 liter
-
-    ! Calculate residual constant pressure heat capacity
-    call eos%residual_cp(n, V, T, Cp=Cp)
-
-    print *, "Residual constant pressure heat capacity: ", Cp
-
-end block residual_cp
-```
 
 # References
 [1] 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:

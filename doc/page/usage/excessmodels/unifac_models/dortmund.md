@@ -12,11 +12,11 @@ This is the Dortmund modified UNIFAC model. In this model, the parameters are
 defined as:
 
 $$
-    z = \frac{3}{4}
+    z = 10
 $$
 
 $$
-    d = 1
+    d = \frac{3}{4}
 $$
 
 The temperature function \(E_{jk}\) is defined with a quadratic temperature

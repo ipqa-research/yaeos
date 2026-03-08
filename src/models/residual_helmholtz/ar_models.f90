@@ -795,23 +795,23 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(out) :: Cp !! heat capacity P constant [bar L / K]
 
-      real(pr) :: Cv, P, dPdT, dPdV, n_t
+      real(pr) :: nt
+      real(pr) :: ArT2, ArTV, ArV2
 
-      n_t = sum(n)
+      nt = sum(n)
 
-      call Cv_residual_vt(eos, n, V, T, Cv)
-      call pressure(eos, n, V, T, P, dPdV=dPdV, dPdT=dPdT)
+      call eos%residual_helmholtz(n, V, T, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2)
 
-      Cp = Cv - T * dPdT**2 / dPdV - n_t*R
+      Cp = &
+         -T * ArT2 &
+         -T * (-ArTV + nt *R / V)**2 / (-ArV2 - nt*R*T / V**2) &
+         - nt * R
    end subroutine Cp_residual_vt
 
    ! ==========================================================================
    ! PT thermoprops
    ! --------------------------------------------------------------------------
-   subroutine helmholtz_residual_pt(&
-      eos, n, P, T, root_type, Ar, ArP, ArT, &
-      ArTP, ArT2, Arn, ArPn, ArTn, Arn2 &
-      )
+   subroutine helmholtz_residual_pt(eos, n, P, T, root_type, Ar, ArP, ArT, Arn)
       !! Calculate residual Helmholtz energy given pressure and temperature.
       !!
       !! # Examples
@@ -824,9 +824,7 @@ contains
       !! P = 1.0_pr
       !!
       !! call eos%helmholtz_residual_pt(&
-      !!    n, P, T, root_type="stable", Ar=Ar, ArP=ArP, ArT=ArT, &
-      !!    ArTP=ArTP, ArT2=ArT2, Arn=Arn, ArPn=ArPn, &
-      !!    ArTn=ArTn, Arn2=Arn2 &
+      !!    n, P, T, root_type="stable", Ar=Ar, ArP=ArP, ArT=ArT, Arn=Arn &
       !!    )
       !! ```
       class(ArModel), intent(in) :: eos !! Model
@@ -840,59 +838,51 @@ contains
       !! Residual Helmholtz energy [bar L]
       real(pr), optional, intent(out) :: ArP !! \(\frac{dA^r}}{dP}\)
       real(pr), optional, intent(out) :: ArT !! \(\frac{dA^r}}{dT}\)
-      real(pr), optional, intent(out) :: ArTP !! \(\frac{d^2A^r}}{dT dP}\)
-      real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2A^r}}{dT^2}\)
       real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dA^r}}{dn}\)
-      real(pr), optional, intent(out) :: ArPn(size(n))
-      !! \(\frac{d^2A^r}}{dP dn}\)
-      real(pr), optional, intent(out) :: ArTn(size(n))
-      !! \(\frac{d^2A^r}}{dT dn}\)
-      real(pr), optional, intent(out) :: Arn2(size(n),size(n))
-      !! \(\frac{d^2A^r}}{dn^2}\)
 
       ! Helmholtz at VT
-      real(pr) :: Ar_v, ArV_v, ArT_v, ArTV_v, ArT2_v
-      real(pr) :: Arn_v(size(n)), ArVn_v(size(n)), ArTn_v(size(n))
-      real(pr) :: Arn2_v(size(n),size(n))
-
+      real(pr) :: Ar_v, ArV_v, ArT_v, Arn_v(size(n))
+      real(pr) :: dPdV, dPdT, dPdn(size(n))
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
       real(pr) :: Z, nt, V, P_dummy
-      real(pr) :: dPdV
 
-      logical :: p_arp, p_artp, p_arpn, p_derivs
+      logical :: dp, dt, dn, present_derivs
 
-      p_arp = present(ArP)
-      p_artp = present(ArTP)
-      p_arpn = present(ArPn)
+      dp = present(ArP)
+      dt = present(ArT)
+      dn = present(Arn)
 
-      p_derivs = p_arp .or. p_artp .or. p_arpn
+      present_derivs = dp .or. dt .or. dn
 
-      if (p_derivs) then
+      if (present_derivs) then
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-         call eos%pressure(n=n, V=V, T=T, P=P_dummy, dPdV=dPdV)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%residual_helmholtz(&
+            n=n, V=V, T=T, Ar=Ar_v, ArV=ArV_v, ArT=ArT_v, Arn=Arn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
       else
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%residual_helmholtz(n=n, V=V, T=T, Ar=Ar_v)
       end if
-
-      call eos%residual_helmholtz(&
-         n=n, V=V, T=T, Ar=Ar_v, ArV=ArV_v, ArT=ArT_v, ArTV=ArTV_v, &
-         ArT2=ArT2_v, Arn=Arn_v, ArVn=ArVn_v, ArTn=ArTn_v, Arn2=Arn2_v &
-         )
 
       nt = sum(n)
       Z = P * V / (nt * R * T)
 
-      ! First derivs
-      if present(Ar) Ar = Ar_v - nt * R * T * log(Z)
-      if present(ArT) ArT = ArT_v - nt * R * log(Z) + nt * R
-      if present(ArP) ArP = ArV_v / dPdV - nt * R * T / P
-      if present(Arn) Arn(:) = Arn_v(:) - R * T * log(Z) + R * T
+      if (present(Ar)) Ar = Ar_v - nt * R * T * log(Z)
 
-      ! Second derivs
-      if present(ArTP) ArTP = ArTV_v / dPdV - nt * R / P
-      if present(ArT2) ArT2 = ArT2_v + nt * R / T
-      if present(ArPn) ArPn(:) = ArVn_v(:) / dPdV - R * T / P
-      if present(ArTn) ArTn(:) = ArTn_v(:) - R * log(Z) + 2.0_pr * R
-      if present(Arn2) Arn2(:,:) = Arn2_v(:,:) + R * T / nt
+      if (present(ArP)) ArP = ArV_v / dPdV - nt*R*T*(1.0_pr/P + dVdP/V)
+
+      if (present(ArT)) ArT = &
+         ArT_v + ArV_v * dVdT - nt*R*log(Z) - nt*R*T*(dVdT / V - 1.0_pr/T)
+
+      if (present(Arn)) Arn = &
+         Arn_v + ArV_v * dVdn - nt*R*T*log(Z) - nt*R*T*(dVdn / V - 1.0_pr/nt)
    end subroutine helmholtz_residual_pt
 
    subroutine enthalpy_residual_pt(eos, n, P, T, root_type, Hr, HrP, HrT, Hrn)
@@ -923,24 +913,39 @@ contains
       real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
       real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
 
-      real(pr) :: Hr_v, HrT_v, HrV_v, Hrn_v ! residual entralpy vt
-      real(pr) :: V, dPdV, P_dummy
+      real(pr) :: Hr_v, HrT_v, HrV_v, Hrn_v(size(n)) ! residual entralpy vt
+      real(pr) :: V, dPdV, dPdT, dPdn(size(n)), P_dummy
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
 
-      if (present(HrP)) then
+      logical :: dp, dT, dn, derivs_present
+
+      dp = present(HrP)
+      dt = present(HrT)
+      dn = present(Hrn)
+
+      derivs_present = dp .or. dt .or. dn
+
+      if (derivs_present) then
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-         call eos%pressure(n=n, V=V, T=T, P=P_dummy, dPdV=dPdV)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%enthalpy_residual_vt(&
+            n=n, V=V, T=T, Hr=Hr_v, HrV=HrV_v, HrT=HrT_v, Hrn=Hrn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
       else
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%enthalpy_residual_vt(n=n, V=V, T=T, Hr=Hr_v)
       end if
 
-      call eos%enthalpy_residual_vt(&
-         n=n, V=V, T=T, Hr=Hr_v, HrV=HrV_v, HrT=HrT_v, Hrn=Hrn_v &
-         )
-
       if (present(Hr)) Hr = Hr_v
-      if (present(HrT)) HrT = HrT_v
-      if (present(HrP)) HrP = HrV_v / dPdV
-      if (present(Hrn)) Hrn(:) = Hrn_v(:)
+      if (present(HrP)) HrP = HrV_v * dVdP
+      if (present(HrT)) HrT = HrT_v + HrV_v * dVdT
+      if (present(Hrn)) Hrn = Hrn_v + HrV_v * dVdn
    end subroutine enthalpy_residual_pt
 
    subroutine gibbs_residual_pt(eos, n, P, T, root_type, Gr, GrP, GrT, Grn)
@@ -971,7 +976,7 @@ contains
       real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
       real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
 
-      real(pr) :: Gr_v, GrT_v, GrV_v, Grn_v ! residual Gibbs energy vt
+      real(pr) :: Gr_v, GrT_v, GrV_v, Grn_v(size(n)) ! residual Gibbs energy vt
       real(pr) :: Z, nt, V, dPdV, P_dummy
 
       if (present(GrP)) then
@@ -991,7 +996,7 @@ contains
       if (present(Gr)) Gr = Gr_v - nt * R * T * log(Z)
       if (present(GrT)) GrT = GrT_v - nt * R * log(Z) + nt * R
       if (present(GrP)) GrP = GrV_v / dPdV - nt * R * T / P
-      if (present(Grn)) Grn(:) = Grn_v(:) - R * T * log(Z) + R * T
+      if (present(Grn)) Grn = Grn_v - R * T * log(Z) + R * T
    end subroutine gibbs_residual_pt
 
    subroutine entropy_residual_pt(eos, n, P, T, root_type, Sr, SrP, SrT, Srn)
@@ -1022,27 +1027,46 @@ contains
       real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
       real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
 
-      real(pr) :: Sr_v, SrT_v, SrV_v, Srn_v ! residual entropy vt
-      real(pr) :: Z, nt, V, dPdV, P_dummy
+      real(pr) :: Sr_v, SrT_v, SrV_v, Srn_v(size(n)) ! residual entropy vt
+      real(pr) :: dPdV, dPdT, dPdn(size(n))
+      real(pr) :: dVdT, dVdP, dVdn(size(n))
+      real(pr) :: Z, nt, V, P_dummy
 
-      if (present(SrP)) then
+      logical :: dp, dt, dn, derivs_present
+
+      dp = present(SrP)
+      dt = present(SrT)
+      dn = present(Srn)
+      derivs_present = dp .or. dt .or. dn
+
+      if (derivs_present) then
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-         call eos%pressure(n=n, V=V, T=T, P=P_dummy, dPdV=dPdV)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%entropy_residual_vt(&
+            n=n, V=V, T=T, Sr=Sr_v, SrV=SrV_v, SrT=SrT_v, Srn=Srn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
       else
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%entropy_residual_vt(n=n, V=V, T=T, Sr=Sr_v)
       end if
-
-      call eos%entropy_residual_vt(&
-         n=n, V=V, T=T, Sr=Sr_v, SrV=SrV_v, SrT=SrT_v, Srn=Srn_v &
-         )
 
       nt = sum(n)
       Z = P * V / (nt * R * T)
 
       if (present(Sr)) Sr = Sr_v + nt * R * log(Z)
-      if (present(SrT)) SrT = SrT_v - nt * R / T
-      if (present(SrP)) SrP = SrV_v / dPdV + nt * R / P
-      if (present(Srn)) Srn(:) = Srn_v(:) + R * log(Z) - R
+      
+      if (present(SrP)) SrP = SrV_v * dVdP + nt*R*(1.0_pr / P + dVdP / V)
+      
+      if (present(SrT)) SrT = SrT_v + SrV_v * dVdT + nt*R*(dVdT / V - 1.0_pr/T)
+      
+      if (present(Srn)) Srn = &
+         Srn_v + SrV_v * dVdn + R*log(Z) + nt*R*(dVdn / V - 1.0_pr/nt)
    end subroutine entropy_residual_pt
 
    subroutine internal_energy_residual_pt(&
@@ -1075,7 +1099,8 @@ contains
       real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
       real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
 
-      real(pr) :: Ur_v, UrT_v, UrV_v, Urn_v ! residual internal energy vt
+      ! residual internal energy vt
+      real(pr) :: Ur_v, UrT_v, UrV_v, Urn_v(size(n))
       real(pr) :: V, dPdV, P_dummy
 
       if (present(UrP)) then
@@ -1092,7 +1117,7 @@ contains
       if (present(Ur)) Ur = Ur_v
       if (present(UrT)) UrT = UrT_v
       if (present(UrP)) UrP = UrV_v / dPdV
-      if (present(Urn)) Urn(:) = Urn_v(:)
+      if (present(Urn)) Urn = Urn_v
    end subroutine internal_energy_residual_pt
 
    subroutine Cv_residual_pt(eos, n, P, T, root_type, Cv)
@@ -1125,7 +1150,6 @@ contains
       real(pr) :: V
 
       call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-
       call eos%Cv_residual_vt(n=n, V=V, T=T, Cv=Cv)
    end subroutine Cv_residual_pt
 
@@ -1159,7 +1183,6 @@ contains
       real(pr) :: V
 
       call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-
       call eos%Cp_residual_vt(n=n, V=V, T=T, Cp=Cp)
    end subroutine Cp_residual_pt
 
