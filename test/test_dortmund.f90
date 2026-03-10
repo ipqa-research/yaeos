@@ -4,6 +4,8 @@ program main
    use testing_aux, only: assert, test_title
    implicit none
 
+   print *, test_title("Dortmund-UNIFAC")
+
    call test_dortmund_cons_mix()
    call test_dortmund_cons_pure()
    call test_against_caleb_thermo()

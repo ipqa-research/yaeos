@@ -6,6 +6,8 @@ program test_dortmund_parameters
 
    logical :: passed
 
+   print *, test_title("Dortmund-UNIFAC parameters")
+
    call test_dortmund_subgroups(passed)
    call assert(passed, "Dortmund subgroups")
 
