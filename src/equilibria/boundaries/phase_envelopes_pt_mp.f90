@@ -244,7 +244,7 @@ contains
          F, dF, Vl, Vw, its, 2000 &
          )
       X_last_converged = 0
-      do i=1,number_of_points
+      continuation: do i=1,number_of_points
          X0 = X
          call solve_point(&
             model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
@@ -260,6 +260,16 @@ contains
                F, dF, Vl, Vw, its, max_iterations &
                )
          end if
+
+         ! Stop due to bad convergence criteria
+         do l=1,np
+            ! Converged but to a trivial solution
+            if(norm2(X((l-1)*nc+1:l*nc)) < 1e-7_pr) exit continuation
+         end do
+
+         ! Did not converge
+         if (any(isnan(F)) .or. its >= max_iterations) exit
+
 
          ! Convert the values of the vector of variables into human-friendly
          ! variables.
@@ -297,9 +307,6 @@ contains
             S, dS, near_crit, l_nc, i_nc, j_nc, Vl, Vw &
             )
 
-         ! Stop criteria
-         if (any(isnan(F)) .or. its > max_iterations) exit
-
          ! If the point actually converged save it
          env_points = [env_points, point]
 
@@ -331,7 +338,7 @@ contains
          else if (near_crit) then
             S = S + dS
          end if
-      end do
+      end do continuation
 
       ! This moves the locally saved points to the output variable.
       call move_alloc(env_points, pt_envelope%points)
@@ -779,9 +786,14 @@ contains
             dS = 0.01
          end if
 
-         do while(abs(S + dS) < 0.01)
-            dS = dS * 1.1
-         end do
+         if (abs(S + dS) < 0.015) then
+            ! Ensure that the next step will be on the other side of the 
+            ! critical point.
+            ! S1 = -0.02
+            ! S1 = S0 + dS
+            ! dS = -0.02 - S0
+            dS = -0.02 - S
+         end if
       end if
    end subroutine update_specification
 
