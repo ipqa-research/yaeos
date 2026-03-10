@@ -107,7 +107,7 @@ contains
    end subroutine test_fugacity_TP
 
    ! ==========================================================================
-   ! Hr
+   ! Hr VT
    ! --------------------------------------------------------------------------
    subroutine test_enthalpy_residual_vt(error)
       use yaeos, only: pr, R, CubicEoS, PengRobinson76
@@ -189,7 +189,7 @@ contains
    end subroutine test_enthalpy_residual_vt
 
    ! ==========================================================================
-   ! Gr
+   ! Gr VT
    ! --------------------------------------------------------------------------
    subroutine test_gibss_residual_vt(error)
       use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong
@@ -279,7 +279,7 @@ contains
    end subroutine test_gibss_residual_vt
 
    ! ==========================================================================
-   ! Sr
+   ! Sr VT
    ! --------------------------------------------------------------------------
    subroutine test_entropy_residual_vt(error)
       use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong
@@ -368,7 +368,7 @@ contains
    end subroutine test_entropy_residual_vt
 
    ! ==========================================================================
-   ! Ur
+   ! Ur VT
    ! --------------------------------------------------------------------------
    subroutine test_internal_energy_vt(error)
       use yaeos, only: pr, R, CubicEoS, SoaveRedlichKwong

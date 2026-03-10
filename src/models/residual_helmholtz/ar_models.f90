@@ -882,7 +882,7 @@ contains
          ArT_v + ArV_v * dVdT - nt*R*log(Z) - nt*R*T*(dVdT / V - 1.0_pr/T)
 
       if (present(Arn)) Arn = &
-         Arn_v + ArV_v * dVdn - nt*R*T*log(Z) - nt*R*T*(dVdn / V - 1.0_pr/nt)
+         Arn_v + ArV_v * dVdn - R*T*log(Z) - nt*R*T*(dVdn / V - 1.0_pr/nt)
    end subroutine helmholtz_residual_pt
 
    subroutine enthalpy_residual_pt(eos, n, P, T, root_type, Hr, HrP, HrT, Hrn)

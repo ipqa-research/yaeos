@@ -906,26 +906,28 @@ $$
 And its derivatives:
 
 $$
-    \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial \, A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial P}\right)_{T,n} - n R T
-    \left(\frac{1}{P} + \frac{1}{V} \left(\frac{\partial V}{\partial
-    P}\right)_{T,n} \right)
+    \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial
+    P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
+    A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
+    \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
+    \right)
 $$
 
 $$
-    \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial A^r(\mathbf{n}, V, T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial A^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n} - nR \; ln \; Z - n R T
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial T}\right)_{P,n} -
-    \frac{1}{T}\right)
+    \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial
+    T}\right)_{P,\mathbf{n}} = \left(\frac{\partial A^r(\mathbf{n}, V,
+    T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    A^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \; ln \; Z -
+    n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 $$
 
 $$
     \left(\frac{\partial A^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
     \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
     \frac{1}{n}\right)
