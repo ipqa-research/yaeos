@@ -163,7 +163,7 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 50
+      integer :: max_iterations = 20
       !! Maximum number of iterations to solve the point.
       integer :: number_of_points
       !! Number of points to calculate.
@@ -622,11 +622,11 @@ contains
             end if
          end do
 
-         do while(abs(dX(iT)) > 1)
+         do while(abs(dX(iT)) > 0.1)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 1)
+         do while(abs(dX(iP)) > 0.1)
             dX = dX/2
          end do
 
