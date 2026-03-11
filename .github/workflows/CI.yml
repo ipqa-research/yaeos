@@ -53,19 +53,12 @@ jobs:
         if [ "$RUNNER_OS" == "Linux" ]; then
           sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
         fi
-    - name: Setup MSYS2 on Windows
+
+    - name: Install LAPACK via vcpkg
       if: runner.os == 'Windows'
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64 # Choose the environment (e.g., MINGW64, UCRT64, MINGW32, CLANG64, CLANGARM64)
-        update: true
-        install: >- # Install necessary packages using pacman
-          gcc
-          mingw-w64-x86_64-gcc-libgfortran
-          mingw-w64-x86_64-lapack
-          make
-          git
-          pkg-config
+      run: |
+        vcpkg install lapack:x64-windows
+        vcpkg integrate install
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
