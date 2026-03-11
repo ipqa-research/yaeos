@@ -53,21 +53,30 @@ jobs:
         if [ "$RUNNER_OS" == "Linux" ]; then
           sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
         fi
-
-    - name: Install LAPACK via vcpkg
+    - name: Setup MSYS2 on Windows
       if: runner.os == 'Windows'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64 # Choose the environment (e.g., MINGW64, UCRT64, MINGW32, CLANG64, CLANGARM64)
+        update: true
+        install: >- # Install necessary packages using pacman
+          gcc
+          mingw-w64-x86_64-gcc-libgfortran
+          mingw-w64-x86_64-lapack
+          make
+          git
+          pkg-config
+
+    - name: Run tests on Windows with MSYS2
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Windows'
+      shell: msys2 {0}
       run: |
-        vcpkg install lapack:x64-windows
-        vcpkg integrate install
+        fpm test --profile release --flag "-g -ffree-line-length-0" --c-compiler gcc
 
     - name: Run tests without coverage
-      if: ${{ env.FC != 'gfortran' }}
+      if: ${{ env.FC == 'gfortran' }} && runner.os != 'Windows'
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          fpm test --profile release --flag "-g -ffree-line-length-0" 
-        else
-          fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
-        fi
+        fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Run tests with coverage
       if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
