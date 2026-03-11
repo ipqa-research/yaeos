@@ -1231,8 +1231,168 @@ $$
 and \(v_i(P, T)\) is the partial molar volume of component \(i\) in the pure
 state at the same pressure and temperature of the mixture.
 
-### Excess Gibbs energy (P, T): \(G^E(\mathbf{n}, P, T)\)
+```fortran
+ln_gamma: block
+    real(pr) :: n(2), T, P, lngamma(2)
+    real(pr) :: dlngammadT(2), dlngammadP(2), dlngammadn(2,2)
 
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%ln_activity_coefficient(&
+       n, P, T, root_type="stable", &
+       lngamma=lngamma, dlngammadT=dlngammadT, dlngammadP=dlngammadP, &
+       dlngammadn=dlngammadn &
+       )
+end block ln_gamma
+```
+
+### Excess Gibbs free energy (P, T): \(G^E(\mathbf{n}, P, T)\)
+
+**MM - Chapter 1 - Table 9 (Equation II)**
+
+The excess Gibbs free energy can be calculated in terms of the activity
+coefficients as follows:
+
+$$
+    G^E(\mathbf{n}, P, T) = R T \sum_i n_i \; ln \; \gamma_i
+$$
+
+and its derivatives:
+
+$$
+    \left(\frac{\partial G^E}{\partial T}\right)_{P,\mathbf{n}} = R \sum_i n_i
+    \; ln \; \gamma_i + R T \sum_i n_i \left(\frac{\partial ln \;
+    \gamma_i}{\partial T}\right)_{P,\mathbf{n}}
+$$
+
+$$
+    \left(\frac{\partial G^E}{\partial P}\right)_{T,\mathbf{n}} = R T \sum_i n_i
+    \left(\frac{\partial ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}}
+$$
+
+$$
+    \left(\frac{\partial G^E}{\partial n_j}\right)_{P,T} = R T \sum_i n_i
+    \left(\frac{\partial ln \; \gamma_i}{\partial n_j}\right)_{P,T} + R T
+    \; ln \; \gamma_j
+$$
+
+```fortran
+gibbs_excess: block
+    real(pr) :: n(2), T, P, GE, dGEdT(2), dGEdP(2), dGE_dn(2,2)
+    
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%gibbs_excess(&
+       n, P, T, root_type="stable", GE=GE, dGEdT=dGEdT, dGEdP=dGEdP, &
+       dGE_dn=dGE_dn &
+       )
+end block gibbs_excess
+```
+
+### Excess Gibbs free energy (P, T): \(H^E(\mathbf{n}, P, T)\)
+
+**MM - Chapter 1 - Table 9 (Equation III)**
+
+The excess enthalpy can be calculated in terms of the activity coefficients as
+follows:
+
+$$
+    H^E(\mathbf{n}, P, T) = -R T^2 \sum_i n_i \left(\frac{\partial ln \;
+    \gamma_i}{\partial T}\right)_{P,\mathbf{n}}
+$$
+
+```fortran
+enthalpy_excess: block
+    real(pr) :: n(2), T, P, HE
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%enthalpy_excess(n, P, T, root_type="stable", HE=HE)
+end block enthalpy_excess
+```
+
+### Excess volume (P, T): \(V^E(\mathbf{n}, P, T)\)
+
+**MM - Chapter 1 - Table 9 (Equation IV)**
+
+The excess volume can be calculated in terms of the activity coefficients as
+follows:
+
+$$
+    V^E(\mathbf{n}, P, T) = R T \sum_i n_i \left(\frac{\partial ln \;
+    \gamma_i}{\partial P}\right)_{T,\mathbf{n}}
+$$
+
+```fortran
+volume_excess: block
+    real(pr) :: n(2), T, P, VE
+    
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%volume_excess(&
+       n, P, T, root_type="stable", VE=VE &
+       )
+end block volume_excess
+```
+
+### Excess entropy (P, T): \(S^E(\mathbf{n}, P, T)\)
+
+The excess entropy can be calculated in terms of the activity coefficients as
+follows:
+
+$$
+    S^E(\mathbf{n}, P, T) = \frac{H^E - G^E}{T}
+$$
+
+replacing \(H^E\) and \(G^E\)
+
+$$
+     S^E(\mathbf{n}, P, T) = \frac{-R T^2 \sum_i n_i \left(\frac{\partial ln \;
+    \gamma_i}{\partial T}\right)_{P,\mathbf{n}} - R T \sum_i n_i \; ln \;
+    \gamma_i}{T}
+$$
+
+$$
+     S^E(\mathbf{n}, P, T) = -R T \sum_i n_i \left(\frac{\partial ln \;
+    \gamma_i}{\partial T}\right)_{P,\mathbf{n}} - R \sum_i n_i \; ln \;
+    \gamma_i
+$$
+
+```fortran
+entropy_excess: block
+    real(pr) :: n(2), T, P, SE
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%entropy_excess(n, P, T, root_type="stable", SE=SE)
+end block entropy_excess
+```
+
+### Excess Helmholtz (P, T): \(A^E(\mathbf{n}, P, T)\)
+
+**MM - Chapter 5 - Equation 1**
+
+The excess Helmholtz free energy can be calculated in terms of the activity
+coefficients as follows:
+
+$$
+    A^E(\mathbf{n}, P, T) = G^E(\mathbf{n}, P, T) - P V^E
+$$
+
+$$
+    A^E(\mathbf{n}, P, T) = R T \sum_i n_i \; ln \; \gamma_i - P R T \sum_i n_i
+    \left(\frac{\partial ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}}
+$$
 
 # References
 [1] 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:

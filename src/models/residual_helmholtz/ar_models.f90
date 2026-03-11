@@ -70,6 +70,11 @@ module yaeos__models_ar
       procedure :: internal_energy_residual_pt
       procedure :: Cv_residual_pt
       procedure :: Cp_residual_pt
+      procedure :: ln_activity_coefficient
+      procedure :: gibbs_excess
+      procedure :: enthalpy_excess
+      procedure :: volume_excess
+      procedure :: entropy_excess
       procedure :: Psat_pure
    end type ArModel
 
@@ -1009,7 +1014,7 @@ contains
       Z = P * V / (nt * R * T)
 
       if (present(Gr)) Gr = Gr_v - nt * R * T * log(Z)
-      
+
       if (present(GrP)) GrP = GrV_v / dPdV - nt*R*T*(1.0_pr/P + dVdP/V)
 
       if (present(GrT)) GrT = &
@@ -1080,11 +1085,11 @@ contains
       Z = P * V / (nt * R * T)
 
       if (present(Sr)) Sr = Sr_v + nt * R * log(Z)
-      
+
       if (present(SrP)) SrP = SrV_v * dVdP + nt*R*(1.0_pr / P + dVdP / V)
-      
+
       if (present(SrT)) SrT = SrT_v + SrV_v * dVdT + nt*R*(dVdT / V - 1.0_pr/T)
-      
+
       if (present(Srn)) Srn = &
          Srn_v + SrV_v * dVdn + R*log(Z) + nt*R*(dVdn / V - 1.0_pr/nt)
    end subroutine entropy_residual_pt
@@ -1220,6 +1225,317 @@ contains
       call eos%Cp_residual_vt(n=n, V=V, T=T, Cp=Cp)
    end subroutine Cp_residual_pt
 
+   ! ==========================================================================
+   ! Excess properties
+   ! --------------------------------------------------------------------------
+   subroutine ln_activity_coefficient(&
+      eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn &
+      )
+      !! Calculate natural logarithm of activity coefficients and its
+      !! derivatives given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !!
+      !! call eos%ln_activity_coefficient(&
+      !!    n, P, T, root_type="stable", &
+      !!    lngamma=lngamma, dlngammadP=dlngammadP, &
+      !!    dlngammadT=dlngammadT, dlngammadn=dlngammadn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out), optional :: lngamma(size(n))
+      !! Natural logarithm of activity coefficient
+      real(pr), intent(out), optional :: dlngammadP(size(n))
+      !! \(\frac{d\ln\gamma}}{dP}\)
+      real(pr), intent(out), optional :: dlngammadT(size(n))
+      !! \(\frac{d\ln\gamma}}{dT}\)
+      real(pr), intent(out), optional :: dlngammadn(size(n),size(n))
+      !! \(\frac{d\ln\gamma}}{dn}\)
+
+      ! Mixture properties
+      real(pr) :: lnPhi(size(n)), dlnPhidT(size(n))
+      real(pr) :: dlnPhidn(size(n),size(n))
+      real(pr) :: dPdV, dPdn(size(n)), dVdn(size(n))
+
+      ! Pure properties
+      real(pr) :: vi(size(n)), vi_temp, npure(size(n))
+      real(pr) :: lnPhi_i(size(n)), dlnPhi_i_dT(size(n))
+      real(pr) :: lnPhi_i_temp(size(n)), dlnPhi_i_dT_temp(size(n))
+
+      integer :: i
+
+      logical :: gam, dp, dt, dn, present_derivs
+
+      gam = present(lngamma)
+      dp = present(dlngammadP)
+      dt = present(dlngammadT)
+      dn = present(dlngammadn)
+      present_derivs = dp .or. dt .or. dn
+
+
+      ! Call to mixture fugacity coefficient at PT
+      ! TODO: maybe more efficient later?
+      if (.not. present_derivs) then
+         call eos%lnphi_pt(n=n, P=P, T=T, root_type=root_type, lnPhi=lnPhi)
+      else
+         call eos%lnphi_pt(&
+            n=n, P=P, T=T, root_type=root_type, &
+            lnPhi=lnPhi, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn, &
+            dPdV=dPdV, dPdn=dPdn &
+            )
+
+         dVdn = -dPdn / dPdV
+      end if
+
+      ! Pure components calls
+      vi = 0.0_pr
+      lnPhi_i = 0.0_pr
+
+      if (dt) then
+         dlnPhi_i_dT = 0.0_pr
+      end if
+
+      do i=1, size(n)
+         npure = 0.0_pr
+         npure(i) = 1.0_pr
+
+         if (.not. dt) then
+            call eos%lnphi_pt(&
+               n=npure, P=P, T=T, V=vi_temp, root_type="stable", &
+               lnPhi=lnPhi_i_temp &
+               )
+         else
+            call eos%lnphi_pt(&
+               n=npure, P=P, T=T, V=vi_temp, root_type="stable", &
+               lnPhi=lnPhi_i_temp, dlnPhidT=dlnPhi_i_dT_temp &
+               )
+         end if
+
+         vi(i) = vi_temp
+         lnPhi_i(i) = lnPhi_i_temp(i)
+
+         if (dt) then
+            dlnPhi_i_dT(i) = dlnPhi_i_dT_temp(i)
+         end if
+      end do
+
+      ! returns
+      if (gam) lngamma = lnPhi - lnPhi_i
+      if (dt) dlngammadT = dlnPhidT - dlnPhi_i_dT
+      if (dp) dlngammadP = (dVdn - vi) / (R * T)
+      if (dn) dlngammadn = dlnPhidn
+   end subroutine ln_activity_coefficient
+
+   subroutine gibbs_excess(eos, n, P, T, root_type, Ge, GeP, GeT, Gen)
+      !! Calculate excess Gibbs energy and its derivatives given pressure and
+      !! temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%gibbs_excess(&
+      !!    n, P, T, root_type="stable", &
+      !!    Ge=Ge, GeP=GeP, GeT=GeT, Gen=Gen &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out), optional :: Ge
+      !! Excess Gibbs energy [bar L]
+      real(pr), intent(out), optional :: GeP
+      !! \(\frac{dG^E}}{dP}\)
+      real(pr), intent(out), optional :: GeT
+      !! \(\frac{dG^E}}{dT}\)
+      real(pr), intent(out), optional :: Gen(size(n))
+      !! \(\frac{dG^E}}{dn}\)
+
+      real(pr) :: lngamma(size(n)), dlngammadP(size(n)), dlngammadT(size(n))
+      real(pr) :: dlngammadn(size(n),size(n))
+
+      integer :: j
+
+      logical :: dp, dt, dn, present_derivs
+
+      dp = present(GeP)
+      dt = present(GeT)
+      dn = present(Gen)
+      present_derivs = dp .or. dt .or. dn
+
+      if (.not. present_derivs) then
+         call eos%ln_activity_coefficient(&
+            n=n, P=P, T=T, root_type=root_type, lngamma=lngamma &
+            )
+      else
+         call eos%ln_activity_coefficient(&
+            n=n, P=P, T=T, root_type=root_type, &
+            lngamma=lngamma, dlngammadP=dlngammadP, &
+            dlngammadT=dlngammadT, dlngammadn=dlngammadn &
+            )
+      end if
+
+      if (present(Ge)) Ge = R * T * sum(n * lngamma)
+      if (present(GeP)) GeP = R * T * sum(n * dlngammadP)
+      if (present(GeT)) GeT = R * sum(n * lngamma) + R * T * sum(n * dlngammadT)
+
+      if (present(Gen)) then
+         do j=1, size(n)
+            Gen(j) = R * T * sum(n * dlngammadn(:,j)) + R * T * lngamma(j)
+         end do
+      end if
+   end subroutine gibbs_excess
+
+   subroutine enthalpy_excess(eos, n, P, T, root_type, He)
+      !! Calculate excess enthalpy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%enthalpy_excess(n, P, T, root_type="stable", He=He)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: He
+      !! Excess enthalpy [bar L]
+
+      real(pr) :: dlngammadT(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, dlngammadT=dlngammadT &
+         )
+
+      He = -R * T**2 * sum(n * dlngammadT)
+   end subroutine enthalpy_excess
+
+   subroutine volume_excess(eos, n, P, T, root_type, Ve)
+      !! Calculate excess volume given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%volume_excess(n, P, T, root_type="stable", Ve=Ve)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Ve !! Excess volume [L]
+
+      real(pr) :: dlngammadP(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, dlngammadP=dlngammadP &
+         )
+
+      Ve = R * T * sum(n * dlngammadP)
+   end subroutine volume_excess
+
+   subroutine entropy_excess(eos, n, P, T, root_type, Se)
+      !! Calculate excess entropy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !!
+      !! call eos%entropy_excess(n, P, T, root_type="stable", Se=Se)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Se
+      !! Excess entropy [bar L K^-1]
+
+      real(pr) :: lngamma(size(n)), dlngammadT(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, &
+         lngamma=lngamma, dlngammadT=dlngammadT &
+         )
+
+      Se = -R * T * sum(n * dlngammadT) - R * sum(n * lngamma)
+   end subroutine entropy_excess
+
+   subroutine helmholtz_excess(eos, n, P, T, root_type, Ae)
+      !! Calculate excess Helmholtz energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%helmholtz_excess(n, P, T, root_type="stable", Ae=Ae)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Ae
+      !! Excess Helmholtz energy [bar L]
+
+      real(pr) :: lngamma(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, lngamma=lngamma &
+         )
+
+      Ae = R * T * sum(n * lngamma)
+   end subroutine helmholtz_excess
+   ! ==========================================================================
+   ! Excess properties
+   ! --------------------------------------------------------------------------
    real(pr) function Psat_pure(eos, ncomp, T)
       !! Calculation of saturation pressure of a pure component using the
       !! secant method.

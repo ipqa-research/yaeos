@@ -49,6 +49,10 @@ program test_thermoprops_ar
 
    call test_cv_and_cp(passed)
    call assert(passed, "Cv and Cp PT")
+
+   ! Excess properties test
+   call test_lngamma_pt(passed)
+   call assert(passed, "lngamma PT")
 contains
    ! ===========================================================================
    ! Fixtures
@@ -925,7 +929,7 @@ contains
       real(pr) :: Hr_v
 
       real(pr) :: nd1(nc), nd2(nc), nd3(nc)
-      real(pr) :: ntot, v, t, p, n(nc), delta_p, delta_t, delta_n, Z
+      real(pr) :: v, t, p, n(nc), delta_p, delta_t, delta_n, Z
 
       real(pr) :: HrT_num, HrP_num, Hrn_num(nc) ! numeric residuals
       real(pr) :: Hr_plus_delta_t, Hr_plus_delta_p
@@ -1305,6 +1309,9 @@ contains
       check = .true.
    end subroutine test_internal_energy_pt
 
+   ! ==========================================================================
+   ! Cv and Cp PT
+   ! --------------------------------------------------------------------------
    subroutine test_cv_and_cp(check)
       logical, intent(out) :: check
 
@@ -1345,4 +1352,172 @@ contains
 
       check = .true.
    end subroutine test_cv_and_cp
+
+   ! ==========================================================================
+   ! lngamma PT
+   ! --------------------------------------------------------------------------
+   subroutine test_lngamma_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: lngamma(nc)
+      real(pr) :: dlngammadP(nc), dlngammadT(nc), dlngammadn(nc, nc)
+      real(pr) :: lngamma_ind(nc), dlngammadP_ind(nc)
+      real(pr) :: dlngammadT_ind(nc), dlngammadn_ind(nc, nc)
+
+      real(pr) :: p, t, v, n(nc)
+      real(pr) :: delta_p, delta_t, delta_n
+      real(pr) :: lng_plus_delta_p(nc), lng_minus_delta_p(nc), lngdP_num(nc)
+      real(pr) :: lng_plus_delta_t(nc), lng_minus_delta_t(nc), lngdT_num(nc)
+      real(pr) :: n_plus(nc), n_minus(nc), lng_plus(nc), lng_minus(nc)
+      real(pr) :: lng_num(nc, nc)
+
+      integer :: i, j
+
+      eos = ternary_PR76()
+
+      delta_p = 0.002_pr
+      delta_t = 0.001_pr
+      delta_n = 0.001_pr
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", &
+         lngamma=lngamma, dlngammadP=dlngammadP, dlngammadT=dlngammadT, &
+         dlngammadn=dlngammadn &
+         )
+
+      ! Individual calls
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", lngamma=lngamma_ind &
+         )
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", dlngammadP=dlngammadP_ind &
+         )
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", dlngammadT=dlngammadT_ind &
+         )
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", dlngammadn=dlngammadn_ind &
+         )
+
+      if (.not. allclose(lngamma, lngamma_ind, rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadP, dlngammadP_ind, rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadT, dlngammadT_ind, rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadn(1,:), dlngammadn_ind(1,:), rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadn(2,:), dlngammadn_ind(2,:), rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadn(3,:), dlngammadn_ind(3,:), rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
+
+      ! dP
+      call eos%ln_activity_coefficient(&
+         n, p + delta_p, t, root_type="stable", &
+         lngamma=lng_plus_delta_p &
+         )
+      call eos%ln_activity_coefficient(&
+         n, p - delta_p, t, root_type="stable", &
+         lngamma=lng_minus_delta_p &
+         )
+      lngdP_num = (lng_plus_delta_p - lng_minus_delta_p) / (2.0_pr * delta_p)
+
+      if (.not. allclose(dlngammadP, lngdP_num, rtol=1e-5_pr)) then
+         check = .false.
+         return
+      end if
+
+
+      ! dT
+      call eos%ln_activity_coefficient(&
+         n, p, t + delta_t, root_type="stable", &
+         lngamma=lng_plus_delta_t &
+         )
+      call eos%ln_activity_coefficient(&
+         n, p, t - delta_t, root_type="stable", &
+         lngamma=lng_minus_delta_t &
+         )
+      lngdT_num = (lng_plus_delta_t - lng_minus_delta_t) / (2.0_pr * delta_t)
+
+      if (.not. allclose(dlngammadT, lngdT_num, rtol=1e-6_pr)) then
+         check = .false.
+         return
+      end if
+
+      ! dn
+      do j = 1, nc
+         ! original composition
+         n_plus  = n
+         n_minus = n
+
+         ! component j perturbation
+         n_plus(j)  = n_plus(j)  + delta_n
+         n_minus(j) = n_minus(j) - delta_n
+
+         ! +delta evaluation
+         call eos%ln_activity_coefficient(&
+            n_plus, p, t, root_type="stable", &
+            lngamma=lng_plus &
+            )
+
+         ! -delta evaluation
+         call eos%ln_activity_coefficient(&
+            n_minus, p, t, root_type="stable", &
+            lngamma=lng_minus &
+            )
+
+         ! derivada numerica
+         do i = 1, nc
+            lng_num(i,j) = (lng_plus(i) - lng_minus(i)) / (2.0_pr * delta_n)
+         end do
+      end do
+
+      if (.not. allclose(dlngammadn(1,:), lng_num(1,:), rtol=2e-7_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadn(2,:), lng_num(2,:), rtol=2e-7_pr)) then
+         check = .false.
+         return
+      end if
+
+      if (.not. allclose(dlngammadn(3,:), lng_num(3,:), rtol=2e-7_pr)) then
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_lngamma_pt
+
+
 end program test_thermoprops_ar
