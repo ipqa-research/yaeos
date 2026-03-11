@@ -49,7 +49,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
+        else
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
