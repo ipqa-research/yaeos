@@ -25,6 +25,7 @@ jobs:
         submodules: false
 
     - name: Setup Fortran Compiler
+      if: runner.os != 'Windows'
       uses: fortran-lang/setup-fortran@v1.8.1
       id: setup-fortran
       with:
@@ -69,19 +70,23 @@ jobs:
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
       run: |
-        fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
+        else
+          fpm test --profile release --flag "-g -ffree-line-length-0" 
+        fi
 
     - name: Run tests with coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
       run: |
         fpm test --profile release --flag "-g -coverage -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Coverage
       run: bash ci/ci.sh coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
 
     - name: Upload coverage reports to Codecov
-      if: ${{ env.FC == 'gfortran' }}
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
