@@ -1033,6 +1033,206 @@ hr_pt: block
 end block hr_pt
 ```
 
+### Residual Gibbs free energy (P, T): \(G^r(\mathbf{n}, P, T)\)
+
+**MM - Chapter 1 - Table 6 (Equation XIII)**
+
+Residual Gibbs free energy \((\mathbf{n}, P, T)\) can be obtained as follows:
+
+$$
+    G^r(\mathbf{n}, P, T) = G^r(\mathbf{n}, V, T) - n R T \; \ln \; Z
+$$
+
+Therefore, the derivatives are the same as the residual Helholtz free energy
+\((\mathbf{n}, P, T)\):
+
+$$
+    \left(\frac{\partial \, G^r(\mathbf{n},P,T)}{\partial
+    P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
+    G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
+    \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
+    \right)
+$$
+
+$$
+    \left(\frac{\partial \, G^r(\mathbf{n},P,T)}{\partial
+    T}\right)_{P,\mathbf{n}} = \left(\frac{\partial G^r(\mathbf{n}, V,
+    T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    G^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \; ln \; Z -
+    n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
+$$
+
+$$
+    \left(\frac{\partial G^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
+    \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
+    \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
+    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
+    \frac{1}{n}\right)
+$$
+
+```fortran
+gr_pt: block
+    real(pr) :: n(2), T, P, Gr, GrP, GrT, Grn(2)
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%gibbs_residual_pt(&
+       n, P, T, root_type="stable", Gr=Gr, GrP=GrP, GrT=GrT, Grn=Grn &
+       )
+end block gr_pt
+```
+
+### Residual internal energy (P, T): \(U^r(\mathbf{n}, P, T)\)
+
+**MM - Chapter 1 - Table 6 (Equation XI)**
+
+Residual internal energy \((\mathbf{n}, P, T)\) can be obtained as follows:
+
+$$
+    U^r(\mathbf{n}, P, T) = U^r(\mathbf{n}, V, T)
+$$
+
+Therefore, its derivatives are the same as enthalpy \((\mathbf{n}, P, T)\):
+
+$$
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial P}{\partial V}\right)^{-1}_{T,n}
+$$
+
+$$
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial T}\right)_{P,n}
+$$
+
+$$
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T}
+$$
+
+```fortran
+ur_pt: block
+    real(pr) :: n(2), T, P, Ur, UrP, UrT, Urn(2)
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%gibbs_residual_pt(&
+       n, P, T, root_type="stable", Ur=Ur, UrP=UrP, UrT=UrT, Urn=Urn &
+       )
+end block ur_pt
+```
+
+### Residual constant volume heat capacity (P,T): \(C_V^r(\mathbf{n},P,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation X)**
+
+Residual constant volume heat capacity \((\mathbf{n}, P, T)\) can be obtained
+as follows:
+
+$$
+    C_v(\mathbf{n}, P, T) = C_v(\mathbf{n}, V, T)
+$$
+
+```fortran
+cv_pt: block
+    real(pr) :: n(2), T, P, Cv
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%Cv_residual_pt(n, P, T, root_type="stable", Cv=Cv)
+end block cv_pt
+```
+
+### Residual constant pressure heat capacity (P,T): \(C_P^r(\mathbf{n},P,T)\)
+
+**MM - Chapter 1 - Table 6 (Equation XIV)**
+
+Residual constant pressure heat capacity \((\mathbf{n}, P, T)\) can be obtained
+as follows:
+
+$$
+    C_p(\mathbf{n}, P, T) = C_p(\mathbf{n}, V, T)
+$$
+
+```fortran
+cp_pt: block
+    real(pr) :: n(2), T, P, Cp
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%Cp_residual_pt(n, P, T, root_type="stable", Cp=Cp)
+end block cp_pt
+```
+
+## Excess properties
+
+### Activity coefficients
+
+**MM - Chapter 1 - Table 9 (Equation 1)**
+
+The natural logarithm of the activity coefficient is given by:
+
+$$
+    ln \; \gamma_i(\mathbf{n}, P, T) = ln \; \hat{\phi}_i(\mathbf{n}, P, T) -
+    ln \; \phi_i(P, T)
+$$
+
+Where:
+
+- \(\hat{\phi}_i(\mathbf{n}, P, T)\) is the fugacity coefficient of component
+  \(i\) in the mixture
+
+- \(\phi_i(P, T)\) is the fugacity coefficient of component \(i\) in the pure
+  state at the same pressure and temperature of the mixture.
+
+And its derivatives:
+
+**MM - Chapter 1 - Table 9 (Equations V and VI)**
+
+$$
+    \left(\frac{\partial \ln \; \gamma_i}{\partial T}\right)_{P,n} =
+    \left(\frac{\partial \ln \; \hat{\phi}_i}{\partial T}\right)_{P,n} -
+    \left(\frac{\partial \ln \; \phi_i}{\partial T}\right)_{P}
+$$
+
+$$
+    \left(\frac{\partial \ln \; \gamma_i}{\partial P}\right)_{T,n} =
+    \frac{\overline{V}_i(\mathbf{n}, P, T) - v_i(P, T)}{RT}
+$$
+
+$$
+    \left(\frac{\partial \ln \; \gamma_i}{\partial n_j}\right)_{P,T} =
+    \left(\frac{\partial \ln \; \hat{\phi}_i}{\partial n_j}\right)_{P,T}
+$$
+
+Where:
+
+$$
+\overline{V}_i(\mathbf{n}, P, T) = \left(\frac{\partial V}{\partial
+n_i}\right)_{P,T} = - \frac{\left(\frac{\partial P}{\partial n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}}
+$$
+
+and \(v_i(P, T)\) is the partial molar volume of component \(i\) in the pure
+state at the same pressure and temperature of the mixture.
+
+### Excess Gibbs energy (P, T): \(G^E(\mathbf{n}, P, T)\)
+
 
 # References
 [1] 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:

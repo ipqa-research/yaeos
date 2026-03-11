@@ -32,9 +32,23 @@ program test_thermoprops_ar
    call test_fugacity_TP(passed)
    call assert(passed, "Fugacity TP")
 
-   call test_ar_pt(passed)
-   call assert(passed, "Ar PT")
+   call test_helmholtz_pt(passed)
+   call assert(passed, "Helmholtz PT")
 
+   call test_entropy_pt(passed)
+   call assert(passed, "Entropy Residual PT")
+
+   call test_enthalpy_pt(passed)
+   call assert(passed, "Enthalpy Residual PT")
+
+   call test_gibbs_pt(passed)
+   call assert(passed, "Gibbs Residual PT")
+
+   call test_internal_energy_pt(passed)
+   call assert(passed, "Internal Energy PT")
+
+   call test_cv_and_cp(passed)
+   call assert(passed, "Cv and Cp PT")
 contains
    ! ===========================================================================
    ! Fixtures
@@ -649,7 +663,7 @@ contains
    ! ==========================================================================
    ! Ar PT
    ! --------------------------------------------------------------------------
-   subroutine test_ar_pt(check)
+   subroutine test_helmholtz_pt(check)
       logical, intent(out) :: check
 
       class(ArModel), allocatable :: eos
@@ -769,5 +783,566 @@ contains
          check = .false.
          return
       end if
-   end subroutine test_ar_pt
+
+      check = .true.
+   end subroutine test_helmholtz_pt
+
+   ! ==========================================================================
+   ! Sr PT
+   ! --------------------------------------------------------------------------
+   subroutine test_entropy_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Sr, SrT, SrP, Srn(nc)
+      real(pr) :: Sr_v
+
+      real(pr) :: nd1(nc), nd2(nc), nd3(nc)
+      real(pr) :: ntot, v, t, p, n(nc), delta_p, delta_t, delta_n, Z
+
+      real(pr) :: SrT_num, SrP_num, Srn_num(nc) ! numeric residuals
+      real(pr) :: Sr_plus_delta_t, Sr_plus_delta_p
+      real(pr) :: Sr_plus_delta_n1, Sr_plus_delta_n2, Sr_plus_delta_n3
+      real(pr) :: Sr_minus_delta_t, Sr_minus_delta_p
+      real(pr) :: Sr_minus_delta_n1, Sr_minus_delta_n2, Sr_minus_delta_n3
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+      delta_t = 0.00001_pr
+      delta_p = 0.00001_pr
+      delta_n = 0.00001_pr
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ntot = sum(n)
+      Z = p*v/(ntot*R*t)
+
+      ! Sr
+      call eos%entropy_residual_pt(&
+         n, p, t, root_type="stable", Sr=Sr, SrP=SrP, SrT=SrT, Srn=Srn &
+         )
+      call eos%entropy_residual_vt(n, v, t, Sr_v)
+
+      if (rel_error(Sr, Sr_v + ntot*R*log(Z)) > 1e-14) then
+         print *, "Error Sr:", Sr, " Sr_v:", Sr_v + ntot*R*log(Z)
+         check = .false.
+         return
+      end if
+
+      ! SrT
+      call eos%entropy_residual_pt(&
+         n, p, t + delta_t, root_type="stable", Sr=Sr_plus_delta_t &
+         )
+      call eos%entropy_residual_pt(&
+         n, p, t - delta_t, root_type="stable", Sr=Sr_minus_delta_t &
+         )
+
+      SrT_num = (Sr_plus_delta_t - Sr_minus_delta_t) / (2.0_pr * delta_t)
+
+      if (rel_error(SrT, SrT_num) > 1e-6) then
+         print *, "Error SrT:", SrT, " SrT_num:", SrT_num
+         check = .false.
+         return
+      end if
+
+      ! SrP
+      call eos%entropy_residual_pt(&
+         n, p + delta_p, t, root_type="stable", Sr=Sr_plus_delta_p &
+         )
+      call eos%entropy_residual_pt(&
+         n, p - delta_p, t, root_type="stable", Sr=Sr_minus_delta_p &
+         )
+
+      SrP_num = (Sr_plus_delta_p - Sr_minus_delta_p) / (2.0_pr * delta_p)
+
+      if (rel_error(SrP, SrP_num) > 1e-6) then
+         print *, "Error SrP:", SrP, " SrP_num:", SrP_num
+         check = .false.
+         return
+      end if
+
+      ! Srn
+      nd1 = n + [delta_n, 0.0_pr, 0.0_pr]
+      call eos%entropy_residual_pt(&
+         nd1, p, t, root_type="stable", Sr=Sr_plus_delta_n1 &
+         )
+      nd1 = n - [delta_n, 0.0_pr, 0.0_pr]
+      call eos%entropy_residual_pt(&
+         nd1, p, t, root_type="stable", Sr=Sr_minus_delta_n1 &
+         )
+
+      nd2 = n + [0.0_pr, delta_n, 0.0_pr]
+      call eos%entropy_residual_pt(&
+         nd2, p, t, root_type="stable", Sr=Sr_plus_delta_n2 &
+         )
+      nd2 = n - [0.0_pr, delta_n, 0.0_pr]
+      call eos%entropy_residual_pt(&
+         nd2, p, t, root_type="stable", Sr=Sr_minus_delta_n2 &
+         )
+
+      nd3 = n + [0.0_pr, 0.0_pr, delta_n]
+      call eos%entropy_residual_pt(&
+         nd3, p, t, root_type="stable", Sr=Sr_plus_delta_n3 &
+         )
+      nd3 = n - [0.0_pr, 0.0_pr, delta_n]
+      call eos%entropy_residual_pt(&
+         nd3, p, t, root_type="stable", Sr=Sr_minus_delta_n3 &
+         )
+
+      Srn_num = [&
+         (Sr_plus_delta_n1 - Sr_minus_delta_n1) / (2.0_pr * delta_n), &
+         (Sr_plus_delta_n2 - Sr_minus_delta_n2) / (2.0_pr * delta_n), &
+         (Sr_plus_delta_n3 - Sr_minus_delta_n3) / (2.0_pr * delta_n) &
+         ]
+
+      if (.not. allclose(Srn, Srn_num, rtol=1e-6_pr)) then
+         print *, "Error Srn:", Srn, " Srn_num:", Srn_num
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_entropy_pt
+
+   ! ==========================================================================
+   ! Hr PT
+   ! --------------------------------------------------------------------------
+   subroutine test_enthalpy_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Hr, HrT, HrP, Hrn(nc)
+      real(pr) :: Hr_v
+
+      real(pr) :: nd1(nc), nd2(nc), nd3(nc)
+      real(pr) :: ntot, v, t, p, n(nc), delta_p, delta_t, delta_n, Z
+
+      real(pr) :: HrT_num, HrP_num, Hrn_num(nc) ! numeric residuals
+      real(pr) :: Hr_plus_delta_t, Hr_plus_delta_p
+      real(pr) :: Hr_plus_delta_n1, Hr_plus_delta_n2, Hr_plus_delta_n3
+      real(pr) :: Hr_minus_delta_t, Hr_minus_delta_p
+      real(pr) :: Hr_minus_delta_n1, Hr_minus_delta_n2, Hr_minus_delta_n3
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+      delta_t = 0.00001_pr
+      delta_p = 0.00001_pr
+      delta_n = 0.00001_pr
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Hr
+      call eos%enthalpy_residual_pt(&
+         n, p, t, root_type="stable", Hr=Hr, &
+         HrP=HrP, HrT=HrT, Hrn=Hrn &
+         )
+
+      call eos%enthalpy_residual_vt(n, v, t, Hr_v)
+
+      if (rel_error(Hr, Hr_v) > 1e-14) then
+         print *, "Error Hr:", Hr, " Hr_v:", Hr_v
+         check = .false.
+         return
+      end if
+
+      ! HrT
+      call eos%enthalpy_residual_pt(&
+         n, p, t + delta_t, root_type="stable", Hr=Hr_plus_delta_t &
+         )
+      call eos%enthalpy_residual_pt(&
+         n, p, t - delta_t, root_type="stable", Hr=Hr_minus_delta_t &
+         )
+
+      HrT_num = (Hr_plus_delta_t - Hr_minus_delta_t) / (2.0_pr * delta_t)
+
+      if (rel_error(HrT, HrT_num) > 1e-6) then
+         print *, "Error HrT:", HrT, " HrT_num:", HrT_num
+         check = .false.
+         return
+      end if
+
+      ! HrP
+      call eos%enthalpy_residual_pt(&
+         n, p + delta_p, t, root_type="stable", Hr=Hr_plus_delta_p &
+         )
+      call eos%enthalpy_residual_pt(&
+         n, p - delta_p, t, root_type="stable", Hr=Hr_minus_delta_p &
+         )
+
+      HrP_num = (Hr_plus_delta_p - Hr_minus_delta_p) / (2.0_pr * delta_p)
+
+      if (rel_error(HrP, HrP_num) > 1e-6) then
+         print *, "Error HrP:", HrP, " HrP_num:", HrP_num
+         check = .false.
+         return
+      end if
+
+      ! Hrn
+      nd1 = n + [delta_n, 0.0_pr, 0.0_pr]
+      call eos%enthalpy_residual_pt(&
+         nd1, p, t, root_type="stable", Hr=Hr_plus_delta_n1 &
+         )
+      nd1 = n - [delta_n, 0.0_pr, 0.0_pr]
+      call eos%enthalpy_residual_pt(&
+         nd1, p, t, root_type="stable", Hr=Hr_minus_delta_n1 &
+         )
+
+      nd2 = n + [0.0_pr, delta_n, 0.0_pr]
+      call eos%enthalpy_residual_pt(&
+         nd2, p, t, root_type="stable", Hr=Hr_plus_delta_n2 &
+         )
+      nd2 = n - [0.0_pr, delta_n, 0.0_pr]
+      call eos%enthalpy_residual_pt(&
+         nd2, p, t, root_type="stable", Hr=Hr_minus_delta_n2 &
+         )
+
+      nd3 = n + [0.0_pr, 0.0_pr, delta_n]
+      call eos%enthalpy_residual_pt(&
+         nd3, p, t, root_type="stable", Hr=Hr_plus_delta_n3 &
+         )
+      nd3 = n - [0.0_pr, 0.0_pr, delta_n]
+      call eos%enthalpy_residual_pt(&
+         nd3, p, t, root_type="stable", Hr=Hr_minus_delta_n3 &
+         )
+
+      Hrn_num = [&
+         (Hr_plus_delta_n1 - Hr_minus_delta_n1) / (2.0_pr * delta_n), &
+         (Hr_plus_delta_n2 - Hr_minus_delta_n2) / (2.0_pr * delta_n), &
+         (Hr_plus_delta_n3 - Hr_minus_delta_n3) / (2.0_pr * delta_n) &
+         ]
+
+      if (.not. allclose(Hrn, Hrn_num, rtol=1e-6_pr)) then
+         print *, "Error Hrn:", Hrn, " Hrn_num:", Hrn_num
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_enthalpy_pt
+
+   ! ==========================================================================
+   ! Gr PT
+   ! --------------------------------------------------------------------------
+   subroutine test_gibbs_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Gr, GrT, GrP, Grn(nc)
+      real(pr) :: Gr_v
+
+      real(pr) :: nd1(nc), nd2(nc), nd3(nc)
+      real(pr) :: ntot, v, t, p, n(nc), delta_p, delta_t, delta_n, Z
+
+      real(pr) :: GrT_num, GrP_num, Grn_num(nc) ! numeric residuals
+      real(pr) :: Gr_plus_delta_t, Gr_plus_delta_p
+      real(pr) :: Gr_plus_delta_n1, Gr_plus_delta_n2, Gr_plus_delta_n3
+      real(pr) :: Gr_minus_delta_t, Gr_minus_delta_p
+      real(pr) :: Gr_minus_delta_n1, Gr_minus_delta_n2, Gr_minus_delta_n3
+
+      real(pr) :: Hr, Sr, lnphi(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+      delta_t = 0.00001_pr
+      delta_p = 0.00001_pr
+      delta_n = 0.00001_pr
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ntot = sum(n)
+      Z = p * v / (ntot * R * t)
+
+      ! Gr
+      call eos%gibbs_residual_pt(&
+         n, p, t, root_type="stable", Gr=Gr, GrP=GrP, GrT=GrT, Grn=Grn &
+         )
+
+      call eos%gibbs_residual_vt(n, v, t, Gr=Gr_v)
+
+      if (rel_error(Gr, Gr_v - ntot * R * t * log(Z)) > 1e-14) then
+         print *, "Error Gr:", Gr, " Gr_v:", Gr_v - ntot * R * t * log(Z)
+         check = .false.
+         return
+      end if
+
+      ! Gr from Sr and Hr
+      call eos%entropy_residual_pt(n, p, t, root_type="stable", Sr=Sr)
+      call eos%enthalpy_residual_pt(n, p, t, root_type="stable", Hr=Hr)
+
+      if (rel_error(Gr, Hr - t * Sr) > 1e-14) then
+         print *, "Error Gr:", Gr, " Hr - t * Sr:", Hr - t * Sr
+         check = .false.
+         return
+      end if
+
+      ! Gr from phis
+      call eos%lnphi_pt(n, p, t, root_type="stable", lnPhi=lnphi)
+
+      if (rel_error(Gr, R * t * sum(n * lnphi)) > 1e-14) then
+         print *, "Error Gr:", Gr, &
+            " R * t * sum(n * lnphi):", R * t * sum(n * lnphi)
+
+         check = .false.
+         return
+      end if
+
+      ! GrT
+      call eos%gibbs_residual_pt(&
+         n, p, t + delta_t, root_type="stable", Gr=Gr_plus_delta_t &
+         )
+      call eos%gibbs_residual_pt(&
+         n, p, t - delta_t, root_type="stable", Gr=Gr_minus_delta_t &
+         )
+
+      GrT_num = (Gr_plus_delta_t - Gr_minus_delta_t) / (2.0_pr * delta_t)
+
+      if (rel_error(GrT, GrT_num) > 1e-6) then
+         print *, "Error GrT:", GrT, " GrT_num:", GrT_num
+         check = .false.
+         return
+      end if
+
+      ! GrP
+      call eos%gibbs_residual_pt(&
+         n, p + delta_p, t, root_type="stable", Gr=Gr_plus_delta_p &
+         )
+      call eos%gibbs_residual_pt(&
+         n, p - delta_p, t, root_type="stable", Gr=Gr_minus_delta_p &
+         )
+
+      GrP_num = (Gr_plus_delta_p - Gr_minus_delta_p) / (2.0_pr * delta_p)
+
+      if (rel_error(GrP, GrP_num) > 1e-6) then
+         print *, "Error GrP:", GrP, " GrP_num:", GrP_num
+         check = .false.
+         return
+      end if
+
+      ! Grn
+      nd1 = n + [delta_n, 0.0_pr, 0.0_pr]
+      call eos%gibbs_residual_pt(&
+         nd1, p, t, root_type="stable", Gr=Gr_plus_delta_n1 &
+         )
+      nd1 = n - [delta_n, 0.0_pr, 0.0_pr]
+      call eos%gibbs_residual_pt(&
+         nd1, p, t, root_type="stable", Gr=Gr_minus_delta_n1 &
+         )
+
+      nd2 = n + [0.0_pr, delta_n, 0.0_pr]
+      call eos%gibbs_residual_pt(&
+         nd2, p, t, root_type="stable", Gr=Gr_plus_delta_n2 &
+         )
+      nd2 = n - [0.0_pr, delta_n, 0.0_pr]
+      call eos%gibbs_residual_pt(&
+         nd2, p, t, root_type="stable", Gr=Gr_minus_delta_n2 &
+         )
+
+      nd3 = n + [0.0_pr, 0.0_pr, delta_n]
+      call eos%gibbs_residual_pt(&
+         nd3, p, t, root_type="stable", Gr=Gr_plus_delta_n3 &
+         )
+      nd3 = n - [0.0_pr, 0.0_pr, delta_n]
+      call eos%gibbs_residual_pt(&
+         nd3, p, t, root_type="stable", Gr=Gr_minus_delta_n3 &
+         )
+
+      Grn_num = [&
+         (Gr_plus_delta_n1 - Gr_minus_delta_n1) / (2.0_pr * delta_n), &
+         (Gr_plus_delta_n2 - Gr_minus_delta_n2) / (2.0_pr * delta_n), &
+         (Gr_plus_delta_n3 - Gr_minus_delta_n3) / (2.0_pr * delta_n) &
+         ]
+
+      if (.not. allclose(Grn, Grn_num, rtol=1e-6_pr)) then
+         print *, "Error Grn:", Grn, " Grn_num:", Grn_num
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_gibbs_pt
+
+   ! ==========================================================================
+   ! Ur PT
+   ! --------------------------------------------------------------------------
+   subroutine test_internal_energy_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Ur, UrT, UrP, Urn(nc)
+      real(pr) :: Ur_v
+
+      real(pr) :: nd1(nc), nd2(nc), nd3(nc)
+      real(pr) :: ntot, v, t, p, n(nc), delta_p, delta_t, delta_n, Z
+
+      real(pr) :: UrT_num, UrP_num, Urn_num(nc) ! numeric residuals
+      real(pr) :: Ur_plus_delta_t, Ur_plus_delta_p
+      real(pr) :: Ur_plus_delta_n1, Ur_plus_delta_n2, Ur_plus_delta_n3
+      real(pr) :: Ur_minus_delta_t, Ur_minus_delta_p
+      real(pr) :: Ur_minus_delta_n1, Ur_minus_delta_n2, Ur_minus_delta_n3
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+      delta_t = 0.00001_pr
+      delta_p = 0.00001_pr
+      delta_n = 0.00001_pr
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Ur
+      call eos%internal_energy_residual_pt(&
+         n, p, t, root_type="stable", Ur=Ur, &
+         UrP=UrP, UrT=UrT, Urn=Urn &
+         )
+
+      call eos%internal_energy_residual_vt(n, v, t, Ur_v)
+
+      if (rel_error(Ur, Ur_v) > 1e-14) then
+         print *, "Error Ur:", Ur, " Ur_v:", Ur_v
+         check = .false.
+         return
+      end if
+
+      ! UrT
+      call eos%internal_energy_residual_pt(&
+         n, p, t + delta_t, root_type="stable", Ur=Ur_plus_delta_t &
+         )
+      call eos%internal_energy_residual_pt(&
+         n, p, t - delta_t, root_type="stable", Ur=Ur_minus_delta_t &
+         )
+
+      UrT_num = (Ur_plus_delta_t - Ur_minus_delta_t) / (2.0_pr * delta_t)
+
+      if (rel_error(UrT, UrT_num) > 1e-6) then
+         print *, "Error UrT:", UrT, " UrT_num:", UrT_num
+         check = .false.
+         return
+      end if
+
+      ! UrP
+      call eos%internal_energy_residual_pt(&
+         n, p + delta_p, t, root_type="stable", Ur=Ur_plus_delta_p &
+         )
+      call eos%internal_energy_residual_pt(&
+         n, p - delta_p, t, root_type="stable", Ur=Ur_minus_delta_p &
+         )
+
+      UrP_num = (Ur_plus_delta_p - Ur_minus_delta_p) / (2.0_pr * delta_p)
+
+      if (rel_error(UrP, UrP_num) > 1e-6) then
+         print *, "Error UrP:", UrP, " UrP_num:", UrP_num
+         check = .false.
+         return
+      end if
+
+      ! Urn
+      nd1 = n + [delta_n, 0.0_pr, 0.0_pr]
+      call eos%internal_energy_residual_pt(&
+         nd1, p, t, root_type="stable", Ur=Ur_plus_delta_n1 &
+         )
+      nd1 = n - [delta_n, 0.0_pr, 0.0_pr]
+      call eos%internal_energy_residual_pt(&
+         nd1, p, t, root_type="stable", Ur=Ur_minus_delta_n1 &
+         )
+
+      nd2 = n + [0.0_pr, delta_n, 0.0_pr]
+      call eos%internal_energy_residual_pt(&
+         nd2, p, t, root_type="stable", Ur=Ur_plus_delta_n2 &
+         )
+      nd2 = n - [0.0_pr, delta_n, 0.0_pr]
+      call eos%internal_energy_residual_pt(&
+         nd2, p, t, root_type="stable", Ur=Ur_minus_delta_n2 &
+         )
+
+      nd3 = n + [0.0_pr, 0.0_pr, delta_n]
+      call eos%internal_energy_residual_pt(&
+         nd3, p, t, root_type="stable", Ur=Ur_plus_delta_n3 &
+         )
+      nd3 = n - [0.0_pr, 0.0_pr, delta_n]
+      call eos%internal_energy_residual_pt(&
+         nd3, p, t, root_type="stable", Ur=Ur_minus_delta_n3 &
+         )
+
+      Urn_num = [&
+         (Ur_plus_delta_n1 - Ur_minus_delta_n1) / (2.0_pr * delta_n), &
+         (Ur_plus_delta_n2 - Ur_minus_delta_n2) / (2.0_pr * delta_n), &
+         (Ur_plus_delta_n3 - Ur_minus_delta_n3) / (2.0_pr * delta_n) &
+         ]
+
+      if (.not. allclose(Urn, Urn_num, rtol=1e-6_pr)) then
+         print *, "Error Urn:", Urn, " Urn_num:", Urn_num
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_internal_energy_pt
+
+   subroutine test_cv_and_cp(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: cv, cp
+      real(pr) :: cv_v, cp_v
+      real(pr) :: p, t, v, n(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      call eos%Cv_residual_vt(n, v, t, cv_v)
+      call eos%Cp_residual_vt(n, v, t, cp_v)
+
+      call eos%Cv_residual_pt(n, p, t, root_type="stable", Cv=cv)
+      call eos%Cp_residual_pt(n, p, t, root_type="stable", Cp=cp)
+
+      if (rel_error(cv, cv_v) > 1e-14) then
+         print *, "Error Cv:", cv, " Cv_v:", cv_v
+         check = .false.
+         return
+      end if
+
+      if (rel_error(cp, cp_v) > 1e-14) then
+         print *, "Error Cp:", cp, " Cp_v:", cp_v
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_cv_and_cp
 end program test_thermoprops_ar

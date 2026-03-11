@@ -977,26 +977,46 @@ contains
       real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
 
       real(pr) :: Gr_v, GrT_v, GrV_v, Grn_v(size(n)) ! residual Gibbs energy vt
-      real(pr) :: Z, nt, V, dPdV, P_dummy
+      real(pr) :: Z, nt, V, dPdV, dPdT, dPdn(size(n)), P_dummy
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
 
-      if (present(GrP)) then
+      logical :: dp, dt, dn, present_derivs
+
+      dp = present(GrP)
+      dt = present(GrT)
+      dn = present(Grn)
+
+      present_derivs = dp .or. dt .or. dn
+
+      if (present_derivs) then
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-         call eos%pressure(n=n, V=V, T=T, P=P_dummy, dPdV=dPdV)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%gibbs_residual_vt(&
+            n=n, V=V, T=T, Gr=Gr_v, GrV=GrV_v, GrT=GrT_v, Grn=Grn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
       else
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%gibbs_residual_vt(n=n, V=V, T=T, Gr=Gr_v)
       end if
-
-      call eos%gibbs_residual_vt(&
-         n=n, V=V, T=T, Gr=Gr_v, GrV=GrV_v, GrT=GrT_v, Grn=Grn_v &
-         )
 
       nt = sum(n)
       Z = P * V / (nt * R * T)
 
       if (present(Gr)) Gr = Gr_v - nt * R * T * log(Z)
-      if (present(GrT)) GrT = GrT_v - nt * R * log(Z) + nt * R
-      if (present(GrP)) GrP = GrV_v / dPdV - nt * R * T / P
-      if (present(Grn)) Grn = Grn_v - R * T * log(Z) + R * T
+      
+      if (present(GrP)) GrP = GrV_v / dPdV - nt*R*T*(1.0_pr/P + dVdP/V)
+
+      if (present(GrT)) GrT = &
+         GrT_v + GrV_v * dVdT - nt*R*log(Z) - nt*R*T*(dVdT / V - 1.0_pr/T)
+
+      if (present(Grn)) Grn = &
+         Grn_v + GrV_v * dVdn - R*T*log(Z) - nt*R*T*(dVdn / V - 1.0_pr/nt)
    end subroutine gibbs_residual_pt
 
    subroutine entropy_residual_pt(eos, n, P, T, root_type, Sr, SrP, SrT, Srn)
@@ -1099,25 +1119,39 @@ contains
       real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
       real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
 
-      ! residual internal energy vt
       real(pr) :: Ur_v, UrT_v, UrV_v, Urn_v(size(n))
-      real(pr) :: V, dPdV, P_dummy
+      real(pr) :: V, dPdV, dPdT, dPdn(size(n)), P_dummy
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
 
-      if (present(UrP)) then
+      logical :: dp, dT, dn, derivs_present
+
+      dp = present(UrP)
+      dt = present(UrT)
+      dn = present(Urn)
+
+      derivs_present = dp .or. dt .or. dn
+
+      if (derivs_present) then
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
-         call eos%pressure(n=n, V=V, T=T, P=P_dummy, dPdV=dPdV)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%internal_energy_residual_vt(&
+            n=n, V=V, T=T, Ur=Ur_v, UrV=UrV_v, UrT=UrT_v, Urn=Urn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
       else
          call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%internal_energy_residual_vt(n=n, V=V, T=T, Ur=Ur_v)
       end if
 
-      call eos%internal_energy_residual_vt(&
-         n=n, V=V, T=T, Ur=Ur_v, UrV=UrV_v, UrT=UrT_v, Urn=Urn_v &
-         )
-
       if (present(Ur)) Ur = Ur_v
-      if (present(UrT)) UrT = UrT_v
-      if (present(UrP)) UrP = UrV_v / dPdV
-      if (present(Urn)) Urn = Urn_v
+      if (present(UrP)) UrP = UrV_v * dVdP
+      if (present(UrT)) UrT = UrT_v + UrV_v * dVdT
+      if (present(Urn)) Urn = Urn_v + UrV_v * dVdn
    end subroutine internal_energy_residual_pt
 
    subroutine Cv_residual_pt(eos, n, P, T, root_type, Cv)
