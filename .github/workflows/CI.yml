@@ -74,52 +74,52 @@ jobs:
         slug: ipqa-research/yaeos
         files: "coverage.xml"
 
-tests_windows:
-  runs-on: windows-latest
-  strategy:
-    fail-fast: false
-    matrix:
-      python-version: [3.12]
-      toolchain:
-        - {compiler: gcc, version: 10}
-        - {compiler: gcc, version: 14}
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        submodules: false
+  tests_windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.12]
+        toolchain:
+          - {compiler: gcc, version: 10}
+          - {compiler: gcc, version: 14}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: false
 
-    - name: Setup MSYS2 (toolchain only, no Python)
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        update: true
-        install: >-
-          gcc
-          mingw-w64-x86_64-gcc-libgfortran
-          mingw-w64-x86_64-lapack
-          make
-          git
-          pkg-config
+      - name: Setup MSYS2 (toolchain only, no Python)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            gcc
+            mingw-w64-x86_64-gcc-libgfortran
+            mingw-w64-x86_64-lapack
+            make
+            git
+            pkg-config
 
-    - name: Install Python (independiente de MSYS2)
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Install Python (independiente de MSYS2)
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Setup Fortran Package Manager
-      uses: fortran-lang/setup-fpm@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Fortran Package Manager
+        uses: fortran-lang/setup-fpm@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install Python dependencies
-      run: |
-        pip install numpy scipy matplotlib coverage
+      - name: Install Python dependencies
+        run: |
+          pip install numpy scipy matplotlib coverage
 
-    - name: Run tests
-      shell: msys2 {0}
-      run: |
-        fpm test --profile release --flag "-g -ffree-line-length-0" --c-compiler gcc
+      - name: Run tests
+        shell: msys2 {0}
+        run: |
+          fpm test --profile release --flag "-g -ffree-line-length-0" --c-compiler gcc
 
   Python-API:
     runs-on: ${{ matrix.os }}
