@@ -68,7 +68,7 @@ jobs:
           pkg-config
 
     - name: Run tests on Windows with MSYS2
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Windows'
+      if: runner.os == 'Windows'
       shell: msys2 {0}
       run: |
         fpm test --profile release --flag "-g -ffree-line-length-0" --c-compiler gcc
