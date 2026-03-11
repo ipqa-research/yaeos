@@ -71,9 +71,9 @@ jobs:
       if: ${{ env.FC != 'gfortran' }}
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-          fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
-        else
           fpm test --profile release --flag "-g -ffree-line-length-0" 
+        else
+          fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
         fi
 
     - name: Run tests with coverage
