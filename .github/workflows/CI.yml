@@ -52,6 +52,19 @@ jobs:
         if [ "$RUNNER_OS" == "Linux" ]; then
           sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
         fi
+    - name: Setup MSYS2 on Windows
+      if: runner.os == 'Windows'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64 # Choose the environment (e.g., MINGW64, UCRT64, MINGW32, CLANG64, CLANGARM64)
+        update: true
+        install: >- # Install necessary packages using pacman
+          gcc
+          gfortran
+          make
+          git
+          pkg-config
+          lapack
 
     - name: Run tests without coverage
       if: ${{ env.FC != 'gfortran' }}
