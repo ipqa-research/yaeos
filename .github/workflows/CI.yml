@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: [3.12]
         toolchain:
           - {compiler: gcc, version: 10}
@@ -50,31 +50,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
-        fi
-    - name: Setup MSYS2 on Windows
-      if: runner.os == 'Windows'
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64 # Choose the environment (e.g., MINGW64, UCRT64, MINGW32, CLANG64, CLANGARM64)
-        update: true
-        install: >- # Install necessary packages using pacman
-          gcc
-          mingw-w64-x86_64-gcc-libgfortran
-          mingw-w64-x86_64-lapack
-          make
-          git
-          pkg-config
-
-    - name: Run tests on Windows with MSYS2
-      if: runner.os == 'Windows'
-      shell: msys2 {0}
-      run: |
-        fpm test --profile release --flag "-g -ffree-line-length-0" --c-compiler gcc
+        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
     - name: Run tests without coverage
-      if: ${{ env.FC == 'gfortran' }} && runner.os != 'Windows'
+      if: ${{ env.FC == 'gfortran' }}
       run: |
         fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
@@ -94,7 +73,53 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: ipqa-research/yaeos
         files: "coverage.xml"
+  
+  tests_windows:
+      defaults:
+        run:
+          shell: msys2 {0}
+      runs-on: windows-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          python-version: [3.12]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+          with:
+            submodules: false
 
+        - name: Setup MSYS2
+          uses: msys2/setup-msys2@v2
+          with:
+            msystem: MINGW64
+            update: true
+            install: >-
+              gcc
+              mingw-w64-x86_64-gcc-libgfortran
+              mingw-w64-x86_64-lapack
+              make
+              git
+              pkg-config
+
+        - name: Install Python
+          uses: actions/setup-python@v1
+          with:
+            python-version: ${{ matrix.python-version }}
+
+        - name: Setup Fortran Package Manager
+          uses: fortran-lang/setup-fpm@v7
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install numpy scipy matplotlib coverage
+
+        - name: Run tests
+          run: |
+            fpm test --profile release --flag "-g -ffree-line-length-0" --c-compiler gcc
   Python-API:
     runs-on: ${{ matrix.os }}
     strategy:
