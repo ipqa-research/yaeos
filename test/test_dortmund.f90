@@ -267,6 +267,7 @@ contains
 
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT2=GeT2_i)
       call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 3")
+      print *, GeT2, GeT2_i, GeT2 - GeT2_i
       call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 4")
 
       call model%excess_gibbs(n, T, Ge=Ge_i, Gen=Gen_i)
