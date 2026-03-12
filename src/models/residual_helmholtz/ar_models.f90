@@ -75,6 +75,8 @@ module yaeos__models_ar
       procedure :: enthalpy_excess
       procedure :: volume_excess
       procedure :: entropy_excess
+      procedure :: helmholtz_excess
+      procedure :: internal_energy_excess
       procedure :: Psat_pure
    end type ArModel
 
@@ -1226,7 +1228,7 @@ contains
    end subroutine Cp_residual_pt
 
    ! ==========================================================================
-   ! Excess properties
+   ! Excess thermoprops
    ! --------------------------------------------------------------------------
    subroutine ln_activity_coefficient(&
       eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn &
@@ -1525,16 +1527,52 @@ contains
       real(pr), intent(out) :: Ae
       !! Excess Helmholtz energy [bar L]
 
-      real(pr) :: lngamma(size(n))
+      real(pr) :: lngamma(size(n)), dlngammadP(size(n))
 
       call eos%ln_activity_coefficient(&
-         n=n, P=P, T=T, root_type=root_type, lngamma=lngamma &
+         n=n, P=P, T=T, root_type=root_type, &
+         lngamma=lngamma, dlngammadP=dlngammadP &
          )
 
-      Ae = R * T * sum(n * lngamma)
+      Ae = R * T * sum(n * lngamma) - P * R * T * sum(n * dlngammadP)
    end subroutine helmholtz_excess
+   
+   subroutine internal_energy_excess(eos, n, P, T, root_type, Ue)
+      !! Calculate excess internal energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%internal_energy_excess(n, P, T, root_type="stable", Ue=Ue)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Ue
+      !! Excess internal energy [bar L]
+
+      real(pr) :: dlngammadP(size(n)), dlngammadT(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, &
+         dlngammadP=dlngammadP, dlngammadT=dlngammadT &
+         )
+
+      Ue = -P * R * T * sum(n * dlngammadP) - R * T**2 * sum(n * dlngammadT)
+   end subroutine internal_energy_excess
+
    ! ==========================================================================
-   ! Excess properties
+   ! Other methods
    ! --------------------------------------------------------------------------
    real(pr) function Psat_pure(eos, ncomp, T)
       !! Calculation of saturation pressure of a pure component using the

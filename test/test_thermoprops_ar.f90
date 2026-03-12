@@ -25,7 +25,7 @@ program test_thermoprops_ar
    call test_internal_energy_vt(passed)
    call assert(passed, "Internal Energy VT")
 
-   call cp_and_cv(passed)
+   call test_cp_and_cv_vt(passed)
    call assert(passed, "Cp and Cv VT")
 
    ! PT residual properties test
@@ -47,12 +47,30 @@ program test_thermoprops_ar
    call test_internal_energy_pt(passed)
    call assert(passed, "Internal Energy PT")
 
-   call test_cv_and_cp(passed)
+   call test_cv_and_cp_pt(passed)
    call assert(passed, "Cv and Cp PT")
 
    ! Excess properties test
    call test_lngamma_pt(passed)
    call assert(passed, "lngamma PT")
+
+   call test_excess_gibbs_pt(passed)
+   call assert(passed, "Excess Gibbs PT")
+
+   call test_excess_enthalpy_pt(passed)
+   call assert(passed, "Excess Enthalpy PT")
+
+   call test_excess_entropy_pt(passed)
+   call assert(passed, "Excess Entropy PT")
+
+   call test_excess_internal_energy_pt(passed)
+   call assert(passed, "Excess Internal Energy PT")
+
+   call test_excess_helmholtz_pt(passed)
+   call assert(passed, "Excess Helmholtz PT")
+
+   call test_excess_volume_pt(passed)
+   call assert(passed, "Excess Volume PT")
 contains
    ! ===========================================================================
    ! Fixtures
@@ -559,7 +577,7 @@ contains
    ! ==========================================================================
    ! Cpr and Cvr
    ! --------------------------------------------------------------------------
-   subroutine cp_and_cv(check)
+   subroutine test_cp_and_cv_vt(check)
       logical, intent(out) :: check
 
       class(ArModel), allocatable :: eos
@@ -599,7 +617,7 @@ contains
       end if
 
       check = .true.
-   end subroutine cp_and_cv
+   end subroutine test_cp_and_cv_vt
 
    ! ==========================================================================
    ! Fugacity PT
@@ -1312,7 +1330,7 @@ contains
    ! ==========================================================================
    ! Cv and Cp PT
    ! --------------------------------------------------------------------------
-   subroutine test_cv_and_cp(check)
+   subroutine test_cv_and_cp_pt(check)
       logical, intent(out) :: check
 
       class(ArModel), allocatable :: eos
@@ -1351,7 +1369,7 @@ contains
       end if
 
       check = .true.
-   end subroutine test_cv_and_cp
+   end subroutine test_cv_and_cp_pt
 
    ! ==========================================================================
    ! lngamma PT
@@ -1367,6 +1385,9 @@ contains
       real(pr) :: dlngammadP(nc), dlngammadT(nc), dlngammadn(nc, nc)
       real(pr) :: lngamma_ind(nc), dlngammadP_ind(nc)
       real(pr) :: dlngammadT_ind(nc), dlngammadn_ind(nc, nc)
+
+      real(pr) :: lnphi(nc), lnphi_pure_i(nc), n_pure(nc)
+      real(pr) :: lnphi_pure_temp(nc), lngamma_fromphi(nc)
 
       real(pr) :: p, t, v, n(nc)
       real(pr) :: delta_p, delta_t, delta_n
@@ -1395,6 +1416,27 @@ contains
          lngamma=lngamma, dlngammadP=dlngammadP, dlngammadT=dlngammadT, &
          dlngammadn=dlngammadn &
          )
+
+      ! ln gamma
+      call eos%lnphi_pt(n, p, t, root_type="stable", lnphi=lnphi)
+
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%lnphi_pt(&
+            n_pure, p, t, root_type="stable", lnphi=lnphi_pure_temp &
+            )
+
+         lnphi_pure_i(i) = lnphi_pure_temp(i)
+      end do
+
+      lngamma_fromphi = lnphi - lnphi_pure_i
+
+      if (.not. allclose(lngamma, lngamma_fromphi, rtol=1e-14_pr)) then
+         check = .false.
+         return
+      end if
 
       ! Individual calls
       call eos%ln_activity_coefficient(&
@@ -1519,5 +1561,568 @@ contains
       check = .true.
    end subroutine test_lngamma_pt
 
+   ! ==========================================================================
+   ! Excess Gibbs PT
+   ! --------------------------------------------------------------------------
+   subroutine test_excess_gibbs_pt(check)
+      logical, intent(out) :: check
 
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Ge, GeP, GeT, Gen(nc)
+      real(pr) :: Gr_i(nc), n_pure(nc), Gr_temp, Gr
+
+      real(pr) :: Ge_plus_delta, Ge_minus_delta
+      real(pr) :: GeP_num, GeT_num, Gen_num(nc)
+      real(pr) :: nd1(nc), nd2(nc), nd3(nc)
+
+      real(pr) :: ln_gamma(nc)
+
+      integer :: i
+
+      real(pr) :: p, t, v, n(nc)
+      real(pr) :: delta_p, delta_t, delta_n
+
+      eos = ternary_PR76()
+
+      delta_p = 0.001_pr
+      delta_t = 0.001_pr
+      delta_n = 0.001_pr
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Ge
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", lngamma=ln_gamma &
+         )
+
+      call eos%gibbs_excess(n, p, t, root_type="stable", Ge=Ge)
+
+      if (rel_error(Ge, R*t*sum(n*ln_gamma)) > 1e-14_pr) then
+         print *, "Ge: ", Ge
+         print *, "Expected: ", R*t*sum(n*ln_gamma)
+         check = .false.
+         return
+      end if
+
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%gibbs_residual_pt(&
+            n_pure, p, t, root_type="stable", Gr=Gr_temp &
+            )
+
+         Gr_i(i) = Gr_temp
+      end do
+
+      call eos%gibbs_residual_pt(n, p, t, root_type="stable", Gr=Gr)
+
+      ! Test of adding pure components residual gibbs to excess gibbs
+      ! and compare it to residual gibbs of the mixture
+      if (rel_error(Gr, sum(n*Gr_i) + Ge) > 1e-9_pr) then
+         print *, "Gr: ", Gr
+         print *, "sum(n*Gr_i) + Ge: ", sum(n*Gr_i) + Ge
+         check = .false.
+         return
+      end if
+
+      ! Test if excess property is zero at pure conditions
+      n_pure = 0.0_pr
+      n_pure(1) = 1.0_pr
+
+      call eos%gibbs_excess(n_pure, p, t, root_type="stable", Ge=Ge)
+
+      if (abs(Ge) > 1e-14_pr) then
+         print *, "Ge at pure conditions: ", Ge
+         check = .false.
+         return
+      end if
+
+      ! Derivatives
+      call eos%gibbs_excess(&
+         n, p, t, root_type="stable", Ge=Ge, GeP=GeP, GeT=GeT, Gen=Gen &
+         )
+
+      ! dP
+      call eos%gibbs_excess(&
+         n, p + delta_p, t, root_type="stable", Ge=Ge_plus_delta &
+         )
+      call eos%gibbs_excess(&
+         n, p - delta_p, t, root_type="stable", Ge=Ge_minus_delta &
+         )
+
+      GeP_num = (Ge_plus_delta - Ge_minus_delta) / (2.0_pr * delta_p)
+
+      if (rel_error(GeP, GeP_num) > 1e-5_pr) then
+         print *, "GeP: ", GeP
+         print *, "Expected: ", GeP_num
+         check = .false.
+         return
+      end if
+
+      ! dT
+      call eos%gibbs_excess(&
+         n, p, t + delta_t, root_type="stable", Ge=Ge_plus_delta &
+         )
+      call eos%gibbs_excess(&
+         n, p, t - delta_t, root_type="stable", Ge=Ge_minus_delta &
+         )
+
+      GeT_num = (Ge_plus_delta - Ge_minus_delta) / (2.0_pr * delta_t)
+
+      if (rel_error(GeT, GeT_num) > 1e-5_pr) then
+         print *, "GeT: ", GeT
+         print *, "Expected: ", GeT_num
+         check = .false.
+         return
+      end if
+
+      ! dn
+      nd1 = n + [delta_n, 0.0_pr, 0.0_pr]
+      call eos%gibbs_excess(&
+         nd1, p, t, root_type="stable", Ge=Ge_plus_delta &
+         )
+      nd1 = n - [delta_n, 0.0_pr, 0.0_pr]
+      call eos%gibbs_excess(&
+         nd1, p, t, root_type="stable", Ge=Ge_minus_delta &
+         )
+
+      Gen_num(1) = (Ge_plus_delta - Ge_minus_delta) / (2.0_pr * delta_n)
+
+      nd2 = n + [0.0_pr, delta_n, 0.0_pr]
+      call eos%gibbs_excess(&
+         nd2, p, t, root_type="stable", Ge=Ge_plus_delta &
+         )
+      nd2 = n - [0.0_pr, delta_n, 0.0_pr]
+      call eos%gibbs_excess(&
+         nd2, p, t, root_type="stable", Ge=Ge_minus_delta &
+         )
+
+      Gen_num(2) = (Ge_plus_delta - Ge_minus_delta) / (2.0_pr * delta_n)
+
+      nd3 = n + [0.0_pr, 0.0_pr, delta_n]
+      call eos%gibbs_excess(&
+         nd3, p, t, root_type="stable", Ge=Ge_plus_delta &
+         )
+      nd3 = n - [0.0_pr, 0.0_pr, delta_n]
+      call eos%gibbs_excess(&
+         nd3, p, t, root_type="stable", Ge=Ge_minus_delta &
+         )
+
+      Gen_num(3) = (Ge_plus_delta - Ge_minus_delta) / (2.0_pr * delta_n)
+
+      if (.not. allclose(Gen, Gen_num, rtol=1e-6_pr)) then
+         print *, "Gen: ", Gen
+         print *, "Expected: ", Gen_num
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_excess_gibbs_pt
+
+   ! ==========================================================================
+   ! Excess Enthalpy PT
+   ! --------------------------------------------------------------------------
+   subroutine test_excess_enthalpy_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: He
+      real(pr) :: Hr_i(nc), n_pure(nc), Hr_temp, Hr
+
+      real(pr) :: lngammadT(nc)
+
+      integer :: i
+
+      real(pr) :: p, t, v, n(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! He
+      call eos%enthalpy_excess(n, p, t, root_type="stable", He=He)
+
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", dlngammadT=lngammadT &
+         )
+
+      if (rel_error(He, -R*T**2*sum(n * lngammadT)) > 1e-14_pr) then
+         print *, "He: ", He
+         print *, "Expected: ", -R*T**2*sum(n * lngammadT)
+         check = .false.
+         return
+      end if
+
+      ! Check excess property as mixing
+      call eos%enthalpy_residual_pt(n, p, t, root_type="stable", Hr=Hr)
+
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%enthalpy_residual_pt(&
+            n_pure, p, t, root_type="stable", Hr=Hr_temp &
+            )
+
+         Hr_i(i) = Hr_temp
+      end do
+
+      if (rel_error(Hr, sum(n * Hr_i) + He) > 1e-10_pr) then
+         print *, "Hr: ", Hr
+         print *, "sum(n * Hr_i) + He: ", sum(n * Hr_i) + He
+         check = .false.
+         return
+      end if
+
+      ! Check excess of pure
+      n_pure = 0.0_pr
+      n_pure(1) = 1.0_pr
+
+      call eos%enthalpy_excess(n_pure, p, t, root_type="stable", He=He)
+
+      if (abs(He) > 1e-10_pr) then
+         print *, "He: ", He
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_excess_enthalpy_pt
+
+   ! ==========================================================================
+   ! Excess entropy PT
+   ! --------------------------------------------------------------------------
+   subroutine test_excess_entropy_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Se
+      real(pr) :: Sr_i(nc), n_pure(nc), Sr_temp, Sr
+
+      real(pr) :: lngamma(nc), lngammadT(nc)
+
+      integer :: i
+
+      real(pr) :: p, t, v, n(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Se
+      call eos%entropy_excess(n, p, t, root_type="stable", Se=Se)
+
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", lngamma=lngamma, dlngammadT=lngammadT &
+         )
+
+      if (rel_error(Se, -R*T*sum(n * lngammadT) - R * sum(n * lngamma)) > 1e-14_pr) then
+         print *, "Se: ", Se
+         print *, "Expected: ", &
+            -R*T*sum(n * lngammadT) - R * sum(n * lngamma)
+
+         check = .false.
+         return
+      end if
+
+      ! Check excess property as mixing
+      call eos%entropy_residual_pt(n, p, t, root_type="stable", Sr=Sr)
+
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%entropy_residual_pt(&
+            n_pure, p, t, root_type="stable", Sr=Sr_temp &
+            )
+
+         Sr_i(i) = Sr_temp
+      end do
+
+      if (rel_error(Sr, sum(n * Sr_i) + Se) > 1e-10_pr) then
+         print *, "Sr: ", Sr
+         print *, "sum(n * Sr_i) + Se: ", sum(n * Sr_i) + Se
+         check = .false.
+         return
+      end if
+
+      ! Check excess of pure
+      n_pure = 0.0_pr
+      n_pure(1) = 1.0_pr
+
+      call eos%entropy_excess(n_pure, p, t, root_type="stable", Se=Se)
+
+      if (abs(Se) > 1e-10_pr) then
+         print *, "Se: ", Se
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_excess_entropy_pt
+
+   ! ==========================================================================
+   ! Excess internal energy PT
+   ! --------------------------------------------------------------------------
+   subroutine test_excess_internal_energy_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Ue
+      real(pr) :: Ur_i(nc), n_pure(nc), Ur_temp, Ur
+
+      real(pr) :: dlngammadP(nc), dlngammadT(nc)
+
+      integer :: i
+
+      real(pr) :: p, t, v, n(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Ue
+      call eos%internal_energy_excess(n, p, t, root_type="stable", Ue=Ue)
+
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", &
+         dlngammadP=dlngammadP, dlngammadT=dlngammadT &
+         )
+
+      if (rel_error(Ue, -P*R*T*sum(n*dlngammadP)-R*T**2*sum(n*dlngammadT)) > 1e-14_pr) then
+         print *, "Ue: ", Ue
+         print *, "Expected: ", &
+            -P*R*T*sum(n*dlngammadP)-R*T**2*sum(n*dlngammadT)
+
+         check = .false.
+         return
+      end if
+
+      ! Check excess property as mixing
+      call eos%internal_energy_residual_pt(n, p, t, root_type="stable", Ur=Ur)
+
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%internal_energy_residual_pt(&
+            n_pure, p, t, root_type="stable", Ur=Ur_temp &
+            )
+
+         Ur_i(i) = Ur_temp
+      end do
+
+      if (rel_error(Ur, sum(n * Ur_i) + Ue) > 1e-10_pr) then
+         print *, "Ur: ", Ur
+         print *, "sum(n * Ur_i) + Ue: ", sum(n * Ur_i) + Ue
+         check = .false.
+         return
+      end if
+
+      ! Check excess of pure
+      n_pure = 0.0_pr
+      n_pure(1) = 1.0_pr
+
+      call eos%internal_energy_excess(n_pure, p, t, root_type="stable", Ue=Ue)
+
+      if (abs(Ue) > 1e-10_pr) then
+         print *, "Ue: ", Ue
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_excess_internal_energy_pt
+
+   ! ==========================================================================
+   ! Excess Helholtz PT
+   ! --------------------------------------------------------------------------
+   subroutine test_excess_helmholtz_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Ae
+      real(pr) :: Ar_i(nc), n_pure(nc), Ar_temp, Ar
+
+      real(pr) :: dlngammadP(nc), lngamma(nc)
+
+      integer :: i
+
+      real(pr) :: p, t, v, n(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Ae
+      call eos%helmholtz_excess(n, p, t, root_type="stable", Ae=Ae)
+
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", &
+         lngamma=lngamma, dlngammadP=dlngammadP &
+         )
+
+      if (rel_error(Ae, R*T*sum(n*lngamma)-P*R*T*sum(n*dlngammadP)) > 1e-14_pr) then
+         print *, "Ae: ", Ae
+         print *, "Expected: ", &
+            R*T*sum(n*lngamma)-P*R*T*sum(n*dlngammadP)
+
+         check = .false.
+         return
+      end if
+
+      ! Check excess property as mixing
+      call eos%helmholtz_residual_pt(n, p, t, root_type="stable", Ar=Ar)
+
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%helmholtz_residual_pt(&
+            n_pure, p, t, root_type="stable", Ar=Ar_temp &
+            )
+
+         Ar_i(i) = Ar_temp
+      end do
+
+      if (rel_error(Ar, sum(n * Ar_i) + Ae) > 1e-9_pr) then
+         print *, "Ar: ", Ar
+         print *, "sum(n * Ar_i) + Ae: ", sum(n * Ar_i) + Ae
+         check = .false.
+         return
+      end if
+
+      ! Check excess of pure
+      n_pure = 0.0_pr
+      n_pure(1) = 1.0_pr
+
+      call eos%helmholtz_excess(n_pure, p, t, root_type="stable", Ae=Ae)
+
+      if (abs(Ae) > 1e-10_pr) then
+         print *, "Ae: ", Ae
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_excess_helmholtz_pt
+
+   ! ==========================================================================
+   ! Excess Volume PT
+   ! --------------------------------------------------------------------------
+   subroutine test_excess_volume_pt(check)
+      logical, intent(out) :: check
+
+      class(ArModel), allocatable :: eos
+
+      integer, parameter :: nc=3
+
+      real(pr) :: Ve
+      real(pr) :: Vr_i(nc), n_pure(nc), Vr_temp, Vr
+
+      real(pr) :: dlngammadP(nc)
+
+      integer :: i
+
+      real(pr) :: p, t, v, n(nc)
+
+      eos = ternary_PR76()
+
+      p = 1.0_pr
+      t = 303.15_pr
+      n = [3.0_pr, 4.0_pr, 2.0_pr]
+
+      call eos%volume(n, p, t, v, root_type="stable")
+      call eos%pressure(n, v, t, p)
+
+      ! Ve
+      call eos%volume_excess(n, p, t, root_type="stable", Ve=Ve)
+
+      call eos%ln_activity_coefficient(&
+         n, p, t, root_type="stable", dlngammadP=dlngammadP &
+         )
+
+      if (rel_error(Ve, R*T*sum(n*dlngammadP)) > 1e-14_pr) then
+         print *, "Ve: ", Ve
+         print *, "Expected: ", R*T*sum(n*dlngammadP)
+
+         check = .false.
+         return
+      end if
+
+      ! Check excess property as mixing
+      do i=1,nc
+         n_pure = 0.0_pr
+         n_pure(i) = 1.0_pr
+
+         call eos%volume(&
+            n_pure, p, t, root_type="stable", V=Vr_temp &
+            )
+
+         Vr_i(i) = Vr_temp
+      end do
+
+      if (rel_error(v, sum(n * Vr_i) + Ve) > 1e-9_pr) then
+         print *, "V: ", v
+         print *, "sum(n * Vr_i) + Ve: ", sum(n * Vr_i) + Ve
+         check = .false.
+         return
+      end if
+
+      ! Check excess of pure
+      n_pure = 0.0_pr
+      n_pure(1) = 1.0_pr
+
+      call eos%volume_excess(n_pure, p, t, root_type="stable", Ve=Ve)
+
+      if (abs(Ve) > 1e-10_pr) then
+         print *, "Ve: ", Ve
+         check = .false.
+         return
+      end if
+
+      check = .true.
+   end subroutine test_excess_volume_pt
 end program test_thermoprops_ar

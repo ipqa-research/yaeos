@@ -223,7 +223,7 @@ volume: block
 end block volume
 ```
 
-## Residual properties at \((\mathbf{n}, V, T)\)
+## Residual properties at (n, V, T)
 
 As you may know, residual properties are the difference between the actual
 property and the ideal gas property at the same temperature and volume (in this
@@ -756,7 +756,7 @@ residual_cp: block
 end block residual_cp
 ```
 
-## Residual properties at \((\mathbf{n}, P, T)\)
+## Residual properties at (n, P, T)
 
 As explained in the "Residual properties at \((\mathbf{n}, V, T)\)" section, a residual
 property is the difference between the actual property and the ideal gas
@@ -1180,9 +1180,26 @@ cp_pt: block
 end block cp_pt
 ```
 
-## Excess properties
+## Excess properties (n, P, T)
 
-### Activity coefficients
+Excess properties (or mixing properties) are the difference between the real
+property and the property of the ideal mixture:
+
+$$
+    M^E(\mathbf{n}, P, T) = M(\mathbf{n}, P, T) - M^{ideal}(\mathbf{n}, P, T)
+$$
+
+The ideal mixture property is equal to the linear combination of the pure
+components properties:
+
+$$
+    M^{ideal}(\mathbf{n}, P, T) = \sum_i n_i \; m_i(P, T)
+$$
+
+Where \(m_i(P, T)\) is the molar property of the pure component \(i\) at the
+same pressure and temperature as the mixture.
+
+### Activity coefficients (P, T): \(ln \gamma_i(\mathbf{n}, P, T)\)
 
 **MM - Chapter 1 - Table 9 (Equation 1)**
 
@@ -1293,7 +1310,7 @@ gibbs_excess: block
 end block gibbs_excess
 ```
 
-### Excess Gibbs free energy (P, T): \(H^E(\mathbf{n}, P, T)\)
+### Excess Enthalpy (P, T): \(H^E(\mathbf{n}, P, T)\)
 
 **MM - Chapter 1 - Table 9 (Equation III)**
 
@@ -1378,7 +1395,7 @@ entropy_excess: block
 end block entropy_excess
 ```
 
-### Excess Helmholtz (P, T): \(A^E(\mathbf{n}, P, T)\)
+### Excess Helmholtz free energy (P, T): \(A^E(\mathbf{n}, P, T)\)
 
 **MM - Chapter 5 - Equation 1**
 
@@ -1393,6 +1410,59 @@ $$
     A^E(\mathbf{n}, P, T) = R T \sum_i n_i \; ln \; \gamma_i - P R T \sum_i n_i
     \left(\frac{\partial ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}}
 $$
+
+```fortran
+helmholtz_excess: block
+    real(pr) :: n(2), T, P, AE
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%helmholtz_excess(n, P, T, root_type="stable", AE=AE)
+end block helmholtz_excess
+```
+
+### Excess Internal Energy (P, T): \(U^E(\mathbf{n}, P, T)\)
+
+**MM - Chapter 5 - Equation 4**
+
+The excess internal energy can be calculated in terms of the activity
+coefficients as follows:
+
+$$
+    U^E(\mathbf{n}, P, T) = A^E(\mathbf{n}, P, T) + T S^E(\mathbf{n}, P, T)
+$$
+
+Replacing:
+
+$$
+    U^E(\mathbf{n}, P, T) = R T \sum_i n_i \; ln \; \gamma_i - P R T \sum_i n_i
+    \left(\frac{\partial ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}} + T
+    \left(-R T \sum_i n_i \left(\frac{\partial ln \; \gamma_i}{\partial
+    T}\right)_{P,\mathbf{n}} - R \sum_i n_i \; ln \; \gamma_i \right)
+$$
+
+And with very little algebra:
+
+$$
+    U^E(\mathbf{n}, P, T) = - P R T \sum_i n_i
+    \left(\frac{\partial ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}}
+    - R T^2 \sum_i n_i \left(\frac{\partial ln \; \gamma_i}{\partial
+    T}\right)_{P,\mathbf{n}}
+$$
+
+```fortran
+internal_energy_excess: block
+    real(pr) :: n(2), T, P, UE
+
+    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    T = 300.0_pr         ! Set temperature to 300 K
+    P = 1.0_pr           ! Set volume to 1 bar
+
+    call eos%internal_energy_excess(n, P, T, root_type="stable", UE=UE)
+end block internal_energy_excess
+```
 
 # References
 [1] 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
