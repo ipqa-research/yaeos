@@ -190,13 +190,13 @@ contains
       ngroups = size(systems_groups%groups_ids)
 
       Eij = exp(-self%Aij / T)
-      
+
       if (present(psi)) &
          psi = Eij
-      
+
       if (present(dpsi_dt)) &
          dpsi_dt = self%Aij * Eij / T**2
-      
+
       if (present(dpsi_dt2)) &
          dpsi_dt2 = self%Aij * (self%Aij - 2_pr*T) * Eij / T**4
    end subroutine UNIFAC_temperature_dependence
@@ -225,28 +225,29 @@ contains
       real(pr) :: a, b, c
 
       ngroups = size(systems_groups%groups_ids)
+      
+      do i=1,ngroups
+         do j=1,ngroups
+            a = self%Aij(i, j)
+            b = self%Bij(i, j)
+            c = self%Cij(i, j)
 
-      do concurrent(i=1:ngroups, j=1:ngroups)
-         a = self%Aij(i, j)
-         b = self%Bij(i, j)
-         c = self%Cij(i, j)
+            u = -(A + B*T + C*T**2)/T
+            dudt = a / T**2 - c
+            dudt2 = -2._pr * a / T**3
 
-         u = -(A + B*T + C*T**2)/T
-         dudt = a / T**2 - c
-         dudt2 = -2._pr * a / T**3
+            if (present(psi)) then
+               psi(i, j) = exp(u)
+            end if
 
-         if (present(psi)) then
-            psi(i, j) = exp(u)
-         end if
+            if (present(dpsi_dt)) then
+               dpsi_dt(i, j) = dudt * exp(u)
+            end if
 
-         if (present(dpsi_dt)) then
-            dpsi_dt(i, j) = dudt * exp(u)
-         end if
-
-         if (present(dpsi_dt2)) then
-            dpsi_dt2(i, j) = (dudt2 + dudt**2)*exp(u)
-         end if
-
+            if (present(dpsi_dt2)) then
+               dpsi_dt2(i, j) = (dudt2 + dudt**2)*exp(u)
+            end if
+         end do
       end do
    end subroutine Quadratic_temperature_dependence
 end module yaeos__models_ge_gc_td
