@@ -474,8 +474,6 @@ contains
             )
       end if
 
-      print *, dt2, "dEjk_dt2: ", dEjk_dt2
-
       ! ========================================================================
       ! Auxiliars
       ! ------------------------------------------------------------------------
@@ -490,7 +488,6 @@ contains
             sum_vij_Qj_dEjk_dT2(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT2(:,k))
          end do
       end if
-      print *, dt2, "sum_vij_Qj_dEjk_dT2: ", sum_vij_Qj_dEjk_dT2
 
       ! ========================================================================
       ! Thetas
