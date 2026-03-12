@@ -302,8 +302,6 @@ contains
       if (present(GeT)) GeT = Ge_c / T + GeT
       if (present(GeT2)) GeT2 = GeT2
       if (present(GeTn)) GeTn = dGe_c_dn / T + GeTn
-
-      if (present(GeT2)) print *, GeT2
    end subroutine excess_gibbs
 
    subroutine Ge_combinatorial(self, n, T, Ge, dGe_dn, dGe_dn2)
@@ -476,6 +474,8 @@ contains
             )
       end if
 
+      print *, dt2, "dEjk_dt2: ", dEjk_dt2
+
       ! ========================================================================
       ! Auxiliars
       ! ------------------------------------------------------------------------
@@ -490,6 +490,7 @@ contains
             sum_vij_Qj_dEjk_dT2(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT2(:,k))
          end do
       end if
+      print *, dt2, "sum_vij_Qj_dEjk_dT2: ", sum_vij_Qj_dEjk_dT2
 
       ! ========================================================================
       ! Thetas
