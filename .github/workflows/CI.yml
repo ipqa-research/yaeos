@@ -117,6 +117,16 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install numpy scipy matplotlib coverage
+      
+      - name: Run dortmund test
+        shell: msys2 {0}
+        run: |
+          fpm test \
+            --profile release \
+            --flag "-g -ffree-line-length-0" \
+            --c-flag "-I./src/adiff/autodiff_api/tapenade/c/" \
+            test_dortmund
+        # --c-flag "-IC:/msys64/mingw64/include"
 
       - name: Run tests
         shell: msys2 {0}
