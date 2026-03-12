@@ -302,6 +302,8 @@ contains
       if (present(GeT)) GeT = Ge_c / T + GeT
       if (present(GeT2)) GeT2 = GeT2
       if (present(GeTn)) GeTn = dGe_c_dn / T + GeTn
+
+      if (present(GeT2)) print *, GeT2
    end subroutine excess_gibbs
 
    subroutine Ge_combinatorial(self, n, T, Ge, dGe_dn, dGe_dn2)
