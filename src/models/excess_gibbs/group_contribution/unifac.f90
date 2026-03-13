@@ -489,6 +489,7 @@ contains
          do concurrent(i=1:self%nmolecules, k=1:self%ngroups)
             sum_vij_Qj_dEjk_dT(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT(:,k))
             sum_vij_Qj_dEjk_dT2(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT2(:,k))
+            print *, i, k, sum_vij_Qj_dEjk_dT(i, k)
          end do
       end if
 
