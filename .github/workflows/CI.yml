@@ -216,14 +216,14 @@ jobs:
           GFORTRAN=$(cygpath -w $(which gfortran))
           GCC=$(cygpath -w $(which gcc))
           GPP=$(cygpath -w $(which g++))
-          mkdir -p ci
+          mkdir -p python/ci
           cat > ci/windows-mingw.ini << EOF
           [binaries]
           c = '${GCC//\\/\\\\}'
           cpp = '${GPP//\\/\\\\}'
           fortran = '${GFORTRAN//\\/\\\\}'
           EOF
-          cat ci/windows-mingw.ini  # debug: verificar contenido
+          cat python/ci/windows-mingw.ini
 
       # CiBuildWheel
       - name: Install dependencies
