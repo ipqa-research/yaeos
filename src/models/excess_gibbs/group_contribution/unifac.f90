@@ -457,6 +457,9 @@ contains
       dt2 = present(dGe_dT2)
       dtn = present(dGe_dTn)
 
+      print *, ""
+      print *, ""
+
       ! ========================================================================
       ! Ejk
       ! ------------------------------------------------------------------------
@@ -613,6 +616,11 @@ contains
          do i=1,self%nmolecules
             sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
          end do
+
+         print *, self%vij
+         print *, self%qk
+         print *, dlambda_k_dT 
+         print *, dlambda_ik_dT
 
          print *, sum_vij_Qj_dlambdas_dT
 
