@@ -486,8 +486,8 @@ contains
       sum_ni_vik_Qk = sum(n * sum_vik_Qk)
 
       print *, ""
-      print *, dEjk_dT(:,k)
-      print *, dEjk_dT2(:,k)
+      print *, "dEjk_dT", dEjk_dT
+      print *, "dEjk_dT2", dEjk_dT2
       if (dtn .or. dt2 .or. dt) then
          do concurrent(i=1:self%nmolecules, k=1:self%ngroups)
             sum_vij_Qj_dEjk_dT(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT(:,k))
