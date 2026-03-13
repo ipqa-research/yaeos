@@ -614,6 +614,8 @@ contains
             sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
          end do
 
+         print *, sum_vij_Qj_dlambdas_dT
+
          dGe_dT_aux = -sum(n * sum_vij_Qj_dlambdas_dT)
       end if
 
