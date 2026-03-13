@@ -210,7 +210,7 @@ if is_windows
     incdir_f2py / 'fortranobject.c',
     include_directories: [inc_np],
     dependencies : [py_dep, omp],
-    link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp', '-static'],
+    link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-fopenmp', '-static'],
     subdir: python_lib / 'lib',
     install: true,
     c_args: ['-g', '-Og', '-static'],
