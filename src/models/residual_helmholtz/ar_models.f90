@@ -1536,7 +1536,7 @@ contains
 
       Ae = R * T * sum(n * lngamma) - P * R * T * sum(n * dlngammadP)
    end subroutine helmholtz_excess
-   
+
    subroutine internal_energy_excess(eos, n, P, T, root_type, Ue)
       !! Calculate excess internal energy given pressure and temperature.
       !!
