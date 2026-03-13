@@ -580,6 +580,7 @@ contains
          end do
 
          if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
+         print *, dlambda_ik_dT 
       end if
 
       ! ========================================================================
@@ -620,14 +621,6 @@ contains
          do i=1,self%nmolecules
             sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
          end do
-
-         print *, self%vij
-         print *, self%qk
-         print *, dlambda_k_dT 
-         print *, dlambda_ik_dT
-
-         print *, sum_vij_Qj_dlambdas_dT
-
          dGe_dT_aux = -sum(n * sum_vij_Qj_dlambdas_dT)
       end if
 
