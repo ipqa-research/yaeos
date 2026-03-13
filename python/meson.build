@@ -16,6 +16,10 @@ add_languages('fortran', native: false)
 meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
+
+# Check if we are on Windows
+is_windows = host_machine.system() == 'windows'
+
 # lapack = dependency('lapack')
 
 py_mod = import('python')
@@ -50,17 +54,19 @@ fpm_build_dir = meson_path / 'fpm_build'
 # allocation
 cc = meson.get_compiler('c')
 
-glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
-glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
+if not on_windows
+  glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
+  glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
 
-message('glibc major version: ' + glibc_major)
-message('glibc minor version: ' + glibc_minor)
+  message('glibc major version: ' + glibc_major)
+  message('glibc minor version: ' + glibc_minor)
 
-glibc_version = glibc_major + '.' + glibc_minor
+  glibc_version = glibc_major + '.' + glibc_minor
 
-if glibc_version.version_compare('>=2.41')
-  fflags = fflags + ' -ftrampoline-impl=heap'
-  cflags = cflags + ' -ftrampoline-impl=heap'
+  if glibc_version.version_compare('>=2.41')
+    fflags = fflags + ' -ftrampoline-impl=heap'
+    cflags = cflags + ' -ftrampoline-impl=heap'
+  endif
 endif
 
 fpm = run_command(
