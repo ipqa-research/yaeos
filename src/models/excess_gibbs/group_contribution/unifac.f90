@@ -621,7 +621,7 @@ contains
          do i=1,self%nmolecules
             sum_vij_Qj_dlambdas_dT2(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT2 - dlambda_ik_dT2(i,:)))
          end do
-
+         print *, sum_vij_Qj_dlambdas_dT2
          dGe_dT2 = -sum(n * sum_vij_Qj_dlambdas_dT2)
       end if
 
