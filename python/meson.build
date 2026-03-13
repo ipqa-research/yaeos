@@ -67,6 +67,9 @@ if not is_windows
     fflags = fflags + ' -ftrampoline-impl=heap'
     cflags = cflags + ' -ftrampoline-impl=heap'
   endif
+else
+  fflags = fflags + ' -static'
+  cflags = cflags + ' -static'
 endif
 
 fpm = run_command(
@@ -200,15 +203,29 @@ py.install_sources(tools, subdir:python_lib / 'tools')
 # -----------------------------------------------------------------------------
 inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
 
-py.extension_module(module_name,
-  [c_wrapper, f2py_gen_source],
-  incdir_f2py / 'fortranobject.c',
-  include_directories: [inc_np],
-  dependencies : [py_dep, omp],
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp'],
-  subdir: python_lib / 'lib',
-  install: true,
-  c_args: ['-g', '-Og'],
-)
+
+if is_windows
+  py.extension_module(module_name,
+    [c_wrapper, f2py_gen_source],
+    incdir_f2py / 'fortranobject.c',
+    include_directories: [inc_np],
+    dependencies : [py_dep, omp],
+    link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp', '-static'],
+    subdir: python_lib / 'lib',
+    install: true,
+    c_args: ['-g', '-Og', '-static'],
+  )
+else
+  py.extension_module(module_name,
+    [c_wrapper, f2py_gen_source],
+    incdir_f2py / 'fortranobject.c',
+    include_directories: [inc_np],
+    dependencies : [py_dep, omp],
+    link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp'],
+    subdir: python_lib / 'lib',
+    install: true,
+    c_args: ['-g', '-Og'],
+  )
+endif
 
 #LDFLAGS=-Wl,-rpath=.,-z,noexecstack
