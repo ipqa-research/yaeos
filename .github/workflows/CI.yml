@@ -80,9 +80,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.12]
-        toolchain:
-          - {compiler: gcc, version: 10}
-          - {compiler: gcc, version: 14}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -108,7 +105,6 @@ jobs:
         shell: msys2 {0}
         run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
-
       - name: Install Python
         uses: actions/setup-python@v1
         with:
@@ -118,16 +114,6 @@ jobs:
         run: |
           pip install numpy scipy matplotlib coverage
       
-      - name: Run dortmund test
-        shell: msys2 {0}
-        run: |
-          fpm test \
-            --profile release \
-            --flag "-g -ffree-line-length-0" \
-            --c-flag "-I./src/adiff/autodiff_api/tapenade/c/" \
-            test_dortmund
-        # --c-flag "-IC:/msys64/mingw64/include"
-
       - name: Run tests
         shell: msys2 {0}
         run: |
@@ -135,7 +121,6 @@ jobs:
             --profile release \
             --flag "-g -ffree-line-length-0" \
             --c-flag "-I./src/adiff/autodiff_api/tapenade/c/"
-        # --c-flag "-IC:/msys64/mingw64/include"
 
   Python-API:
     runs-on: ${{ matrix.os }}
@@ -181,12 +166,13 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     needs: 
       - tests_and_coverage
+      - tests_windows
       - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest] #, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest, windows-latest] #, macos-13, macos-14]
     
     steps:
       - uses: actions/checkout@v4
@@ -194,16 +180,22 @@ jobs:
       # Used to host cibuildwheel
       - uses: actions/setup-python@v5
       
-      - name: Install 
+      - name: Install Fortran
+        if: runner.os == "Linux"
         run: |
           sudo apt install gfortran-14
           sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
 
-      # Install fpm for Windows
-      - name: Install fpm
-        uses: fortran-lang/setup-fpm@v7
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          msystem: MINGW64
+          update: true
+          install: >-
+            gcc
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-lapack      
 
       # CiBuildWheel
       - name: Install dependencies
