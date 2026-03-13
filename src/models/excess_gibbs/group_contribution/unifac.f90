@@ -645,7 +645,8 @@ contains
       end if
 
       if (present(dGe_dT2)) then
-         print *, "ASD", 2.0 * dGe_dT_aux + T * dGe_dT2
+         print *, "ASD1", 2.0 * dGe_dT_aux + T * dGe_dT2
+         print *, "ASD2", 2.0 * dGe_dT_aux , T * dGe_dT2
          dGe_dT2 = R * (2.0 * dGe_dT_aux + T * dGe_dT2)
       end if
 
