@@ -460,20 +460,22 @@ contains
       ! ========================================================================
       ! Ejk
       ! ------------------------------------------------------------------------
-      print *, pge, dt, dt2, dtn, dn, dn2
-      if ((dt .or. dtn) .and. .not. dt2) then
-         call self%psi_function%psi(&
-            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
-            )
-      elseif (dt2 .and. .not. (dt .or. dtn)) then
-         call self%psi_function%psi(&
-            self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2 &
-            )
-      else
-         call self%psi_function%psi(&
-            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
-            )
-      end if
+      ! if ((dt .or. dtn) .and. .not. dt2) then
+      !    call self%psi_function%psi(&
+      !       self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
+      !       )
+      ! elseif (dt2 .and. .not. (dt .or. dtn)) then
+      !    call self%psi_function%psi(&
+      !       self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2 &
+      !       )
+      ! else
+      !    call self%psi_function%psi(&
+      !       self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
+      !       )
+      ! end if
+      call self%psi_function%psi(&
+         self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
+         )
 
       ! ========================================================================
       ! Auxiliars
@@ -487,7 +489,6 @@ contains
          do concurrent(i=1:self%nmolecules, k=1:self%ngroups)
             sum_vij_Qj_dEjk_dT(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT(:,k))
             sum_vij_Qj_dEjk_dT2(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT2(:,k))
-            print *, i, k, sum_vij_Qj_dEjk_dT(i, k)
          end do
       end if
 
@@ -541,11 +542,7 @@ contains
             sum_ni_vij_Qj_dEjk_dT(k) = sum(n * sum_vij_Qj_dEjk_dT(:,k))
             dlambda_k_dT(k) = sum(theta_j * dEjk_dt(:, k)) / sum(theta_j * Ejk(:, k))
             dlambda_k_dT2(k) = sum(n * sum_vij_Qj_dEjk_dT2(:,k)) / sum_ni_vij_Qj_Ejk(k) - dlambda_k_dT(k)**2
-            print *, k, dlambda_k_dT2(k)
          end do
-
-
-
       end if
 
       if (dtn) then
