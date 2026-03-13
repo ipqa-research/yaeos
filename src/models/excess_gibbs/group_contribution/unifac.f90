@@ -457,12 +457,10 @@ contains
       dt2 = present(dGe_dT2)
       dtn = present(dGe_dTn)
 
-      print *, ""
-      print *, ""
-
       ! ========================================================================
       ! Ejk
       ! ------------------------------------------------------------------------
+      print *, pge, dt, dt2, dtn, dn, dn2
       if ((dt .or. dtn) .and. .not. dt2) then
          call self%psi_function%psi(&
             self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
@@ -485,9 +483,6 @@ contains
       end do
       sum_ni_vik_Qk = sum(n * sum_vik_Qk)
 
-      print *, ""
-      print *, "dEjk_dT", dEjk_dT
-      print *, "dEjk_dT2", dEjk_dT2
       if (dtn .or. dt2 .or. dt) then
          do concurrent(i=1:self%nmolecules, k=1:self%ngroups)
             sum_vij_Qj_dEjk_dT(i,k) = sum(self%vij(i,:) * self%qk * dEjk_dT(:,k))
@@ -584,7 +579,6 @@ contains
          end do
 
          if (dt2) dlambda_ik_dT2 = sum_vij_Qj_dEjk_dT2 / sum_vij_Qj_Ejk - dlambda_ik_dT * dlambda_ik_dT
-         print *, dlambda_ik_dT 
       end if
 
       ! ========================================================================
@@ -632,7 +626,6 @@ contains
          do i=1,self%nmolecules
             sum_vij_Qj_dlambdas_dT2(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT2 - dlambda_ik_dT2(i,:)))
          end do
-         print *, sum_vij_Qj_dlambdas_dT2
          dGe_dT2 = -sum(n * sum_vij_Qj_dlambdas_dT2)
       end if
 
@@ -656,8 +649,6 @@ contains
       end if
 
       if (present(dGe_dT2)) then
-         print *, "ASD1", 2.0 * dGe_dT_aux + T * dGe_dT2
-         print *, "ASD2", 2.0 * dGe_dT_aux , T * dGe_dT2
          dGe_dT2 = R * (2.0 * dGe_dT_aux + T * dGe_dT2)
       end if
 
