@@ -181,7 +181,7 @@ jobs:
       - uses: actions/setup-python@v5
       
       - name: Install Fortran
-        if: runner.os == "Linux"
+        if: runner.os == 'Linux'
         run: |
           sudo apt install gfortran-14
           sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
@@ -196,6 +196,28 @@ jobs:
             gcc
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-lapack      
+
+      - name: Add MSYS2 to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          MINGW_PATH=$(cygpath -w $(dirname $(which gfortran)))
+          echo "$MINGW_PATH" >> $GITHUB_PATH
+      - name: Generate meson native file (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          GFORTRAN=$(cygpath -w $(which gfortran))
+          GCC=$(cygpath -w $(which gcc))
+          GPP=$(cygpath -w $(which g++))
+          mkdir -p ci
+          cat > ci/windows-mingw.ini << EOF
+          [binaries]
+          c = '${GCC//\\/\\\\}'
+          cpp = '${GPP//\\/\\\\}'
+          fortran = '${GFORTRAN//\\/\\\\}'
+          EOF
+          cat ci/windows-mingw.ini  # debug: verificar contenido
 
       # CiBuildWheel
       - name: Install dependencies
@@ -212,6 +234,8 @@ jobs:
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
           CIBW_BEFORE_TEST: pip install pytest fpm
           CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+          CIBW_CONFIG_SETTINGS_WINDOWS: >
+            setup-args=--native-file=../ci/windows-mingw.ini
 
       - uses: actions/upload-artifact@v4
         with:
