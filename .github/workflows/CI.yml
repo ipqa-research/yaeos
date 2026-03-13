@@ -203,6 +203,12 @@ jobs:
         run: |
           MINGW_PATH=$(cygpath -w $(dirname $(which gfortran)))
           echo "$MINGW_PATH" >> $GITHUB_PATH
+
+      - name: Install fpm
+        uses: fortran-lang/setup-fpm@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Generate meson native file (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
