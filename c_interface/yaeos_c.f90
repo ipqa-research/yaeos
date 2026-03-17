@@ -27,7 +27,7 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
+   public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2_k
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
    ! Multifluid equations
@@ -580,13 +580,11 @@ contains
       call extend_ar_models_list(id)
    end subroutine psrk
 
-   subroutine get_ac_b_del1_del2(id, ac, b, del1, del2, nc)
-      use yaeos, only: CubicEoS, size
+   subroutine get_ac_b_del1_del2_k(id, ac, b, del1, del2, k, nc)
+      use yaeos, only: CubicEoS, size, AlphaRKPR
       integer(c_int), intent(in) :: id
       integer, intent(in) :: nc
-      real(c_double), dimension(nc), intent(out) :: &
-         ac, b, del1, del2
-
+      real(c_double), dimension(nc), intent(out) :: ac, b, del1, del2, k
 
       associate(model => ar_models(id)%model)
          select type(model)
@@ -595,9 +593,16 @@ contains
             b(:nc) = model%b
             del1(:nc) = model%del1
             del2(:nc) = model%del2
+
+            associate(a => model%alpha)
+               select type(a)
+                class is(AlphaRKPR)
+                  k(:nc) = a%k
+               end select
+            end associate
          end select
       end associate
-   end subroutine get_ac_b_del1_del2
+   end subroutine get_ac_b_del1_del2_k
 
    ! ==========================================================================
    !  Multifluid equations
