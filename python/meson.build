@@ -204,14 +204,35 @@ py.install_sources(tools, subdir:python_lib / 'tools')
 # -----------------------------------------------------------------------------
 inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
 
+# Prepare link arguments based on OS
+extra_link_args = ['-L' + fpm_build_dir / 'lib', '-l' + 'yaeos']
+
+if is_windows
+  # For Windows: Force static linking for math and fortran runtimes
+  extra_link_args += [
+    '-static-libgcc',
+    '-static-libgfortran',
+    '-Wl,-Bstatic',
+    '-llapack',
+    '-lblas',
+    '-lquadmath',
+    '-Wl,-Bdynamic',
+    '-fopenmp'
+  ]
+else
+  # For Linux/macOS: Standard dynamic linking
+  extra_link_args += ['-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp']
+endif
+
 py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
-  dependencies : [py_dep, omp],
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp'],
+  dependencies : [py_dep, omp, quadmath_dep],
+  link_args: extra_link_args,
   subdir: python_lib / 'lib',
   install: true,
   c_args: ['-g', '-Og'],
 )
+
 #LDFLAGS=-Wl,-rpath=.,-z,noexecstack
