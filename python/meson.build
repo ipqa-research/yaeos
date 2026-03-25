@@ -53,6 +53,7 @@ fpm_build_dir = meson_path / 'fpm_build'
 # from glibc >= 2.41 executable stack is not an option, so we force heap
 # allocation
 cc = meson.get_compiler('c')
+quadmath_dep = cc.find_library('quadmath', required: true)
 
 if not is_windows
   glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
@@ -203,13 +204,12 @@ py.install_sources(tools, subdir:python_lib / 'tools')
 # -----------------------------------------------------------------------------
 inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
 
-
 py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
   dependencies : [py_dep, omp],
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-lblas', '-fopenmp'],
+  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp'],
   subdir: python_lib / 'lib',
   install: true,
   c_args: ['-g', '-Og'],
