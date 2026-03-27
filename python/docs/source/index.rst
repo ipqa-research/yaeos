@@ -26,6 +26,7 @@
    gpec
    envelopes
    fitting/init
+   tools/init
 
 Indices and tables
 ==================

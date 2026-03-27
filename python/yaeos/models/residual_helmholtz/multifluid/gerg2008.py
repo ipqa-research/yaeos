@@ -135,7 +135,6 @@ class GERG2008(ArModel):
         representation of the model parameters. This string should be valid
         Fortran code that assigns the model variables.
         """
-
         fcode = ""
 
         fcode += "ids = ["
@@ -153,7 +152,6 @@ class GERG2008(ArModel):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             f"integer, parameter :: nc={self.size()}\n"
             "\n"

@@ -68,20 +68,20 @@ class BinaryFitter:
     verbose : bool, optional
         If True, print the objective function value and the optimization
     pressure_error : Callable, optional
-        A function `f(Pexp, Pmodel)`that calculates the pressure error between
+        A function `f(Pexp, Pmodel)` that calculates the pressure error between
         the experimental and model values.
         The function should take the experimental and model
         values as arguments and return the error. If None, the default function
         is used.
     temperature_error : Callable, optional
-        A function `f(Texp, Tmodel)`that calculates the temperature error
+        A function `f(Texp, Tmodel)` that calculates the temperature error
         between the experimental and model values.
         The function should take the experimental and model
         values as arguments and return the error. If None, the default function
         is used.
     composition_error : Callable, optional
-        A function `f(zexp, zmodel)`that calculates the composition error
-        between the experimental and model values.  The function should take
+        A function `f(zexp, zmodel)` that calculates the composition error
+        between the experimental and model values. The function should take
         the experimental and model for mixture composition as arguments and
         return the error. If None, the default function is used.
 

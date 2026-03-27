@@ -980,7 +980,7 @@ class ArModel(ABC):
         dv: bool = False,
         dn: bool = False,
     ) -> Union[float, tuple[float, dict]]:
-        """Calculate residual internal energy at volume and temperature [bar L]
+        """Calculate residual internal energy at V and T [bar L].
 
         Parameters
         ----------
@@ -1950,7 +1950,7 @@ class ArModel(ABC):
         temperature: float,
         root: str = "stable",
     ) -> float:
-        """Calculate residual isochoric heat capacity given P and T [bar L / K]
+        """Calculate residual isochoric heat capacity at P and T [bar L / K].
 
         Parameters
         ----------
@@ -3998,7 +3998,7 @@ class ArModel(ABC):
         ws_stability,
         max_points=100,
     ):
-        r"""Calculation of a generalized multiphase isoplethic line.
+        r"""Calculate a generalized multiphase isoplethic line.
 
         Calculates a line for a constant composition specification.
         A multiphase line is defined as a line of `np+1` phases, where the
@@ -4394,6 +4394,7 @@ class ArModel(ABC):
                 - Vy: phase y molar volumes
                 - T: temperatures [K]
                 - P: pressures [bar]
+
         Returns
         -------
         dict
@@ -4407,7 +4408,6 @@ class ArModel(ABC):
                 - T: temperatures [K]
                 - P: pressures [bar]
         """
-
         x1s, y1s, w1s, vxys, vys, vws, ts, ps = yaeos_c.binary_llv_from_cep(
             self.id,
             cep["x"],

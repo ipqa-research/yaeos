@@ -136,7 +136,6 @@ class QMR(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             "type(QMR) :: mixrule"
             "\n"
@@ -259,7 +258,6 @@ class QMRTD(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             "type(QMRTD) :: mixrule"
             "\n"
@@ -614,7 +612,6 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             f"integer, parameter :: nc={self.size()}\n"
             "\n"

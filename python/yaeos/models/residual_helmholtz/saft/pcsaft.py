@@ -27,6 +27,7 @@ class PCSAFT(ArModel):
     Example
     -------
     .. code-block:: python
+
         from yaeos import PCSAFT
 
         m = [1.0582, 3.3004]
