@@ -204,10 +204,11 @@ contains
          ub = l*nc
          lnK = X(lb:ub)
 
-         i = maxloc(exp(lnK), dim=1)
-         j = minloc(exp(lnK), dim=1)
+         i = maxloc(lnK, dim=1)
+         j = minloc(lnK, dim=1)
          near_crit= (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.06_pr
-         ! near_critical = maxval(abs(X(lb:ub))) < 0.05_pr
+         near_crit= (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.1
+         near_crit = maxval(lnK) - minval(lnK) < 0.5 .or. maxval(abs(lnK)) < 0.06
          if (near_crit) then
             return
          end if
