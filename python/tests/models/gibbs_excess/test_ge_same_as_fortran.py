@@ -226,11 +226,16 @@ def test_ge_same_as_fortran(ge_model: GeModel):
     # Search output start
     lines = result.stdout.splitlines()
 
-    start_idx = 0
+    start_idx = None
     for i, line in enumerate(lines):
         if "=== FORTRAN OUTPUT START ===" in line:
             start_idx = i + 1
             break
+
+    # If compilation error occured, here will be printed
+    assert (
+        start_idx is not None
+    ), f"No FORTRAN OUTPUT found.\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"  # noqa
 
     # Actual output lines
     lines = lines[start_idx:]

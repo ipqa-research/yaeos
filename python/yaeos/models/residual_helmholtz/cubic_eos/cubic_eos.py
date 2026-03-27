@@ -285,7 +285,7 @@ class SoaveRedlichKwong(CubicEoS):
         srk = SoaveRedlichKwong(tc, pc, w)
     """
 
-    name = "SoaveReldichKwong"
+    name = "SoaveRedlichKwong"
 
     def __init__(
         self,
@@ -358,7 +358,7 @@ class RKPR(CubicEoS):
         rkpr = RKPR(tc, pc, w, zc)
     """
 
-    name = "fRKPR"
+    name = "RKPR"
 
     def __init__(
         self,

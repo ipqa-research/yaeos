@@ -85,6 +85,8 @@ class QMR(CubicMixRule):
         model = SoaveRedlichKwong(tc, pc, w, mixrule)
     """
 
+    name = "QMR"
+
     def __init__(self, kij, lij) -> None:
         self.kij = np.array(kij, order="F")
         self.lij = np.array(lij, order="F")
@@ -153,24 +155,24 @@ class QMRTD(CubicMixRule):
 
     Parameters
     ----------
-    kij_0 : array_like
+    kij_0 : matrix_like
         kij_0 binary interaction parameters matrix
-    kij_inf : array_like
+    kij_inf : matrix_like
         kij_inf binary interaction parameters matrix
-    t_ref: array_like
+    t_ref: matrix_like
         Reference temperature
-    lij : array_like
+    lij : matrix_like
         lij binary interaction parameters matrix
 
     Attributes
     ----------
-    kij_0 : array_like
+    kij_0 : matrix_like
         kij_0 binary interaction parameters matrix
-    kij_inf : array_like
+    kij_inf : matrix_like
         kij_inf binary interaction parameters matrix
-    t_ref: array_like
+    t_ref: matrix_like
         Reference temperature
-    lij : array_like
+    lij : matrix_like
         lij binary interaction parameters matrix
 
     Example
@@ -193,6 +195,8 @@ class QMRTD(CubicMixRule):
 
         model = SoaveRedlichKwong(tc, pc, w, mixrule)
     """
+
+    name = "QMRTD"
 
     def __init__(self, kij_0, kij_inf, t_ref, lij) -> None:
         self.kij_0 = np.array(kij_0, order="F")
@@ -311,6 +315,8 @@ class MHV(CubicMixRule):
 
         model_mhv = PengRobinson76(tc, pc, w, mixrule)
     """
+
+    name = "MHV"
 
     def __init__(self, ge: GeModel, q: float, lij=None) -> None:
         nc = ge.size()
@@ -433,6 +439,8 @@ class HV(CubicMixRule):
         model_hv = PengRobinson76(tc, pc, w, mixrule)
     """
 
+    name = "HV"
+
     def __init__(self, ge: GeModel) -> None:
         self.ge = ge
 
@@ -502,6 +510,8 @@ class HVNRTL(CubicMixRule):
         NRTL alpha parameters matrix
     gji : matrix_like
         NRTL gij parameters matrix
+    gjiT: matrix_like
+        NRTL gij temperature coefficient parameters matrix
     use_kij : matrix_like
         Boolean matrix indicating whether to use kij parameters
     kij : matrix_like
@@ -520,6 +530,8 @@ class HVNRTL(CubicMixRule):
     kij : matrix_like
         kij binary interaction parameters matrix
     """
+
+    name = "HVNRTL"
 
     def __init__(self, alpha, gji, gjiT=None, use_kij=None, kij=None) -> None:
         nc = np.shape(gji)[0]
@@ -569,30 +581,39 @@ class HVNRTL(CubicMixRule):
         use_kij_c = ""
         kij_c = ""
 
-        for i in range(len(self.gji0)):
+        for i in range(len(self.gji)):
             gji0_c += f"gji0({i + 1}, :) = ["
             gjit_c += f"gjiT({i + 1}, :) = ["
             use_kij_c += f"use_kij({i + 1}, :) = ["
             kij_c += f"kij({i + 1}, :) = ["
 
-            for j in range(len(self.kij)):
-                if j < len(self.kij) - 1:
-                    kij_c += f"{self.kij[i][j]}_pr, "
-                    gji0_c += f"{self.gji0[i][j]}_pr, "
-                    gjit_c += f"{self.gjiT[i][j]}_pr, "
-                    use_kij_c += f"{self.use_kij[i][j]}_pr, "
+            for j in range(len(self.gji)):
+                if j < len(self.gji) - 1:
+                    gji0_c += f"{self.gji[i][j]}_pr, "
+
+                    if self.gjiT[i][j]:
+                        gjit_c += f"{self.gjiT[i][j]}_pr, "
+
                     if self.use_kij[i][j]:
                         use_kij_c += ".true., "
                     else:
                         use_kij_c += ".false., "
+
+                    if self.kij[i][j]:
+                        kij_c += f"{self.kij[i][j]}_pr, "
                 else:
-                    kij_c += f"{self.kij[i][j]}_pr]\n"
-                    gji0_c += f"{self.gji0[i][j]}_pr]\n"
-                    gjit_c += f"{self.gjiT[i][j]}_pr]\n"
+                    gji0_c += f"{self.gji[i][j]}_pr]\n"
+
+                    if self.gjiT[i][j]:
+                        gjit_c += f"{self.gjiT[i][j]}_pr]\n"
+
                     if self.use_kij[i][j]:
                         use_kij_c += ".true.]\n"
                     else:
                         use_kij_c += ".false.]\n"
+
+                    if self.kij[i][j]:
+                        kij_c += f"{self.kij[i][j]}_pr]\n"
 
         fcode += kij_c + "\n"
         fcode += gji0_c + "\n"
@@ -613,7 +634,7 @@ class HVNRTL(CubicMixRule):
         be valid Fortran code that declares the model variables.
         """
         fcode = (
-            f"integer, parameter :: nc={self.size()}\n"
+            f"integer, parameter :: nc={len(self.gji)}\n"
             "\n"
             "type(HV_NRTL) :: mixrule\n"
             "\n"
