@@ -567,13 +567,13 @@ class HVNRTL(CubicMixRule):
         fcode = ""
 
         gji0_c = ""
-        gjiT_c = ""
+        gjit_c = ""
         use_kij_c = ""
         kij_c = ""
 
         for i in range(len(self.gji0)):
             gji0_c += f"gji0({i + 1}, :) = ["
-            gjiT_c += f"gjiT({i + 1}, :) = ["
+            gjit_c += f"gjiT({i + 1}, :) = ["
             use_kij_c += f"use_kij({i + 1}, :) = ["
             kij_c += f"kij({i + 1}, :) = ["
 
@@ -581,7 +581,7 @@ class HVNRTL(CubicMixRule):
                 if j < len(self.kij) - 1:
                     kij_c += f"{self.kij[i][j]}_pr, "
                     gji0_c += f"{self.gji0[i][j]}_pr, "
-                    gjiT_c += f"{self.gjiT[i][j]}_pr, "
+                    gjit_c += f"{self.gjiT[i][j]}_pr, "
                     use_kij_c += f"{self.use_kij[i][j]}_pr, "
                     if self.use_kij[i][j]:
                         use_kij_c += ".true., "
@@ -590,7 +590,7 @@ class HVNRTL(CubicMixRule):
                 else:
                     kij_c += f"{self.kij[i][j]}_pr]\n"
                     gji0_c += f"{self.gji0[i][j]}_pr]\n"
-                    gjiT_c += f"{self.gjiT[i][j]}_pr]\n"
+                    gjit_c += f"{self.gjiT[i][j]}_pr]\n"
                     if self.use_kij[i][j]:
                         use_kij_c += ".true.]\n"
                     else:
@@ -598,7 +598,7 @@ class HVNRTL(CubicMixRule):
 
         fcode += kij_c + "\n"
         fcode += gji0_c + "\n"
-        fcode += gjiT_c + "\n"
+        fcode += gjit_c + "\n"
         fcode += use_kij_c + "\n"
 
         fcode += (

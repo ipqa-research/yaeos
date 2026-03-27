@@ -1950,7 +1950,7 @@ class ArModel(ABC):
         temperature: float,
         root: str = "stable",
     ) -> float:
-        """Calculate residual isochoric heat capacity given P and T [bar L / K].
+        """Calculate residual isochoric heat capacity given P and T [bar L / K]
 
         Parameters
         ----------
@@ -2058,7 +2058,7 @@ class ArModel(ABC):
         dp: bool = False,
         dn: bool = False,
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
-        """Calculate activity coefficients given temperature and pressure.
+        r"""Calculate activity coefficients given temperature and pressure.
 
         Calculate :math:`ln \gamma_i(n,P,T)` and its derivatives..
 
@@ -2175,8 +2175,8 @@ class ArModel(ABC):
         Returns
         -------
         Union[float, tuple[float, dict]]
-            Excess Gibbs energy or tuple with Excess Gibbs energy and derivatives
-            dictionary if any derivative is asked [bar L]
+            Excess Gibbs energy or tuple with Excess Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
 
         Example
         -------
@@ -2380,8 +2380,8 @@ class ArModel(ABC):
         Returns
         -------
         Union[float, tuple[float, dict]]
-            Excess volume or tuple with Excess volume and derivatives dictionary
-            if any derivative is asked [L]
+            Excess volume or tuple with Excess volume and derivatives
+            dictionary if any derivative is asked [L]
 
         Example
         -------
@@ -2392,9 +2392,9 @@ class ArModel(ABC):
             from yaeos import PengRobinson76
 
 
-            tc = np.array([320.0, 375.0])   # critical temperatures [K]
-            pc = np.array([45.0, 60.0])     # critical pressures [bar]
-            w = np.array([0.0123, 0.045])   # acentric factors
+            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =
+            np.array([45.0, 60.0])     # critical pressures [bar] w =
+            np.array([0.0123, 0.045])   # acentric factors
 
             model = PengRobinson76(tc, pc, w)
 
@@ -2438,7 +2438,8 @@ class ArModel(ABC):
         -------
         Union[float, tuple[float, dict]]
             Excess Helmholtz free energy or tuple with Excess Helmholtz free
-            energy and derivatives dictionary if any derivative is asked [bar L]
+            energy and derivatives dictionary if any derivative is asked
+            [bar L]
 
         Example
         -------
@@ -3817,7 +3818,7 @@ class ArModel(ABC):
         locs_2 = []
 
         if len(temperatures) > 5:
-            warn("""More than 5 intersection points found. 
+            warn("""More than 5 intersection points found.
                 Assuming overlaped lines""")
             return dsps, locs_1, locs_2
 
