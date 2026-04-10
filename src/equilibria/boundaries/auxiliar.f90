@@ -208,7 +208,7 @@ contains
          j = minloc(lnK, dim=1)
          near_crit= (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.06_pr
          near_crit= (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.1
-         near_crit = maxval(lnK) - minval(lnK) < 0.5 .or. maxval(abs(lnK)) < 0.06
+         near_crit = maxval(lnK) - minval(lnK) < 0.5 .and. maxval(abs(lnK)) < 0.1
          if (near_crit) then
             return
          end if
