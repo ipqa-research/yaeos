@@ -155,7 +155,7 @@ class GERG2008(ArModel):
         fcode = (
             f"integer, parameter :: nc={self.size()}\n"
             "\n"
-            "type(ArModel) :: ar_model\n"
+            "type(Gerg2008) :: ar_model\n"
             "\n"
             f"integer :: ids(nc)\n\n"
         )

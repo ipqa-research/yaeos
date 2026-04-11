@@ -92,6 +92,9 @@ class PCSAFT(ArModel):
 
         fcode += kij_c + "\n"
 
+        # Setup PCSAFT
+        fcode += "ar_model = init_pcsaft(m, sigma, epsilon_k, kij)\n"
+
         return fcode
 
     def _model_params_declaration_as_str(self) -> str:
