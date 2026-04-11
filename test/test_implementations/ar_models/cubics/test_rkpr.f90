@@ -10,10 +10,68 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test RKPR Ar individual calls", test_rkpr_individual_calls), &
          new_unittest("Test RKPR Ar consistency mix", test_rkpr_cons_mixture), &
          new_unittest("Test RKPR Ar consistency pure", test_rkpr_cons_pure) &
          ]
    end subroutine collect_suite
+
+   subroutine test_rkpr_individual_calls(error)
+      use yaeos, only: pr, RKPR, ArModel
+      use yaeos__consistency, only: individual_ar_calls
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model, model_kij
+      real(pr) :: tc(4), pc(4), w(4), zc(4), kij(4, 4), lij(4, 4)
+
+      real(pr) :: n(4), t, v
+
+      logical :: passed
+
+      n = [1.5, 0.2, 0.7, 2.3]
+
+      tc = [647.13_pr, 514.0_pr, 694.25_pr, 591.95_pr]
+      pc = [220.55_pr, 61.37_pr, 61.3_pr, 57.86_pr]
+      w = [0.344861_pr, 0.643558_pr, 0.44346_pr, 0.466521_pr]
+      zc = [&
+         0.22933184088891398_pr, &
+         0.24125043270236704_pr, &
+         0.24319009555842885_pr, &
+         0.21125514583718205_pr &
+         ]
+
+      t = 600_pr
+      v = 0.5_pr
+
+      ! =======================================================================
+      ! Without kij
+      ! -----------------------------------------------------------------------
+      model = RKPR(tc, pc, w, zc)
+
+      call individual_ar_calls(model, n, v, t, passed=passed)
+      call check(error, passed)
+
+      ! =======================================================================
+      ! With kij
+      ! -----------------------------------------------------------------------
+      kij = reshape([&
+         0.0_pr, 0.1_pr, 0.2_pr, 0.1_pr, &
+         0.1_pr, 0.0_pr, 0.3_pr, 0.25_pr, &
+         0.2_pr, 0.3_pr, 0.0_pr, 0.18_pr, &
+         0.1_pr, 0.25_pr, 0.18_pr, 0.0_pr], [size(n), size(n)])
+
+      lij = reshape([&
+         0.0_pr, 0.001_pr, 0.002_pr, 0.001_pr, &
+         0.001_pr, 0.0_pr, 0.003_pr, 0.0025_pr, &
+         0.002_pr, 0.003_pr, 0.0_pr, 0.0018_pr, &
+         0.001_pr, 0.0025_pr, 0.0018_pr, 0.0_pr], [size(n), size(n)])
+
+
+      model_kij = RKPR(tc, pc, w, zc, kij, lij)
+
+      call individual_ar_calls(model_kij, n, v, t, passed=passed)
+      call check(error, passed)
+   end subroutine test_rkpr_individual_calls
 
    subroutine test_rkpr_cons_mixture(error)
       use yaeos, only: pr, RKPR, ArModel

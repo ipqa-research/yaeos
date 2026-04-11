@@ -10,6 +10,7 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test PSRK Ar individual calls", test_psrk_individual_calls), &
          new_unittest("Test PSRK Ar consistency mix", test_psrk_cons_mixture), &
          new_unittest("Test PSRK Ar consistency pure", test_psrk_cons_pure), &
          new_unittest("Test PSRK paper 2005 1", test_psrk_paper2005_1), &
@@ -18,6 +19,51 @@ contains
          new_unittest("Test PSRK paper 2005 4", test_psrk_paper2005_4) &
          ]
    end subroutine collect_suite
+
+   subroutine test_psrk_individual_calls(error)
+      use yaeos, only: pr, PSRK, ArModel, Groups
+      use yaeos__consistency, only: individual_ar_calls
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model, model_kij
+      type(Groups) :: molecules(4)
+      real(pr) :: tc(4), pc(4), w(4), kij(4, 4), lij(4, 4)
+      real(pr) :: c1(4), c2(4), c3(4)
+
+      real(pr) :: n(4), t, v
+
+      logical :: passed
+
+      n = [1.5, 0.2, 0.7, 2.3]
+      t = 600_pr
+      v = 10.0_pr
+      
+      molecules(1)%groups_ids = [16]
+      molecules(1)%number_of_groups = [1]
+
+      molecules(2)%groups_ids = [1, 2, 14]
+      molecules(2)%number_of_groups = [1, 1, 1]
+
+      molecules(3)%groups_ids = [9, 17]
+      molecules(3)%number_of_groups = [5, 1]
+
+      molecules(4)%groups_ids = [1, 42]
+      molecules(4)%number_of_groups = [1, 1]
+
+
+      tc = [647.13_pr, 514.0_pr, 694.25_pr, 591.95_pr]
+      pc = [220.55_pr, 61.37_pr, 61.34_pr, 57.86_pr]
+      w = [0.344861_pr, 0.643558_pr, 0.44346_pr, 0.466521_pr]
+
+      c1 = [1.0783_pr, 1.3327_pr, 1.524_pr, 1.29616_pr]
+      c2 = [-0.58321_pr, 0.96946_pr, -3.46962_pr, -1.05202_pr]
+      c3 = [0.54619_pr, -3.1879_pr, 7.50049_pr, 0.92225_pr]
+
+      model = PSRK(tc, pc, w, molecules, c1, c2, c3)
+
+      call individual_ar_calls(model, n, v, t, passed)
+      call check(error, passed)
+   end subroutine test_psrk_individual_calls
 
    subroutine test_psrk_cons_mixture(error)
       use yaeos, only: pr, PSRK, ArModel, Groups
