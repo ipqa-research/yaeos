@@ -18,6 +18,9 @@ module yaeos__consistency_armodel
    !! - [[ar_consistency]]: From an instantiated [[ArModel]] evaluate all the
    !! Michelsen and Mollerup consistency tests.
    !!
+   !! - [[individual_ar_calls]]: Test the individual calls to the Helmholtz 
+   !! free energy derivatives.
+   !!
    !! # References
    !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
    !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
@@ -114,7 +117,6 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), optional, intent(out) :: eq31 !! MM Eq. 31
-      ! TODO real(pr), optional, intent(out) :: eq32
       real(pr), optional, intent(out) :: eq33(size(n), size(n)) !! MM Eq. 33
       real(pr), optional, intent(out) :: eq34(size(n)) !! MM Eq. 34
       real(pr), optional, intent(out) :: eq36 !! MM Eq. 36
@@ -146,19 +148,14 @@ contains
 
       Grp = Grv - ntot * R * T * log(Z)
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 31
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq31)) eq31 = sum(n(:) * lnPhi(:)) - Grp / (R * T)
 
-      ! ========================================================================
-      ! Equation 32
-      ! ------------------------------------------------------------------------
-      ! TODO
-
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 33
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq33)) then
          do i = 1, size(n), 1
             do j = 1, size(n), 1
@@ -167,9 +164,9 @@ contains
          end do
       end if
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 34
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq34)) then
          eq34 = 0.0_pr
 
@@ -180,14 +177,14 @@ contains
          end do
       end if
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 36
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq36)) eq36 = sum(n(:) * dlnPhidP(:)) - (z - 1) * ntot / P
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 37
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq37)) then
          eq37 = sum(n(:) * dlnPhidT(:)) + Hrv / (R * T**2)
       end if
@@ -392,4 +389,146 @@ contains
          end do
       end if
    end subroutine numeric_ar_derivatives
+
+   subroutine individual_ar_calls(eos, n, V, T, passed)
+      !! # individual_ar_calls
+      !! Check if all derivatives of helmholtz can be called individually
+      !!
+      !! # Description
+      !! Tool to facilitate the development of new [[ArModel]] by testing
+      !! the individual call of each Helmholtz derivative. The individual call
+      !! must be equal to the total call.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  use yaeos, only: pr, SoaveRedlichKwong, ArModel
+      !!  use yaeos__consistency_armodel, only: individual_ar_calls
+      !!
+      !!  class(ArModel), allocatable :: model
+      !!  real(pr) :: tc(4), pc(4), w(4)
+      !!
+      !!  real(pr) :: n(4), T, V
+      !!  logical :: passed
+      !!
+      !!  n = [1.5, 0.2, 0.7, 2.3]
+      !!  tc = [190.564, 425.12, 300.11, 320.25]
+      !!  pc = [45.99, 37.96, 39.23, 40.21]
+      !!  w = [0.0115478, 0.200164, 0.3624, 0.298]
+      !!
+      !!  T = 600_pr
+      !!  V = 0.5_pr
+      !!
+      !!  model = SoaveRedlichKwong(tc, pc, w)
+      !!
+      !!  call individual_ar_calls(model, n, V, T, passed)
+      !!
+      !!  ! If TRUE, then all individual calls are correct
+      !!  print *, passed
+      !! ```
+      !!
+      class(ArModel), intent(in) :: eos !! Equation of state
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      logical, intent(out) :: passed
+      !! Flag indicating if all individual calls are correct
+
+      integer :: i, j
+
+      ! All calls together
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArV2, ArT2, ArTV, ArVn(size(n))
+      real (pr) :: ArTn(size(n)), Arn2(size(n), size(n))
+
+      ! Individual calls
+      real(pr) :: i_Ar, i_ArV, i_ArT, i_Arn(size(n)), i_ArV2, i_ArT2, i_ArTV
+      real (pr) :: i_ArVn(size(n)), i_ArTn(size(n)), i_Arn2(size(n), size(n))
+
+      ! =======================================================================
+      ! All calls together
+      ! -----------------------------------------------------------------------
+      call eos%residual_helmholtz(&
+         n=n, V=V, T=T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+      )
+
+      ! =======================================================================
+      ! Individual calls
+      ! -----------------------------------------------------------------------
+      call eos%residual_helmholtz(n=n, V=V, T=T, Ar=i_Ar)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArV=i_ArV)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArT=i_ArT)
+      call eos%residual_helmholtz(n=n, V=V, T=T, Arn=i_Arn)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArV2=i_ArV2)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArT2=i_ArT2)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArTV=i_ArTV)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArVn=i_ArVn)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArTn=i_ArTn)
+      call eos%residual_helmholtz(n=n, V=V, T=T, Arn2=i_Arn2)
+
+      ! =======================================================================
+      ! Asserts
+      ! -----------------------------------------------------------------------
+      if (abs(Ar - i_Ar) > epsilon(Ar)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArV - i_ArV) > epsilon(ArV)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArT - i_ArT) > epsilon(ArT)) then
+         passed = .false.
+         return
+      end if
+
+      do i = 1, size(n)
+         if (abs(Arn(i) - i_Arn(i)) > epsilon(Arn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      if (abs(ArV2 - i_ArV2) > epsilon(ArV2)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArT2 - i_ArT2) > epsilon(ArT2)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArTV - i_ArTV) > epsilon(ArTV)) then
+         passed = .false.
+         return
+      end if
+
+      do i = 1, size(n)
+         if (abs(ArVn(i) - i_ArVn(i)) > epsilon(ArVn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      do i = 1, size(n)
+         if (abs(ArTn(i) - i_ArTn(i)) > epsilon(ArTn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      do i = 1, size(n)
+         do j = 1, size(n)
+            if (abs(Arn2(i, j) - i_Arn2(i, j)) > epsilon(Arn2(i, j))) then
+               passed = .false.
+               return
+            end if
+         end do
+      end do
+
+      passed = .true.
+   end subroutine individual_ar_calls
 end module yaeos__consistency_armodel

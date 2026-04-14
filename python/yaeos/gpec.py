@@ -71,16 +71,6 @@ class GPEC:
         Critical line data for liquid-liquid critical line.
     _cep_ll : dict
         Critical endpoint data for liquid-liquid critical line.
-
-    Methods
-    -------
-    plot_gped()
-        Plots the global phase equilibria diagram (GPED) based on the critical
-        lines and pure saturation pressures.
-    plot_pxy(temperature, a0=1e-5)
-        Plots a Pxy phase diagram for the system at a given temperature.
-    plot_txy(pressure, a0=1e-5)
-        Plots a Txy phase diagram for the system at a given pressure.
     """
 
     def __init__(

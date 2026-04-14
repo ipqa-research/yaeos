@@ -13,11 +13,49 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test NRTL individual ge calls", test_nrtl_individual_ge_calls), &
          new_unittest("Test NRTL consistency mixture", test_cons_nrtl_mix), &
          new_unittest("Test NRTL consistency pure", test_cons_nrtl_pure), &
          new_unittest("NRTL", test_nrtl) &
          ]
    end subroutine collect_suite
+
+   subroutine test_nrtl_individual_ge_calls(error)
+      use yaeos, only: pr, R
+      use yaeos, only: NRTL
+      use yaeos__consistency_gemodel, only: individual_ge_calls
+
+      type(NRTL) :: model
+
+      type(error_type), allocatable, intent(out) :: error
+
+      integer, parameter :: nc=2
+      logical :: passed
+
+      real(pr) :: n(nc), T, rs(nc), qs(nc)
+      real(pr) :: a(nc,nc), b(nc,nc), c(nc,nc)
+
+      T = 303.15
+      n = [400.0, 100.0]
+
+      a = 0; b = 0; c = 0
+
+      a(1, 2) = 3.458
+      a(2, 1) = -0.801
+
+      b(1, 2) = -586.1
+      b(2, 1) = 246.2
+
+      c(1, 2) = 0.3
+      c(2, 1) = 0.3
+
+      model = NRTL(a, b, c)
+
+      call individual_ge_calls(model, n, T, passed)
+
+      call check(error, passed)
+   end subroutine test_nrtl_individual_ge_calls
+
 
    subroutine test_cons_nrtl_mix(error)
       use yaeos, only: pr, NRTL

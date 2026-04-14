@@ -1,15 +1,10 @@
-"""Module of helper tools that write data to either files or strings in various 
-formats.
-"""
-
+"""Module tool: write data to either files or strings in various formats."""
 
 import numpy as np
 
 
 def fmatrix_as_str(array: np.ndarray) -> str:
-    """Converts a 2D array into it's equivalent representation in Fortran code.
-    """
-
+    """Convert 2D array into its equivalent representation in Fortran code."""
     array_str = ""
     n = len(array)
 

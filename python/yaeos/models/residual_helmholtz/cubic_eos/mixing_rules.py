@@ -85,6 +85,8 @@ class QMR(CubicMixRule):
         model = SoaveRedlichKwong(tc, pc, w, mixrule)
     """
 
+    name = "QMR"
+
     def __init__(self, kij, lij) -> None:
         self.kij = np.array(kij, order="F")
         self.lij = np.array(lij, order="F")
@@ -136,7 +138,6 @@ class QMR(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             "type(QMR) :: mixrule"
             "\n"
@@ -154,24 +155,24 @@ class QMRTD(CubicMixRule):
 
     Parameters
     ----------
-    kij_0 : array_like
+    kij_0 : matrix_like
         kij_0 binary interaction parameters matrix
-    kij_inf : array_like
+    kij_inf : matrix_like
         kij_inf binary interaction parameters matrix
-    t_ref: array_like
+    t_ref: matrix_like
         Reference temperature
-    lij : array_like
+    lij : matrix_like
         lij binary interaction parameters matrix
 
     Attributes
     ----------
-    kij_0 : array_like
+    kij_0 : matrix_like
         kij_0 binary interaction parameters matrix
-    kij_inf : array_like
+    kij_inf : matrix_like
         kij_inf binary interaction parameters matrix
-    t_ref: array_like
+    t_ref: matrix_like
         Reference temperature
-    lij : array_like
+    lij : matrix_like
         lij binary interaction parameters matrix
 
     Example
@@ -194,6 +195,8 @@ class QMRTD(CubicMixRule):
 
         model = SoaveRedlichKwong(tc, pc, w, mixrule)
     """
+
+    name = "QMRTD"
 
     def __init__(self, kij_0, kij_inf, t_ref, lij) -> None:
         self.kij_0 = np.array(kij_0, order="F")
@@ -259,7 +262,6 @@ class QMRTD(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             "type(QMRTD) :: mixrule"
             "\n"
@@ -314,6 +316,8 @@ class MHV(CubicMixRule):
         model_mhv = PengRobinson76(tc, pc, w, mixrule)
     """
 
+    name = "MHV"
+
     def __init__(self, ge: GeModel, q: float, lij=None) -> None:
         nc = ge.size()
         self.ge = ge
@@ -367,7 +371,7 @@ class MHV(CubicMixRule):
             )
         else:
             fcode += (
-                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, bi=ar_model%b)\n\n"
+                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b)\n\n"
             )
 
         return fcode
@@ -435,6 +439,8 @@ class HV(CubicMixRule):
         model_hv = PengRobinson76(tc, pc, w, mixrule)
     """
 
+    name = "HV"
+
     def __init__(self, ge: GeModel) -> None:
         self.ge = ge
 
@@ -459,10 +465,9 @@ class HV(CubicMixRule):
 
         fcode += self.ge._model_params_as_str()
 
-        fcode += (
-            "mixrule = HV(ge=ge_model, "
-            "bi=ar_model%b, del1=ar_model%del1)\n\n"
-        )
+        fcode += "mixrule%ge = ge_model \n"
+        fcode += "mixrule%bi = ar_model%b \n"
+        fcode += "mixrule%del1 = ar_model%del1 \n"
 
         return fcode
 
@@ -504,6 +509,8 @@ class HVNRTL(CubicMixRule):
         NRTL alpha parameters matrix
     gji : matrix_like
         NRTL gij parameters matrix
+    gjiT: matrix_like
+        NRTL gij temperature coefficient parameters matrix
     use_kij : matrix_like
         Boolean matrix indicating whether to use kij parameters
     kij : matrix_like
@@ -522,6 +529,8 @@ class HVNRTL(CubicMixRule):
     kij : matrix_like
         kij binary interaction parameters matrix
     """
+
+    name = "HVNRTL"
 
     def __init__(self, alpha, gji, gjiT=None, use_kij=None, kij=None) -> None:
         nc = np.shape(gji)[0]
@@ -564,46 +573,42 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters. This string should be valid
         Fortran code that assigns the model variables.
         """
+        nc = len(self.gji)
         fcode = ""
-
         gji0_c = ""
-        gjiT_c = ""
+        gjit_c = ""
         use_kij_c = ""
         kij_c = ""
+        alpha_c = ""
 
-        for i in range(len(self.gji0)):
+        for i in range(nc):
             gji0_c += f"gji0({i + 1}, :) = ["
-            gjiT_c += f"gjiT({i + 1}, :) = ["
+            gjit_c += f"gjiT({i + 1}, :) = ["
             use_kij_c += f"use_kij({i + 1}, :) = ["
             kij_c += f"kij({i + 1}, :) = ["
+            alpha_c += f"alphaij({i + 1}, :) = ["
 
-            for j in range(len(self.kij)):
-                if j < len(self.kij) - 1:
-                    kij_c += f"{self.kij[i][j]}_pr, "
-                    gji0_c += f"{self.gji0[i][j]}_pr, "
-                    gjiT_c += f"{self.gjiT[i][j]}_pr, "
-                    use_kij_c += f"{self.use_kij[i][j]}_pr, "
-                    if self.use_kij[i][j]:
-                        use_kij_c += ".true., "
-                    else:
-                        use_kij_c += ".false., "
-                else:
-                    kij_c += f"{self.kij[i][j]}_pr]\n"
-                    gji0_c += f"{self.gji0[i][j]}_pr]\n"
-                    gjiT_c += f"{self.gjiT[i][j]}_pr]\n"
-                    if self.use_kij[i][j]:
-                        use_kij_c += ".true.]\n"
-                    else:
-                        use_kij_c += ".false.]\n"
+            for j in range(nc):
+                sep = ", " if j < nc - 1 else "]\n"
+                gji0_c += f"{self.gji[i][j]}_pr{sep}"
+                gjit_c += f"{self.gjiT[i][j]}_pr{sep}"
+                kij_c += f"{self.kij[i][j]}_pr{sep}"
+                alpha_c += f"{self.alpha[i][j]}_pr{sep}"
+                use_kij_c += (
+                    ".true." if self.use_kij[i][j] else ".false."
+                ) + sep
 
+        fcode += alpha_c + "\n"
         fcode += kij_c + "\n"
         fcode += gji0_c + "\n"
-        fcode += gjiT_c + "\n"
+        fcode += gjit_c + "\n"
         fcode += use_kij_c + "\n"
 
         fcode += (
-            r"mixrule = HVNRTL(gji0=gji0, gjit=gjiT, b=ar_model%b, "
-            r"use_kij=use_kij, kij=kij)\n\n"
+            "mixrule = init_hvnrtl("
+            "b=ar_model%b, del1=ar_model%del1, "
+            "alpha=alphaij, gji0=gji0, gjiT=gjiT, "
+            "use_kij=use_kij, kij=kij)\n\n"
         )
         return fcode
 
@@ -614,13 +619,11 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
-            f"integer, parameter :: nc={self.size()}\n"
-            "\n"
             "type(HV_NRTL) :: mixrule\n"
             "\n"
-            "real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc)\n"
+            "real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc), alphaij(nc,nc)"
+            "\n"
             "logical :: use_kij(nc,nc)\n\n"
         )
         return fcode

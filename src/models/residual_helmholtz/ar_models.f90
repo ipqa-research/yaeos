@@ -63,6 +63,20 @@ module yaeos__models_ar
       procedure :: internal_energy_residual_vt
       procedure :: Cv_residual_vt
       procedure :: Cp_residual_vt
+      procedure :: helmholtz_residual_pt
+      procedure :: enthalpy_residual_pt
+      procedure :: gibbs_residual_pt
+      procedure :: entropy_residual_pt
+      procedure :: internal_energy_residual_pt
+      procedure :: Cv_residual_pt
+      procedure :: Cp_residual_pt
+      procedure :: ln_activity_coefficient
+      procedure :: gibbs_excess
+      procedure :: enthalpy_excess
+      procedure :: volume_excess
+      procedure :: entropy_excess
+      procedure :: helmholtz_excess
+      procedure :: internal_energy_excess
       procedure :: Psat_pure
    end type ArModel
 
@@ -433,7 +447,7 @@ contains
 
       if (present(lnPhi)) lnPhi = Arn(:)/RT - log(Z)
       if (present(lnPhiP)) then
-         ! Avoiding P in Z makes it possible to calculate fugacities at 
+         ! Avoiding P in Z makes it possible to calculate fugacities at
          ! negative pressures
          Z_P = V/(totn*RT)
          lnPhiP = Arn(:)/RT - log(Z_P)
@@ -586,6 +600,9 @@ contains
       if (present(dPdn)) dPdn = dPdn_in
    end subroutine lnfug_vt
 
+   ! ==========================================================================
+   ! VT thermoprops
+   ! --------------------------------------------------------------------------
    subroutine enthalpy_residual_vt(eos, n, V, T, Hr, HrV, HrT, Hrn)
       !! Calculate residual enthalpy given volume and temperature.
       !!
@@ -785,16 +802,778 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(out) :: Cp !! heat capacity P constant [bar L / K]
 
-      real(pr) :: Cv, P, dPdT, dPdV, n_t
+      real(pr) :: nt
+      real(pr) :: ArT2, ArTV, ArV2
 
-      n_t = sum(n)
+      nt = sum(n)
 
-      call Cv_residual_vt(eos, n, V, T, Cv)
-      call pressure(eos, n, V, T, P, dPdV=dPdV, dPdT=dPdT)
+      call eos%residual_helmholtz(n, V, T, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2)
 
-      Cp = Cv - T * dPdT**2 / dPdV - n_t*R
+      Cp = &
+         -T * ArT2 &
+         -T * (-ArTV + nt *R / V)**2 / (-ArV2 - nt*R*T / V**2) &
+         - nt * R
    end subroutine Cp_residual_vt
 
+   ! ==========================================================================
+   ! PT thermoprops
+   ! --------------------------------------------------------------------------
+   subroutine helmholtz_residual_pt(eos, n, P, T, root_type, Ar, ArP, ArT, Arn)
+      !! Calculate residual Helmholtz energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%helmholtz_residual_pt(&
+      !!    n, P, T, root_type="stable", Ar=Ar, ArP=ArP, ArT=ArT, Arn=Arn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), optional, intent(out) :: Ar
+      !! Residual Helmholtz energy [bar L]
+      real(pr), optional, intent(out) :: ArP !! \(\frac{dA^r}}{dP}\)
+      real(pr), optional, intent(out) :: ArT !! \(\frac{dA^r}}{dT}\)
+      real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dA^r}}{dn}\)
+
+      ! Helmholtz at VT
+      real(pr) :: Ar_v, ArV_v, ArT_v, Arn_v(size(n))
+      real(pr) :: dPdV, dPdT, dPdn(size(n))
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
+      real(pr) :: Z, nt, V, P_dummy
+
+      logical :: dp, dt, dn, present_derivs
+
+      dp = present(ArP)
+      dt = present(ArT)
+      dn = present(Arn)
+
+      present_derivs = dp .or. dt .or. dn
+
+      if (present_derivs) then
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%residual_helmholtz(&
+            n=n, V=V, T=T, Ar=Ar_v, ArV=ArV_v, ArT=ArT_v, Arn=Arn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
+      else
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%residual_helmholtz(n=n, V=V, T=T, Ar=Ar_v)
+      end if
+
+      nt = sum(n)
+      Z = P * V / (nt * R * T)
+
+      if (present(Ar)) Ar = Ar_v - nt * R * T * log(Z)
+
+      if (present(ArP)) ArP = ArV_v / dPdV - nt*R*T*(1.0_pr/P + dVdP/V)
+
+      if (present(ArT)) ArT = &
+         ArT_v + ArV_v * dVdT - nt*R*log(Z) - nt*R*T*(dVdT / V - 1.0_pr/T)
+
+      if (present(Arn)) Arn = &
+         Arn_v + ArV_v * dVdn - R*T*log(Z) - nt*R*T*(dVdn / V - 1.0_pr/nt)
+   end subroutine helmholtz_residual_pt
+
+   subroutine enthalpy_residual_pt(eos, n, P, T, root_type, Hr, HrP, HrT, Hrn)
+      !! Calculate residual enthalpy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%enthalpy_residual_pt(&
+      !!    n, P, T, root_type="stable", Hr=Hr, HrP=HrP, HrT=HrT, Hrn=Hrn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), optional, intent(out) :: Hr !! Residual enthalpy [bar L]
+      real(pr), optional, intent(out) :: HrP !! \(\frac{dH^r}}{dP}\)
+      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
+      real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
+
+      real(pr) :: Hr_v, HrT_v, HrV_v, Hrn_v(size(n)) ! residual entralpy vt
+      real(pr) :: V, dPdV, dPdT, dPdn(size(n)), P_dummy
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
+
+      logical :: dp, dT, dn, derivs_present
+
+      dp = present(HrP)
+      dt = present(HrT)
+      dn = present(Hrn)
+
+      derivs_present = dp .or. dt .or. dn
+
+      if (derivs_present) then
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%enthalpy_residual_vt(&
+            n=n, V=V, T=T, Hr=Hr_v, HrV=HrV_v, HrT=HrT_v, Hrn=Hrn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
+      else
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%enthalpy_residual_vt(n=n, V=V, T=T, Hr=Hr_v)
+      end if
+
+      if (present(Hr)) Hr = Hr_v
+      if (present(HrP)) HrP = HrV_v * dVdP
+      if (present(HrT)) HrT = HrT_v + HrV_v * dVdT
+      if (present(Hrn)) Hrn = Hrn_v + HrV_v * dVdn
+   end subroutine enthalpy_residual_pt
+
+   subroutine gibbs_residual_pt(eos, n, P, T, root_type, Gr, GrP, GrT, Grn)
+      !! Calculate residual Gibbs energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%gibbs_residual_pt(&
+      !!    n, P, T, root_type="stable", Gr=Gr, GrP=GrP, GrT=GrT, Grn=Grn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), optional, intent(out) :: Gr !! Residual Gibbs energy [bar L]
+      real(pr), optional, intent(out) :: GrP !! \(\frac{dG^r}}{dP}\)
+      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
+      real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
+
+      real(pr) :: Gr_v, GrT_v, GrV_v, Grn_v(size(n)) ! residual Gibbs energy vt
+      real(pr) :: Z, nt, V, dPdV, dPdT, dPdn(size(n)), P_dummy
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
+
+      logical :: dp, dt, dn, present_derivs
+
+      dp = present(GrP)
+      dt = present(GrT)
+      dn = present(Grn)
+
+      present_derivs = dp .or. dt .or. dn
+
+      if (present_derivs) then
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%gibbs_residual_vt(&
+            n=n, V=V, T=T, Gr=Gr_v, GrV=GrV_v, GrT=GrT_v, Grn=Grn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
+      else
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%gibbs_residual_vt(n=n, V=V, T=T, Gr=Gr_v)
+      end if
+
+      nt = sum(n)
+      Z = P * V / (nt * R * T)
+
+      if (present(Gr)) Gr = Gr_v - nt * R * T * log(Z)
+
+      if (present(GrP)) GrP = GrV_v / dPdV - nt*R*T*(1.0_pr/P + dVdP/V)
+
+      if (present(GrT)) GrT = &
+         GrT_v + GrV_v * dVdT - nt*R*log(Z) - nt*R*T*(dVdT / V - 1.0_pr/T)
+
+      if (present(Grn)) Grn = &
+         Grn_v + GrV_v * dVdn - R*T*log(Z) - nt*R*T*(dVdn / V - 1.0_pr/nt)
+   end subroutine gibbs_residual_pt
+
+   subroutine entropy_residual_pt(eos, n, P, T, root_type, Sr, SrP, SrT, Srn)
+      !! Calculate residual entropy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%entropy_residual_pt(&
+      !!    n, P, T, root_type="stable", Sr=Sr, SrP=SrP, SrT=SrT, Srn=Srn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), optional, intent(out) :: Sr !! Residual entropy [bar L K^-1]
+      real(pr), optional, intent(out) :: SrP !! \(\frac{dS^r}}{dP}\)
+      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
+      real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
+
+      real(pr) :: Sr_v, SrT_v, SrV_v, Srn_v(size(n)) ! residual entropy vt
+      real(pr) :: dPdV, dPdT, dPdn(size(n))
+      real(pr) :: dVdT, dVdP, dVdn(size(n))
+      real(pr) :: Z, nt, V, P_dummy
+
+      logical :: dp, dt, dn, derivs_present
+
+      dp = present(SrP)
+      dt = present(SrT)
+      dn = present(Srn)
+      derivs_present = dp .or. dt .or. dn
+
+      if (derivs_present) then
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%entropy_residual_vt(&
+            n=n, V=V, T=T, Sr=Sr_v, SrV=SrV_v, SrT=SrT_v, Srn=Srn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
+      else
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%entropy_residual_vt(n=n, V=V, T=T, Sr=Sr_v)
+      end if
+
+      nt = sum(n)
+      Z = P * V / (nt * R * T)
+
+      if (present(Sr)) Sr = Sr_v + nt * R * log(Z)
+
+      if (present(SrP)) SrP = SrV_v * dVdP + nt*R*(1.0_pr / P + dVdP / V)
+
+      if (present(SrT)) SrT = SrT_v + SrV_v * dVdT + nt*R*(dVdT / V - 1.0_pr/T)
+
+      if (present(Srn)) Srn = &
+         Srn_v + SrV_v * dVdn + R*log(Z) + nt*R*(dVdn / V - 1.0_pr/nt)
+   end subroutine entropy_residual_pt
+
+   subroutine internal_energy_residual_pt(&
+      eos, n, P, T, root_type, Ur, UrP, UrT, Urn &
+      )
+      !! Calculate residual internal energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%internal_energy_residual_pt(&
+      !!    n, P, T, root_type="stable", Ur=Ur, UrP=UrP, UrT=UrT, Urn=Urn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), optional, intent(out) :: Ur !! Residual internal energy [bar L]
+      real(pr), optional, intent(out) :: UrP !! \(\frac{dU^r}}{dP}\)
+      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
+      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
+
+      real(pr) :: Ur_v, UrT_v, UrV_v, Urn_v(size(n))
+      real(pr) :: V, dPdV, dPdT, dPdn(size(n)), P_dummy
+      real(pr) :: dVdP, dVdT, dVdn(size(n))
+
+      logical :: dp, dT, dn, derivs_present
+
+      dp = present(UrP)
+      dt = present(UrT)
+      dn = present(Urn)
+
+      derivs_present = dp .or. dt .or. dn
+
+      if (derivs_present) then
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%pressure(&
+            n=n, V=V, T=T, P=P_dummy, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
+            )
+         call eos%internal_energy_residual_vt(&
+            n=n, V=V, T=T, Ur=Ur_v, UrV=UrV_v, UrT=UrT_v, Urn=Urn_v &
+            )
+
+         dVdP = 1 / dPdV
+         dVdT = -dPdT / dPdV
+         dVdn = -dPdn / dPdV
+      else
+         call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+         call eos%internal_energy_residual_vt(n=n, V=V, T=T, Ur=Ur_v)
+      end if
+
+      if (present(Ur)) Ur = Ur_v
+      if (present(UrP)) UrP = UrV_v * dVdP
+      if (present(UrT)) UrT = UrT_v + UrV_v * dVdT
+      if (present(Urn)) Urn = Urn_v + UrV_v * dVdn
+   end subroutine internal_energy_residual_pt
+
+   subroutine Cv_residual_pt(eos, n, P, T, root_type, Cv)
+      !! Calculate residual heat capacity at constant volume given pressure and
+      !! temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%Cv_residual_pt(&
+      !!    n, P, T, root_type="stable", Cv=Cv &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Cv
+      !! Residual heat capacity at constant volume [bar L K^-1]
+
+      real(pr) :: V
+
+      call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+      call eos%Cv_residual_vt(n=n, V=V, T=T, Cv=Cv)
+   end subroutine Cv_residual_pt
+
+   subroutine Cp_residual_pt(eos, n, P, T, root_type, Cp)
+      !! Calculate residual heat capacity at constant pressure given pressure
+      !! and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%Cp_residual_pt(&
+      !!    n, P, T, root_type="stable", Cp=Cp &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Cp
+      !! Residual heat capacity at constant pressure [bar L K^-1]
+
+      real(pr) :: V
+
+      call eos%volume(n=n, P=P, T=T, V=V, root_type=root_type)
+      call eos%Cp_residual_vt(n=n, V=V, T=T, Cp=Cp)
+   end subroutine Cp_residual_pt
+
+   ! ==========================================================================
+   ! Excess thermoprops
+   ! --------------------------------------------------------------------------
+   subroutine ln_activity_coefficient(&
+      eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn &
+      )
+      !! Calculate natural logarithm of activity coefficients and its
+      !! derivatives given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !!
+      !! call eos%ln_activity_coefficient(&
+      !!    n, P, T, root_type="stable", &
+      !!    lngamma=lngamma, dlngammadP=dlngammadP, &
+      !!    dlngammadT=dlngammadT, dlngammadn=dlngammadn &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out), optional :: lngamma(size(n))
+      !! Natural logarithm of activity coefficient
+      real(pr), intent(out), optional :: dlngammadP(size(n))
+      !! \(\frac{d\ln\gamma}}{dP}\)
+      real(pr), intent(out), optional :: dlngammadT(size(n))
+      !! \(\frac{d\ln\gamma}}{dT}\)
+      real(pr), intent(out), optional :: dlngammadn(size(n),size(n))
+      !! \(\frac{d\ln\gamma}}{dn}\)
+
+      ! Mixture properties
+      real(pr) :: lnPhi(size(n)), dlnPhidT(size(n))
+      real(pr) :: dlnPhidn(size(n),size(n))
+      real(pr) :: dPdV, dPdn(size(n)), dVdn(size(n))
+
+      ! Pure properties
+      real(pr) :: vi(size(n)), vi_temp, npure(size(n))
+      real(pr) :: lnPhi_i(size(n)), dlnPhi_i_dT(size(n))
+      real(pr) :: lnPhi_i_temp(size(n)), dlnPhi_i_dT_temp(size(n))
+
+      integer :: i
+
+      logical :: gam, dp, dt, dn, present_derivs
+
+      gam = present(lngamma)
+      dp = present(dlngammadP)
+      dt = present(dlngammadT)
+      dn = present(dlngammadn)
+      present_derivs = dp .or. dt .or. dn
+
+
+      ! Call to mixture fugacity coefficient at PT
+      ! TODO: maybe more efficient later?
+      if (.not. present_derivs) then
+         call eos%lnphi_pt(n=n, P=P, T=T, root_type=root_type, lnPhi=lnPhi)
+      else
+         call eos%lnphi_pt(&
+            n=n, P=P, T=T, root_type=root_type, &
+            lnPhi=lnPhi, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn, &
+            dPdV=dPdV, dPdn=dPdn &
+            )
+
+         dVdn = -dPdn / dPdV
+      end if
+
+      ! Pure components calls
+      vi = 0.0_pr
+      lnPhi_i = 0.0_pr
+
+      if (dt) then
+         dlnPhi_i_dT = 0.0_pr
+      end if
+
+      do i=1, size(n)
+         npure = 0.0_pr
+         npure(i) = 1.0_pr
+
+         if (.not. dt) then
+            call eos%lnphi_pt(&
+               n=npure, P=P, T=T, V=vi_temp, root_type="stable", &
+               lnPhi=lnPhi_i_temp &
+               )
+         else
+            call eos%lnphi_pt(&
+               n=npure, P=P, T=T, V=vi_temp, root_type="stable", &
+               lnPhi=lnPhi_i_temp, dlnPhidT=dlnPhi_i_dT_temp &
+               )
+         end if
+
+         vi(i) = vi_temp
+         lnPhi_i(i) = lnPhi_i_temp(i)
+
+         if (dt) then
+            dlnPhi_i_dT(i) = dlnPhi_i_dT_temp(i)
+         end if
+      end do
+
+      ! returns
+      if (gam) lngamma = lnPhi - lnPhi_i
+      if (dt) dlngammadT = dlnPhidT - dlnPhi_i_dT
+      if (dp) dlngammadP = (dVdn - vi) / (R * T)
+      if (dn) dlngammadn = dlnPhidn
+   end subroutine ln_activity_coefficient
+
+   subroutine gibbs_excess(eos, n, P, T, root_type, Ge, GeP, GeT, Gen)
+      !! Calculate excess Gibbs energy and its derivatives given pressure and
+      !! temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%gibbs_excess(&
+      !!    n, P, T, root_type="stable", &
+      !!    Ge=Ge, GeP=GeP, GeT=GeT, Gen=Gen &
+      !!    )
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out), optional :: Ge
+      !! Excess Gibbs energy [bar L]
+      real(pr), intent(out), optional :: GeP
+      !! \(\frac{dG^E}}{dP}\)
+      real(pr), intent(out), optional :: GeT
+      !! \(\frac{dG^E}}{dT}\)
+      real(pr), intent(out), optional :: Gen(size(n))
+      !! \(\frac{dG^E}}{dn}\)
+
+      real(pr) :: lngamma(size(n)), dlngammadP(size(n)), dlngammadT(size(n))
+      real(pr) :: dlngammadn(size(n),size(n))
+
+      integer :: j
+
+      logical :: dp, dt, dn, present_derivs
+
+      dp = present(GeP)
+      dt = present(GeT)
+      dn = present(Gen)
+      present_derivs = dp .or. dt .or. dn
+
+      if (.not. present_derivs) then
+         call eos%ln_activity_coefficient(&
+            n=n, P=P, T=T, root_type=root_type, lngamma=lngamma &
+            )
+      else
+         call eos%ln_activity_coefficient(&
+            n=n, P=P, T=T, root_type=root_type, &
+            lngamma=lngamma, dlngammadP=dlngammadP, &
+            dlngammadT=dlngammadT, dlngammadn=dlngammadn &
+            )
+      end if
+
+      if (present(Ge)) Ge = R * T * sum(n * lngamma)
+      if (present(GeP)) GeP = R * T * sum(n * dlngammadP)
+      if (present(GeT)) GeT = R * sum(n * lngamma) + R * T * sum(n * dlngammadT)
+
+      if (present(Gen)) then
+         do j=1, size(n)
+            Gen(j) = R * T * sum(n * dlngammadn(:,j)) + R * T * lngamma(j)
+         end do
+      end if
+   end subroutine gibbs_excess
+
+   subroutine enthalpy_excess(eos, n, P, T, root_type, He)
+      !! Calculate excess enthalpy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%enthalpy_excess(n, P, T, root_type="stable", He=He)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: He
+      !! Excess enthalpy [bar L]
+
+      real(pr) :: dlngammadT(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, dlngammadT=dlngammadT &
+         )
+
+      He = -R * T**2 * sum(n * dlngammadT)
+   end subroutine enthalpy_excess
+
+   subroutine volume_excess(eos, n, P, T, root_type, Ve)
+      !! Calculate excess volume given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%volume_excess(n, P, T, root_type="stable", Ve=Ve)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Ve !! Excess volume [L]
+
+      real(pr) :: dlngammadP(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, dlngammadP=dlngammadP &
+         )
+
+      Ve = R * T * sum(n * dlngammadP)
+   end subroutine volume_excess
+
+   subroutine entropy_excess(eos, n, P, T, root_type, Se)
+      !! Calculate excess entropy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !!
+      !! call eos%entropy_excess(n, P, T, root_type="stable", Se=Se)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Se
+      !! Excess entropy [bar L K^-1]
+
+      real(pr) :: lngamma(size(n)), dlngammadT(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, &
+         lngamma=lngamma, dlngammadT=dlngammadT &
+         )
+
+      Se = -R * T * sum(n * dlngammadT) - R * sum(n * lngamma)
+   end subroutine entropy_excess
+
+   subroutine helmholtz_excess(eos, n, P, T, root_type, Ae)
+      !! Calculate excess Helmholtz energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%helmholtz_excess(n, P, T, root_type="stable", Ae=Ae)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Ae
+      !! Excess Helmholtz energy [bar L]
+
+      real(pr) :: lngamma(size(n)), dlngammadP(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, &
+         lngamma=lngamma, dlngammadP=dlngammadP &
+         )
+
+      Ae = R * T * sum(n * lngamma) - P * R * T * sum(n * dlngammadP)
+   end subroutine helmholtz_excess
+
+   subroutine internal_energy_excess(eos, n, P, T, root_type, Ue)
+      !! Calculate excess internal energy given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
+      !!
+      !! call eos%internal_energy_excess(n, P, T, root_type="stable", Ue=Ue)
+      !! ```
+      class(ArModel), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out) :: Ue
+      !! Excess internal energy [bar L]
+
+      real(pr) :: dlngammadP(size(n)), dlngammadT(size(n))
+
+      call eos%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, &
+         dlngammadP=dlngammadP, dlngammadT=dlngammadT &
+         )
+
+      Ue = -P * R * T * sum(n * dlngammadP) - R * T**2 * sum(n * dlngammadT)
+   end subroutine internal_energy_excess
+
+   ! ==========================================================================
+   ! Other methods
+   ! --------------------------------------------------------------------------
    real(pr) function Psat_pure(eos, ncomp, T)
       !! Calculation of saturation pressure of a pure component using the
       !! secant method.

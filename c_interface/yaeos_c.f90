@@ -27,7 +27,7 @@ module yaeos_c
    private
 
    ! CubicEoS
-   public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2
+   public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2_k
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
    ! Multifluid equations
@@ -51,10 +51,20 @@ module yaeos_c
    public :: excess_entropy_ge
    public :: excess_cp_ge
 
-   ! Thermoprops
-   public :: lnphi_vt, lnphi_pt, pressure, volume, enthalpy_residual_vt
+   ! Thermoprops ArModels
+   ! VT properties
+   public :: lnphi_vt, pressure, volume, enthalpy_residual_vt
    public :: gibbs_residual_vt, helmholtz_residual_vt, entropy_residual_vt
    public :: Cv_residual_vt, Cp_residual_vt, internal_energy_residual_vt
+
+   ! PT properties
+   public :: lnphi_pt, helmholtz_residual_pt, enthalpy_residual_pt
+   public :: gibbs_residual_pt, entropy_residual_pt, internal_energy_residual_pt
+   public :: Cv_residual_pt, Cp_residual_pt
+
+   ! PT excess properties
+   public :: ln_gamma_ar, gibbs_excess_ar, enthalpy_excess_ar, volume_excess_ar
+   public :: entropy_excess_ar, helmholtz_excess_ar, internal_energy_excess_ar
 
    ! Phase equilibria
    public :: flash, flash_vt, flash_grid, solve_mp_flash
@@ -570,13 +580,11 @@ contains
       call extend_ar_models_list(id)
    end subroutine psrk
 
-   subroutine get_ac_b_del1_del2(id, ac, b, del1, del2, nc)
-      use yaeos, only: CubicEoS, size
+   subroutine get_ac_b_del1_del2_k(id, ac, b, del1, del2, k, nc)
+      use yaeos, only: CubicEoS, size, AlphaRKPR
       integer(c_int), intent(in) :: id
       integer, intent(in) :: nc
-      real(c_double), dimension(nc), intent(out) :: &
-         ac, b, del1, del2
-
+      real(c_double), dimension(nc), intent(out) :: ac, b, del1, del2, k
 
       associate(model => ar_models(id)%model)
          select type(model)
@@ -585,9 +593,16 @@ contains
             b(:nc) = model%b
             del1(:nc) = model%del1
             del2(:nc) = model%del2
+
+            associate(a => model%alpha)
+               select type(a)
+                class is(AlphaRKPR)
+                  k(:nc) = a%k
+               end select
+            end associate
          end select
       end associate
-   end subroutine get_ac_b_del1_del2
+   end subroutine get_ac_b_del1_del2_k
 
    ! ==========================================================================
    !  Multifluid equations
@@ -611,15 +626,15 @@ contains
       real(c_double), intent(in) :: sigma(:)
       real(c_double), intent(in) :: epsilon_k(:)
       real(c_double), optional, intent(in) :: kij(:, :)
-      
+
       ar_model = init_pcsaft(m, sigma, epsilon_k, kij)
       call extend_ar_models_list(id)
    end subroutine pcsaft
 
-
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
+   ! VT properties
    subroutine helmholtz_residual_vt(id, n, v, t, ar, ArT, ArV, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
       integer(c_int), intent(in) :: id
       real(c_double), intent(in) :: n(:), v, t
@@ -647,21 +662,6 @@ contains
          dlnPhidT=dlnphidt, dlnPhidn=dlnphidn &
          )
    end subroutine lnphi_vt
-
-   subroutine lnphi_pt(id, n, p, t, root_type, lnphi, dlnphidp, dlnphidt, dlnphidn)
-      integer(c_int), intent(in) :: id
-      real(c_double), intent(in) :: n(:), p, t
-      character(len=15), intent(in) :: root_type
-      real(c_double), intent(out) :: lnphi(size(n))
-
-      real(c_double), optional, intent(in out) :: &
-         dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
-
-      call ar_models(id)%model%lnphi_pt(&
-         n, P=P, T=T, root_type=root_type, &
-         lnphi=lnphi, dlnphidp=dlnPhidP, dlnphidt=dlnphidT, dlnphidn=dlnPhidn &
-         )
-   end subroutine lnphi_pt
 
    subroutine pressure(id, n, V, T, P, dPdV, dPdT, dPdn)
       integer(c_int), intent(in) :: id
@@ -742,6 +742,204 @@ contains
 
       call ar_models(id)%model%cp_residual_vt(n=n, V=V, T=T, Cp=CP)
    end subroutine Cp_residual_vt
+
+   ! PT properties
+   subroutine lnphi_pt(id, n, p, t, root_type, lnphi, dlnphidp, dlnphidt, dlnphidn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: lnphi(size(n))
+
+      real(c_double), optional, intent(in out) :: &
+         dlnphidp(size(n)), dlnphidt(size(n)), dlnphidn(size(n), size(n))
+
+      call ar_models(id)%model%lnphi_pt(&
+         n, P=P, T=T, root_type=root_type, &
+         lnphi=lnphi, dlnphidp=dlnPhidP, dlnphidt=dlnphidT, dlnphidn=dlnPhidn &
+         )
+   end subroutine lnphi_pt
+
+   subroutine helmholtz_residual_pt(id, n, p, t, root_type, Ar, ArP, ArT, Arn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Ar
+      real(c_double), optional, intent(in out) :: ArT, ArP, Arn(size(n))
+
+      call ar_models(id)%model%helmholtz_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, &
+         Ar=Ar, ArP=ArP, ArT=ArT, Arn=Arn &
+         )
+   end subroutine helmholtz_residual_pt
+
+   subroutine enthalpy_residual_pt(id, n, p, t, root_type, Hr, HrP, HrT, Hrn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Hr
+      real(c_double), optional, intent(in out) :: HrP, HrT, Hrn(size(n))
+
+      call ar_models(id)%model%enthalpy_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, Hr=Hr, HrP=HrP, HrT=HrT, Hrn=Hrn &
+         )
+   end subroutine enthalpy_residual_pt
+
+   subroutine gibbs_residual_pt(id, n, p, t, root_type, Gr, GrP, GrT, Grn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Gr
+      real(c_double), optional, intent(in out) :: GrP, GrT, Grn(size(n))
+
+      call ar_models(id)%model%gibbs_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, Gr=Gr, GrP=GrP, GrT=GrT, Grn=Grn &
+         )
+   end subroutine gibbs_residual_pt
+
+   subroutine entropy_residual_pt(id, n, p, t, root_type, Sr, SrP, SrT, Srn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Sr
+      real(c_double), optional, intent(in out) :: SrP, SrT, Srn(size(n))
+
+      call ar_models(id)%model%entropy_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, Sr=Sr, SrP=SrP, SrT=SrT, Srn=Srn &
+         )
+   end subroutine entropy_residual_pt
+
+   subroutine internal_energy_residual_pt(id, n, p, t, root_type, Ur, UrP, UrT, Urn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Ur
+      real(c_double), optional, intent(in out) :: UrP, UrT, Urn(size(n))
+
+      call ar_models(id)%model%internal_energy_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, Ur=Ur, UrP=UrP, UrT=UrT, Urn=Urn &
+         )
+   end subroutine internal_energy_residual_pt
+
+   subroutine Cv_residual_pt(id, n, p, t, root_type, Cv)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Cv
+
+      call ar_models(id)%model%Cv_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, Cv=Cv &
+         )
+   end subroutine Cv_residual_pt
+
+   subroutine Cp_residual_pt(id, n, p, t, root_type, Cp)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:), p, t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Cp
+
+      call ar_models(id)%model%Cp_residual_pt(&
+         n=n, P=P, T=T, root_type=root_type, Cp=Cp &
+         )
+   end subroutine Cp_residual_pt
+
+   ! Excess properties (Armodel)
+   subroutine ln_gamma_ar(&
+      id, n, p, t, root_type, lngamma, dlngammadp, dlngammadt, dlngammadn)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: lngamma(size(n))
+      real(c_double), optional, intent(in out) :: dlngammadp(size(n))
+      real(c_double), optional, intent(in out) :: dlngammadt(size(n))
+      real(c_double), optional, intent(in out) :: dlngammadn(size(n), size(n))
+
+      call ar_models(id)%model%ln_activity_coefficient(&
+         n=n, P=P, T=T, root_type=root_type, lngamma=lngamma, &
+         dlngammadP=dlngammadp, dlngammadT=dlngammadt, dlngammadn=dlngammadn &
+         )
+   end subroutine ln_gamma_ar
+
+   subroutine gibbs_excess_ar(id, n, p, t, root_type, Ge, GeP, GeT, Gen)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Ge
+      real(c_double), optional, intent(in out) :: GeP, GeT, Gen(size(n))
+
+      call ar_models(id)%model%gibbs_excess(&
+         n=n, P=P, T=T, root_type=root_type, Ge=Ge, &
+         GeP=GeP, GeT=GeT, Gen=Gen &
+         )
+   end subroutine gibbs_excess_ar
+
+   subroutine enthalpy_excess_ar(id, n, p, t, root_type, He)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: He
+
+      call ar_models(id)%model%enthalpy_excess(&
+         n=n, P=P, T=T, root_type=root_type, He=He &
+         )
+   end subroutine enthalpy_excess_ar
+
+   subroutine volume_excess_ar(id, n, p, t, root_type, Ve)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Ve
+
+      call ar_models(id)%model%volume_excess(&
+         n=n, P=P, T=T, root_type=root_type, Ve=Ve &
+         )
+   end subroutine volume_excess_ar
+
+   subroutine entropy_excess_ar(id, n, p, t, root_type, Se)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Se
+
+      call ar_models(id)%model%entropy_excess(&
+         n=n, P=P, T=T, root_type=root_type, Se=Se &
+         )
+   end subroutine entropy_excess_ar
+
+   subroutine helmholtz_excess_ar(id, n, p, t, root_type, Ae)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Ae
+
+      call ar_models(id)%model%helmholtz_excess(&
+         n=n, P=P, T=T, root_type=root_type, Ae=Ae &
+         )
+   end subroutine helmholtz_excess_ar
+
+   subroutine internal_energy_excess_ar(id, n, p, t, root_type, Ue)
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: n(:)
+      real(c_double), intent(in) :: p
+      real(c_double), intent(in) :: t
+      character(len=15), intent(in) :: root_type
+      real(c_double), intent(out) :: Ue
+
+      call ar_models(id)%model%internal_energy_excess(&
+         n=n, P=P, T=T, root_type=root_type, Ue=Ue &
+         )
+   end subroutine internal_energy_excess_ar
 
    ! ==========================================================================
    ! Phase equilibria
@@ -915,7 +1113,7 @@ contains
       type(BinaryThreePhase) :: btp
       type(EquilibriumState) :: cep
       integer :: points
-      
+
       x1s = makenan()
       y1s = makenan()
       w1s = makenan()
@@ -927,7 +1125,7 @@ contains
 
       cep = EquilibriumState( &
          kind="CEP", x=x, y=y, P=Pcep, T=Tcep, Vx=Vx, Vy=Vy, beta=0._pr&
-      )
+         )
 
       btp = fbinary_llv_from_cep(&
          model=ar_models(id)%model, cep=cep &

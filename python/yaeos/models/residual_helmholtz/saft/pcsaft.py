@@ -27,6 +27,7 @@ class PCSAFT(ArModel):
     Example
     -------
     .. code-block:: python
+
         from yaeos import PCSAFT
 
         m = [1.0582, 3.3004]
@@ -90,6 +91,9 @@ class PCSAFT(ArModel):
                     kij_c += f"{self.kij[i][j]}_pr]\n"
 
         fcode += kij_c + "\n"
+
+        # Setup PCSAFT
+        fcode += "ar_model = init_pcsaft(m, sigma, epsilon_k, kij)\n"
 
         return fcode
 
