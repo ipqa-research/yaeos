@@ -12,7 +12,7 @@ program test_cubic_implementations
    call test_pr76
    call test_pr78
    call test_RKPR
-   print *,
+   print *, ""
 contains
    subroutine test_srk
       use yaeos__constants, only: pr

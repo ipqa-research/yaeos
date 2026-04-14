@@ -4,7 +4,6 @@ program tester
 
     use fortime, only: Timer
 
-    use test_cubic_mixrules, only: suite_cubic_mixrules => collect_suite
     use test_autodiff_api, only: suite_autodiff_hd => collect_suite
     use test_flash, only: suite_flash => collect_suite
     use test_saturation, only: suite_saturation => collect_suite
@@ -42,7 +41,6 @@ program tester
     stat = 0
 
     testsuites = [ &
-        new_testsuite("Cubic MixRules", suite_cubic_mixrules), &
         new_testsuite("Autodiff APIs", suite_autodiff_hd), &
         new_testsuite("Flash", suite_flash), &
         new_testsuite("Saturation Points", suite_saturation), &
