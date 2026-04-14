@@ -2446,6 +2446,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
+        allow_negative_betas=False
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -2473,6 +2474,7 @@ class ArModel(ABC):
                 kind_w=kind_w,
                 max_points=max_points,
                 stop_pressure=stop_pressure,
+                allow_negative_betas=allow_negative_betas
             )
         )
 
@@ -2982,15 +2984,15 @@ class ArModel(ABC):
         x_l0 = np.asarray(x_l0, order="F")
         ws_stability = np.asarray(ws_stability, order="F")
 
-        kinds_x, kind_w = adjust_root_kind(
+        kinds_x_as_number, kind_w_as_number = adjust_root_kind(
             number_of_phases=x_l0.shape[0], kinds_x=kinds_x, kind_w=kind_w
         )
 
         x_ls, ws, betas, ts, ps, w_more_stable, found_unstability = (
             yaeos_c.generalized_isopleth(
                 id=self.id,
-                kinds_x=kinds_x,
-                kind_w=kind_w,
+                kinds_x=kinds_x_as_number,
+                kind_w=kind_w_as_number,
                 z=z,
                 x_l0=x_l0,
                 w0=w0,
