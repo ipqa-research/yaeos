@@ -6,7 +6,7 @@ program test_cubic_alphas
 
    real(pr) :: absolute_tolerance = 1e-5_pr
 
-   print *, "TEST CUBIC ALPHAS"
+   print *, test_title("TEST CUBIC ALPHAS")
    call test_alpha_soave
    call test_alpha_RKPR
 
