@@ -1360,6 +1360,7 @@ contains
    subroutine pt_mp_phase_envelope(&
       id, z, np, x_l0, w0, betas0, P0, T0, ns0, ds0, &
       beta_w, kinds_x, kind_w, max_points, stop_pressure, &
+      allow_negative_betas, &
       x_ls, ws, betas, Ps, Ts, iters, ns, main_kinds, ref_kinds, &
       Pcs, Tcs &
       )
@@ -1376,6 +1377,7 @@ contains
       integer(c_int), intent(in) :: kind_w
       real(c_double), intent(in) :: beta_w
       real(c_double), intent(in) :: stop_pressure
+      logical, intent(in) :: allow_negative_betas
 
       integer(c_int), intent(in) :: ns0
       real(c_double), intent(in) :: ds0
@@ -1416,8 +1418,9 @@ contains
          model=ar_models(id)%model, np=np, z=z, kinds_x=x_kinds, kind_w=w_kind,&
          x_l0=x_l0, w0=w0, betas0=betas0, &
          P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
-         beta_w=beta_w, points=max_points, max_pressure=stop_pressure &
-         )
+         beta_w=beta_w, points=max_points, max_pressure=stop_pressure, &
+         allow_negative_betas=allow_negative_betas &
+      )
 
       do i=1,size(pt_mp%points)
          do j=1,np
