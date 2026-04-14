@@ -10,11 +10,51 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test PSRK individual ge calls", test_psrk_individual_ge_calls), &
          new_unittest("Test PSRK consistency mixture", test_psrk_cons_mix), &
          new_unittest("Test PSRK consistency pure", test_psrk_cons_pure), &
          new_unittest("Test PSRK against Caleb Bell's Thermo lib", test_against_caleb_thermo) &
          ]
    end subroutine collect_suite
+
+   subroutine test_psrk_individual_ge_calls(error)
+      use yaeos, only: pr, R
+      use yaeos, only: Groups, setup_psrk, UNIFAC
+      use yaeos__consistency_gemodel, only: individual_ge_calls
+
+      type(Groups) :: molecules(4)
+      type(UNIFAC) :: model
+
+      type(error_type), allocatable, intent(out) :: error
+
+      real(pr) :: n(4), T
+      logical :: passed
+
+      n = [400.0_pr, 100.0_pr, 300.0_pr, 200.0_pr]
+      T = 303.15_pr
+
+      ! ! Hexane [CH3, CH2]
+      molecules(1)%groups_ids = [1, 2]
+      molecules(1)%number_of_groups = [2, 4]
+
+      ! ! Ethanol [CH3, CH2, OH]
+      molecules(2)%groups_ids = [1, 2, 14]
+      molecules(2)%number_of_groups = [1, 1, 1]
+
+      ! ! Toluene [ACH, ACCH3]
+      molecules(3)%groups_ids = [9, 11]
+      molecules(3)%number_of_groups = [5, 1]
+
+      ! ! Carbon dioxide [CO2]
+      molecules(4)%groups_ids = [117]
+      molecules(4)%number_of_groups = [1]
+
+      model = setup_psrk(molecules)
+
+      call individual_ge_calls(model, n, T, passed)
+
+      call check(error, passed)
+   end subroutine test_psrk_individual_ge_calls
 
    subroutine test_psrk_cons_mix(error)
       use yaeos, only: pr, R

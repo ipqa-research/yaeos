@@ -285,7 +285,7 @@ class SoaveRedlichKwong(CubicEoS):
         srk = SoaveRedlichKwong(tc, pc, w)
     """
 
-    name = "SoaveReldichKwong"
+    name = "SoaveRedlichKwong"
 
     def __init__(
         self,
@@ -358,7 +358,7 @@ class RKPR(CubicEoS):
         rkpr = RKPR(tc, pc, w, zc)
     """
 
-    name = "fRKPR"
+    name = "RKPR"
 
     def __init__(
         self,
@@ -395,6 +395,15 @@ class RKPR(CubicEoS):
                 self.id = yaeos_c.rkpr(
                     self.tc, self.pc, self.w, self.zc, k=k, delta_1=delta_1
                 )
+
+        _, _, d1, d2, k = yaeos_c.get_ac_b_del1_del2_k(
+            id=self.id, nc=len(critical_temperatures)
+        )
+
+        self.delta_1 = d1
+        self.delta_2 = d2
+        self.k = k
+
         self.mixrule = mixrule
         if mixrule:
             mixrule.set_mixrule(self.id)

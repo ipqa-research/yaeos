@@ -10,6 +10,7 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test PR76 Ar individual calls", test_pr76_individual_calls), &
          new_unittest("Test PR76 Ar consistency mix", test_pr76_cons_mixture), &
          new_unittest("Test PR76 Ar consistency pure", test_pr76_cons_pure), &
          new_unittest("Test PR76 Z", test_pr76_compressibility_factor), &
@@ -20,6 +21,56 @@ contains
          new_unittest("Test PR76 ethane-heptane envelope Elliot", test_pr76_envelope_ethane_heptane) &
          ]
    end subroutine collect_suite
+
+   subroutine test_pr76_individual_calls(error)
+      use yaeos, only: pr, PengRobinson76, ArModel
+      use yaeos__consistency, only: individual_ar_calls
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model, model_kij
+      real(pr) :: tc(4), pc(4), w(4), kij(4, 4), lij(4, 4)
+
+      real(pr) :: n(4), t, v
+
+      logical :: passed
+
+      n = [1.5, 0.2, 0.7, 2.3]
+      tc = [190.564, 425.12, 300.11, 320.25]
+      pc = [45.99, 37.96, 39.23, 40.21]
+      w = [0.0115478, 0.200164, 0.3624, 0.298]
+
+      t = 600_pr
+      v = 0.5_pr
+
+      ! =======================================================================
+      ! Without kij
+      ! -----------------------------------------------------------------------
+      model = PengRobinson76(tc, pc, w)
+
+      call individual_ar_calls(model, n, v, t, passed=passed)
+      call check(error, passed)
+
+      ! =======================================================================
+      ! With kij
+      ! -----------------------------------------------------------------------
+      kij = reshape([&
+         0.0_pr, 0.1_pr, 0.2_pr, 0.1_pr, &
+         0.1_pr, 0.0_pr, 0.3_pr, 0.25_pr, &
+         0.2_pr, 0.3_pr, 0.0_pr, 0.18_pr, &
+         0.1_pr, 0.25_pr, 0.18_pr, 0.0_pr], [size(n), size(n)])
+
+      lij = reshape([&
+         0.0_pr, 0.001_pr, 0.002_pr, 0.001_pr, &
+         0.001_pr, 0.0_pr, 0.003_pr, 0.0025_pr, &
+         0.002_pr, 0.003_pr, 0.0_pr, 0.0018_pr, &
+         0.001_pr, 0.0025_pr, 0.0018_pr, 0.0_pr], [size(n), size(n)])
+
+
+      model_kij = PengRobinson76(tc, pc, w, kij, lij)
+
+      call individual_ar_calls(model_kij, n, v, t, passed=passed)
+      call check(error, passed)
+   end subroutine test_pr76_individual_calls
 
    subroutine test_pr76_cons_mixture(error)
       use yaeos, only: pr, PengRobinson76, ArModel
@@ -360,7 +411,7 @@ contains
 
       call model%volume(n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
       call check(error, abs(V / mw * 1000 - 3.84) < 0.01)
-      
+
       call volume(model, n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
       call check(error, abs(V / mw * 1000 - 3.84) < 0.01)
    end subroutine test_pr76_co2_volume

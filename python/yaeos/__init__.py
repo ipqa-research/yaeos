@@ -10,6 +10,13 @@ import yaeos.constants as constants
 import yaeos.envelopes as envelopes
 from yaeos.gpec import GPEC
 from yaeos.lib import yaeos_c
+from yaeos.models.excess_gibbs import (
+    NRTL,
+    UNIFACDortmund,
+    UNIFACPSRK,
+    UNIFACVLE,
+    UNIQUAC,
+)
 from yaeos.models.residual_helmholtz.cubic_eos import (
     HV,
     HVNRTL,
@@ -24,14 +31,6 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
 )
 from yaeos.models.residual_helmholtz.multifluid import GERG2008
 from yaeos.models.residual_helmholtz.saft import PCSAFT
-
-from yaeos.models.excess_gibbs import (
-    NRTL,
-    UNIFACDortmund,
-    UNIFACPSRK,
-    UNIFACVLE,
-    UNIQUAC,
-)
 
 __all__ = [
     "envelopes",

@@ -123,7 +123,7 @@ From the Gibbs-Helmholtz equation [1]:
 
 $$
  \left(\frac{\partial \left(\frac{G^E}{T} \right)}{\partial T} 
- \right)_P = \frac{-H^E}{T^2}
+ \right)_{P,\mathbf{n}} = \frac{-H^E}{T^2}
 $$
 We can calculate the excess enthalpy from the excess Gibbs energy as:
 
@@ -202,6 +202,25 @@ print *, "dSE_dT = ", dSE_dT
 print *, "dSE_dn = ", dSE_dn
 ```
 
+### Excess heat capacity \( (C_{p}^{E}) \)
+
+Excess heat capacity can be calculated as:
+
+$$
+C_p^E = \left(\frac{\partial H^E}{\partial T}\right)_{\mathbf{n}} = -T
+\frac{\partial^2 G^E}{\partial T^2}
+$$
+
+#### Example
+
+```fortran
+real(pr) :: C_p_E
+
+! Calculate excess heat capacity
+call model%excess_Cp(n, T, C_p_E)
+
+print *, "C_p_E = ", C_p_E
+```
 
 ### References
 [1] https://en.wikipedia.org/wiki/Gibbs%E2%80%93Helmholtz_equation
