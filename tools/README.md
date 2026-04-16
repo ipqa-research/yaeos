@@ -10,5 +10,5 @@ are helpful for it's usage.
 
 ## Dev tools
 
-- [test_to_toml](./dev/test_to_toml): Tool to automatically add the Fortran
+- [test_to_toml](./dev/test_to_toml.py): Tool to automatically add the Fortran
   tests to the fpm.toml file.
