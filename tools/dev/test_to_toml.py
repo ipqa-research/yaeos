@@ -1,8 +1,12 @@
-"""Tool to automatically add the Fortran tests to the fpm.toml file.
+"""Tool to automatically add discovered Fortran test programs to `fpm.toml`.
 
-To use, simply run this script from any directory. It will add the tests to the
-fpm.toml file. The version control must be done manually.
+To use, simply run this script from any directory. It updates the `[[test]]`
+entries in `fpm.toml`; the version control must be done manually.
 
+Only files under `test/` matching `test_*.f90` are considered. In addition,
+a file is only treated as a test if it contains both a Fortran `program`
+declaration and a matching `end program`, so helper modules and other sources
+in `test/` are intentionally ignored.
 python tools/dev/test_to_toml.py
 """
 
