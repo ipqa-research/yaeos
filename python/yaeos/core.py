@@ -3826,10 +3826,10 @@ class ArModel(ABC):
 
         for t, p in zip(temperatures, pressures):
             env1_loc = (
-                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
+                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
             )
             env2_loc = (
-                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p)) + 1
+                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
             )
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
