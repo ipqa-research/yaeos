@@ -257,6 +257,10 @@ contains
       x_kinds = kinds_x
       w_kind = kind_w
 
+
+      near_critical_state%entering = .false.
+      near_critical_state%near_critical = .false.
+
       allocate(env_points(0), pt_envelope%Tc(0), pt_envelope%Pc(0))
 
       F = 1
