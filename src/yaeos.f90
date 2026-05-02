@@ -16,4 +16,4 @@ module yaeos
    use yaeos__models
    use yaeos__equilibria
    character(len=*), parameter :: version="4.5.1" !! This version.
-end module
+end module yaeos
