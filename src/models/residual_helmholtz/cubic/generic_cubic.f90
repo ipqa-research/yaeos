@@ -108,15 +108,16 @@ module yaeos__models_ar_genericcubic
          real(pr), intent(out) :: a(:), dadt(:), dadt2(:)
       end subroutine abs_alpha
 
-      subroutine abs_Dmix(self, n, T, &
+      subroutine abs_Dmix(self, n, V, T, &
          ai, daidt, daidt2, &
-         D, dDdT, dDdT2, dDi, dDidT, dDij&
+         D, &
+         dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
          )
          import CubicMixRule, pr
          class(CubicMixRule), intent(in) :: self
          real(pr), intent(in) :: T, n(:)
          real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-         real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+         real(pr), intent(out) :: D, dDdV, dDdT, dDdV2, dDdT2, dDdTV, dDi(:), dDidV(:), dDidT(:), dDij(:, :)
       end subroutine abs_Dmix
 
       subroutine abs_Bmix(self, n, bi, B, dBi, dBij)
@@ -208,8 +209,11 @@ contains
       call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
       call self%mixrule%Bmix(n, self%b, B, dBi, dBij)
       call self%mixrule%Dmix(&
-         n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
-         )
+         n, T, a, dadt, dadt2, &
+         D=D, &
+         dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
+         dDdVT=dDdVT, dDi=dDi, dDidT=dDidT, dDij=dDij&
+      )
 
       call generic(&
          n, V, T, &
