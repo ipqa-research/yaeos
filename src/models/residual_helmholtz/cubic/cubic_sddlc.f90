@@ -7,6 +7,9 @@ module yaeos__models_ar_cubic_sddlc
    use yaeos__autodiff, only: hyperdual, ArModelAdiff
 
    type, extends(ArModelAdiff) :: CubicEOSsDDLC
+      real(pr), allocatable :: ac(:)
+      real(pr), allocatable :: b(:)
+      real(pr), allocatable :: del1(:)
    contains
       procedure :: Ar => Ar
       procedure :: get_v0 => get_v0
