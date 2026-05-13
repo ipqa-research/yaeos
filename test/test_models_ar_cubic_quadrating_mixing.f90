@@ -93,6 +93,7 @@ contains
       real(pr) :: n(nc), T, Tr(nc), Tc(nc)
 
       real(pr) :: D, dDdT, dDdT2, dDi(nc), dDidT(nc), dDij(nc,nc)
+      real(pr) :: V, dDdV, dDdV2, dDdTV, dDidV(nc)
       
       type(CubicEoS) :: model
 
@@ -108,7 +109,12 @@ contains
       daidt = daidt*model%ac/Tc
       daidt2 = daidt2*model%ac/Tc**2
 
-      call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+
+      call model%mixrule%DMIX(n, V, T, &
+         ai, daidt, daidt2, &
+         D, &
+         dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
+      )
 
       call assert(allclose([D], [test_D], absolute_tolerance), "MHV_SRK")
       call assert(allclose([dDdT], [test_dDdT], absolute_tolerance), "MHV_SRK")

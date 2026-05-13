@@ -108,15 +108,16 @@ module yaeos__models_ar_genericcubic
          real(pr), intent(out) :: a(:), dadt(:), dadt2(:)
       end subroutine abs_alpha
 
-      subroutine abs_Dmix(self, n, T, &
+      subroutine abs_Dmix(self, n, V, T, &
          ai, daidt, daidt2, &
-         D, dDdT, dDdT2, dDi, dDidT, dDij&
+         D, &
+         dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
          )
          import CubicMixRule, pr
          class(CubicMixRule), intent(in) :: self
-         real(pr), intent(in) :: T, n(:)
+         real(pr), intent(in) :: V, T, n(:)
          real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-         real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+         real(pr), intent(out) :: D, dDdV, dDdT, dDdV2, dDdT2, dDdTV, dDi(:), dDidV(:), dDidT(:), dDij(:, :)
       end subroutine abs_Dmix
 
       subroutine abs_Bmix(self, n, bi, B, dBi, dBij)
@@ -178,6 +179,7 @@ contains
 
       real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
       real(pr) :: D, dDi(size(n)), dDij(size(n), size(n)), dDidT(size(n)), dDdT, dDdT2
+      real(pr) :: dDdV, dDdV2, dDdTV, dDidV(size(n))
 
       real(pr) :: totn
       real(pr) d1, dD1i(size(n)), dD1ij(size(n), size(n))
@@ -208,8 +210,11 @@ contains
       call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
       call self%mixrule%Bmix(n, self%b, B, dBi, dBij)
       call self%mixrule%Dmix(&
-         n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
-         )
+         n=n, V=V, T=T, ai=a, daidt=dadt, daidt2=dadt2, &
+         D=D, &
+         dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
+         dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij &
+      )
 
       call generic(&
          n, V, T, &
@@ -311,67 +316,5 @@ contains
       real(pr) :: totn
 
       call volume_michelsen(eos, n=n, P=P, T=T, V=V, root_type=root_type)
-      return
-
-      totn = sum(n)
-      z = n/totn
-      Tr = T/eos%components%Tc
-      ! ========================================================================
-      ! Attractive parameter and derivatives
-      ! ------------------------------------------------------------------------
-      call eos%alpha%alpha(Tr, a, dadt, dadt2)
-      a = eos%ac * a
-      dadt = eos%ac * dadt / eos%components%Tc
-      dadt2 = eos%ac * dadt2 / eos%components%Tc**2
-
-      ! ========================================================================
-      ! Mixing rules
-      ! ------------------------------------------------------------------------
-      call eos%mixrule%D1mix(z, eos%del1, D1, dD1i, dD1ij)
-      call eos%mixrule%Bmix(z, eos%b, Bmix, dBi, dBij)
-      call eos%mixrule%Dmix(&
-         z, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
-         )
-      D2 = (1._pr - D1)/(1._pr + D1)
-
-      cp(1) = -P
-      cp(2) = -P*Bmix*(D1 + D2 - 1) + R*T
-      cp(3) = -P*(D1*D2*Bmix**2 - D1*Bmix**2 - D2*Bmix**2) + R*T*Bmix*(D1+D2) - D
-      cp(4) = P*D1*D2*Bmix**3 + R*T *D1*D2*Bmix**2 + D*Bmix
-
-      ! call cubic_roots(cp, rr, cr, flag)
-      ! call cubic_roots_rosendo(cp, rr, cr, flag)
-
-      select case(flag)
-       case(-1)
-         V_liq = rr(1)
-         V_vap = rr(3)
-         if (V_liq < 0) V_liq = V_vap
-       case(1)
-         V_liq = rr(1)
-         V_vap = rr(1)
-      end select
-
-      select case(root_type)
-       case("liquid")
-         V = V_liq
-       case("vapor")
-         V = V_vap
-       case("stable")
-         ! AT is something close to Gr(P,T)
-         call eos%residual_helmholtz(z, V_liq, T, Ar=Ar)
-         AT_Liq = (Ar + V_liq*P)/(T*R) - sum(z)*log(V_liq)
-
-         call eos%residual_helmholtz(z, V_vap, T, Ar=Ar)
-         AT_Vap = (Ar + V_vap*P)/(T*R) - sum(z)*log(V_vap)
-
-         if (AT_liq <= AT_vap) then
-            V = V_liq
-         else
-            V = V_vap
-         end if
-      end select
-
-      V = totn * V
    end subroutine volume
 end module yaeos__models_ar_genericcubic
