@@ -12,10 +12,10 @@ from yaeos.core import ArModel
 from yaeos.fitting.solvers import solve_pt
 
 KINDS = {
-    "zT1": ["bubbleP", "bubble"],
-    "zP1": ["bubbleT"],
-    "zT0": ["dewP", "dew"],
-    "zP0": ["dewT"],
+    "zT0": ["bubbleP", "bubble"],
+    "zP0": ["bubbleT"],
+    "zT1": ["dewP", "dew"],
+    "zP1": ["dewT"],
     "PT": ["PT", "liquid-liquid"],
     "CP": ["critical", "CP"],
 }
@@ -187,7 +187,7 @@ class BinaryFitter:
             # =================================================================
             # Bubble point - Pressure
             # -----------------------------------------------------------------
-            if row["kind"] in KINDS["zT1"]:
+            if row["kind"] in KINDS["zT0"]:
                 sat = model.saturation_pressure(
                     x, kind="bubble", temperature=t, p0=p
                 )
@@ -197,7 +197,7 @@ class BinaryFitter:
             # =================================================================
             # Bubble point - Temperature
             # -----------------------------------------------------------------
-            elif row["kind"] in KINDS["zP1"]:
+            elif row["kind"] in KINDS["zP0"]:
                 sat = model.saturation_temperature(
                     x, kind="bubble", pressure=p, t0=t
                 )
@@ -207,7 +207,7 @@ class BinaryFitter:
             # =================================================================
             # Dew point - Pressure
             # -----------------------------------------------------------------
-            elif row["kind"] in KINDS["zT0"]:
+            elif row["kind"] in KINDS["zT1"]:
                 sat = model.saturation_pressure(
                     y, kind="dew", temperature=t, p0=p
                 )
@@ -217,7 +217,7 @@ class BinaryFitter:
             # =================================================================
             # Dew point - Temperature
             # -----------------------------------------------------------------
-            elif row["kind"] in KINDS["zP0"]:
+            elif row["kind"] in KINDS["zP1"]:
                 sat = model.saturation_temperature(
                     y, kind="dew", pressure=p, t0=t
                 )
@@ -231,7 +231,15 @@ class BinaryFitter:
                 x1, y1 = solve_pt(model, row["P"], row["T"], row["kind"])
 
                 residual = []
-                if np.isnan(x[0]):
+                if x1 == y1:
+                    # No separation at TP
+                    if not np.isnan(x[0]):
+                        sat = model.saturation_pressure(x, kind="bubble", temperature=t)
+                    else:
+                        sat = model.saturation_pressure(y, kind="dew", temperature=t)
+                    error_i = self.pressure_error(p, sat["P"])
+
+                elif np.isnan(x[0]):
                     error_i += self.composition_error(y, [y1, 1 - y1])
                     residual.append(y[0] - y1)
 
@@ -284,7 +292,7 @@ class BinaryFitter:
                 # TODO make more robust PT solver to avoid infs
                 error_i = row["P"]
 
-            objective_function_contributions.append(error_i / len(data))
+            objective_function_contributions.append(w * error_i / len(data))
             residuals.append(residual)
 
             err += error_i * w
