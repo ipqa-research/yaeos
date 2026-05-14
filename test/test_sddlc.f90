@@ -1,5 +1,5 @@
 program test_sddlc
-   use yaeos, only: pr, sDDLC, CubicEoS, RKPR, EquilibriumState, saturation_pressure, px_envelope_2ph, PXEnvel2
+   use yaeos, only: pr, sDDLC, CubicEoS, RKPR, EquilibriumState, saturation_pressure, px_envelope_2ph, PXEnvel2, R
    use testing_aux, only: assert, test_title
    integer, parameter :: nc=2
 
