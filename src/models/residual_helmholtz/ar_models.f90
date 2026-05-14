@@ -1583,32 +1583,143 @@ contains
       !! will be calculated
       real(pr), intent(in) :: T !! Temperature [K]
 
-      real(pr) :: P1, P2
-      real(pr) :: f1, f2
-
       real(pr) :: n(size(eos))
+      real(pr) :: F(3), X(3), dF(3, 3), Vl, Vv, P, Pc, S, dFdS(3)
+      integer :: ns=3
+      integer :: its
 
       n = 0
       n(ncomp) = 1
 
-      P1 = 0.5
-      P2 = 1
+      call eos%volume(n, 1e-3_pr, T, Vl, root_type="liquid")
+      call eos%volume(n, 1e-3_pr, T, Vv, root_type="vapor")
 
-      do while(abs(diff(P2)) > 1e-5)
-         f1 = diff(P1)
-         f2 = diff(P2)
-         Psat_pure = (P1 * f2 - P2 * f1)/(f2 - f1)
-         P1 = P2
-         P2 = Psat_pure
+      X = [log(Vl), log(Vv), log(T)]
+      S = log(T)
+
+      F = 10
+      call solve_point_psat(eos, ncomp, size(n), X, ns, S, F, dF, dFdS, its)
+      Vl = exp(X(1))
+      call eos%pressure_psat(n, Vl, T, Psat_pure)
+   end function Psat_pure
+
+   subroutine solve_point_psat(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)
+      !! # Solve point
+      !!
+      !! Solve a saturation point for a pure component.
+      !!
+      !! ## Description
+      !! The set of equations to solve is:
+      !!
+      !! \[
+      !! \begin{align*}
+      !! f_1 &= \ln f_{z}(V_z, T) - \ln f_{y}(V_y, T) \\
+      !! f_2 &= \ln \left( \frac{P_z}{P_y} \right) \\
+      !! f_3 &= \ln P_z - \ln P \\
+      !! f_4 &= g(X, ns)
+      !! \end{align*}
+      !! \]
+      !!
+      !! Where \(f_4\) is an specification function defined as:
+      !!
+      !! \[
+      !! g(X, ns) = \left\{
+      !! \begin{array}{lr}
+      !! \ln \left( \frac{V_z}{V_y} \right) - S & \text{if } ns = 1 \text{ or } ns = 2 \\
+      !! X(ns) - S & \text{otherwise}
+      !! \end{array}
+      !! \right\}
+      !! \]
+      !!
+      !! The vector of variables \(X\) is equal to
+      !! \([ \ln V_z, \ln V_y, \ln P, \ln T ]\).
+      use yaeos__math, only: solve_system
+
+      class(ArModel), intent(in) :: model
+      !! Thermodynamic model
+      integer, intent(in) :: ncomp
+      !! Component index
+      integer, intent(in) :: nc
+      !! Total number of components
+      real(pr), intent(in out) :: X(3)
+      !! Variables \([ln V_z, lnV_y, lnP, lnT]\)
+      integer, intent(in) :: ns
+      !! Variable index to solve. If the
+      real(pr), intent(in) :: S
+      !! Variable value specified to solve
+      real(pr), intent(out) :: F(3)
+      !! Function
+      real(pr), intent(out) :: dF(3, 3)
+      !! Jacobian
+      real(pr), intent(out) :: dFdS(3)
+      !! Derivative of the function with respect to S
+      integer, intent(out) :: its
+      !! Number of iterations
+
+      real(pr) :: z(nc)
+      real(pr) :: lnfug_z(nc), lnfug_y(nc)
+      real(pr) :: dlnfdv_z(nc), dlnfdv_y(nc)
+      real(pr) :: dlnfdt_z(nc), dlnfdt_y(nc)
+      real(pr) :: dPdTz, dPdTy
+      real(pr) :: dPdVz, dPdVy
+      real(pr) :: Vz, Vy
+
+      real(pr) :: T
+      real(pr) :: Pz, Py
+      real(pr) :: dX(3), B
+      real(pr) :: Xnew(3)
+
+      integer :: i
+
+      i = ncomp
+
+      dX = 1
+      F = 1
+      z = 0
+      z(i) = 1
+      B = model%get_v0(z, 1._pr, 150._pr)
+
+      its = 0
+      do while((maxval(abs(dX)) > 1e-7 .and. maxval(abs(F)) > 1e-7))
+         its = its+1
+         call isofugacity(X, F, dF, dFdS)
+         if (any(isnan(F))) exit
+         dX = solve_system(dF, -F)
+         Xnew = X + dX
+         X = Xnew
       end do
    contains
-      real(pr) function diff(P)
-         real(pr), intent(in) :: P
-         real(pr) :: V_l, V_v
-         real(pr) :: phi_v(size(eos)), phi_l(size(eos))
-         call eos%lnphi_pt(n, P=P, T=T, V=V_v, lnPhi=phi_v, root_type="vapor")
-         call eos%lnphi_pt(n, P=P, T=T, V=V_l, lnPhi=phi_l, root_type="liquid")
-         diff = phi_v(ncomp) - phi_l(ncomp)
-      end function diff
-   end function Psat_pure
+      subroutine isofugacity(X, F, dF, dFdS)
+         real(pr), intent(inout) :: X(3)
+         real(pr), intent(out) :: F(3)
+         real(pr), intent(out) :: dF(3,3)
+         real(pr), intent(out) :: dFdS(3)
+
+         F = 0
+         dF = 0
+
+         Vz = exp(X(1))
+         Vy = exp(X(2))
+         T = exp(X(3))
+
+         call model%lnfug_vt(z, V=Vz, T=T, P=Pz, lnf=lnfug_z, dlnfdV=dlnfdv_z, dlnfdT=dlnfdT_z, dPdV=dPdVz, dPdT=dPdTz)
+         call model%lnfug_vt(z, V=Vy, T=T, P=Py, lnf=lnfug_y, dlnfdV=dlnfdv_y, dlnfdT=dlnfdT_y, dPdV=dPdVy, dPdT=dPdTy)
+
+         F = 0
+         dF = 0
+         F(1) = lnfug_z(i) - lnfug_y(i)
+         F(2) = log(Pz/Py)
+         F(3) = X(ns) - S
+
+         df(1, 1) = Vz * dlnfdv_z(i)
+         df(1, 2) = -Vy * dlnfdv_y(i)
+         df(1, 3) = T * (dlnfdt_z(i) - dlnfdt_y(i))
+
+         df(2, 1) = 1/Pz * dPdVz
+         df(2, 2) = -Py * dPdVy
+         df(2, 3) = 1/Pz * dPdTz - dPdTy / Py
+
+         df(3, ns) = -1
+      end subroutine isofugacity
+   end subroutine solve_point_psat
 end module yaeos__models_ar
