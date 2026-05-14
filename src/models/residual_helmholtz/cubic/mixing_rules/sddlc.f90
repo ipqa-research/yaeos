@@ -1,5 +1,5 @@
 module yaeos__models_ar_cubic_mixing_sddlc
-   use yaeos__constants, only: pr
+   use yaeos__constants, only: pr, R
    use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
 
    type, extends(QMR) :: sDDLC
@@ -27,11 +27,11 @@ contains
       !! where \(E_{ij} = \exp\!\left(\frac{a_{ij}\sum_k n_k q_k}{q_i q_j RTV}\right)\)
       !! and \(\Lambda = \sum_{ij} s_i s_j E_{ij}\), with segment fractions
       !! \(s_i = n_i q_i / \sum_k n_k q_k\).
-      class(DDLC_MixRule), intent(in)  :: self
+      class(sDDLC), intent(in)  :: self
       real(pr),            intent(in)  :: n(:), V, T
       real(pr),            intent(in)  :: ai(:), daidt(:), daidt2(:)
       real(pr),            intent(out) :: D, dDdT, dDdT2, dDdV, dDdV2, dDdTV
-      real(pr),            intent(out) :: dDi(:), dDidT(:), dDidT(:), dDij(:,:)
+      real(pr),            intent(out) :: dDi(:), dDidT(:), dDidV(:), dDij(:,:)
 
       integer  :: i, j, k, m, nc
       real(pr) :: RTV, sumnq
@@ -74,7 +74,7 @@ contains
       ! -----------------------------------------------------------------------
       ! Build aij matrix (reusing the shared helper)
       ! -----------------------------------------------------------------------
-      call self%aij(self, T, ai, daidt, daidt2, aij, daijdt, daijdt2)
+      call self%aij(T, ai, daidt, daidt2, aij, daijdT, daijdT2)
 
       ! -----------------------------------------------------------------------
       ! Segment fractions and their n-derivatives
@@ -145,31 +145,27 @@ contains
             d2EdnV(m,k,:) = d2EdnV(k,m,:)
 
             ! -- T-derivatives of E (computed only when requested) --
-            if (calc_T) then
-               dEdT(k,m)    = E(k,m)*rata(k,m)*sumnq &
-                  *(daijdT(k,m)/aij(k,m) - 1.0_pr/T)
-               d2EdT2(k,m)  = dEdT(k,m)**2/E(k,m) - 2.0_pr*dEdT(k,m)/T &
-                  + E(k,m)*rata(k,m)*sumnq*daijdT2(k,m)/aij(k,m)
-               d2EdVT(k,m)  = dEdV(k,m)* &
-                  (dEdT(k,m)/E(k,m) + daijdT(k,m)/aij(k,m) - 1.0_pr/T)
-               d2EdnT(k,m,:)= self%q(:)*dEdT(k,m)/sumnq &
-                  + dEdT(k,m)*dEdn(k,m,:)/E(k,m)
-               dEdT(m,k)    = dEdT(k,m)
-               d2EdT2(m,k)  = d2EdT2(k,m)
-               d2EdVT(m,k)  = d2EdVT(k,m)
-               d2EdnT(m,k,:)= d2EdnT(k,m,:)
-            end if
+            dEdT(k,m)    = E(k,m)*rata(k,m)*sumnq &
+               *(daijdT(k,m)/aij(k,m) - 1.0_pr/T)
+            d2EdT2(k,m)  = dEdT(k,m)**2/E(k,m) - 2.0_pr*dEdT(k,m)/T &
+               + E(k,m)*rata(k,m)*sumnq*daijdT2(k,m)/aij(k,m)
+            d2EdVT(k,m)  = dEdV(k,m)* &
+               (dEdT(k,m)/E(k,m) + daijdT(k,m)/aij(k,m) - 1.0_pr/T)
+            d2EdnT(k,m,:)= self%q(:)*dEdT(k,m)/sumnq &
+               + dEdT(k,m)*dEdn(k,m,:)/E(k,m)
+            dEdT(m,k)    = dEdT(k,m)
+            d2EdT2(m,k)  = d2EdT2(k,m)
+            d2EdVT(m,k)  = d2EdVT(k,m)
+            d2EdnT(m,k,:)= d2EdnT(k,m,:)
 
             ! -- Accumulate Den and its derivatives --
             if (k == m) then
                Den      = Den      + sfrac(k)**2*E(k,k)
                dDendV   = dDendV   + sfrac(k)**2*dEdV(k,k)
                d2DendV2 = d2DendV2 + sfrac(k)**2*d2EdV2(k,k)
-               if (calc_T) then
-                  dDendT   = dDendT   + sfrac(k)**2*dEdT(k,k)
-                  d2DendT2 = d2DendT2 + sfrac(k)**2*d2EdT2(k,k)
-                  d2DendVT = d2DendVT + sfrac(k)**2*d2EdVT(k,k)
-               end if
+               dDendT   = dDendT   + sfrac(k)**2*dEdT(k,k)
+               d2DendT2 = d2DendT2 + sfrac(k)**2*d2EdT2(k,k)
+               d2DendVT = d2DendVT + sfrac(k)**2*d2EdVT(k,k)
                do i = 1, nc
                   dDendn(i)   = dDendn(i) &
                      + 2.0_pr*sfrac(k)*dsfdn(k,i)*E(k,k) &
@@ -177,21 +173,17 @@ contains
                   d2DendnV(i) = d2DendnV(i) &
                      + 2.0_pr*sfrac(k)*dsfdn(k,i)*dEdV(k,k) &
                      + sfrac(k)**2*d2EdnV(k,k,i)
-                  if (calc_T) then
-                     d2DendnT(i) = d2DendnT(i) &
-                        + 2.0_pr*sfrac(k)*dsfdn(k,i)*dEdT(k,k) &
-                        + sfrac(k)**2*d2EdnT(k,k,i)
-                  end if
+                  d2DendnT(i) = d2DendnT(i) &
+                     + 2.0_pr*sfrac(k)*dsfdn(k,i)*dEdT(k,k) &
+                     + sfrac(k)**2*d2EdnT(k,k,i)
                end do
             else
                Den      = Den      + 2.0_pr*sfrac(k)*sfrac(m)*E(k,m)
                dDendV   = dDendV   + 2.0_pr*sfrac(k)*sfrac(m)*dEdV(k,m)
                d2DendV2 = d2DendV2 + 2.0_pr*sfrac(k)*sfrac(m)*d2EdV2(k,m)
-               if (calc_T) then
-                  dDendT   = dDendT   + 2.0_pr*sfrac(k)*sfrac(m)*dEdT(k,m)
-                  d2DendT2 = d2DendT2 + 2.0_pr*sfrac(k)*sfrac(m)*d2EdT2(k,m)
-                  d2DendVT = d2DendVT + 2.0_pr*sfrac(k)*sfrac(m)*d2EdVT(k,m)
-               end if
+               dDendT   = dDendT   + 2.0_pr*sfrac(k)*sfrac(m)*dEdT(k,m)
+               d2DendT2 = d2DendT2 + 2.0_pr*sfrac(k)*sfrac(m)*d2EdT2(k,m)
+               d2DendVT = d2DendVT + 2.0_pr*sfrac(k)*sfrac(m)*d2EdVT(k,m)
                do i = 1, nc
                   dDendn(i)   = dDendn(i) &
                      + 2.0_pr*sfrac(k)*sfrac(m)*dEdn(k,m,i) &
@@ -199,11 +191,9 @@ contains
                   d2DendnV(i) = d2DendnV(i) &
                      + 2.0_pr*sfrac(k)*sfrac(m)*d2EdnV(k,m,i) &
                      + 2.0_pr*(sfrac(k)*dsfdn(m,i)+sfrac(m)*dsfdn(k,i))*dEdV(k,m)
-                  if (calc_T) then
-                     d2DendnT(i) = d2DendnT(i) &
-                        + 2.0_pr*sfrac(k)*sfrac(m)*d2EdnT(k,m,i) &
-                        + 2.0_pr*(sfrac(k)*dsfdn(m,i)+sfrac(m)*dsfdn(k,i))*dEdT(k,m)
-                  end if
+                  d2DendnT(i) = d2DendnT(i) &
+                     + 2.0_pr*sfrac(k)*sfrac(m)*d2EdnT(k,m,i) &
+                     + 2.0_pr*(sfrac(k)*dsfdn(m,i)+sfrac(m)*dsfdn(k,i))*dEdT(k,m)
                end do
             end if
          end do
@@ -245,7 +235,7 @@ contains
       dDdV2    = 0.0_pr
       dDdTV    = 0.0_pr
       dDi    = 0.0_pr
-      dDidT    = 0.0_pr
+      dDidV    = 0.0_pr
       dDidT  = 0.0_pr
 
       do i = 1, nc
@@ -256,25 +246,21 @@ contains
             do m = 1, nc
                auxjmi  = auxjmi  + n(m)*dEdn(m,j,i)*aij(m,j)
                auxjmiV = auxjmiV + n(m)*d2EdnV(m,j,i)*aij(m,j)
-               if (calc_T) then
-                  auxjmiT = auxjmiT + n(m)*( &
-                     dEdn(m,j,i)*daijdT(m,j) + d2EdnT(m,j,i)*aij(m,j))
-               end if
+               auxjmiT = auxjmiT + n(m)*( &
+                  dEdn(m,j,i)*daijdT(m,j) + d2EdnT(m,j,i)*aij(m,j))
             end do
 
             dDi(i) = dDi(i) + 2.0_pr*n(j)*E(i,j)*aij(i,j) + n(j)*auxjmi
-            dDidT(i) = dDidT(i) + 2.0_pr*n(j)*dEdV(i,j)*aij(i,j) + n(j)*auxjmiV
+            dDidV(i) = dDidV(i) + 2.0_pr*n(j)*dEdV(i,j)*aij(i,j) + n(j)*auxjmiV
 
-            if (calc_T) then
-               auxTij  = E(i,j)*daijdT(i,j) + dEdT(i,j)*aij(i,j)
-               auxT    = auxT + n(j)*auxTij
-               dDidT(i)= dDidT(i) + 2.0_pr*n(j)*auxTij + n(j)*auxjmiT
-               auxTT   = auxTT + n(j)*( &
-                  E(i,j)*daijdT2(i,j) + 2.0_pr*dEdT(i,j)*daijdT(i,j) &
-                  + d2EdT2(i,j)*aij(i,j))
-               auxVT   = auxVT + n(j)*( &
-                  d2EdVT(i,j)*aij(i,j) + dEdV(i,j)*daijdT(i,j))
-            end if
+            auxTij  = E(i,j)*daijdT(i,j) + dEdT(i,j)*aij(i,j)
+            auxT    = auxT + n(j)*auxTij
+            dDidT(i)= dDidT(i) + 2.0_pr*n(j)*auxTij + n(j)*auxjmiT
+            auxTT   = auxTT + n(j)*( &
+               E(i,j)*daijdT2(i,j) + 2.0_pr*dEdT(i,j)*daijdT(i,j) &
+               + d2EdT2(i,j)*aij(i,j))
+            auxVT   = auxVT + n(j)*( &
+               d2EdVT(i,j)*aij(i,j) + dEdV(i,j)*daijdT(i,j))
 
             aux   = aux   + n(j)*E(i,j)*aij(i,j)
             auxV  = auxV  + n(j)*dEdV(i,j)*aij(i,j)
@@ -284,11 +270,9 @@ contains
          D   = D   + n(i)*aux
          dDdV  = dDdV  + n(i)*auxV
          dDdV2 = dDdV2 + n(i)*auxVV
-         if (calc_T) then
-            dDdT  = dDdT  + n(i)*auxT
-            dDdT2 = dDdT2 + n(i)*auxTT
-            dDdTV   = dDdTV   + n(i)*auxVT
-         end if
+         dDdT  = dDdT  + n(i)*auxT
+         dDdT2 = dDdT2 + n(i)*auxTT
+         dDdTV   = dDdTV   + n(i)*auxVT
       end do
 
       ! -----------------------------------------------------------------------
@@ -299,7 +283,7 @@ contains
       dDdV2 = (dDdV2 - 2.0_pr*dDdV*dDendV - D*d2DendV2)/Den
 
       dDi(1:nc) = (dDi(1:nc)  - D*dDendn(1:nc))/Den
-      dDidT(1:nc) = (dDidT(1:nc)  - dDdV*dDendn(1:nc) - D*d2DendnV(1:nc) &
+      dDidV(1:nc) = (dDidV(1:nc)  - dDdV*dDendn(1:nc) - D*d2DendnV(1:nc) &
          - dDi(1:nc)*dDendV)/Den
 
       dDdT  = (dDdT  - D*dDendT)/Den
@@ -309,7 +293,7 @@ contains
          - dDi(1:nc)*dDendT)/Den
 
       ! -----------------------------------------------------------------------
-      ! Second composition derivative of D (= dDij)
+      ! Second composition derivative of D (= Dij)
       ! -----------------------------------------------------------------------
       do i = 1, nc
          do j = i, nc
