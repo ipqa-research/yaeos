@@ -29,7 +29,7 @@ module yaeos_c
    ! CubicEoS
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2_k
    ! Mixing rules
-   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
+   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl, set_sddlc
    ! Multifluid equations
    public :: multifluid_gerg2008
    ! SAFT equations
@@ -505,6 +505,38 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_qmr
 
+   subroutine set_sddlc(ar_id, qs, kij_0, kij_inf, t_star, lij)
+      !! # `set_sddlc`
+      !! Set the sDDLC with Temperature Dependent `k_ij`
+      !! to a cubic equation of state. The expression of the `k_ij` parameter is:
+      !! \[
+      !! k_{ij} = k_{ij}^{\infty} + k_{ij}^0 \exp {\frac{-T}{T^*_{ij}}}
+      !! \]
+      use yaeos, only: QMRTD, CubicEoS, sDDLC
+      integer(c_int), intent(in) :: ar_id !!
+      real(c_double), intent(in) :: qs(:)
+      real(c_double), intent(in) :: kij_0(:, :)
+      real(c_double), intent(in) :: kij_inf(:, :)
+      real(c_double), intent(in) :: t_star(:, :)
+      real(c_double), intent(in) :: lij(:, :)
+
+      type(sDDLC) :: mixrule
+
+      mixrule%k = kij_inf
+      mixrule%k0 = kij_0
+      mixrule%Tref = T_star
+      mixrule%l = lij
+      mixrule%q = qs
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = mixrule
+         end select
+      end associate
+   end subroutine set_sddlc
+
    ! ==========================================================================
    !  Cubic EoS implementations
    ! --------------------------------------------------------------------------
@@ -581,7 +613,7 @@ contains
    end subroutine psrk
 
    subroutine get_ac_b_del1_del2_k(id, ac, b, del1, del2, k, nc)
-      use yaeos, only: CubicEoS, size, AlphaRKPR
+      use yaeos, only: CubicEoS, size, AlphaRKPR, AlphaSoave
       integer(c_int), intent(in) :: id
       integer, intent(in) :: nc
       real(c_double), dimension(nc), intent(out) :: ac, b, del1, del2, k
@@ -597,6 +629,8 @@ contains
             associate(a => model%alpha)
                select type(a)
                 class is(AlphaRKPR)
+                  k(:nc) = a%k
+                class is(AlphaSoave)
                   k(:nc) = a%k
                end select
             end associate
@@ -1618,7 +1652,7 @@ contains
          P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
          beta_w=beta_w, points=max_points, max_pressure=stop_pressure, &
          allow_negative_betas=allow_negative_betas &
-      )
+         )
 
       do i=1,size(pt_mp%points)
          do j=1,np

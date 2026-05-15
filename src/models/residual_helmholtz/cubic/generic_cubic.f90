@@ -209,6 +209,10 @@ contains
       ! ------------------------------------------------------------------------
       call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
       call self%mixrule%Bmix(n, self%b, B, dBi, dBij)
+      dDdV = 0
+      dDdV2 = 0
+      dDdTV = 0
+      dDdTV = 0
       call self%mixrule%Dmix(&
          n=n, V=V, T=T, ai=a, daidt=dadt, daidt2=dadt2, &
          D=D, &
@@ -227,7 +231,6 @@ contains
          Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
          )
-
    end subroutine GenericCubic_Ar
 
    subroutine set_delta1(self, delta1)
@@ -261,18 +264,8 @@ contains
       !! # Cubic EoS volume solver
       !! Volume solver optimized for Cubic Equations of State.
       !!
-      !! @warn
-      !! This routine intends to use the analyitical solution of the cubic
-      !! equation, but due to errors in the solutions it is not used. And
-      !! the general volume solver by Michelsen is used instead.
-      !! @endwarn
-      !!
       !! # Description
-      !! Cubic equations can be analytically solved. Using an anallytical
-      !! solution provides the best possible solution in terms of speed and
-      !! precision. This subroutine uses the modified cardano method proposed
-      !! by Rosendo.
-      !!
+      !! Uses the solver proposed by Michelsen.
       !! # Examples
       !!
       !! ```fortran

@@ -4,7 +4,7 @@ program test_sddlc
    integer, parameter :: nc=2
 
    real(pr), dimension(nc) :: Tc, Pc, w, zc, q
-   real(pr) :: kij(nc, nc), lij(nc, nc)
+   real(pr) :: kij(nc, nc), lij(nc, nc), Tstar(nc, nc)
    type(CubicEoS) :: model
    type(sDDLC) :: mr
    type(EquilibriumState) :: sat
@@ -30,7 +30,7 @@ program test_sddlc
    kij = 0
    lij = 0
 
-   mr = sDDLC(q=q, k=kij, l=lij)
+   mr = sDDLC(q=q, k=kij, k0=kij, Tref=Tstar,l=lij)
    model = RKPR(Tc, Pc, w, zc)
    call model%set_mixrule(mr)
 
@@ -40,4 +40,9 @@ program test_sddlc
       sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=Ps(i))
       call assert(abs(sat%P - Ps(i)) < 2._pr, "Different Psat compared with Cismondi ")
    end do
+
+   ! z = [0.01, 0.99]
+   ! sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=1._pr)
+   ! px = px_envelope_2ph(model, z0, 0.01._pr, zi, sat)
+
 end program test_sddlc

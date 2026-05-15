@@ -79,7 +79,6 @@ contains
       TOTN = sum(n)
 
       volume_dep_D = (dDdV /= 0._pr .or. dDdV2 /= 0._pr .or. any(dDidV /= 0._pr))
-      volume_dep_D = .true.
 
       ! =======================================================================
       ! Delta 2 from Delta 1
@@ -114,9 +113,9 @@ contains
       FFBV = -TOTN*AUX/(V - B) + D*(2*fv + V*fv2)/B
       FFBB =  TOTN*AUX/(V - B) - D*(2*f + 4*V*fv + V**2*fv2)/B**2
 
-      ! =======================================================================
-      ! Residual Helmholtz Energy and spatial derivatives
-      ! -----------------------------------------------------------------------
+      ! ========================================================================
+      ! Reduced Helmholtz Energy and derivatives
+      ! ------------------------------------------------------------------------
       if (present(Ar))   Ar   = -TOTN*g*T - D*f
 
       if (present(ArV)) then

@@ -28,6 +28,7 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
     QMRTD,
     RKPR,
     SoaveRedlichKwong,
+    sDDLC
 )
 from yaeos.models.residual_helmholtz.multifluid import GERG2008
 from yaeos.models.residual_helmholtz.saft import PCSAFT
@@ -47,6 +48,7 @@ __all__ = [
     "QMRTD",
     "GERG2008",
     "NRTL",
+    "sDDLC",
     "UNIFACDortmund",
     "UNIFACPSRK",
     "UNIFACVLE",

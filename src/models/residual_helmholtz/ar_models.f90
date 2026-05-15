@@ -1600,7 +1600,7 @@ contains
       F = 10
       call solve_point_psat(eos, ncomp, size(n), X, ns, S, F, dF, dFdS, its)
       Vl = exp(X(1))
-      call eos%pressure_psat(n, Vl, T, Psat_pure)
+      call eos%pressure(n, Vl, T, Psat_pure)
    end function Psat_pure
 
    subroutine solve_point_psat(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)
