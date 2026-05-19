@@ -154,6 +154,6 @@ program main
    ! Gamma mole derivative
    call assert( &
       all(abs(dlngammadn - dln_phis_dn) < 1e-10_pr), &
-      "dlngammadn matches lnphi mixture - lnphi pure" &
+      "dlngammadn matches dlnphi/dn of the mixture" &
       )
 end program main
