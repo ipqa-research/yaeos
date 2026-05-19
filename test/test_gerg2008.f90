@@ -18,7 +18,10 @@ program main
 
    ! ln_gamma tests
    real(pr) :: ln_gamma(3), dlngammadP(3), dlngammadT(3), dlngammadn(3,3)
-   real(pr) :: ln_phis_pures(3), ln_phis(3), vi(3), ln_phi_temp(1), vi_temp
+   real(pr) :: ln_phis_pures(3), ln_phis(3), dln_phis_dT(3), vi(3)
+   real(pr) :: ln_phi_temp(1), vi_temp, dln_phis_pures_dT(3), dln_phi_dT_temp(1)
+   real(pr) :: dln_phis_pures_dP(3), dln_phi_dP_temp(1), dln_phis_dP(3)
+   real(pr) :: dln_phis_dn(3,3)
    real(pr) :: ln_gamma_from_phis(3)
 
    ! ===========================================================================
@@ -91,26 +94,42 @@ program main
       1.0_pr, &
       303.15_pr, &
       root_type="stable", &
-      lnphi=ln_phis &
+      lnphi=ln_phis, &
+      dlnPhidT=dln_phis_dT, &
+      dlnPhidP=dln_phis_dP, &
+      dlnPhidn=dln_phis_dn &
       )
 
+   ! Pure calls
    call methane%lnphi_pt(&
-      [1.0_pr], 1.0_pr, 303.15_pr, V=vi_temp, root_type="stable", lnphi=ln_phi_temp &
+      [1.0_pr], 1.0_pr, 303.15_pr, V=vi_temp, &
+      root_type="stable", lnphi=ln_phi_temp, dlnPhidT=dln_phi_dT_temp, &
+      dlnPhidP=dln_phi_dP_temp &
       )
    vi(1) = vi_temp
    ln_phis_pures(1) = ln_phi_temp(1)
+   dln_phis_pures_dT(1) = dln_phi_dT_temp(1)
+   dln_phis_pures_dP(1) = dln_phi_dP_temp(1)
 
    call nitrogen%lnphi_pt(&
-      [1.0_pr], 1.0_pr, 303.15_pr, V=vi_temp, root_type="stable", lnphi=ln_phi_temp &
+      [1.0_pr], 1.0_pr, 303.15_pr, V=vi_temp, &
+      root_type="stable", lnphi=ln_phi_temp, dlnPhidT=dln_phi_dT_temp, &
+      dlnPhidP=dln_phi_dP_temp &
       )
    vi(2) = vi_temp
    ln_phis_pures(2) = ln_phi_temp(1)
+   dln_phis_pures_dT(2) = dln_phi_dT_temp(1)
+   dln_phis_pures_dP(2) = dln_phi_dP_temp(1)
 
    call co2%lnphi_pt(&
-      [1.0_pr], 1.0_pr, 303.15_pr, V=vi_temp, root_type="stable", lnphi=ln_phi_temp &
+      [1.0_pr], 1.0_pr, 303.15_pr, V=vi_temp, &
+      root_type="stable", lnphi=ln_phi_temp, dlnPhidT=dln_phi_dT_temp, &
+      dlnPhidP=dln_phi_dP_temp &
       )
    vi(3) = vi_temp
    ln_phis_pures(3) = ln_phi_temp(1)
+   dln_phis_pures_dT(3) = dln_phi_dT_temp(1)
+   dln_phis_pures_dP(3) = dln_phi_dP_temp(1)
 
    ! Test gamma
    ln_gamma_from_phis = ln_phis - ln_phis_pures
@@ -120,5 +139,21 @@ program main
       "ln_gamma matches lnphi mixture - lnphi pure" &
       )
 
+   ! Gamma temperature derivative
+   call assert( &
+      all(abs(dlngammadT - (dln_phis_dT - dln_phis_pures_dT)) < 1e-10_pr), &
+      "dlngammadT matches lnphi mixture - lnphi pure" &
+      )
 
+   ! Gamma pressure derivative
+   call assert( &
+      all(abs(dlngammadP - (dln_phis_dP - dln_phis_pures_dP)) < 1e-10_pr), &
+      "dlngammadP matches lnphi mixture - lnphi pure" &
+      )
+
+   ! Gamma mole derivative
+   call assert( &
+      all(abs(dlngammadn - dln_phis_dn) < 1e-10_pr), &
+      "dlngammadn matches lnphi mixture - lnphi pure" &
+      )
 end program main

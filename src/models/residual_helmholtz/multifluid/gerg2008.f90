@@ -321,7 +321,7 @@ contains
       v0 = self%srk%get_v0(n, p, t)
    end function volume_initalizer
 
-    subroutine ln_activity_coefficient(&
+   subroutine ln_activity_coefficient(&
       eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn &
       )
       !! Calculate natural logarithm of activity coefficients and its
