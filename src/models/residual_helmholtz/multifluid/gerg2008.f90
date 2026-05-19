@@ -349,11 +349,11 @@ contains
       real(pr), intent(out), optional :: lngamma(size(n))
       !! Natural logarithm of activity coefficient
       real(pr), intent(out), optional :: dlngammadP(size(n))
-      !! \(\frac{d\ln\gamma}}{dP}\)
+      !! \(\frac{d\ln\gamma}{dP}\)
       real(pr), intent(out), optional :: dlngammadT(size(n))
-      !! \(\frac{d\ln\gamma}}{dT}\)
+      !! \(\frac{d\ln\gamma}{dT}\)
       real(pr), intent(out), optional :: dlngammadn(size(n),size(n))
-      !! \(\frac{d\ln\gamma}}{dn}\)
+      !! \(\frac{d\ln\gamma}{dn}\)
 
       ! Mixture properties
       real(pr) :: lnPhi(size(n)), dlnPhidT(size(n))
