@@ -1,13 +1,12 @@
 module yaeos__models_ar_cubic_mixing_sddlc
    use yaeos__constants, only: pr, R
-   use yaeos__models_ar_cubic_quadratic_mixing, only: QMRTD
+   use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
 
-   type, extends(QMRTD) :: sDDLC
+   type, extends(QMR) :: sDDLC
       real(pr), allocatable :: q(:) !! Segment size
    contains
       procedure :: Dmix => ddlc_Dmix
    end type sDDLC
-
 
 contains
    subroutine ddlc_Dmix(&
@@ -17,8 +16,6 @@ contains
       dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
       !! s-DDLC D mixing rule including V, n, and T derivatives.
-      !!
-      !! Corresponds to `DLCandTnVder` in the legacy code.
       !!
       !! The local-composition D is:
       !! \[
