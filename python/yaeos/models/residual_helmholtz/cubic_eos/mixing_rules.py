@@ -718,7 +718,7 @@ class sDDLC(CubicMixRule):
         t_ref_c = ""
 
         qs_c = "qs = ["
-        for q in qs:
+        for q in self.qs:
             qs_c += f"{q:.5f}_pr,"
         qs_c += "]"
 
