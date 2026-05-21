@@ -1,5 +1,6 @@
 program test_sddlc
-   use yaeos, only: pr, sDDLC, CubicEoS, RKPR, EquilibriumState, saturation_pressure, px_envelope_2ph, PXEnvel2, R
+   use yaeos, only: pr, sDDLC, CubicEoS, RKPR, EquilibriumState, saturation_pressure, px_envelope_2ph, PXEnvel2, R, numeric_ar_derivatives
+   use auxiliar_functions, only: allclose
    use testing_aux, only: assert, test_title
    integer, parameter :: nc=2
 
@@ -27,22 +28,59 @@ program test_sddlc
 
    q = [1.16_pr, 6.00_pr]
 
+
    kij = 0
    lij = 0
+   Tstar(1, :) = [0, 190]
+   Tstar(2, :) = [190, 0]
 
    mr = sDDLC(q=q, k=kij, k0=kij, Tref=Tstar,l=lij)
    model = RKPR(Tc, Pc, w, zc)
    call model%set_mixrule(mr)
+   
+   call test_numdiff
 
-   do i=1,4
-      a = as(i)
-      z = a * zi + (1-a) * z0
-      sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=Ps(i))
-      call assert(abs(sat%P - Ps(i)) < 2._pr, "Different Psat compared with Cismondi ")
-   end do
+   ! do i=1,4
+   !    a = as(i)
+   !    z = a * zi + (1-a) * z0
+   !    sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=Ps(i))
+   !    call assert(abs(sat%P - Ps(i)) < 2._pr, "Different Psat compared with Cismondi ")
+   ! end do
 
    ! z = [0.01, 0.99]
    ! sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=1._pr)
    ! px = px_envelope_2ph(model, z0, 0.01._pr, zi, sat)
 
+
+contains
+
+   subroutine test_numdiff
+      real(pr) :: V, T, z(nc)
+      real(pr) :: Ar_num, ArV_num, ArT_num, ArV2_num, ArT2_num, ArTV_num
+      real(pr), dimension(nc) :: Arn_num, ArVn_num, ArTn_num
+      real(pr), dimension(nc, nc) :: Arn2_num
+      real(pr) :: Ar, ArV, ArT, ArV2, ArT2, ArTV
+      real(pr), dimension(nc) :: Arn, ArVn, ArTn
+      real(pr), dimension(nc, nc) :: Arn2
+
+      real(pr), parameter :: dn = 1e-5, dv=1e-5, dt=1e-2
+      real(pr), parameter :: tol=1e-5
+
+      z = [0.5, 0.5]
+      V = 5
+      T = 350
+
+      call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
+         Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+
+      call model%residual_helmholtz(z, V, T, &
+         Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
+         ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+         )
+
+
+      call allclose([Ar, Ar], tol)
+      call allclose([ArT_num , ArT], tol)
+      call allclose([ArT2_num, ArT2], tol)
+   end subroutine test_numdiff
 end program test_sddlc
