@@ -234,9 +234,13 @@ class BinaryFitter:
                 if x1 == y1:
                     # No separation at TP
                     if not np.isnan(x[0]):
-                        sat = model.saturation_pressure(x, kind="bubble", temperature=t)
+                        sat = model.saturation_pressure(
+                            x, kind="bubble", temperature=t
+                        )
                     else:
-                        sat = model.saturation_pressure(y, kind="dew", temperature=t)
+                        sat = model.saturation_pressure(
+                            y, kind="dew", temperature=t
+                        )
                     error_i = self.pressure_error(p, sat["P"])
 
                 elif np.isnan(x[0]):

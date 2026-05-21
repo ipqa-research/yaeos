@@ -12,11 +12,13 @@ module yaeos__models_ar_gerg2008
    type, extends(ArModelAdiff) :: Gerg2008
       type(Gerg2008Pure), allocatable :: pures(:)
       type(Gerg2008Binary), allocatable :: binaries(:, :)
+      integer, allocatable :: ids(:)
       type(CubicEoS) :: srk
    contains
       procedure :: ar => arfun
       procedure :: get_v0 => volume_initalizer
       procedure :: volume => volume
+      procedure :: ln_activity_coefficient => ln_activity_coefficient
    end type Gerg2008
 
    type, private :: GERG2008Selector
@@ -56,6 +58,7 @@ contains
       call get_original_parameters(ids, pures, binaries, gerg_2008%components)
       gerg_2008%pures = pures
       gerg_2008%binaries = binaries
+      gerg_2008%ids = ids
       gerg_2008%srk =SoaveRedlichKwong(gerg_2008%components%Tc, gerg_2008%components%Pc, gerg_2008%components%w)
    end function gerg_2008
 
@@ -317,4 +320,112 @@ contains
       real(pr) :: v0
       v0 = self%srk%get_v0(n, p, t)
    end function volume_initalizer
+
+   subroutine ln_activity_coefficient(&
+      eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn &
+      )
+      !! Calculate natural logarithm of activity coefficients and its
+      !! derivatives given pressure and temperature.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !!
+      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !!
+      !! call eos%ln_activity_coefficient(&
+      !!    n, P, T, root_type="stable", &
+      !!    lngamma=lngamma, dlngammadP=dlngammadP, &
+      !!    dlngammadT=dlngammadT, dlngammadn=dlngammadn &
+      !!    )
+      !! ```
+      class(GERG2008), intent(in) :: eos !! Model
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=*), intent(in) :: root_type
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]`
+      real(pr), intent(out), optional :: lngamma(size(n))
+      !! Natural logarithm of activity coefficient
+      real(pr), intent(out), optional :: dlngammadP(size(n))
+      !! \(\frac{d\ln\gamma}{dP}\)
+      real(pr), intent(out), optional :: dlngammadT(size(n))
+      !! \(\frac{d\ln\gamma}{dT}\)
+      real(pr), intent(out), optional :: dlngammadn(size(n),size(n))
+      !! \(\frac{d\ln\gamma}{dn}\)
+
+      ! Mixture properties
+      real(pr) :: lnPhi(size(n)), dlnPhidT(size(n))
+      real(pr) :: dlnPhidn(size(n),size(n))
+      real(pr) :: dPdV, dPdn(size(n)), dVdn(size(n))
+
+      ! Pure properties
+      real(pr) :: vi(size(n)), vi_temp, npure(size(n))
+      real(pr) :: lnPhi_i(size(n)), dlnPhi_i_dT(size(n))
+      real(pr) :: lnPhi_i_temp(1), dlnPhi_i_dT_temp(1)
+      type(GERG2008) :: eos_temp
+
+      integer :: i
+
+      logical :: gam, dp, dt, dn, present_derivs
+
+      gam = present(lngamma)
+      dp = present(dlngammadP)
+      dt = present(dlngammadT)
+      dn = present(dlngammadn)
+      present_derivs = dp .or. dt .or. dn
+
+
+      ! Call to mixture fugacity coefficient at PT
+      ! TODO: maybe more efficient later?
+      if (.not. present_derivs) then
+         call eos%lnphi_pt(n=n, P=P, T=T, root_type=root_type, lnPhi=lnPhi)
+      else
+         call eos%lnphi_pt(&
+            n=n, P=P, T=T, root_type=root_type, &
+            lnPhi=lnPhi, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn, &
+            dPdV=dPdV, dPdn=dPdn &
+            )
+
+         dVdn = -dPdn / dPdV
+      end if
+
+      ! Pure components calls
+      vi = 0.0_pr
+      lnPhi_i = 0.0_pr
+
+      if (dt) then
+         dlnPhi_i_dT = 0.0_pr
+      end if
+
+      do i=1, size(n)
+         eos_temp = gerg_2008([eos%ids(i)])
+
+         if (.not. dt) then
+            call eos_temp%lnphi_pt(&
+               n=[1.0_pr], P=P, T=T, V=vi_temp, root_type="stable", &
+               lnPhi=lnPhi_i_temp &
+               )
+         else
+            call eos_temp%lnphi_pt(&
+               n=[1.0_pr], P=P, T=T, V=vi_temp, root_type="stable", &
+               lnPhi=lnPhi_i_temp, dlnPhidT=dlnPhi_i_dT_temp &
+               )
+         end if
+
+         vi(i) = vi_temp
+         lnPhi_i(i) = lnPhi_i_temp(1)
+
+         if (dt) then
+            dlnPhi_i_dT(i) = dlnPhi_i_dT_temp(1)
+         end if
+      end do
+
+      ! returns
+      if (gam) lngamma = lnPhi - lnPhi_i
+      if (dt) dlngammadT = dlnPhidT - dlnPhi_i_dT
+      if (dp) dlngammadP = (dVdn - vi) / (Ryaeos * T)
+      if (dn) dlngammadn = dlnPhidn
+   end subroutine ln_activity_coefficient
 end module yaeos__models_ar_gerg2008
