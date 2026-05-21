@@ -3542,7 +3542,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
-        allow_negative_betas=False
+        allow_negative_betas=False,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -3570,7 +3570,7 @@ class ArModel(ABC):
                 kind_w=kind_w,
                 max_points=max_points,
                 stop_pressure=stop_pressure,
-                allow_negative_betas=allow_negative_betas
+                allow_negative_betas=allow_negative_betas,
             )
         )
 
@@ -3825,12 +3825,8 @@ class ArModel(ABC):
             return dsps, locs_1, locs_2
 
         for t, p in zip(temperatures, pressures):
-            env1_loc = (
-                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
-            )
-            env2_loc = (
-                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
-            )
+            env1_loc = np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
+            env2_loc = np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]

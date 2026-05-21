@@ -28,6 +28,7 @@ module yaeos_c
 
    ! CubicEoS
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2_k
+   public :: get_cubiceos_attractive_parameters, get_cubiceos_repulsive_parameters
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl, set_sddlc
    ! Multifluid equations
@@ -612,6 +613,7 @@ contains
       call extend_ar_models_list(id)
    end subroutine psrk
 
+   ! Get cubic parameters
    subroutine get_ac_b_del1_del2_k(id, ac, b, del1, del2, k, nc)
       use yaeos, only: CubicEoS, size, AlphaRKPR, AlphaSoave
       integer(c_int), intent(in) :: id
@@ -637,6 +639,56 @@ contains
          end select
       end associate
    end subroutine get_ac_b_del1_del2_k
+
+   subroutine get_cubiceos_attractive_parameters(id, nc, n, T, a, dadt, dadt2)
+      !! Get the attractive parameters of the cubic eos object for a range
+      !! of temperatures
+      use yaeos, only: pr, CubicEoS
+      integer(c_int), intent(in) :: id !! Model id
+      integer(c_int), intent(in) :: n !! Number of valuations
+      integer(c_int), intent(in) :: nc !! Number of components
+      real(c_double), intent(in) :: T(n) !! Temperatures to evaluate
+      real(c_double), intent(out) :: a(n, nc) !! Attractive parameter values
+      real(c_double), intent(out) :: dadt(n, nc) !! Attractive parameter values
+      real(c_double), intent(out) :: dadt2(n, nc) !! Attractive parameter values
+
+      integer :: i
+      real(pr) :: Tc(nc), ac(nc)
+      real(pr) :: Tr(nc)
+
+      ar_model = ar_models(id)%model
+
+      select type(ar_model)
+       class is (CubicEoS)
+         Tc = ar_model%components%Tc
+         ac = ar_model%ac
+         do i=1,n
+            Tr = T(i)/Tc
+            call ar_model%alpha%alpha(Tr, a(i, :), dadt(i, :), dadt2(i, :))
+            a(i, :) = ac * a(i, :)
+            dadt(i, :) = ac * dadt(i, :) / Tc
+            dadt2(i, :) = ac * dadt2(i, :) / Tc**2
+         end do
+      end select
+   end subroutine get_cubiceos_attractive_parameters
+
+   subroutine get_cubiceos_repulsive_parameters(id, nc, b)
+      !! Get the repulsive parameters of the cubic eos object
+      use yaeos, only: pr, CubicEoS
+      integer(c_int), intent(in) :: id !! Model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      real(c_double), intent(out) :: b(nc) !! Repulsive parameter value
+
+      integer :: i
+      real(pr) :: Tr
+
+      ar_model = ar_models(id)%model
+
+      select type(ar_model)
+       class is (CubicEoS)
+         b = ar_model%b
+      end select
+   end subroutine get_cubiceos_repulsive_parameters
 
    ! ==========================================================================
    !  Multifluid equations

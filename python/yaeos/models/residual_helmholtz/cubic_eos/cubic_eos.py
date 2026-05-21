@@ -113,6 +113,42 @@ class CubicEoS(ArModel):
 
         return fcode
 
+    def get_attractive_parameter(self, temperatures: np.ndarray):
+        """Calculate the attractive parameter of the CubicEoS.
+
+        Parameters
+        ----------
+        temperatures : array_like
+            Range of temperatuers for which calculate the attractive parameter.
+
+        Returns 
+        -------
+        dict : Dictionary with the values of a for each component and its 
+               derivatives with temperature.
+        """
+        a, dadt, dadt2 = yaeos_c.get_cubiceos_attractive_parameters(
+            id=self.id, nc=self.size(), t=temperatures
+        )
+
+        return {
+            "a": a,
+            "dt": dadt,
+            "dt2": dadt2
+        }
+    
+    def get_repulsive_parameter(self):
+        """Calculate the repulsive parameters of the CubicEoS.
+
+        Returns 
+        -------
+            array : Repulsive parameter value for each component.
+        """
+        b = yaeos_c.get_cubiceos_repulsive_parameters(
+            id=self.id, nc=self.size()
+        )
+
+        return b
+
 
 class PengRobinson76(CubicEoS):
     """Peng-Robinson 1976 cubic equation of state.
