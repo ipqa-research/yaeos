@@ -1,8 +1,8 @@
 module yaeos__models_ar_cubic_mixing_sddlc
    use yaeos__constants, only: pr, R
-   use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
+   use yaeos__models_ar_cubic_quadratic_mixing, only: QMRTD
 
-   type, extends(QMR) :: sDDLC
+   type, extends(QMRTD) :: sDDLC
       real(pr), allocatable :: q(:) !! Segment size
    contains
       procedure :: Dmix => ddlc_Dmix
