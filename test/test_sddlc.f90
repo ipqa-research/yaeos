@@ -79,8 +79,8 @@ contains
          )
 
 
-      call assert(allclose([Ar, Ar], tol), "Ar")
-      call assert(allclose([ArT_num , ArT], tol), "ArV")
-      call assert(allclose([ArT2_num, ArT2], tol), "ArV2")
+      call assert(allclose([Ar], [Ar], tol), "Ar")
+      call assert(allclose([ArT_num] , [ArT], tol), "ArV")
+      call assert(allclose([ArT2_num], [ArT2], tol), "ArV2")
    end subroutine test_numdiff
 end program test_sddlc
