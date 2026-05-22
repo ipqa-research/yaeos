@@ -3,6 +3,7 @@ module yaeos__models_ar_cubic_mixing_sddlc
    use yaeos__models_ar_cubic_quadratic_mixing, only: QMRTD
 
    type, extends(QMRTD) :: sDDLC
+      !! Segmented Density-Dependent Local-Composition Mixing Rule.
       real(pr), allocatable :: q(:) !! Segment size
    contains
       procedure :: Dmix => ddlc_Dmix
