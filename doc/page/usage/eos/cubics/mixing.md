@@ -58,11 +58,59 @@ subroutine my_aij_implementation(self, ai, daidt, daidt2, aij, daijdt, daijdt2)
 end subroutine
 ```
 
+## Quadratic Mixing Rules Temperature Dependant (QMRTD)
+
+Modification of the QMR mixing rules that use a $k_{ij}$ dependenant on
+temperature. They add two extra set of parameters:
+
+\[k_{ij}(T) = k_{ij}^{infty} + k_{ij}^0 \exp \left(T/T^{*}\right)\]
+
+@note
+$T^{*}$ is usually the critical temperature of the lightest component.
+
+QMRTD are handled by the [[QMRTD]] derived type. Which can be used like:
+
+```fortran
+use yaeos, only: pr, QMRTD
+
+type(QMR) :: mixrule
+real(pr) :: kij_0(2, 2), kij_inf(2,2), lij(2, 2), T_ref(2, 2)
+
+kij_0(1, :) = [0.0, 0.1]
+kij_0(2, :) = [0.1, 0.0]
+
+kij_inf(1, :) = [0.0, 0.1]
+kij_inf(2, :) = [0.1, 0.0]
+
+lij(1, :) = [0.0, 0.01]
+lij(2, :) = [0.01, 0.0]
+
+T_ref(1, :) = [0.0, 190.]
+T_ref(2, :) = [190., 0.0]
+
+mixrule = QMRTD(k=kij, k0=kij_0, Tref=T_ref, l=lij)
+```
+
+The same modification of the `get_aij` procedure of the QMR explained before
+can be used here too.
+
+
 ## \(G^E\) Models Mixing Rules
 It is possible to mix the attractive parameter of Cubic Equations with an 
 excess Gibbs-based model.
 This can be useful for cases of polar molecules and/or systems that have been 
 fitted to \(G^E\) models.
+
+### Huron-Vidal Mixing Rule
+Infinite pressure limit of a cubic equation of state.
+
+\[
+\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{G^E(n,T)}{\Lambda}
+\]
+
+### HVNRTL Mixing Rule
+The same mixing rule of Huron-Vidal, just that in this case it uses a modified
+$NRTL$ model that can be reduced to the QMR rules for specific binaries.
 
 ### Michelsen's Modified Huron-Vidal Mixing Rules
 This mixing rule is based on the aproximate zero-pressure limit 
