@@ -14,7 +14,10 @@ module yaeos__models_ar_genericcubic
    type, abstract :: CubicMixRule
       !! Abstract derived type that describe the required
       !! procedure for a mixing rule on a Cubic EoS
-      logical :: dn2 = .false. !! Calculate second order derivatives
+      logical :: is_D_ddlc = .false. 
+         !! Mixing rule D parameter dependant on density
+      logical :: dn2 = .false. 
+         !! Calculate second order derivatives
    contains
       procedure(abs_Dmix), deferred :: Dmix
       procedure(abs_Bmix), deferred :: Bmix
@@ -222,6 +225,7 @@ contains
 
       call generic(&
          n=n, V=V, T=T, &
+         D_ddlc=self%mixrule%is_D_ddlc, &
          B=B, &
          dBi=dBi, dBij=dBij, &
          D=D, &

@@ -6,6 +6,7 @@ contains
 
    subroutine GenericCubic_Ar(&
       n, V, T, &
+      D_ddlc, &
       B, dBi, dBij, &
       D, &
       dDdV, dDdV2, dDdT, dDdT2, &
@@ -33,6 +34,9 @@ contains
       real(pr), intent(in) :: n(:)  !! Mole numbers
       real(pr), intent(in) :: V     !! Volume [L]
       real(pr), intent(in) :: T     !! Temperature [K]
+
+      logical, intent(in) :: D_ddlc 
+         !! D parameter is dependant on volume besides temperature.
 
       real(pr), intent(in) :: B             !! Repulsive parameter [L]
       real(pr), intent(in) :: dBi(size(n)) !! \(dB/dn_i\)
@@ -78,7 +82,7 @@ contains
       nc   = size(n)
       TOTN = sum(n)
 
-      volume_dep_D = (dDdV /= 0._pr .or. dDdV2 /= 0._pr .or. any(dDidV /= 0._pr))
+      volume_dep_D = D_ddlc
 
       ! =======================================================================
       ! Delta 2 from Delta 1
