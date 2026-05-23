@@ -679,8 +679,6 @@ contains
       integer(c_int), intent(in) :: nc !! Number of components
       real(c_double), intent(out) :: b(nc) !! Repulsive parameter value
 
-      integer :: i
-      real(pr) :: Tr
 
       ar_model = ar_models(id)%model
 
@@ -1043,7 +1041,7 @@ contains
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: V
 
-      real(c_double) :: y(size(z0)), Vx, Vy, beta
+      real(c_double) :: y(size(z0)), Vy, beta
 
       type(EquilibriumState) :: crit
 
@@ -1059,7 +1057,7 @@ contains
       a0, v0, t0, p0, z0, zi, stability_analysis, max_points, stop_pressure, &
       as, Vs, Ts, Ps, CEP_x, CEP_y, CEP_P, CEP_Vx, CEP_Vy, CEP_T)
       use yaeos, only: EquilibriumState, CriticalLine, &
-         fcritical_line => critical_line, spec_CP
+         fcritical_line => critical_line
       integer(c_int), intent(in) :: id
       integer(c_int), intent(in) :: ns
       real(c_double), intent(in) :: S
@@ -1256,8 +1254,6 @@ contains
       real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
 
       real(c_double) :: d_i(size(z))
-
-      integer :: i
 
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
