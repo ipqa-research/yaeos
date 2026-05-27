@@ -161,7 +161,9 @@ contains
       !! three parameter EoS RKPR where \(delta_1\) is not a constant and
       !! has its own mixing rule.
       !!
-      use yaeos__models_ar_genericcubic_base, only: generic => GenericCubic_Ar
+      use yaeos__models_ar_genericcubic_base, only: &
+         generic => GenericCubic_Ar, &
+         generic_dddlc => GenericCubic_Ar_dddlc
       use yaeos__constants, only: R
       class(CubicEoS), intent(in) :: self
       real(pr), intent(in) :: n(:) !! Number of moles
@@ -223,18 +225,27 @@ contains
          dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij &
          )
 
-      call generic(&
-         n=n, V=V, T=T, &
-         D_ddlc=self%mixrule%is_D_ddlc, &
-         B=B, &
-         dBi=dBi, dBij=dBij, &
-         D=D, &
-         dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
-         dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij, &
-         D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
-         Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, &
-         ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
+      if (self%mixrule%is_D_ddlc) then
+         call generic_dddlc(&
+            n=n, V=V, T=T, &
+            B=B, &
+            dBi=dBi, dBij=dBij, &
+            D=D, &
+            dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
+            dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij, &
+            D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
+            Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, &
+            ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
+            )
+      else
+         call generic(&
+            n=n, V=V, T=T, &
+            B=B, dBi=dBi, dBij=dBij, &
+            D=D, dDi=dDi, dDij=dDij, dDidT=dDidT, dDdT=dDdT, dDdT2=dDdT2, &
+            D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
+            Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
          )
+      end if
    end subroutine GenericCubic_Ar
 
    subroutine set_delta1(self, delta1)
