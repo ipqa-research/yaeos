@@ -352,17 +352,16 @@ class MHV(CubicMixRule):
 
         lij_c = ""
 
-        if self._have_lij:
-            for i in range(self.ge.size()):
-                lij_c += f"lij({i + 1}, :) = ["
+        for i in range(self.ge.size()):
+            lij_c += f"lij({i + 1}, :) = ["
 
-                for j in range(self.ge.size()):
-                    if j < self.ge.size() - 1:
-                        lij_c += f"{self.lij[i][j]}_pr, "
-                    else:
-                        lij_c += f"{self.lij[i][j]}_pr]\n"
+            for j in range(self.ge.size()):
+                if j < self.ge.size() - 1:
+                    lij_c += f"{self.lij[i][j]}_pr, "
+                else:
+                    lij_c += f"{self.lij[i][j]}_pr]\n"
 
-            fcode += lij_c + "\n"
+        fcode += lij_c + "\n"
 
         if self._have_lij:
             # TODO: include lij in MHV
