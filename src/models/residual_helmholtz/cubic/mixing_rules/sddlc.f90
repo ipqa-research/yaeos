@@ -11,24 +11,24 @@ module yaeos__models_ar_cubic_mixing_sddlc
 
    interface sDDLC
       module procedure :: init_sddlc
-   end interface 
+   end interface sDDLC
 
 contains
 
-   type(sDDLC) function init_sddlc(k, k0, l, q) result(mixrule)
+   type(sDDLC) function init_sddlc(k, k0, tref, l, q) result(mixrule)
       real(pr), intent(in) :: k(:, :)
       real(pr), intent(in) :: k0(:, :)
+      real(pr), intent(in) :: tref(:, :)
       real(pr), intent(in) :: l(:, :)
       real(pr), intent(in) :: q(:)
 
       mixrule%k = k
       mixrule%k0 = k0
+      mixrule%tref =  tref
       mixrule%l =  l
       mixrule%q =  q
       mixrule%is_D_ddlc = .true.
-   end function
-
-
+   end function init_sddlc
 
    subroutine ddlc_Dmix(&
       self, n, V, T, &
