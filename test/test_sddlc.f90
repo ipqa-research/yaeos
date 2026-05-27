@@ -34,23 +34,18 @@ program test_sddlc
    Tstar(1, :) = [0, 190]
    Tstar(2, :) = [190, 0]
 
-   mr = sDDLC(q=q, k=kij, k0=kij, Tref=Tstar,l=lij)
+   mr = sDDLC(q=q, k=kij, k0=kij, Tref=Tstar, l=lij)
    model = RKPR(Tc, Pc, w, zc)
    call model%set_mixrule(mr)
    
    call test_numdiff
 
-   ! do i=1,4
-   !    a = as(i)
-   !    z = a * zi + (1-a) * z0
-   !    sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=Ps(i))
-   !    call assert(abs(sat%P - Ps(i)) < 2._pr, "Different Psat compared with Cismondi ")
-   ! end do
-
-   ! z = [0.01, 0.99]
-   ! sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=1._pr)
-   ! px = px_envelope_2ph(model, z0, 0.01._pr, zi, sat)
-
+   do i=1,4
+      a = as(i)
+      z = a * zi + (1-a) * z0
+      sat = saturation_pressure(model=model, n=z, T=323.15_pr, kind="bubble", p0=Ps(i))
+      call assert(abs(sat%P - Ps(i)) < 2._pr, "Different Psat compared with Cismondi ")
+   end do
 
 contains
 
@@ -63,12 +58,32 @@ contains
       real(pr), dimension(nc) :: Arn, ArVn, ArTn
       real(pr), dimension(nc, nc) :: Arn2
 
-      real(pr), parameter :: dn = 1e-5, dv=1e-5, dt=1e-2
-      real(pr), parameter :: tol=1e-5
+      real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
+      real(pr), parameter :: tol=1e-2
+      integer :: i
 
       z = [0.5, 0.5]
       V = 5
       T = 350
+
+
+      dv = 0.0001
+      ! do i=1,1000000000,100000
+      !    dt = real(i, pr)/1.e10_pr
+      !    z = [0.5, 0.5]
+      !    V = 5
+      !    T = 350
+      !    call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
+      !       Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+
+      !    call model%residual_helmholtz(z, V, T, &
+      !       Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
+      !       ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+      !       )
+      ! end do
+
+      dv = 0.0001
+      dt = 0.01
 
       call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
          Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
@@ -80,7 +95,15 @@ contains
 
 
       call assert(allclose([Ar], [Ar], tol), "Ar")
-      call assert(allclose([ArT_num] , [ArT], tol), "ArV")
-      call assert(allclose([ArT2_num], [ArT2], tol), "ArV2")
+      call assert(allclose([ArT_num] , [ArT], tol), "ArT")
+      call assert(allclose([ArT2_num], [ArT2], tol), "ArT2")
+      
+      call assert(allclose([ArV_num] , [ArV], tol), "ArV")
+      call assert(allclose([ArV2_num], [ArV2], tol), "ArV2")
+      
+      call assert(allclose([ArTV_num], [ArTV], tol), "ArTV")
+      
+      call assert(allclose([ArVn_num], [ArVn], tol), "ArnV")
+      call assert(allclose([ArTn_num], [ArTn], tol), "ArnT")
    end subroutine test_numdiff
 end program test_sddlc
