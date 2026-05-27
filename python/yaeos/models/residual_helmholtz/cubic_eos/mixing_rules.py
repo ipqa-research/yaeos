@@ -364,7 +364,7 @@ class MHV(CubicMixRule):
         fcode += lij_c + "\n"
 
         fcode += (
-            f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b, lij={self.lij})\n\n"
+            f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b, lij=lij)\n\n"
         )
 
         return fcode
