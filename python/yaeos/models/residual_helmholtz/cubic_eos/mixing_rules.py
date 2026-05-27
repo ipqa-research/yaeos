@@ -363,15 +363,9 @@ class MHV(CubicMixRule):
 
         fcode += lij_c + "\n"
 
-        if self._have_lij:
-            # TODO: include lij in MHV
-            fcode += (
-                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b)\n\n"
-            )
-        else:
-            fcode += (
-                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b)\n\n"
-            )
+        fcode += (
+            f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b, lij={self.lij})\n\n"
+        )
 
         return fcode
 
@@ -398,9 +392,7 @@ class MHV(CubicMixRule):
         # Mixrule setup
         fcode += "type(MHV) :: mixrule" "\n"
 
-        # TODO: include lij in MHV
-        if self._have_lij:
-            fcode += "real(pr) :: lij(nc, nc)\n\n"
+        fcode += "real(pr) :: lij(nc, nc)\n\n"
 
         return fcode
 
