@@ -523,11 +523,7 @@ contains
 
       type(sDDLC) :: mixrule
 
-      mixrule%k = kij_inf
-      mixrule%k0 = kij_0
-      mixrule%Tref = T_star
-      mixrule%l = lij
-      mixrule%q = qs
+      mixrule = sDDLC(q=qs, k=kij_inf, k0=kij_0, Tref=T_star, l=lij)
 
       associate (ar_model => ar_models(ar_id)%model)
          select type(ar_model)

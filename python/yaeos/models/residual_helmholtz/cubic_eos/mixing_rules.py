@@ -324,8 +324,8 @@ class MHV(CubicMixRule):
         self.q = q
         if lij is None:
             self.lij = np.zeros((nc, nc), order="F")
-
-        self._have_lij = True if lij is not None else False
+        else:
+            self.lij = lij
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set modified Huron-Vidal mix rule method.
