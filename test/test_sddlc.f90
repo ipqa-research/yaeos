@@ -50,6 +50,7 @@ program test_sddlc
 contains
 
    subroutine test_numdiff
+      use yaeos, only: individual_ar_calls
       real(pr) :: V, T, z(nc)
       real(pr) :: Ar_num, ArV_num, ArT_num, ArV2_num, ArT2_num, ArTV_num
       real(pr), dimension(nc) :: Arn_num, ArVn_num, ArTn_num
@@ -62,25 +63,12 @@ contains
       real(pr), parameter :: tol=1e-2
       integer :: i
 
+      logical :: individual_calls
+
       z = [0.5, 0.5]
       V = 5
       T = 350
 
-
-      dv = 0.0001
-      ! do i=1,1000000000,100000
-      !    dt = real(i, pr)/1.e10_pr
-      !    z = [0.5, 0.5]
-      !    V = 5
-      !    T = 350
-      !    call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
-      !       Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
-
-      !    call model%residual_helmholtz(z, V, T, &
-      !       Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
-      !       ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-      !       )
-      ! end do
 
       dv = 0.0001
       dt = 0.01
@@ -105,5 +93,8 @@ contains
       
       call assert(allclose([ArVn_num], [ArVn], tol), "ArnV")
       call assert(allclose([ArTn_num], [ArTn], tol), "ArnT")
+
+      call individual_ar_calls(model, z, V, T, individual_calls)
+      call assert(individual_calls, "Individual calls should work")
    end subroutine test_numdiff
 end program test_sddlc
