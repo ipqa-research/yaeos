@@ -1715,8 +1715,8 @@ contains
          df(1, 2) = -Vy * dlnfdv_y(i)
          df(1, 3) = T * (dlnfdt_z(i) - dlnfdt_y(i))
 
-         df(2, 1) = 1/Pz * dPdVz
-         df(2, 2) = -Py * dPdVy
+         df(2, 1) = Vz/Pz * dPdVz
+         df(2, 2) = -Vy/Py * dPdVy
          df(2, 3) = 1/Pz * dPdTz - dPdTy / Py
 
          df(3, ns) = -1
