@@ -1,5 +1,5 @@
-Cubic Equations of State
-========================
+SAFT Equations of State
+=======================
 
 .. toctree::
    :maxdepth: 4

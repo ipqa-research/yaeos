@@ -79,7 +79,7 @@ contains
       kinds_x = "vapor"
       kind_w = "liquid"
       dew = pt_envelope(model, z, np, kinds_x, kind_w, x_l0, w0, betas0, p0, t0, ns0, ds0, beta_w, max_pressure=1500._pr)
-      ! call dew%write(2)
+      call dew%write(2)
       idx = size(dew%points)
       call assert(size(dew%Tc) == 2, "Two critical points found")
       call assert(dew%points(idx)%P > 1000._pr, "Envelope should end at high pressure")

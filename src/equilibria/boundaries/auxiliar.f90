@@ -170,7 +170,7 @@ contains
             ncomp = maxloc(abs(X(lb:ub) - X_last_converged(lb:ub)), dim=1) + lb - 1
             jumped_critical = .true.
             Xc = interpol(X_last_converged(ncomp), X(ncomp), X_last_converged, X, 0._pr)
-            
+
             if (jumped_critical .and. .not. found_critical) then
                incipient_kind = kind_w
                kind_w = kinds_x(l)
@@ -182,28 +182,36 @@ contains
       end do
    end subroutine check_critical_jump
 
-   logical function near_critical(nc, np, X)
-      integer, intent(in) :: nc
-      integer, intent(in) :: np
-      real(pr), intent(in) :: X(nc*np+np+2)
+   subroutine near_critical(nc, np, X, near_crit, l, i, j)
+      integer, intent(in) :: nc !! Number of components
+      integer, intent(in) :: np !! Number of main phases
+      real(pr), intent(in) :: X(nc*np+np+2) !! Vector of variables
+      logical, intent(out) :: near_crit
+      !! If the system is near a critical point
+      integer, intent(out) :: l !! Index of the near-critical phase
+      integer, intent(out) :: i !! Index of the component with the maximum lnK
+      integer, intent(out) :: j !! Index of the component with the minimum lnK
 
-      integer :: l !! Phase index
+
       integer :: lb, ub
 
       real(pr) :: cf, lnK(nc)
 
-      near_critical = .false.
+      near_crit = .false.
 
       do l=1,np
          lb = (l-1)*nc + 1
          ub = l*nc
          lnK = X(lb:ub)
 
-         near_critical = (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.1_pr
-         ! near_critical = maxval(abs(X(lb:ub))) < 0.05_pr
-         if (near_critical) then
+         i = maxloc(lnK, dim=1)
+         j = minloc(lnK, dim=1)
+         near_crit= (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.06_pr
+         near_crit= (maxval(exp(lnK)))/minval(exp(lnK)) - 1 < 0.2 .or. maxval(abs(lnK)) < 0.1
+         near_crit = maxval(lnK) - minval(lnK) < 0.5 .and. maxval(abs(lnK)) < 0.1
+         if (near_crit) then
             return
          end if
       end do
-   end function near_critical
+   end subroutine near_critical
 end module yaeos__equilibria_boundaries_auxiliar

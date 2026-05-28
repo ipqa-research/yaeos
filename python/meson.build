@@ -16,6 +16,10 @@ add_languages('fortran', native: false)
 meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
+
+# Check if we are on Windows
+is_windows = host_machine.system() == 'windows'
+
 # lapack = dependency('lapack')
 
 py_mod = import('python')
@@ -35,13 +39,14 @@ incdir_f2py = run_command(py,
 
 
 # fpm
-fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
-if get_option('debug')
-  fflags = '-g -fPIC -Og'
-else
-  fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
-endif
+# fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
+# if get_option('debug')
+#   fflags = '-g -fPIC -Og'
+# else
+#   fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
+# endif
 
+fflags = '-g -fPIC -O2'
 cflags = '-g -fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
@@ -49,18 +54,24 @@ fpm_build_dir = meson_path / 'fpm_build'
 # from glibc >= 2.41 executable stack is not an option, so we force heap
 # allocation
 cc = meson.get_compiler('c')
+quadmath_dep = cc.find_library('quadmath', required: true)
 
-glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
-glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
+if not is_windows
+  glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
+  glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
 
-message('glibc major version: ' + glibc_major)
-message('glibc minor version: ' + glibc_minor)
+  message('glibc major version: ' + glibc_major)
+  message('glibc minor version: ' + glibc_minor)
 
-glibc_version = glibc_major + '.' + glibc_minor
+  glibc_version = glibc_major + '.' + glibc_minor
 
-if glibc_version.version_compare('>=2.41')
-  fflags = fflags + ' -ftrampoline-impl=heap'
-  cflags = cflags + ' -ftrampoline-impl=heap'
+  if glibc_version.version_compare('>=2.41')
+    fflags = fflags + ' -ftrampoline-impl=heap'
+    cflags = cflags + ' -ftrampoline-impl=heap'
+  endif
+else
+  fflags = fflags + ' -static'
+  cflags = cflags + ' -static'
 endif
 
 fpm = run_command(
@@ -182,20 +193,48 @@ fitting = [
 ]
 py.install_sources(fitting, subdir:python_lib / 'fitting')
 
+#### tools
+tools = [
+  python_lib / 'tools' / '__init__.py',
+  python_lib / 'tools' / 'writers.py',
+]
+py.install_sources(tools, subdir:python_lib / 'tools')
+
 # =============================================================================
 # Extension fortran module
 # -----------------------------------------------------------------------------
 inc_np = include_directories(incdir_numpy, incdir_f2py, 'fpm_build' / 'include')
 
+# Prepare link arguments based on OS
+extra_link_args = ['-L' + fpm_build_dir / 'lib', '-l' + 'yaeos']
+
+if is_windows
+  # For Windows: Force static linking for math, fortran, AND openmp runtimes
+  extra_link_args += [
+    '-static-libgcc',
+    '-static-libgfortran',
+    '-Wl,-Bstatic',
+    '-llapack',
+    '-lblas',
+    '-lquadmath',
+    '-lgomp',
+    '-Wl,-Bdynamic'
+  ]
+  ext_dependencies = [py_dep]
+else
+  # For Linux/macOS: Standard dynamic linking
+  extra_link_args += ['-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp']
+  ext_dependencies = [py_dep, omp, quadmath_dep]
+endif
+
 py.extension_module(module_name,
   [c_wrapper, f2py_gen_source],
   incdir_f2py / 'fortranobject.c',
   include_directories: [inc_np],
-  dependencies : [py_dep, omp],
-  link_args: ['-L' + 'fpm_build' / 'lib', '-l' + 'yaeos', '-llapack', '-fopenmp'],
+  dependencies : ext_dependencies, # Use the conditional list
+  link_args: extra_link_args,
   subdir: python_lib / 'lib',
   install: true,
   c_args: ['-g', '-Og'],
 )
-
 #LDFLAGS=-Wl,-rpath=.,-z,noexecstack

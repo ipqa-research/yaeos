@@ -10,3 +10,4 @@ Residual Helmholtz Models
 
    cubic_eos/init
    multifluid/init
+   saft/init

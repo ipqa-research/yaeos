@@ -30,6 +30,7 @@ from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import (
     MHV,
     QMR,
     QMRTD,
+    sDDLC,
 )
 
 __all__ = [
@@ -45,4 +46,5 @@ __all__ = [
     "MHV",
     "HV",
     "HVNRTL",
+    "sDDLC"
 ]

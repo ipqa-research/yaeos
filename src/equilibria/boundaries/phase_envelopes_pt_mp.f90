@@ -6,7 +6,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_boundaries_auxiliar, only: &
-      detect_critical, check_critical_jump
+      jump_critical => detect_critical, check_critical_jump
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
 
@@ -61,11 +61,30 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
       !! Step size of the specification to reach this point.
    end type MPPoint
 
+   type :: NearCritical
+      !! Near critical point information.
+      logical :: near_critical = .false.
+      !! If we are satisfying the condition of being near a critical point.
+      logical :: entering = .false.
+      !! Entering a critical region. This attribute is used to ensure that the
+      !! correct indexes are used since they should not be updated while inside
+      !! the region, just on the first point.
+      integer :: l 
+      !! Index of the phase that is becoming critical with the reference phase.
+      integer :: i
+      !! Index of the component with the max \(\ln K_i^l\)
+      integer :: j
+      !! Index of the component with the minimum \(\ln K_j^l\)
+   end type NearCritical
+
+   type(NearCritical) :: near_critical_state 
+   !! Singleton to follow the near critical status.
+
 contains
 
    type(PTEnvelMP) function pt_envelope(&
       model, z, np, kinds_x, kind_w, x_l0, w0, betas0, P0, T0, ns0, dS0, beta_w, points, &
-      max_pressure &
+      max_pressure, allow_negative_betas &
       )
       !! # `pt_envelope`
       !! Calculation of a multiphase PT envelope.
@@ -132,10 +151,18 @@ contains
       !! calculation is stopped.
       !! This is useful to avoid calculating envelopes that go to infinite
       !! values of pressure.
+      logical, optional, intent(in) :: allow_negative_betas
+      !! Do not stop calculating when there are negative values of beta.
 
-      type(MPPoint), allocatable :: env_points(:) !! Array of converged points.
-      type(MPPoint) :: point !! Converged point.
-      real(pr) :: max_P !! Maximum pressure [bar] to calculate.
+      type(MPPoint), allocatable :: env_points(:) 
+      !! Array of converged points.
+      type(MPPoint) :: point 
+      !! Converged point.
+      
+      real(pr) :: max_P 
+      !! Maximum pressure [bar] to calculate.
+      logical :: anb
+      !! Allow negative betas.
 
       real(pr) :: F(size(z) * np + np + 2) !! Vector of functions valuated.
       real(pr) :: dF(size(z) * np + np + 2, size(z) * np + np + 2)
@@ -147,7 +174,8 @@ contains
       real(pr) :: dX(size(z) * np + np + 2)
       !! Step for next point estimation.
 
-      integer :: nc !! Number of components.
+      integer :: nc 
+      !! Number of components.
 
       integer :: its
       !! Number of iterations to solve the current point.
@@ -180,13 +208,29 @@ contains
       logical :: found_critical !! If true, a critical point was found
       logical :: jumped_critical !! If true, a critical point was jumped
 
-      character(len=14) :: x_kinds(np), w_kind
+      character(len=14) :: x_kinds(np)
+      !! Kinds of the main phases. This variable is used internally to not
+      !! modify the inicial values
+      character(len=14) :: w_kind
+      !! Kinds of the reference phase. This variable is used internally to not
+      !! modify the inicial values
 
+      ! Near Critical variables
       real(pr) :: Tc !! Critical temperature [K]
       real(pr) :: Pc !! Critical pressure [bar]
       real(pr) :: Vl(np) !! Molar volumes of the main phases [L/mol]
       real(pr) :: Vw !! Molar volume of the reference phase [L/mol]
       integer :: l !! Phase index
+
+      logical :: near_crit
+      !! Near a critical point
+      integer :: l_nc
+      !! Index of the phase near a critical point.
+      integer :: i_nc
+      !! Index of the component with the maximum lnK if near a critical point.
+      integer :: j_nc
+      !! Index of the component with the minimum lnK if near a critical point.
+
 
       nc = size(z)
       iP = np*nc + np + 1
@@ -194,6 +238,7 @@ contains
 
       number_of_points = optval(points, 1000)
       max_P = optval(max_pressure, 2000._pr)
+      anb = optval(allow_negative_betas, .false.)
 
       do i=1,np
          lb = (i-1)*nc + 1
@@ -212,22 +257,49 @@ contains
       x_kinds = kinds_x
       w_kind = kind_w
 
+
+      near_critical_state%entering = .false.
+      near_critical_state%near_critical = .false.
+
       allocate(env_points(0), pt_envelope%Tc(0), pt_envelope%Pc(0))
 
       F = 1
       its = 0
-      X0 = X
       call solve_point(&
          model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
          F, dF, Vl, Vw, its, 2000 &
          )
       X_last_converged = 0
-      do i=1,number_of_points
+      continuation: do i=1,number_of_points
          X0 = X
+
+         ! ====================================================================
+         ! Solution of the point
+         ! --------------------------------------------------------------------
          call solve_point(&
             model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
             F, dF, Vl, Vw, its, max_iterations &
             )
+
+         if (its >= max_iterations) then
+            X = X0 - 0.9*dX
+            S = S - 0.9*dS !X(ns)
+            dS = dS/2
+            call solve_point(&
+               model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
+               F, dF, Vl, Vw, its, max_iterations &
+               )
+         end if
+
+         ! Stop due to bad convergence criteria
+         do l=1,np
+            ! Converged but to a trivial solution
+            if(norm2(X((l-1)*nc+1:l*nc)) < 1e-7_pr) exit continuation
+         end do
+
+         ! Point did not converge
+         if (any(isnan(F)) .or. its >= max_iterations) exit
+
 
          ! Convert the values of the vector of variables into human-friendly
          ! variables.
@@ -241,8 +313,9 @@ contains
 
          ! Check if we have jumped over a critical point. If we did, save the
          ! CP obtained from interplation.
-         call check_critical_jump(nc, np, ns, x_kinds, w_kind, X, X_last_converged, Xc, found_critical, jumped_critical)
-         if (jumped_critical) then
+         jumped_critical = .false.
+         call check_critical_jump(nc, np, ns, x_kinds, w_kind, X, X_last_converged, Xc, jumped_critical, found_critical)
+         if (found_critical) then
             Tc = exp(Xc(iT))
             Pc = exp(Xc(iP))
             pt_envelope%Tc = [pt_envelope%Tc, Tc]
@@ -253,44 +326,44 @@ contains
          ! before that
          X_last_converged = X
 
-         call detect_critical(&
-            nc, np, i, x_kinds, w_kind, .false., &
-            X_last_converged, X, dXdS, ns, dS, S, &
-            found_critical, Xc)
-
          ! Update the specification for the next point.
-         call update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
-
-         ! Stop criteria
-         if (any(isnan(F)) .or. its > max_iterations) exit
+         call update_specification(&
+            its, nc, np, X, dF, dXdS, ns, &
+            S, dS, near_crit, l_nc, i_nc, j_nc, Vl, Vw &
+            )
 
          ! If the point actually converged save it
          env_points = [env_points, point]
-         
+
+
          if (&
             P > max_P&
             .or. P < 1e-5_pr &
-            .or. any(betas < -1e-14) .or. any(betas > 1 + 1e-14) &
             .or. abs(dS) <= 1e-14 &
             .or. (T < 100._pr .and. P < 1e-5_pr) &
-         ) exit
+            ) exit continuation
+
+         if (.not. anb) then
+            if (any(betas < -1e-10) .or. any(betas > 1 + 1e-10)) exit continuation
+         end if
 
          ! Next point estimation.
          dX = dXdS * dS
 
-         do while(abs(exp(X(iT))  - exp(X(iT) + dX(iT))) > 10)
-            dX = dX/2
-         end do
-
-         do while(abs(exp(X(iP))  - exp(X(iP) + dX(iP))) > 50)
-            dX = dX/2
-         end do
+         if (.not. near_crit) then
+            do while(sum((dX(nc*np+np+1:)**2)) > 0.1)
+               dX = dX/2
+            end do
+         end if
 
          X = X + dX
+
          if (ns > 0) then
             S = X(ns)
+         else if (near_crit) then
+            S = S + dS
          end if
-      end do
+      end do continuation
 
       ! This moves the locally saved points to the output variable.
       call move_alloc(env_points, pt_envelope%points)
@@ -399,7 +472,6 @@ contains
          dpdv_l(l) = dpdv
          dpdn_l(l, :) = dPdN
          dpdt_l(l) = dpdt
-
       end do
 
       ! ========================================================================
@@ -416,8 +488,11 @@ contains
       F(nc * np + np + 1) = sum(betas) + beta_w - 1
 
       if (ns < 0) then
-         nv = abs(ns)
-         F(nc * np + np + 2) = log(Vl(nv)/Vw) - S
+         l = near_critical_state%l
+         i = near_critical_state%i
+         j = near_critical_state%j
+
+         F(nc * np + np + 2) = X((l-1)*nc + i) - X((l-1)*nc + j) - S
       else
          F(nc * np + np + 2) = X(ns) - S
       endif
@@ -458,12 +533,6 @@ contains
                   df(idx_1, idx_2) = &
                      dlnphi_dn_l(phase, i, j) * dx_l_dlnK(phase, l, j) &
                      - dlnphi_dn_w(i, j) * dwdlnK(l, j)
-
-                  ! do ik=1, nc
-                  !    df(idx_1, idx_2) = df(idx_1, idx_2) + &
-                  !       dlnphi_dn_l(phase, i, ik) * dx_l_dlnK(phase, l, ik) &
-                  !       - dlnphi_dn_w(i, ik) * dwdlnK(l, ik)
-                  ! end do
 
                   if (i == j .and. phase == l) then
                      df(idx_1, idx_2) = df(idx_1, idx_2) + 1
@@ -514,57 +583,15 @@ contains
          df(nc * np + np + 1, np*nc + l) = 1
       end do
 
-      block
-         real(pr) :: dVwdlnKl(np, size(z))
-         real(pr) :: dVnvdlnKl(np, size(z))
-         real(pr) :: dVwdb(np)
-         real(pr) :: dVnvdb(np)
-
-
-         real(pr) :: dVnvdn(size(z)), dVnvdP, dVnvdT
-         real(pr) :: Vnv
-         integer :: spec_eq
-
-         if (ns < 0) then
-            spec_eq = nc * np + np + 2
-            nv = abs(ns)
-
-            Vnv = Vl(nv)
-            dVwdn = dpdn_w / dpdv_w
-            dVwdP = 1.0_pr / dpdv_w
-            dVwdT = dPdT_w / dpdv_w
-
-            dVnvdn = dpdn_l(nv, :) / dpdv_l(nv)
-            dVnvdP = 1.0_pr / dpdv_l(nv)
-            dVnvdT = dPdT_l(nv) / dpdv_l(nv)
-
-            do l=1,np
-               dVwdlnKl(l, :) = dVwdn * dwdlnK(l, :)
-               dVnvdlnKl(l, :) = dVnvdn * dx_l_dlnK(nv, l, :)
-               dVwdb(l) = sum(dVwdn * dwdb(l, :))
-               dVnvdb(l) = sum(dVnvdn * K(nv, :) * dwdb(l, :))
-            end do
-
-            do l=1,np
-               lb = (l-1) * nc
-
-               ! wrt lnK^l_i
-               do i=1,nc
-                  df(spec_eq, lb + i) = &
-                     dVwdlnKl(l, i) / Vw - dVnvdlnKl(l, i) / Vnv
-               end do
-
-               ! wrt beta
-               lb = np * nc + l
-               df(spec_eq, lb) = &
-                  dVwdb(l) / Vw - dVnvdb(l) / Vnv
-            end do
-            df(spec_eq, nc * np + np + 1) = Vw / Vnv * P * (1 / Vw * dVnvdP - Vnv / Vw**2 * dVwdP)
-            df(spec_eq, nc * np + np + 2) = -Vw / Vnv * T * (1 / Vw * dVnvdT - Vnv / Vw**2 * dVwdT)
-         else
-            df(nc * np + np + 2, ns) = 1
-         end if
-      end block
+      if (ns < 0) then
+         l = near_critical_state%l
+         i = near_critical_state%i
+         j = near_critical_state%j
+         df(nc * np + np + 2, (l-1)*nc + i) = 1
+         df(nc * np + np + 2, (l-1)*nc + j) = -1
+      else
+         df(nc * np + np + 2, ns) = 1
+      end if
 
    end subroutine pt_F_NP
 
@@ -617,8 +644,6 @@ contains
          call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
          call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
-         ! print *, iters, maxval(abs(F)), ns, S, T, P
-
          dX = solve_system(dF, -F)
 
          do l=1,np
@@ -629,11 +654,11 @@ contains
             end if
          end do
 
-         do while(abs(dX(iT)) > 1)
+         do while(abs(dX(iT)) > 0.1)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 1)
+         do while(abs(dX(iP)) > 0.1)
             dX = dX/2
          end do
 
@@ -651,7 +676,10 @@ contains
       end do
    end subroutine solve_point
 
-   subroutine update_specification(its, nc, np, X, dF, dXdS, ns, S, dS, Vl, Vw)
+   subroutine update_specification(&
+      its, nc, np, X, dF, dXdS, ns, S, dS, &
+      near_crit, l_nc, i_nc, j_nc, Vl, Vw &
+      )
       !! # update_specification
       !! Change the specified variable for the next step.
       !!
@@ -683,14 +711,22 @@ contains
       !! Vector of variables.
       real(pr), intent(in out) :: dF(:, :)
       !! Jacobian matrix.
-      real(pr), intent(in out) :: dXdS(:)
-      !! Sensitivity of the variables wrt the specification.
       integer, intent(in out) :: ns
       !! Number of the specified variable.
       real(pr), intent(in out) :: S
       !! Specified value.
       real(pr), intent(in out) :: dS
       !! Step size of the specification for the next point.
+      real(pr), intent(in out) :: dXdS(:)
+      !! Sensitivity of the variables wrt the specification.
+      logical, intent(out) :: near_crit
+      !! If true, the point is near a critical point.
+      integer, intent(out) :: l_nc
+      !! Index of the phase near a critical point.
+      integer, intent(out) :: i_nc
+      !! Index of the component with the maximum lnK if near a critical point.
+      integer, intent(out) :: j_nc
+      !! Index of the component with the minimum lnK if near a critical point.
       real(pr), intent(in) :: Vl(:)
       !! Molar volumes of the main phases [L/mol].
       real(pr), intent(in) :: Vw
@@ -701,6 +737,9 @@ contains
 
       real(pr) :: cf
       !! Critical factor, defined by Lingfei Xu & Huazhou Li*
+
+      real(pr) :: lnKdiff
+      !! If near critical equals lnK_{max} - lnK_{min}
 
       integer :: i
       integer :: l !! Phase index
@@ -739,21 +778,42 @@ contains
          dS = sign(min(delmax, updel), dS)
       end block
 
+      ! Check if we already are in the critical region
+      call near_critical(nc, np, X, near_crit, l_nc, i_nc, j_nc)
 
-      ! dS = sign(max(abs(dS), sqrt(abs(X(ns))/10)), dS)
-      ! dS = sign(min(abs(dS), 0.15_pr), dS)
+      if (near_crit .and. .not. near_critical_state%entering) then
+         ! If it is the first point of the critical region save the positions
+         ! of the phase and the lnK_max and lnK_min
+         near_critical_state%entering = .true.
+         near_critical_state%l = l_nc
+         near_critical_state%i = i_nc
+         near_critical_state%j = j_nc
 
-      do l=1,np
-         lb = (l-1)*nc + 1
-         ub = l*nc
-         if (near_critical(nc, np, X)) then
-            ns = maxloc(abs(X(lb:ub)), dim=1) + lb - 1
-            dS = dXdS(ns)*dS
-            dXdS = dXdS/dXdS(ns)
-            dS = sign(0.01_pr, dS)
-            exit
+         lnKdiff = X((l_nc-1)*nc + i_nc) - X((l_nc-1)*nc + j_nc)
+         S = lnKdiff
+      else if (.not. near_crit) then
+         near_critical_state%entering = .false.
+      end if
+
+      if (near_crit) then
+         l_nc = near_critical_state%l
+         i_nc = near_critical_state%i
+         j_nc = near_critical_state%j
+
+         ns = -l_nc
+         dF(nc*np+np+2, :) = 0
+         dF(nc*np+np+2, (l_nc-1)*nc + i_nc) = 1
+         dF(nc*np+np+2, (l_nc-1)*nc + j_nc) = -1
+         dXdS = solve_system(dF, -dFdS)
+
+         dS = -0.01_pr
+
+         if (abs(S + dS) < 0.020) then
+            ! Ensure that the next step will be on the other side of the
+            ! critical point. Next S=-0.025
+            S = -0.025 - dS
          end if
-      end do
+      end if
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
@@ -804,6 +864,10 @@ contains
 
       integer :: i, j
       integer :: np, nc
+      integer :: ns
+      integer :: its
+      real(pr) :: S
+      real(pr) :: dS
       real(pr) :: P, T
       real(pr), allocatable :: betas(:)
       real(pr), allocatable :: w(:)
@@ -818,13 +882,16 @@ contains
          betas = env%points(i)%betas
          w = env%points(i)%w
          x_l = env%points(i)%x_l
-         write(unit, "(*(E15.5,2x))") P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
+         its = env%points(i)%iters
+         ns = env%points(i)%ns
+         S = env%points(i)%S
+         dS = env%points(i)%dS
+         write(unit, "(I3,2x,I3,*(E25.15,2x))") its, ns, S, dS, P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
       end do
 
       ! do i=1,size(env%Tc)
       !    write(unit, "(*(E15.5,2x))") env%Pc(i), env%Tc(i)
       ! end do
    end subroutine write_envelope_PT_MP
-
 
 end module yaeos__equilibria_boundaries_phase_envelopes_mp

@@ -4,12 +4,7 @@ program tester
 
     use fortime, only: Timer
 
-    use test_legacy, only: suite_legacy => collect_suite
-    use test_cubic_alphas, only: suite_alphas => collect_suite
-    use test_cubic_implementations, only: suite_implementations => collect_suite
-    use test_cubic_mixrules, only: suite_cubic_mixrules => collect_suite
     use test_autodiff_api, only: suite_autodiff_hd => collect_suite
-    use test_thermoprops, only: suite_thermoprops => collect_suite
     use test_flash, only: suite_flash => collect_suite
     use test_saturation, only: suite_saturation => collect_suite
     use test_math, only: suite_math => collect_suite
@@ -46,12 +41,7 @@ program tester
     stat = 0
 
     testsuites = [ &
-        new_testsuite("legacy", suite_legacy), &
-        new_testsuite("Alphas", suite_alphas), &
-        new_testsuite("Cubic EoS", suite_implementations), &
-        new_testsuite("Cubic MixRules", suite_cubic_mixrules), &
         new_testsuite("Autodiff APIs", suite_autodiff_hd), &
-        new_testsuite("Thermoprops", suite_thermoprops), &
         new_testsuite("Flash", suite_flash), &
         new_testsuite("Saturation Points", suite_saturation), &
         new_testsuite("Math module", suite_math), &

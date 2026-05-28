@@ -434,7 +434,6 @@ contains
 
          deallocate(model%alpha)
          model%alpha = alpha
-         if (Psat_i < 1e-6) error stop
       end do
    end subroutine refit_rkpr_k
 

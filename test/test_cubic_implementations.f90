@@ -1,30 +1,23 @@
-module test_cubic_implementations
+program test_cubic_implementations
    use yaeos__constants, only: pr
    use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
+   use testing_aux, only: assert, test_title
    implicit none
 
    real(pr) :: absolute_tolerance = 1e-4_pr
 
+   print *, test_title("CUBIC EOS IMPLEMENTATIONS")
+   call test_srk
+   call test_pr76
+   call test_pr78
+   call test_RKPR
+   print *, ""
 contains
-
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("SRK", test_srk), &
-         new_unittest("PR76", test_pr76), &
-         new_unittest("PR78", test_pr78), &
-         new_unittest("RKPR", test_RKPR) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_srk(error)
+   subroutine test_srk
       use yaeos__constants, only: pr
       use fixtures_models, only: binary_SRK
       use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
@@ -56,23 +49,22 @@ contains
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
 
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
    end subroutine test_srk
 
-   subroutine test_pr76(error)
+   subroutine test_pr76
       use yaeos__constants, only: pr
       use fixtures_models, only: binary_PR76
       use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
@@ -103,24 +95,22 @@ contains
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
    end subroutine test_pr76
 
-   subroutine test_pr78(error)
+   subroutine test_pr78
       use yaeos__constants, only: pr
       use fixtures_models, only: binary_PR78
       use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
@@ -152,23 +142,22 @@ contains
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
 
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
    end subroutine test_pr78
 
-   subroutine test_RKPR(error)
+   subroutine test_RKPR
       use yaeos__constants, only: pr
       use fixtures_models, only: binary_RKPR
       use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
@@ -182,7 +171,7 @@ contains
       Ar_val         =   -9.5995556136857765
       ArV_val        =   8.7952184911116689
       ArT_val        =   2.1732218215585023E-002
-      ArT2_val       =  -4.7480350864298389E-005
+      ArT2_val       =  -4.7472272035403612E-005
       ArV2_val       =  -16.171996177263189
       ArTV_val       =  -2.0750113033467819E-002
       Arn_val        =  [-15.106022804526534,       -19.804239027780842]
@@ -200,15 +189,15 @@ contains
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
 
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
    end subroutine test_RKPR
-end module test_cubic_implementations
+end program test_cubic_implementations

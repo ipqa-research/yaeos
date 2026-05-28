@@ -171,15 +171,30 @@ contains
       call d1mix_rkpr(n, d1i, D1, dD1i, dD1ij)
    end subroutine D1MixHV
 
-   subroutine DmixHV(self, n, T, &
+   subroutine DmixHV(self, n, V, T, &
       ai, daidt, daidt2, &
-      D, dDdT, dDdT2, dDi, dDidT, dDij &
+      D, &
+      dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
       use yaeos__models_ar_cubic_mixing_base, only: lamdba_hv, mix => DMixHV
       class(HV), intent(in) :: self
-      real(pr), intent(in) :: T, n(:)
-      real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-      real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+      real(pr), intent(in) :: V !! Volume [L] (unused)
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Moles vector [mol]
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
+      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
+      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
+      real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
+      real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
+      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
+      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
 
       real(pr) :: b, bi(size(n)), dbi(size(n)), dbij(size(n), size(n))
       real(pr) :: del1(size(n)), del2(size(n))
@@ -286,16 +301,31 @@ contains
       call d1mix_rkpr(n, d1i, D1, dD1i, dD1ij)
    end subroutine D1MixHVNRTL
 
-   subroutine DmixHVNRTL(self, n, T, &
+   subroutine DmixHVNRTL(self, n, V, T, &
       ai, daidt, daidt2, &
-      D, dDdT, dDdT2, dDi, dDidT, dDij &
+      D, &
+      dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
       use yaeos__models_ar_cubic_mixing_base, only: lamdba_hv, DmixHV
       use yaeos__models_ge_nrtlhv, only: NRTLHV
       class(HV_NRTL), intent(in) :: self
-      real(pr), intent(in) :: T, n(:)
-      real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-      real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+      real(pr), intent(in) :: V !! Volume [L] (unused)
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Moles vector [mol]
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
+      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
+      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
+      real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
+      real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
+      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
+      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
 
       real(pr) :: Ge, GeT, GeT2
       real(pr) :: Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
@@ -405,9 +435,10 @@ contains
       ! call bmix_linear(n, bi, b, dbi, dbij)
    end subroutine BmixMHV
 
-   subroutine DmixMHV(self, n, T, &
+   subroutine DmixMHV(self, n, V, T, &
       ai, daidt, daidt2, &
-      D, dDdT, dDdT2, dDi, dDidT, dDij &
+      D, &
+      dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
       !! # Michelsen Modified Huron-Vidal mixing rule.
       !! Mixing rule at infinite pressure as defined in the book of Michelsen and
@@ -432,9 +463,23 @@ contains
       !! # References
       !!
       class(MHV), intent(in) :: self
-      real(pr), intent(in) :: T, n(:)
-      real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-      real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+      real(pr), intent(in) :: V !! Volume [L] (unused)
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Moles vector [mol]
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
+      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
+      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
+      real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
+      real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
+      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
+      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
       real(pr) :: f, fdt, fdt2, fdi(size(n)), fdit(size(n)), fdij(size(n), size(n))
 
       real(pr) :: b, bi(size(n)), dbi(size(n)), dbij(size(n), size(n))

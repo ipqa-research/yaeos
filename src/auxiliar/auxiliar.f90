@@ -3,7 +3,7 @@ module yaeos__auxiliar
    implicit none
 
    interface optval
-      module procedure optval_integer, optval_real, optval_character
+      module procedure optval_integer, optval_real, optval_character, optval_logical
    end interface optval
 
 contains
@@ -19,6 +19,18 @@ contains
          optval_integer = default
       end if
    end function optval_integer
+   
+   logical function optval_logical(val, default)
+      !! Set a value to a default if it is not defined
+      logical, optional, intent(in) :: val
+      logical, intent(in) :: default
+
+      if (present(val)) then
+         optval_logical = val
+      else
+         optval_logical = default
+      end if
+   end function optval_logical
 
    real(pr) function optval_real(val, default)
       !! Set a value to a default if it is not defined

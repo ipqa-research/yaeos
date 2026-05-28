@@ -85,6 +85,8 @@ class QMR(CubicMixRule):
         model = SoaveRedlichKwong(tc, pc, w, mixrule)
     """
 
+    name = "QMR"
+
     def __init__(self, kij, lij) -> None:
         self.kij = np.array(kij, order="F")
         self.lij = np.array(lij, order="F")
@@ -136,7 +138,6 @@ class QMR(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             "type(QMR) :: mixrule"
             "\n"
@@ -154,24 +155,24 @@ class QMRTD(CubicMixRule):
 
     Parameters
     ----------
-    kij_0 : array_like
+    kij_0 : matrix_like
         kij_0 binary interaction parameters matrix
-    kij_inf : array_like
+    kij_inf : matrix_like
         kij_inf binary interaction parameters matrix
-    t_ref: array_like
+    t_ref: matrix_like
         Reference temperature
-    lij : array_like
+    lij : matrix_like
         lij binary interaction parameters matrix
 
     Attributes
     ----------
-    kij_0 : array_like
+    kij_0 : matrix_like
         kij_0 binary interaction parameters matrix
-    kij_inf : array_like
+    kij_inf : matrix_like
         kij_inf binary interaction parameters matrix
-    t_ref: array_like
+    t_ref: matrix_like
         Reference temperature
-    lij : array_like
+    lij : matrix_like
         lij binary interaction parameters matrix
 
     Example
@@ -194,6 +195,8 @@ class QMRTD(CubicMixRule):
 
         model = SoaveRedlichKwong(tc, pc, w, mixrule)
     """
+
+    name = "QMRTD"
 
     def __init__(self, kij_0, kij_inf, t_ref, lij) -> None:
         self.kij_0 = np.array(kij_0, order="F")
@@ -259,7 +262,6 @@ class QMRTD(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
             "type(QMRTD) :: mixrule"
             "\n"
@@ -314,14 +316,16 @@ class MHV(CubicMixRule):
         model_mhv = PengRobinson76(tc, pc, w, mixrule)
     """
 
+    name = "MHV"
+
     def __init__(self, ge: GeModel, q: float, lij=None) -> None:
         nc = ge.size()
         self.ge = ge
         self.q = q
         if lij is None:
             self.lij = np.zeros((nc, nc), order="F")
-
-        self._have_lij = True if lij is not None else False
+        else:
+            self.lij = lij
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set modified Huron-Vidal mix rule method.
@@ -348,27 +352,20 @@ class MHV(CubicMixRule):
 
         lij_c = ""
 
-        if self._have_lij:
-            for i in range(self.ge.size()):
-                lij_c += f"lij({i + 1}, :) = ["
+        for i in range(self.ge.size()):
+            lij_c += f"lij({i + 1}, :) = ["
 
-                for j in range(self.ge.size()):
-                    if j < self.ge.size() - 1:
-                        lij_c += f"{self.lij[i][j]}_pr, "
-                    else:
-                        lij_c += f"{self.lij[i][j]}_pr]\n"
+            for j in range(self.ge.size()):
+                if j < self.ge.size() - 1:
+                    lij_c += f"{self.lij[i][j]}_pr, "
+                else:
+                    lij_c += f"{self.lij[i][j]}_pr]\n"
 
-            fcode += lij_c + "\n"
+        fcode += lij_c + "\n"
 
-        if self._have_lij:
-            # TODO: include lij in MHV
-            fcode += (
-                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b)\n\n"
-            )
-        else:
-            fcode += (
-                f"mixrule = MHV(ge=ge_model, q={self.q}_pr, bi=ar_model%b)\n\n"
-            )
+        fcode += (
+            f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b, lij=lij)\n\n"
+        )
 
         return fcode
 
@@ -395,9 +392,7 @@ class MHV(CubicMixRule):
         # Mixrule setup
         fcode += "type(MHV) :: mixrule" "\n"
 
-        # TODO: include lij in MHV
-        if self._have_lij:
-            fcode += "real(pr) :: lij(nc, nc)\n\n"
+        fcode += "real(pr) :: lij(nc, nc)\n\n"
 
         return fcode
 
@@ -435,6 +430,8 @@ class HV(CubicMixRule):
         model_hv = PengRobinson76(tc, pc, w, mixrule)
     """
 
+    name = "HV"
+
     def __init__(self, ge: GeModel) -> None:
         self.ge = ge
 
@@ -459,10 +456,9 @@ class HV(CubicMixRule):
 
         fcode += self.ge._model_params_as_str()
 
-        fcode += (
-            "mixrule = HV(ge=ge_model, "
-            "bi=ar_model%b, del1=ar_model%del1)\n\n"
-        )
+        fcode += "mixrule%ge = ge_model \n"
+        fcode += "mixrule%bi = ar_model%b \n"
+        fcode += "mixrule%del1 = ar_model%del1 \n"
 
         return fcode
 
@@ -504,6 +500,8 @@ class HVNRTL(CubicMixRule):
         NRTL alpha parameters matrix
     gji : matrix_like
         NRTL gij parameters matrix
+    gjiT: matrix_like
+        NRTL gij temperature coefficient parameters matrix
     use_kij : matrix_like
         Boolean matrix indicating whether to use kij parameters
     kij : matrix_like
@@ -522,6 +520,8 @@ class HVNRTL(CubicMixRule):
     kij : matrix_like
         kij binary interaction parameters matrix
     """
+
+    name = "HVNRTL"
 
     def __init__(self, alpha, gji, gjiT=None, use_kij=None, kij=None) -> None:
         nc = np.shape(gji)[0]
@@ -564,39 +564,42 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters. This string should be valid
         Fortran code that assigns the model variables.
         """
+        nc = len(self.gji)
         fcode = ""
-
         gji0_c = ""
-        gjiT_c = ""
+        gjit_c = ""
         use_kij_c = ""
         kij_c = ""
+        alpha_c = ""
 
-        for i in range(len(self.gji0)):
+        for i in range(nc):
             gji0_c += f"gji0({i + 1}, :) = ["
-            gjiT_c += f"gjiT({i + 1}, :) = ["
+            gjit_c += f"gjiT({i + 1}, :) = ["
             use_kij_c += f"use_kij({i + 1}, :) = ["
             kij_c += f"kij({i + 1}, :) = ["
+            alpha_c += f"alphaij({i + 1}, :) = ["
 
-            for j in range(len(self.kij)):
-                if j < len(self.kij) - 1:
-                    kij_c += f"{self.kij[i][j]}_pr, "
-                    gji0_c += f"{self.gji0[i][j]}_pr, "
-                    gjiT_c += f"{self.gjiT[i][j]}_pr, "
-                    use_kij_c += f"{self.use_kij[i][j]}_pr, "
-                else:
-                    kij_c += f"{self.kij[i][j]}_pr]\n"
-                    gji0_c += f"{self.gji0[i][j]}_pr]\n"
-                    gjiT_c += f"{self.gjiT[i][j]}_pr]\n"
-                    use_kij_c += f"{self.use_kij[i][j]}_pr]\n"
+            for j in range(nc):
+                sep = ", " if j < nc - 1 else "]\n"
+                gji0_c += f"{self.gji[i][j]}_pr{sep}"
+                gjit_c += f"{self.gjiT[i][j]}_pr{sep}"
+                kij_c += f"{self.kij[i][j]}_pr{sep}"
+                alpha_c += f"{self.alpha[i][j]}_pr{sep}"
+                use_kij_c += (
+                    ".true." if self.use_kij[i][j] else ".false."
+                ) + sep
 
+        fcode += alpha_c + "\n"
         fcode += kij_c + "\n"
         fcode += gji0_c + "\n"
-        fcode += gjiT_c + "\n"
+        fcode += gjit_c + "\n"
         fcode += use_kij_c + "\n"
 
         fcode += (
-            r"mixrule = HVNRTL(gji0=gji0, gjit=gjiT, b=ar_model%b, "
-            r"use_kij=use_kij, kij=kij)\n\n"
+            "mixrule = init_hvnrtl("
+            "b=ar_model%b, del1=ar_model%del1, "
+            "alpha=alphaij, gji0=gji0, gjiT=gjiT, "
+            "use_kij=use_kij, kij=kij)\n\n"
         )
         return fcode
 
@@ -607,13 +610,239 @@ class HVNRTL(CubicMixRule):
         representation of the model parameters declaration. This string should
         be valid Fortran code that declares the model variables.
         """
-
         fcode = (
-            f"integer, parameter :: nc={self.size()}\n"
-            "\n"
             "type(HV_NRTL) :: mixrule\n"
             "\n"
-            "real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc)\n"
+            "real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc), alphaij(nc,nc)"
+            "\n"
             "logical :: use_kij(nc,nc)\n\n"
         )
+        return fcode
+
+
+    @classmethod
+    def setup_from_kij(cls, model, temperatures, kij):
+        r"""
+        Generalizes the calculation of gji parameters and returns linear 
+        correlation matrices gji0 and gjiT for any number of components.
+
+        .. warning::
+           Internally this function depends on the :math:`\delta_1` of the
+           model. For the case of the RKPR EoS where there are different
+           :math:`\delta_1` parameters for each component the method will
+           only use a mean value. Which will make the predictions further
+           away of the predictions being made with :math:`k_{ij}` compared
+           to using classic Cubic EoS. This method is intended only as a way
+           to ease the initialization of parameters on optimization methods. 
+
+        Parameters
+        ----------
+        model: yaeos.CubicEoS
+            Thermodynamic model intended to be used as reference model.
+        temperatures: array_like
+            Array of temperature values on which make the correlation
+        kij: float
+            kij value to replicate.
+
+        Returns
+        -------
+            yaeos.HVNRTL: Instance of a HVNRTL mixing rule with parameters
+            set to be close the parameters that would replicate the classic
+            QMR mixing rule.
+        """
+        from yaeos.lib import yaeos_c
+        def lambd(d1=1+np.sqrt(2)):
+            f = d1 + 1
+            g = (d1 + 1)*d1 + d1 - 1
+            h = np.log((d1+1)**2 / 2)
+            L = f/g * h
+            return L
+        
+        # 1. Setup basic parameters
+        nc = model.size()
+        ac, b, del1, del2, k = yaeos_c.get_ac_b_del1_del2_k(model.id, nc)
+        nt = len(temperatures)
+        ais = model.get_attractive_parameter(temperatures)["a"]  # Shape: (nt, nc)
+        bis = model.get_repulsive_parameter()          # Shape: (nc,)
+        lambd = lambd(np.mean(del1))
+        
+        # Storage for all gji matrices across all temperatures
+        # Shape: (Temperature, Component_j, Component_i)
+        gjiss = np.zeros((nt, nc, nc))
+        
+        # 2. Calculate gji at each Temperature
+        for t_idx, T in enumerate(temperatures):
+            ais_i = ais[t_idx]
+            
+            # Calculate gii (pure component interaction) for this T
+            # gii = - (a_i / b_i) * lambda
+            gii = - (ais_i / bis) * lambd
+            
+            gji_temp = np.zeros((nc, nc))
+            for i in range(nc):
+                for j in range(nc):
+                    # Cross-interaction term logic
+                    term1 = -2 * np.sqrt(bis[i] * bis[j]) / (bis[i] + bis[j])
+                    term2 = np.sqrt(gii[i] * gii[j]) * (1 - kij)
+                    
+                    # gji = (Interaction Term) - gii[i]
+                    gji_temp[j, i] = (term1 * term2) - gii[i]
+            
+            gjiss[t_idx] = gji_temp
+
+        # 3. Linear Correlation: gji = gji0 + gjiT * T
+        gji0 = np.zeros((nc, nc))
+        gjiT = np.zeros((nc, nc))
+        
+        for i in range(nc):
+            for j in range(nc):
+                if i != j:
+                    # Extract the vector of values for parameter g[j,i] over time
+                    y = gjiss[:, j, i]
+                    
+                    # Polyfit returns [slope, intercept]
+                    slope, intercept = np.polyfit(temperatures, y, deg=1)
+                    
+                    gjiT[j, i] = slope
+                    gji0[j, i] = intercept
+
+        return cls(alpha=np.zeros((nc,nc)), gji=gji0, gjiT=gjiT)
+
+
+class sDDLC(CubicMixRule):
+    r"""segmented Density Dependent Local Composition mixing rule.
+
+    ..math::
+        k_{ij}(T) = k_{ij}^{\infty} + k_{ij}^0 \exp{\left(-T/T^{ref}\right)}
+
+    Parameters
+    ----------
+    q : array_like
+        Segment size for each component
+    kij_0 : matrix_like
+        kij_0 binary interaction parameters matrix
+    kij_inf : matrix_like
+        kij_inf binary interaction parameters matrix
+    t_ref: matrix_like
+        Reference temperature
+    lij : matrix_like
+        lij binary interaction parameters matrix
+
+    Attributes
+    ----------
+    q : array_like
+        Segment size for each component
+    kij_0 : matrix_like
+        kij_0 binary interaction parameters matrix
+    kij_inf : matrix_like
+        kij_inf binary interaction parameters matrix
+    t_ref: matrix_like
+        Reference temperature
+    lij : matrix_like
+        lij binary interaction parameters matrix
+
+    Example
+    -------
+    .. code-block:: python
+
+        from yaeos import sDDLC, SoaveRedlichKwong
+
+        qs = [1.16, 6.0]
+        kij_0 = [[0.0, 0.1], [0.1, 0.0]]
+        kij_inf = [[0.0, 0.1], [0.1, 0.0]]
+        Tref = [[0.0, 390], [390, 0.0]]
+        lij = [[0.0, 0.02], [0.02, 0.0]]
+
+        # sDDLC
+        mixrule = sDDLC(qs, kij_0, kij_inf, Tref, lij)
+
+        tc = [305.32, 469.7]        # critical temperature [K]
+        pc = [48.72, 33.7]          # critical pressure [bar]
+        w = [0.0995, 0.152]         # acentric factor
+
+        model = SoaveRedlichKwong(tc, pc, w, mixrule)
+    """
+
+    name = "sDDLC"
+
+    def __init__(self, qs, kij_0, kij_inf, t_ref, lij) -> None:
+        self.qs = np.array(qs, order="F")
+        self.kij_0 = np.array(kij_0, order="F")
+        self.kij_inf = np.array(kij_inf, order="F")
+        self.t_ref = np.array(t_ref, order="F")
+        self.lij = np.array(lij, order="F")
+
+    def set_mixrule(self, ar_model_id: int) -> None:
+        """Set mix rule method."""
+        yaeos_c.set_sddlc(
+            ar_model_id,
+            qs=self.qs,
+            kij_0=self.kij_0,
+            kij_inf=self.kij_inf,
+            t_star=self.t_ref,
+            lij=self.lij,
+        )
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters. This string should be valid
+        Fortran code that assigns the model variables.
+        """
+        fcode = ""
+
+        kij0_c = ""
+        kijinf_c = ""
+        lij_c = ""
+        t_ref_c = ""
+
+        qs_c = "qs = ["
+        for q in self.qs:
+            qs_c += f"{q:.5f}_pr,"
+        qs_c += "]"
+
+        for i in range(len(self.kij_0)):
+            kij0_c += f"kij_0({i + 1}, :) = ["
+            kijinf_c += f"kij_inf({i + 1}, :) = ["
+            lij_c += f"lij({i + 1}, :) = ["
+            t_ref_c += f"t_ref({i + 1}, :) = ["
+
+            for j in range(len(self.kij_0)):
+                if j < len(self.kij_0) - 1:
+                    kij0_c += f"{self.kij_0[i][j]}_pr, "
+                    kijinf_c += f"{self.kij_inf[i][j]}_pr, "
+                    lij_c += f"{self.lij[i][j]}_pr, "
+                    t_ref_c += f"{self.t_ref[i][j]}_pr, "
+                else:
+                    kij0_c += f"{self.kij_0[i][j]}_pr]\n"
+                    kijinf_c += f"{self.kij_inf[i][j]}_pr]\n"
+                    lij_c += f"{self.lij[i][j]}_pr]\n"
+                    t_ref_c += f"{self.t_ref[i][j]}_pr]\n"
+        fcode += qs_c + "\n"
+        fcode += kij0_c + "\n"
+        fcode += kijinf_c + "\n"
+        fcode += lij_c + "\n"
+        fcode += t_ref_c + "\n"
+
+        fcode += """
+        mixrule = sDDLC(q=qs, k=kij_inf, k0=kij_0, l=lij, tref=t_ref)
+        """
+
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as a string.
+
+        This method should be implemented by subclasses to return a string
+        representation of the model parameters declaration. This string should
+        be valid Fortran code that declares the model variables.
+        """
+        fcode = (
+            "type(sDDLC) :: mixrule"
+            "\n"
+            "real(pr) :: kij_inf(nc, nc), kij_0(nc, nc), lij(nc, nc)\n"
+            "real(pr) :: t_ref(nc, nc), qs(nc)\n\n"
+        )
+
         return fcode

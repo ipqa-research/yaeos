@@ -10,6 +10,7 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test UNIQUAC individual ge calls", test_uniquac_individual_ge_calls), &
          new_unittest("Test UNIQUAC consistency mixture", test_uniquac_cons_mix), &
          new_unittest("Test UNIQUAC consistency pure", test_uniquac_cons_pure), &
          new_unittest("Test UNIQUAC against Caleb Bell's Thermo lib", test_against_caleb_thermo), &
@@ -18,6 +19,55 @@ contains
          new_unittest("Test UNIQUAC Temperature dependence", test_temperature_dependence) &
          ]
    end subroutine collect_suite
+
+   subroutine test_uniquac_individual_ge_calls(error)
+      use yaeos, only: pr, R
+      use yaeos, only: setup_uniquac, UNIQUAC
+      use yaeos__consistency_gemodel, only: individual_ge_calls
+
+      type(UNIQUAC) :: model
+
+      type(error_type), allocatable, intent(out) :: error
+
+      integer, parameter :: nc=3
+      logical :: passed
+
+      real(pr) :: n(nc), T, rs(nc), qs(nc)
+      real(pr) :: A(nc,nc), B(nc,nc), C(nc,nc), D(nc,nc), E(nc,nc)
+
+      T = 350.15_pr
+      n = [5.0_pr, 8.0_pr, 10.0_pr]
+
+      A(1,:) = [0.0_pr, -75.46_pr, -60.15_pr]
+      A(2,:) = [120.20_pr, 0.0_pr, 44.22_pr]
+      A(3,:) = [120.20_pr, 33.21_pr, 0.0_pr]
+
+      B(1,:) = [0.0_pr, -0.10062_pr, 0.2566_pr]
+      B(2,:) = [0.44835_pr, 0.0_pr, -0.01325_pr]
+      B(3,:) = [0.44835_pr, 0.124_pr, 0.0_pr]
+
+      C(1,:) = [0.0_pr, -0.0008052_pr, 0.00021_pr]
+      C(2,:) = [0.0004704_pr, 0.0_pr, -0.00033_pr]
+      C(3,:) = [0.0004704_pr, -0.000247_pr, 0.0_pr]
+
+      D(1,:) = [0.0_pr, -0.001_pr, 0.0002_pr]
+      D(2,:) = [-0.001_pr, 0.0_pr, 0.0002_pr]
+      D(3,:) = [-0.001_pr, 0.0002_pr, 0.0_pr]
+
+      E(1,:) = [0.0_pr, -0.00001_pr, 0.00001_pr]
+      E(2,:) = [-0.00001_pr, 0.0_pr, 0.00001_pr]
+      E(3,:) = [-0.00001_pr, 0.00001_pr, 0.0_pr]
+
+      rs = [0.92_pr, 2.1055_pr, 1.5_pr]
+      qs = [1.4_pr, 1.972_pr, 1.4_pr]
+
+      model = setup_uniquac(qs, rs, A, B, C, D, E)
+
+      call individual_ge_calls(model, n, T, passed)
+
+      call check(error, passed)
+   end subroutine test_uniquac_individual_ge_calls
+
 
    subroutine test_uniquac_cons_mix(error)
       use yaeos, only: pr, R

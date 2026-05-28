@@ -638,6 +638,9 @@ class ArModel(ABC):
         """
         pass
 
+    # =========================================================================
+    # Thermoprops: Residual properties at VT
+    # -------------------------------------------------------------------------
     def lnphi_vt(
         self,
         moles,
@@ -714,105 +717,6 @@ class ArModel(ABC):
             moles,
             volume,
             temperature,
-            dlnphidt=dt,
-            dlnphidp=dp,
-            dlnphidn=dn,
-        )
-
-        if dt is None and dp is None and dn is None:
-            ...
-        else:
-            res = (
-                res,
-                {
-                    "dt": dt,
-                    "dp": dp,
-                    "dn": dn,
-                },
-            )
-        return res
-
-    def lnphi_pt(
-        self,
-        moles,
-        pressure: float,
-        temperature: float,
-        root: str = "stable",
-        dt: bool = False,
-        dp: bool = False,
-        dn: bool = False,
-    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
-        r"""Calculate fugacity coefficent given pressure and temperature.
-
-        Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
-        temperature, pressure and moles number.
-
-        Parameters
-        ----------
-        moles : array_like
-            Moles number vector [mol]
-        pressure : float
-            Pressure [bar]
-        temperature : float
-            Temperature [K]
-        root : str, optional
-            Volume root, use: "liquid", "vapor" or "stable", by default
-            "stable"
-        dt : bool, optional
-            Calculate temperature derivative, by default False
-        dp : bool, optional
-            Calculate pressure derivative, by default False
-        dn : bool, optional
-            Calculate moles derivative, by default False
-
-        Returns
-        -------
-        Union[np.ndarray, tuple[np.ndarray, dict]]
-            :math:`ln \phi_i(n,P,T)` vector or tuple with
-            :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any
-            derivative is asked
-
-        Example
-        -------
-        .. code-block:: python
-
-            import numpy as np
-
-            from yaeos import PengRobinson76
-
-
-            tc = np.array([320.0, 375.0])   # critical temperatures [K]
-            pc = np.array([45.0, 60.0])     # critical pressures [bar]
-            w = np.array([0.0123, 0.045])   # acentric factors
-
-            model = PengRobinson76(tc, pc, w)
-
-            # Evaluating ln_phi only
-            # will print: [-0.10288733 -0.11909807]
-
-            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))
-
-            # Asking for derivatives
-            # will print:
-            # (
-            # array([-0.10288733, -0.11909807]),
-            # {'dt': array([0.00094892, 0.00108809]), 'dp': None, 'dn': None}
-            # )
-
-            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)
-        """
-        nc = len(moles)
-
-        dt = np.empty(nc, order="F") if dt else None
-        dp = np.empty(nc, order="F") if dp else None
-        dn = np.empty((nc, nc), order="F") if dn else None
-
-        res = yaeos_c.lnphi_pt(
-            self.id,
-            moles,
-            pressure,
-            temperature,
-            root,
             dlnphidt=dt,
             dlnphidp=dp,
             dlnphidn=dn,
@@ -1076,7 +980,7 @@ class ArModel(ABC):
         dv: bool = False,
         dn: bool = False,
     ) -> Union[float, tuple[float, dict]]:
-        """Calculate residual internal energy at volume and temperature [bar L]
+        """Calculate residual internal energy at V and T [bar L].
 
         Parameters
         ----------
@@ -1435,6 +1339,1198 @@ class ArModel(ABC):
         """
         return yaeos_c.cp_residual_vt(self.id, moles, volume, temperature)
 
+    # =========================================================================
+    # Thermoprops: Residual properties at PT
+    # -------------------------------------------------------------------------
+    def lnphi_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        r"""Calculate fugacity coefficent given pressure and temperature.
+
+        Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
+        temperature, pressure and moles number.
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            :math:`ln \phi_i(n,P,T)` vector or tuple with
+            :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any
+            derivative is asked
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating ln_phi only
+            # will print: [-0.10288733 -0.11909807]
+
+            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))
+
+            # Asking for derivatives
+            # will print:
+            # (
+            # array([-0.10288733, -0.11909807]),
+            # {'dt': array([0.00094892, 0.00108809]), 'dp': None, 'dn': None}
+            # )
+
+            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)
+        """
+        nc = len(moles)
+
+        dt = np.empty(nc, order="F") if dt else None
+        dp = np.empty(nc, order="F") if dp else None
+        dn = np.empty((nc, nc), order="F") if dn else None
+
+        res = yaeos_c.lnphi_pt(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            dlnphidt=dt,
+            dlnphidp=dp,
+            dlnphidn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt,
+                    "dp": dp,
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def helmholtz_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual helmoltz free energy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual helmoltz free energy or tuple with Residual helmoltz free
+            energy and derivatives dictionary if any derivative is asked
+            [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.helmholtz_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+
+            # Asking for derivatives
+            print(
+                model.helmholtz_residual_pt(
+                    np.array([5.0, 5.6]),
+                    1.0,
+                    300.0,
+                    root="stable",
+                    dp=True,
+                    dt=True,
+                    dn=True,
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.helmholtz_residual_pt(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            art=dt,
+            arp=dp,
+            arn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dp": dp if dp is None else float(dp),
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def enthalpy_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual enthalpy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual enthalpy or tuple with Residual enthalpy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.enthalpy_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+
+            # Asking for derivatives
+
+            print(
+                model.enthalpy_residual_pt(
+                    np.array([5.0, 5.6]),
+                    1.0,
+                    300.0,
+                    root="stable",
+                    dp=True,
+                    dt=True,
+                    dn=True,
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.enthalpy_residual_pt(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            hrt=dt,
+            hrp=dp,
+            hrn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dp": dp if dp is None else float(dp),
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def gibbs_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual Gibbs energy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual Gibbs energy or tuple with Residual Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.gibbs_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+
+            # Asking for derivatives
+            print(
+                model.gibbs_residual_pt(
+                    np.array([5.0, 5.6]),
+                    1.0,
+                    300.0,
+                    root="stable",
+                    dp=True,
+                    dt=True,
+                    dn=True,
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.gibbs_residual_pt(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            grt=dt,
+            grp=dp,
+            grn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dp": dp if dp is None else float(dp),
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def entropy_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual entropy given P and T [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual entropy or tuple with Residual entropy and derivatives
+            dictionary if any derivative is asked [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.entropy_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+
+            # Asking for derivatives
+            print(
+                model.entropy_residual_pt(
+                    np.array([5.0, 5.6]),
+                    1.0,
+                    300.0,
+                    root="stable",
+                    dp=True,
+                    dt=True,
+                    dn=True,
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.entropy_residual_pt(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            srt=dt,
+            srp=dp,
+            srn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dp": dp if dp is None else float(dp),
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def internal_energy_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate residual internal energy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Residual internal energy or tuple with Residual internal energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.internal_energy_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+
+            # Asking for derivatives
+            print(
+                model.internal_energy_residual_pt(
+                    np.array([5.0, 5.6]),
+                    1.0,
+                    300.0,
+                    root="stable",
+                    dp=True,
+                    dt=True,
+                    dn=True,
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.internal_energy_residual_pt(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            urt=dt,
+            urp=dp,
+            urn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dp": dp if dp is None else float(dp),
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def cv_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> float:
+        """Calculate residual isochoric heat capacity at P and T [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        float
+            Residual isochoric heat capacity [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.cv_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        return yaeos_c.cv_residual_pt(
+            self.id, moles, pressure, temperature, root
+        )
+
+    def cp_residual_pt(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> float:
+        """Calculate residual isobaric heat capacity given P and T [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        float
+            Residual isobaric heat capacity [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.cp_residual_pt(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        return yaeos_c.cp_residual_pt(
+            self.id, moles, pressure, temperature, root
+        )
+
+    # =========================================================================
+    # Thermoprops: Excess properties
+    # -------------------------------------------------------------------------
+    def ln_gamma(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
+        r"""Calculate activity coefficients given temperature and pressure.
+
+        Calculate :math:`ln \gamma_i(n,P,T)` and its derivatives..
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        temperature : float
+            Temperature [K]
+        pressure : float
+            Pressure [bar]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            :math:`ln \gamma_i(n,T)` vector or tuple with
+            :math:`ln \gamma_i(n,T)` vector and derivatives dictionary if any
+            derivative is asked
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            # Evaluating ln_gamma only
+            print(model.ln_gamma([5.0, 5.6], 1.0, 300.0, root="stable"))
+
+            # Asking for derivatives
+            print(
+                model.ln_gamma(
+                    [5.0, 5.6], 1.0, 300.0, root="stable", dt=True, dn=True
+                )
+            )
+        """
+        nc = len(moles)
+
+        dp = np.empty(nc, order="F") if dp else None
+        dt = np.empty(nc, order="F") if dt else None
+        dn = np.empty((nc, nc), order="F") if dn else None
+
+        res = yaeos_c.ln_gamma_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            dlngammadt=dt,
+            dlngammadp=dp,
+            dlngammadn=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt,
+                    "dp": dp,
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def gibbs_excess(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+        dt: bool = False,
+        dp: bool = False,
+        dn: bool = False,
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate excess Gibbs energy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dp : bool, optional
+            Calculate pressure derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Excess Gibbs energy or tuple with Excess Gibbs energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.gibbs_excess(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+
+            # Asking for derivatives
+            print(
+                model.gibbs_excess(
+                    np.array([5.0, 5.6]),
+                    1.0,
+                    300.0,
+                    root="stable",
+                    dp=True,
+                    dt=True,
+                    dn=True,
+                )
+            )
+        """
+        nc = len(moles)
+
+        dt = np.array(0, dtype=np.float64) if dt else None
+        dp = np.array(0, dtype=np.float64) if dp else None
+        dn = np.empty(nc, order="F") if dn else None
+
+        res = yaeos_c.gibbs_excess_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+            get=dt,
+            gep=dp,
+            gen=dn,
+        )
+
+        if dt is None and dp is None and dn is None:
+            ...
+        else:
+            res = (
+                res,
+                {
+                    "dt": dt if dt is None else float(dt),
+                    "dp": dp if dp is None else float(dp),
+                    "dn": dn,
+                },
+            )
+        return res
+
+    def enthalpy_excess(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate excess enthalpy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Excess enthalpy or tuple with Excess enthalpy and derivatives
+            dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.enthalpy_excess(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        res = yaeos_c.enthalpy_excess_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+        )
+        return res
+
+    def entropy_excess(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate excess entropy given P and T [bar L / K].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Excess entropy or tuple with Excess entropy and derivatives
+            dictionary if any derivative is asked [bar L / K]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.entropy_excess(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        res = yaeos_c.entropy_excess_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+        )
+        return res
+
+    def volume_excess(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate excess volume given P and T [L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Excess volume or tuple with Excess volume and derivatives
+            dictionary if any derivative is asked [L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =
+            np.array([45.0, 60.0])     # critical pressures [bar] w =
+            np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.volume_excess(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        res = yaeos_c.volume_excess_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+        )
+        return res
+
+    def helmoltz_excess(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate excess Helmholtz free energy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Excess Helmholtz free energy or tuple with Excess Helmholtz free
+            energy and derivatives dictionary if any derivative is asked
+            [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.helmholtz_excess(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        res = yaeos_c.helmholtz_excess_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+        )
+        return res
+
+    def internal_energy_excess(
+        self,
+        moles,
+        pressure: float,
+        temperature: float,
+        root: str = "stable",
+    ) -> Union[float, tuple[float, dict]]:
+        """Calculate excess internal energy given P and T [bar L].
+
+        Parameters
+        ----------
+        moles : array_like
+            Moles number vector [mol]
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        root : str, optional
+            Volume root, use: "liquid", "vapor" or "stable", by default
+            "stable"
+
+        Returns
+        -------
+        Union[float, tuple[float, dict]]
+            Excess internal energy or tuple with Excess internal energy and
+            derivatives dictionary if any derivative is asked [bar L]
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(
+                model.internal_energy_excess(
+                    np.array([5.0, 5.6]), 1.0, 300.0, root="stable"
+                )
+            )
+        """
+        res = yaeos_c.internal_energy_excess_ar(
+            self.id,
+            moles,
+            pressure,
+            temperature,
+            root,
+        )
+        return res
+
+    # =========================================================================
+    # Equilibrium calculations
+    # -------------------------------------------------------------------------
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
     ):
@@ -2446,6 +3542,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
+        allow_negative_betas=False,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -2473,6 +3570,7 @@ class ArModel(ABC):
                 kind_w=kind_w,
                 max_points=max_points,
                 stop_pressure=stop_pressure,
+                allow_negative_betas=allow_negative_betas,
             )
         )
 
@@ -2722,19 +3820,13 @@ class ArModel(ABC):
         locs_2 = []
 
         if len(temperatures) > 5:
-            warn(
-                """More than 5 intersection points found. 
-                Assuming overlaped lines"""
-            )
+            warn("""More than 5 intersection points found.
+                Assuming overlaped lines""")
             return dsps, locs_1, locs_2
 
         for t, p in zip(temperatures, pressures):
-            env1_loc = (
-                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
-            )
-            env2_loc = (
-                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p)) + 1
-            )
+            env1_loc = np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
+            env2_loc = np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
@@ -2904,7 +3996,7 @@ class ArModel(ABC):
         ws_stability,
         max_points=100,
     ):
-        r"""Calculation of a generalized multiphase isoplethic line.
+        r"""Calculate a generalized multiphase isoplethic line.
 
         Calculates a line for a constant composition specification.
         A multiphase line is defined as a line of `np+1` phases, where the
@@ -2982,15 +4074,15 @@ class ArModel(ABC):
         x_l0 = np.asarray(x_l0, order="F")
         ws_stability = np.asarray(ws_stability, order="F")
 
-        kinds_x, kind_w = adjust_root_kind(
+        kinds_x_as_number, kind_w_as_number = adjust_root_kind(
             number_of_phases=x_l0.shape[0], kinds_x=kinds_x, kind_w=kind_w
         )
 
         x_ls, ws, betas, ts, ps, w_more_stable, found_unstability = (
             yaeos_c.generalized_isopleth(
                 id=self.id,
-                kinds_x=kinds_x,
-                kind_w=kind_w,
+                kinds_x=kinds_x_as_number,
+                kind_w=kind_w_as_number,
                 z=z,
                 x_l0=x_l0,
                 w0=w0,
@@ -3016,6 +4108,8 @@ class ArModel(ABC):
             "P": ps[msk],
             "w_more_stable": w_more_stable,
             "found_unstability": found_unstability,
+            "kinds_x": kinds_x,
+            "kind_w": kind_w,
         }
 
     def precipitation_line_from_env(
@@ -3026,7 +4120,7 @@ class ArModel(ABC):
         ds0=1e-5,
         ws_stability=None,
         max_points=100,
-        beta0=1e-15
+        beta0=1e-15,
     ) -> dict:
         """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
@@ -3298,6 +4392,7 @@ class ArModel(ABC):
                 - Vy: phase y molar volumes
                 - T: temperatures [K]
                 - P: pressures [bar]
+
         Returns
         -------
         dict
@@ -3311,7 +4406,6 @@ class ArModel(ABC):
                 - T: temperatures [K]
                 - P: pressures [bar]
         """
-
         x1s, y1s, w1s, vxys, vys, vws, ts, ps = yaeos_c.binary_llv_from_cep(
             self.id,
             cep["x"],

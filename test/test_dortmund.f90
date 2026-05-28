@@ -4,11 +4,51 @@ program main
    use testing_aux, only: assert, test_title
    implicit none
 
+   print *, test_title("Dortmund-UNIFAC")
+
+   call test_unifac_individual_ge_calls()
    call test_dortmund_cons_mix()
    call test_dortmund_cons_pure()
    call test_against_caleb_thermo()
 
 contains
+   subroutine test_unifac_individual_ge_calls()
+      use yaeos, only: pr, R
+      use yaeos, only: Groups, setup_dortmund, UNIFAC
+      use yaeos__consistency_gemodel, only: individual_ge_calls
+
+      type(Groups) :: molecules(4)
+      type(UNIFAC) :: model
+
+      real(pr) :: n(4), T
+      logical :: passed
+
+      n = [400.0_pr, 100.0_pr, 300.0_pr, 200.0_pr]
+      T = 303.15_pr
+
+      ! ! Hexane [CH3, CH2]
+      molecules(1)%groups_ids = [1, 2]
+      molecules(1)%number_of_groups = [2, 4]
+
+      ! ! Ethanol [CH3, CH2, OH]
+      molecules(2)%groups_ids = [1, 2, 14]
+      molecules(2)%number_of_groups = [1, 1, 1]
+
+      ! ! Toluene [ACH, ACCH3]
+      molecules(3)%groups_ids = [9, 11]
+      molecules(3)%number_of_groups = [5, 1]
+
+      ! ! Heptane [CH3, CH2]
+      molecules(4)%groups_ids = [1, 2]
+      molecules(4)%number_of_groups = [2, 5]
+
+      model = setup_dortmund(molecules)
+
+      call individual_ge_calls(model, n, T, passed)
+
+      call assert(passed, "Dortmund Individual Ge Calls")
+   end subroutine test_unifac_individual_ge_calls
+
    subroutine test_dortmund_cons_mix()
       use yaeos, only: pr, R
       use yaeos, only: Groups, setup_dortmund, UNIFAC
@@ -34,8 +74,6 @@ contains
       real(pr) :: eq58, eq59(size(n)), eq60(size(n),size(n)), eq61(size(n))
 
       integer :: i, j
-
-      print *, test_title("Dortmund model mixture consistency test")
 
       T = 303.15
       n = [400.0, 100.0, 300.0, 200.0]
@@ -124,8 +162,6 @@ contains
 
       integer :: i, j
 
-      print *, test_title("Dortmund model pure consistency test")
-
       T = 303.15
       n = [400.0]
 
@@ -173,8 +209,6 @@ contains
       real(pr) :: ln_gammas(nc)
 
       real(pr) :: n(nc), T, n_t
-
-      print *, test_title("Dortmund test against Caleb Bell's thermo")
 
       T = 303.15_pr
       n = [2.0_pr, 5.0_pr, 3.0_pr]
@@ -267,6 +301,7 @@ contains
 
       call model%excess_gibbs(n, T, Ge=Ge_i, GeT2=GeT2_i)
       call assert(abs(Ge - Ge_i) <= 1e-10, "pair calls 3")
+      print *, GeT2, GeT2_i, GeT2 - GeT2_i
       call assert(abs(GeT2 - GeT2_i) <= 1e-10, "pair calls 4")
 
       call model%excess_gibbs(n, T, Ge=Ge_i, Gen=Gen_i)

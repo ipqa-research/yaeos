@@ -113,6 +113,42 @@ class CubicEoS(ArModel):
 
         return fcode
 
+    def get_attractive_parameter(self, temperatures: np.ndarray):
+        """Calculate the attractive parameter of the CubicEoS.
+
+        Parameters
+        ----------
+        temperatures : array_like
+            Range of temperatuers for which calculate the attractive parameter.
+
+        Returns 
+        -------
+        dict : Dictionary with the values of a for each component and its 
+               derivatives with temperature.
+        """
+        a, dadt, dadt2 = yaeos_c.get_cubiceos_attractive_parameters(
+            id=self.id, nc=self.size(), t=temperatures
+        )
+
+        return {
+            "a": a,
+            "dt": dadt,
+            "dt2": dadt2
+        }
+    
+    def get_repulsive_parameter(self):
+        """Calculate the repulsive parameters of the CubicEoS.
+
+        Returns 
+        -------
+            array : Repulsive parameter value for each component.
+        """
+        b = yaeos_c.get_cubiceos_repulsive_parameters(
+            id=self.id, nc=self.size()
+        )
+
+        return b
+
 
 class PengRobinson76(CubicEoS):
     """Peng-Robinson 1976 cubic equation of state.
@@ -285,7 +321,7 @@ class SoaveRedlichKwong(CubicEoS):
         srk = SoaveRedlichKwong(tc, pc, w)
     """
 
-    name = "SoaveReldichKwong"
+    name = "SoaveRedlichKwong"
 
     def __init__(
         self,
@@ -358,7 +394,7 @@ class RKPR(CubicEoS):
         rkpr = RKPR(tc, pc, w, zc)
     """
 
-    name = "fRKPR"
+    name = "RKPR"
 
     def __init__(
         self,
@@ -395,6 +431,15 @@ class RKPR(CubicEoS):
                 self.id = yaeos_c.rkpr(
                     self.tc, self.pc, self.w, self.zc, k=k, delta_1=delta_1
                 )
+
+        _, _, d1, d2, k = yaeos_c.get_ac_b_del1_del2_k(
+            id=self.id, nc=len(critical_temperatures)
+        )
+
+        self.delta_1 = d1
+        self.delta_2 = d2
+        self.k = k
+
         self.mixrule = mixrule
         if mixrule:
             mixrule.set_mixrule(self.id)
