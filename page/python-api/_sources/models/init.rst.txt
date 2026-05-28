@@ -10,3 +10,4 @@ Models
 
    residual_helmholtz/init
    excess_gibbs/init
+   groups

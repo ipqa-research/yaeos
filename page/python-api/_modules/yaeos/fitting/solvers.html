@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.fitting.solvers &mdash; yaeos 4.5.0 documentation</title>
+  <title>yaeos.fitting.solvers &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -96,6 +98,8 @@
 <span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
 
 
+<div class="viewcode-block" id="binary_isofugacity_x1y1pt">
+<a class="viewcode-back" href="../../../fitting/solvers.html#yaeos.fitting.solvers.binary_isofugacity_x1y1pt">[docs]</a>
 <span class="k">def</span> <span class="nf">binary_isofugacity_x1y1pt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Isofugacity evaluation at a given P and T.&quot;&quot;&quot;</span>
     <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span>
@@ -108,11 +112,12 @@
 
     <span class="n">isofug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">lnphi_x</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lnphi_y</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">isofug</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">isofug</span><span class="o">**</span><span class="mi">2</span></div>
+
 
 
 <div class="viewcode-block" id="solve_pt">
-<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.solve_pt">[docs]</a>
+<a class="viewcode-back" href="../../../fitting/solvers.html#yaeos.fitting.solvers.solve_pt">[docs]</a>
 <span class="k">def</span> <span class="nf">solve_pt</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -162,6 +167,8 @@
 
 
 
+<div class="viewcode-block" id="find_init_binary_ll">
+<a class="viewcode-back" href="../../../fitting/solvers.html#yaeos.fitting.solvers.find_init_binary_ll">[docs]</a>
 <span class="k">def</span> <span class="nf">find_init_binary_ll</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -219,7 +226,8 @@
     <span class="n">msk</span> <span class="o">=</span> <span class="n">zs</span> <span class="o">&gt;</span> <span class="n">zs</span><span class="p">[</span><span class="n">argmin</span><span class="p">]</span>
     <span class="n">y1</span> <span class="o">=</span> <span class="n">zs</span><span class="p">[</span><span class="n">msk</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fug</span> <span class="o">-</span> <span class="n">fug_1</span><span class="p">[</span><span class="n">msk</span><span class="p">]))]</span>
 
-    <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span>
+    <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span></div>
+
 </pre></div>
 
            </div>

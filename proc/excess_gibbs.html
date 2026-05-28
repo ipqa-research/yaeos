@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">17 statements</a>
+                 title=" 0.6% of total for procedures.">76 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/nrtl.f90"> Source File</a>
+              <a href="../src/tapenade_ge_api.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/nrtl.f90.html'>nrtl.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_nrtl.html'>yaeos__models_ge_NRTL</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/tapenade_ge_api.f90.html'>tapenade_ge_api.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__tapenade_ge_api.html'>yaeos__tapenade_ge_api</a></li>
             <li class="breadcrumb-item active" aria-current="page">excess_gibbs</li>
           </ol>
         </nav>
@@ -135,10 +135,20 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-b~4">b</a>
-            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-dtaudt">dtaudt</a>
-            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-dtaudt2">dtaudt2</a>
-            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-tau">tau</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-geb~3">geb</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-ged~4">ged</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-ged0~2">ged0</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-gedb~2">gedb</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-gedd~2">gedd</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-i~41">i</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-nb~6">nb</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-nc~40">nc</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-nd~11">nd</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-ndb~4">ndb</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-tb~6">tb</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-td~8">td</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-td0~4">td0</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#variable-tdb~4">tdb</a>
         </div>
       </div>
     </div>
@@ -152,8 +162,32 @@
   
   
   
-  
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/excess_gibbs.html#proc-get_gent">get_GenT</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#proc-get_dgedt">get_dGedT</a>
+            <a class="list-group-item" href="../proc/excess_gibbs.html#proc-get_dgedt2">get_dGedT2</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/excess_gibbs.html#proc-reset_vars~2">reset_vars</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -168,162 +202,14 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    <h2>private  subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__models_ge_base.html'>yaeos__models_ge_base</a></li>
-              </ul>
-            </li>
-            <li class="list-group-item">
-              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~excess_gibbs~~UsesGraph Pages: 1 -->
-<svg id="procexcess_gibbsUsesGraph" width="577pt" height="32pt"
- viewBox="0.00 0.00 577.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~excess_gibbs~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>proc~~excess_gibbs~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 573,-28 573,4 -4,4"/>
-<!-- proc~excess_gibbs -->
-<g id="proc~~excess_gibbs~~UsesGraph_node1" class="node">
-<title>proc~excess_gibbs</title>
-<polygon fill="none" stroke="black" points="569,-24 451,-24 451,0 569,0 569,-24"/>
-<text text-anchor="middle" x="510" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">NRTL%excess_gibbs</text>
-</g>
-<!-- module~yaeos__models_ge_base -->
-<g id="proc~~excess_gibbs~~UsesGraph_node2" class="node">
-<title>module~yaeos__models_ge_base</title>
-<g id="a_proc~~excess_gibbs~~UsesGraph_node2"><a xlink:href="../module/yaeos__models_ge_base.html" xlink:title="yaeos__models_ge_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="415,-24 272,-24 272,0 415,0 415,-24"/>
-<text text-anchor="middle" x="343.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_base</text>
-</a>
-</g>
-</g>
-<!-- proc~excess_gibbs&#45;&gt;module~yaeos__models_ge_base -->
-<g id="proc~~excess_gibbs~~UsesGraph_edge1" class="edge">
-<title>proc~excess_gibbs&#45;&gt;module~yaeos__models_ge_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M450.54,-12C442.31,-12 433.73,-12 425.18,-12"/>
-<polygon fill="#000000" stroke="#000000" points="425.17,-8.5 415.17,-12 425.17,-15.5 425.17,-8.5"/>
-</g>
-<!-- module~yaeos__constants -->
-<g id="proc~~excess_gibbs~~UsesGraph_node3" class="node">
-<title>module~yaeos__constants</title>
-<g id="a_proc~~excess_gibbs~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-24 130,-24 130,0 236,0 236,-24"/>
-<text text-anchor="middle" x="183" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos__models_ge_base&#45;&gt;module~yaeos__constants -->
-<g id="proc~~excess_gibbs~~UsesGraph_edge2" class="edge">
-<title>module~yaeos__models_ge_base&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.59,-12C263.25,-12 254.78,-12 246.56,-12"/>
-<polygon fill="#000000" stroke="#000000" points="246.31,-8.5 236.31,-12 246.31,-15.5 246.31,-8.5"/>
-</g>
-<!-- iso_fortran_env -->
-<g id="proc~~excess_gibbs~~UsesGraph_node4" class="node">
-<title>iso_fortran_env</title>
-<g id="a_proc~~excess_gibbs~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-24 0,-24 0,0 94,0 94,-24"/>
-<text text-anchor="middle" x="47" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
-<g id="proc~~excess_gibbs~~UsesGraph_edge3" class="edge">
-<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-12C121.45,-12 112.77,-12 104.32,-12"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-8.5 94.16,-12 104.16,-15.5 104.16,-8.5"/>
-</g>
-</g>
-</svg>
-</div>          <div>
-            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
-          </div>
-          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-<p>Nodes of different colours represent the following: </p>
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
-<!-- Module -->
-<g id="node1" class="node">
-<title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
-</g>
-<!-- Submodule -->
-<g id="node2" class="node">
-<title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
-</g>
-<!-- Subroutine -->
-<g id="node3" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node4" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Program -->
-<g id="node5" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node6" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
+    
 
-<p>Solid arrows point from a submodule to the (sub)module which it is
-descended from. Dashed arrows point from a module or program unit to 
-modules which it uses.
-</p>
- </div>
-            </div>
-          </div>
-        </div>
-            </li>
-        </ul>
-      </div>
-    </div>
-
-
-    <p>Calculate Excess Gibbs and its derivatives.</p>
+    <p>Excess Gibbs model generic interface</p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/nrtl.html'>NRTL</a></p>
+    <p><a href='../type/gemodeltapenade.html'>GeModelTapenade</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -338,8 +224,8 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~3"></span>
-              class(<a href='../type/nrtl.html'>NRTL</a>),
+              <span class="anchor" id="variable-self~2"></span>
+              class(<a href='../type/gemodeltapenade.html'>GeModelTapenade</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -348,12 +234,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                <p>Model</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~6"></span>
+              <span class="anchor" id="variable-n~27"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -363,12 +249,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                <p>Moles vector</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~13"></span>
+              <span class="anchor" id="variable-t~26"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -376,14 +262,14 @@ modules which it uses.
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>t</strong></td>
             <td>
-                <p>Temperature [K]</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge"></span>
+              <span class="anchor" id="variable-ge~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -393,12 +279,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>Ge</strong></td>
             <td>
-                <p>Excess Gibbs free energy</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get"></span>
+              <span class="anchor" id="variable-get~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -408,14 +294,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>GeT</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{dG^E}{dT}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2"></span>
+              <span class="anchor" id="variable-get2~4"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -425,46 +309,42 @@ modules which it uses.
             <td>::</td>
             <td><strong>GeT2</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dT^2}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen"></span>
+              <span class="anchor" id="variable-gen~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              dimension(size(n))
             </td>
             <td>::</td>
-            <td><strong>Gen</strong>(size(n))</td>
-            <td>
-                <p>
-<script type="math/tex">\frac{dG^E}{dn}</script>
-</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-getn"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>GeTn</strong>(size(n))</td>
+            <td><strong>Gen</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2"></span>
+              <span class="anchor" id="variable-getn~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              dimension(size(n))
+            </td>
+            <td>::</td>
+            <td><strong>GeTn</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gen2~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -492,46 +372,160 @@ modules which it uses.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~excess_gibbs~~CallsGraph Pages: 1 -->
-<svg id="procexcess_gibbsCallsGraph" width="276pt" height="74pt"
- viewBox="0.00 0.00 276.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~excess_gibbs~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="procexcess_gibbsCallsGraph" width="414pt" height="277pt"
+ viewBox="0.00 0.00 414.00 277.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~excess_gibbs~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 273)">
 <title>proc~~excess_gibbs~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 272,-70 272,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-273 410,-273 410,4 -4,4"/>
 <!-- proc~excess_gibbs -->
 <g id="proc~~excess_gibbs~~CallsGraph_node1" class="node">
 <title>proc~excess_gibbs</title>
-<polygon fill="none" stroke="black" points="118,-45 0,-45 0,-21 118,-21 118,-45"/>
-<text text-anchor="middle" x="59" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">NRTL%excess_gibbs</text>
+<polygon fill="none" stroke="black" points="190,-147 0,-147 0,-123 190,-123 190,-147"/>
+<text text-anchor="middle" x="95" y="-132.6" font-family="Helvetica,sans-Serif" font-size="10.50">GeModelTapenade%excess_gibbs</text>
 </g>
-<!-- proc~nrtl_hv_ge -->
+<!-- ge -->
 <g id="proc~~excess_gibbs~~CallsGraph_node2" class="node">
-<title>proc~nrtl_hv_ge</title>
-<g id="a_proc~~excess_gibbs~~CallsGraph_node2"><a xlink:href="../proc/nrtl_hv_ge.html" xlink:title="nrtl_hv_ge">
-<polygon fill="#d9534f" stroke="#d9534f" points="244.5,-66 177.5,-66 177.5,-42 244.5,-42 244.5,-66"/>
-<text text-anchor="middle" x="211" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nrtl_hv_ge</text>
-</a>
+<title>ge</title>
+<polygon fill="#777777" stroke="#777777" points="291.5,-269 237.5,-269 237.5,-245 291.5,-245 291.5,-269"/>
+<text text-anchor="middle" x="264.5" y="-254.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge</text>
 </g>
-</g>
-<!-- proc~excess_gibbs&#45;&gt;proc~nrtl_hv_ge -->
+<!-- proc~excess_gibbs&#45;&gt;ge -->
 <g id="proc~~excess_gibbs~~CallsGraph_edge1" class="edge">
-<title>proc~excess_gibbs&#45;&gt;proc~nrtl_hv_ge</title>
-<path fill="none" stroke="#000000" d="M118.42,-41.18C134.73,-43.46 152.14,-45.9 167.35,-48.03"/>
-<polygon fill="#000000" stroke="#000000" points="167.1,-51.53 177.49,-49.45 168.07,-44.6 167.1,-51.53"/>
+<title>proc~excess_gibbs&#45;&gt;ge</title>
+<path fill="none" stroke="#000000" d="M110.28,-147.25C133.67,-167.05 181.93,-206.78 226,-236 227.87,-237.24 229.82,-238.48 231.8,-239.7"/>
+<polygon fill="#000000" stroke="#000000" points="230.18,-242.8 240.57,-244.88 233.74,-236.78 230.18,-242.8"/>
 </g>
-<!-- proc~nrtl_hv_tdep_linear -->
+<!-- ge_b -->
 <g id="proc~~excess_gibbs~~CallsGraph_node3" class="node">
-<title>proc~nrtl_hv_tdep_linear</title>
-<g id="a_proc~~excess_gibbs~~CallsGraph_node3"><a xlink:href="../proc/nrtl_hv_tdep_linear.html" xlink:title="nrtl_hv_tdep_linear">
-<polygon fill="#d9534f" stroke="#d9534f" points="268,-24 154,-24 154,0 268,0 268,-24"/>
-<text text-anchor="middle" x="211" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">nrtl_hv_tdep_linear</text>
+<title>ge_b</title>
+<polygon fill="#777777" stroke="#777777" points="291.5,-227 237.5,-227 237.5,-203 291.5,-203 291.5,-227"/>
+<text text-anchor="middle" x="264.5" y="-212.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge_b</text>
+</g>
+<!-- proc~excess_gibbs&#45;&gt;ge_b -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge2" class="edge">
+<title>proc~excess_gibbs&#45;&gt;ge_b</title>
+<path fill="none" stroke="#000000" d="M121.44,-147.15C150.14,-160.86 196.97,-183.22 228.96,-198.5"/>
+<polygon fill="#000000" stroke="#000000" points="227.84,-201.85 238.37,-203 230.85,-195.53 227.84,-201.85"/>
+</g>
+<!-- ge_d_b -->
+<g id="proc~~excess_gibbs~~CallsGraph_node4" class="node">
+<title>ge_d_b</title>
+<polygon fill="#777777" stroke="#777777" points="399.5,-168 345.5,-168 345.5,-144 399.5,-144 399.5,-168"/>
+<text text-anchor="middle" x="372.5" y="-153.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge_d_b</text>
+</g>
+<!-- proc~excess_gibbs&#45;&gt;ge_d_b -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge3" class="edge">
+<title>proc~excess_gibbs&#45;&gt;ge_d_b</title>
+<path fill="none" stroke="#000000" d="M157.58,-147.02C179.13,-150.67 203.55,-154.2 226,-156 263.11,-158.98 305.73,-158.53 335.2,-157.61"/>
+<polygon fill="#000000" stroke="#000000" points="335.56,-161.1 345.43,-157.25 335.31,-154.1 335.56,-161.1"/>
+</g>
+<!-- none~get_dgedt -->
+<g id="proc~~excess_gibbs~~CallsGraph_node5" class="node">
+<title>none~get_dgedt</title>
+<g id="a_proc~~excess_gibbs~~CallsGraph_node5"><a xlink:href="../proc/excess_gibbs.html#proc-get_dgedt" xlink:title="get_dGedT">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="299.5,-67 229.5,-67 229.5,-43 299.5,-43 299.5,-67"/>
+<text text-anchor="middle" x="264.5" y="-52.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dGedT</text>
 </a>
 </g>
 </g>
-<!-- proc~excess_gibbs&#45;&gt;proc~nrtl_hv_tdep_linear -->
-<g id="proc~~excess_gibbs~~CallsGraph_edge2" class="edge">
-<title>proc~excess_gibbs&#45;&gt;proc~nrtl_hv_tdep_linear</title>
-<path fill="none" stroke="#000000" d="M118.42,-24.82C126.82,-23.65 135.51,-22.43 144.04,-21.23"/>
-<polygon fill="#000000" stroke="#000000" points="144.53,-24.7 153.95,-19.85 143.56,-17.77 144.53,-24.7"/>
+<!-- proc~excess_gibbs&#45;&gt;none~get_dgedt -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge4" class="edge">
+<title>proc~excess_gibbs&#45;&gt;none~get_dgedt</title>
+<path fill="none" stroke="#000000" d="M121.44,-122.85C150.14,-109.14 196.97,-86.78 228.96,-71.5"/>
+<polygon fill="#000000" stroke="#000000" points="230.85,-74.47 238.37,-67 227.84,-68.15 230.85,-74.47"/>
+</g>
+<!-- none~get_dgedt2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_node6" class="node">
+<title>none~get_dgedt2</title>
+<g id="a_proc~~excess_gibbs~~CallsGraph_node6"><a xlink:href="../proc/excess_gibbs.html#proc-get_dgedt2" xlink:title="get_dGedT2">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="303,-25 226,-25 226,-1 303,-1 303,-25"/>
+<text text-anchor="middle" x="264.5" y="-10.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dGedT2</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs&#45;&gt;none~get_dgedt2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge5" class="edge">
+<title>proc~excess_gibbs&#45;&gt;none~get_dgedt2</title>
+<path fill="none" stroke="#000000" d="M110.28,-122.75C133.67,-102.95 181.93,-63.22 226,-34 227.87,-32.76 229.82,-31.52 231.8,-30.3"/>
+<polygon fill="#000000" stroke="#000000" points="233.74,-33.22 240.57,-25.12 230.18,-27.2 233.74,-33.22"/>
+</g>
+<!-- none~get_gent -->
+<g id="proc~~excess_gibbs~~CallsGraph_node7" class="node">
+<title>none~get_gent</title>
+<g id="a_proc~~excess_gibbs~~CallsGraph_node7"><a xlink:href="../proc/excess_gibbs.html#proc-get_gent" xlink:title="get_GenT">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="296.5,-147 232.5,-147 232.5,-123 296.5,-123 296.5,-147"/>
+<text text-anchor="middle" x="264.5" y="-132.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_GenT</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs&#45;&gt;none~get_gent -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge6" class="edge">
+<title>proc~excess_gibbs&#45;&gt;none~get_gent</title>
+<path fill="none" stroke="#000000" d="M190.03,-135C201.2,-135 212.13,-135 221.99,-135"/>
+<polygon fill="#000000" stroke="#000000" points="222.24,-138.5 232.24,-135 222.24,-131.5 222.24,-138.5"/>
+</g>
+<!-- none~reset_vars~2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_node8" class="node">
+<title>none~reset_vars~2</title>
+<g id="a_proc~~excess_gibbs~~CallsGraph_node8"><a xlink:href="../proc/excess_gibbs.html#proc-reset_vars~2" xlink:title="reset_vars">
+<polygon fill="#d9534f" stroke="#d9534f" points="406,-108 339,-108 339,-84 406,-84 406,-108"/>
+<text text-anchor="middle" x="372.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">reset_vars</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs&#45;&gt;none~reset_vars~2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge7" class="edge">
+<title>proc~excess_gibbs&#45;&gt;none~reset_vars~2</title>
+<path fill="none" stroke="#000000" d="M167.45,-122.97C186.46,-119.9 206.99,-116.71 226,-114 260.45,-109.09 299.6,-104.29 328.6,-100.88"/>
+<polygon fill="#000000" stroke="#000000" points="329.28,-104.33 338.8,-99.69 328.47,-97.38 329.28,-104.33"/>
+</g>
+<!-- none~get_dgedt&#45;&gt;none~reset_vars~2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge9" class="edge">
+<title>none~get_dgedt&#45;&gt;none~reset_vars~2</title>
+<path fill="none" stroke="#000000" d="M296.73,-67.08C307.31,-71.17 319.29,-75.81 330.51,-80.15"/>
+<polygon fill="#000000" stroke="#000000" points="329.54,-83.52 340.13,-83.87 332.06,-76.99 329.54,-83.52"/>
+</g>
+<!-- ge_d -->
+<g id="proc~~excess_gibbs~~CallsGraph_node9" class="node">
+<title>ge_d</title>
+<polygon fill="#777777" stroke="#777777" points="399.5,-66 345.5,-66 345.5,-42 399.5,-42 399.5,-66"/>
+<text text-anchor="middle" x="372.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge_d</text>
+</g>
+<!-- none~get_dgedt&#45;&gt;ge_d -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge8" class="edge">
+<title>none~get_dgedt&#45;&gt;ge_d</title>
+<path fill="none" stroke="#000000" d="M299.62,-54.68C310.93,-54.57 323.55,-54.45 335.03,-54.34"/>
+<polygon fill="#000000" stroke="#000000" points="335.21,-57.84 345.17,-54.25 335.14,-50.84 335.21,-57.84"/>
+</g>
+<!-- none~get_dgedt2&#45;&gt;none~reset_vars~2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge11" class="edge">
+<title>none~get_dgedt2&#45;&gt;none~reset_vars~2</title>
+<path fill="none" stroke="#000000" d="M290.09,-25.18C294.56,-27.83 299.06,-30.81 303,-34 321.85,-49.25 320.64,-59.16 339,-75 340.14,-75.99 341.34,-76.96 342.57,-77.92"/>
+<polygon fill="#000000" stroke="#000000" points="340.78,-80.95 350.94,-83.95 344.87,-75.27 340.78,-80.95"/>
+</g>
+<!-- ge_d_d -->
+<g id="proc~~excess_gibbs~~CallsGraph_node10" class="node">
+<title>ge_d_d</title>
+<polygon fill="#777777" stroke="#777777" points="399.5,-24 345.5,-24 345.5,0 399.5,0 399.5,-24"/>
+<text text-anchor="middle" x="372.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge_d_d</text>
+</g>
+<!-- none~get_dgedt2&#45;&gt;ge_d_d -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge10" class="edge">
+<title>none~get_dgedt2&#45;&gt;ge_d_d</title>
+<path fill="none" stroke="#000000" d="M303.17,-12.64C313.5,-12.55 324.69,-12.44 334.96,-12.34"/>
+<polygon fill="#000000" stroke="#000000" points="335.29,-15.84 345.26,-12.25 335.22,-8.84 335.29,-15.84"/>
+</g>
+<!-- none~get_gent&#45;&gt;ge_d_b -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge12" class="edge">
+<title>none~get_gent&#45;&gt;ge_d_b</title>
+<path fill="none" stroke="#000000" d="M296.73,-141.19C308.85,-143.59 322.8,-146.35 335.35,-148.84"/>
+<polygon fill="#000000" stroke="#000000" points="335,-152.34 345.49,-150.85 336.36,-145.47 335,-152.34"/>
+</g>
+<!-- none~get_gent&#45;&gt;none~reset_vars~2 -->
+<g id="proc~~excess_gibbs~~CallsGraph_edge13" class="edge">
+<title>none~get_gent&#45;&gt;none~reset_vars~2</title>
+<path fill="none" stroke="#000000" d="M296.73,-123.51C306.83,-119.79 318.21,-115.61 328.98,-111.64"/>
+<polygon fill="#000000" stroke="#000000" points="330.47,-114.82 338.65,-108.09 328.06,-108.25 330.47,-114.82"/>
 </g>
 </g>
 </svg>
@@ -631,15 +625,15 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~4"></span>
+              <span class="anchor" id="variable-geb~3"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>b</strong>(size(n))</td>
+            <td><strong>geb</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -648,15 +642,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dtaudt"></span>
+              <span class="anchor" id="variable-ged~4"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dtaudt</strong>(size(n),size(n))</td>
+            <td><strong>ged</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -665,15 +659,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dtaudt2"></span>
+              <span class="anchor" id="variable-ged0~2"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dtaudt2</strong>(size(n),size(n))</td>
+            <td><strong>ged0</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -682,15 +676,185 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau"></span>
+              <span class="anchor" id="variable-gedb~2"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>tau</strong>(size(n),size(n))</td>
+            <td><strong>gedb</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gedd~2"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gedd</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~41"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nb~6"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nb</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~40"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nd~11"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nd</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ndb~4"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ndb</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tb~6"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tb</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-td~8"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>td</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-td0~4"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>td0</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tdb~4"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tdb</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -707,8 +871,83 @@ implementation in a submodule of an interface in a parent module.
 
     
     
+ 
+    <section>
+    <h2>Functions</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_gent"></span> <h3> function <a href='excess_gibbs.html#proc-get_gent'>get_GenT</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+    <h4>
+    Return Value
+    <small>real(kind=pr), (size(n))</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedt"></span> <h3> function <a href='excess_gibbs.html#proc-get_dgedt'>get_dGedT</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+    <h4>
+    Return Value
+    <small>real(kind=pr)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedt2"></span> <h3> function <a href='excess_gibbs.html#proc-get_dgedt2'>get_dGedT2</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+    <h4>
+    Return Value
+    <small>real(kind=pr)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+    </section>
+    <br>
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-reset_vars~2"></span> <h3> subroutine <a href='excess_gibbs.html#proc-reset_vars~2'>reset_vars</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+    </section>    
 
     
     
@@ -730,7 +969,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-02-28 00:49 +0000             </p>
+ on 2026-05-28 17:05 +0000             </p>
           </div>
         </div>
         <br>

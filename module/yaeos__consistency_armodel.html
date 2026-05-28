@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.1% of total for modules and submodules.">148 statements</a>
+                 title=" 1.5% of total for modules and submodules.">222 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -146,6 +146,7 @@
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/yaeos__consistency_armodel.html#proc-ar_consistency">ar_consistency</a>
+            <a class="list-group-item" href="../module/yaeos__consistency_armodel.html#proc-individual_ar_calls">individual_ar_calls</a>
             <a class="list-group-item" href="../module/yaeos__consistency_armodel.html#proc-numeric_ar_derivatives">numeric_ar_derivatives</a>
         </div>
       </div>
@@ -184,6 +185,10 @@ difference method.</p>
 <p><a href="../proc/ar_consistency.html">ar_consistency</a>: From an instantiated <a href="../type/armodel.html">ArModel</a> evaluate all the
 Michelsen and Mollerup consistency tests.</p>
 </li>
+<li>
+<p><a href="../proc/individual_ar_calls.html">individual_ar_calls</a>: Test the individual calls to the Helmholtz 
+free energy derivatives.</p>
+</li>
 </ul>
 <h1 id="references">References</h1>
 <ol>
@@ -196,8 +201,8 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
               </ul>
             </li>
             <li class="list-group-item">
@@ -547,7 +552,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos"></span>
+              <span class="anchor" id="variable-eos~33"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -562,7 +567,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n"></span>
+              <span class="anchor" id="variable-n~115"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -577,7 +582,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v"></span>
+              <span class="anchor" id="variable-v~49"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -592,7 +597,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~4"></span>
+              <span class="anchor" id="variable-t~131"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -688,6 +693,106 @@ modules which it uses.
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-individual_ar_calls"></span> <h3>public  subroutine <a href='../proc/individual_ar_calls.html'>individual_ar_calls</a>(eos, n, V, T, passed)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Check if all derivatives of helmholtz can be called individually</p><a href="../proc/individual_ar_calls.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~35"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+<p>Equation of state</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~117"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~51"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~133"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-passed~2"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>passed</strong></td>
+            <td>
+<p>Flag indicating if all individual calls are correct</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-numeric_ar_derivatives"></span> <h3>public  subroutine <a href='../proc/numeric_ar_derivatives.html'>numeric_ar_derivatives</a>(eos, n, V, T, d_n, d_v, d_t, Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)  
 </h3></div>
     <div class="card-body">
@@ -707,7 +812,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~2"></span>
+              <span class="anchor" id="variable-eos~34"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -722,7 +827,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~2"></span>
+              <span class="anchor" id="variable-n~116"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -737,7 +842,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~2"></span>
+              <span class="anchor" id="variable-v~50"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -752,7 +857,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~5"></span>
+              <span class="anchor" id="variable-t~132"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -767,7 +872,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_n"></span>
+              <span class="anchor" id="variable-d_n~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -782,7 +887,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_v"></span>
+              <span class="anchor" id="variable-d_v~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -797,7 +902,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_t"></span>
+              <span class="anchor" id="variable-d_t~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -812,7 +917,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar"></span>
+              <span class="anchor" id="variable-ar~23"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -827,7 +932,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv"></span>
+              <span class="anchor" id="variable-arv~17"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -844,7 +949,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art"></span>
+              <span class="anchor" id="variable-art~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -861,7 +966,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn"></span>
+              <span class="anchor" id="variable-arn~23"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -878,7 +983,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2"></span>
+              <span class="anchor" id="variable-arv2~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -895,7 +1000,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art2"></span>
+              <span class="anchor" id="variable-art2~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -912,7 +1017,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv"></span>
+              <span class="anchor" id="variable-artv~17"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -929,7 +1034,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn"></span>
+              <span class="anchor" id="variable-arvn~22"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -946,7 +1051,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn"></span>
+              <span class="anchor" id="variable-artn~22"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -963,7 +1068,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2"></span>
+              <span class="anchor" id="variable-arn2~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1008,7 +1113,7 @@ modules which it uses.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-02-28 00:49 +0000             </p>
+ on 2026-05-28 17:05 +0000             </p>
           </div>
         </div>
         <br>

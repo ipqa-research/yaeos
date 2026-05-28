@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNIFAC models &mdash; yaeos 4.5.0 documentation</title>
+  <title>UNIFAC models &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -26,7 +26,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Core Module" href="../../../core.html" />
+    <link rel="next" title="Equilibrium calculations" href="../equilibrium_calcs.html" />
     <link rel="prev" title="UNIQUAC" href="uniquac.html" /> 
 </head>
 
@@ -62,6 +62,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">UNIFAC models</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../equilibrium_calcs.html">Equilibrium calculations</a></li>
 </ul>
 </li>
 </ul>
@@ -75,8 +76,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -117,36 +120,27 @@
 <li><p>Residual: Accounts for the energy interactions between different functional groups.</p></li>
 </ul>
 <p>Each substance of a mixture modeled with UNIFAC must be represented by a list a functional groups and other list with the ocurrence of each functional group on the substance.</p>
-<section id="Combinatorial-term">
-<h2>Combinatorial term<a class="headerlink" href="#Combinatorial-term" title="Link to this heading"></a></h2>
+<p><strong>Combinatorial term</strong></p>
 <p>Combinatorial term has two parameters (z) and (d). The (z) parameter is always set to 10, and the (d) parameter is set to 1 for the Classic Liquid-Vapor UNIFAC model and the PSRK-UNIFAC model, and 3/4 for the Dortmund-UNIFAC model.</p>
-<section id="Flory-Huggins">
-<h3>Flory-Huggins<a class="headerlink" href="#Flory-Huggins" title="Link to this heading"></a></h3>
+<p><strong>Flory-Huggins</strong></p>
 <div class="math notranslate nohighlight">
 \[G^{E,FH} =
 RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i^d
 - n \, \text{ln} \, \sum_j^{NC} n_j r_j^d
 + n \, \text{ln} \, n \right)\]</div>
-</section>
-<section id="Staverman-Guggenheim">
-<h3>Staverman-Guggenheim<a class="headerlink" href="#Staverman-Guggenheim" title="Link to this heading"></a></h3>
+<p><strong>Staverman-Guggenheim</strong></p>
 <div class="math notranslate nohighlight">
 \[\frac{G^{E,SG}}{RT} =
 \frac{z}{2} \sum_i^{NC} n_i q_i
 \left(\text{ln} \frac{q_i}{r_i}
 - \text{ln} \, \sum_j^{NC} n_j q_j
 + \text{ln} \, \sum_j^{NC} n_j r_j \right)\]</div>
-</section>
-<section id="Fredenslund-et-al.-(UNIFAC)">
-<h3>Fredenslund et al. (UNIFAC)<a class="headerlink" href="#Fredenslund-et-al.-(UNIFAC)" title="Link to this heading"></a></h3>
+<p><strong>Fredenslund et al. (UNIFAC)</strong></p>
 <p>The complete combinatorial term is given by the sum of the Flory-Huggins and Staverman-Guggenheim terms:</p>
 <div class="math notranslate nohighlight">
 \[\frac{G^{E,\text{UNIFAC}}}{RT} =
 \frac{G^{E,FH}}{RT} + \frac{G^{E,SG}}{RT}\]</div>
-</section>
-</section>
-<section id="Residual-term">
-<h2>Residual term<a class="headerlink" href="#Residual-term" title="Link to this heading"></a></h2>
+<p><strong>Residual term</strong></p>
 <p>Evaluate the UNIFAC residual term. Check the temperature function <span class="math notranslate nohighlight">\(E_{jk}\)</span>. This temperature function is different for each UNIFAC model. The residual Gibbs excess energy and its derivatives are evaluated as:</p>
 <div class="math notranslate nohighlight">
 \[\frac{G^{E,R}}{RT} = - \sum_i^{NC} n_i \sum_k^{NG} v_k^i Q_k
@@ -163,9 +157,7 @@ RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i^d
 {\displaystyle \sum_{k}^{NC} n_k \sum_{m}^{NG} v_m^l Q_m}\]</div>
 <div class="math notranslate nohighlight">
 \[\Theta_j^i = \frac{Q_j v_j^i}{\displaystyle \sum_k^{NG} v_k^i Q_k}\]</div>
-</section>
-<section id="Using-ugropy-to-retrieve-UNIFAC-functional-groups">
-<h2>Using <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> to retrieve UNIFAC functional groups<a class="headerlink" href="#Using-ugropy-to-retrieve-UNIFAC-functional-groups" title="Link to this heading"></a></h2>
+<p><strong>Using ugropy to retrieve UNIFAC functional groups</strong></p>
 <p>Our research group has another Python package called <code class="docutils literal notranslate"><span class="pre">ugropy</span></code></p>
 <p><a class="reference external" href="https://github.com/ipqa-research/ugropy">https://github.com/ipqa-research/ugropy</a></p>
 <p>That package can be used to retrieve the functional groups of a molecule by its SMILES, or name. Here it’s a little example of how to use it. Please refer to the <code class="docutils literal notranslate"><span class="pre">ugropy</span></code> documentation for more information.</p>
@@ -173,7 +165,6 @@ RT \left(\sum_i^{NC} n_i \, \text{ln} \, r_i^d
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ugropy
 </pre></div>
 </div>
-</section>
 <section id="Liquid-Vapor-UNIFAC">
 <h2>Liquid-Vapor UNIFAC<a class="headerlink" href="#Liquid-Vapor-UNIFAC" title="Link to this heading"></a></h2>
 <p>This is the original and classic Liquid-Vapor UNIFAC model. In this model, the parameters are defined as:</p>
@@ -438,7 +429,7 @@ array([0.19827923, 0.08808743])
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="uniquac.html" class="btn btn-neutral float-left" title="UNIQUAC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../../core.html" class="btn btn-neutral float-right" title="Core Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../equilibrium_calcs.html" class="btn btn-neutral float-right" title="Equilibrium calculations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

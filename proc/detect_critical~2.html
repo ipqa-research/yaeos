@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.6% of total for procedures.">68 statements</a>
+                 title=" 0.3% of total for procedures.">43 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/auxiliar.f90"> Source File</a>
+              <a href="../src/phase_envelopes_pt_3ph.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_3ph.f90.html'>phase_envelopes_pt_3ph.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
             <li class="breadcrumb-item active" aria-current="page">detect_critical</li>
           </ol>
         </nav>
@@ -135,18 +135,18 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-p~46">P</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-t~73">T</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-xc~4">Xc</a>
             <a class="list-group-item" href="../proc/detect_critical~2.html#variable-xnew~5">Xnew</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-a~22">a</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-i~77">i</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-incipient_kind">incipient_kind</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-lb~13">lb</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-limit">limit</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-lnk~3">lnK</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-lnkold~3">lnKold</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-ncomp~4">ncomp</a>
-            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-ub~13">ub</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-xold~6">Xold</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-a~25">a</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-critical_set~2">critical_set</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-first_set~3">first_set</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-found_critical~3">found_critical</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-i~75">i</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-idx~4">idx</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-nc~66">nc</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-second_set~3">second_set</a>
+            <a class="list-group-item" href="../proc/detect_critical~2.html#variable-step~3">step</a>
         </div>
       </div>
     </div>
@@ -176,218 +176,29 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine detect_critical(nc, np, point, kinds_x, kind_w, binary_stop, Xold, X, dXdS, ns, dS, S, found_critical, Xc)  
+    <h2>private  subroutine detect_critical(X, dXdS, ns, S, dS)  
 </h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
-              </ul>
-            </li>
-            <li class="list-group-item">
-              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~detect_critical~2~~UsesGraph Pages: 1 -->
-<svg id="procdetect_critical2UsesGraph" width="641pt" height="59pt"
- viewBox="0.00 0.00 641.00 58.77" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~detect_critical~2~~UsesGraph" class="graph" transform="scale(0.77 0.77) rotate(0) translate(4 72)">
-<title>proc~~detect_critical~2~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-72 825,-72 825,4 -4,4"/>
-<!-- proc~detect_critical~2 -->
-<g id="proc~~detect_critical~2~~UsesGraph_node1" class="node">
-<title>proc~detect_critical~2</title>
-<polygon fill="none" stroke="black" points="821,-39.49 733,-39.49 733,-15.49 821,-15.49 821,-39.49"/>
-<text text-anchor="middle" x="777" y="-25.09" font-family="Helvetica,sans-Serif" font-size="10.50">detect_critical</text>
-</g>
-<!-- module~yaeos__math -->
-<g id="proc~~detect_critical~2~~UsesGraph_node2" class="node">
-<title>module~yaeos__math</title>
-<g id="a_proc~~detect_critical~2~~UsesGraph_node2"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
-<polygon fill="#337ab7" stroke="#337ab7" points="697,-39.49 615,-39.49 615,-15.49 697,-15.49 697,-39.49"/>
-<text text-anchor="middle" x="656" y="-25.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
-</a>
-</g>
-</g>
-<!-- proc~detect_critical~2&#45;&gt;module~yaeos__math -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge1" class="edge">
-<title>proc~detect_critical~2&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M732.7,-27.49C724.48,-27.49 715.81,-27.49 707.4,-27.49"/>
-<polygon fill="#000000" stroke="#000000" points="707.3,-23.99 697.3,-27.49 707.3,-30.99 707.3,-23.99"/>
-</g>
-<!-- module~yaeos__constants -->
-<g id="proc~~detect_critical~2~~UsesGraph_node3" class="node">
-<title>module~yaeos__constants</title>
-<g id="a_proc~~detect_critical~2~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-59.49 130,-59.49 130,-35.49 236,-35.49 236,-59.49"/>
-<text text-anchor="middle" x="183" y="-45.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos__math&#45;&gt;module~yaeos__constants -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge2" class="edge">
-<title>module~yaeos__math&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M617.05,-39.52C605,-42.92 591.54,-46.29 579,-48.49 470.33,-67.49 441.82,-68.52 331.5,-67.49"/>
-</g>
-<!-- module~yaeos__math_continuation -->
-<g id="proc~~detect_critical~2~~UsesGraph_node4" class="node">
-<title>module~yaeos__math_continuation</title>
-<g id="a_proc~~detect_critical~2~~UsesGraph_node4"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
-<polygon fill="#337ab7" stroke="#337ab7" points="579,-39.49 425,-39.49 425,-15.49 579,-15.49 579,-39.49"/>
-<text text-anchor="middle" x="502" y="-25.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos__math&#45;&gt;module~yaeos__math_continuation -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge3" class="edge">
-<title>module~yaeos__math&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M614.67,-27.49C606.68,-27.49 598.01,-27.49 589.16,-27.49"/>
-<polygon fill="#000000" stroke="#000000" points="589.11,-23.99 579.11,-27.49 589.11,-30.99 589.11,-23.99"/>
-</g>
-<!-- module~yaeos__math_linalg -->
-<g id="proc~~detect_critical~2~~UsesGraph_node5" class="node">
-<title>module~yaeos__math_linalg</title>
-<g id="a_proc~~detect_critical~2~~UsesGraph_node5"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
-<polygon fill="#337ab7" stroke="#337ab7" points="389,-39.49 272,-39.49 272,-15.49 389,-15.49 389,-39.49"/>
-<text text-anchor="middle" x="330.5" y="-25.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos__math&#45;&gt;module~yaeos__math_linalg -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge4" class="edge">
-<title>module~yaeos__math&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M619.08,-15.42C606.55,-11.79 592.29,-8.29 579,-6.49 511.18,2.71 493.03,1.06 425,-6.49 412.21,-7.9 398.62,-10.38 385.87,-13.15"/>
-<polygon fill="#000000" stroke="#000000" points="384.85,-9.79 375.87,-15.42 386.39,-16.62 384.85,-9.79"/>
-</g>
-<!-- iso_fortran_env -->
-<g id="proc~~detect_critical~2~~UsesGraph_node6" class="node">
-<title>iso_fortran_env</title>
-<g id="a_proc~~detect_critical~2~~UsesGraph_node6"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-59.49 0,-59.49 0,-35.49 94,-35.49 94,-59.49"/>
-<text text-anchor="middle" x="47" y="-45.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
-</a>
-</g>
-</g>
-<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge5" class="edge">
-<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-47.49C121.45,-47.49 112.77,-47.49 104.32,-47.49"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-43.99 94.16,-47.49 104.16,-50.99 104.16,-43.99"/>
-</g>
-<!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge6" class="edge">
-<title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M459.9,-39.58C418.12,-51.44 356.14,-67.72 331.5,-67.49"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.5,-67.49C302.04,-67.23 271.93,-63.65 246.26,-59.59"/>
-<polygon fill="#000000" stroke="#000000" points="246.73,-56.12 236.29,-57.95 245.59,-63.02 246.73,-56.12"/>
-</g>
-<!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge7" class="edge">
-<title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M424.68,-27.49C416.18,-27.49 407.57,-27.49 399.2,-27.49"/>
-<polygon fill="#000000" stroke="#000000" points="399.11,-23.99 389.11,-27.49 399.11,-30.99 399.11,-23.99"/>
-</g>
-<!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
-<g id="proc~~detect_critical~2~~UsesGraph_edge8" class="edge">
-<title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.99,-35.39C263.64,-36.54 255,-37.73 246.55,-38.89"/>
-<polygon fill="#000000" stroke="#000000" points="245.79,-35.46 236.36,-40.29 246.75,-42.39 245.79,-35.46"/>
-</g>
-</g>
-</svg>
-</div>                <script>
-                  var panprocdetect_critical2UsesGraph = svgPanZoom('#procdetect_critical2UsesGraph',
-                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
-                  );
-                </script>          <div>
-            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
-          </div>
-          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-<p>Nodes of different colours represent the following: </p>
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
-<!-- Module -->
-<g id="node1" class="node">
-<title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
-</g>
-<!-- Submodule -->
-<g id="node2" class="node">
-<title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
-</g>
-<!-- Subroutine -->
-<g id="node3" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node4" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Program -->
-<g id="node5" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node6" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
+    
 
-<p>Solid arrows point from a submodule to the (sub)module which it is
-descended from. Dashed arrows point from a module or program unit to 
-modules which it uses.
-</p>
- </div>
-            </div>
-          </div>
-        </div>
-            </li>
-        </ul>
-      </div>
-    </div>
-
-
-    <h1 id="detect_critical">detect_critical</h1>
-<p>Detect if the system is close to a critical point.</p>
+    <h1 id="detect_critical"><code>detect_critical</code></h1>
+<p>Critical point detection</p>
 <h1 id="description">Description</h1>
-<p>When the system is close to a critical point, the <script type="math/tex">\ln K_i^l</script> values
-are close to zero, since the composition of the incipient phase and the
-<script type="math/tex">l</script> phase are similar (equal in the critical point). This can be used
-to detect if the system is close to a critical point and force a jump
-above it.</p>
+<p>If the values of lnK (X[:nc]) change sign then a critical point
+Has passed, since for this to happen all variables should pass
+through zero. Near critical points (lnK &lt; 0.05) points are harder
+to converge, so more steps in the extrapolation vector are made to
+jump over the critical point.
+If the critical point is detected then the kind of the point is
+changed and the point is saved using an interpolation knowing that</p>
+<p>
+<script type="math/tex; mode=display">
+  X_c = a * X + (1-a)*X_{new}
+</script>
+</p>
+<p>With <script type="math/tex">X_c</script> is the variables at the critical point, <script type="math/tex">X_{new}</script>
+is the new initialization point of the method and <script type="math/tex">a</script> is the
+parameter to interpolate the values. This subroutine finds the
+value of  <script type="math/tex">a</script> to obtain <script type="math/tex">X_c</script>.</p>
 
 
     <h3>Arguments</h3>
@@ -403,112 +214,7 @@ above it.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~59"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nc</strong></td>
-            <td>
-                <p>Number of components in the mixture.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-np~23"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>np</strong></td>
-            <td>
-                <p>Number of main phases.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-point~6"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>point</strong></td>
-            <td>
-                <p>Point number in the phase boundary.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-kinds_x~16"></span>
-              character(len=14),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>kinds_x</strong>(np)</td>
-            <td>
-                <p>Kinds of the main phases.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-kind_w~16"></span>
-              character(len=14),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>kind_w</strong></td>
-            <td>
-                <p>Kind of the incipient phase.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-binary_stop"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>binary_stop</strong></td>
-            <td>
-                <p>If true, stop at the critical point if its a binary system.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-xold~6"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Xold</strong>(:)</td>
-            <td>
-                <p>Old vector of variables.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~40"></span>
+              <span class="anchor" id="variable-x~31"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -518,12 +224,12 @@ above it.</p>
             <td>::</td>
             <td><strong>X</strong>(:)</td>
             <td>
-                <p>Vector of variables.</p>
+                <p>Vector of variables</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~18"></span>
+              <span class="anchor" id="variable-dxds~12"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -533,12 +239,12 @@ above it.</p>
             <td>::</td>
             <td><strong>dXdS</strong>(:)</td>
             <td>
-                <p>Sensitivity of the variables wrt the specification.</p>
+                <p>Variation of variables wrt S</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~34"></span>
+              <span class="anchor" id="variable-ns~26"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -548,27 +254,12 @@ above it.</p>
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-                <p>Number of the specified variable.</p>
+                <p>Number of specified variable</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~17"></span>
-              real(kind=pr),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dS</strong></td>
-            <td>
-                <p>Step size of the specification for the next point.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-s~29"></span>
+              <span class="anchor" id="variable-s~20"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -578,37 +269,22 @@ above it.</p>
             <td>::</td>
             <td><strong>S</strong></td>
             <td>
-                <p>Specification value.</p>
+                <p>Specification value</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-found_critical~4"></span>
-              logical,
+              <span class="anchor" id="variable-ds~11"></span>
+              real(kind=pr),
             </td>
-<td>intent(out)</td>
+<td>intent(inout)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>found_critical</strong></td>
+            <td><strong>dS</strong></td>
             <td>
-                <p>If true, a critical point was found.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-xc~4"></span>
-              real(kind=pr)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Xc</strong>(size(X))</td>
-            <td>
-                <p>Vector of variables at the critical point.</p>
+                <p>Step in specification</p>
             </td>
         </tr>
     </tbody>
@@ -626,31 +302,31 @@ above it.</p>
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~detect_critical~2~~CallsGraph Pages: 1 -->
-<svg id="procdetect_critical2CallsGraph" width="186pt" height="32pt"
- viewBox="0.00 0.00 186.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg id="procdetect_critical2CallsGraph" width="227pt" height="32pt"
+ viewBox="0.00 0.00 227.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="proc~~detect_critical~2~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
 <title>proc~~detect_critical~2~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 182,-28 182,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 223,-28 223,4 -4,4"/>
 <!-- proc~detect_critical~2 -->
 <g id="proc~~detect_critical~2~~CallsGraph_node1" class="node">
 <title>proc~detect_critical~2</title>
 <polygon fill="none" stroke="black" points="88,-24 0,-24 0,0 88,0 88,-24"/>
 <text text-anchor="middle" x="44" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">detect_critical</text>
 </g>
-<!-- proc~interpol -->
+<!-- proc~critical_interpol~2 -->
 <g id="proc~~detect_critical~2~~CallsGraph_node2" class="node">
-<title>proc~interpol</title>
-<g id="a_proc~~detect_critical~2~~CallsGraph_node2"><a xlink:href="../proc/interpol.html" xlink:title="interpol">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="178,-24 124,-24 124,0 178,0 178,-24"/>
-<text text-anchor="middle" x="151" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">interpol</text>
+<title>proc~critical_interpol~2</title>
+<g id="a_proc~~detect_critical~2~~CallsGraph_node2"><a xlink:href="../proc/critical_interpol~2.html" xlink:title="critical_interpol">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="219,-24 124,-24 124,0 219,0 219,-24"/>
+<text text-anchor="middle" x="171.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">critical_interpol</text>
 </a>
 </g>
 </g>
-<!-- proc~detect_critical~2&#45;&gt;proc~interpol -->
+<!-- proc~detect_critical~2&#45;&gt;proc~critical_interpol~2 -->
 <g id="proc~~detect_critical~2~~CallsGraph_edge1" class="edge">
-<title>proc~detect_critical~2&#45;&gt;proc~interpol</title>
-<path fill="none" stroke="#000000" d="M88.01,-12C96.53,-12 105.4,-12 113.67,-12"/>
-<polygon fill="#000000" stroke="#000000" points="113.76,-15.5 123.76,-12 113.76,-8.5 113.76,-15.5"/>
+<title>proc~detect_critical~2&#45;&gt;proc~critical_interpol~2</title>
+<path fill="none" stroke="#000000" d="M88.19,-12C96.36,-12 105.01,-12 113.53,-12"/>
+<polygon fill="#000000" stroke="#000000" points="113.8,-15.5 123.8,-12 113.8,-8.5 113.8,-15.5"/>
 </g>
 </g>
 </svg>
@@ -744,91 +420,31 @@ implementation in a submodule of an interface in a parent module.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~detect_critical~2~~CalledByGraph Pages: 1 -->
-<svg id="procdetect_critical2CalledByGraph" width="442pt" height="116pt"
- viewBox="0.00 0.00 442.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~detect_critical~2~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<svg id="procdetect_critical2CalledByGraph" width="235pt" height="32pt"
+ viewBox="0.00 0.00 235.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~detect_critical~2~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
 <title>proc~~detect_critical~2~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 438,-112 438,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 231,-28 231,4 -4,4"/>
 <!-- proc~detect_critical~2 -->
 <g id="proc~~detect_critical~2~~CalledByGraph_node1" class="node">
 <title>proc~detect_critical~2</title>
-<polygon fill="none" stroke="black" points="434,-66 346,-66 346,-42 434,-42 434,-66"/>
-<text text-anchor="middle" x="390" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">detect_critical</text>
+<polygon fill="none" stroke="black" points="227,-24 139,-24 139,0 227,0 227,-24"/>
+<text text-anchor="middle" x="183" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">detect_critical</text>
 </g>
-<!-- proc~pt_envelope -->
+<!-- proc~pt_envelope_3ph -->
 <g id="proc~~detect_critical~2~~CalledByGraph_node2" class="node">
-<title>proc~pt_envelope</title>
-<g id="a_proc~~detect_critical~2~~CalledByGraph_node2"><a xlink:href="../proc/pt_envelope.html" xlink:title="pt_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="309,-108 231,-108 231,-84 309,-84 309,-108"/>
-<text text-anchor="middle" x="270" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
+<title>proc~pt_envelope_3ph</title>
+<g id="a_proc~~detect_critical~2~~CalledByGraph_node2"><a xlink:href="../proc/pt_envelope_3ph.html" xlink:title="pt_envelope_3ph">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="103,-24 0,-24 0,0 103,0 103,-24"/>
+<text text-anchor="middle" x="51.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_3ph</text>
 </a>
 </g>
 </g>
-<!-- proc~pt_envelope&#45;&gt;proc~detect_critical~2 -->
+<!-- proc~pt_envelope_3ph&#45;&gt;proc~detect_critical~2 -->
 <g id="proc~~detect_critical~2~~CalledByGraph_edge1" class="edge">
-<title>proc~pt_envelope&#45;&gt;proc~detect_critical~2</title>
-<path fill="none" stroke="#000000" d="M304.81,-83.96C317.53,-79.44 332.16,-74.23 345.63,-69.44"/>
-<polygon fill="#000000" stroke="#000000" points="346.93,-72.69 355.18,-66.04 344.59,-66.09 346.93,-72.69"/>
-</g>
-<!-- proc~px_envelope -->
-<g id="proc~~detect_critical~2~~CalledByGraph_node3" class="node">
-<title>proc~px_envelope</title>
-<g id="a_proc~~detect_critical~2~~CalledByGraph_node3"><a xlink:href="../proc/px_envelope.html" xlink:title="px_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-66 230,-66 230,-42 310,-42 310,-66"/>
-<text text-anchor="middle" x="270" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope</text>
-</a>
-</g>
-</g>
-<!-- proc~px_envelope&#45;&gt;proc~detect_critical~2 -->
-<g id="proc~~detect_critical~2~~CalledByGraph_edge2" class="edge">
-<title>proc~px_envelope&#45;&gt;proc~detect_critical~2</title>
-<path fill="none" stroke="#000000" d="M310.29,-54C318.4,-54 327.06,-54 335.57,-54"/>
-<polygon fill="#000000" stroke="#000000" points="335.82,-57.5 345.82,-54 335.82,-50.5 335.82,-57.5"/>
-</g>
-<!-- proc~tx_envelope -->
-<g id="proc~~detect_critical~2~~CalledByGraph_node4" class="node">
-<title>proc~tx_envelope</title>
-<g id="a_proc~~detect_critical~2~~CalledByGraph_node4"><a xlink:href="../proc/tx_envelope.html" xlink:title="tx_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="308.5,-24 231.5,-24 231.5,0 308.5,0 308.5,-24"/>
-<text text-anchor="middle" x="270" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">tx_envelope</text>
-</a>
-</g>
-</g>
-<!-- proc~tx_envelope&#45;&gt;proc~detect_critical~2 -->
-<g id="proc~~detect_critical~2~~CalledByGraph_edge3" class="edge">
-<title>proc~tx_envelope&#45;&gt;proc~detect_critical~2</title>
-<path fill="none" stroke="#000000" d="M304.81,-24.04C317.53,-28.56 332.16,-33.77 345.63,-38.56"/>
-<polygon fill="#000000" stroke="#000000" points="344.59,-41.91 355.18,-41.96 346.93,-35.31 344.59,-41.91"/>
-</g>
-<!-- proc~pt_envelope_2ph -->
-<g id="proc~~detect_critical~2~~CalledByGraph_node5" class="node">
-<title>proc~pt_envelope_2ph</title>
-<g id="a_proc~~detect_critical~2~~CalledByGraph_node5"><a xlink:href="../proc/pt_envelope_2ph.html" xlink:title="pt_envelope_2ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="194,-108 91,-108 91,-84 194,-84 194,-108"/>
-<text text-anchor="middle" x="142.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_2ph</text>
-</a>
-</g>
-</g>
-<!-- proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope -->
-<g id="proc~~detect_critical~2~~CalledByGraph_edge4" class="edge">
-<title>proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope</title>
-<path fill="none" stroke="#000000" d="M194.18,-96C202.99,-96 212.12,-96 220.85,-96"/>
-<polygon fill="#000000" stroke="#000000" points="220.87,-99.5 230.87,-96 220.87,-92.5 220.87,-99.5"/>
-</g>
-<!-- proc~find_hpl -->
-<g id="proc~~detect_critical~2~~CalledByGraph_node6" class="node">
-<title>proc~find_hpl</title>
-<g id="a_proc~~detect_critical~2~~CalledByGraph_node6"><a xlink:href="../proc/find_hpl.html" xlink:title="find_hpl">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="55,-108 0,-108 0,-84 55,-84 55,-108"/>
-<text text-anchor="middle" x="27.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_hpl</text>
-</a>
-</g>
-</g>
-<!-- proc~find_hpl&#45;&gt;proc~pt_envelope_2ph -->
-<g id="proc~~detect_critical~2~~CalledByGraph_edge5" class="edge">
-<title>proc~find_hpl&#45;&gt;proc~pt_envelope_2ph</title>
-<path fill="none" stroke="#000000" d="M55.28,-96C63.06,-96 71.88,-96 80.85,-96"/>
-<polygon fill="#000000" stroke="#000000" points="80.99,-99.5 90.99,-96 80.99,-92.5 80.99,-99.5"/>
+<title>proc~pt_envelope_3ph&#45;&gt;proc~detect_critical~2</title>
+<path fill="none" stroke="#000000" d="M103.31,-12C111.67,-12 120.36,-12 128.78,-12"/>
+<polygon fill="#000000" stroke="#000000" points="128.88,-15.5 138.88,-12 128.88,-8.5 128.88,-15.5"/>
 </g>
 </g>
 </svg>
@@ -928,36 +544,19 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~46"></span>
+              <span class="anchor" id="variable-xc~4"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>Xc</strong>(size(X))</td>
                 <td></td>
                 <td></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~73"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
+                <p>Value at (near) critical point</p>
             </td>
         </tr>
         <tr>
@@ -965,7 +564,7 @@ implementation in a submodule of an interface in a parent module.
               <span class="anchor" id="variable-xnew~5"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
@@ -974,15 +573,32 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Value of the next initialization</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~22"></span>
+              <span class="anchor" id="variable-xold~6"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Xold</strong>(size(X))</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Old value of X</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~25"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
             <td>
               
             </td>
@@ -991,15 +607,66 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
+                <p>Parameter for interpolation</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-critical_set~2"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>critical_set</strong>((size(X)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~77"></span>
+              <span class="anchor" id="variable-first_set~3"></span>
               integer,
             </td>
-              <td>public</td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>first_set</strong>((size(X)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-found_critical~3"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>found_critical</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~75"></span>
+              integer,
+            </td>
+              <td>private</td>
             <td>
               
             </td>
@@ -1013,32 +680,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-incipient_kind"></span>
-              character(len=14),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>incipient_kind</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lb~13"></span>
+              <span class="anchor" id="variable-idx~4"></span>
               integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>lb</strong></td>
+            <td><strong>idx</strong>((size(X)-3)/2)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -1047,66 +697,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-limit"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>limit</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnk~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lnK</strong>(nc)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lnkold~3"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lnKold</strong>(nc)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ncomp~4"></span>
+              <span class="anchor" id="variable-nc~66"></span>
               integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>ncomp</strong></td>
+            <td><strong>nc</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -1115,15 +714,32 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~13"></span>
+              <span class="anchor" id="variable-second_set~3"></span>
               integer,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>ub</strong></td>
+            <td><strong>second_set</strong>((size(X)-3)/2)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-step~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>step</strong>(size(X))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -1163,7 +779,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-02-28 00:49 +0000             </p>
+ on 2026-05-28 17:05 +0000             </p>
           </div>
         </div>
         <br>

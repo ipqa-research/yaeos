@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cubic EoS &mdash; yaeos 4.5.0 documentation</title>
+  <title>Cubic EoS &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -63,15 +63,19 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -199,6 +203,37 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>mixrule</strong> (<a class="reference internal" href="mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><em>CubicMixRule</em></a>) – Mixing rule object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_attractive_parameter">
+<span class="sig-name descname"><span class="pre">get_attractive_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#CubicEoS.get_attractive_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_attractive_parameter" title="Link to this definition"></a></dt>
+<dd><p>Calculate the attractive parameter of the CubicEoS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>temperatures</strong> (<em>array_like</em>) – Range of temperatuers for which calculate the attractive parameter.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dict</strong> – derivatives with temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary with the values of a for each component and its</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_repulsive_parameter">
+<span class="sig-name descname"><span class="pre">get_repulsive_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.html#CubicEoS.get_repulsive_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_repulsive_parameter" title="Link to this definition"></a></dt>
+<dd><p>Calculate the repulsive parameters of the CubicEoS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Repulsive parameter value for each component.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -497,7 +532,7 @@ with zero for kij and lij parameters is set, by default None</p></li>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SoaveReldichKwong'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.name" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SoaveRedlichKwong'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.SoaveRedlichKwong.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -611,7 +646,7 @@ with zero for kij and lij parameters is set, by default None</p></li>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fRKPR'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.name" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RKPR'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.RKPR.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

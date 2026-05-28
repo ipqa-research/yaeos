@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.5.0 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -762,6 +764,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># Thermoprops: Residual properties at VT</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ArModel.lnphi_vt">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.lnphi_vt">[docs]</a>
     <span class="k">def</span> <span class="nf">lnphi_vt</span><span class="p">(</span>
@@ -840,108 +845,6 @@
             <span class="n">moles</span><span class="p">,</span>
             <span class="n">volume</span><span class="p">,</span>
             <span class="n">temperature</span><span class="p">,</span>
-            <span class="n">dlnphidt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
-            <span class="n">dlnphidp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
-            <span class="n">dlnphidn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="o">...</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">res</span><span class="p">,</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
-                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="p">,</span>
-                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">res</span></div>
-
-
-<div class="viewcode-block" id="ArModel.lnphi_pt">
-<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.lnphi_pt">[docs]</a>
-    <span class="k">def</span> <span class="nf">lnphi_pt</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">moles</span><span class="p">,</span>
-        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
-        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate fugacity coefficent given pressure and temperature.</span>
-
-<span class="sd">        Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to</span>
-<span class="sd">        temperature, pressure and moles number.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        moles : array_like</span>
-<span class="sd">            Moles number vector [mol]</span>
-<span class="sd">        pressure : float</span>
-<span class="sd">            Pressure [bar]</span>
-<span class="sd">        temperature : float</span>
-<span class="sd">            Temperature [K]</span>
-<span class="sd">        root : str, optional</span>
-<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
-<span class="sd">            &quot;stable&quot;</span>
-<span class="sd">        dt : bool, optional</span>
-<span class="sd">            Calculate temperature derivative, by default False</span>
-<span class="sd">        dp : bool, optional</span>
-<span class="sd">            Calculate pressure derivative, by default False</span>
-<span class="sd">        dn : bool, optional</span>
-<span class="sd">            Calculate moles derivative, by default False</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Union[np.ndarray, tuple[np.ndarray, dict]]</span>
-<span class="sd">            :math:`ln \phi_i(n,P,T)` vector or tuple with</span>
-<span class="sd">            :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any</span>
-<span class="sd">            derivative is asked</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            import numpy as np</span>
-
-<span class="sd">            from yaeos import PengRobinson76</span>
-
-
-<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
-<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
-<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
-
-<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
-
-<span class="sd">            # Evaluating ln_phi only</span>
-<span class="sd">            # will print: [-0.10288733 -0.11909807]</span>
-
-<span class="sd">            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))</span>
-
-<span class="sd">            # Asking for derivatives</span>
-<span class="sd">            # will print:</span>
-<span class="sd">            # (</span>
-<span class="sd">            # array([-0.10288733, -0.11909807]),</span>
-<span class="sd">            # {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}</span>
-<span class="sd">            # )</span>
-
-<span class="sd">            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
-
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
-
-        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">moles</span><span class="p">,</span>
-            <span class="n">pressure</span><span class="p">,</span>
-            <span class="n">temperature</span><span class="p">,</span>
-            <span class="n">root</span><span class="p">,</span>
             <span class="n">dlnphidt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
             <span class="n">dlnphidp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
             <span class="n">dlnphidn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
@@ -1217,7 +1120,7 @@
         <span class="n">dv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual internal energy at volume and temperature [bar L]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual internal energy at V and T [bar L].</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1589,6 +1492,1243 @@
         <span class="k">return</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">cp_residual_vt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span></div>
 
 
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># Thermoprops: Residual properties at PT</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="ArModel.lnphi_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.lnphi_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">lnphi_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate fugacity coefficent given pressure and temperature.</span>
+
+<span class="sd">        Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to</span>
+<span class="sd">        temperature, pressure and moles number.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[np.ndarray, tuple[np.ndarray, dict]]</span>
+<span class="sd">            :math:`ln \phi_i(n,P,T)` vector or tuple with</span>
+<span class="sd">            :math:`ln \phi_i(n,P,T)` vector and derivatives dictionary if any</span>
+<span class="sd">            derivative is asked</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            # Evaluating ln_phi only</span>
+<span class="sd">            # will print: [-0.10288733 -0.11909807]</span>
+
+<span class="sd">            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0))</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            # will print:</span>
+<span class="sd">            # (</span>
+<span class="sd">            # array([-0.10288733, -0.11909807]),</span>
+<span class="sd">            # {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}</span>
+<span class="sd">            # )</span>
+
+<span class="sd">            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">dlnphidt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">dlnphidp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">dlnphidn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="p">,</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.helmholtz_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.helmholtz_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">helmholtz_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual helmoltz free energy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Residual helmoltz free energy or tuple with Residual helmoltz free</span>
+<span class="sd">            energy and derivatives dictionary if any derivative is asked</span>
+<span class="sd">            [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.helmholtz_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            print(</span>
+<span class="sd">                model.helmholtz_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]),</span>
+<span class="sd">                    1.0,</span>
+<span class="sd">                    300.0,</span>
+<span class="sd">                    root=&quot;stable&quot;,</span>
+<span class="sd">                    dp=True,</span>
+<span class="sd">                    dt=True,</span>
+<span class="sd">                    dn=True,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">helmholtz_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">art</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">arp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">arn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span> <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.enthalpy_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.enthalpy_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">enthalpy_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual enthalpy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Residual enthalpy or tuple with Residual enthalpy and derivatives</span>
+<span class="sd">            dictionary if any derivative is asked [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.enthalpy_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">            # Asking for derivatives</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.enthalpy_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]),</span>
+<span class="sd">                    1.0,</span>
+<span class="sd">                    300.0,</span>
+<span class="sd">                    root=&quot;stable&quot;,</span>
+<span class="sd">                    dp=True,</span>
+<span class="sd">                    dt=True,</span>
+<span class="sd">                    dn=True,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">enthalpy_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">hrt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">hrp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">hrn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span> <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.gibbs_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.gibbs_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">gibbs_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual Gibbs energy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Residual Gibbs energy or tuple with Residual Gibbs energy and</span>
+<span class="sd">            derivatives dictionary if any derivative is asked [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.gibbs_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            print(</span>
+<span class="sd">                model.gibbs_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]),</span>
+<span class="sd">                    1.0,</span>
+<span class="sd">                    300.0,</span>
+<span class="sd">                    root=&quot;stable&quot;,</span>
+<span class="sd">                    dp=True,</span>
+<span class="sd">                    dt=True,</span>
+<span class="sd">                    dn=True,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">gibbs_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">grt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">grp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">grn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span> <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.entropy_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.entropy_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">entropy_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual entropy given P and T [bar L / K].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Residual entropy or tuple with Residual entropy and derivatives</span>
+<span class="sd">            dictionary if any derivative is asked [bar L / K]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.entropy_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            print(</span>
+<span class="sd">                model.entropy_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]),</span>
+<span class="sd">                    1.0,</span>
+<span class="sd">                    300.0,</span>
+<span class="sd">                    root=&quot;stable&quot;,</span>
+<span class="sd">                    dp=True,</span>
+<span class="sd">                    dt=True,</span>
+<span class="sd">                    dn=True,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">entropy_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">srt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">srp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">srn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span> <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.internal_energy_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.internal_energy_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">internal_energy_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual internal energy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Residual internal energy or tuple with Residual internal energy and</span>
+<span class="sd">            derivatives dictionary if any derivative is asked [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.internal_energy_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            print(</span>
+<span class="sd">                model.internal_energy_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]),</span>
+<span class="sd">                    1.0,</span>
+<span class="sd">                    300.0,</span>
+<span class="sd">                    root=&quot;stable&quot;,</span>
+<span class="sd">                    dp=True,</span>
+<span class="sd">                    dt=True,</span>
+<span class="sd">                    dn=True,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">internal_energy_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">urt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">urp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">urn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span> <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.cv_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.cv_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">cv_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual isochoric heat capacity at P and T [bar L / K].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Residual isochoric heat capacity [bar L / K]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.cv_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">cv_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">root</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArModel.cp_residual_pt">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.cp_residual_pt">[docs]</a>
+    <span class="k">def</span> <span class="nf">cp_residual_pt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate residual isobaric heat capacity given P and T [bar L / K].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Residual isobaric heat capacity [bar L / K]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.cp_residual_pt(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">cp_residual_pt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">root</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># Thermoprops: Excess properties</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="ArModel.ln_gamma">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.ln_gamma">[docs]</a>
+    <span class="k">def</span> <span class="nf">ln_gamma</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate activity coefficients given temperature and pressure.</span>
+
+<span class="sd">        Calculate :math:`ln \gamma_i(n,P,T)` and its derivatives..</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[np.ndarray, tuple[np.ndarray, dict]]</span>
+<span class="sd">            :math:`ln \gamma_i(n,T)` vector or tuple with</span>
+<span class="sd">            :math:`ln \gamma_i(n,T)` vector and derivatives dictionary if any</span>
+<span class="sd">            derivative is asked</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            # Evaluating ln_gamma only</span>
+<span class="sd">            print(model.ln_gamma([5.0, 5.6], 1.0, 300.0, root=&quot;stable&quot;))</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            print(</span>
+<span class="sd">                model.ln_gamma(</span>
+<span class="sd">                    [5.0, 5.6], 1.0, 300.0, root=&quot;stable&quot;, dt=True, dn=True</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">ln_gamma_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">dlngammadt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">dlngammadp</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">dlngammadn</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="p">,</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.gibbs_excess">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.gibbs_excess">[docs]</a>
+    <span class="k">def</span> <span class="nf">gibbs_excess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">dn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate excess Gibbs energy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+<span class="sd">        dt : bool, optional</span>
+<span class="sd">            Calculate temperature derivative, by default False</span>
+<span class="sd">        dp : bool, optional</span>
+<span class="sd">            Calculate pressure derivative, by default False</span>
+<span class="sd">        dn : bool, optional</span>
+<span class="sd">            Calculate moles derivative, by default False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Excess Gibbs energy or tuple with Excess Gibbs energy and</span>
+<span class="sd">            derivatives dictionary if any derivative is asked [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.gibbs_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">            # Asking for derivatives</span>
+<span class="sd">            print(</span>
+<span class="sd">                model.gibbs_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]),</span>
+<span class="sd">                    1.0,</span>
+<span class="sd">                    300.0,</span>
+<span class="sd">                    root=&quot;stable&quot;,</span>
+<span class="sd">                    dp=True,</span>
+<span class="sd">                    dt=True,</span>
+<span class="sd">                    dn=True,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dp</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">gibbs_excess_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">get</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">gep</span><span class="o">=</span><span class="n">dp</span><span class="p">,</span>
+            <span class="n">gen</span><span class="o">=</span><span class="n">dn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="s2">&quot;dp&quot;</span><span class="p">:</span> <span class="n">dp</span> <span class="k">if</span> <span class="n">dp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span>
+                    <span class="s2">&quot;dn&quot;</span><span class="p">:</span> <span class="n">dn</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.enthalpy_excess">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.enthalpy_excess">[docs]</a>
+    <span class="k">def</span> <span class="nf">enthalpy_excess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate excess enthalpy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Excess enthalpy or tuple with Excess enthalpy and derivatives</span>
+<span class="sd">            dictionary if any derivative is asked [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.enthalpy_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">enthalpy_excess_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.entropy_excess">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.entropy_excess">[docs]</a>
+    <span class="k">def</span> <span class="nf">entropy_excess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate excess entropy given P and T [bar L / K].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Excess entropy or tuple with Excess entropy and derivatives</span>
+<span class="sd">            dictionary if any derivative is asked [bar L / K]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.entropy_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">entropy_excess_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.volume_excess">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.volume_excess">[docs]</a>
+    <span class="k">def</span> <span class="nf">volume_excess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate excess volume given P and T [L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Excess volume or tuple with Excess volume and derivatives</span>
+<span class="sd">            dictionary if any derivative is asked [L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =</span>
+<span class="sd">            np.array([45.0, 60.0])     # critical pressures [bar] w =</span>
+<span class="sd">            np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.volume_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">volume_excess_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.helmoltz_excess">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.helmoltz_excess">[docs]</a>
+    <span class="k">def</span> <span class="nf">helmoltz_excess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate excess Helmholtz free energy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Excess Helmholtz free energy or tuple with Excess Helmholtz free</span>
+<span class="sd">            energy and derivatives dictionary if any derivative is asked</span>
+<span class="sd">            [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.helmholtz_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">helmholtz_excess_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="ArModel.internal_energy_excess">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.internal_energy_excess">[docs]</a>
+    <span class="k">def</span> <span class="nf">internal_energy_excess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">moles</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate excess internal energy given P and T [bar L].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        moles : array_like</span>
+<span class="sd">            Moles number vector [mol]</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure [bar]</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            Temperature [K]</span>
+<span class="sd">        root : str, optional</span>
+<span class="sd">            Volume root, use: &quot;liquid&quot;, &quot;vapor&quot; or &quot;stable&quot;, by default</span>
+<span class="sd">            &quot;stable&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[float, tuple[float, dict]]</span>
+<span class="sd">            Excess internal energy or tuple with Excess internal energy and</span>
+<span class="sd">            derivatives dictionary if any derivative is asked [bar L]</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import numpy as np</span>
+
+<span class="sd">            from yaeos import PengRobinson76</span>
+
+
+<span class="sd">            tc = np.array([320.0, 375.0])   # critical temperatures [K]</span>
+<span class="sd">            pc = np.array([45.0, 60.0])     # critical pressures [bar]</span>
+<span class="sd">            w = np.array([0.0123, 0.045])   # acentric factors</span>
+
+<span class="sd">            model = PengRobinson76(tc, pc, w)</span>
+
+<span class="sd">            print(</span>
+<span class="sd">                model.internal_energy_excess(</span>
+<span class="sd">                    np.array([5.0, 5.6]), 1.0, 300.0, root=&quot;stable&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">internal_energy_excess_ar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">moles</span><span class="p">,</span>
+            <span class="n">pressure</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># Equilibrium calculations</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ArModel.pure_saturation_pressures">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.pure_saturation_pressures">[docs]</a>
     <span class="k">def</span> <span class="nf">pure_saturation_pressures</span><span class="p">(</span>
@@ -2638,6 +3778,7 @@
         <span class="n">kind_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS_ENVELOPES</span><span class="p">,</span>
         <span class="n">stop_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
+        <span class="n">allow_negative_betas</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PTEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multi-phase envelope.&quot;&quot;&quot;</span>
         <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_l0</span><span class="p">)</span>
@@ -2665,6 +3806,7 @@
                 <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
                 <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
                 <span class="n">stop_pressure</span><span class="o">=</span><span class="n">stop_pressure</span><span class="p">,</span>
+                <span class="n">allow_negative_betas</span><span class="o">=</span><span class="n">allow_negative_betas</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -2923,19 +4065,13 @@
         <span class="n">locs_2</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;More than 5 intersection points found. </span>
-<span class="sd">                Assuming overlaped lines&quot;&quot;&quot;</span>
-            <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;More than 5 intersection points found.</span>
+<span class="s2">                Assuming overlaped lines&quot;&quot;&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">dsps</span><span class="p">,</span> <span class="n">locs_1</span><span class="p">,</span> <span class="n">locs_2</span>
 
         <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">temperatures</span><span class="p">,</span> <span class="n">pressures</span><span class="p">):</span>
-            <span class="n">env1_loc</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="p">)</span>
-            <span class="n">env2_loc</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="p">)</span>
+            <span class="n">env1_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span>
+            <span class="n">env2_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">))</span>
 
             <span class="n">betas_1</span> <span class="o">=</span> <span class="n">env1</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env1_loc</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">betas_2</span> <span class="o">=</span> <span class="n">env2</span><span class="o">.</span><span class="n">main_phases_molar_fractions</span><span class="p">[</span><span class="n">env2_loc</span><span class="p">,</span> <span class="p">:]</span>
@@ -3111,7 +4247,7 @@
         <span class="n">ws_stability</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculation of a generalized multiphase isoplethic line.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate a generalized multiphase isoplethic line.</span>
 
 <span class="sd">        Calculates a line for a constant composition specification.</span>
 <span class="sd">        A multiphase line is defined as a line of `np+1` phases, where the</span>
@@ -3189,15 +4325,15 @@
         <span class="n">x_l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_l0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
         <span class="n">ws_stability</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ws_stability</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
-        <span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
+        <span class="n">kinds_x_as_number</span><span class="p">,</span> <span class="n">kind_w_as_number</span> <span class="o">=</span> <span class="n">adjust_root_kind</span><span class="p">(</span>
             <span class="n">number_of_phases</span><span class="o">=</span><span class="n">x_l0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span> <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span>
         <span class="p">)</span>
 
         <span class="n">x_ls</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">w_more_stable</span><span class="p">,</span> <span class="n">found_unstability</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">yaeos_c</span><span class="o">.</span><span class="n">generalized_isopleth</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x</span><span class="p">,</span>
-                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w</span><span class="p">,</span>
+                <span class="n">kinds_x</span><span class="o">=</span><span class="n">kinds_x_as_number</span><span class="p">,</span>
+                <span class="n">kind_w</span><span class="o">=</span><span class="n">kind_w_as_number</span><span class="p">,</span>
                 <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
                 <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
                 <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
@@ -3223,6 +4359,8 @@
             <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">ps</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span>
             <span class="s2">&quot;w_more_stable&quot;</span><span class="p">:</span> <span class="n">w_more_stable</span><span class="p">,</span>
             <span class="s2">&quot;found_unstability&quot;</span><span class="p">:</span> <span class="n">found_unstability</span><span class="p">,</span>
+            <span class="s2">&quot;kinds_x&quot;</span><span class="p">:</span> <span class="n">kinds_x</span><span class="p">,</span>
+            <span class="s2">&quot;kind_w&quot;</span><span class="p">:</span> <span class="n">kind_w</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
@@ -3236,7 +4374,7 @@
         <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
         <span class="n">ws_stability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="n">beta0</span><span class="o">=</span><span class="mf">1e-15</span>
+        <span class="n">beta0</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate precipitation line from a PTEnvelope.&quot;&quot;&quot;</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">number_of_phases</span>
@@ -3526,6 +4664,7 @@
 <span class="sd">                - Vy: phase y molar volumes</span>
 <span class="sd">                - T: temperatures [K]</span>
 <span class="sd">                - P: pressures [bar]</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
@@ -3539,7 +4678,6 @@
 <span class="sd">                - T: temperatures [K]</span>
 <span class="sd">                - P: pressures [bar]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">x1s</span><span class="p">,</span> <span class="n">y1s</span><span class="p">,</span> <span class="n">w1s</span><span class="p">,</span> <span class="n">vxys</span><span class="p">,</span> <span class="n">vys</span><span class="p">,</span> <span class="n">vws</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">cep</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>

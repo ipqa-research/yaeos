@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mixing Rules &mdash; yaeos 4.5.0 documentation</title>
+  <title>Mixing Rules &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -66,7 +66,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
@@ -84,8 +84,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -584,6 +586,206 @@ Text(0, 0.5, &#39;Pressure [bar]&#39;)
 </div>
 <div class="output_area docutils container">
 <img alt="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_25_0.png" src="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_25_0.png" />
+</div>
+</div>
+</section>
+<section id="segmented-Density-Dependent-Local-Composition-(sDDLC)">
+<h2>segmented Density Dependent Local Composition (sDDLC)<a class="headerlink" href="#segmented-Density-Dependent-Local-Composition-(sDDLC)" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Methane-Benzene binary system</span>
+<span class="n">Tc</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">562.05</span><span class="p">]</span>
+<span class="n">Pc</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">48.95</span><span class="p">]</span>
+<span class="n">w</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.2103</span><span class="p">]</span>
+<span class="n">zc</span> <span class="o">=</span>  <span class="p">[</span><span class="mf">0.286</span><span class="p">,</span> <span class="mf">0.268</span><span class="p">]</span>
+
+<span class="n">kij_i</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">kij_0</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">Tref</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">Tc</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">Tc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">lij</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+<span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">q2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">4.7</span><span class="p">,</span> <span class="mi">6</span><span class="p">]):</span>
+    <span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.16</span><span class="p">,</span> <span class="n">q2</span><span class="p">]</span>
+    <span class="n">mr</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">sDDLC</span><span class="p">(</span><span class="n">qs</span><span class="o">=</span><span class="n">qs</span><span class="p">,</span> <span class="n">kij_0</span><span class="o">=</span><span class="n">kij_0</span><span class="p">,</span> <span class="n">kij_inf</span><span class="o">=</span><span class="n">kij_i</span><span class="p">,</span> <span class="n">t_ref</span><span class="o">=</span><span class="n">Tref</span><span class="p">,</span> <span class="n">lij</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">RKPR</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">zc</span><span class="p">,</span> <span class="n">mixrule</span><span class="o">=</span><span class="n">mr</span><span class="p">)</span>
+    <span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x10</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+    <span class="n">gpec</span><span class="o">.</span><span class="n">plot_pxy</span><span class="p">(</span><span class="mi">323</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dx20</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$q_2$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Methane-Benzene </span><span class="se">\n</span><span class="s2"> PengRobinson76 with sDDLC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Methane-Benzene \n PengRobinson76 with sDDLC&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_27_1.png" src="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_27_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="c1"># cl21, cep21 = model.critical_line(z0=[0, 1], zi=[1, 0], stability_analysis=True)</span>
+<span class="n">cl12</span><span class="p">,</span> <span class="n">cep12</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
+    <span class="n">z0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">zi</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">ds0</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">stability_analysis</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cl12</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">cl12</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cl21</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">cl21</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+<span class="n">cl12</span><span class="p">,</span> <span class="n">cep12</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 287 ms, sys: 2.02 ms, total: 289 ms
+Wall time: 286 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+({&#39;a&#39;: array([1.00000000e-06, 1.06183656e-06, 1.12749691e-06, 1.23367815e-06,
+         1.34985897e-06, 1.47134445e-06, 1.56246637e-06, 1.65359508e-06,
+         1.72194604e-06, 1.77321178e-06, 1.81166250e-06, 1.84050114e-06,
+         1.88376079e-06, 1.91620636e-06, 1.94054110e-06, 1.95879245e-06,
+         1.97704408e-06, 1.99529597e-06, 2.01354813e-06, 2.03180055e-06,
+         2.05005325e-06, 2.07743279e-06, 2.09796785e-06, 2.11865643e-06,
+         2.14084759e-06, 2.16303916e-06, 2.18523114e-06, 2.20676728e-06,
+         2.22863530e-06, 2.25086813e-06, 2.27384441e-06, 2.29682118e-06,
+         2.31906687e-06, 2.34210545e-06, 2.36515805e-06, 2.38867904e-06,
+         2.41259574e-06, 2.44847162e-06, 2.48434854e-06, 2.52022650e-06,
+         2.55610547e-06, 2.59198552e-06, 2.61889623e-06, 2.64580753e-06,
+         2.68617560e-06, 2.72654502e-06, 2.76691577e-06, 2.80728846e-06,
+         2.86784855e-06, 2.91327098e-06, 2.94733882e-06, 2.98140775e-06,
+         3.01547747e-06, 3.04542830e-06, 3.07609993e-06, 3.10677233e-06,
+         3.13769222e-06, 3.16896598e-06, 3.20151877e-06, 3.23439260e-06,
+         3.26726735e-06, 3.30014299e-06, 3.33301951e-06, 3.36611068e-06,
+         3.39920271e-06, 3.43274870e-06, 3.46665177e-06, 3.50068156e-06,
+         3.53656992e-06, 3.57245930e-06, 3.60834973e-06, 3.66218735e-06,
+         3.71602732e-06, 3.75640888e-06, 3.79679174e-06, 3.83492031e-06,
+         3.89211543e-06, 3.94931314e-06, 4.00651351e-06, 4.06371648e-06,
+         4.12092211e-06]),
+  &#39;T&#39;: array([190.56722091, 190.56741999, 190.56763138, 190.5679732 ,
+         190.56834717, 190.56873818, 190.56903144, 190.5693247 ,
+         190.56954464, 190.5697096 , 190.56983332, 190.56992611,
+         190.5700653 , 190.57016968, 190.57024797, 190.57030669,
+         190.57036541, 190.57042413, 190.57048285, 190.57054157,
+         190.57060029, 190.57068836, 190.57075442, 190.57082097,
+         190.57089236, 190.57096374, 190.57103512, 190.5711044 ,
+         190.57117473, 190.57124625, 190.57132015, 190.57139405,
+         190.5714656 , 190.57153969, 190.57161384, 190.57168948,
+         190.5717664 , 190.57188178, 190.57199715, 190.57211253,
+         190.5722279 , 190.57234328, 190.57242981, 190.57251634,
+         190.57264614, 190.57277594, 190.57290574, 190.57303554,
+         190.57323024, 190.57337626, 190.57348578, 190.5735953 ,
+         190.57370482, 190.57380109, 190.57389968, 190.57399827,
+         190.57409766, 190.57419817, 190.5743028 , 190.57440846,
+         190.57451411, 190.57461977, 190.57472542, 190.57483177,
+         190.57493811, 190.57504591, 190.57515485, 190.5752642 ,
+         190.57537951, 190.57549483, 190.57561015, 190.57578312,
+         190.5759561 , 190.57608583, 190.57621556, 190.57633805,
+         190.57652177, 190.5767055 , 190.57688923, 190.57707296,
+         190.57725669]),
+  &#39;P&#39;: array([45.99350434, 45.99372097, 45.99395099, 45.99432293, 45.99472989,
+         45.99515539, 45.99547452, 45.99579366, 45.99603302, 45.99621255,
+         45.99634719, 45.99644817, 45.99659965, 45.99671326, 45.99679846,
+         45.99686237, 45.99692628, 45.99699018, 45.99705409, 45.99711799,
+         45.9971819 , 45.99727776, 45.99734966, 45.99742209, 45.99749978,
+         45.99757747, 45.99765517, 45.99773056, 45.99780712, 45.99788495,
+         45.99796539, 45.99804582, 45.9981237 , 45.99820435, 45.99828504,
+         45.99836738, 45.9984511 , 45.99857668, 45.99870226, 45.99882785,
+         45.99895343, 45.99907901, 45.9991732 , 45.99926739, 45.99940868,
+         45.99954997, 45.99969126, 45.99983255, 46.00004448, 46.00020344,
+         46.00032266, 46.00044187, 46.00056109, 46.0006659 , 46.00077322,
+         46.00088055, 46.00098874, 46.00109816, 46.00121206, 46.00132708,
+         46.0014421 , 46.00155712, 46.00167215, 46.00178792, 46.00190369,
+         46.00202105, 46.00213965, 46.0022587 , 46.00238424, 46.00250979,
+         46.00263534, 46.00282366, 46.00301198, 46.00315323, 46.00329448,
+         46.00342784, 46.00362788, 46.00382792, 46.00402796, 46.00422801,
+         46.00442806]),
+  &#39;V&#39;: array([0.11510108, 0.11510007, 0.11509899, 0.11509724, 0.11509533,
+         0.11509333, 0.11509184, 0.11509034, 0.11508921, 0.11508837,
+         0.11508774, 0.11508727, 0.11508655, 0.11508602, 0.11508562,
+         0.11508532, 0.11508502, 0.11508472, 0.11508442, 0.11508412,
+         0.11508382, 0.11508337, 0.11508303, 0.11508269, 0.11508233,
+         0.11508196, 0.1150816 , 0.11508124, 0.11508088, 0.11508052,
+         0.11508014, 0.11507976, 0.1150794 , 0.11507902, 0.11507864,
+         0.11507825, 0.11507786, 0.11507727, 0.11507668, 0.11507609,
+         0.1150755 , 0.11507491, 0.11507447, 0.11507402, 0.11507336,
+         0.1150727 , 0.11507203, 0.11507137, 0.11507037, 0.11506963,
+         0.11506907, 0.11506851, 0.11506795, 0.11506745, 0.11506695,
+         0.11506645, 0.11506594, 0.11506542, 0.11506489, 0.11506435,
+         0.11506381, 0.11506327, 0.11506273, 0.11506218, 0.11506164,
+         0.11506109, 0.11506053, 0.11505997, 0.11505938, 0.11505879,
+         0.1150582 , 0.11505731, 0.11505643, 0.11505576, 0.1150551 ,
+         0.11505447, 0.11505353, 0.11505259, 0.11505165, 0.11505071,
+         0.11504977])},
+ {&#39;x&#39;: array([9.99995989e-01, 4.01094560e-06]),
+  &#39;y&#39;: array([0.66468424, 0.33531576]),
+  &#39;P&#39;: 46.00404358980046,
+  &#39;Vx&#39;: 0.1150517954018111,
+  &#39;Vy&#39;: 0.05091781675281902,
+  &#39;T&#39;: 190.5769035926144})
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_28_2.png" src="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_28_2.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[63]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gpec</span><span class="o">.</span><span class="n">plot_gped</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">gpec</span><span class="o">.</span><span class="n">_cl12</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_29_0.png" src="../../../_images/tutorial_equations_of_state_cubic_eos_cubic_mixing_rules_29_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[56]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gpec</span><span class="o">.</span><span class="n">_cep12</span>
+</pre></div>
 </div>
 </div>
 </section>

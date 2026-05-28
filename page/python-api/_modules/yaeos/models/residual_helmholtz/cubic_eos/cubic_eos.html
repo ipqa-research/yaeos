@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 4.5.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.cubic_eos &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -205,7 +207,49 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="p">:</span>
             <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">_model_params_declaration_as_str</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">fcode</span></div>
+        <span class="k">return</span> <span class="n">fcode</span>
+
+<div class="viewcode-block" id="CubicEoS.get_attractive_parameter">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_attractive_parameter">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_attractive_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the attractive parameter of the CubicEoS.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temperatures : array_like</span>
+<span class="sd">            Range of temperatuers for which calculate the attractive parameter.</span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        -------</span>
+<span class="sd">        dict : Dictionary with the values of a for each component and its </span>
+<span class="sd">               derivatives with temperature.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">dadt</span><span class="p">,</span> <span class="n">dadt2</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">get_cubiceos_attractive_parameters</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">t</span><span class="o">=</span><span class="n">temperatures</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+            <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dadt</span><span class="p">,</span>
+            <span class="s2">&quot;dt2&quot;</span><span class="p">:</span> <span class="n">dadt2</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="CubicEoS.get_repulsive_parameter">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_repulsive_parameter">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_repulsive_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the repulsive parameters of the CubicEoS.</span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        -------</span>
+<span class="sd">            array : Repulsive parameter value for each component.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">get_cubiceos_repulsive_parameters</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">b</span></div>
+</div>
 
 
 
@@ -388,7 +432,7 @@
 <span class="sd">        srk = SoaveRedlichKwong(tc, pc, w)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;SoaveReldichKwong&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;SoaveRedlichKwong&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -464,7 +508,7 @@
 <span class="sd">        rkpr = RKPR(tc, pc, w, zc)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;fRKPR&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RKPR&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -501,6 +545,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">rkpr</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zc</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">delta_1</span><span class="o">=</span><span class="n">delta_1</span>
                 <span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">get_ac_b_del1_del2_k</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nc</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">critical_temperatures</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta_1</span> <span class="o">=</span> <span class="n">d1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta_2</span> <span class="o">=</span> <span class="n">d2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span> <span class="o">=</span> <span class="n">mixrule</span>
         <span class="k">if</span> <span class="n">mixrule</span><span class="p">:</span>
             <span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>

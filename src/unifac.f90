@@ -460,19 +460,22 @@ contains
       ! ========================================================================
       ! Ejk
       ! ------------------------------------------------------------------------
-      if ((dt .or. dtn) .and. .not. dt2) then
-         call self%psi_function%psi(&
-            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
-            )
-      elseif (dt2 .and. .not. (dt .or. dtn)) then
-         call self%psi_function%psi(&
-            self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2 &
-            )
-      else
-         call self%psi_function%psi(&
-            self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
-            )
-      end if
+      ! if ((dt .or. dtn) .and. .not. dt2) then
+      !    call self%psi_function%psi(&
+      !       self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt &
+      !       )
+      ! elseif (dt2 .and. .not. (dt .or. dtn)) then
+      !    call self%psi_function%psi(&
+      !       self%groups_stew, T, psi=Ejk, dpsi_dt2=dEjk_dt2 &
+      !       )
+      ! else
+      !    call self%psi_function%psi(&
+      !       self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
+      !       )
+      ! end if
+      call self%psi_function%psi(&
+         self%groups_stew, T, psi=Ejk, dpsi_dt=dEjk_dt, dpsi_dt2=dEjk_dt2 &
+         )
 
       ! ========================================================================
       ! Auxiliars
@@ -613,7 +616,6 @@ contains
          do i=1,self%nmolecules
             sum_vij_Qj_dlambdas_dT(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT - dlambda_ik_dT(i,:)))
          end do
-
          dGe_dT_aux = -sum(n * sum_vij_Qj_dlambdas_dT)
       end if
 
@@ -621,7 +623,6 @@ contains
          do i=1,self%nmolecules
             sum_vij_Qj_dlambdas_dT2(i) = sum(self%vij(i,:) * self%qk * (dlambda_k_dT2 - dlambda_ik_dT2(i,:)))
          end do
-
          dGe_dT2 = -sum(n * sum_vij_Qj_dlambdas_dT2)
       end if
 

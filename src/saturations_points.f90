@@ -60,6 +60,9 @@ contains
       real(pr) :: f, step
       integer :: its, iterations
 
+      real(pr) :: X(size(n)+2), S
+      integer :: ns, nc
+
       ! =======================================================================
       ! Handle arguments
       ! -----------------------------------------------------------------------
@@ -121,27 +124,23 @@ contains
       end do
       ! ========================================================================
       if (its >= iters_first_step) then
-         block
-            real(pr) :: X(size(n)+2), S
-            integer :: ns, nc
-            nc = size(n)
-            X(:nc) = log(y/z)
-            X(nc+1) = log(T)
-            X(nc+2) = log(P)
-            ns = nc+1
-            S = X(ns)
+         nc = size(n)
+         X(:nc) = log(y/z)
+         X(nc+1) = log(T)
+         X(nc+2) = log(P)
+         ns = nc+1
+         S = X(ns)
 
-            call solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
+         call solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
 
-            P = exp(X(nc+2))
-            y = z * exp(X(:nc))
-            call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
-            call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
-         end block
+         P = exp(X(nc+2))
+         y = z * exp(X(:nc))
+         call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+         call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
       end if
 
       y = y/sum(y)
-      
+
       select case(kind)
        case("bubble")
          saturation_pressure = EquilibriumState(kind="bubble", &
@@ -157,7 +156,7 @@ contains
             )
       end select
 
-      if (its >= max_iterations .or. any(isnan([P, y])) .or. abs(Vz - Vy) < 1e-8) then
+      if (its >= max_iterations .or. any(ieee_is_nan(y)) .or. ieee_is_nan(P) .or. abs(Vz - Vy) < 1e-8) then
          saturation_pressure%kind = "failed"
       end if
    end function saturation_pressure
@@ -206,6 +205,9 @@ contains
       logical :: is_incipient(size(n))
 
       real(pr) :: T1, T2, f1, f2
+
+      integer :: nc, ns
+      real(pr) :: X(size(n)+2), S
 
       ! =======================================================================
       ! Handle arguments
@@ -278,23 +280,19 @@ contains
       end do
 
       if (its >= iters_first_step) then
-         block
-            real(pr) :: X(size(n)+2), S
-            integer :: ns, nc
-            nc = size(n)
-            X(:nc) = log(k)
-            X(nc+1) = log(T)
-            X(nc+2) = log(P)
-            ns = nc+2
-            S = X(ns)
+         nc = size(n)
+         X(:nc) = log(k)
+         X(nc+1) = log(T)
+         X(nc+2) = log(P)
+         ns = nc+2
+         S = X(ns)
 
-            call solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
+         call solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
 
-            T = exp(X(nc+1))
-            y = z * exp(X(:nc))
-            call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
-            call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
-         end block
+         T = exp(X(nc+1))
+         y = z * exp(X(:nc))
+         call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+         call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
       end if
 
       select case(kind)
@@ -312,7 +310,7 @@ contains
             )
       end select
 
-      if (its >= max_iterations .or. any(isnan([P, y])) .or. abs(Vz - Vy) < 1e-8) then
+      if (its >= max_iterations .or. any(ieee_is_nan(y)) .or. ieee_is_nan(T) .or. abs(Vz - Vy) < 1e-8) then
          saturation_temperature%kind = "failed"
       end if
    end function saturation_temperature

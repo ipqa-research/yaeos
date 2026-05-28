@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.5.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -179,6 +181,8 @@
 <span class="sd">        model = SoaveRedlichKwong(tc, pc, w, mixrule)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;QMR&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kij</span><span class="p">,</span> <span class="n">lij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
@@ -233,7 +237,6 @@
 <span class="sd">        representation of the model parameters declaration. This string should</span>
 <span class="sd">        be valid Fortran code that declares the model variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;type(QMR) :: mixrule&quot;</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -254,24 +257,24 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    kij_0 : array_like</span>
+<span class="sd">    kij_0 : matrix_like</span>
 <span class="sd">        kij_0 binary interaction parameters matrix</span>
-<span class="sd">    kij_inf : array_like</span>
+<span class="sd">    kij_inf : matrix_like</span>
 <span class="sd">        kij_inf binary interaction parameters matrix</span>
-<span class="sd">    t_ref: array_like</span>
+<span class="sd">    t_ref: matrix_like</span>
 <span class="sd">        Reference temperature</span>
-<span class="sd">    lij : array_like</span>
+<span class="sd">    lij : matrix_like</span>
 <span class="sd">        lij binary interaction parameters matrix</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    kij_0 : array_like</span>
+<span class="sd">    kij_0 : matrix_like</span>
 <span class="sd">        kij_0 binary interaction parameters matrix</span>
-<span class="sd">    kij_inf : array_like</span>
+<span class="sd">    kij_inf : matrix_like</span>
 <span class="sd">        kij_inf binary interaction parameters matrix</span>
-<span class="sd">    t_ref: array_like</span>
+<span class="sd">    t_ref: matrix_like</span>
 <span class="sd">        Reference temperature</span>
-<span class="sd">    lij : array_like</span>
+<span class="sd">    lij : matrix_like</span>
 <span class="sd">        lij binary interaction parameters matrix</span>
 
 <span class="sd">    Example</span>
@@ -294,6 +297,8 @@
 
 <span class="sd">        model = SoaveRedlichKwong(tc, pc, w, mixrule)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;QMRTD&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kij_0</span><span class="p">,</span> <span class="n">kij_inf</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">lij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
@@ -362,7 +367,6 @@
 <span class="sd">        representation of the model parameters declaration. This string should</span>
 <span class="sd">        be valid Fortran code that declares the model variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;type(QMRTD) :: mixrule&quot;</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -420,14 +424,16 @@
 <span class="sd">        model_mhv = PengRobinson76(tc, pc, w, mixrule)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;MHV&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ge</span><span class="p">:</span> <span class="n">GeModel</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lij</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nc</span> <span class="o">=</span> <span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ge</span> <span class="o">=</span> <span class="n">ge</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
         <span class="k">if</span> <span class="n">lij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">lij</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">lij</span>
 
 <div class="viewcode-block" id="MHV.set_mixrule">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.set_mixrule">[docs]</a>
@@ -457,27 +463,20 @@
 
         <span class="n">lij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
-                <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
+            <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
 
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
-                    <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-            <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span><span class="p">:</span>
-            <span class="c1"># TODO: include lij in MHV</span>
-            <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, b=ar_model%b)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, bi=ar_model%b)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, b=ar_model%b, lij=lij)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">fcode</span>
 
@@ -504,9 +503,7 @@
         <span class="c1"># Mixrule setup</span>
         <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;type(MHV) :: mixrule&quot;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="c1"># TODO: include lij in MHV</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_have_lij</span><span class="p">:</span>
-            <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;real(pr) :: lij(nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;real(pr) :: lij(nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
         <span class="k">return</span> <span class="n">fcode</span></div>
 
@@ -547,6 +544,8 @@
 <span class="sd">        model_hv = PengRobinson76(tc, pc, w, mixrule)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;HV&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ge</span><span class="p">:</span> <span class="n">GeModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ge</span> <span class="o">=</span> <span class="n">ge</span>
 
@@ -574,10 +573,9 @@
 
         <span class="n">fcode</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="o">.</span><span class="n">_model_params_as_str</span><span class="p">()</span>
 
-        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="s2">&quot;mixrule = HV(ge=ge_model, &quot;</span>
-            <span class="s2">&quot;bi=ar_model%b, del1=ar_model</span><span class="si">%d</span><span class="s2">el1)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule</span><span class="si">%g</span><span class="s2">e = ge_model </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule%bi = ar_model%b </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule</span><span class="si">%d</span><span class="s2">el1 = ar_model</span><span class="si">%d</span><span class="s2">el1 </span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">return</span> <span class="n">fcode</span>
 
@@ -622,6 +620,8 @@
 <span class="sd">        NRTL alpha parameters matrix</span>
 <span class="sd">    gji : matrix_like</span>
 <span class="sd">        NRTL gij parameters matrix</span>
+<span class="sd">    gjiT: matrix_like</span>
+<span class="sd">        NRTL gij temperature coefficient parameters matrix</span>
 <span class="sd">    use_kij : matrix_like</span>
 <span class="sd">        Boolean matrix indicating whether to use kij parameters</span>
 <span class="sd">    kij : matrix_like</span>
@@ -640,6 +640,8 @@
 <span class="sd">    kij : matrix_like</span>
 <span class="sd">        kij binary interaction parameters matrix</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;HVNRTL&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">gji</span><span class="p">,</span> <span class="n">gjiT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_kij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kij</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">gji</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -685,39 +687,42 @@
 <span class="sd">        representation of the model parameters. This string should be valid</span>
 <span class="sd">        Fortran code that assigns the model variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">)</span>
         <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-
         <span class="n">gji0_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">gjiT_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">gjit_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">use_kij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">kij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">alpha_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gji0</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
             <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;gji0(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
-            <span class="n">gjiT_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;gjiT(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">gjit_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;gjiT(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
             <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;use_kij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
             <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">alpha_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;alphaij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
 
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                    <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gji0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                    <span class="n">gjiT_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                    <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gji0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="n">gjiT_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
+                <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nc</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">gji0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gji</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">gjit_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gjiT</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">alpha_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">use_kij_c</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot;.true.&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;.false.&quot;</span>
+                <span class="p">)</span> <span class="o">+</span> <span class="n">sep</span>
 
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">alpha_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">fcode</span> <span class="o">+=</span> <span class="n">gji0_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">gjiT_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">gjit_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">fcode</span> <span class="o">+=</span> <span class="n">use_kij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">r</span><span class="s2">&quot;mixrule = HVNRTL(gji0=gji0, gjit=gjiT, b=ar_model%b, &quot;</span>
-            <span class="sa">r</span><span class="s2">&quot;use_kij=use_kij, kij=kij)\n\n&quot;</span>
+            <span class="s2">&quot;mixrule = init_hvnrtl(&quot;</span>
+            <span class="s2">&quot;b=ar_model%b, del1=ar_model</span><span class="si">%d</span><span class="s2">el1, &quot;</span>
+            <span class="s2">&quot;alpha=alphaij, gji0=gji0, gjiT=gjiT, &quot;</span>
+            <span class="s2">&quot;use_kij=use_kij, kij=kij)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">fcode</span>
 
@@ -728,15 +733,250 @@
 <span class="sd">        representation of the model parameters declaration. This string should</span>
 <span class="sd">        be valid Fortran code that declares the model variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;type(HV_NRTL) :: mixrule</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: gji0(nc,nc), gjiT(nc,nc), kij(nc,nc), alphaij(nc,nc)&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;logical :: use_kij(nc,nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fcode</span>
+
+
+<div class="viewcode-block" id="HVNRTL.setup_from_kij">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.setup_from_kij">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setup_from_kij</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">,</span> <span class="n">kij</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generalizes the calculation of gji parameters and returns linear </span>
+<span class="sd">        correlation matrices gji0 and gjiT for any number of components.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">           Internally this function depends on the :math:`\delta_1` of the</span>
+<span class="sd">           model. For the case of the RKPR EoS where there are different</span>
+<span class="sd">           :math:`\delta_1` parameters for each component the method will</span>
+<span class="sd">           only use a mean value. Which will make the predictions further</span>
+<span class="sd">           away of the predictions being made with :math:`k_{ij}` compared</span>
+<span class="sd">           to using classic Cubic EoS. This method is intended only as a way</span>
+<span class="sd">           to ease the initialization of parameters on optimization methods. </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model: yaeos.CubicEoS</span>
+<span class="sd">            Thermodynamic model intended to be used as reference model.</span>
+<span class="sd">        temperatures: array_like</span>
+<span class="sd">            Array of temperature values on which make the correlation</span>
+<span class="sd">        kij: float</span>
+<span class="sd">            kij value to replicate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            yaeos.HVNRTL: Instance of a HVNRTL mixing rule with parameters</span>
+<span class="sd">            set to be close the parameters that would replicate the classic</span>
+<span class="sd">            QMR mixing rule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
+        <span class="k">def</span> <span class="nf">lambd</span><span class="p">(</span><span class="n">d1</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">d1</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">d1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">f</span><span class="o">/</span><span class="n">g</span> <span class="o">*</span> <span class="n">h</span>
+            <span class="k">return</span> <span class="n">L</span>
+        
+        <span class="c1"># 1. Setup basic parameters</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">ac</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">del1</span><span class="p">,</span> <span class="n">del2</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">get_ac_b_del1_del2_k</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span>
+        <span class="n">ais</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_attractive_parameter</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span>  <span class="c1"># Shape: (nt, nc)</span>
+        <span class="n">bis</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_repulsive_parameter</span><span class="p">()</span>          <span class="c1"># Shape: (nc,)</span>
+        <span class="n">lambd</span> <span class="o">=</span> <span class="n">lambd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">del1</span><span class="p">))</span>
+        
+        <span class="c1"># Storage for all gji matrices across all temperatures</span>
+        <span class="c1"># Shape: (Temperature, Component_j, Component_i)</span>
+        <span class="n">gjiss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+        
+        <span class="c1"># 2. Calculate gji at each Temperature</span>
+        <span class="k">for</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">temperatures</span><span class="p">):</span>
+            <span class="n">ais_i</span> <span class="o">=</span> <span class="n">ais</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+            
+            <span class="c1"># Calculate gii (pure component interaction) for this T</span>
+            <span class="c1"># gii = - (a_i / b_i) * lambda</span>
+            <span class="n">gii</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">ais_i</span> <span class="o">/</span> <span class="n">bis</span><span class="p">)</span> <span class="o">*</span> <span class="n">lambd</span>
+            
+            <span class="n">gji_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
+                    <span class="c1"># Cross-interaction term logic</span>
+                    <span class="n">term1</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">bis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">bis</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">bis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">bis</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    <span class="n">term2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gii</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">gii</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">kij</span><span class="p">)</span>
+                    
+                    <span class="c1"># gji = (Interaction Term) - gii[i]</span>
+                    <span class="n">gji_temp</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">term1</span> <span class="o">*</span> <span class="n">term2</span><span class="p">)</span> <span class="o">-</span> <span class="n">gii</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            
+            <span class="n">gjiss</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">gji_temp</span>
+
+        <span class="c1"># 3. Linear Correlation: gji = gji0 + gjiT * T</span>
+        <span class="n">gji0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+        <span class="n">gjiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="c1"># Extract the vector of values for parameter g[j,i] over time</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">gjiss</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                    
+                    <span class="c1"># Polyfit returns [slope, intercept]</span>
+                    <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">temperatures</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    
+                    <span class="n">gjiT</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">slope</span>
+                    <span class="n">gji0</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">intercept</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span><span class="n">nc</span><span class="p">)),</span> <span class="n">gji</span><span class="o">=</span><span class="n">gji0</span><span class="p">,</span> <span class="n">gjiT</span><span class="o">=</span><span class="n">gjiT</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="sDDLC">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC">[docs]</a>
+<span class="k">class</span> <span class="nc">sDDLC</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;segmented Density Dependent Local Composition mixing rule.</span>
+
+<span class="sd">    ..math::</span>
+<span class="sd">        k_{ij}(T) = k_{ij}^{\infty} + k_{ij}^0 \exp{\left(-T/T^{ref}\right)}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    q : array_like</span>
+<span class="sd">        Segment size for each component</span>
+<span class="sd">    kij_0 : matrix_like</span>
+<span class="sd">        kij_0 binary interaction parameters matrix</span>
+<span class="sd">    kij_inf : matrix_like</span>
+<span class="sd">        kij_inf binary interaction parameters matrix</span>
+<span class="sd">    t_ref: matrix_like</span>
+<span class="sd">        Reference temperature</span>
+<span class="sd">    lij : matrix_like</span>
+<span class="sd">        lij binary interaction parameters matrix</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    q : array_like</span>
+<span class="sd">        Segment size for each component</span>
+<span class="sd">    kij_0 : matrix_like</span>
+<span class="sd">        kij_0 binary interaction parameters matrix</span>
+<span class="sd">    kij_inf : matrix_like</span>
+<span class="sd">        kij_inf binary interaction parameters matrix</span>
+<span class="sd">    t_ref: matrix_like</span>
+<span class="sd">        Reference temperature</span>
+<span class="sd">    lij : matrix_like</span>
+<span class="sd">        lij binary interaction parameters matrix</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from yaeos import sDDLC, SoaveRedlichKwong</span>
+
+<span class="sd">        qs = [1.16, 6.0]</span>
+<span class="sd">        kij_0 = [[0.0, 0.1], [0.1, 0.0]]</span>
+<span class="sd">        kij_inf = [[0.0, 0.1], [0.1, 0.0]]</span>
+<span class="sd">        Tref = [[0.0, 390], [390, 0.0]]</span>
+<span class="sd">        lij = [[0.0, 0.02], [0.02, 0.0]]</span>
+
+<span class="sd">        # sDDLC</span>
+<span class="sd">        mixrule = sDDLC(qs, kij_0, kij_inf, Tref, lij)</span>
+
+<span class="sd">        tc = [305.32, 469.7]        # critical temperature [K]</span>
+<span class="sd">        pc = [48.72, 33.7]          # critical pressure [bar]</span>
+<span class="sd">        w = [0.0995, 0.152]         # acentric factor</span>
+
+<span class="sd">        model = SoaveRedlichKwong(tc, pc, w, mixrule)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;sDDLC&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">kij_0</span><span class="p">,</span> <span class="n">kij_inf</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">lij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_inf</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_ref</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="sDDLC.set_mixrule">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.set_mixrule">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set mix rule method.&quot;&quot;&quot;</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_sddlc</span><span class="p">(</span>
+            <span class="n">ar_model_id</span><span class="p">,</span>
+            <span class="n">qs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">,</span>
+            <span class="n">kij_0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">,</span>
+            <span class="n">kij_inf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span><span class="p">,</span>
+            <span class="n">t_star</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span>
+            <span class="n">lij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters. This string should be valid</span>
+<span class="sd">        Fortran code that assigns the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">kij0_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">kijinf_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">lij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">t_ref_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">qs_c</span> <span class="o">=</span> <span class="s2">&quot;qs = [&quot;</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">:</span>
+            <span class="n">qs_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">_pr,&quot;</span>
+        <span class="n">qs_c</span> <span class="o">+=</span> <span class="s2">&quot;]&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">)):</span>
+            <span class="n">kij0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij_0(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">kijinf_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij_inf(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+            <span class="n">t_ref_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;t_ref(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">kij0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">kijinf_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                    <span class="n">t_ref_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">kij0_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">kijinf_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">t_ref_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">qs_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kij0_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kijinf_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">t_ref_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        mixrule = sDDLC(q=qs, k=kij_inf, k0=kij_0, l=lij, tref=t_ref)</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
+
+<span class="sd">        This method should be implemented by subclasses to return a string</span>
+<span class="sd">        representation of the model parameters declaration. This string should</span>
+<span class="sd">        be valid Fortran code that declares the model variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;type(sDDLC) :: mixrule&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: kij_inf(nc, nc), kij_0(nc, nc), lij(nc, nc)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: t_ref(nc, nc), qs(nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">fcode</span></div>
 
 </pre></div>

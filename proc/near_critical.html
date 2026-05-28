@@ -82,7 +82,7 @@
     <div class="container">
   <div class="row">
     <h1>near_critical
-      <small>Function</small>
+      <small>Subroutine</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">18 statements</a>
+                 title=" 0.2% of total for procedures.">25 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -105,7 +105,7 @@
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90~2.html'>auxiliar.f90</a></li>
                 <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
             <li class="breadcrumb-item active" aria-current="page">near_critical</li>
           </ol>
@@ -135,11 +135,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/near_critical.html#variable-cf">cf</a>
-            <a class="list-group-item" href="../proc/near_critical.html#variable-l~11">l</a>
-            <a class="list-group-item" href="../proc/near_critical.html#variable-lb~15">lb</a>
+            <a class="list-group-item" href="../proc/near_critical.html#variable-cf~2">cf</a>
+            <a class="list-group-item" href="../proc/near_critical.html#variable-lb~19">lb</a>
             <a class="list-group-item" href="../proc/near_critical.html#variable-lnk~4">lnK</a>
-            <a class="list-group-item" href="../proc/near_critical.html#variable-ub~15">ub</a>
+            <a class="list-group-item" href="../proc/near_critical.html#variable-ub~19">ub</a>
         </div>
       </div>
     </div>
@@ -169,7 +168,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  function near_critical(nc, np, X)  
+    <h2>public  subroutine near_critical(nc, np, X, near_crit, l, i, j)  
 </h2>
     
 
@@ -188,7 +187,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~61"></span>
+              <span class="anchor" id="variable-nc~107"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -198,12 +197,12 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                
+                <p>Number of components</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~25"></span>
+              <span class="anchor" id="variable-np~32"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -213,12 +212,12 @@
             <td>::</td>
             <td><strong>np</strong></td>
             <td>
-                
+                <p>Number of main phases</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~42"></span>
+              <span class="anchor" id="variable-x~69"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -228,19 +227,72 @@
             <td>::</td>
             <td><strong>X</strong>(nc*np+np+2)</td>
             <td>
-                
+                <p>Vector of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-near_crit~3"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>near_crit</strong></td>
+            <td>
+                <p>If the system is near a critical point</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~22"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+            <td>
+                <p>Index of the near-critical phase</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~120"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+                <p>Index of the component with the maximum lnK</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~58"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+            <td>
+                <p>Index of the component with the minimum lnK</p>
             </td>
         </tr>
     </tbody>
   </table>
 
-      <h3>Return Value
-        <small>
-          <span class="anchor" id="variable-near_critical"></span>
-          logical
-        </small>
-      </h3>
-      
     <br>
     <div class="card">
       <div class="card-header">
@@ -264,18 +316,18 @@
 <polygon fill="none" stroke="black" points="582,-24 503,-24 503,0 582,0 582,-24"/>
 <text text-anchor="middle" x="542.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">near_critical</text>
 </g>
-<!-- proc~update_specification~4 -->
+<!-- proc~update_specification~5 -->
 <g id="proc~~near_critical~~CalledByGraph_node2" class="node">
-<title>proc~update_specification~4</title>
-<g id="a_proc~~near_critical~~CalledByGraph_node2"><a xlink:href="../proc/update_specification~4.html" xlink:title="update_specification">
+<title>proc~update_specification~5</title>
+<g id="a_proc~~near_critical~~CalledByGraph_node2"><a xlink:href="../proc/update_specification~5.html" xlink:title="update_specification">
 <polygon fill="#d9534f" stroke="#d9534f" points="467,-24 344,-24 344,0 467,0 467,-24"/>
 <text text-anchor="middle" x="405.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">update_specification</text>
 </a>
 </g>
 </g>
-<!-- proc~update_specification~4&#45;&gt;proc~near_critical -->
+<!-- proc~update_specification~5&#45;&gt;proc~near_critical -->
 <g id="proc~~near_critical~~CalledByGraph_edge1" class="edge">
-<title>proc~update_specification~4&#45;&gt;proc~near_critical</title>
+<title>proc~update_specification~5&#45;&gt;proc~near_critical</title>
 <path fill="none" stroke="#000000" d="M467.29,-12C475.75,-12 484.36,-12 492.57,-12"/>
 <polygon fill="#000000" stroke="#000000" points="492.71,-15.5 502.71,-12 492.71,-8.5 492.71,-15.5"/>
 </g>
@@ -288,9 +340,9 @@
 </a>
 </g>
 </g>
-<!-- proc~pt_envelope&#45;&gt;proc~update_specification~4 -->
+<!-- proc~pt_envelope&#45;&gt;proc~update_specification~5 -->
 <g id="proc~~near_critical~~CalledByGraph_edge2" class="edge">
-<title>proc~pt_envelope&#45;&gt;proc~update_specification~4</title>
+<title>proc~pt_envelope&#45;&gt;proc~update_specification~5</title>
 <path fill="none" stroke="#000000" d="M308.18,-12C316.16,-12 324.82,-12 333.57,-12"/>
 <polygon fill="#000000" stroke="#000000" points="333.83,-15.5 343.83,-12 333.83,-8.5 333.83,-15.5"/>
 </g>
@@ -422,7 +474,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-cf"></span>
+              <span class="anchor" id="variable-cf~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -439,24 +491,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~11"></span>
-              integer,
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>l</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Phase index</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lb~15"></span>
+              <span class="anchor" id="variable-lb~19"></span>
               integer,
             </td>
               <td>public</td>
@@ -490,7 +525,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~15"></span>
+              <span class="anchor" id="variable-ub~19"></span>
               integer,
             </td>
               <td>public</td>
@@ -538,7 +573,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-02-28 00:49 +0000             </p>
+ on 2026-05-28 17:05 +0000             </p>
           </div>
         </div>
         <br>

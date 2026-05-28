@@ -23,8 +23,10 @@
 .. toctree::
    :maxdepth: 5
 
+   gpec
    envelopes
-   fitting
+   fitting/init
+   tools/init
 
 Indices and tables
 ==================

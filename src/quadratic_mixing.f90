@@ -50,9 +50,11 @@ module yaeos__models_ar_cubic_quadratic_mixing
 
 contains
 
-   subroutine Dmix(self, n, T, &
-      ai, daidt, daidt2, &
-      D, dDdT, dDdT2, dDi, dDidT, dDij)
+   subroutine Dmix(self, n, V, T, &
+         ai, daidt, daidt2, &
+         D, &
+         dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
+      )
       !! Attractive parameter mixing rule with quadratic mix.
       !!
       !! Takes the all the pure components attractive parameters and their
@@ -75,6 +77,7 @@ contains
       !! my_mixing_rule%aij => new_aij_procedure
       !! ```
       class(QMR), intent(in) :: self !! Mixing rule object.
+      real(pr), intent(in) :: V !! Volume [L] (unused)
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: n(:) !! Moles vector [mol]
       real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
@@ -82,9 +85,13 @@ contains
       real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
 
       real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
-      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
       real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
       real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
       real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
       real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
 

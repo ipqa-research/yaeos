@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.8% of total for modules and submodules.">109 statements</a>
+                 title=" 1.1% of total for modules and submodules.">160 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -146,6 +146,7 @@
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/yaeos__consistency_gemodel.html#proc-ge_consistency">ge_consistency</a>
+            <a class="list-group-item" href="../module/yaeos__consistency_gemodel.html#proc-individual_ge_calls">individual_ge_calls</a>
             <a class="list-group-item" href="../module/yaeos__consistency_gemodel.html#proc-numeric_ge_derivatives">numeric_ge_derivatives</a>
         </div>
       </div>
@@ -183,6 +184,10 @@ difference method.</p>
 <li>
 <p><a href="../proc/ge_consistency.html">ge_consistency</a>: From an instantiated GeModel evaluate all the
 Michelsen and Mollerup consistency tests</p>
+</li>
+<li>
+<p><a href="../proc/individual_ge_calls.html">individual_ge_calls</a>: Test the individual calls to the excess Gibbs
+free energy derivatives.</p>
 </li>
 </ul>
 <h1 id="references">References</h1>
@@ -547,7 +552,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~47"></span>
+              <span class="anchor" id="variable-model~11"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -563,7 +568,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~55"></span>
+              <span class="anchor" id="variable-n~14"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -578,7 +583,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~31"></span>
+              <span class="anchor" id="variable-t~19"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -659,6 +664,92 @@ modules which it uses.
   </div>
 
               <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-individual_ge_calls"></span> <h3>public  subroutine <a href='../proc/individual_ge_calls.html'>individual_ge_calls</a>(model, n, T, passed)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Check if all derivatives of excess Gibbs can be called individually</p><a href="../proc/individual_ge_calls.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-model~13"></span>
+              class(<a href='../type/gemodel.html'>GeModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+<p>
+<script type="math/tex">G^E</script> model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-passed"></span>
+              logical,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>passed</strong></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-numeric_ge_derivatives"></span> <h3>public  subroutine <a href='../proc/numeric_ge_derivatives.html'>numeric_ge_derivatives</a>(model, n, t, d_n, d_t, Ge, GeT, Gen, GeT2, GeTn, Gen2)  
 </h3></div>
     <div class="card-body">
@@ -678,7 +769,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~48"></span>
+              <span class="anchor" id="variable-model~12"></span>
               class(<a href='../type/gemodel.html'>GeModel</a>),
             </td>
 <td>intent(in)</td>
@@ -694,7 +785,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~56"></span>
+              <span class="anchor" id="variable-n~15"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -709,7 +800,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~32"></span>
+              <span class="anchor" id="variable-t~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -724,7 +815,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_n~3"></span>
+              <span class="anchor" id="variable-d_n"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -739,7 +830,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d_t~3"></span>
+              <span class="anchor" id="variable-d_t"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -754,7 +845,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~11"></span>
+              <span class="anchor" id="variable-ge~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -769,7 +860,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~9"></span>
+              <span class="anchor" id="variable-get"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -786,7 +877,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~10"></span>
+              <span class="anchor" id="variable-gen~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -803,7 +894,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~9"></span>
+              <span class="anchor" id="variable-get2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -820,7 +911,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~10"></span>
+              <span class="anchor" id="variable-getn"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -837,7 +928,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~8"></span>
+              <span class="anchor" id="variable-gen2~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -882,7 +973,7 @@ modules which it uses.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-02-28 00:49 +0000             </p>
+ on 2026-05-28 17:05 +0000             </p>
           </div>
         </div>
         <br>

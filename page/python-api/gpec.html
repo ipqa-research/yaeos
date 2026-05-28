@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPEC module &mdash; yaeos 4.5.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fa8d1881"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Envelopes Module" href="envelopes.html" />
+    <link rel="prev" title="Groups module" href="models/groups.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GPEC module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/init.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">GPEC module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/gpec.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-yaeos.gpec">
+<span id="gpec-module"></span><h1>GPEC module<a class="headerlink" href="#module-yaeos.gpec" title="Link to this heading"></a></h1>
+<p>Global Phase Equilibria Calculations.</p>
+<p>Module that implements the GPEC algorithm for calculation of GPEDs and its
+derivatives to obtain isopleths, isotherms and isobars.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">GPEC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><span class="pre">ArModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stability_analysis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_21</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_12</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999999999</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/gpec.html#GPEC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.gpec.GPEC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Global Phase Equilibria Calculation.</p>
+<p>This class implements the GPEC algorithm for calculation of global phase
+equilibria diagrams (GPEDs) and their usage to obtain isotherms, isobars
+and isopleths. It is designed to work with a given thermodynamic model
+that implements the necessary methods for phase equilibria calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><em>ArModel</em></a>) – The thermodynamic model to be used for phase equilibria calculations.</p></li>
+<li><p><strong>max_pressure</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum pressure for the calculations (default is 2500).</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of points to be calculated in the critical line
+(default is 10000).</p></li>
+<li><p><strong>stability_analysis</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to perform stability analysis (default is True).</p></li>
+<li><p><strong>step_21</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the critical line that starts from the almost pure second
+component (default is 1e-2).</p></li>
+<li><p><strong>step_12</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the critical line that starts from the almost pure first
+component (default is 1e-5).</p></li>
+<li><p><strong>x20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial mole fraction of the second component for the critical line
+starting from the almost pure second component (default is 0.9999).</p></li>
+<li><p><strong>x10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial mole fraction of the first component for the critical line
+starting from the almost pure first component (default is 0.99999).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._z0">
+<span class="sig-name descname"><span class="pre">_z0</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._z0" title="Link to this definition"></a></dt>
+<dd><p>Initial composition of the system, representing the almost pure second
+component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._zi">
+<span class="sig-name descname"><span class="pre">_zi</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._zi" title="Link to this definition"></a></dt>
+<dd><p>Initial composition of the system, representing the almost pure first
+component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._model">
+<span class="sig-name descname"><span class="pre">_model</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._model" title="Link to this definition"></a></dt>
+<dd><p>The thermodynamic model used for phase equilibria calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.html#yaeos.core.ArModel" title="yaeos.core.ArModel">ArModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._pures">
+<span class="sig-name descname"><span class="pre">_pures</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._pures" title="Link to this definition"></a></dt>
+<dd><p>List of pure saturation pressures for each component in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._cl21">
+<span class="sig-name descname"><span class="pre">_cl21</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._cl21" title="Link to this definition"></a></dt>
+<dd><p>Critical line data starting from the almost pure second component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._cep21">
+<span class="sig-name descname"><span class="pre">_cep21</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._cep21" title="Link to this definition"></a></dt>
+<dd><p>Critical endpoint data starting from the almost pure second component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._cl12">
+<span class="sig-name descname"><span class="pre">_cl12</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._cl12" title="Link to this definition"></a></dt>
+<dd><p>Critical line data starting from the almost pure first component,
+or None if not applicable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._cep12">
+<span class="sig-name descname"><span class="pre">_cep12</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._cep12" title="Link to this definition"></a></dt>
+<dd><p>Critical endpoint data starting from the almost pure first component,
+or None if not applicable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._cl_ll">
+<span class="sig-name descname"><span class="pre">_cl_ll</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._cl_ll" title="Link to this definition"></a></dt>
+<dd><p>Critical line data for liquid-liquid critical line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC._cep_ll">
+<span class="sig-name descname"><span class="pre">_cep_ll</span></span><a class="headerlink" href="#yaeos.gpec.GPEC._cep_ll" title="Link to this definition"></a></dt>
+<dd><p>Critical endpoint data for liquid-liquid critical line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC.plot_gped">
+<span class="sig-name descname"><span class="pre">plot_gped</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/gpec.html#GPEC.plot_gped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.gpec.GPEC.plot_gped" title="Link to this definition"></a></dt>
+<dd><p>Plot the global phase equilibria diagram (GPED).</p>
+<p>This method plots the critical lines and pure saturation pressures
+for the components in the system. It visualizes the phase behavior of
+the system across different temperatures and pressures.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC.calc_pxy">
+<span class="sig-name descname"><span class="pre">calc_pxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dxll0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/gpec.html#GPEC.calc_pxy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.gpec.GPEC.calc_pxy" title="Link to this definition"></a></dt>
+<dd><p>Calculate a Pxy phase diagram.</p>
+<p>This method calculates the Pxy phase diagram for the system at a given
+temperature. It uses the critical lines and pure saturation pressures
+to determine the phase behavior of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<em>float</em>) – The temperature at which to calculate the Pxy phase diagram.</p></li>
+<li><p><strong>x10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
+starts from the almost pure first component (default is 1e-5).</p></li>
+<li><p><strong>x20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
+starts from the almost pure second component (default is 1e-5).</p></li>
+<li><p><strong>dx10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
+component (default is 1e-3).</p></li>
+<li><p><strong>dx20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
+component (default is 1e-3).</p></li>
+<li><p><strong>dxll0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the liquid-liquid critical
+point (default is 1e-4).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A list containing the calculated Pxy phase diagrams.</p>
+<ul class="simple">
+<li><p>Starting from the almost pure first component. If below its Tc.</p></li>
+<li><p>Starting from the almost pure second component. If below its Tc.</p></li>
+<li><p>Starting from liquid-liquid critical line, if it exists.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC.plot_pxy">
+<span class="sig-name descname"><span class="pre">plot_pxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dxll0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/gpec.html#GPEC.plot_pxy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.gpec.GPEC.plot_pxy" title="Link to this definition"></a></dt>
+<dd><p>Plot a Pxy phase diagram.</p>
+<p>This method plots the Pxy phase diagram for the system at a given
+temperature. It visualizes the phase behavior of the system across
+different compositions of the components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<em>float</em>) – The temperature at which to plot the Pxy phase diagram.</p></li>
+<li><p><strong>x10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
+starts from the almost pure first component (default is 1e-5).</p></li>
+<li><p><strong>x20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
+starts from the almost pure second component (default is 1e-5).</p></li>
+<li><p><strong>dx10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
+component (default is 1e-3).</p></li>
+<li><p><strong>dx20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
+component (default is 1e-3).</p></li>
+<li><p><strong>dxll0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the liquid-liquid critical
+point (default is 1e-4).</p></li>
+<li><p><strong>plot_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments to be passed to the plot function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC.calc_txy">
+<span class="sig-name descname"><span class="pre">calc_txy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dyll0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/gpec.html#GPEC.calc_txy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.gpec.GPEC.calc_txy" title="Link to this definition"></a></dt>
+<dd><p>Calculate a Txy phase diagram.</p>
+<p>This method calculates the Txy phase diagram for the system at a given
+pressure. It uses the critical lines and pure saturation pressures to
+determine the phase behavior of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<em>float</em>) – The pressure at which to calculate the Txy phase diagram.</p></li>
+<li><p><strong>y10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
+starts from the almost pure first component (default is 1e-5).</p></li>
+<li><p><strong>y20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
+starts from the almost pure second component (default is 1e-5).</p></li>
+<li><p><strong>dy10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
+component (default is -1e-3).</p></li>
+<li><p><strong>dy20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
+component (default is 1e-3).</p></li>
+<li><p><strong>dyll0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the liquid-liquid critical
+point (default is 1e-4).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A list containing the calculated Txy envelopes. They are sorted
+in the order of:</p>
+<ul class="simple">
+<li><p>Starting from the almost pure first component.</p></li>
+<li><p>Starting from the almost pure second component.</p></li>
+<li><p>Starting from liquid-liquid critical line if it exists.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.gpec.GPEC.plot_txy">
+<span class="sig-name descname"><span class="pre">plot_txy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy10</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy20</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dyll0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/gpec.html#GPEC.plot_txy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.gpec.GPEC.plot_txy" title="Link to this definition"></a></dt>
+<dd><p>Plot a Txy phase diagram.</p>
+<p>This method plots the Txy phase diagram for the system at a given
+pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<em>float</em>) – The pressure at which to plot the Txy phase diagram.</p></li>
+<li><p><strong>y10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
+starts from the almost pure first component (default is 0.9999).</p></li>
+<li><p><strong>y20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
+starts from the almost pure second component (default is 0.9999).</p></li>
+<li><p><strong>dy10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
+component (default is -1e-3).</p></li>
+<li><p><strong>dy20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
+component (default is 1e-3).</p></li>
+<li><p><strong>dyll0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the liquid-liquid critical
+point (default is 1e-4).</p></li>
+<li><p><strong>plot_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments to be passed to the plot function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="models/groups.html" class="btn btn-neutral float-left" title="Groups module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="envelopes.html" class="btn btn-neutral float-right" title="Envelopes Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

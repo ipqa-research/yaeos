@@ -244,6 +244,11 @@ contains
                X = X + dX
                l1 = lambda1(model=model, X=X, s=0.0_pr, z0=z0, zi=zi, u=u, u_new=u_new)
                u = u_new
+
+               if (its == 500) then
+                  X = X0 - 0.9 * dS * dXdS
+                  real_its = 0
+               end if
             end do
 
 
@@ -290,12 +295,14 @@ contains
             else
                ns = maxloc(abs(dXdS(:3)), dim=1)
             end if
+
             dS = dXdS(ns)*dS * 3./its
             dXdS = dXdS/dXdS(ns)
 
             if (i > 20) then
                dS = sign(max(abs(dS), 1e-2_pr), dS)
             end if
+
             if (i > 4) then
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))

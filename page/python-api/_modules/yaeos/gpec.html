@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>yaeos.gpec &mdash; yaeos 4.5.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fa8d1881"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core.html">Core Module</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../models/init.html">Models</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gpec.html">GPEC module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools/init.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">yaeos.gpec</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for yaeos.gpec</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Global Phase Equilibria Calculations.</span>
+
+<span class="sd">Module that implements the GPEC algorithm for calculation of GPEDs and its</span>
+<span class="sd">derivatives to obtain isopleths, isotherms and isobars.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
+
+<span class="n">MAX_POINTS</span> <span class="o">=</span> <span class="mi">1000</span>
+
+
+<div class="viewcode-block" id="GPEC">
+<a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC">[docs]</a>
+<span class="k">class</span> <span class="nc">GPEC</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Global Phase Equilibria Calculation.</span>
+
+<span class="sd">    This class implements the GPEC algorithm for calculation of global phase</span>
+<span class="sd">    equilibria diagrams (GPEDs) and their usage to obtain isotherms, isobars</span>
+<span class="sd">    and isopleths. It is designed to work with a given thermodynamic model</span>
+<span class="sd">    that implements the necessary methods for phase equilibria calculations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : ArModel</span>
+<span class="sd">        The thermodynamic model to be used for phase equilibria calculations.</span>
+<span class="sd">    max_pressure : float, optional</span>
+<span class="sd">        The maximum pressure for the calculations (default is 2500).</span>
+<span class="sd">    max_points : int, optional</span>
+<span class="sd">        The maximum number of points to be calculated in the critical line</span>
+<span class="sd">        (default is 10000).</span>
+<span class="sd">    stability_analysis : bool, optional</span>
+<span class="sd">        Whether to perform stability analysis (default is True).</span>
+<span class="sd">    step_21 : float, optional</span>
+<span class="sd">        Step size for the critical line that starts from the almost pure second</span>
+<span class="sd">        component (default is 1e-2).</span>
+<span class="sd">    step_12 : float, optional</span>
+<span class="sd">        Step size for the critical line that starts from the almost pure first</span>
+<span class="sd">        component (default is 1e-5).</span>
+<span class="sd">    x20 : float, optional</span>
+<span class="sd">        Initial mole fraction of the second component for the critical line</span>
+<span class="sd">        starting from the almost pure second component (default is 0.9999).</span>
+<span class="sd">    x10 : float, optional</span>
+<span class="sd">        Initial mole fraction of the first component for the critical line</span>
+<span class="sd">        starting from the almost pure first component (default is 0.99999).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    _z0 : np.ndarray</span>
+<span class="sd">        Initial composition of the system, representing the almost pure second</span>
+<span class="sd">        component.</span>
+<span class="sd">    _zi : np.ndarray</span>
+<span class="sd">        Initial composition of the system, representing the almost pure first</span>
+<span class="sd">        component.</span>
+<span class="sd">    _model : ArModel</span>
+<span class="sd">        The thermodynamic model used for phase equilibria calculations.</span>
+<span class="sd">    _pures : list</span>
+<span class="sd">        List of pure saturation pressures for each component in the system.</span>
+<span class="sd">    _cl21 : dict</span>
+<span class="sd">        Critical line data starting from the almost pure second component.</span>
+<span class="sd">    _cep21 : dict</span>
+<span class="sd">        Critical endpoint data starting from the almost pure second component.</span>
+<span class="sd">    _cl12 : dict or None</span>
+<span class="sd">        Critical line data starting from the almost pure first component,</span>
+<span class="sd">        or None if not applicable.</span>
+<span class="sd">    _cep12 : dict or None</span>
+<span class="sd">        Critical endpoint data starting from the almost pure first component,</span>
+<span class="sd">        or None if not applicable.</span>
+<span class="sd">    _cl_ll : dict</span>
+<span class="sd">        Critical line data for liquid-liquid critical line.</span>
+<span class="sd">    _cep_ll : dict</span>
+<span class="sd">        Critical endpoint data for liquid-liquid critical line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span>
+        <span class="n">max_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
+        <span class="n">max_points</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+        <span class="n">stability_analysis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">step_21</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+        <span class="n">step_12</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">x20</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">x10</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-9</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Calculate the pure saturation pressures of each component and</span>
+        <span class="c1"># save it as an internal variable</span>
+        <span class="n">psats</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">pure_saturation_pressures</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pures</span> <span class="o">=</span> <span class="n">psats</span>
+
+        <span class="c1"># Calculate the critical line starting from the almost pure second</span>
+        <span class="c1"># component.</span>
+        <span class="n">cl</span><span class="p">,</span> <span class="n">cep</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
+            <span class="n">z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+            <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+            <span class="n">ns</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x20</span><span class="p">,</span>
+            <span class="n">a0</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x20</span><span class="p">,</span>
+            <span class="n">ds0</span><span class="o">=</span><span class="n">step_21</span><span class="p">,</span>
+            <span class="n">stop_pressure</span><span class="o">=</span><span class="n">max_pressure</span><span class="p">,</span>
+            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="n">stability_analysis</span><span class="o">=</span><span class="n">stability_analysis</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cl21</span> <span class="o">=</span> <span class="n">cl</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cep</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span> <span class="o">=</span> <span class="n">cep</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl21</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">psats</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">5</span>
+            <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl21</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">psats</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">5</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="c1"># Check if the critical line did not reach to the pure first component.</span>
+        <span class="c1"># if not, calculate the critical line starting from the almost pure</span>
+        <span class="c1"># first component. It is important to make small steps because this</span>
+        <span class="c1"># kind of line can be pretty short.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cep</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">cl</span><span class="p">,</span> <span class="n">cep</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
+                <span class="n">z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                <span class="n">ns</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">=</span><span class="n">x10</span><span class="p">,</span>
+                <span class="n">a0</span><span class="o">=</span><span class="n">x10</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=-</span><span class="n">step_12</span><span class="p">,</span>
+                <span class="n">stop_pressure</span><span class="o">=</span><span class="n">max_pressure</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+                <span class="n">stability_analysis</span><span class="o">=</span><span class="n">stability_analysis</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">psats</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">psats</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cl12</span> <span class="o">=</span> <span class="n">cl</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cep</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span> <span class="o">=</span> <span class="n">cep</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cl12</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">a</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">vol</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line_liquid_liquid</span><span class="p">(</span>
+            <span class="n">z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">max_pressure</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">500</span>
+        <span class="p">)</span>
+
+        <span class="n">cl</span><span class="p">,</span> <span class="n">cep</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">critical_line</span><span class="p">(</span>
+            <span class="n">z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+            <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+            <span class="n">ns</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">max_pressure</span><span class="p">),</span>
+            <span class="n">a0</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
+            <span class="n">v0</span><span class="o">=</span><span class="n">vol</span><span class="p">,</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span>
+            <span class="n">p0</span><span class="o">=</span><span class="n">max_pressure</span><span class="p">,</span>
+            <span class="n">ds0</span><span class="o">=-</span><span class="mf">1e-1</span><span class="p">,</span>
+            <span class="n">stop_pressure</span><span class="o">=</span><span class="n">max_pressure</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">,</span>
+            <span class="n">max_points</span><span class="o">=</span><span class="n">max_points</span><span class="p">,</span>
+            <span class="n">stability_analysis</span><span class="o">=</span><span class="n">stability_analysis</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span> <span class="o">=</span> <span class="n">cl</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cep</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cep_ll</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cep_ll</span> <span class="o">=</span> <span class="n">cep</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Calculate the three-phase lines from the critical endpoints</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_llv_12</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_llv_12</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_llv_21</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_llv_21</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep_ll</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_llv_ll</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">binary_llv_from_cep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cep_ll</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_llv_ll</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="GPEC.plot_gped">
+<a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.plot_gped">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_gped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the global phase equilibria diagram (GPED).</span>
+
+<span class="sd">        This method plots the critical lines and pure saturation pressures</span>
+<span class="sd">        for the components in the system. It visualizes the phase behavior of</span>
+<span class="sd">        the system across different temperatures and pressures.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">pure</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pures</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pure</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">pure</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl21</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl21</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl12</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl12</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl12</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep12</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_llv_12</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_llv_12</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep21</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_llv_21</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_llv_21</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cep_ll</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_llv_ll</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_llv_ll</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Pure saturation pressure&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Critical line&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="p">[],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Three-phase line&quot;</span>
+        <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature (K)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure (bar)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GPEC.calc_pxy">
+<a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.calc_pxy">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_pxy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">,</span>
+        <span class="n">x10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">x20</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">dx10</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dx20</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dxll0</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate a Pxy phase diagram.</span>
+
+<span class="sd">        This method calculates the Pxy phase diagram for the system at a given</span>
+<span class="sd">        temperature. It uses the critical lines and pure saturation pressures</span>
+<span class="sd">        to determine the phase behavior of the system.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            The temperature at which to calculate the Pxy phase diagram.</span>
+<span class="sd">        x10 : float, optional</span>
+<span class="sd">            Initial molar fraction of the first component for the line that</span>
+<span class="sd">            starts from the almost pure first component (default is 1e-5).</span>
+<span class="sd">        x20 : float, optional</span>
+<span class="sd">            Initial molar fraction of the second component for the line that</span>
+<span class="sd">            starts from the almost pure second component (default is 1e-5).</span>
+<span class="sd">        dx10 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure first</span>
+<span class="sd">            component (default is 1e-3).</span>
+<span class="sd">        dx20 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure second</span>
+<span class="sd">            component (default is 1e-3).</span>
+<span class="sd">        dxll0 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the liquid-liquid critical</span>
+<span class="sd">            point (default is 1e-4).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list containing the calculated Pxy phase diagrams.</span>
+
+<span class="sd">            - Starting from the almost pure first component. If below its Tc.</span>
+<span class="sd">            - Starting from the almost pure second component. If below its Tc.</span>
+<span class="sd">            - Starting from liquid-liquid critical line, if it exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">psat_1</span><span class="p">,</span> <span class="n">psat_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pures</span>
+        <span class="n">critical_temperatures</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">psat_2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">])</span>
+
+        <span class="n">px_12</span> <span class="o">=</span> <span class="n">px_21</span> <span class="o">=</span> <span class="n">px_ll</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Below saturation temperature of light component</span>
+        <span class="k">if</span> <span class="n">temperature</span> <span class="o">&lt;</span> <span class="n">critical_temperatures</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">temperature</span><span class="p">))</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+            <span class="n">px_12</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">phase_envelope_px</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+                <span class="n">a0</span><span class="o">=</span><span class="n">x10</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=-</span><span class="n">dx10</span><span class="p">,</span>  <span class="c1"># Negative because we go from high to low x1</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Below saturation temperature of heavy component and did not reach to</span>
+        <span class="c1"># pure second component</span>
+        <span class="k">if</span> <span class="n">temperature</span> <span class="o">&lt;</span> <span class="n">critical_temperatures</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">psat_2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">temperature</span><span class="p">))</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">psat_2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+            <span class="n">px_21</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">phase_envelope_px</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+                <span class="n">a0</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x20</span><span class="p">,</span>  <span class="c1"># Because x1 = 1 - x2</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">dx20</span><span class="p">,</span>  <span class="c1"># Positive because we go from low to high x1</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">temperature</span><span class="p">))</span>
+            <span class="n">p0</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">temperature</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span>
+                <span class="n">x_l0</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+
+                <span class="n">x_l0</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-5</span>
+                <span class="n">x_l0</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1e-5</span>
+                <span class="n">w0</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">w0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1e-5</span>
+                <span class="n">w0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-5</span>
+
+                <span class="n">px_ll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">phase_envelope_px_mp</span><span class="p">(</span>
+                    <span class="n">z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                    <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                    <span class="n">t</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                    <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;liquid&quot;</span><span class="p">],</span>
+                    <span class="n">kind_w</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span>
+                    <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+                    <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                    <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+                    <span class="n">alpha0</span><span class="o">=</span><span class="n">a</span> <span class="o">+</span> <span class="mf">1e-5</span><span class="p">,</span>
+                    <span class="n">ns0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span>
+                    <span class="n">ds0</span><span class="o">=</span><span class="n">dxll0</span><span class="p">,</span>
+                    <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">pxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">px_12</span><span class="p">,</span> <span class="n">px_21</span><span class="p">,</span> <span class="n">px_ll</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">pxs</span></div>
+
+
+<div class="viewcode-block" id="GPEC.plot_pxy">
+<a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.plot_pxy">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_pxy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">,</span>
+        <span class="n">x10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">x20</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">dx10</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dx20</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dxll0</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a Pxy phase diagram.</span>
+
+<span class="sd">        This method plots the Pxy phase diagram for the system at a given</span>
+<span class="sd">        temperature. It visualizes the phase behavior of the system across</span>
+<span class="sd">        different compositions of the components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temperature : float</span>
+<span class="sd">            The temperature at which to plot the Pxy phase diagram.</span>
+<span class="sd">        x10 : float, optional</span>
+<span class="sd">            Initial molar fraction of the first component for the line that</span>
+<span class="sd">            starts from the almost pure first component (default is 1e-5).</span>
+<span class="sd">        x20 : float, optional</span>
+<span class="sd">            Initial molar fraction of the second component for the line that</span>
+<span class="sd">            starts from the almost pure second component (default is 1e-5).</span>
+<span class="sd">        dx10 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure first</span>
+<span class="sd">            component (default is 1e-3).</span>
+<span class="sd">        dx20 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure second</span>
+<span class="sd">            component (default is 1e-3).</span>
+<span class="sd">        dxll0 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the liquid-liquid critical</span>
+<span class="sd">            point (default is 1e-4).</span>
+<span class="sd">        plot_kwargs : dict, optional</span>
+<span class="sd">            Additional keyword arguments to be passed to the plot function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_pxy</span><span class="p">(</span>
+            <span class="n">temperature</span><span class="p">,</span> <span class="n">x10</span><span class="o">=</span><span class="n">x10</span><span class="p">,</span> <span class="n">x20</span><span class="o">=</span><span class="n">x20</span><span class="p">,</span> <span class="n">dx10</span><span class="o">=</span><span class="n">dx10</span><span class="p">,</span> <span class="n">dx20</span><span class="o">=</span><span class="n">dx20</span><span class="p">,</span> <span class="n">dxll0</span><span class="o">=</span><span class="n">dxll0</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">px</span> <span class="ow">in</span> <span class="n">pxs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">px</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">px</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">px</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+                    <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">px</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">px</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+                    <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x_1$, $y_1$&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Pressure (bar)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GPEC.calc_txy">
+<a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.calc_txy">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_txy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">,</span>
+        <span class="n">y10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">y20</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">dy10</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dy20</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dyll0</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate a Txy phase diagram.</span>
+
+<span class="sd">        This method calculates the Txy phase diagram for the system at a given</span>
+<span class="sd">        pressure. It uses the critical lines and pure saturation pressures to</span>
+<span class="sd">        determine the phase behavior of the system.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            The pressure at which to calculate the Txy phase diagram.</span>
+<span class="sd">        y10 : float, optional</span>
+<span class="sd">            Initial molar fraction of the first component for the line that</span>
+<span class="sd">            starts from the almost pure first component (default is 1e-5).</span>
+<span class="sd">        y20 : float, optional</span>
+<span class="sd">            Initial molar fraction of the second component for the line that</span>
+<span class="sd">            starts from the almost pure second component (default is 1e-5).</span>
+<span class="sd">        dy10 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure first</span>
+<span class="sd">            component (default is -1e-3).</span>
+<span class="sd">        dy20 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure second</span>
+<span class="sd">            component (default is 1e-3).</span>
+<span class="sd">        dyll0 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the liquid-liquid critical</span>
+<span class="sd">            point (default is 1e-4).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list containing the calculated Txy envelopes. They are sorted</span>
+<span class="sd">            in the order of:</span>
+
+<span class="sd">            - Starting from the almost pure first component.</span>
+<span class="sd">            - Starting from the almost pure second component.</span>
+<span class="sd">            - Starting from liquid-liquid critical line if it exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">psat_1</span><span class="p">,</span> <span class="n">psat_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pures</span>
+
+        <span class="n">tx_12</span> <span class="o">=</span> <span class="n">tx_21</span> <span class="o">=</span> <span class="n">tx_ll</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Below critical pressure of heavy component</span>
+        <span class="k">if</span> <span class="n">pressure</span> <span class="o">&lt;</span> <span class="n">psat_2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">psat_2</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pressure</span><span class="p">))</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">psat_2</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+
+            <span class="n">tx_21</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">phase_envelope_tx</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+                <span class="n">a0</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y20</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=</span><span class="n">dy20</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pressure</span> <span class="o">&lt;</span> <span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="c1"># Below critical pressure of the light component</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pressure</span><span class="p">))</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+
+            <span class="n">tx_12</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">phase_envelope_tx</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span>
+                <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+                <span class="n">a0</span><span class="o">=</span><span class="n">y10</span><span class="p">,</span>
+                <span class="n">ds0</span><span class="o">=-</span><span class="n">dy10</span><span class="p">,</span>
+                <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pressure</span><span class="p">))</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">pressure</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+                <span class="ow">or</span> <span class="n">pressure</span> <span class="o">&gt;</span> <span class="n">psat_1</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">):</span>
+
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cl_ll</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zi</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z0</span>
+                <span class="n">x_l0</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+
+                <span class="n">delta</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.025</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="mf">0.025</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">)])</span>
+
+                <span class="n">x_l0</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span>
+                <span class="n">x_l0</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta</span>
+                <span class="n">w0</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">w0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta</span>
+                <span class="n">w0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span>
+
+                <span class="n">tx_ll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">phase_envelope_tx_mp</span><span class="p">(</span>
+                    <span class="n">z0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_z0</span><span class="p">,</span>
+                    <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zi</span><span class="p">,</span>
+                    <span class="n">p</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+                    <span class="n">kinds_x</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;liquid&quot;</span><span class="p">],</span>
+                    <span class="n">kind_w</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span>
+                    <span class="n">x_l0</span><span class="o">=</span><span class="n">x_l0</span><span class="p">,</span>
+                    <span class="n">w0</span><span class="o">=</span><span class="n">w0</span><span class="p">,</span>
+                    <span class="n">betas0</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+                    <span class="n">alpha0</span><span class="o">=</span><span class="n">a</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span>
+                    <span class="n">ns0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span>
+                    <span class="n">ds0</span><span class="o">=</span><span class="n">dyll0</span><span class="p">,</span>
+                    <span class="n">max_points</span><span class="o">=</span><span class="n">MAX_POINTS</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">txs</span> <span class="o">=</span> <span class="p">[</span><span class="n">tx_12</span><span class="p">,</span> <span class="n">tx_21</span><span class="p">,</span> <span class="n">tx_ll</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">txs</span></div>
+
+
+<div class="viewcode-block" id="GPEC.plot_txy">
+<a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.plot_txy">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_txy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="p">,</span>
+        <span class="n">y10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">y20</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
+        <span class="n">dy10</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dy20</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">dyll0</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a Txy phase diagram.</span>
+
+<span class="sd">        This method plots the Txy phase diagram for the system at a given</span>
+<span class="sd">        pressure.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            The pressure at which to plot the Txy phase diagram.</span>
+<span class="sd">        y10 : float, optional</span>
+<span class="sd">            Initial molar fraction of the first component for the line that</span>
+<span class="sd">            starts from the almost pure first component (default is 0.9999).</span>
+<span class="sd">        y20 : float, optional</span>
+<span class="sd">            Initial molar fraction of the second component for the line that</span>
+<span class="sd">            starts from the almost pure second component (default is 0.9999).</span>
+<span class="sd">        dy10 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure first</span>
+<span class="sd">            component (default is -1e-3).</span>
+<span class="sd">        dy20 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the almost pure second</span>
+<span class="sd">            component (default is 1e-3).</span>
+<span class="sd">        dyll0 : float, optional</span>
+<span class="sd">            Step size for the line that starts from the liquid-liquid critical</span>
+<span class="sd">            point (default is 1e-4).</span>
+<span class="sd">        plot_kwargs : dict, optional</span>
+<span class="sd">            Additional keyword arguments to be passed to the plot function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">txs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_txy</span><span class="p">(</span>
+            <span class="n">pressure</span><span class="p">,</span> <span class="n">y10</span><span class="o">=</span><span class="n">y10</span><span class="p">,</span> <span class="n">y20</span><span class="o">=</span><span class="n">y20</span><span class="p">,</span> <span class="n">dy10</span><span class="o">=</span><span class="n">dy10</span><span class="p">,</span> <span class="n">dy20</span><span class="o">=</span><span class="n">dy20</span><span class="p">,</span> <span class="n">dyll0</span><span class="o">=</span><span class="n">dyll0</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">txs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tx</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">tx</span><span class="o">.</span><span class="n">main_phases_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">tx</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+                    <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">tx</span><span class="o">.</span><span class="n">reference_phase_compositions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">tx</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+                    <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$x_1$, $y_1$&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Temperature (K)&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

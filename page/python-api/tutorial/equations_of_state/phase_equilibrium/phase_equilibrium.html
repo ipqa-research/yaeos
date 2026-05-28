@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phase Equilibrium Calculations &mdash; yaeos 4.5.0 documentation</title>
+  <title>Phase Equilibrium Calculations &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,8 +23,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="More calculations" href="phase_equilibrium_tutorial.html" />
-    <link rel="prev" title="SAFT Equations of State" href="../saft_eos/saft.html" /> 
+    <link rel="next" title="Calculating an isotherm" href="phase_equilibrium_tutorial.html" />
+    <link rel="prev" title="PC-SAFT" href="../saft_eos/saft.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,9 +54,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Phase Equilibrium Calculations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html">More calculations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
@@ -75,8 +83,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -109,32 +119,29 @@
 <h1>Phase Equilibrium Calculations<a class="headerlink" href="#phase-equilibrium-calculations" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html">More calculations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculating-an-isotherm">Calculating an isotherm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pure-compound">Pure compound</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Mixture">Mixture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pure-compound">Pure compound</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Mixture">Mixture</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Model-definition">Model definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#PT-phase-envelope-calculation">PT phase envelope calculation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Px-phase-envelopes">Px phase envelopes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Tx-phase-envelopes">Tx phase envelopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Model-definition">Model definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#PT-phase-envelope-calculation">PT phase envelope calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Px-phase-envelopes">Px phase envelopes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Tx-phase-envelopes">Tx phase envelopes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculation-of-critical-points">Calculation of critical points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculation-of-critical-lines">Calculation of critical lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculation-of-critical-points">Calculation of critical points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculation-of-critical-lines">Calculation of critical lines</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
 </ul>
 </div>
 </section>
@@ -143,8 +150,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../saft_eos/saft.html" class="btn btn-neutral float-left" title="SAFT Equations of State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="phase_equilibrium_tutorial.html" class="btn btn-neutral float-right" title="More calculations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../saft_eos/saft.html" class="btn btn-neutral float-left" title="PC-SAFT" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="phase_equilibrium_tutorial.html" class="btn btn-neutral float-right" title="Calculating an isotherm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mixing Rules &mdash; yaeos 4.5.0 documentation</title>
+  <title>Mixing Rules &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,12 +14,14 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -63,15 +65,19 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -176,6 +182,11 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMR.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'QMR'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMR.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMR.set_mixrule">
 <span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#QMR.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMR.set_mixrule" title="Link to this definition"></a></dt>
@@ -201,10 +212,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>kij_0</strong> (<em>array_like</em>) – kij_0 binary interaction parameters matrix</p></li>
-<li><p><strong>kij_inf</strong> (<em>array_like</em>) – kij_inf binary interaction parameters matrix</p></li>
-<li><p><strong>t_ref</strong> (<em>array_like</em>) – Reference temperature</p></li>
-<li><p><strong>lij</strong> (<em>array_like</em>) – lij binary interaction parameters matrix</p></li>
+<li><p><strong>kij_0</strong> (<em>matrix_like</em>) – kij_0 binary interaction parameters matrix</p></li>
+<li><p><strong>kij_inf</strong> (<em>matrix_like</em>) – kij_inf binary interaction parameters matrix</p></li>
+<li><p><strong>t_ref</strong> (<em>matrix_like</em>) – Reference temperature</p></li>
+<li><p><strong>lij</strong> (<em>matrix_like</em>) – lij binary interaction parameters matrix</p></li>
 </ul>
 </dd>
 </dl>
@@ -214,7 +225,7 @@
 <dd><p>kij_0 binary interaction parameters matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>array_like</p>
+<dd class="field-odd"><p>matrix_like</p>
 </dd>
 </dl>
 </dd></dl>
@@ -225,7 +236,7 @@
 <dd><p>kij_inf binary interaction parameters matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>array_like</p>
+<dd class="field-odd"><p>matrix_like</p>
 </dd>
 </dl>
 </dd></dl>
@@ -236,7 +247,7 @@
 <dd><p>Reference temperature</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>array_like</p>
+<dd class="field-odd"><p>matrix_like</p>
 </dd>
 </dl>
 </dd></dl>
@@ -247,7 +258,7 @@
 <dd><p>lij binary interaction parameters matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>array_like</p>
+<dd class="field-odd"><p>matrix_like</p>
 </dd>
 </dl>
 </dd></dl>
@@ -270,6 +281,11 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'QMRTD'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD.set_mixrule">
 <span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#QMRTD.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.QMRTD.set_mixrule" title="Link to this definition"></a></dt>
@@ -348,6 +364,11 @@ q = -0.85 for Van der Waals</p>
 <span class="n">model_mhv</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MHV'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.set_mixrule">
 <span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#MHV.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.MHV.set_mixrule" title="Link to this definition"></a></dt>
@@ -399,6 +420,11 @@ q = -0.85 for Van der Waals</p>
 <span class="n">model_hv</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HV'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV.set_mixrule">
 <span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#HV.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HV.set_mixrule" title="Link to this definition"></a></dt>
@@ -425,6 +451,7 @@ parameters when desired.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alpha</strong> (<em>matrix_like</em>) – NRTL alpha parameters matrix</p></li>
 <li><p><strong>gji</strong> (<em>matrix_like</em>) – NRTL gij parameters matrix</p></li>
+<li><p><strong>gjiT</strong> (<em>matrix_like</em>) – NRTL gij temperature coefficient parameters matrix</p></li>
 <li><p><strong>use_kij</strong> (<em>matrix_like</em>) – Boolean matrix indicating whether to use kij parameters</p></li>
 <li><p><strong>kij</strong> (<em>matrix_like</em>) – kij binary interaction parameters matrix</p></li>
 </ul>
@@ -485,6 +512,11 @@ parameters when desired.</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HVNRTL'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.set_mixrule">
 <span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#HVNRTL.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.set_mixrule" title="Link to this definition"></a></dt>
@@ -494,6 +526,147 @@ parameters when desired.</p>
 <dd class="field-odd"><p><strong>ar_model_id</strong> (<em>int</em>) – ID of the cubic EoS model</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.setup_from_kij">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">setup_from_kij</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kij</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#HVNRTL.setup_from_kij"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.setup_from_kij" title="Link to this definition"></a></dt>
+<dd><p>Generalizes the calculation of gji parameters and returns linear
+correlation matrices gji0 and gjiT for any number of components.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Internally this function depends on the <span class="math notranslate nohighlight">\(\delta_1\)</span> of the
+model. For the case of the RKPR EoS where there are different
+<span class="math notranslate nohighlight">\(\delta_1\)</span> parameters for each component the method will
+only use a mean value. Which will make the predictions further
+away of the predictions being made with <span class="math notranslate nohighlight">\(k_{ij}\)</span> compared
+to using classic Cubic EoS. This method is intended only as a way
+to ease the initialization of parameters on optimization methods.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>yaeos.CubicEoS</em>) – Thermodynamic model intended to be used as reference model.</p></li>
+<li><p><strong>temperatures</strong> (<em>array_like</em>) – Array of temperature values on which make the correlation</p></li>
+<li><p><strong>kij</strong> (<em>float</em>) – kij value to replicate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>yaeos.HVNRTL</strong> (<em>Instance of a HVNRTL mixing rule with parameters</em>)</p></li>
+<li><p><em>set to be close the parameters that would replicate the classic</em></p></li>
+<li><p><em>QMR mixing rule.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sDDLC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kij_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kij_inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lij</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#sDDLC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule" title="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CubicMixRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicMixRule</span></code></a></p>
+<p>segmented Density Dependent Local Composition mixing rule.</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>k_{ij}(T) = k_{ij}^{infty} + k_{ij}^0 exp{left(-T/T^{ref}right)}</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<em>array_like</em>) – Segment size for each component</p></li>
+<li><p><strong>kij_0</strong> (<em>matrix_like</em>) – kij_0 binary interaction parameters matrix</p></li>
+<li><p><strong>kij_inf</strong> (<em>matrix_like</em>) – kij_inf binary interaction parameters matrix</p></li>
+<li><p><strong>t_ref</strong> (<em>matrix_like</em>) – Reference temperature</p></li>
+<li><p><strong>lij</strong> (<em>matrix_like</em>) – lij binary interaction parameters matrix</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.q" title="Link to this definition"></a></dt>
+<dd><p>Segment size for each component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.kij_0">
+<span class="sig-name descname"><span class="pre">kij_0</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.kij_0" title="Link to this definition"></a></dt>
+<dd><p>kij_0 binary interaction parameters matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matrix_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.kij_inf">
+<span class="sig-name descname"><span class="pre">kij_inf</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.kij_inf" title="Link to this definition"></a></dt>
+<dd><p>kij_inf binary interaction parameters matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matrix_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.t_ref">
+<span class="sig-name descname"><span class="pre">t_ref</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.t_ref" title="Link to this definition"></a></dt>
+<dd><p>Reference temperature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matrix_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.lij">
+<span class="sig-name descname"><span class="pre">lij</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.lij" title="Link to this definition"></a></dt>
+<dd><p>lij binary interaction parameters matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matrix_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">sDDLC</span><span class="p">,</span> <span class="n">SoaveRedlichKwong</span>
+
+<span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.16</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>
+<span class="n">kij_0</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="n">kij_inf</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="n">Tref</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">390</span><span class="p">],</span> <span class="p">[</span><span class="mi">390</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="n">lij</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+
+<span class="c1"># sDDLC</span>
+<span class="n">mixrule</span> <span class="o">=</span> <span class="n">sDDLC</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">kij_0</span><span class="p">,</span> <span class="n">kij_inf</span><span class="p">,</span> <span class="n">Tref</span><span class="p">,</span> <span class="n">lij</span><span class="p">)</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">305.32</span><span class="p">,</span> <span class="mf">469.7</span><span class="p">]</span>        <span class="c1"># critical temperature [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">48.72</span><span class="p">,</span> <span class="mf">33.7</span><span class="p">]</span>          <span class="c1"># critical pressure [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0995</span><span class="p">,</span> <span class="mf">0.152</span><span class="p">]</span>         <span class="c1"># acentric factor</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sDDLC'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.set_mixrule">
+<span class="sig-name descname"><span class="pre">set_mixrule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.html#sDDLC.set_mixrule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.sDDLC.set_mixrule" title="Link to this definition"></a></dt>
+<dd><p>Set mix rule method.</p>
 </dd></dl>
 
 </dd></dl>

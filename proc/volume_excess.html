@@ -1,0 +1,585 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>volume_excess &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>volume_excess
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.1% of total for procedures.">11 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/ar_models.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">volume_excess</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/volume_excess.html#variable-dlngammadp~4">dlngammadP</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine volume_excess(eos, n, P, T, root_type, Ve)  
+</h2>
+    
+
+    <p>Calculate excess volume given pressure and temperature.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">eos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">Tc</span><span class="p">,</span><span class="w"> </span><span class="n">Pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">]</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+<span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+
+<span class="k">call </span><span class="n">eos</span><span class="p">%</span><span class="n">volume_excess</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ve</span><span class="o">=</span><span class="n">Ve</span><span class="p">)</span>
+</code></pre></div>
+
+    <h3>Type Bound</h3>
+    <p><a href='../type/armodel.html'>ArModel</a></p>
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eos~28"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eos</strong></td>
+            <td>
+                <p>Model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~106"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+                <p>Moles number vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~82"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+                <p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~122"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+                <p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root_type~17"></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root_type</strong></td>
+            <td>
+                <p>Desired root-type to solve. Options are:
+<code>["liquid", "vapor", "stable"]</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ve"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ve</strong></td>
+            <td>
+                <p>Excess volume [L]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~volume_excess~~CallsGraph Pages: 1 -->
+<svg id="procvolume_excessCallsGraph" width="641pt" height="81pt"
+ viewBox="0.00 0.00 641.00 81.26" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~volume_excess~~CallsGraph" class="graph" transform="scale(0.7 0.7) rotate(0) translate(4 112)">
+<title>proc~~volume_excess~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 911,-112 911,4 -4,4"/>
+<!-- proc~volume_excess -->
+<g id="proc~~volume_excess~~CallsGraph_node1" class="node">
+<title>proc~volume_excess</title>
+<polygon fill="none" stroke="black" points="147,-87 0,-87 0,-63 147,-63 147,-87"/>
+<text text-anchor="middle" x="73.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%volume_excess</text>
+</g>
+<!-- proc~ln_activity_coefficient~3 -->
+<g id="proc~~volume_excess~~CallsGraph_node2" class="node">
+<title>proc~ln_activity_coefficient~3</title>
+<g id="a_proc~~volume_excess~~CallsGraph_node2"><a xlink:href="../proc/ln_activity_coefficient~3.html" xlink:title="ArModel%ln_activity_coefficient">
+<polygon fill="#d9534f" stroke="#d9534f" points="364,-87 183,-87 183,-63 364,-63 364,-87"/>
+<text text-anchor="middle" x="273.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%ln_activity_coefficient</text>
+</a>
+</g>
+</g>
+<!-- proc~volume_excess&#45;&gt;proc~ln_activity_coefficient~3 -->
+<g id="proc~~volume_excess~~CallsGraph_edge1" class="edge">
+<title>proc~volume_excess&#45;&gt;proc~ln_activity_coefficient~3</title>
+<path fill="none" stroke="#000000" d="M147.1,-75C155.43,-75 164.03,-75 172.64,-75"/>
+<polygon fill="#000000" stroke="#000000" points="172.73,-78.5 182.73,-75 172.73,-71.5 172.73,-78.5"/>
+</g>
+<!-- proc~lnphi_pt -->
+<g id="proc~~volume_excess~~CallsGraph_node3" class="node">
+<title>proc~lnphi_pt</title>
+<g id="a_proc~~volume_excess~~CallsGraph_node3"><a xlink:href="../proc/lnphi_pt.html" xlink:title="ArModel%lnphi_pt">
+<polygon fill="#d9534f" stroke="#d9534f" points="509,-87 400,-87 400,-63 509,-63 509,-87"/>
+<text text-anchor="middle" x="454.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
+</a>
+</g>
+</g>
+<!-- proc~ln_activity_coefficient~3&#45;&gt;proc~lnphi_pt -->
+<g id="proc~~volume_excess~~CallsGraph_edge2" class="edge">
+<title>proc~ln_activity_coefficient~3&#45;&gt;proc~lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M364.26,-75C372.85,-75 381.43,-75 389.7,-75"/>
+<polygon fill="#000000" stroke="#000000" points="389.97,-78.5 399.97,-75 389.97,-71.5 389.97,-78.5"/>
+</g>
+<!-- proc~lnphi_vt -->
+<g id="proc~~volume_excess~~CallsGraph_node4" class="node">
+<title>proc~lnphi_vt</title>
+<g id="a_proc~~volume_excess~~CallsGraph_node4"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
+<polygon fill="#d9534f" stroke="#d9534f" points="653,-108 545,-108 545,-84 653,-84 653,-108"/>
+<text text-anchor="middle" x="599" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~lnphi_vt -->
+<g id="proc~~volume_excess~~CallsGraph_edge3" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~lnphi_vt</title>
+<path fill="none" stroke="#000000" d="M509.37,-82.94C517.76,-84.17 526.48,-85.46 535.05,-86.72"/>
+<polygon fill="#000000" stroke="#000000" points="534.59,-90.19 545,-88.19 535.61,-83.27 534.59,-90.19"/>
+</g>
+<!-- proc~volume~3 -->
+<g id="proc~~volume_excess~~CallsGraph_node5" class="node">
+<title>proc~volume~3</title>
+<g id="a_proc~~volume_excess~~CallsGraph_node5"><a xlink:href="../proc/volume~3.html" xlink:title="ArModel%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="652,-66 546,-66 546,-42 652,-42 652,-66"/>
+<text text-anchor="middle" x="599" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~volume~3 -->
+<g id="proc~~volume_excess~~CallsGraph_edge4" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~volume~3</title>
+<path fill="none" stroke="#000000" d="M509.37,-67.06C518.08,-65.78 527.15,-64.44 536.03,-63.13"/>
+<polygon fill="#000000" stroke="#000000" points="536.55,-66.59 545.94,-61.67 535.53,-59.67 536.55,-66.59"/>
+</g>
+<!-- residual_helmholtz -->
+<g id="proc~~volume_excess~~CallsGraph_node8" class="node">
+<title>residual_helmholtz</title>
+<polygon fill="#777777" stroke="#777777" points="801,-108 689,-108 689,-84 801,-84 801,-108"/>
+<text text-anchor="middle" x="745" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+</g>
+<!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
+<g id="proc~~volume_excess~~CallsGraph_edge5" class="edge">
+<title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M653.21,-96C661.41,-96 669.97,-96 678.4,-96"/>
+<polygon fill="#000000" stroke="#000000" points="678.6,-99.5 688.6,-96 678.6,-92.5 678.6,-99.5"/>
+</g>
+<!-- get_v0 -->
+<g id="proc~~volume_excess~~CallsGraph_node6" class="node">
+<title>get_v0</title>
+<polygon fill="#777777" stroke="#777777" points="772,-66 718,-66 718,-42 772,-42 772,-66"/>
+<text text-anchor="middle" x="745" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+</g>
+<!-- proc~volume~3&#45;&gt;get_v0 -->
+<g id="proc~~volume_excess~~CallsGraph_edge6" class="edge">
+<title>proc~volume~3&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M652.39,-54C670.6,-54 690.62,-54 707.29,-54"/>
+<polygon fill="#000000" stroke="#000000" points="707.7,-57.5 717.7,-54 707.7,-50.5 707.7,-57.5"/>
+</g>
+<!-- interface~newton -->
+<g id="proc~~volume_excess~~CallsGraph_node7" class="node">
+<title>interface~newton</title>
+<g id="a_proc~~volume_excess~~CallsGraph_node7"><a xlink:href="../interface/newton.html" xlink:title="newton">
+<polygon fill="#a7506f" stroke="#a7506f" points="772,-24 718,-24 718,0 772,0 772,-24"/>
+<text text-anchor="middle" x="745" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+</a>
+</g>
+</g>
+<!-- proc~volume~3&#45;&gt;interface~newton -->
+<g id="proc~~volume_excess~~CallsGraph_edge7" class="edge">
+<title>proc~volume~3&#45;&gt;interface~newton</title>
+<path fill="none" stroke="#000000" d="M641.26,-41.96C662.31,-35.83 687.67,-28.43 707.92,-22.52"/>
+<polygon fill="#000000" stroke="#000000" points="709.09,-25.83 717.71,-19.67 707.13,-19.11 709.09,-25.83"/>
+</g>
+<!-- proc~newton_1d -->
+<g id="proc~~volume_excess~~CallsGraph_node9" class="node">
+<title>proc~newton_1d</title>
+<g id="a_proc~~volume_excess~~CallsGraph_node9"><a xlink:href="../proc/newton_1d.html" xlink:title="newton_1d">
+<polygon fill="#d9534f" stroke="#d9534f" points="907,-24 837,-24 837,0 907,0 907,-24"/>
+<text text-anchor="middle" x="872" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
+</a>
+</g>
+</g>
+<!-- interface~newton&#45;&gt;proc~newton_1d -->
+<g id="proc~~volume_excess~~CallsGraph_edge8" class="edge">
+<title>interface~newton&#45;&gt;proc~newton_1d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M772.2,-12C787.96,-12 808.42,-12 826.63,-12"/>
+<polygon fill="#000000" stroke="#000000" points="826.75,-15.5 836.75,-12 826.75,-8.5 826.75,-15.5"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocvolume_excessCallsGraph = svgPanZoom('#procvolume_excessCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlngammadp~4"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadP</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+
+    
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-05-28 17:05 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

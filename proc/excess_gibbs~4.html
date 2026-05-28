@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">32 statements</a>
+                 title=" 0.8% of total for procedures.">105 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/unifac.f90"> Source File</a>
+              <a href="../src/gemodel_adiff_api.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/unifac.f90.html'>unifac.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge_group_contribution_unifac.html'>yaeos__models_ge_group_contribution_unifac</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/gemodel_adiff_api.f90.html'>gemodel_adiff_api.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__adiff_hyperdual_ge_api.html'>yaeos__adiff_hyperdual_ge_api</a></li>
             <li class="breadcrumb-item active" aria-current="page">excess_gibbs</li>
           </ol>
         </nav>
@@ -135,12 +135,12 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-ge_c">Ge_c</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-dge_c_dn">dGe_c_dn</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-dge_c_dn2">dGe_c_dn2</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-dn~3">dn</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-dn2~3">dn2</a>
-            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-pge">pge</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-any_deriv">any_deriv</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-dge">dGe</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-d_ge">d_Ge</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-d_n~2">d_n</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-d_t~2">d_t</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#variable-nc~95">nc</a>
         </div>
       </div>
     </div>
@@ -155,7 +155,23 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#proc-get_dgedn">get_dgedn</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#proc-get_dgedn2">get_dgedn2</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#proc-get_dgedt">get_dgedt</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#proc-get_dgedt2">get_dgedt2</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#proc-get_dgedtn">get_dgedtn</a>
+            <a class="list-group-item" href="../proc/excess_gibbs~4.html#proc-reset_vars~3">reset_vars</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -170,70 +186,13 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    <h2>public  subroutine excess_gibbs(self, n, t, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h2>
     
 
-    <h1 id="excess-gibbs-energy">Excess Gibbs energy</h1>
-<p>Calculate the Gibbs excess energy of the UNIFAC model</p>
-<h1 id="description">Description</h1>
-<p>Calculate the Gibbs excess energy of the UNIFAC model and its
-derivatives.</p>
-<h1 id="examples">Examples</h1>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="c">! Gibbs excess of ethane-ethanol-methyl amine mixture.</span>
-<span class="w"> </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span>
-
-<span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
-
-<span class="w"> </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">ng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
-
-<span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
-
-<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ge</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">GeT</span><span class="p">,</span><span class="w"> </span><span class="n">GeT2</span><span class="p">,</span><span class="w"> </span><span class="n">GeTn</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
-
-<span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">T</span>
-
-<span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="mf">0.0_pr</span>
-<span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">2.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">7.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! Ethane [CH3]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! Ethanol [CH3, CH2, OH]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! Methylamine [H3C-NH2]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">28</span><span class="p">]</span>
-<span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="w"> </span><span class="c">! setup UNIFAC model</span>
-<span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
-
-<span class="w"> </span><span class="c">! Call all Ge and derivatives</span>
-<span class="w"> </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="p">,</span><span class="w"> </span><span class="n">GeT</span><span class="p">,</span><span class="w"> </span><span class="n">GeT2</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span><span class="p">,</span><span class="w"> </span><span class="n">GeTn</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">)</span>
-
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ge: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GeT: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GeT</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GeT2: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GeT2</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Gen: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GeTn: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GeTn</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Gen2:&quot;</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="mi">1</span><span class="p">,:)</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="mi">2</span><span class="p">,:)</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">Gen2</span><span class="p">(</span><span class="mi">3</span><span class="p">,:)</span>
-
-<span class="w"> </span><span class="c">! If you want the ln_gammas from &quot;Gen&quot; derivative:</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln_gammas: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Gen</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">T</span>
-
-<span class="w"> </span><span class="c">! Or</span>
-<span class="w"> </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
-<span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln_gammas: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span>
-</code></pre></div>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/unifac.html'>UNIFAC</a></p>
+    <p><a href='../type/gemodeladiff.html'>GeModelAdiff</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -248,8 +207,8 @@ derivatives.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~53"></span>
-              class(<a href='../type/unifac.html'>UNIFAC</a>),
+              <span class="anchor" id="variable-self~36"></span>
+              class(<a href='../type/gemodeladiff.html'>GeModelAdiff</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -258,12 +217,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                <p>UNIFAC model</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~76"></span>
+              <span class="anchor" id="variable-n~67"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -273,12 +232,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                <p>Moles vector [mol]</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~88"></span>
+              <span class="anchor" id="variable-t~33"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -286,9 +245,9 @@ derivatives.</p>
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>t</strong></td>
             <td>
-                <p>Temperature [K]</p>
+                
             </td>
         </tr>
         <tr>
@@ -303,12 +262,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>Ge</strong></td>
             <td>
-                <p>Excess Gibbs energy</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~14"></span>
+              <span class="anchor" id="variable-get~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -318,14 +277,12 @@ derivatives.</p>
             <td>::</td>
             <td><strong>GeT</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{dG^E}{dT}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get2~14"></span>
+              <span class="anchor" id="variable-get2~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -335,48 +292,42 @@ derivatives.</p>
             <td>::</td>
             <td><strong>GeT2</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dT^2}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~15"></span>
+              <span class="anchor" id="variable-gen~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              dimension(size(n))
             </td>
             <td>::</td>
-            <td><strong>Gen</strong>(size(n))</td>
+            <td><strong>Gen</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{dG^E}{dn}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~15"></span>
+              <span class="anchor" id="variable-getn~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              dimension(size(n))
             </td>
             <td>::</td>
-            <td><strong>GeTn</strong>(size(n))</td>
+            <td><strong>GeTn</strong></td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dTdn}</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~13"></span>
+              <span class="anchor" id="variable-gen2~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -386,9 +337,7 @@ derivatives.</p>
             <td>::</td>
             <td><strong>Gen2</strong>(size(n),size(n))</td>
             <td>
-                <p>
-<script type="math/tex">\frac{d^2G^E}{dn^2}</script>
-</p>
+                
             </td>
         </tr>
     </tbody>
@@ -406,58 +355,178 @@ derivatives.</p>
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~excess_gibbs~4~~CallsGraph Pages: 1 -->
-<svg id="procexcess_gibbs4CallsGraph" width="417pt" height="74pt"
- viewBox="0.00 0.00 417.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~excess_gibbs~4~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="procexcess_gibbs4CallsGraph" width="386pt" height="238pt"
+ viewBox="0.00 0.00 386.00 238.25" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~excess_gibbs~4~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 234.25)">
 <title>proc~~excess_gibbs~4~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 413,-70 413,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-234.25 382,-234.25 382,4 -4,4"/>
 <!-- proc~excess_gibbs~4 -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_node1" class="node">
 <title>proc~excess_gibbs~4</title>
-<polygon fill="none" stroke="black" points="129,-45 0,-45 0,-21 129,-21 129,-45"/>
-<text text-anchor="middle" x="64.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">UNIFAC%excess_gibbs</text>
+<polygon fill="none" stroke="black" points="163,-127.12 0,-127.12 0,-103.12 163,-103.12 163,-127.12"/>
+<text text-anchor="middle" x="81.5" y="-112.72" font-family="Helvetica,sans-Serif" font-size="10.50">GeModelAdiff%excess_gibbs</text>
 </g>
-<!-- proc~ge_combinatorial -->
+<!-- Ge -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_node2" class="node">
-<title>proc~ge_combinatorial</title>
-<g id="a_proc~~excess_gibbs~4~~CallsGraph_node2"><a xlink:href="../proc/ge_combinatorial.html" xlink:title="UNIFAC%Ge_combinatorial">
-<polygon fill="#d9534f" stroke="#d9534f" points="319,-66 165,-66 165,-42 319,-42 319,-66"/>
-<text text-anchor="middle" x="242" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIFAC%Ge_combinatorial</text>
-</a>
+<title>Ge</title>
+<polygon fill="#777777" stroke="#777777" points="371.5,-148.12 317.5,-148.12 317.5,-124.12 371.5,-124.12 371.5,-148.12"/>
+<text text-anchor="middle" x="344.5" y="-133.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Ge</text>
 </g>
-</g>
-<!-- proc~excess_gibbs~4&#45;&gt;proc~ge_combinatorial -->
+<!-- proc~excess_gibbs~4&#45;&gt;Ge -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_edge1" class="edge">
-<title>proc~excess_gibbs~4&#45;&gt;proc~ge_combinatorial</title>
-<path fill="none" stroke="#000000" d="M129.36,-40.64C137.67,-41.64 146.29,-42.67 154.89,-43.7"/>
-<polygon fill="#000000" stroke="#000000" points="154.61,-47.19 164.96,-44.9 155.44,-40.24 154.61,-47.19"/>
+<title>proc~excess_gibbs~4&#45;&gt;Ge</title>
+<path fill="none" stroke="#000000" d="M91.01,-127.28C108.21,-150.65 149.69,-201.18 199,-220.12 230.53,-232.24 244.49,-234.61 275,-220.12 302.17,-207.22 322.12,-177.68 333.27,-157.31"/>
+<polygon fill="#000000" stroke="#000000" points="336.52,-158.65 338.03,-148.16 330.31,-155.42 336.52,-158.65"/>
 </g>
-<!-- proc~ge_residual -->
+<!-- none~get_dgedn -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_node3" class="node">
-<title>proc~ge_residual</title>
-<g id="a_proc~~excess_gibbs~4~~CallsGraph_node3"><a xlink:href="../proc/ge_residual.html" xlink:title="UNIFAC%Ge_residual">
-<polygon fill="#d9534f" stroke="#d9534f" points="303,-24 181,-24 181,0 303,0 303,-24"/>
-<text text-anchor="middle" x="242" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIFAC%Ge_residual</text>
+<title>none~get_dgedn</title>
+<g id="a_proc~~excess_gibbs~4~~CallsGraph_node3"><a xlink:href="../proc/excess_gibbs~4.html#proc-get_dgedn" xlink:title="get_dgedn">
+<polygon fill="#d9534f" stroke="#d9534f" points="271.5,-127.12 202.5,-127.12 202.5,-103.12 271.5,-103.12 271.5,-127.12"/>
+<text text-anchor="middle" x="237" y="-112.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dgedn</text>
 </a>
 </g>
 </g>
-<!-- proc~excess_gibbs~4&#45;&gt;proc~ge_residual -->
+<!-- proc~excess_gibbs~4&#45;&gt;none~get_dgedn -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_edge2" class="edge">
-<title>proc~excess_gibbs~4&#45;&gt;proc~ge_residual</title>
-<path fill="none" stroke="#000000" d="M129.36,-25.36C142.79,-23.75 157.03,-22.05 170.69,-20.41"/>
-<polygon fill="#000000" stroke="#000000" points="171.48,-23.84 180.99,-19.18 170.65,-16.89 171.48,-23.84"/>
+<title>proc~excess_gibbs~4&#45;&gt;none~get_dgedn</title>
+<path fill="none" stroke="#000000" d="M163.3,-115.12C173.16,-115.12 182.93,-115.12 191.96,-115.12"/>
+<polygon fill="#000000" stroke="#000000" points="192.18,-118.62 202.18,-115.12 192.18,-111.62 192.18,-118.62"/>
 </g>
-<!-- psi -->
+<!-- none~get_dgedn2 -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_node4" class="node">
-<title>psi</title>
-<polygon fill="#777777" stroke="#777777" points="409,-24 355,-24 355,0 409,0 409,-24"/>
-<text text-anchor="middle" x="382" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">psi</text>
+<title>none~get_dgedn2</title>
+<g id="a_proc~~excess_gibbs~4~~CallsGraph_node4"><a xlink:href="../proc/excess_gibbs~4.html#proc-get_dgedn2" xlink:title="get_dgedn2">
+<polygon fill="#d9534f" stroke="#d9534f" points="275,-85.12 199,-85.12 199,-61.12 275,-61.12 275,-85.12"/>
+<text text-anchor="middle" x="237" y="-70.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dgedn2</text>
+</a>
 </g>
-<!-- proc~ge_residual&#45;&gt;psi -->
+</g>
+<!-- proc~excess_gibbs~4&#45;&gt;none~get_dgedn2 -->
 <g id="proc~~excess_gibbs~4~~CallsGraph_edge3" class="edge">
-<title>proc~ge_residual&#45;&gt;psi</title>
-<path fill="none" stroke="#000000" d="M303.13,-12C317.31,-12 332.01,-12 344.76,-12"/>
-<polygon fill="#000000" stroke="#000000" points="344.96,-15.5 354.96,-12 344.96,-8.5 344.96,-15.5"/>
+<title>proc~excess_gibbs~4&#45;&gt;none~get_dgedn2</title>
+<path fill="none" stroke="#000000" d="M126.49,-103.09C146.04,-97.74 169.09,-91.43 188.98,-85.99"/>
+<polygon fill="#000000" stroke="#000000" points="190.04,-89.33 198.76,-83.31 188.19,-82.58 190.04,-89.33"/>
+</g>
+<!-- none~get_dgedt -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_node5" class="node">
+<title>none~get_dgedt</title>
+<g id="a_proc~~excess_gibbs~4~~CallsGraph_node5"><a xlink:href="../proc/excess_gibbs~4.html#proc-get_dgedt" xlink:title="get_dgedt">
+<polygon fill="#d9534f" stroke="#d9534f" points="270,-43.12 204,-43.12 204,-19.12 270,-19.12 270,-43.12"/>
+<text text-anchor="middle" x="237" y="-28.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dgedt</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs~4&#45;&gt;none~get_dgedt -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge4" class="edge">
+<title>proc~excess_gibbs~4&#45;&gt;none~get_dgedt</title>
+<path fill="none" stroke="#000000" d="M104.49,-103.09C130.82,-88.68 175.1,-64.45 204.92,-48.13"/>
+<polygon fill="#000000" stroke="#000000" points="206.96,-51.01 214.05,-43.14 203.6,-44.87 206.96,-51.01"/>
+</g>
+<!-- none~get_dgedt2 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_node6" class="node">
+<title>none~get_dgedt2</title>
+<g id="a_proc~~excess_gibbs~4~~CallsGraph_node6"><a xlink:href="../proc/excess_gibbs~4.html#proc-get_dgedt2" xlink:title="get_dgedt2">
+<polygon fill="#d9534f" stroke="#d9534f" points="273.5,-211.12 200.5,-211.12 200.5,-187.12 273.5,-187.12 273.5,-211.12"/>
+<text text-anchor="middle" x="237" y="-196.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dgedt2</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs~4&#45;&gt;none~get_dgedt2 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge5" class="edge">
+<title>proc~excess_gibbs~4&#45;&gt;none~get_dgedt2</title>
+<path fill="none" stroke="#000000" d="M104.49,-127.16C130.82,-141.57 175.1,-165.8 204.92,-182.11"/>
+<polygon fill="#000000" stroke="#000000" points="203.6,-185.38 214.05,-187.11 206.96,-179.24 203.6,-185.38"/>
+</g>
+<!-- none~get_dgedtn -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_node7" class="node">
+<title>none~get_dgedtn</title>
+<g id="a_proc~~excess_gibbs~4~~CallsGraph_node7"><a xlink:href="../proc/excess_gibbs~4.html#proc-get_dgedtn" xlink:title="get_dgedtn">
+<polygon fill="#d9534f" stroke="#d9534f" points="273.5,-169.12 200.5,-169.12 200.5,-145.12 273.5,-145.12 273.5,-169.12"/>
+<text text-anchor="middle" x="237" y="-154.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_dgedtn</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs~4&#45;&gt;none~get_dgedtn -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge6" class="edge">
+<title>proc~excess_gibbs~4&#45;&gt;none~get_dgedtn</title>
+<path fill="none" stroke="#000000" d="M126.49,-127.16C146.49,-132.63 170.16,-139.11 190.36,-144.64"/>
+<polygon fill="#000000" stroke="#000000" points="189.7,-148.09 200.27,-147.35 191.55,-141.33 189.7,-148.09"/>
+</g>
+<!-- none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_node8" class="node">
+<title>none~reset_vars~3</title>
+<g id="a_proc~~excess_gibbs~4~~CallsGraph_node8"><a xlink:href="../proc/excess_gibbs~4.html#proc-reset_vars~3" xlink:title="reset_vars">
+<polygon fill="#d9534f" stroke="#d9534f" points="378,-106.12 311,-106.12 311,-82.12 378,-82.12 378,-106.12"/>
+<text text-anchor="middle" x="344.5" y="-91.72" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">reset_vars</text>
+</a>
+</g>
+</g>
+<!-- proc~excess_gibbs~4&#45;&gt;none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge7" class="edge">
+<title>proc~excess_gibbs~4&#45;&gt;none~reset_vars~3</title>
+<path fill="none" stroke="#000000" d="M91.01,-102.96C108.21,-79.6 149.69,-29.07 199,-10.12 230.53,1.99 244.49,4.37 275,-10.12 302.17,-23.03 322.12,-52.57 333.27,-72.94"/>
+<polygon fill="#000000" stroke="#000000" points="330.31,-74.83 338.03,-82.09 336.52,-71.6 330.31,-74.83"/>
+</g>
+<!-- none~get_dgedn&#45;&gt;Ge -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge8" class="edge">
+<title>none~get_dgedn&#45;&gt;Ge</title>
+<path fill="none" stroke="#000000" d="M271.67,-121.83C283.14,-124.11 296.01,-126.67 307.65,-128.99"/>
+<polygon fill="#000000" stroke="#000000" points="307,-132.43 317.49,-130.95 308.37,-125.56 307,-132.43"/>
+</g>
+<!-- none~get_dgedn&#45;&gt;none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge9" class="edge">
+<title>none~get_dgedn&#45;&gt;none~reset_vars~3</title>
+<path fill="none" stroke="#000000" d="M271.67,-108.42C280.98,-106.57 291.21,-104.53 300.95,-102.59"/>
+<polygon fill="#000000" stroke="#000000" points="301.74,-106 310.87,-100.62 300.38,-99.14 301.74,-106"/>
+</g>
+<!-- none~get_dgedn2&#45;&gt;Ge -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge10" class="edge">
+<title>none~get_dgedn2&#45;&gt;Ge</title>
+<path fill="none" stroke="#000000" d="M259.59,-85.22C264.67,-88.1 270.04,-91.2 275,-94.12 288.44,-102.05 303.21,-111.07 315.58,-118.71"/>
+<polygon fill="#000000" stroke="#000000" points="313.77,-121.71 324.12,-124 317.46,-115.76 313.77,-121.71"/>
+</g>
+<!-- none~get_dgedn2&#45;&gt;none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge11" class="edge">
+<title>none~get_dgedn2&#45;&gt;none~reset_vars~3</title>
+<path fill="none" stroke="#000000" d="M275.2,-80.53C283.55,-82.19 292.48,-83.97 301.04,-85.67"/>
+<polygon fill="#000000" stroke="#000000" points="300.36,-89.11 310.85,-87.62 301.72,-82.24 300.36,-89.11"/>
+</g>
+<!-- none~get_dgedt&#45;&gt;Ge -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge12" class="edge">
+<title>none~get_dgedt&#45;&gt;Ge</title>
+<path fill="none" stroke="#000000" d="M263.57,-43.21C267.67,-45.81 271.65,-48.79 275,-52.12 297.84,-74.89 288.83,-91.71 311,-115.12 311.76,-115.93 312.56,-116.72 313.39,-117.49"/>
+<polygon fill="#000000" stroke="#000000" points="311.41,-120.39 321.4,-123.91 315.79,-114.93 311.41,-120.39"/>
+</g>
+<!-- none~get_dgedt&#45;&gt;none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge13" class="edge">
+<title>none~get_dgedt&#45;&gt;none~reset_vars~3</title>
+<path fill="none" stroke="#000000" d="M259.59,-43.22C264.67,-46.1 270.04,-49.2 275,-52.12 288.44,-60.05 303.21,-69.07 315.58,-76.71"/>
+<polygon fill="#000000" stroke="#000000" points="313.77,-79.71 324.12,-82 317.46,-73.76 313.77,-79.71"/>
+</g>
+<!-- none~get_dgedt2&#45;&gt;Ge -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge14" class="edge">
+<title>none~get_dgedt2&#45;&gt;Ge</title>
+<path fill="none" stroke="#000000" d="M259.59,-187.03C264.67,-184.15 270.04,-181.05 275,-178.12 288.44,-170.19 303.21,-161.18 315.58,-153.53"/>
+<polygon fill="#000000" stroke="#000000" points="317.46,-156.49 324.12,-148.25 313.77,-150.54 317.46,-156.49"/>
+</g>
+<!-- none~get_dgedt2&#45;&gt;none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge15" class="edge">
+<title>none~get_dgedt2&#45;&gt;none~reset_vars~3</title>
+<path fill="none" stroke="#000000" d="M263.57,-187.04C267.67,-184.44 271.65,-181.46 275,-178.12 297.84,-155.35 288.83,-138.54 311,-115.12 311.76,-114.32 312.56,-113.53 313.39,-112.76"/>
+<polygon fill="#000000" stroke="#000000" points="315.79,-115.32 321.4,-106.34 311.41,-109.86 315.79,-115.32"/>
+</g>
+<!-- none~get_dgedtn&#45;&gt;Ge -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge16" class="edge">
+<title>none~get_dgedtn&#45;&gt;Ge</title>
+<path fill="none" stroke="#000000" d="M273.72,-150.01C284.59,-147.85 296.54,-145.47 307.44,-143.3"/>
+<polygon fill="#000000" stroke="#000000" points="308.36,-146.69 317.49,-141.3 307,-139.82 308.36,-146.69"/>
+</g>
+<!-- none~get_dgedtn&#45;&gt;none~reset_vars~3 -->
+<g id="proc~~excess_gibbs~4~~CallsGraph_edge17" class="edge">
+<title>none~get_dgedtn&#45;&gt;none~reset_vars~3</title>
+<path fill="none" stroke="#000000" d="M259.59,-145.03C264.67,-142.15 270.04,-139.05 275,-136.12 288.44,-128.19 303.21,-119.18 315.58,-111.53"/>
+<polygon fill="#000000" stroke="#000000" points="317.46,-114.49 324.12,-106.25 313.77,-108.54 317.46,-114.49"/>
 </g>
 </g>
 </svg>
@@ -557,58 +626,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge_c"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Ge_c</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dge_c_dn"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dGe_c_dn</strong>(self%nmolecules)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dge_c_dn2"></span>
-              real(kind=pr),
-            </td>
-              <td>public</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dGe_c_dn2</strong>(self%nmolecules,self%nmolecules)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dn~3"></span>
+              <span class="anchor" id="variable-any_deriv"></span>
               logical,
             </td>
               <td>public</td>
@@ -616,7 +634,7 @@ implementation in a submodule of an interface in a parent module.
               
             </td>
             <td>::</td>
-            <td><strong>dn</strong></td>
+            <td><strong>any_deriv</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -625,15 +643,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dn2~3"></span>
-              logical,
+              <span class="anchor" id="variable-dge"></span>
+              real(kind=pr),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>dn2</strong></td>
+            <td><strong>dGe</strong>(size(n)+1,size(n)+1)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -642,15 +660,66 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pge"></span>
-              logical,
+              <span class="anchor" id="variable-d_ge"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
               <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>pge</strong></td>
+            <td><strong>d_Ge</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d_n~2"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d_n</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d_t~2"></span>
+              type(<a href='../type/hyperdual.html'>hyperdual</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d_t</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~95"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -669,6 +738,87 @@ implementation in a submodule of an interface in a parent module.
     
 
 
+    <section>
+    <h2>Subroutines</h2>
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedn"></span> <h3> subroutine <a href='excess_gibbs~4.html#proc-get_dgedn'>get_dgedn</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedn2"></span> <h3> subroutine <a href='excess_gibbs~4.html#proc-get_dgedn2'>get_dgedn2</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedt"></span> <h3> subroutine <a href='excess_gibbs~4.html#proc-get_dgedt'>get_dgedt</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedt2"></span> <h3> subroutine <a href='excess_gibbs~4.html#proc-get_dgedt2'>get_dgedt2</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-get_dgedtn"></span> <h3> subroutine <a href='excess_gibbs~4.html#proc-get_dgedtn'>get_dgedtn</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+      <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-reset_vars~3"></span> <h3> subroutine <a href='excess_gibbs~4.html#proc-reset_vars~3'>reset_vars</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+
+    </div>
+  </div>
+
+    </section>    
 
     
     
@@ -690,7 +840,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-02-28 00:49 +0000             </p>
+ on 2026-05-28 17:05 +0000             </p>
           </div>
         </div>
         <br>

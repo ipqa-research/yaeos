@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.fitting.core &mdash; yaeos 4.5.0 documentation</title>
+  <title>yaeos.fitting.core &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -98,10 +100,10 @@
 <span class="kn">from</span> <span class="nn">yaeos.fitting.solvers</span> <span class="kn">import</span> <span class="n">solve_pt</span>
 
 <span class="n">KINDS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;zT1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleP&quot;</span><span class="p">,</span> <span class="s2">&quot;bubble&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;zP1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleT&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;zT0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dewP&quot;</span><span class="p">,</span> <span class="s2">&quot;dew&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;zP0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dewT&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zT0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleP&quot;</span><span class="p">,</span> <span class="s2">&quot;bubble&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zP0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleT&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zT1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dewP&quot;</span><span class="p">,</span> <span class="s2">&quot;dew&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;zP1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dewT&quot;</span><span class="p">],</span>
     <span class="s2">&quot;PT&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PT&quot;</span><span class="p">,</span> <span class="s2">&quot;liquid-liquid&quot;</span><span class="p">],</span>
     <span class="s2">&quot;CP&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span> <span class="s2">&quot;CP&quot;</span><span class="p">],</span>
 <span class="p">}</span>
@@ -125,7 +127,7 @@
 
 
 <div class="viewcode-block" id="BinaryFitter">
-<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter">[docs]</a>
+<a class="viewcode-back" href="../../../fitting/core.html#yaeos.fitting.core.BinaryFitter">[docs]</a>
 <span class="k">class</span> <span class="nc">BinaryFitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BinaryFitter class.</span>
 
@@ -156,20 +158,20 @@
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, print the objective function value and the optimization</span>
 <span class="sd">    pressure_error : Callable, optional</span>
-<span class="sd">        A function `f(Pexp, Pmodel)`that calculates the pressure error between</span>
+<span class="sd">        A function `f(Pexp, Pmodel)` that calculates the pressure error between</span>
 <span class="sd">        the experimental and model values.</span>
 <span class="sd">        The function should take the experimental and model</span>
 <span class="sd">        values as arguments and return the error. If None, the default function</span>
 <span class="sd">        is used.</span>
 <span class="sd">    temperature_error : Callable, optional</span>
-<span class="sd">        A function `f(Texp, Tmodel)`that calculates the temperature error</span>
+<span class="sd">        A function `f(Texp, Tmodel)` that calculates the temperature error</span>
 <span class="sd">        between the experimental and model values.</span>
 <span class="sd">        The function should take the experimental and model</span>
 <span class="sd">        values as arguments and return the error. If None, the default function</span>
 <span class="sd">        is used.</span>
 <span class="sd">    composition_error : Callable, optional</span>
-<span class="sd">        A function `f(zexp, zmodel)`that calculates the composition error</span>
-<span class="sd">        between the experimental and model values.  The function should take</span>
+<span class="sd">        A function `f(zexp, zmodel)` that calculates the composition error</span>
+<span class="sd">        between the experimental and model values. The function should take</span>
 <span class="sd">        the experimental and model for mixture composition as arguments and</span>
 <span class="sd">        return the error. If None, the default function is used.</span>
 
@@ -220,7 +222,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span> <span class="o">=</span> <span class="n">_composition_error</span>
 
 <div class="viewcode-block" id="BinaryFitter.objective_function">
-<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.objective_function">[docs]</a>
+<a class="viewcode-back" href="../../../fitting/core.html#yaeos.fitting.core.BinaryFitter.objective_function">[docs]</a>
     <span class="k">def</span> <span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Objective function to minimize when fitting interaction parameters.</span>
@@ -277,7 +279,7 @@
             <span class="c1"># =================================================================</span>
             <span class="c1"># Bubble point - Pressure</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zT1&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zT0&quot;</span><span class="p">]:</span>
                 <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
                     <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
                 <span class="p">)</span>
@@ -287,7 +289,7 @@
             <span class="c1"># =================================================================</span>
             <span class="c1"># Bubble point - Temperature</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zP1&quot;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zP0&quot;</span><span class="p">]:</span>
                 <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
                     <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t</span>
                 <span class="p">)</span>
@@ -297,7 +299,7 @@
             <span class="c1"># =================================================================</span>
             <span class="c1"># Dew point - Pressure</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zT0&quot;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zT1&quot;</span><span class="p">]:</span>
                 <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
                     <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p</span>
                 <span class="p">)</span>
@@ -307,7 +309,7 @@
             <span class="c1"># =================================================================</span>
             <span class="c1"># Dew point - Temperature</span>
             <span class="c1"># -----------------------------------------------------------------</span>
-            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zP0&quot;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">KINDS</span><span class="p">[</span><span class="s2">&quot;zP1&quot;</span><span class="p">]:</span>
                 <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_temperature</span><span class="p">(</span>
                     <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t</span>
                 <span class="p">)</span>
@@ -321,7 +323,19 @@
                 <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">solve_pt</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">])</span>
 
                 <span class="n">residual</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">x1</span> <span class="o">==</span> <span class="n">y1</span><span class="p">:</span>
+                    <span class="c1"># No separation at TP</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
+                            <span class="n">x</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span>
+                            <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">t</span>
+                        <span class="p">)</span>
+                    <span class="n">error_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sat</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                     <span class="n">error_i</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composition_error</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y1</span><span class="p">])</span>
                     <span class="n">residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
 
@@ -374,7 +388,7 @@
                 <span class="c1"># TODO make more robust PT solver to avoid infs</span>
                 <span class="n">error_i</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
 
-            <span class="n">objective_function_contributions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_i</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">objective_function_contributions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">error_i</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
             <span class="n">residuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
 
             <span class="n">err</span> <span class="o">+=</span> <span class="n">error_i</span> <span class="o">*</span> <span class="n">w</span>
@@ -396,7 +410,7 @@
 
 
 <div class="viewcode-block" id="BinaryFitter.fit">
-<a class="viewcode-back" href="../../../fitting.html#yaeos.fitting.BinaryFitter.fit">[docs]</a>
+<a class="viewcode-back" href="../../../fitting/core.html#yaeos.fitting.core.BinaryFitter.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span> <span class="n">optimizer_options</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>

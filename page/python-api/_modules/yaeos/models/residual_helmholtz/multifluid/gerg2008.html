@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.multifluid.gerg2008 &mdash; yaeos 4.5.0 documentation</title>
+  <title>yaeos.models.residual_helmholtz.multifluid.gerg2008 &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -226,7 +228,6 @@
 <span class="sd">        representation of the model parameters. This string should be valid</span>
 <span class="sd">        Fortran code that assigns the model variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;ids = [&quot;</span>
@@ -244,11 +245,10 @@
 <span class="sd">        representation of the model parameters declaration. This string should</span>
 <span class="sd">        be valid Fortran code that declares the model variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;integer, parameter :: nc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;type(ArModel) :: ar_model</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;type(Gerg2008) :: ar_model</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;integer :: ids(nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>More calculations &mdash; yaeos 4.5.0 documentation</title>
+  <title>Calculating an isotherm &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="../../../_static/documentation_options.js?v=fa8d1881"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -57,9 +57,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="phase_equilibrium.html">Phase Equilibrium Calculations</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">More calculations</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Calculating an isotherm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Calculate-a-saturation-pressure">Calculate a saturation pressure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Flash-calculation">Flash calculation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Phase-envelopes">Phase envelopes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Critical-lines">Critical lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Pure-components-saturation-lines">Pure components saturation lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Three-phase-envelopes">Three-phase envelopes</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
@@ -78,8 +86,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -99,7 +109,7 @@
           <li class="breadcrumb-item"><a href="../../tutorial_tree.html">Tutorial</a></li>
           <li class="breadcrumb-item"><a href="../equations_of_state.html">Equations of State (EoS)</a></li>
           <li class="breadcrumb-item"><a href="phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
-      <li class="breadcrumb-item active">More calculations</li>
+      <li class="breadcrumb-item active">Calculating an isotherm</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../_sources/tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -109,11 +119,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="More-calculations">
-<h1>More calculations<a class="headerlink" href="#More-calculations" title="Link to this heading"></a></h1>
-<p>By now we have been only calculating properties “on point”, but we can do more than that with <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>. Here we have a few examples:</p>
-<section id="Calculating-an-isotherm">
-<h2>Calculating an isotherm<a class="headerlink" href="#Calculating-an-isotherm" title="Link to this heading"></a></h2>
+  <section id="Calculating-an-isotherm">
+<h1>Calculating an isotherm<a class="headerlink" href="#Calculating-an-isotherm" title="Link to this heading"></a></h1>
 <p>Let’s create a plot Pressure vs Volume at a given temperature (250 K) for a pure component. Let’s use carbon dioxide.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -156,14 +163,14 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_2_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_2_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_1_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_1_0.png" />
 </div>
 </div>
 </section>
 <section id="Calculate-a-saturation-pressure">
-<h2>Calculate a saturation pressure<a class="headerlink" href="#Calculate-a-saturation-pressure" title="Link to this heading"></a></h2>
+<h1>Calculate a saturation pressure<a class="headerlink" href="#Calculate-a-saturation-pressure" title="Link to this heading"></a></h1>
 <section id="Pure-compound">
-<h3>Pure compound<a class="headerlink" href="#Pure-compound" title="Link to this heading"></a></h3>
+<h2>Pure compound<a class="headerlink" href="#Pure-compound" title="Link to this heading"></a></h2>
 <p>In the previous example we obtained an isotherm for carbon dioxide at 250 K. We can check in the plot that the saturation pressure is around 18 bar. Let’s calculate the previous saturation pressure using <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> and the instantiated <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -210,7 +217,7 @@
 <p>The DIPPR correlated value for the saturation pressure of CO2 at 250 K is 17.88 bar, so SoaveRedlichKwong is doing a good job in this case.</p>
 </section>
 <section id="Mixture">
-<h3>Mixture<a class="headerlink" href="#Mixture" title="Link to this heading"></a></h3>
+<h2>Mixture<a class="headerlink" href="#Mixture" title="Link to this heading"></a></h2>
 <p>Of course, in thermodynamics there is not only pure compounds, we can also use <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> to calculate the saturation pressure of a mixture. Let’s calculate the saturation pressure of a mixture of 50% CO2 and 50% n-butane at 250 K. But now let’s use <code class="docutils literal notranslate"><span class="pre">PengRobinson78</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -307,7 +314,7 @@
 </section>
 </section>
 <section id="Pxy-diagram-for-a-mixture">
-<h2>Pxy diagram for a mixture<a class="headerlink" href="#Pxy-diagram-for-a-mixture" title="Link to this heading"></a></h2>
+<h1>Pxy diagram for a mixture<a class="headerlink" href="#Pxy-diagram-for-a-mixture" title="Link to this heading"></a></h1>
 <p>We can use what we have learned to obtain a Pxy diagram for a mixture. Let’s try it out with the CO2 and n-butane mixture at 250 K.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -369,12 +376,12 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_16_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_16_1.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_15_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_15_1.png" />
 </div>
 </div>
 </section>
 <section id="Flash-calculation">
-<h2>Flash calculation<a class="headerlink" href="#Flash-calculation" title="Link to this heading"></a></h2>
+<h1>Flash calculation<a class="headerlink" href="#Flash-calculation" title="Link to this heading"></a></h1>
 <p>Flash calculation are also supported by <code class="docutils literal notranslate"><span class="pre">yaeos</span></code>. Let’s calculate a liquid-vapor flash at 250 K for the CO2 and n-butane mixture.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -477,16 +484,16 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_20_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_20_1.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_19_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_19_1.png" />
 </div>
 </div>
 </section>
 <section id="Phase-envelopes">
-<h2>Phase envelopes<a class="headerlink" href="#Phase-envelopes" title="Link to this heading"></a></h2>
+<h1>Phase envelopes<a class="headerlink" href="#Phase-envelopes" title="Link to this heading"></a></h1>
 <p>Most of times, calculating the whole lines of saturation points can be more efficient than calculating individual points while sweeping over a variable (for example, over a composition like we did before).</p>
 <p>If the interest is to calculate the whole phase diagram of a mixture, then the phase envelope methods should be the go-to.</p>
 <section id="Model-definition">
-<h3>Model definition<a class="headerlink" href="#Model-definition" title="Link to this heading"></a></h3>
+<h2>Model definition<a class="headerlink" href="#Model-definition" title="Link to this heading"></a></h2>
 <p>We first define a model that will be used for all the possible calculations.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -507,7 +514,7 @@
 </div>
 </section>
 <section id="PT-phase-envelope-calculation">
-<h3>PT phase envelope calculation<a class="headerlink" href="#PT-phase-envelope-calculation" title="Link to this heading"></a></h3>
+<h2>PT phase envelope calculation<a class="headerlink" href="#PT-phase-envelope-calculation" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">yaeos</span></code> also provides a method to calculate the 2 phase envelope of a mixture. Of course, we are going to keep using the CO2 and n-butane mixture, with a global composition [0.5, 0.5].</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -708,12 +715,12 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_29_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_29_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_28_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_28_0.png" />
 </div>
 </div>
 </section>
 <section id="Px-phase-envelopes">
-<h3>Px phase envelopes<a class="headerlink" href="#Px-phase-envelopes" title="Link to this heading"></a></h3>
+<h2>Px phase envelopes<a class="headerlink" href="#Px-phase-envelopes" title="Link to this heading"></a></h2>
 <p>Px phase envelopes can be calculated with the <code class="docutils literal notranslate"><span class="pre">.phase_envelope_px</span></code> method</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
@@ -740,12 +747,12 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_31_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_31_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_30_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_30_0.png" />
 </div>
 </div>
 </section>
 <section id="Tx-phase-envelopes">
-<h3>Tx phase envelopes<a class="headerlink" href="#Tx-phase-envelopes" title="Link to this heading"></a></h3>
+<h2>Tx phase envelopes<a class="headerlink" href="#Tx-phase-envelopes" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -772,7 +779,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_33_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_33_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_32_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_32_0.png" />
 </div>
 </div>
 <p>Ussually, it is better to start <span class="math notranslate nohighlight">\(Tx\)</span> envelopes from the light component instead of the heavy one. For this, we can change the initial value of <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">ds0</span></code>, to trace the line from right to left.</p>
@@ -801,15 +808,15 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_35_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_35_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_34_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_34_0.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="Critical-lines">
-<h2>Critical lines<a class="headerlink" href="#Critical-lines" title="Link to this heading"></a></h2>
+<h1>Critical lines<a class="headerlink" href="#Critical-lines" title="Link to this heading"></a></h1>
 <section id="Calculation-of-critical-points">
-<h3>Calculation of critical points<a class="headerlink" href="#Calculation-of-critical-points" title="Link to this heading"></a></h3>
+<h2>Calculation of critical points<a class="headerlink" href="#Calculation-of-critical-points" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
@@ -830,7 +837,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 </div>
 </section>
 <section id="Calculation-of-critical-lines">
-<h3>Calculation of critical lines<a class="headerlink" href="#Calculation-of-critical-lines" title="Link to this heading"></a></h3>
+<h2>Calculation of critical lines<a class="headerlink" href="#Calculation-of-critical-lines" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
@@ -849,7 +856,7 @@ first saturation point of the envelope of kind: <code class="docutils literal no
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_40_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_40_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_39_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_39_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -876,13 +883,13 @@ Text(0, 0.5, &#39;$P [bar]$&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_41_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_41_1.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_40_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_40_1.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="Stability-analysis">
-<h2>Stability analysis<a class="headerlink" href="#Stability-analysis" title="Link to this heading"></a></h2>
+<h1>Stability analysis<a class="headerlink" href="#Stability-analysis" title="Link to this heading"></a></h1>
 <p>In <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> it is possible to make stability analysis using the <span class="math notranslate nohighlight">\(tm\)</span> function defined by Michelsen and Møllerup</p>
 <p><span class="math">\begin{equation}
 tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\mathbf{z}))
@@ -919,7 +926,7 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_43_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_43_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_42_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_42_0.png" />
 </div>
 </div>
 <p>We can take a point of the phase envelope and calculate the <span class="math notranslate nohighlight">\(tm\)</span> function at pressures sligthly above and slightly below.</p>
@@ -950,7 +957,7 @@ tm = 1 + \sum_i w_i (\ln w_i + \ln \phi_i(\mathbf{w}) - \ln z_i - \ln \phi_i(\ma
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_45_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_45_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_44_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_44_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -998,7 +1005,7 @@ np.float64(36.741026003871276)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_47_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_47_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_46_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_46_0.png" />
 </div>
 </div>
 <p>What if we have a ternary mixture?</p>
@@ -1045,7 +1052,7 @@ np.float64(36.741026003871276)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_49_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_49_1.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_48_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_48_1.png" />
 </div>
 </div>
 <p>We can make the stability anaylisis sweeping on the composition of two components (using <span class="math notranslate nohighlight">\(1 - w_1 - w_2\)</span> for the remaining one) at a specified <span class="math notranslate nohighlight">\(T\)</span> and <span class="math notranslate nohighlight">\(P\)</span>, and save the results.</p>
@@ -1099,7 +1106,7 @@ np.float64(36.741026003871276)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_51_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_51_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_50_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_50_0.png" />
 </div>
 </div>
 <p>It is easy to notice that finding a minima by sweeping variables becomes harder and harder as more components are added. Luckily, in <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> there is also the method <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> that will use specific procedures to find the possible minima in an efficient way.</p>
@@ -1188,7 +1195,7 @@ np.float64(36.741026003871276)
 </div>
 </section>
 <section id="Pure-components-saturation-lines">
-<h2>Pure components saturation lines<a class="headerlink" href="#Pure-components-saturation-lines" title="Link to this heading"></a></h2>
+<h1>Pure components saturation lines<a class="headerlink" href="#Pure-components-saturation-lines" title="Link to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
@@ -1234,12 +1241,12 @@ np.float64(36.741026003871276)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_60_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_60_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_59_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_59_0.png" />
 </div>
 </div>
 </section>
 <section id="Three-phase-envelopes">
-<h2>Three-phase envelopes<a class="headerlink" href="#Three-phase-envelopes" title="Link to this heading"></a></h2>
+<h1>Three-phase envelopes<a class="headerlink" href="#Three-phase-envelopes" title="Link to this heading"></a></h1>
 <p>Assymetric systems can have three-phase behaviour. One of the common cases where three-phase behavoir can be expected is when we have a an open two-phase envelope and another two-phase envelope inside, this second envelope is actually an unstable line, but can be used to estimate the start of a three-phase line.</p>
 <p>First let’s start by defining a model and calculating two two-phase envelopes. One starting from a dew point at low pressure and another starting from a bubble point at low temperature. Here it is possible to see the unstable bubble line.</p>
 <div class="nbinput docutils container">
@@ -1304,7 +1311,7 @@ Text(189.99999999999991, 66.37652186684838, &#39;Unstable&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_63_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_63_1.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_62_1.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_62_1.png" />
 </div>
 </div>
 <p>This unstable phase envelope can be used to start a three-phase envelope. First let’s see how a three-phase point is described.</p>
@@ -1337,7 +1344,7 @@ Text(189.99999999999991, 66.37652186684838, &#39;Unstable&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_65_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_65_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_64_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_64_0.png" />
 </div>
 </div>
 <p>We now can plot the phase diagram including the three-phase envelope, and removing the unstable line.</p>
@@ -1360,10 +1367,9 @@ Text(189.99999999999991, 66.37652186684838, &#39;Unstable&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_67_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_67_0.png" />
+<img alt="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_66_0.png" src="../../../_images/tutorial_equations_of_state_phase_equilibrium_phase_equilibrium_tutorial_66_0.png" />
 </div>
 </div>
-</section>
 </section>
 
 

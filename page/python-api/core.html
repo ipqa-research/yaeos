@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Module &mdash; yaeos 4.5.0 documentation</title>
+  <title>Core Module &mdash; yaeos 4.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5ef59c98"></script>
+      <script src="_static/documentation_options.js?v=fa8d1881"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Models" href="models/init.html" />
-    <link rel="prev" title="UNIFAC models" href="tutorial/gibbs_excess/models/unifac_models.html" /> 
+    <link rel="prev" title="Equilibrium calculations" href="tutorial/gibbs_excess/equilibrium_calcs.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -60,8 +60,10 @@
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/init.html">Tools</a></li>
 </ul>
 
         </div>
@@ -526,62 +528,6 @@ derivative is asked</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="yaeos.core.ArModel.lnphi_pt">
-<span class="sig-name descname"><span class="pre">lnphi_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.lnphi_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.lnphi_pt" title="Link to this definition"></a></dt>
-<dd><p>Calculate fugacity coefficent given pressure and temperature.</p>
-<p>Calculate <span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> and its derivatives with respect to
-temperature, pressure and moles number.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
-<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
-<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
-<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
-“stable”</p></li>
-<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
-<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
-<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> vector or tuple with
-<span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> vector and derivatives dictionary if any
-derivative is asked</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
-
-<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
-<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-
-<span class="c1"># Evaluating ln_phi only</span>
-<span class="c1"># will print: [-0.10288733 -0.11909807]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
-
-<span class="c1"># Asking for derivatives</span>
-<span class="c1"># will print:</span>
-<span class="c1"># (</span>
-<span class="c1"># array([-0.10288733, -0.11909807]),</span>
-<span class="c1"># {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}</span>
-<span class="c1"># )</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.pressure">
 <span class="sig-name descname"><span class="pre">pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.pressure" title="Link to this definition"></a></dt>
 <dd><p>Calculate pressure given volume and temperature [bar].</p>
@@ -742,7 +688,7 @@ dictionary if any derivative is asked [bar L]</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.internal_energy_residual_vt">
 <span class="sig-name descname"><span class="pre">internal_energy_residual_vt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.internal_energy_residual_vt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.internal_energy_residual_vt" title="Link to this definition"></a></dt>
-<dd><p>Calculate residual internal energy at volume and temperature [bar L]</p>
+<dd><p>Calculate residual internal energy at V and T [bar L].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -978,6 +924,756 @@ w = np.array([0.0123, 0.045])   # acentric factors</p>
 <span class="c1"># will print: 1.4964025088916886</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">cp_residual_vt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.lnphi_pt">
+<span class="sig-name descname"><span class="pre">lnphi_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.lnphi_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.lnphi_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate fugacity coefficent given pressure and temperature.</p>
+<p>Calculate <span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> and its derivatives with respect to
+temperature, pressure and moles number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> vector or tuple with
+<span class="math notranslate nohighlight">\(ln \phi_i(n,P,T)\)</span> vector and derivatives dictionary if any
+derivative is asked</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Evaluating ln_phi only</span>
+<span class="c1"># will print: [-0.10288733 -0.11909807]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="c1"># will print:</span>
+<span class="c1"># (</span>
+<span class="c1"># array([-0.10288733, -0.11909807]),</span>
+<span class="c1"># {&#39;dt&#39;: array([0.00094892, 0.00108809]), &#39;dp&#39;: None, &#39;dn&#39;: None}</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">lnphi_pt</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.helmholtz_residual_pt">
+<span class="sig-name descname"><span class="pre">helmholtz_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.helmholtz_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.helmholtz_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual helmoltz free energy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual helmoltz free energy or tuple with Residual helmoltz free
+energy and derivatives dictionary if any derivative is asked
+[bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">helmholtz_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">helmholtz_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">300.0</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.enthalpy_residual_pt">
+<span class="sig-name descname"><span class="pre">enthalpy_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.enthalpy_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.enthalpy_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual enthalpy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual enthalpy or tuple with Residual enthalpy and derivatives
+dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">enthalpy_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Asking for derivatives</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">enthalpy_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">300.0</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.gibbs_residual_pt">
+<span class="sig-name descname"><span class="pre">gibbs_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.gibbs_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.gibbs_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual Gibbs energy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual Gibbs energy or tuple with Residual Gibbs energy and
+derivatives dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">gibbs_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">gibbs_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">300.0</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.entropy_residual_pt">
+<span class="sig-name descname"><span class="pre">entropy_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.entropy_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.entropy_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual entropy given P and T [bar L / K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual entropy or tuple with Residual entropy and derivatives
+dictionary if any derivative is asked [bar L / K]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">entropy_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">entropy_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">300.0</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.internal_energy_residual_pt">
+<span class="sig-name descname"><span class="pre">internal_energy_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.internal_energy_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.internal_energy_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual internal energy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual internal energy or tuple with Residual internal energy and
+derivatives dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">internal_energy_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">internal_energy_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">300.0</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.cv_residual_pt">
+<span class="sig-name descname"><span class="pre">cv_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.cv_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.cv_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual isochoric heat capacity at P and T [bar L / K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual isochoric heat capacity [bar L / K]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">cv_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.cp_residual_pt">
+<span class="sig-name descname"><span class="pre">cp_residual_pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.cp_residual_pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.cp_residual_pt" title="Link to this definition"></a></dt>
+<dd><p>Calculate residual isobaric heat capacity given P and T [bar L / K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residual isobaric heat capacity [bar L / K]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">cp_residual_pt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.ln_gamma">
+<span class="sig-name descname"><span class="pre">ln_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.ln_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.ln_gamma" title="Link to this definition"></a></dt>
+<dd><p>Calculate activity coefficients given temperature and pressure.</p>
+<p>Calculate <span class="math notranslate nohighlight">\(ln \gamma_i(n,P,T)\)</span> and its derivatives..</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(ln \gamma_i(n,T)\)</span> vector or tuple with
+<span class="math notranslate nohighlight">\(ln \gamma_i(n,T)\)</span> vector and derivatives dictionary if any
+derivative is asked</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, tuple[np.ndarray, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="c1"># Evaluating ln_gamma only</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">))</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">(</span>
+        <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.gibbs_excess">
+<span class="sig-name descname"><span class="pre">gibbs_excess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.gibbs_excess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.gibbs_excess" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess Gibbs energy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+<li><p><strong>dt</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate temperature derivative, by default False</p></li>
+<li><p><strong>dp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate pressure derivative, by default False</p></li>
+<li><p><strong>dn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Calculate moles derivative, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess Gibbs energy or tuple with Excess Gibbs energy and
+derivatives dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">gibbs_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Asking for derivatives</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">gibbs_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+        <span class="mf">300.0</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.enthalpy_excess">
+<span class="sig-name descname"><span class="pre">enthalpy_excess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.enthalpy_excess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.enthalpy_excess" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess enthalpy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess enthalpy or tuple with Excess enthalpy and derivatives
+dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">enthalpy_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.entropy_excess">
+<span class="sig-name descname"><span class="pre">entropy_excess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.entropy_excess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.entropy_excess" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess entropy given P and T [bar L / K].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess entropy or tuple with Excess entropy and derivatives
+dictionary if any derivative is asked [bar L / K]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">entropy_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.volume_excess">
+<span class="sig-name descname"><span class="pre">volume_excess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.volume_excess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.volume_excess" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess volume given P and T [L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess volume or tuple with Excess volume and derivatives
+dictionary if any derivative is asked [L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K] pc =</span>
+<span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar] w =</span>
+<span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">volume_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.helmoltz_excess">
+<span class="sig-name descname"><span class="pre">helmoltz_excess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.helmoltz_excess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.helmoltz_excess" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess Helmholtz free energy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess Helmholtz free energy or tuple with Excess Helmholtz free
+energy and derivatives dictionary if any derivative is asked
+[bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">helmholtz_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.core.ArModel.internal_energy_excess">
+<span class="sig-name descname"><span class="pre">internal_energy_excess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stable'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.internal_energy_excess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.internal_energy_excess" title="Link to this definition"></a></dt>
+<dd><p>Calculate excess internal energy given P and T [bar L].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>moles</strong> (<em>array_like</em>) – Moles number vector [mol]</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar]</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K]</p></li>
+<li><p><strong>root</strong> (<em>str</em><em>, </em><em>optional</em>) – Volume root, use: “liquid”, “vapor” or “stable”, by default
+“stable”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Excess internal energy or tuple with Excess internal energy and
+derivatives dictionary if any derivative is asked [bar L]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, tuple[float, dict]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">320.0</span><span class="p">,</span> <span class="mf">375.0</span><span class="p">])</span>   <span class="c1"># critical temperatures [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">])</span>     <span class="c1"># critical pressures [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0123</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">])</span>   <span class="c1"># acentric factors</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">internal_energy_excess</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">]),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1575,7 +2271,7 @@ options can be - “stable”, “liquid”, “vapor”</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.phase_envelope_pt_mp">
-<span class="sig-name descname"><span class="pre">phase_envelope_pt_mp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="envelopes.html#yaeos.envelopes.PTEnvelope" title="yaeos.envelopes.PTEnvelope"><span class="pre">PTEnvelope</span></a></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_pt_mp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_pt_mp" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">phase_envelope_pt_mp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_negative_betas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="envelopes.html#yaeos.envelopes.PTEnvelope" title="yaeos.envelopes.PTEnvelope"><span class="pre">PTEnvelope</span></a></span></span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.phase_envelope_pt_mp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.phase_envelope_pt_mp" title="Link to this definition"></a></dt>
 <dd><p>Multi-phase envelope.</p>
 </dd></dl>
 
@@ -1678,7 +2374,7 @@ point.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaeos.core.ArModel.generalized_isopleth">
 <span class="sig-name descname"><span class="pre">generalized_isopleth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind_w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_variable_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_stability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaeos/core.html#ArModel.generalized_isopleth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.core.ArModel.generalized_isopleth" title="Link to this definition"></a></dt>
-<dd><p>Calculation of a generalized multiphase isoplethic line.</p>
+<dd><p>Calculate a generalized multiphase isoplethic line.</p>
 <p>Calculates a line for a constant composition specification.
 A multiphase line is defined as a line of <cite>np+1</cite> phases, where the
 first <cite>np</cite> phases are what are considered _main_ phases and the <cite>np+1</cite>
@@ -1931,7 +2627,7 @@ is unstable.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="tutorial/gibbs_excess/models/unifac_models.html" class="btn btn-neutral float-left" title="UNIFAC models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial/gibbs_excess/equilibrium_calcs.html" class="btn btn-neutral float-left" title="Equilibrium calculations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="models/init.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
