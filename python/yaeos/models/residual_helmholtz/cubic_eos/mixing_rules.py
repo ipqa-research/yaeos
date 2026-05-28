@@ -826,6 +826,7 @@ class sDDLC(CubicMixRule):
         fcode += t_ref_c + "\n"
 
         fcode += """
+        sDDLC(q=qs, k=kij_inf, k0=kij_0, l=lij, tref=t_ref)
         """
 
         return fcode
