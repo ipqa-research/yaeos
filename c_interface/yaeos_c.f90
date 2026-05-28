@@ -30,7 +30,7 @@ module yaeos_c
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2_k
    public :: get_cubiceos_attractive_parameters, get_cubiceos_repulsive_parameters
    ! Mixing rules
-   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
+   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl, set_sddlc
    ! Multifluid equations
    public :: multifluid_gerg2008
    ! SAFT equations
@@ -506,6 +506,34 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_qmr
 
+   subroutine set_sddlc(ar_id, qs, kij_0, kij_inf, t_star, lij)
+      !! # `set_sddlc`
+      !! Set the sDDLC with Temperature Dependent `k_ij`
+      !! to a cubic equation of state. The expression of the `k_ij` parameter is:
+      !! \[
+      !! k_{ij} = k_{ij}^{\infty} + k_{ij}^0 \exp {\frac{-T}{T^*_{ij}}}
+      !! \]
+      use yaeos, only: QMRTD, CubicEoS, sDDLC
+      integer(c_int), intent(in) :: ar_id !!
+      real(c_double), intent(in) :: qs(:)
+      real(c_double), intent(in) :: kij_0(:, :)
+      real(c_double), intent(in) :: kij_inf(:, :)
+      real(c_double), intent(in) :: t_star(:, :)
+      real(c_double), intent(in) :: lij(:, :)
+
+      type(sDDLC) :: mixrule
+
+      mixrule = sDDLC(q=qs, k=kij_inf, k0=kij_0, Tref=T_star, l=lij)
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = mixrule
+         end select
+      end associate
+   end subroutine set_sddlc
+
    ! ==========================================================================
    !  Cubic EoS implementations
    ! --------------------------------------------------------------------------
@@ -583,7 +611,7 @@ contains
 
    ! Get cubic parameters
    subroutine get_ac_b_del1_del2_k(id, ac, b, del1, del2, k, nc)
-      use yaeos, only: CubicEoS, size, AlphaRKPR
+      use yaeos, only: CubicEoS, size, AlphaRKPR, AlphaSoave
       integer(c_int), intent(in) :: id
       integer, intent(in) :: nc
       real(c_double), dimension(nc), intent(out) :: ac, b, del1, del2, k
@@ -599,6 +627,8 @@ contains
             associate(a => model%alpha)
                select type(a)
                 class is(AlphaRKPR)
+                  k(:nc) = a%k
+                class is(AlphaSoave)
                   k(:nc) = a%k
                end select
             end associate
@@ -645,8 +675,6 @@ contains
       integer(c_int), intent(in) :: nc !! Number of components
       real(c_double), intent(out) :: b(nc) !! Repulsive parameter value
 
-      integer :: i
-      real(pr) :: Tr
 
       ar_model = ar_models(id)%model
 
@@ -1009,7 +1037,7 @@ contains
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: V
 
-      real(c_double) :: y(size(z0)), Vx, Vy, beta
+      real(c_double) :: y(size(z0)), Vy, beta
 
       type(EquilibriumState) :: crit
 
@@ -1025,7 +1053,7 @@ contains
       a0, v0, t0, p0, z0, zi, stability_analysis, max_points, stop_pressure, &
       as, Vs, Ts, Ps, CEP_x, CEP_y, CEP_P, CEP_Vx, CEP_Vy, CEP_T)
       use yaeos, only: EquilibriumState, CriticalLine, &
-         fcritical_line => critical_line, spec_CP
+         fcritical_line => critical_line
       integer(c_int), intent(in) :: id
       integer(c_int), intent(in) :: ns
       real(c_double), intent(in) :: S
@@ -1222,8 +1250,6 @@ contains
       real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
 
       real(c_double) :: d_i(size(z))
-
-      integer :: i
 
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &

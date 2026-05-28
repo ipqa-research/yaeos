@@ -14,7 +14,10 @@ module yaeos__models_ar_genericcubic
    type, abstract :: CubicMixRule
       !! Abstract derived type that describe the required
       !! procedure for a mixing rule on a Cubic EoS
-      logical :: dn2 = .false. !! Calculate second order derivatives
+      logical :: is_D_ddlc = .false. 
+         !! Mixing rule D parameter dependant on density
+      logical :: dn2 = .false. 
+         !! Calculate second order derivatives
    contains
       procedure(abs_Dmix), deferred :: Dmix
       procedure(abs_Bmix), deferred :: Bmix
@@ -158,7 +161,9 @@ contains
       !! three parameter EoS RKPR where \(delta_1\) is not a constant and
       !! has its own mixing rule.
       !!
-      use yaeos__models_ar_genericcubic_base, only: generic => GenericCubic_Ar
+      use yaeos__models_ar_genericcubic_base, only: &
+         generic => GenericCubic_Ar, &
+         generic_dddlc => GenericCubic_Ar_dddlc
       use yaeos__constants, only: R
       class(CubicEoS), intent(in) :: self
       real(pr), intent(in) :: n(:) !! Number of moles
@@ -209,21 +214,38 @@ contains
       ! ------------------------------------------------------------------------
       call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
       call self%mixrule%Bmix(n, self%b, B, dBi, dBij)
+      dDdV = 0
+      dDdV2 = 0
+      dDdTV = 0
+      dDdTV = 0
       call self%mixrule%Dmix(&
          n=n, V=V, T=T, ai=a, daidt=dadt, daidt2=dadt2, &
          D=D, &
          dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
          dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij &
-      )
-
-      call generic(&
-         n, V, T, &
-         B, dBi, dBij, &
-         D, dDi, dDij, dDidT, dDdT, dDdT2, &
-         D1, dD1i, dD1ij, &
-         Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
          )
 
+      if (self%mixrule%is_D_ddlc) then
+         call generic_dddlc(&
+            n=n, V=V, T=T, &
+            B=B, &
+            dBi=dBi, dBij=dBij, &
+            D=D, &
+            dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
+            dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij, &
+            D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
+            Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, &
+            ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
+            )
+      else
+         call generic(&
+            n=n, V=V, T=T, &
+            B=B, dBi=dBi, dBij=dBij, &
+            D=D, dDi=dDi, dDij=dDij, dDidT=dDidT, dDdT=dDdT, dDdT2=dDdT2, &
+            D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
+            Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
+         )
+      end if
    end subroutine GenericCubic_Ar
 
    subroutine set_delta1(self, delta1)
@@ -257,18 +279,8 @@ contains
       !! # Cubic EoS volume solver
       !! Volume solver optimized for Cubic Equations of State.
       !!
-      !! @warn
-      !! This routine intends to use the analyitical solution of the cubic
-      !! equation, but due to errors in the solutions it is not used. And
-      !! the general volume solver by Michelsen is used instead.
-      !! @endwarn
-      !!
       !! # Description
-      !! Cubic equations can be analytically solved. Using an anallytical
-      !! solution provides the best possible solution in terms of speed and
-      !! precision. This subroutine uses the modified cardano method proposed
-      !! by Rosendo.
-      !!
+      !! Uses the solver proposed by Michelsen.
       !! # Examples
       !!
       !! ```fortran

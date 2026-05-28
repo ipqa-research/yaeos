@@ -39,13 +39,14 @@ incdir_f2py = run_command(py,
 
 
 # fpm
-fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
-if get_option('debug')
-  fflags = '-g -fPIC -Og'
-else
-  fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
-endif
+# fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
+# if get_option('debug')
+#   fflags = '-g -fPIC -Og'
+# else
+#   fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
+# endif
 
+fflags = '-g -fPIC -O2'
 cflags = '-g -fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
