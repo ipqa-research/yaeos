@@ -82,7 +82,7 @@ contains
          )
 
 
-      call assert(allclose([Ar], [Ar], tol), "Ar")
+      call assert(allclose([Ar_num], [Ar], tol), "Ar")
       call assert(allclose([ArT_num] , [ArT], tol), "ArT")
       call assert(allclose([ArT2_num], [ArT2], tol), "ArT2")
       
