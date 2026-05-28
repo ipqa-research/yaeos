@@ -1585,7 +1585,7 @@ contains
 
       real(pr) :: n(size(eos))
       real(pr) :: F(3), X(3), dF(3, 3), Vl, Vv, P, Pc, S, dFdS(3)
-      integer :: ns=3
+      integer, parameter :: ns=3
       integer :: its
 
       n = 0
