@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.5.1 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fa8d1881"></script>
+      <script src="../../_static/documentation_options.js?v=cd7592eb"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -3256,7 +3256,7 @@
     <span class="k">def</span> <span class="nf">phase_envelope_pt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">z</span><span class="p">,</span>
-        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bubble&quot;</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dew&quot;</span><span class="p">,</span>
         <span class="n">max_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MAX_POINTS_ENVELOPES</span><span class="p">,</span>
         <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">150.0</span><span class="p">,</span>
         <span class="n">p0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -3272,7 +3272,7 @@
 <span class="sd">            Global mole fractions</span>
 <span class="sd">        kind : str, optional</span>
 <span class="sd">            Kind of saturation point to start the envelope calculation,</span>
-<span class="sd">            defaults to &quot;bubble&quot;. Options are</span>
+<span class="sd">            defaults to &quot;dew&quot;. Options are</span>
 <span class="sd">            - &quot;bubble&quot;</span>
 <span class="sd">            - &quot;dew&quot;</span>
 <span class="sd">            - &quot;liquid-liquid&quot;</span>
@@ -3329,10 +3329,8 @@
 <span class="sd">                p0=1.0</span>
 <span class="sd">            )</span>
 
-<span class="sd">            plt.plot(env[&quot;T&quot;], env[&quot;P&quot;])</span>
-<span class="sd">            plt.scatter(env[&quot;Tc&quot;], env[&quot;Pc&quot;])</span>
+<span class="sd">            env.plot()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ds0</span> <span class="o">=</span> <span class="mf">0.001</span>
 
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;bubble&quot;</span><span class="p">:</span>
             <span class="n">sat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
