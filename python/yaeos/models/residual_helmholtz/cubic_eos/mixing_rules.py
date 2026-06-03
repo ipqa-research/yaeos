@@ -732,14 +732,14 @@ class sDDLC(CubicMixRule):
     ----------
     q : array_like
         Segment size for each component
-    kij_0 : matrix_like
-        kij_0 binary interaction parameters matrix
-    kij_inf : matrix_like
-        kij_inf binary interaction parameters matrix
-    t_ref: matrix_like
-        Reference temperature
-    lij : matrix_like
-        lij binary interaction parameters matrix
+    kij_0, optional : matrix_like
+        kij_0 binary interaction parameters matrix. Defaults to zero.
+    kij_inf, optional : matrix_like
+        kij_inf binary interaction parameters matrix. Defaults to zero.
+    t_ref, optional: matrix_like
+        Reference temperature. Defaults to zero.
+    lij, optional : matrix_like
+        lij binary interaction parameters matrix. Defaults to zero.
 
     Example
     -------
@@ -774,20 +774,22 @@ class sDDLC(CubicMixRule):
 
         # kij constant term
         if kij_inf is None:
-            kij_inf = np.zeros((nc, nc))
+            self.kij_inf = np.zeros((nc, nc))
         else:
             self.kij_inf = np.array(kij_inf, order="F")
 
+        if t_ref is not None and kij_0 is None:
+            raise ValueError("kij_0 should be provided with t_ref")
+        if kij_0 is not None and t_ref is None:
+            raise ValueError("t_ref should be provided with kij_0")
+
         # kij temperature dependance term 
         if kij_0 is None:
-            kij_0 = np.zeros((nc, nc))
+            self.kij_0 = np.zeros((nc, nc))
+            self.t_ref = np.zeros((nc, nc))
         else:
             self.kij_0 = np.array(kij_0, order="F")
             self.t_ref = np.array(t_ref, order="F")
-        if t_ref and kij_0 is not None:
-            raise ValueError("kij_0 should be provided with t_ref")
-        if kij_0 and t_ref is not None:
-            raise ValueError("t_ref should be provided with kij_0")
 
         if lij:
             self.lij = np.array(lij, order="F")
