@@ -3035,7 +3035,7 @@ class ArModel(ABC):
     def phase_envelope_pt(
         self,
         z,
-        kind: str = "bubble",
+        kind: str = "dew",
         max_points: int = MAX_POINTS_ENVELOPES,
         t0: float = 150.0,
         p0: float = 1.0,
@@ -3051,7 +3051,7 @@ class ArModel(ABC):
             Global mole fractions
         kind : str, optional
             Kind of saturation point to start the envelope calculation,
-            defaults to "bubble". Options are
+            defaults to "dew". Options are
             - "bubble"
             - "dew"
             - "liquid-liquid"
@@ -3108,10 +3108,8 @@ class ArModel(ABC):
                 p0=1.0
             )
 
-            plt.plot(env["T"], env["P"])
-            plt.scatter(env["Tc"], env["Pc"])
+            env.plot()
         """
-        ds0 = 0.001
 
         if kind == "bubble":
             sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
