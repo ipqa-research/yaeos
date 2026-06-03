@@ -765,12 +765,34 @@ class sDDLC(CubicMixRule):
 
     name = "sDDLC"
 
-    def __init__(self, qs, kij_0, kij_inf, t_ref, lij) -> None:
+    def __init__(
+        self, qs, kij_0=None, kij_inf=None, t_ref=None, lij=None
+    ) -> None:
+        nc = len(qs)
+
         self.qs = np.array(qs, order="F")
-        self.kij_0 = np.array(kij_0, order="F")
-        self.kij_inf = np.array(kij_inf, order="F")
-        self.t_ref = np.array(t_ref, order="F")
-        self.lij = np.array(lij, order="F")
+
+        # kij constant term
+        if kij_inf is None:
+            kij_inf = np.zeros((nc, nc))
+        else:
+            self.kij_inf = np.array(kij_inf, order="F")
+
+        # kij temperature dependance term 
+        if kij_0 is None:
+            kij_0 = np.zeros((nc, nc))
+        else:
+            self.kij_0 = np.array(kij_0, order="F")
+            self.t_ref = np.array(t_ref, order="F")
+        if t_ref and kij_0 is not None:
+            raise ValueError("kij_0 should be provided with t_ref")
+        if kij_0 and t_ref is not None:
+            raise ValueError("t_ref should be provided with kij_0")
+
+        if lij:
+            self.lij = np.array(lij, order="F")
+        else:
+            self.lij = np.zeros((nc, nc))
 
     def set_mixrule(self, ar_model_id: int) -> None:
         """Set mix rule method."""
