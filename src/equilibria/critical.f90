@@ -304,6 +304,7 @@ contains
             end if
 
             if (i > 4) then
+               ! Detect when we are near the minimum of a Type III line.
                dPdT_1 = (P - critical_line%P(i-1)) / (T - critical_line%T(i-1))
                dPdT_2 = (P - critical_line%P(i-2)) / (T - critical_line%T(i-2))
                dT2 = (T - critical_line%T(i-1)) *(T - critical_line%T(i-2))
