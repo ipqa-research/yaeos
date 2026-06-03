@@ -386,6 +386,27 @@ class PXEnvelope:
         """
         if "key" in self.__dict__:
             return self.__dict__["key"]
+        elif isinstance(key, slice):
+            return PXEnvelope(
+                global_composition_0=self.global_composition_0,
+                global_composition_i=self.global_composition_i,
+                temperature=self.temperature,
+                main_phases_compositions=self.main_phases_compositions[key],
+                reference_phase_compositions=self.reference_phase_compositions[
+                    key
+                ],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[
+                    key
+                ],
+                pressures=self.pressures[key],
+                alphas=self.alphas[key],
+                iterations=self.iterations[key],
+                specified_variable=self.specified_variable[key],
+                main_phases_kinds=self.main_phases_kinds[key],
+                reference_phase_kinds=self.reference_phase_kinds[key],
+                critical_pressures=self.critical_pressures,
+                critical_alphas=self.critical_alphas,
+            )
         elif isinstance(key, np.ndarray) or isinstance(key, list):
             return PXEnvelope(
                 global_composition_0=self.global_composition_0,
