@@ -37,7 +37,6 @@ contains
          X = X + t * dX
 
          call sub(x, F, J)
-         if (any(isnan(F))) call exit
       end do
    end subroutine newton
 

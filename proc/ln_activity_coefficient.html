@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">23 statements</a>
+                 title=" 0.4% of total for procedures.">53 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/ge_models.f90"> Source File</a>
+              <a href="../src/ar_models.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/ge_models.f90.html'>ge_models.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ge.html'>yaeos__models_ge</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/ar_models.f90.html'>ar_models.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></li>
             <li class="breadcrumb-item active" aria-current="page">ln_activity_coefficient</li>
           </ol>
         </nav>
@@ -135,13 +135,25 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-ge~8">Ge</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-getn~7">GeTn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-gen~8">Gen</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-gen2~8">Gen2</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dn~3">dn</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dt~3">dt</a>
-            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-tt~2">tt</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dpdv~10">dPdV</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dpdn~10">dPdn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dvdn~6">dVdn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dlnphi_i_dt">dlnPhi_i_dT</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dlnphi_i_dt_temp">dlnPhi_i_dT_temp</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dlnphidt~3">dlnPhidT</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dlnphidn~3">dlnPhidn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dn~8">dn</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dp~7">dp</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-dt~7">dt</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-gam~2">gam</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-i~90">i</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-lnphi~3">lnPhi</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-lnphi_i">lnPhi_i</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-lnphi_i_temp">lnPhi_i_temp</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-npure">npure</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-present_derivs~3">present_derivs</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-vi">vi</a>
+            <a class="list-group-item" href="../proc/ln_activity_coefficient.html#variable-vi_temp">vi_temp</a>
         </div>
       </div>
     </div>
@@ -171,19 +183,24 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine ln_activity_coefficient(self, n, T, lngamma, dlngammadT, dlngammadn)  
+    <h2>private  subroutine ln_activity_coefficient(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
 </h2>
     
 
-    <p>Calculate natural logarithm of activity coefficients.</p>
-<p>
-<script type="math/tex; mode=display">
- \ln \gamma_i = \frac{1}{RT} \frac{\partial G^E}{\partial n_i}
-</script>
-</p>
+    <p>Calculate natural logarithm of activity coefficients and its
+derivatives given pressure and temperature.</p>
+<h1 id="examples">Examples</h1>
+<p>```fortran ! eos = PengRobinson76(Tc, Pc, w)</p>
+<p>n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr</p>
+<p>call eos%ln_activity_coefficient(&amp;
+   n, P, T, root_type=&rdquo;stable&rdquo;, &amp;
+   lngamma=lngamma, dlngammadP=dlngammadP, &amp;
+   dlngammadT=dlngammadT, dlngammadn=dlngammadn &amp;
+   )
+```</p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/gemodel.html'>GeModel</a></p>
+    <p><a href='../type/armodel.html'>ArModel</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -198,22 +215,22 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~16"></span>
-              class(<a href='../type/gemodel.html'>GeModel</a>),
+              <span class="anchor" id="variable-eos~21"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>self</strong></td>
+            <td><strong>eos</strong></td>
             <td>
                 <p>Model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~38"></span>
+              <span class="anchor" id="variable-n~87"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -223,12 +240,27 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                <p>Moles vector</p>
+                <p>Moles number vector</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~28"></span>
+              <span class="anchor" id="variable-p~58"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+                <p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~87"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -243,6 +275,22 @@
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-root_type~11"></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>root_type</strong></td>
+            <td>
+                <p>Desired root-type to solve. Options are:
+<code>["liquid", "vapor", "stable"]</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-lngamma"></span>
               real(kind=pr),
             </td>
@@ -251,9 +299,26 @@
               
             </td>
             <td>::</td>
-            <td><strong>lngamma</strong>(:)</td>
+            <td><strong>lngamma</strong>(size(n))</td>
             <td>
-                <p>Natural logarithm of activity coefficients</p>
+                <p>Natural logarithm of activity coefficient</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlngammadp"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlngammadP</strong>(size(n))</td>
+            <td>
+                <p>
+<script type="math/tex">\frac{d\ln\gamma}}{dP}</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -269,7 +334,7 @@
             <td><strong>dlngammadT</strong>(size(n))</td>
             <td>
                 <p>
-<script type="math/tex">\frac{d\ln \gamma_i}{dT}</script>
+<script type="math/tex">\frac{d\ln\gamma}}{dT}</script>
 </p>
             </td>
         </tr>
@@ -286,7 +351,7 @@
             <td><strong>dlngammadn</strong>(size(n),size(n))</td>
             <td>
                 <p>
-<script type="math/tex">\frac{d\ln \gamma_i}{dn_j}</script>
+<script type="math/tex">\frac{d\ln\gamma}}{dn}</script>
 </p>
             </td>
         </tr>
@@ -305,32 +370,123 @@
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~ln_activity_coefficient~~CallsGraph Pages: 1 -->
-<svg id="procln_activity_coefficientCallsGraph" width="310pt" height="32pt"
- viewBox="0.00 0.00 310.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~ln_activity_coefficient~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procln_activity_coefficientCallsGraph" width="641pt" height="102pt"
+ viewBox="0.00 0.00 641.00 101.58" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~ln_activity_coefficient~~CallsGraph" class="graph" transform="scale(0.88 0.88) rotate(0) translate(4 112)">
 <title>proc~~ln_activity_coefficient~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 306,-28 306,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 728,-112 728,4 -4,4"/>
 <!-- proc~ln_activity_coefficient -->
 <g id="proc~~ln_activity_coefficient~~CallsGraph_node1" class="node">
 <title>proc~ln_activity_coefficient</title>
-<polygon fill="none" stroke="black" points="184,-24 0,-24 0,0 184,0 184,-24"/>
-<text text-anchor="middle" x="92" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">GeModel%ln_activity_coefficient</text>
+<polygon fill="none" stroke="black" points="181,-87 0,-87 0,-63 181,-63 181,-87"/>
+<text text-anchor="middle" x="90.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%ln_activity_coefficient</text>
 </g>
-<!-- excess_gibbs -->
+<!-- proc~lnphi_pt -->
 <g id="proc~~ln_activity_coefficient~~CallsGraph_node2" class="node">
-<title>excess_gibbs</title>
-<polygon fill="#777777" stroke="#777777" points="302,-24 220,-24 220,0 302,0 302,-24"/>
-<text text-anchor="middle" x="261" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">excess_gibbs</text>
+<title>proc~lnphi_pt</title>
+<g id="a_proc~~ln_activity_coefficient~~CallsGraph_node2"><a xlink:href="../proc/lnphi_pt.html" xlink:title="ArModel%lnphi_pt">
+<polygon fill="#d9534f" stroke="#d9534f" points="326,-87 217,-87 217,-63 326,-63 326,-87"/>
+<text text-anchor="middle" x="271.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
+</a>
 </g>
-<!-- proc~ln_activity_coefficient&#45;&gt;excess_gibbs -->
+</g>
+<!-- proc~ln_activity_coefficient&#45;&gt;proc~lnphi_pt -->
 <g id="proc~~ln_activity_coefficient~~CallsGraph_edge1" class="edge">
-<title>proc~ln_activity_coefficient&#45;&gt;excess_gibbs</title>
-<path fill="none" stroke="#000000" d="M184.32,-12C193.1,-12 201.76,-12 209.92,-12"/>
-<polygon fill="#000000" stroke="#000000" points="209.95,-15.5 219.95,-12 209.95,-8.5 209.95,-15.5"/>
+<title>proc~ln_activity_coefficient&#45;&gt;proc~lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M181.26,-75C189.85,-75 198.43,-75 206.7,-75"/>
+<polygon fill="#000000" stroke="#000000" points="206.97,-78.5 216.97,-75 206.97,-71.5 206.97,-78.5"/>
+</g>
+<!-- proc~lnphi_vt -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_node3" class="node">
+<title>proc~lnphi_vt</title>
+<g id="a_proc~~ln_activity_coefficient~~CallsGraph_node3"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
+<polygon fill="#d9534f" stroke="#d9534f" points="470,-108 362,-108 362,-84 470,-84 470,-108"/>
+<text text-anchor="middle" x="416" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~lnphi_vt -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_edge2" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~lnphi_vt</title>
+<path fill="none" stroke="#000000" d="M326.37,-82.94C334.76,-84.17 343.48,-85.46 352.05,-86.72"/>
+<polygon fill="#000000" stroke="#000000" points="351.59,-90.19 362,-88.19 352.61,-83.27 351.59,-90.19"/>
+</g>
+<!-- proc~volume~2 -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_node4" class="node">
+<title>proc~volume~2</title>
+<g id="a_proc~~ln_activity_coefficient~~CallsGraph_node4"><a xlink:href="../proc/volume~2.html" xlink:title="ArModel%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="469,-66 363,-66 363,-42 469,-42 469,-66"/>
+<text text-anchor="middle" x="416" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
+</a>
+</g>
+</g>
+<!-- proc~lnphi_pt&#45;&gt;proc~volume~2 -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_edge3" class="edge">
+<title>proc~lnphi_pt&#45;&gt;proc~volume~2</title>
+<path fill="none" stroke="#000000" d="M326.37,-67.06C335.08,-65.78 344.15,-64.44 353.03,-63.13"/>
+<polygon fill="#000000" stroke="#000000" points="353.55,-66.59 362.94,-61.67 352.53,-59.67 353.55,-66.59"/>
+</g>
+<!-- residual_helmholtz -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_node7" class="node">
+<title>residual_helmholtz</title>
+<polygon fill="#777777" stroke="#777777" points="618,-108 506,-108 506,-84 618,-84 618,-108"/>
+<text text-anchor="middle" x="562" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+</g>
+<!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_edge4" class="edge">
+<title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
+<path fill="none" stroke="#000000" d="M470.21,-96C478.41,-96 486.97,-96 495.4,-96"/>
+<polygon fill="#000000" stroke="#000000" points="495.6,-99.5 505.6,-96 495.6,-92.5 495.6,-99.5"/>
+</g>
+<!-- get_v0 -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_node5" class="node">
+<title>get_v0</title>
+<polygon fill="#777777" stroke="#777777" points="589,-66 535,-66 535,-42 589,-42 589,-66"/>
+<text text-anchor="middle" x="562" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+</g>
+<!-- proc~volume~2&#45;&gt;get_v0 -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_edge5" class="edge">
+<title>proc~volume~2&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M469.39,-54C487.6,-54 507.62,-54 524.29,-54"/>
+<polygon fill="#000000" stroke="#000000" points="524.7,-57.5 534.7,-54 524.7,-50.5 524.7,-57.5"/>
+</g>
+<!-- interface~newton -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_node6" class="node">
+<title>interface~newton</title>
+<g id="a_proc~~ln_activity_coefficient~~CallsGraph_node6"><a xlink:href="../interface/newton.html" xlink:title="newton">
+<polygon fill="#a7506f" stroke="#a7506f" points="589,-24 535,-24 535,0 589,0 589,-24"/>
+<text text-anchor="middle" x="562" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+</a>
+</g>
+</g>
+<!-- proc~volume~2&#45;&gt;interface~newton -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_edge6" class="edge">
+<title>proc~volume~2&#45;&gt;interface~newton</title>
+<path fill="none" stroke="#000000" d="M458.26,-41.96C479.31,-35.83 504.67,-28.43 524.92,-22.52"/>
+<polygon fill="#000000" stroke="#000000" points="526.09,-25.83 534.71,-19.67 524.13,-19.11 526.09,-25.83"/>
+</g>
+<!-- proc~newton_1d -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_node8" class="node">
+<title>proc~newton_1d</title>
+<g id="a_proc~~ln_activity_coefficient~~CallsGraph_node8"><a xlink:href="../proc/newton_1d.html" xlink:title="newton_1d">
+<polygon fill="#d9534f" stroke="#d9534f" points="724,-24 654,-24 654,0 724,0 724,-24"/>
+<text text-anchor="middle" x="689" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
+</a>
+</g>
+</g>
+<!-- interface~newton&#45;&gt;proc~newton_1d -->
+<g id="proc~~ln_activity_coefficient~~CallsGraph_edge7" class="edge">
+<title>interface~newton&#45;&gt;proc~newton_1d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M589.2,-12C604.96,-12 625.42,-12 643.63,-12"/>
+<polygon fill="#000000" stroke="#000000" points="643.75,-15.5 653.75,-12 643.75,-8.5 643.75,-15.5"/>
 </g>
 </g>
 </svg>
-</div>          <div>
+</div>                <script>
+                  var panprocln_activity_coefficientCallsGraph = svgPanZoom('#procln_activity_coefficientCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
             <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
           </div>
           <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
@@ -420,31 +576,106 @@ implementation in a submodule of an interface in a parent module.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~ln_activity_coefficient~~CalledByGraph Pages: 1 -->
-<svg id="procln_activity_coefficientCalledByGraph" width="322pt" height="32pt"
- viewBox="0.00 0.00 322.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~ln_activity_coefficient~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procln_activity_coefficientCalledByGraph" width="416pt" height="242pt"
+ viewBox="0.00 0.00 416.00 242.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~ln_activity_coefficient~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 238)">
 <title>proc~~ln_activity_coefficient~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 318,-28 318,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-238 412,-238 412,4 -4,4"/>
 <!-- proc~ln_activity_coefficient -->
 <g id="proc~~ln_activity_coefficient~~CalledByGraph_node1" class="node">
 <title>proc~ln_activity_coefficient</title>
-<polygon fill="none" stroke="black" points="314,-24 130,-24 130,0 314,0 314,-24"/>
-<text text-anchor="middle" x="222" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">GeModel%ln_activity_coefficient</text>
+<polygon fill="none" stroke="black" points="408,-129 227,-129 227,-105 408,-105 408,-129"/>
+<text text-anchor="middle" x="317.5" y="-114.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%ln_activity_coefficient</text>
 </g>
-<!-- proc~ge_consistency -->
+<!-- proc~enthalpy_excess -->
 <g id="proc~~ln_activity_coefficient~~CalledByGraph_node2" class="node">
-<title>proc~ge_consistency</title>
-<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node2"><a xlink:href="../proc/ge_consistency.html" xlink:title="ge_consistency">
-<polygon fill="#d9534f" stroke="#d9534f" points="94,-24 0,-24 0,0 94,0 94,-24"/>
-<text text-anchor="middle" x="47" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ge_consistency</text>
+<title>proc~enthalpy_excess</title>
+<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node2"><a xlink:href="../proc/enthalpy_excess.html" xlink:title="ArModel%enthalpy_excess">
+<polygon fill="#d9534f" stroke="#d9534f" points="172.5,-234 18.5,-234 18.5,-210 172.5,-210 172.5,-234"/>
+<text text-anchor="middle" x="95.5" y="-219.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%enthalpy_excess</text>
 </a>
 </g>
 </g>
-<!-- proc~ge_consistency&#45;&gt;proc~ln_activity_coefficient -->
+<!-- proc~enthalpy_excess&#45;&gt;proc~ln_activity_coefficient -->
 <g id="proc~~ln_activity_coefficient~~CalledByGraph_edge1" class="edge">
-<title>proc~ge_consistency&#45;&gt;proc~ln_activity_coefficient</title>
-<path fill="none" stroke="#000000" d="M94.36,-12C102.36,-12 110.95,-12 119.75,-12"/>
-<polygon fill="#000000" stroke="#000000" points="119.75,-15.5 129.75,-12 119.75,-8.5 119.75,-15.5"/>
+<title>proc~enthalpy_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M165.08,-209.94C173.96,-207.46 182.81,-204.5 191,-201 230.24,-184.21 270.33,-154.8 294.32,-135.62"/>
+<polygon fill="#000000" stroke="#000000" points="296.54,-138.32 302.1,-129.29 292.13,-132.88 296.54,-138.32"/>
+</g>
+<!-- proc~entropy_excess -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_node3" class="node">
+<title>proc~entropy_excess</title>
+<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node3"><a xlink:href="../proc/entropy_excess.html" xlink:title="ArModel%entropy_excess">
+<polygon fill="#d9534f" stroke="#d9534f" points="169.5,-192 21.5,-192 21.5,-168 169.5,-168 169.5,-192"/>
+<text text-anchor="middle" x="95.5" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%entropy_excess</text>
+</a>
+</g>
+</g>
+<!-- proc~entropy_excess&#45;&gt;proc~ln_activity_coefficient -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_edge2" class="edge">
+<title>proc~entropy_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M155.21,-167.95C167.11,-165.23 179.5,-162.19 191,-159 219.02,-151.22 250.01,-140.87 274.18,-132.39"/>
+<polygon fill="#000000" stroke="#000000" points="275.5,-135.63 283.76,-129 273.17,-129.03 275.5,-135.63"/>
+</g>
+<!-- proc~gibbs_excess -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_node4" class="node">
+<title>proc~gibbs_excess</title>
+<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node4"><a xlink:href="../proc/gibbs_excess.html" xlink:title="ArModel%gibbs_excess">
+<polygon fill="#d9534f" stroke="#d9534f" points="163.5,-150 27.5,-150 27.5,-126 163.5,-126 163.5,-150"/>
+<text text-anchor="middle" x="95.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%gibbs_excess</text>
+</a>
+</g>
+</g>
+<!-- proc~gibbs_excess&#45;&gt;proc~ln_activity_coefficient -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_edge3" class="edge">
+<title>proc~gibbs_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M163.7,-131.59C180.29,-130 198.41,-128.27 216.19,-126.58"/>
+<polygon fill="#000000" stroke="#000000" points="216.98,-130.02 226.61,-125.58 216.32,-123.05 216.98,-130.02"/>
+</g>
+<!-- proc~helmholtz_excess -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_node5" class="node">
+<title>proc~helmholtz_excess</title>
+<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node5"><a xlink:href="../proc/helmholtz_excess.html" xlink:title="ArModel%helmholtz_excess">
+<polygon fill="#d9534f" stroke="#d9534f" points="175.5,-108 15.5,-108 15.5,-84 175.5,-84 175.5,-108"/>
+<text text-anchor="middle" x="95.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%helmholtz_excess</text>
+</a>
+</g>
+</g>
+<!-- proc~helmholtz_excess&#45;&gt;proc~ln_activity_coefficient -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_edge4" class="edge">
+<title>proc~helmholtz_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M175.61,-103.55C189,-104.83 203.04,-106.17 216.87,-107.49"/>
+<polygon fill="#000000" stroke="#000000" points="216.6,-110.98 226.88,-108.45 217.26,-104.01 216.6,-110.98"/>
+</g>
+<!-- proc~internal_energy_excess -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_node6" class="node">
+<title>proc~internal_energy_excess</title>
+<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node6"><a xlink:href="../proc/internal_energy_excess.html" xlink:title="ArModel%internal_energy_excess">
+<polygon fill="#d9534f" stroke="#d9534f" points="191,-66 0,-66 0,-42 191,-42 191,-66"/>
+<text text-anchor="middle" x="95.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%internal_energy_excess</text>
+</a>
+</g>
+</g>
+<!-- proc~internal_energy_excess&#45;&gt;proc~ln_activity_coefficient -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_edge5" class="edge">
+<title>proc~internal_energy_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M155.21,-66.05C167.11,-68.77 179.5,-71.81 191,-75 219.02,-82.78 250.01,-93.13 274.18,-101.61"/>
+<polygon fill="#000000" stroke="#000000" points="273.17,-104.97 283.76,-105 275.5,-98.37 273.17,-104.97"/>
+</g>
+<!-- proc~volume_excess -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_node7" class="node">
+<title>proc~volume_excess</title>
+<g id="a_proc~~ln_activity_coefficient~~CalledByGraph_node7"><a xlink:href="../proc/volume_excess.html" xlink:title="ArModel%volume_excess">
+<polygon fill="#d9534f" stroke="#d9534f" points="169,-24 22,-24 22,0 169,0 169,-24"/>
+<text text-anchor="middle" x="95.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume_excess</text>
+</a>
+</g>
+</g>
+<!-- proc~volume_excess&#45;&gt;proc~ln_activity_coefficient -->
+<g id="proc~~ln_activity_coefficient~~CalledByGraph_edge6" class="edge">
+<title>proc~volume_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M165.08,-24.06C173.96,-26.54 182.81,-29.5 191,-33 230.24,-49.79 270.33,-79.2 294.32,-98.38"/>
+<polygon fill="#000000" stroke="#000000" points="292.13,-101.12 302.1,-104.71 296.54,-95.68 292.13,-101.12"/>
 </g>
 </g>
 </svg>
@@ -544,15 +775,15 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~8"></span>
+              <span class="anchor" id="variable-dpdv~10"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Ge</strong></td>
+            <td><strong>dPdV</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -561,15 +792,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-getn~7"></span>
+              <span class="anchor" id="variable-dpdn~10"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>GeTn</strong>(size(n))</td>
+            <td><strong>dPdn</strong>(size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -578,15 +809,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~8"></span>
+              <span class="anchor" id="variable-dvdn~6"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Gen</strong>(size(n))</td>
+            <td><strong>dVdn</strong>(size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -595,15 +826,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~8"></span>
+              <span class="anchor" id="variable-dlnphi_i_dt"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Gen2</strong>(size(n),size(n))</td>
+            <td><strong>dlnPhi_i_dT</strong>(size(n))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -612,10 +843,61 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dn~3"></span>
+              <span class="anchor" id="variable-dlnphi_i_dt_temp"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhi_i_dT_temp</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphidt~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidT</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlnphidn~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dn~8"></span>
               logical,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
@@ -629,10 +911,27 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dt~3"></span>
+              <span class="anchor" id="variable-dp~7"></span>
               logical,
             </td>
-              <td>public</td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dt~7"></span>
+              logical,
+            </td>
+              <td>private</td>
             <td>
               
             </td>
@@ -646,15 +945,151 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tt~2"></span>
+              <span class="anchor" id="variable-gam~2"></span>
               logical,
             </td>
-              <td>public</td>
+              <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>tt</strong></td>
+            <td><strong>gam</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~90"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphi~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhi</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphi_i"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhi_i</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lnphi_i_temp"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lnPhi_i_temp</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-npure"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>npure</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-present_derivs~3"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>present_derivs</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vi"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>vi</strong>(size(n))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vi_temp"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>vi_temp</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -694,7 +1129,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-06-03 14:21 +0000             </p>
+ on 2026-06-03 20:09 +0000             </p>
           </div>
         </div>
         <br>

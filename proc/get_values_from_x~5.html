@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">24 statements</a>
+                 title=" 0.2% of total for procedures.">28 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
+              <a href="../src/phase_envelopes_pt_mp.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_mp.f90.html'>phase_envelopes_pt_mp.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></li>
             <li class="breadcrumb-item active" aria-current="page">get_values_from_X</li>
           </ol>
         </nav>
@@ -135,10 +135,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-kx~3">Kx</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-ky~3">Ky</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-nc~104">nc</a>
-            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-z~58">z</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-i~140">i</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-lb~19">lb</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-nc~114">nc</a>
+            <a class="list-group-item" href="../proc/get_values_from_x~5.html#variable-ub~19">ub</a>
         </div>
       </div>
     </div>
@@ -168,11 +168,15 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine get_values_from_X(z0, zi, Xvars, x, y, w, P, alpha, beta)  
+    <h2>private  subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)  
 </h2>
     
 
+    <h1 id="get_values_from_x">get_values_from_X</h1>
+<p>Extract the values of the variables from the vector X.</p>
 
+    <h3>Type Bound</h3>
+    <p><a href='../type/ptenvelmp.html'>PTEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -187,7 +191,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~27"></span>
+              <span class="anchor" id="variable-x~81"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -195,14 +199,29 @@
               
             </td>
             <td>::</td>
-            <td><strong>z0</strong>(:)</td>
+            <td><strong>X</strong>(:)</td>
             <td>
-                
+                <p>Vector of variables.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~23"></span>
+              <span class="anchor" id="variable-np~31"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>np</strong></td>
+            <td>
+                <p>Number of main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~65"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -210,14 +229,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>zi</strong>(:)</td>
+            <td><strong>z</strong>(:)</td>
             <td>
-                
+                <p>Mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-xvars~6"></span>
+              <span class="anchor" id="variable-beta_w~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -225,14 +244,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>Xvars</strong>(size(z0)*2+3)</td>
+            <td><strong>beta_w</strong></td>
             <td>
-                
+                <p>Fraction of the reference phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~31"></span>
+              <span class="anchor" id="variable-x_l~20"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -240,24 +259,9 @@
               
             </td>
             <td>::</td>
-            <td><strong>x</strong>(size(z0))</td>
+            <td><strong>x_l</strong>(np,size(z))</td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-y~31"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>y</strong>(size(z0))</td>
-            <td>
-                
+                <p>Mole fractions of the main phases.</p>
             </td>
         </tr>
         <tr>
@@ -270,14 +274,29 @@
               
             </td>
             <td>::</td>
-            <td><strong>w</strong>(size(z0))</td>
+            <td><strong>w</strong>(size(z))</td>
             <td>
-                
+                <p>Mole fractions of the incipient phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~88"></span>
+              <span class="anchor" id="variable-betas~20"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>betas</strong>(np)</td>
+            <td>
+                <p>Fractions of the main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~89"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -287,12 +306,12 @@
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-                
+                <p>Pressure [bar].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~35"></span>
+              <span class="anchor" id="variable-t~134"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -300,148 +319,15 @@
               
             </td>
             <td>::</td>
-            <td><strong>alpha</strong></td>
+            <td><strong>T</strong></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-beta~14"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>beta</strong></td>
-            <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
     </tbody>
   </table>
 
     <br>
-    <div class="card">
-      <div class="card-header">
-  <h3 class="card-title">Calls</h3>
-      </div>
-      <div class="card-body">
-  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~get_values_from_x~5~~CallsGraph Pages: 1 -->
-<svg id="procget_values_from_x5CallsGraph" width="210pt" height="32pt"
- viewBox="0.00 0.00 210.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~get_values_from_x~5~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
-<title>proc~~get_values_from_x~5~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 206,-28 206,4 -4,4"/>
-<!-- proc~get_values_from_x~5 -->
-<g id="proc~~get_values_from_x~5~~CallsGraph_node1" class="node">
-<title>proc~get_values_from_x~5</title>
-<polygon fill="none" stroke="black" points="112,-24 0,-24 0,0 112,0 112,-24"/>
-<text text-anchor="middle" x="56" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">get_values_from_X</text>
-</g>
-<!-- proc~get_z -->
-<g id="proc~~get_values_from_x~5~~CallsGraph_node2" class="node">
-<title>proc~get_z</title>
-<g id="a_proc~~get_values_from_x~5~~CallsGraph_node2"><a xlink:href="../proc/get_z.html" xlink:title="get_z">
-<polygon fill="#d9534f" stroke="#d9534f" points="202,-24 148,-24 148,0 202,0 202,-24"/>
-<text text-anchor="middle" x="175" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_z</text>
-</a>
-</g>
-</g>
-<!-- proc~get_values_from_x~5&#45;&gt;proc~get_z -->
-<g id="proc~~get_values_from_x~5~~CallsGraph_edge1" class="edge">
-<title>proc~get_values_from_x~5&#45;&gt;proc~get_z</title>
-<path fill="none" stroke="#000000" d="M112.07,-12C120.73,-12 129.48,-12 137.58,-12"/>
-<polygon fill="#000000" stroke="#000000" points="137.77,-15.5 147.77,-12 137.77,-8.5 137.77,-15.5"/>
-</g>
-</g>
-</svg>
-</div>          <div>
-            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
-          </div>
-          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-<p>Nodes of different colours represent the following: </p>
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
-<!-- Subroutine -->
-<g id="node1" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node2" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Interface -->
-<g id="node3" class="node">
-<title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
-</g>
-<!-- Type Bound Procedure -->
-<g id="node4" class="node">
-<title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
-</g>
-<!-- Unknown Procedure Type -->
-<g id="node5" class="node">
-<title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
-</g>
-<!-- Program -->
-<g id="node6" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node7" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
-
-<p>Solid arrows point from a procedure to one which it calls. Dashed 
-arrows point from an interface to procedures which implement that interface.
-This could include the module procedures in a generic interface or the
-implementation in a submodule of an interface in a parent module.
-</p>
- </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="card">
       <div class="card-header">
   <h3 class="card-title">Called by</h3>
@@ -453,35 +339,90 @@ implementation in a submodule of an interface in a parent module.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~get_values_from_x~5~~CalledByGraph Pages: 1 -->
-<svg id="procget_values_from_x5CalledByGraph" width="262pt" height="32pt"
- viewBox="0.00 0.00 262.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~get_values_from_x~5~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procget_values_from_x5CalledByGraph" width="641pt" height="47pt"
+ viewBox="0.00 0.00 641.00 47.21" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~get_values_from_x~5~~CalledByGraph" class="graph" transform="scale(0.91 0.91) rotate(0) translate(4 48)">
 <title>proc~~get_values_from_x~5~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 258,-28 258,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 702,-48 702,4 -4,4"/>
 <!-- proc~get_values_from_x~5 -->
 <g id="proc~~get_values_from_x~5~~CalledByGraph_node1" class="node">
 <title>proc~get_values_from_x~5</title>
-<polygon fill="none" stroke="black" points="254,-24 142,-24 142,0 254,0 254,-24"/>
-<text text-anchor="middle" x="198" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">get_values_from_X</text>
+<polygon fill="none" stroke="black" points="698,-44 519,-44 519,-20 698,-20 698,-44"/>
+<text text-anchor="middle" x="608.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">PTEnvelMP%get_values_from_X</text>
 </g>
-<!-- proc~px_envelope_3ph -->
+<!-- proc~pt_envelope -->
 <g id="proc~~get_values_from_x~5~~CalledByGraph_node2" class="node">
-<title>proc~px_envelope_3ph</title>
-<g id="a_proc~~get_values_from_x~5~~CalledByGraph_node2"><a xlink:href="../proc/px_envelope_3ph.html" xlink:title="px_envelope_3ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="106,-24 0,-24 0,0 106,0 106,-24"/>
-<text text-anchor="middle" x="53" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope_3ph</text>
+<title>proc~pt_envelope</title>
+<g id="a_proc~~get_values_from_x~5~~CalledByGraph_node2"><a xlink:href="../proc/pt_envelope.html" xlink:title="pt_envelope">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="308,-44 230,-44 230,-20 308,-20 308,-44"/>
+<text text-anchor="middle" x="269" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
 </a>
 </g>
 </g>
-<!-- proc~px_envelope_3ph&#45;&gt;proc~get_values_from_x~5 -->
+<!-- proc~pt_envelope&#45;&gt;proc~get_values_from_x~5 -->
 <g id="proc~~get_values_from_x~5~~CalledByGraph_edge1" class="edge">
-<title>proc~px_envelope_3ph&#45;&gt;proc~get_values_from_x~5</title>
-<path fill="none" stroke="#000000" d="M106.03,-12C114.41,-12 123.18,-12 131.82,-12"/>
-<polygon fill="#000000" stroke="#000000" points="131.88,-15.5 141.88,-12 131.88,-8.5 131.88,-15.5"/>
+<title>proc~pt_envelope&#45;&gt;proc~get_values_from_x~5</title>
+<path fill="none" stroke="#000000" d="M308.03,-32.61C319.58,-32.77 332.31,-32.92 344,-33 398.46,-33.37 459.25,-33.18 508.71,-32.87"/>
+<polygon fill="#000000" stroke="#000000" points="508.79,-36.37 518.76,-32.8 508.74,-29.37 508.79,-36.37"/>
+</g>
+<!-- proc~solve_point~7 -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_node3" class="node">
+<title>proc~solve_point~7</title>
+<g id="a_proc~~get_values_from_x~5~~CalledByGraph_node3"><a xlink:href="../proc/solve_point~7.html" xlink:title="PTEnvelMP%solve_point">
+<polygon fill="#d9534f" stroke="#d9534f" points="483,-24 344,-24 344,0 483,0 483,-24"/>
+<text text-anchor="middle" x="413.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvelMP%solve_point</text>
+</a>
+</g>
+</g>
+<!-- proc~pt_envelope&#45;&gt;proc~solve_point~7 -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_edge4" class="edge">
+<title>proc~pt_envelope&#45;&gt;proc~solve_point~7</title>
+<path fill="none" stroke="#000000" d="M308.19,-26.64C316.21,-25.51 324.96,-24.29 333.86,-23.04"/>
+<polygon fill="#000000" stroke="#000000" points="334.53,-26.48 343.95,-21.62 333.56,-19.55 334.53,-26.48"/>
+</g>
+<!-- proc~solve_point~7&#45;&gt;proc~get_values_from_x~5 -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_edge2" class="edge">
+<title>proc~solve_point~7&#45;&gt;proc~get_values_from_x~5</title>
+<path fill="none" stroke="#000000" d="M483.09,-19.11C491.42,-19.97 500.06,-20.87 508.72,-21.76"/>
+<polygon fill="#000000" stroke="#000000" points="508.57,-25.27 518.88,-22.82 509.29,-18.3 508.57,-25.27"/>
+</g>
+<!-- proc~pt_envelope_2ph -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_node4" class="node">
+<title>proc~pt_envelope_2ph</title>
+<g id="a_proc~~get_values_from_x~5~~CalledByGraph_node4"><a xlink:href="../proc/pt_envelope_2ph.html" xlink:title="pt_envelope_2ph">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="194,-44 91,-44 91,-20 194,-20 194,-44"/>
+<text text-anchor="middle" x="142.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_2ph</text>
+</a>
+</g>
+</g>
+<!-- proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_edge3" class="edge">
+<title>proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope</title>
+<path fill="none" stroke="#000000" d="M194.14,-32C202.47,-32 211.09,-32 219.37,-32"/>
+<polygon fill="#000000" stroke="#000000" points="219.63,-35.5 229.63,-32 219.63,-28.5 219.63,-35.5"/>
+</g>
+<!-- proc~find_hpl -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_node5" class="node">
+<title>proc~find_hpl</title>
+<g id="a_proc~~get_values_from_x~5~~CalledByGraph_node5"><a xlink:href="../proc/find_hpl.html" xlink:title="find_hpl">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="55,-44 0,-44 0,-20 55,-20 55,-44"/>
+<text text-anchor="middle" x="27.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_hpl</text>
+</a>
+</g>
+</g>
+<!-- proc~find_hpl&#45;&gt;proc~pt_envelope_2ph -->
+<g id="proc~~get_values_from_x~5~~CalledByGraph_edge5" class="edge">
+<title>proc~find_hpl&#45;&gt;proc~pt_envelope_2ph</title>
+<path fill="none" stroke="#000000" d="M55.28,-32C63.06,-32 71.88,-32 80.85,-32"/>
+<polygon fill="#000000" stroke="#000000" points="80.99,-35.5 90.99,-32 80.99,-28.5 80.99,-35.5"/>
 </g>
 </g>
 </svg>
-</div>          <div>
+</div>                <script>
+                  var panprocget_values_from_x5CalledByGraph = svgPanZoom('#procget_values_from_x5CalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
             <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
           </div>
           <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
@@ -577,41 +518,41 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-kx~3"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-i~140"></span>
+              integer,
             </td>
               <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Kx</strong>((Size(Xvars)-3)/2)</td>
+            <td><strong>i</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ky~3"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-lb~19"></span>
+              integer,
             </td>
               <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>Ky</strong>((Size(Xvars)-3)/2)</td>
+            <td><strong>lb</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Lower bound of each phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~104"></span>
+              <span class="anchor" id="variable-nc~114"></span>
               integer,
             </td>
               <td>private</td>
@@ -623,24 +564,24 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~58"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-ub~19"></span>
+              integer,
             </td>
               <td>private</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>z</strong>(size(z0))</td>
+            <td><strong>ub</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Upper bound of each phase.</p>
             </td>
         </tr>
     </tbody>
@@ -676,7 +617,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-06-03 14:21 +0000             </p>
+ on 2026-06-03 20:09 +0000             </p>
           </div>
         </div>
         <br>

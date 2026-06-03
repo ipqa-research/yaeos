@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.5.2 documentation</title>
+  <title>yaeos.models.residual_helmholtz.cubic_eos.mixing_rules &mdash; yaeos 4.5.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=cd7592eb"></script>
+      <script src="../../../../../_static/documentation_options.js?v=690d16f2"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -861,14 +861,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    q : array_like</span>
 <span class="sd">        Segment size for each component</span>
-<span class="sd">    kij_0 : matrix_like</span>
-<span class="sd">        kij_0 binary interaction parameters matrix</span>
-<span class="sd">    kij_inf : matrix_like</span>
-<span class="sd">        kij_inf binary interaction parameters matrix</span>
-<span class="sd">    t_ref: matrix_like</span>
-<span class="sd">        Reference temperature</span>
-<span class="sd">    lij : matrix_like</span>
-<span class="sd">        lij binary interaction parameters matrix</span>
+<span class="sd">    kij_0, optional : matrix_like</span>
+<span class="sd">        kij_0 binary interaction parameters matrix. Defaults to zero.</span>
+<span class="sd">    kij_inf, optional : matrix_like</span>
+<span class="sd">        kij_inf binary interaction parameters matrix. Defaults to zero.</span>
+<span class="sd">    t_ref, optional: matrix_like</span>
+<span class="sd">        Reference temperature. Defaults to zero.</span>
+<span class="sd">    lij, optional : matrix_like</span>
+<span class="sd">        lij binary interaction parameters matrix. Defaults to zero.</span>
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
@@ -903,20 +903,22 @@
 
         <span class="c1"># kij constant term</span>
         <span class="k">if</span> <span class="n">kij_inf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">kij_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kij_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_inf</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">t_ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kij_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kij_0 should be provided with t_ref&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kij_0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t_ref should be provided with kij_0&quot;</span><span class="p">)</span>
+
         <span class="c1"># kij temperature dependance term </span>
         <span class="k">if</span> <span class="n">kij_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij_0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_ref</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">t_ref</span> <span class="ow">and</span> <span class="n">kij_0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kij_0 should be provided with t_ref&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kij_0</span> <span class="ow">and</span> <span class="n">t_ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t_ref should be provided with kij_0&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">lij</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
