@@ -732,14 +732,14 @@ class sDDLC(CubicMixRule):
     ----------
     q : array_like
         Segment size for each component
-    kij_0 : matrix_like
-        kij_0 binary interaction parameters matrix
-    kij_inf : matrix_like
-        kij_inf binary interaction parameters matrix
-    t_ref: matrix_like
-        Reference temperature
-    lij : matrix_like
-        lij binary interaction parameters matrix
+    kij_0, optional : matrix_like
+        kij_0 binary interaction parameters matrix. Defaults to zero.
+    kij_inf, optional : matrix_like
+        kij_inf binary interaction parameters matrix. Defaults to zero.
+    t_ref, optional: matrix_like
+        Reference temperature. Defaults to zero.
+    lij, optional : matrix_like
+        lij binary interaction parameters matrix. Defaults to zero.
 
     Example
     -------
