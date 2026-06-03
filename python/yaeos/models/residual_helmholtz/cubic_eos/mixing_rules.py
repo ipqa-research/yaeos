@@ -774,20 +774,22 @@ class sDDLC(CubicMixRule):
 
         # kij constant term
         if kij_inf is None:
-            kij_inf = np.zeros((nc, nc))
+            self.kij_inf = np.zeros((nc, nc))
         else:
             self.kij_inf = np.array(kij_inf, order="F")
 
+        if t_ref is not None and kij_0 is None:
+            raise ValueError("kij_0 should be provided with t_ref")
+        if kij_0 is not None and t_ref is None:
+            raise ValueError("t_ref should be provided with kij_0")
+
         # kij temperature dependance term 
         if kij_0 is None:
-            kij_0 = np.zeros((nc, nc))
+            self.kij_0 = np.zeros((nc, nc))
+            self.t_ref = np.zeros((nc, nc))
         else:
             self.kij_0 = np.array(kij_0, order="F")
             self.t_ref = np.array(t_ref, order="F")
-        if t_ref and kij_0 is not None:
-            raise ValueError("kij_0 should be provided with t_ref")
-        if kij_0 and t_ref is not None:
-            raise ValueError("t_ref should be provided with kij_0")
 
         if lij:
             self.lij = np.array(lij, order="F")
