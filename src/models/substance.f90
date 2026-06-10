@@ -10,5 +10,6 @@ module yaeos__substance
         real(pr), allocatable :: tc(:) !! Critical Temperature [K]
         real(pr), allocatable :: pc(:) !! Critical Pressure [bar]
         real(pr), allocatable :: w(:) !! Acentric factor
+        real(pr), allocatable :: vc(:) !! Critical Volume [L/mol]
     end type
 end module

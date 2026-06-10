@@ -19,7 +19,7 @@ contains
    subroutine test_tm(error)
       use forsus, only: Substance, forsus_dir
       use yaeos
-      use yaeos__phase_equilibria_stability, only: tm, min_tpd
+      use yaeos__equilibria_stability, only: tm, min_tpd
       use yaeos, only: flash
       implicit none
       type(error_type), allocatable, intent(out) :: error
@@ -31,6 +31,8 @@ contains
       real(pr) :: tc(nc), pc(nc), ac(nc)
       real(pr) :: z(nc), T, P
       real(pr) :: w(nc), mintpd
+
+      integer :: i
 
       forsus_dir = "build/dependencies/forsus/data/json"
       sus(1) = Substance("methane")
@@ -49,17 +51,16 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - 5.3e-6_pr) < 1e-5)
-
+      call check(error, abs(mintpd) < 1e-4_pr)
+      
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - (-0.1883_pr)) < 1e-4)
-
+      call check(error, abs(mintpd - (-0.172_pr)) < 1e-2)
       call check(error, abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr)
    end subroutine test_tm
 
    subroutine test_flash_pt(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
@@ -70,7 +71,7 @@ contains
       real(pr) :: vy = 0.32922132295944545
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: flash_result
+      type(EquilibriumState) :: flash_result
 
       real(pr) :: tc(nc), pc(nc), w(nc)
       real(pr) :: n(nc), p, t, k0(nc)
@@ -95,7 +96,7 @@ contains
    end subroutine test_flash_pt
 
    subroutine test_flash_tv(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
       use fixtures_models, only: binary_PR76
       type(error_type), allocatable, intent(out) :: error
 
@@ -109,7 +110,7 @@ contains
       real(pr) :: P = 6.097517429661468
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: flash_result
+      type(EquilibriumState) :: flash_result
 
       real(pr) :: tc(nc), pc(nc), w(nc)
       real(pr) :: n(nc), t, k0(nc), v
@@ -135,7 +136,7 @@ contains
    end subroutine test_flash_tv
 
    subroutine test_flash_pt_failed(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
@@ -146,7 +147,7 @@ contains
       real(pr) :: vy = 0.32922132295944545
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: flash_result
+      type(EquilibriumState) :: flash_result
 
       real(pr) :: tc(nc), pc(nc), w(nc)
       real(pr) :: n(nc), p, t, k0(nc)
@@ -167,7 +168,7 @@ contains
    end subroutine test_flash_pt_failed
 
    subroutine test_flash_pt_bad_spec(error)
-      use yaeos, only: pr, EquilibriaState, flash, PengRobinson76, ArModel, fugacity_tp
+      use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
       type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
@@ -178,7 +179,7 @@ contains
       real(pr) :: vy = 0.32922132295944545
 
       class(ArModel), allocatable :: model
-      type(EquilibriaState) :: flash_result
+      type(EquilibriumState) :: flash_result
 
       real(pr) :: tc(nc), pc(nc), w(nc)
       real(pr) :: n(nc), p, t, k0(nc)

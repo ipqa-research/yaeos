@@ -98,8 +98,8 @@ Which when plotted with `gnuplot` with:
 
 ```gnuplot
 plot "outfile" \
-        index "dew" u 2:3 w l title "Dew", \
-     "" index "bubble" u 2:3 w l t "Bubble", \
+        index "dew"      u 2:3 w l title "Dew", \
+     "" index "bubble"   u 2:3 w l t "Bubble", \
      "" index "Critical" u 1:2 w p pt 7 lc rgb "black" t "CP"
 ```
 

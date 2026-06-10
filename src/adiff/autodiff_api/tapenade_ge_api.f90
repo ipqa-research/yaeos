@@ -118,6 +118,7 @@ contains
             Gen = nb
             if (present(GeT)) GeT = tb
       else
+         if (present(GeT)) GeT = get_dGedT()
       end if
 
       if (present(GeTn)) GeTn = get_GenT()
@@ -157,6 +158,18 @@ contains
             ge, ged0, ged, gedd &
          )
          get_dGedT2 = gedd
+      end function
+
+      function get_dGedT()
+         real(pr) :: get_dGedT
+         call reset_vars
+
+         td = 1
+
+         call self%ge_d(&
+            n, nd, t, td, ge, ged &
+            )
+         get_dGedT = ged
       end function
 
       function get_GenT()

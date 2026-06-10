@@ -76,6 +76,9 @@ sed -i "s/REAL :: r//g" tapeout/${name}_diff.f90
 # make the types into classes for polymorphism
 sed -i 's/TYPE(\(.*\)),/class(\1),/' tapeout/${name}_diff.f90
 
+# remove all the external definition of functions. we use interfaces now
+sed -i '/EXTERNAL.*/d' tapeout/${name}_diff.f90
+
 # Options to format document
 # fprettify -i 3 --case 1 1 1 1
 # findent < tapeout/${name}_diff.f90 > tapeout/${name}_diff.f90
