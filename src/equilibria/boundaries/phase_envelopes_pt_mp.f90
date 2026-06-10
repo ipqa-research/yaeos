@@ -351,7 +351,7 @@ contains
          dX = dXdS * dS
 
          if (.not. near_crit) then
-            do while(sum((dX(nc*np+np+1:)**2)) > 0.1)
+            do while(sum((dX(nc*np+np+1:)**2)) > 0.01)
                dX = dX/2
             end do
          end if
@@ -654,11 +654,11 @@ contains
             end if
          end do
 
-         do while(abs(dX(iT)) > 0.1)
+         do while(abs(dX(iT)) > 0.05)
             dX = dX/2
          end do
 
-         do while(abs(dX(iP)) > 0.1)
+         do while(abs(dX(iP)) > 0.05)
             dX = dX/2
          end do
 

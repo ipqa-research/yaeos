@@ -139,7 +139,8 @@ class PTEnvelope:
         ax.set_xlabel("Temperature [K]")
         ax.set_ylabel("Pressure [bar]")
         ax.scatter(
-            self.critical_temperatures, self.critical_pressures, color="black"
+            self.critical_temperatures, self.critical_pressures, color="black",
+            zorder=10
         )
 
     def __getitem__(self, key):
@@ -362,7 +363,8 @@ class PXEnvelope:
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Pressure [bar]")
         ax.scatter(
-            self.critical_alphas, self.critical_pressures, color="black"
+            self.critical_alphas, self.critical_pressures, color="black",
+            zorder=10
         )
 
     def __getitem__(self, key):
@@ -580,7 +582,8 @@ class TXEnvelope:
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Temperature [K]")
         ax.scatter(
-            self.critical_alphas, self.critical_pressures, color="black"
+            self.critical_alphas, self.critical_pressures, color="black",
+            zorder=10
         )
 
     def __getitem__(self, key):
