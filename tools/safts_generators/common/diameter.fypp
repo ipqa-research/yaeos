@@ -1,0 +1,45 @@
+#:def DIAMETER_TYPE_MEMBERS()
+
+real(8), allocatable :: sigma(:)
+real(8), allocatable :: epsilon_k(:)
+
+#:enddef
+
+
+#:def DIAMETER_SETUP_ARGS()
+
+real(8), intent(in) :: sigma(:)
+real(8), intent(in) :: epsilon_k(:)
+
+#:enddef
+
+
+#:def DIAMETER_SETUP_BODY()
+
+setup_model%sigma = sigma
+setup_model%epsilon_k = epsilon_k
+
+#:enddef
+
+
+#:def DIAMETER_AR_LOCALS()
+
+integer :: i
+
+real(8) :: sigma(size(n))
+real(8) :: epsilon_k(size(n))
+real(8) :: d(size(n))
+
+sigma = model%sigma
+epsilon_k = model%epsilon_k
+
+#:enddef
+
+
+#:def DIAMETER_AR_CODE()
+
+do i = 1, size(n)
+    d(i) = sigma(i) * (1.0_8 - 0.12_8 * exp(-3.0_8 * epsilon_k(i) / t))
+end do
+
+#:enddef
