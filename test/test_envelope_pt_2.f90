@@ -65,7 +65,7 @@ contains
       z = [0.0987, 0.4023, 0.4990]
       z = z / sum(z)
 
-      p0 = 0.01
+      p0 = 0.1
       sat = saturation_temperature(model, z, p0, kind="dew", T0=150._pr)
 
       x_l0(1, :) = sat%y
@@ -74,12 +74,11 @@ contains
       p0 = sat%P
       t0 = sat%T
       ns0 = np*nc+np+1
-      ds0=1e-2
+      ds0=1e-1
       beta_w = 0
       kinds_x = "vapor"
       kind_w = "liquid"
       dew = pt_envelope(model, z, np, kinds_x, kind_w, x_l0, w0, betas0, p0, t0, ns0, ds0, beta_w, max_pressure=1500._pr)
-      call dew%write(2)
       idx = size(dew%points)
       call assert(size(dew%Tc) == 2, "Two critical points found")
       call assert(dew%points(idx)%P > 1000._pr, "Envelope should end at high pressure")

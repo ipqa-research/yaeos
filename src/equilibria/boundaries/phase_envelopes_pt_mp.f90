@@ -6,7 +6,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_boundaries_auxiliar, only: &
-      jump_critical => detect_critical, check_critical_jump
+      jump_critical => detect_critical, check_critical_jump, NearCritical
    use yaeos__models_ar, only: ArModel
    use yaeos__math, only: solve_system
 
@@ -60,22 +60,6 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
       real(pr) :: dS
       !! Step size of the specification to reach this point.
    end type MPPoint
-
-   type :: NearCritical
-      !! Near critical point information.
-      logical :: near_critical = .false.
-      !! If we are satisfying the condition of being near a critical point.
-      logical :: entering = .false.
-      !! Entering a critical region. This attribute is used to ensure that the
-      !! correct indexes are used since they should not be updated while inside
-      !! the region, just on the first point.
-      integer :: l 
-      !! Index of the phase that is becoming critical with the reference phase.
-      integer :: i
-      !! Index of the component with the max \(\ln K_i^l\)
-      integer :: j
-      !! Index of the component with the minimum \(\ln K_j^l\)
-   end type NearCritical
 
    type(NearCritical) :: near_critical_state 
    !! Singleton to follow the near critical status.
@@ -179,8 +163,12 @@ contains
 
       integer :: its
       !! Number of iterations to solve the current point.
-      integer :: max_iterations = 10
-      !! Maximum number of iterations to solve the point.
+      integer, parameter :: max_iterations_np = 10
+      !! Maximum number of iterations to solve "normal" points.
+      integer, parameter :: max_iterations_ncp = 50
+      !! Maximum number of iterations near critical points.
+      integer :: max_iterations
+      !! Maximum number of iterations.
       integer :: number_of_points
       !! Number of points to calculate.
 
@@ -276,6 +264,11 @@ contains
          ! ====================================================================
          ! Solution of the point
          ! --------------------------------------------------------------------
+         if (near_critical_state%near_critical) then
+            max_iterations = max_iterations_ncp
+         else
+            max_iterations = max_iterations_np
+         end if
          call solve_point(&
             model, z, np, beta_w, x_kinds, w_kind, X, ns, S, dXdS, &
             F, dF, Vl, Vw, its, max_iterations &
@@ -351,8 +344,8 @@ contains
          dX = dXdS * dS
 
          if (.not. near_crit) then
-            do while(sum((dX(nc*np+np+1:)**2)) > 0.01)
-               dX = dX/2
+            do while(sum(((dX(iP:))**2)) > 0.1)
+               dX(iP:) = dX(iP:)/2
             end do
          end if
 
@@ -596,6 +589,14 @@ contains
    end subroutine pt_F_NP
 
    subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, dF, Vl, Vw, iters, max_iterations)
+      !! # `solve_point
+      !! Solve a multiphase phase equilbiria at a fixed $T,P,\beta^w$
+      !!
+      !! # Description
+      !! This subroutine uses the Newton method to solve the system of 
+      !! equations for the calculation of a multiphase phase eqiulibria point. 
+      !! To help with convergence, damping on the \(\Delta X\) at each step
+      !! is done, avoiding divergence and undesired big steps.  
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model !! Model to use.
@@ -617,43 +618,39 @@ contains
       integer, intent(out) :: iters
       !! Number of iterations to solve the current point
 
-      integer :: i, l
-      integer :: iT
-      integer :: iP
-      integer :: iBetas(np)
-      integer :: nc
+      integer :: i !! Indexing variable
+      integer :: l !! Phase index
+      integer :: iT !! Temperature variable index
+      integer :: iP !! Pressure variable index
+      integer :: iBetas(np) !! Index of beta variables
+      integer :: nc !! NUmber of components
 
-      real(pr) :: P, T, x_l(np, size(z)), betas(np), w(size(z))
+      real(pr) :: x_l(np, size(z)) !! Composition of the main phases
+      real(pr) w(size(z)) !! Composition of reference phase
+      real(pr) :: betas(np) !! Mole fraction of each main phase
+      real(pr) :: P !! Pressure
+      real(pr) :: T !! Temperature
 
-      real(pr) :: X0(size(X))
-      real(pr) :: dX(size(X))
-
-      logical :: can_solve
+      real(pr) :: X0(size(X)) !! Initial value of \(X\)
+      real(pr) :: dX(size(X)) !! Newton step \(\Delta X\)
 
       nc = size(z)
+
+      ! Get the indexes of each variable
+      iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = np*nc + np + 1
       iT = np*nc + np + 2
 
       X0 = X
 
-      can_solve = .true.
-
-      iBetas = [(i, i=np*nc+1, np*nc+np)]
-
       do iters=1,max_iterations
          call pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
          call get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
 
+         ! Solve linear system to obtain Newton step
          dX = solve_system(dF, -F)
 
-         do l=1,np
-            if (maxval(abs(X(l:nc*l))) < 1e-1) then
-               do while(maxval(abs(dX(l:nc*l))) > 1e-1)
-                  dX = dX/2
-               end do
-            end if
-         end do
-
+         ! Damping of the step
          do while(abs(dX(iT)) > 0.05)
             dX = dX/2
          end do
@@ -670,6 +667,7 @@ contains
             end if
          end do
 
+         ! Convergence criteria
          if (maxval(abs(F)) < 1e-9_pr .or. maxval(abs(dX)) < 1.e-7_pr) exit
 
          X = X + dX
@@ -697,9 +695,6 @@ contains
       !!
       !! for the \( \frac{dX}{dS} \) vector. The variable with the highest value
       !! of \( \frac{dX}{dS} \) is chosen as the new specification.
-      !!
-      !! # References
-      !!
       use yaeos__equilibria_boundaries_auxiliar, only: near_critical
       integer, intent(in) :: its
       !! Iterations to solve the current point.
@@ -741,16 +736,14 @@ contains
       real(pr) :: lnKdiff
       !! If near critical equals lnK_{max} - lnK_{min}
 
-      integer :: i
+      integer :: i !! Iteration variable
       integer :: l !! Phase index
       integer :: lb !! Lower bound of each phase
       integer :: ub !! Upper bound of each phase
 
-      integer :: iT
-      integer :: iP
-      integer :: iBetas(np)
-
-      real(pr) :: dT, dP
+      integer :: iT !! Index of temperature variable
+      integer :: iP !! Index of pressure variable
+      integer :: iBetas(np) !! Index of phase fraction variables  
 
       iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = size(X) - 1
@@ -796,6 +789,7 @@ contains
       end if
 
       if (near_crit) then
+         near_critical_state%near_critical = .true.
          l_nc = near_critical_state%l
          i_nc = near_critical_state%i
          j_nc = near_critical_state%j
@@ -808,11 +802,13 @@ contains
 
          dS = -0.01_pr
 
-         if (abs(S + dS) < 0.020) then
+         if (abs(S + dS) < 0.010) then
             ! Ensure that the next step will be on the other side of the
             ! critical point. Next S=-0.025
             S = -0.025 - dS
          end if
+      else
+         near_critical_state%near_critical = .false.
       end if
    end subroutine update_specification
 
