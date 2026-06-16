@@ -133,25 +133,21 @@ class CubicEoS(ArModel):
         temperatures : array_like
             Range of temperatuers for which calculate the attractive parameter.
 
-        Returns 
+        Returns
         -------
-        dict : Dictionary with the values of a for each component and its 
+        dict : Dictionary with the values of a for each component and its
                derivatives with temperature.
         """
         a, dadt, dadt2 = yaeos_c.get_cubiceos_attractive_parameters(
             id=self.id, nc=self.size(), t=temperatures
         )
 
-        return {
-            "a": a,
-            "dt": dadt,
-            "dt2": dadt2
-        }
-    
+        return {"a": a, "dt": dadt, "dt2": dadt2}
+
     def get_repulsive_parameter(self):
         """Calculate the repulsive parameters of the CubicEoS.
 
-        Returns 
+        Returns
         -------
             array : Repulsive parameter value for each component.
         """

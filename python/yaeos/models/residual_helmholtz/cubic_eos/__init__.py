@@ -33,6 +33,12 @@ from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import (
     sDDLC,
 )
 
+from yaeos.models.residual_helmholtz.cubic_eos.alphas import (
+    CubicAlphaFunction,
+    AlphaSoave,
+    AlphaRKPR,
+)
+
 __all__ = [
     "CubicEoS",
     "PengRobinson76",
@@ -40,11 +46,14 @@ __all__ = [
     "SoaveRedlichKwong",
     "RKPR",
     "PSRK",
+    "CubicAlphaFunction",
+    "AlphaSoave",
+    "AlphaRKPR",
     "CubicMixRule",
     "QMR",
     "QMRTD",
     "MHV",
     "HV",
     "HVNRTL",
-    "sDDLC"
+    "sDDLC",
 ]

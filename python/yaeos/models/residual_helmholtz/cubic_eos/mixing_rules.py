@@ -363,9 +363,7 @@ class MHV(CubicMixRule):
 
         fcode += lij_c + "\n"
 
-        fcode += (
-            f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b, lij=lij)\n\n"
-        )
+        fcode += f"mixrule = MHV(ge=ge_model, q={self.q}_pr, b=ar_model%b, lij=lij)\n\n"
 
         return fcode
 
@@ -619,11 +617,10 @@ class HVNRTL(CubicMixRule):
         )
         return fcode
 
-
     @classmethod
     def setup_from_kij(cls, model, temperatures, kij):
         r"""
-        Generalizes the calculation of gji parameters and returns linear 
+        Generalizes the calculation of gji parameters and returns linear
         correlation matrices gji0 and gjiT for any number of components.
 
         .. warning::
@@ -633,7 +630,7 @@ class HVNRTL(CubicMixRule):
            only use a mean value. Which will make the predictions further
            away of the predictions being made with :math:`k_{ij}` compared
            to using classic Cubic EoS. This method is intended only as a way
-           to ease the initialization of parameters on optimization methods. 
+           to ease the initialization of parameters on optimization methods.
 
         Parameters
         ----------
@@ -651,62 +648,65 @@ class HVNRTL(CubicMixRule):
             QMR mixing rule.
         """
         from yaeos.lib import yaeos_c
-        def lambd(d1=1+np.sqrt(2)):
+
+        def lambd(d1=1 + np.sqrt(2)):
             f = d1 + 1
-            g = (d1 + 1)*d1 + d1 - 1
-            h = np.log((d1+1)**2 / 2)
-            L = f/g * h
+            g = (d1 + 1) * d1 + d1 - 1
+            h = np.log((d1 + 1) ** 2 / 2)
+            L = f / g * h
             return L
-        
+
         # 1. Setup basic parameters
         nc = model.size()
         ac, b, del1, del2, k = yaeos_c.get_ac_b_del1_del2_k(model.id, nc)
         nt = len(temperatures)
-        ais = model.get_attractive_parameter(temperatures)["a"]  # Shape: (nt, nc)
-        bis = model.get_repulsive_parameter()          # Shape: (nc,)
+        ais = model.get_attractive_parameter(temperatures)[
+            "a"
+        ]  # Shape: (nt, nc)
+        bis = model.get_repulsive_parameter()  # Shape: (nc,)
         lambd = lambd(np.mean(del1))
-        
+
         # Storage for all gji matrices across all temperatures
         # Shape: (Temperature, Component_j, Component_i)
         gjiss = np.zeros((nt, nc, nc))
-        
+
         # 2. Calculate gji at each Temperature
         for t_idx, T in enumerate(temperatures):
             ais_i = ais[t_idx]
-            
+
             # Calculate gii (pure component interaction) for this T
             # gii = - (a_i / b_i) * lambda
-            gii = - (ais_i / bis) * lambd
-            
+            gii = -(ais_i / bis) * lambd
+
             gji_temp = np.zeros((nc, nc))
             for i in range(nc):
                 for j in range(nc):
                     # Cross-interaction term logic
                     term1 = -2 * np.sqrt(bis[i] * bis[j]) / (bis[i] + bis[j])
                     term2 = np.sqrt(gii[i] * gii[j]) * (1 - kij)
-                    
+
                     # gji = (Interaction Term) - gii[i]
                     gji_temp[j, i] = (term1 * term2) - gii[i]
-            
+
             gjiss[t_idx] = gji_temp
 
         # 3. Linear Correlation: gji = gji0 + gjiT * T
         gji0 = np.zeros((nc, nc))
         gjiT = np.zeros((nc, nc))
-        
+
         for i in range(nc):
             for j in range(nc):
                 if i != j:
                     # Extract the vector of values for parameter g[j,i] over time
                     y = gjiss[:, j, i]
-                    
+
                     # Polyfit returns [slope, intercept]
                     slope, intercept = np.polyfit(temperatures, y, deg=1)
-                    
+
                     gjiT[j, i] = slope
                     gji0[j, i] = intercept
 
-        return cls(alpha=np.zeros((nc,nc)), gji=gji0, gjiT=gjiT)
+        return cls(alpha=np.zeros((nc, nc)), gji=gji0, gjiT=gjiT)
 
 
 class sDDLC(CubicMixRule):
@@ -783,7 +783,7 @@ class sDDLC(CubicMixRule):
         if kij_0 is not None and t_ref is None:
             raise ValueError("t_ref should be provided with kij_0")
 
-        # kij temperature dependance term 
+        # kij temperature dependance term
         if kij_0 is None:
             self.kij_0 = np.zeros((nc, nc))
             self.t_ref = np.zeros((nc, nc))
