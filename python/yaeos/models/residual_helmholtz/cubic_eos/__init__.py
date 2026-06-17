@@ -37,6 +37,7 @@ from yaeos.models.residual_helmholtz.cubic_eos.alphas import (
     CubicAlphaFunction,
     AlphaSoave,
     AlphaRKPR,
+    AlphaMathiasCopeman
 )
 
 __all__ = [
@@ -49,6 +50,7 @@ __all__ = [
     "CubicAlphaFunction",
     "AlphaSoave",
     "AlphaRKPR",
+    "AlphaMathiasCopeman",
     "CubicMixRule",
     "QMR",
     "QMRTD",
