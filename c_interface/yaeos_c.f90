@@ -31,6 +31,8 @@ module yaeos_c
    public :: get_cubiceos_attractive_parameters, get_cubiceos_repulsive_parameters
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl, set_sddlc
+   ! Alphas
+   public :: set_alpha_mathiascopeman, set_alpha_RKPR, set_alpha_soave
    ! Multifluid equations
    public :: multifluid_gerg2008
    ! SAFT equations
@@ -533,6 +535,54 @@ contains
          end select
       end associate
    end subroutine set_sddlc
+
+   ! ==========================================================================
+   !  Cubic Alpha Functions
+   ! --------------------------------------------------------------------------
+
+   subroutine set_alpha(ar_id, alpha)
+      use yaeos, only: CubicEoS, AlphaFunction
+      integer(c_int) :: ar_id
+      class(AlphaFunction) :: alpha
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is (CubicEoS)
+            call ar_model%set_alpha(alpha)
+         end select
+      end associate
+   end subroutine set_alpha
+
+
+   subroutine set_alpha_soave(ar_id, ks)
+      use yaeos, only: AlphaSoave, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: ks(:)
+      type(AlphaSoave) :: alpha
+      alpha = AlphaSoave(k=ks)
+      call set_alpha(ar_id, alpha)
+   end subroutine set_alpha_soave
+
+   subroutine set_alpha_RKPR(ar_id, ks)
+      use yaeos, only: AlphaRKPR, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: ks(:)
+      type(AlphaRKPR) :: alpha
+      alpha = AlphaRKPR(k=ks)
+      call set_alpha(ar_id, alpha)
+   end subroutine set_alpha_RKPR
+
+   subroutine set_alpha_mathiascopeman(ar_id, c1s, c2s, c3s)
+      use yaeos, only: AlphaMathiasCopeman, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: c1s(:)
+      real(c_double), intent(in) :: c2s(:)
+      real(c_double), intent(in) :: c3s(:)
+      type(AlphaMathiasCopeman) :: alpha
+
+      alpha = AlphaMathiasCopeman(c1=c1s, c2=c2s, c3=c3s)
+      call set_alpha(ar_id, alpha)
+   end subroutine set_alpha_mathiascopeman
 
    ! ==========================================================================
    !  Cubic EoS implementations

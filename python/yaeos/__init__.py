@@ -18,17 +18,20 @@ from yaeos.models.excess_gibbs import (
     UNIQUAC,
 )
 from yaeos.models.residual_helmholtz.cubic_eos import (
-    HV,
-    HVNRTL,
-    MHV,
     PSRK,
     PengRobinson76,
     PengRobinson78,
+    SoaveRedlichKwong,
     QMR,
     QMRTD,
     RKPR,
-    SoaveRedlichKwong,
-    sDDLC
+    sDDLC,
+    HV,
+    HVNRTL,
+    MHV,
+    AlphaSoave,
+    AlphaRKPR,
+    AlphaMathiasCopeman,
 )
 from yaeos.models.residual_helmholtz.multifluid import GERG2008
 from yaeos.models.residual_helmholtz.saft import PCSAFT
@@ -56,6 +59,9 @@ __all__ = [
     "MHV",
     "HV",
     "HVNRTL",
+    "AlphaSoave",
+    "AlphaRKPR",
+    "AlphaMathiasCopeman",
 ]
 
 
