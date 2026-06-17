@@ -15,12 +15,25 @@ module yaeos__math_nonlinearsolvers
 contains
 
    subroutine newton(sub, x, tol, max_its, its)
-      procedure(to_solve) :: sub
+      !! # `newton`
+      !! Muldimensional Newton method with simple damping.
+      !!
+      !! # Description
+      !! Solves a non-lineal system of equations using the Newton-Raphson 
+      !! method. To help with convergence a damping is done to ensure that
+      !! \(|\Delta X| < 0.1\) for each step.
+      procedure(to_solve) :: sub 
+      !! Subroutine with the system of equations to solve and its 
+      !! Jacobian matrix
       real(pr), intent(in out) :: x(:)
+      !! Vector of variables used for initialization, updated to the solution
+      !! at the end
       real(pr), intent(in) :: tol
+      !! Absolute tolerance on the function equations
       integer, intent(in) :: max_its
+      !! Maximum number of iterations
       integer, intent(out) :: its
-      real(pr) :: t
+      !! Number of iterations used
 
       real(pr) :: F(size(X)), J(size(X), size(X)), dX(size(X))
       real(pr) :: F2(size(X)), J2(size(X), size(X))
@@ -30,11 +43,11 @@ contains
          dX = solve_system(J, -F)
          if (maxval(abs(F)) < tol) exit
 
-         do while(maxval(abs(dX)) > 1)
+         do while(maxval(abs(dX)) > 0.1)
             dX = dX/2
          end do
-         t = 1
-         X = X + t * dX
+         
+         X = X + dX
 
          call sub(x, F, J)
       end do
