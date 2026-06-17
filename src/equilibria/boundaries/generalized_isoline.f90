@@ -113,7 +113,7 @@ contains
             exit line_tracing
          end if
 
-         if (any(point%betas < 0)) then
+         if (any(point%betas < -1e-20)) then
             exit line_tracing
          end if
 
@@ -396,12 +396,11 @@ contains
 
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
-
          if (maxval(abs(F)) < 1e-9) exit
 
          dX = solve_system(df, -F)
 
-         do while(maxval(abs(dX)) > 0.5)
+         do while(maxval(abs(dX)) > 0.05)
             dX = dX/2
          end do
 
