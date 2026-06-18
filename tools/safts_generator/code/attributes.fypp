@@ -1,0 +1,70 @@
+! ------------------------------------------------------------------------------
+! Attributes
+! ------------------------------------------------------------------------------
+#:def attributes(ATTRIBUTES)
+      #:if ATTRIBUTES == 'PCSAFT-ATTRIBUTES'
+      real(8), allocatable :: m(:)
+      !! Number of segments
+      real(8), allocatable :: sigma(:)
+      !! Segment diameter [Angstrom]
+      real(8), allocatable :: epsilon_k(:)
+      !! Energy / k_B [K]
+      real(8), allocatable :: kij(:,:)
+      !! Binary interaction parameters (optional)
+      #:endif
+#:enddef attributes
+
+
+#:def attributes_in_helmholtz(ATTRIBUTES)
+      #:if ATTRIBUTES == 'PCSAFT-ATTRIBUTES'
+      real(8) :: m(size(n))
+      real(8) :: sigma(size(n))
+      real(8) :: epsilon_k(size(n))
+      real(8) :: kij(size(n),size(n))
+
+
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      #:endif
+#:enddef attributes_in_helmholtz
+
+! ------------------------------------------------------------------------------
+! Setup function (setup the model attributes)
+! ------------------------------------------------------------------------------
+#:def setup_signature(ATTRIBUTES)
+      #:if ATTRIBUTES == 'PCSAFT-ATTRIBUTES'
+m, sigma, epsilon_k, kij
+      #:endif
+#:enddef setup_signature
+
+#:def setup_body(ATTRIBUTES)
+      #:if ATTRIBUTES == 'PCSAFT-ATTRIBUTES'
+      use yaeos__equilibria_critical, only: get_critical_constants
+      real(8), intent(in) :: m(:)
+      !! Number of segments
+      real(8), intent(in) :: sigma(:)
+      !! Segment diameter [Angstrom]
+      real(8), intent(in) :: epsilon_k(:)
+      !! Energy / k_B [K]
+      real(8), intent(in), optional :: kij(:,:)
+      !! Binary interaction parameters (optional)
+
+      integer :: nc
+      nc = size(m)
+
+      model%m = m
+      model%sigma = sigma
+      model%epsilon_k = epsilon_k
+      
+      if (present(kij)) then
+         model%kij = kij
+      end if
+
+      allocate(model%components%Tc(nc))
+      allocate(model%components%Pc(nc))
+      allocate(model%components%w(nc))
+      call get_critical_constants(model)
+      #:endif
+#:enddef setup_body

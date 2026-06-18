@@ -1,0 +1,79 @@
+! ------------------------------------------------------------------------------
+! Declarations
+! ------------------------------------------------------------------------------
+#:def ar_dispersion_declaration(AR_DISPERSION)
+   #:if AR_DISPERSION == "Dispersion-PCSAFT"
+      real(8) :: rho_disp, eta, one_m_eta
+      real(8) :: m_ave, m2_es3, m2_e2s3, I1, I2, C1
+      real(8) :: term_disp, a_k, b_k
+      real(8) :: a1_term_disp, a2_term_disp
+      real(8) :: eps_ij, sig_ij, kij_val
+      real(8) :: ar_dispersion
+   #:endif
+#:enddef ar_dispersion_declaration
+
+
+! ------------------------------------------------------------------------------
+! Code
+! ------------------------------------------------------------------------------
+#:def ar_dispersion(AR_DISPERSION)
+   #:if AR_DISPERSION == "Dispersion-PCSAFT"
+      rho_disp = n_tot * N_AVO / (V * 1.0e27_pr)  ! Number density [1/A^3]
+      eta = zeta(3)
+      one_m_eta = 1.0_pr - eta
+
+      ! 1. Mixture Averages (Same as before)
+      m_ave = 0.0_pr; m2_es3 = 0.0_pr; m2_e2s3 = 0.0_pr
+
+      do i = 1, nc
+         m_ave = m_ave + x(i)*m(i) ! Segment average
+      end do
+
+      do i = 1, nc
+         do j = 1, nc
+            sig_ij = 0.5_pr * (sigma(i) + sigma(j))
+            kij_val = 0.0_pr; if (present(kij)) kij_val = kij(i,j)
+            eps_ij = sqrt(epsilon_k(i) * epsilon_k(j)) * (1.0_pr - kij_val)
+
+            term_disp = x(i) * x(j) * m(i) * m(j) * (sig_ij**3)
+
+            m2_es3 = m2_es3 + term_disp * (eps_ij / T)
+            m2_e2s3 = m2_e2s3 + term_disp * (eps_ij / T)**2
+         end do
+      end do
+
+      ! 2. Integrals I1 and I2 (Same as before)
+      I1 = 0.0_pr; I2 = 0.0_pr
+      do k = 0, 6
+         a_k = A_COEFFS(0,k) + (m_ave - 1.0_pr)/m_ave * A_COEFFS(1,k) + &
+            (m_ave - 1.0_pr)/m_ave * (m_ave - 2.0_pr)/m_ave * A_COEFFS(2,k)
+         b_k = B_COEFFS(0,k) + (m_ave - 1.0_pr)/m_ave * B_COEFFS(1,k) + &
+            (m_ave - 1.0_pr)/m_ave * (m_ave - 2.0_pr)/m_ave * B_COEFFS(2,k)
+
+         I1 = I1 + a_k * (eta**k)
+         I2 = I2 + b_k * (eta**k)
+      end do
+
+      ! 3. Compressibility C1 (Same as before)
+      C1 = 1.0_pr + m_ave * (8.0_pr * eta - 2.0_pr * (eta**2)) / (one_m_eta**4)
+      C1 = C1 + (1.0_pr - m_ave) * &
+         (20.0_pr*eta - 27.0_pr*(eta**2) + 12.0_pr*(eta**3) - 2.0_pr*(eta**4)) / &
+         ((1.0_pr - eta) * (2.0_pr - eta))**2
+      C1 = 1._pr / C1
+
+      ! ---------------------------------------------------------
+      ! 4. Final Sum
+      ! Eq. A.11 Gross & Sadowski (2001)
+      ! a_res/RT = -2*pi*rho_disp*I1*... - pi*rho_disp*m_ave*C1*I2*...
+      ! ---------------------------------------------------------
+
+      ! 1st order term (Takes 2 * PI)
+      a1_term_disp = -2.0_pr * PI * rho_disp * I1 * m2_es3
+
+      ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+      a2_term_disp = -1.0_pr * PI * rho_disp * m_ave * C1 * I2 * m2_e2s3
+
+      ! Sum and make extensive
+      ar_dispersion = a1_term_disp + a2_term_disp   
+   #:endif   
+#:enddef ar_dispersion

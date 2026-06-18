@@ -1,0 +1,24 @@
+! ------------------------------------------------------------------------------
+! Declarations
+! ------------------------------------------------------------------------------
+#:def zetas_declaration(ZETAS)
+   #:if ZETAS == "PCSAFT-ZETAS"
+      real(8) :: zetas(0:3)
+      real(8) :: rho
+   #:endif
+#:enddef zetas_declaration
+
+! ------------------------------------------------------------------------------
+! Code
+! ------------------------------------------------------------------------------
+#:def zetas(ZETAS)
+   #:if ZETAS == "PCSAFT-ZETAS"
+      rho = sum(n) * N_AVO / (V * 1.0e27_8)  ! Number density [1/A^3]
+      
+      zetas = 0.0_8
+
+      do k = 0, 3
+         zetas(k) = rho * (PI / 6.0_8) * sum(x * m * (d**k))
+      end do
+   #:endif
+#:enddef zetas
