@@ -2,19 +2,24 @@
 
 set -euo pipefail
 
-TEMPLATE="template_master.fypp"
-OUTDIR="tampenade_inputs"
+TEMPLATE="template.fypp"
+OUTDIR="tapenade_inputs"
 
 mkdir -p "${OUTDIR}"
 
 # -----------------------------------------------------------------------------
 # PC-SAFT
 # -----------------------------------------------------------------------------
-fypp \
-    -D MODEL_NAME="'PCSAFT'" \
-    -D USE_DIAMETER=1 \
-    "${TEMPLATE}" \
-    "${OUTDIR}/PCSAFT.f90"
+model_name="PCSAFT"
 
-echo "Generated PCSAFT.f90"
+fypp \
+    -DATTRIBUTES='"attributes/pcsaft_attributes"' \
+    -DSETUP='"pcsaft_setup"' \
+    -DDIAMETER='"pcsaft_diameter"' \
+    "${TEMPLATE}" \
+    "${OUTDIR}/${model_name,,}.f90"
+
+sed -i "s/ModelNameSedMe/${model_name}/g" "${OUTDIR}/${model_name,,}.f90"
+
+echo "Generated ${model_name}.f90"
 
