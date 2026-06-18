@@ -1,0 +1,10 @@
+#:mute
+#:include "code/attributes.fypp"
+!    - attributes(ATTRIBUTES)
+!    - attributes_in_helmholtz(ATTRIBUTES)
+!    - setup_signature(ATTRIBUTES)
+!    - setup_body(ATTRIBUTES)
+#:endmute
+   type(ModelNameSedMe) function setup_model(${setup_signature(ATTRIBUTES)}$) result(model)
+      $:setup_body(ATTRIBUTES)
+   end function setup_model

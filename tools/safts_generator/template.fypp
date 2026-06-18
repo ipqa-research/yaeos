@@ -69,10 +69,6 @@ module tapenade_model_template
    real(8), parameter :: UNITS_FACTOR = 0.000602214086_8
 
 contains
-   type(ModelNameSedMe) function setup_model(${setup_signature(ATTRIBUTES)}$) result(model)
-      $:setup_body(ATTRIBUTES)
-   end function setup_model
-
    subroutine ar(model, n, v, t, arval)
       type(ModelNameSedMe), intent(in) :: model
       real(8), intent(in) :: n(:), v, t
@@ -125,34 +121,8 @@ contains
          m_average = m_average + x(i)*m(i) ! Segment average
       end do
 
-      arval = (R * T * n_tot) * (m_average * a_hs + a_chain + a_disp)
+      arval = (R * T * n_tot) * (m_average * ar_hs + ar_chain + ar_dispersion)
    end subroutine ar
 
-   ! ---------------------------------------------------------
-   ! Method get_v0: Volume lower limit (Covolume)
-   ! Represents the physical volume occupied by the segments
-   ! ---------------------------------------------------------
-   function get_v0(self, n, P, T) result(v0)
-      class(ModelNameSedMe), intent(in) :: self
-      real(pr), intent(in) :: n(:)  ! Moles of each component
-      real(pr), intent(in) :: P     ! System pressure
-      real(pr), intent(in) :: T     ! System temperature
-      real(pr) :: v0
-
-      integer :: i
-      real(pr) :: sum_seg_vol
-
-      ! v0 = (Pi/6) * Sum(n_i * m_i * sigma_i^3) * Factor_Conversion
-      ! This makes zeta_3 = 1 if V = v0.
-
-      sum_seg_vol = 0.0_pr
-      do i = 1, size(n)
-         sum_seg_vol = sum_seg_vol + n(i) * self%m(i) * (self%sigma(i)**3)
-      end do
-
-      ! Note: UNITS_FACTOR must be approx 0.000602214 to convert
-      ! (mol * Ang^3) to Liters.
-      ! Make sure it matches the one used in 'calculate_zetas'.
-      v0 = (PI / 6.0_pr) * UNITS_FACTOR * sum_seg_vol
-   end function get_v0
+   ! PUT setup and get_v0 here after tapenade
 end module tapenade_model_template

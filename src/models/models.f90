@@ -38,6 +38,8 @@ module yaeos__models
    use yaeos__models_ar_saft_pcsaft, only: &
       PcSaft, init_pcsaft
 
+   use yaeos__models_ar_saft_tpcsaft, only: TPCSAFT, init_tpcsaft
+
    ! Cubic EoS models
    use yaeos__models_ar_genericcubic, only: &
       CubicEoS, GenericCubic_Ar, AlphaFunction, CubicMixRule
