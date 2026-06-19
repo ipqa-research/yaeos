@@ -16,7 +16,7 @@
 module yaeos__models_ar_saft_tpcsaft
   USE YAEOS__TAPENADE_AR_API, ONLY : armodeltapenade
   USE YAEOS__TAPENADE_INTERFACES
-  USE YAEOS, ONLY : r
+  use yaeos__constants, only: pr, R
   IMPLICIT NONE
 ! ---------------------------------------------------------------------------
 ! PC-SAFT UNIVERSAL CONSTANTS (Gross & Sadowski, 2001, Table A1)
