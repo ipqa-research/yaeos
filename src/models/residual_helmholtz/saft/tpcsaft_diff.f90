@@ -44,14 +44,14 @@ MODULE YAEOS__MODELS_AR_SAFT_TPCSAFT
       REAL(pr), ALLOCATABLE :: sigma(:)
       REAL(pr), ALLOCATABLE :: epsilon_k(:)
       REAL(pr), ALLOCATABLE :: kij(:, :)
-   contains
-     procedure :: ar
-     procedure :: ar_d
-     procedure :: ar_b
-     procedure :: ar_d_b
-     procedure :: ar_d_d
-     procedure :: get_v0 => get_v0
-   END TYPE TPCSAFT
+    contains
+        procedure :: ar
+        procedure :: ar_d
+        procedure :: ar_b
+        procedure :: ar_d_b
+        procedure :: ar_d_d
+        procedure :: get_v0 => get_v0
+    END TYPE TPCSAFT
 ! Module private constants
   REAL(pr), PARAMETER :: pi=3.14159265359_pr
   REAL(pr), PARAMETER :: n_avo=6.02214076e23_pr
@@ -102,8 +102,8 @@ CONTAINS
 ! Number of components
     INTEGER :: nc
 ! Average number of segments
-    REAL(pr) :: m_average
-    REAL(pr) :: m_averaged
+    REAL(pr) :: m_ave
+    REAL(pr) :: m_aved
 ! Internal variables declarations
 ! Diameter declarations
     REAL(pr) :: d(SIZE(n))
@@ -131,15 +131,23 @@ CONTAINS
     REAL(pr) :: rhodd0
     REAL(pr) :: rhodd
     REAL(pr) :: rhoddd
+    REAL(pr) :: eta
+    REAL(pr) :: etad1
+    REAL(pr) :: etad0
+    REAL(pr) :: etad0d
+    REAL(pr) :: etad
+    REAL(pr) :: etadd0
+    REAL(pr) :: etadd
+    REAL(pr) :: etaddd
 ! Ar hard-sphere contribution declarations
-    REAL(pr) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
-    REAL(pr) :: term1_hsd1, term2_hsd1, term3_hsd1, one_m_z3_hsd1
-    REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0, one_m_z3_hsd0
-    REAL(pr) :: term1_hsd0d, term2_hsd0d, term3_hsd0d, one_m_z3_hsd0d
-    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd, one_m_z3_hsd
-    REAL(pr) :: term1_hsdd0, term2_hsdd0, term3_hsdd0, one_m_z3_hsdd0
-    REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd, one_m_z3_hsdd
-    REAL(pr) :: term1_hsddd, term2_hsddd, term3_hsddd, one_m_z3_hsddd
+    REAL(pr) :: term1_hs, term2_hs, term3_hs
+    REAL(pr) :: term1_hsd1, term2_hsd1, term3_hsd1
+    REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0
+    REAL(pr) :: term1_hsd0d, term2_hsd0d, term3_hsd0d
+    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+    REAL(pr) :: term1_hsdd0, term2_hsdd0, term3_hsdd0
+    REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd
+    REAL(pr) :: term1_hsddd, term2_hsddd, term3_hsddd
     REAL(pr) :: ar_hs
     REAL(pr) :: ar_hsd1
     REAL(pr) :: ar_hsd0
@@ -149,14 +157,14 @@ CONTAINS
     REAL(pr) :: ar_hsdd
     REAL(pr) :: ar_hsddd
 ! Ar chain contribution declarations
-    REAL(pr) :: g_ii, one_m_z3_chain
-    REAL(pr) :: g_iid1, one_m_z3_chaind1
-    REAL(pr) :: g_iid0, one_m_z3_chaind0
-    REAL(pr) :: g_iid0d, one_m_z3_chaind0d
-    REAL(pr) :: g_iid, one_m_z3_chaind
-    REAL(pr) :: g_iidd0, one_m_z3_chaindd0
-    REAL(pr) :: g_iidd, one_m_z3_chaindd
-    REAL(pr) :: g_iiddd, one_m_z3_chainddd
+    REAL(pr) :: g_ii
+    REAL(pr) :: g_iid1
+    REAL(pr) :: g_iid0
+    REAL(pr) :: g_iid0d
+    REAL(pr) :: g_iid
+    REAL(pr) :: g_iidd0
+    REAL(pr) :: g_iidd
+    REAL(pr) :: g_iiddd
     REAL(pr) :: di_2
     REAL(pr) :: di_2d1
     REAL(pr) :: di_2d0
@@ -174,19 +182,19 @@ CONTAINS
     REAL(pr) :: ar_chaindd
     REAL(pr) :: ar_chainddd
 ! Ar dispersion contribution declarations
-    REAL(pr) :: rho_disp, eta, one_m_eta
-    REAL(pr) :: rho_dispd1, etad1, one_m_etad1
-    REAL(pr) :: rho_dispd0, etad0, one_m_etad0
-    REAL(pr) :: rho_dispd0d, etad0d, one_m_etad0d
-    REAL(pr) :: rho_dispd, etad, one_m_etad
-    REAL(pr) :: rho_dispdd0, etadd0, one_m_etadd0
-    REAL(pr) :: rho_dispdd, etadd, one_m_etadd
-    REAL(pr) :: rho_dispddd, etaddd, one_m_etaddd
-    REAL(pr) :: m_ave, m2_es3, m2_e2s3, i1, i2, c1
+    REAL(pr) :: rho_disp
+    REAL(pr) :: rho_dispd1
+    REAL(pr) :: rho_dispd0
+    REAL(pr) :: rho_dispd0d
+    REAL(pr) :: rho_dispd
+    REAL(pr) :: rho_dispdd0
+    REAL(pr) :: rho_dispdd
+    REAL(pr) :: rho_dispddd
+    REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
     REAL(pr) :: m2_es3d1, m2_e2s3d1, i1d1, i2d1, c1d1
     REAL(pr) :: m2_es3d0, m2_e2s3d0, i1d0, i2d0, c1d0
     REAL(pr) :: m2_es3d0d, m2_e2s3d0d, i1d0d, i2d0d, c1d0d
-    REAL(pr) :: m_aved, m2_es3d, m2_e2s3d, i1d, i2d, c1d
+    REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
     REAL(pr) :: m2_es3dd0, m2_e2s3dd0, i1dd0, i2dd0, c1dd0
     REAL(pr) :: m2_es3dd, m2_e2s3dd, i1dd, i2dd, c1dd
     REAL(pr) :: m2_es3ddd, m2_e2s3ddd, i1ddd, i2ddd, c1ddd
@@ -315,6 +323,13 @@ CONTAINS
     n_tot = SUM(n)
 ! Number of components
     nc = SIZE(n)
+    m_ave = 0.0_pr
+    m_aved = 0.0_pr
+    DO i=1,nc
+! Segment average
+      m_aved = m_aved + m(i)*xd(i)
+      m_ave = m_ave + x(i)*m(i)
+    END DO
     dd = 0.0_pr
     ddd = 0.0_pr
     dd0 = 0.0_pr
@@ -473,38 +488,35 @@ CONTAINS
       zetasd1(k) = pi*(temp*rhod1/6.0_pr+rho*tempd4/6.0_8)
       zetas(k) = pi*(rho/6.0_pr*temp)
     END DO
+    etaddd = -zetasddd(3)
+    etadd = -zetasdd(3)
+    etadd0 = -zetasdd0(3)
+    etad = -zetasd(3)
+    etad0d = -zetasd0d(3)
+    etad0 = -zetasd0(3)
+    etad1 = -zetasd1(3)
+    eta = 1.0_pr - zetas(3)
 ! Ar hard-sphere contribution
-    one_m_z3_hsddd = -zetasddd(3)
-    one_m_z3_hsdd = -zetasdd(3)
-    one_m_z3_hsdd0 = -zetasdd0(3)
-    one_m_z3_hsd = -zetasd(3)
-    one_m_z3_hsd0d = -zetasd0d(3)
-    one_m_z3_hsd0 = -zetasd0(3)
-    one_m_z3_hsd1 = -zetasd1(3)
-    one_m_z3_hs = 1.0_pr - zetas(3)
-    temp11 = zetas(1)/one_m_z3_hs
-    temp3d = (zetasd1(1)-temp11*one_m_z3_hsd1)/one_m_z3_hs
+    temp11 = zetas(1)/eta
+    temp3d = (zetasd1(1)-temp11*etad1)/eta
     temp3 = temp11
-    temp11 = (zetasd0(1)-temp3*one_m_z3_hsd0)/one_m_z3_hs
-    tempd1d = (zetasd0d(1)-one_m_z3_hsd0*temp3d-temp3*one_m_z3_hsd0d-&
-&     temp11*one_m_z3_hsd1)/one_m_z3_hs
+    temp11 = (zetasd0(1)-temp3*etad0)/eta
+    tempd1d = (zetasd0d(1)-etad0*temp3d-temp3*etad0d-temp11*etad1)/eta
     tempd1 = temp11
     tempd4 = temp3d
     temp = temp3
-    temp3d = zetasdd0(1) - one_m_z3_hsd*tempd4 - temp*one_m_z3_hsdd0
-    temp3 = zetasd(1) - temp*one_m_z3_hsd
-    temp11 = zetas(2)/one_m_z3_hs
-    temp5d = (zetasd1(2)-temp11*one_m_z3_hsd1)/one_m_z3_hs
+    temp3d = zetasdd0(1) - etad*tempd4 - temp*etadd0
+    temp3 = zetasd(1) - temp*etad
+    temp11 = zetas(2)/eta
+    temp5d = (zetasd1(2)-temp11*etad1)/eta
     temp5 = temp11
-    temp11 = temp3/one_m_z3_hs
-    temp13 = zetasd0(2) - temp5*one_m_z3_hsd0
-    temp14 = zetasdd(1) - one_m_z3_hsd*tempd1 - temp*one_m_z3_hsdd
-    term1_hsddd = 3.0_pr*(temp11*(zetasd0d(2)-one_m_z3_hsd0*temp5d-temp5*&
-&     one_m_z3_hsd0d)+temp13*(temp3d-temp11*one_m_z3_hsd1)/one_m_z3_hs+&
-&     temp14*temp5d+temp5*(zetasddd(1)-tempd1*one_m_z3_hsdd0-&
-&     one_m_z3_hsd*tempd1d-one_m_z3_hsdd*tempd4-temp*one_m_z3_hsddd)+&
-&     tempd1*zetasdd0(2)+zetasd(2)*tempd1d+zetasdd(2)*tempd4+temp*&
-&     zetasddd(2))
+    temp11 = temp3/eta
+    temp13 = zetasd0(2) - temp5*etad0
+    temp14 = zetasdd(1) - etad*tempd1 - temp*etadd
+    term1_hsddd = 3.0_pr*(temp11*(zetasd0d(2)-etad0*temp5d-temp5*etad0d)+&
+&     temp13*(temp3d-temp11*etad1)/eta+temp14*temp5d+temp5*(zetasddd(1)-&
+&     tempd1*etadd0-etad*tempd1d-etadd*tempd4-temp*etaddd)+tempd1*&
+&     zetasdd0(2)+zetasd(2)*tempd1d+zetasdd(2)*tempd4+temp*zetasddd(2))
     term1_hsdd = 3.0_pr*(temp13*temp11+temp5*temp14+zetasd(2)*tempd1+temp&
 &     *zetasdd(2))
     term1_hsdd0 = 3.0_pr*(temp3*temp5d+temp5*temp3d+zetasd(2)*tempd4+temp&
@@ -515,14 +527,11 @@ CONTAINS
     term1_hsd0 = 3.0_pr*(zetas(2)*tempd1+temp*zetasd0(2))
     term1_hsd1 = 3.0_pr*(zetas(2)*tempd4+temp*zetasd1(2))
     term1_hs = 3.0_pr*(temp*zetas(2))
-    tempd1d = zetasd0(3)*2*one_m_z3_hs*one_m_z3_hsd1 + one_m_z3_hs**2*&
-&     zetasd0d(3) + one_m_z3_hs*one_m_z3_hsd0*2*zetasd1(3) + 2*zetas(3)*&
-&     (one_m_z3_hsd0*one_m_z3_hsd1+one_m_z3_hs*one_m_z3_hsd0d)
-    tempd1 = one_m_z3_hs**2*zetasd0(3) + zetas(3)*2*one_m_z3_hs*&
-&     one_m_z3_hsd0
-    tempd4 = one_m_z3_hs**2*zetasd1(3) + zetas(3)*2*one_m_z3_hs*&
-&     one_m_z3_hsd1
-    temp = zetas(3)*(one_m_z3_hs*one_m_z3_hs)
+    tempd1d = zetasd0(3)*2*eta*etad1 + eta**2*zetasd0d(3) + eta*etad0*2*&
+&     zetasd1(3) + 2*zetas(3)*(etad0*etad1+eta*etad0d)
+    tempd1 = eta**2*zetasd0(3) + zetas(3)*2*eta*etad0
+    tempd4 = eta**2*zetasd1(3) + zetas(3)*2*eta*etad1
+    temp = zetas(3)*(eta*eta)
     temp14 = zetas(2)*zetas(2)*zetas(2)/temp
     temp5d = (3*zetas(2)**2*zetasd1(2)-temp14*tempd4)/temp
     temp5 = temp14
@@ -535,32 +544,27 @@ CONTAINS
     temp1 = temp5
     temp5d = 3*2*zetas(2)*zetasd1(2)
     temp5 = 3*(zetas(2)*zetas(2))
-    temp3d = zetasd(3)*2*one_m_z3_hs*one_m_z3_hsd1 + one_m_z3_hs**2*&
-&     zetasdd0(3) + one_m_z3_hs*one_m_z3_hsd*2*zetasd1(3) + 2*zetas(3)*(&
-&     one_m_z3_hsd*one_m_z3_hsd1+one_m_z3_hs*one_m_z3_hsdd0)
-    temp3 = one_m_z3_hs*one_m_z3_hs*zetasd(3) + 2*zetas(3)*one_m_z3_hs*&
-&     one_m_z3_hsd
+    temp3d = zetasd(3)*2*eta*etad1 + eta**2*zetasdd0(3) + eta*etad*2*&
+&     zetasd1(3) + 2*zetas(3)*(etad*etad1+eta*etadd0)
+    temp3 = eta*eta*zetasd(3) + 2*zetas(3)*eta*etad
     temp14 = (temp5*zetasd(2)-temp1*temp3)/temp
     temp6d = (zetasd(2)*temp5d+temp5*zetasdd0(2)-temp3*temp1d0-temp1*&
 &     temp3d-temp14*tempd4)/temp
     temp6 = temp14
-    temp14 = one_m_z3_hsd*one_m_z3_hsd0 + one_m_z3_hs*one_m_z3_hsdd
-    temp13 = 2*one_m_z3_hs*one_m_z3_hsd
-    temp11 = 2*zetasd(3)*one_m_z3_hs*one_m_z3_hsd0 + one_m_z3_hs*&
-&     one_m_z3_hs*zetasdd(3) + temp13*zetasd0(3) + 2*zetas(3)*temp14
+    temp14 = etad*etad0 + eta*etadd
+    temp13 = 2*eta*etad
+    temp11 = 2*zetasd(3)*eta*etad0 + eta*eta*zetasdd(3) + temp13*zetasd0&
+&     (3) + 2*zetas(3)*temp14
     temp15 = (2*3*zetasd(2)*zetas(2)*zetasd0(2)+temp5*zetasdd(2)-temp3*&
 &     temp1d-temp1*temp11-temp6*tempd1)/temp
     term2_hsddd = (2*3*(zetasd0(2)*(zetas(2)*zetasdd0(2)+zetasd(2)*&
 &     zetasd1(2))+zetasd(2)*zetas(2)*zetasd0d(2))+zetasdd(2)*temp5d+&
 &     temp5*zetasddd(2)-temp1d*temp3d-temp3*temp1dd-temp11*temp1d0-temp1&
-&     *(one_m_z3_hs*one_m_z3_hsd0*2*zetasdd0(3)+2*zetasd(3)*(&
-&     one_m_z3_hsd0*one_m_z3_hsd1+one_m_z3_hs*one_m_z3_hsd0d)+zetasdd(3)&
-&     *2*one_m_z3_hs*one_m_z3_hsd1+one_m_z3_hs**2*zetasddd(3)+zetasd0(3)&
-&     *(one_m_z3_hsd*2*one_m_z3_hsd1+2*one_m_z3_hs*one_m_z3_hsdd0)+&
-&     temp13*zetasd0d(3)+temp14*2*zetasd1(3)+2*zetas(3)*(one_m_z3_hsd0*&
-&     one_m_z3_hsdd0+one_m_z3_hsd*one_m_z3_hsd0d+one_m_z3_hsdd*&
-&     one_m_z3_hsd1+one_m_z3_hs*one_m_z3_hsddd))-tempd1*temp6d-temp6*&
-&     tempd1d-temp15*tempd4)/temp
+&     *(eta*etad0*2*zetasdd0(3)+2*zetasd(3)*(etad0*etad1+eta*etad0d)+&
+&     zetasdd(3)*2*eta*etad1+eta**2*zetasddd(3)+zetasd0(3)*(etad*2*etad1&
+&     +2*eta*etadd0)+temp13*zetasd0d(3)+temp14*2*zetasd1(3)+2*zetas(3)*(&
+&     etad0*etadd0+etad*etad0d+etadd*etad1+eta*etaddd))-tempd1*temp6d-&
+&     temp6*tempd1d-temp15*tempd4)/temp
     term2_hsdd = temp15
     term2_hsdd0 = temp6d
     term2_hsd = temp6
@@ -568,11 +572,10 @@ CONTAINS
     term2_hsd0 = temp1d
     term2_hsd1 = temp1d0
     term2_hs = temp1
-    temp1dd = (one_m_z3_hsd0d-one_m_z3_hsd0*one_m_z3_hsd1/one_m_z3_hs)/&
-&     one_m_z3_hs
-    temp1d = one_m_z3_hsd0/one_m_z3_hs
-    temp1d0 = one_m_z3_hsd1/one_m_z3_hs
-    temp1 = LOG(one_m_z3_hs)
+    temp1dd = (etad0d-etad0*etad1/eta)/eta
+    temp1d = etad0/eta
+    temp1d0 = etad1/eta
+    temp1 = LOG(eta)
     temp15 = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
     temp6d = (3*zetas(2)**2*zetasd1(2)-temp15*2*zetas(3)*zetasd1(3))/&
 &     zetas(3)**2
@@ -594,14 +597,13 @@ CONTAINS
     temp3d = (zetasd(2)*temp5d+temp5*zetasdd0(2)-zetasd(3)*temp6d-temp6*&
 &     zetasdd0(3)-temp15*2*zetas(3)*zetasd1(3))/zetas(3)**2
     temp3 = temp15
-    temp7d = (one_m_z3_hsdd0-one_m_z3_hsd*one_m_z3_hsd1/one_m_z3_hs)/&
-&     one_m_z3_hs
-    temp7 = one_m_z3_hsd/one_m_z3_hs
+    temp7d = (etadd0-etad*etad1/eta)/eta
+    temp7 = etad/eta
     temp15 = 2*temp3*zetas(3)
     temp14 = 2*zetas(3)*tempd1 + 2*temp*zetasd0(3)
     temp13 = (2*3*zetasd(2)*zetas(2)*zetasd0(2)+temp5*zetasdd(2)-zetasd(&
 &     3)*temp14-temp6*zetasdd(3)-temp15*zetasd0(3))/(zetas(3)*zetas(3))
-    temp11 = (temp-zetas(0))/one_m_z3_hs
+    temp11 = (temp-zetas(0))/eta
     term3_hsddd = temp1d*(temp3d-zetasdd0(0)) + (temp3-zetasd(0))*&
 &     temp1dd + (temp13-zetasdd(0))*temp1d0 + temp1*((2*3*(zetasd0(2)*(&
 &     zetas(2)*zetasdd0(2)+zetasd(2)*zetasd1(2))+zetasd(2)*zetas(2)*&
@@ -610,13 +612,11 @@ CONTAINS
 &     tempd4+2*temp*zetasd0d(3))-zetasdd(3)*temp6d-temp6*zetasddd(3)-&
 &     zetasd0(3)*(zetas(3)*2*temp3d+2*temp3*zetasd1(3))-temp15*zetasd0d(&
 &     3)-temp13*2*zetas(3)*zetasd1(3))/zetas(3)**2-zetasddd(0)) + (&
-&     tempd1-zetasd0(0))*temp7d + temp7*(tempd1d-zetasd0d(0)) + (&
-&     one_m_z3_hsdd-temp7*one_m_z3_hsd0)*(tempd4-zetasd1(0)-temp11*&
-&     one_m_z3_hsd1)/one_m_z3_hs + temp11*(one_m_z3_hsddd-one_m_z3_hsd0*&
-&     temp7d-temp7*one_m_z3_hsd0d)
+&     tempd1-zetasd0(0))*temp7d + temp7*(tempd1d-zetasd0d(0)) + (etadd-&
+&     temp7*etad0)*(tempd4-zetasd1(0)-temp11*etad1)/eta + temp11*(etaddd&
+&     -etad0*temp7d-temp7*etad0d)
     term3_hsdd = (temp3-zetasd(0))*temp1d + temp1*(temp13-zetasdd(0)) + &
-&     temp7*(tempd1-zetasd0(0)) + temp11*(one_m_z3_hsdd-temp7*&
-&     one_m_z3_hsd0)
+&     temp7*(tempd1-zetasd0(0)) + temp11*(etadd-temp7*etad0)
     term3_hsdd0 = (temp3-zetasd(0))*temp1d0 + temp1*(temp3d-zetasdd0(0))&
 &     + temp7*(tempd4-zetasd1(0)) + (temp-zetas(0))*temp7d
     term3_hsd = temp1*(temp3-zetasd(0)) + (temp-zetas(0))*temp7
@@ -655,14 +655,6 @@ CONTAINS
     ar_hs = temp1
 ! Ar chain contribution
     ar_chain = 0.0_pr
-    one_m_z3_chainddd = -zetasddd(3)
-    one_m_z3_chaindd = -zetasdd(3)
-    one_m_z3_chaindd0 = -zetasdd0(3)
-    one_m_z3_chaind = -zetasd(3)
-    one_m_z3_chaind0d = -zetasd0d(3)
-    one_m_z3_chaind0 = -zetasd0(3)
-    one_m_z3_chaind1 = -zetasd1(3)
-    one_m_z3_chain = 1.0_pr - zetas(3)
     ar_chaind = 0.0_pr
     ar_chaindd = 0.0_pr
     ar_chaind0 = 0.0_pr
@@ -679,25 +671,22 @@ CONTAINS
       di_2d0 = dd0(i)/2.0_pr
       di_2d1 = dd1(i)/2.0_pr
       di_2 = d(i)/2.0_pr
-      temp15 = di_2*zetas(2)/(one_m_z3_chain*one_m_z3_chain)
-      temp7d = (zetas(2)*di_2d1+di_2*zetasd1(2)-temp15*2*one_m_z3_chain*&
-&       one_m_z3_chaind1)/one_m_z3_chain**2
+      temp15 = di_2*zetas(2)/(eta*eta)
+      temp7d = (zetas(2)*di_2d1+di_2*zetasd1(2)-temp15*2*eta*etad1)/eta&
+&       **2
       temp7 = temp15
-      temp15 = 2*temp7*one_m_z3_chain
-      temp14 = (zetas(2)*di_2d0+di_2*zetasd0(2)-temp15*one_m_z3_chaind0)&
-&       /(one_m_z3_chain*one_m_z3_chain)
+      temp15 = 2*temp7*eta
+      temp14 = (zetas(2)*di_2d0+di_2*zetasd0(2)-temp15*etad0)/(eta*eta)
       temp1dd = (di_2d0*zetasd1(2)+zetas(2)*di_2d0d+zetasd0(2)*di_2d1+&
-&       di_2*zetasd0d(2)-one_m_z3_chaind0*(one_m_z3_chain*2*temp7d+2*&
-&       temp7*one_m_z3_chaind1)-temp15*one_m_z3_chaind0d-temp14*2*&
-&       one_m_z3_chain*one_m_z3_chaind1)/one_m_z3_chain**2
+&       di_2*zetasd0d(2)-etad0*(eta*2*temp7d+2*temp7*etad1)-temp15*&
+&       etad0d-temp14*2*eta*etad1)/eta**2
       temp1d = temp14
       temp1d0 = temp7d
       temp1 = temp7
-      tempd1d = 3*(one_m_z3_chaind0*2*one_m_z3_chain*one_m_z3_chaind1+&
-&       one_m_z3_chain**2*one_m_z3_chaind0d)
-      tempd1 = 3*one_m_z3_chain**2*one_m_z3_chaind0
-      tempd4 = 3*one_m_z3_chain**2*one_m_z3_chaind1
-      temp = one_m_z3_chain*one_m_z3_chain*one_m_z3_chain
+      tempd1d = 3*(etad0*2*eta*etad1+eta**2*etad0d)
+      tempd1 = 3*eta**2*etad0
+      tempd4 = 3*eta**2*etad1
+      temp = eta*eta*eta
       temp15 = di_2*di_2/temp
       temp7d = (2*di_2*di_2d1-temp15*tempd4)/temp
       temp7 = temp15
@@ -711,81 +700,66 @@ CONTAINS
       temp2d = temp14*temp15 + temp13*zetasd0(2)
       temp2d0 = zetas(2)**2*temp7d + temp7*2*zetas(2)*zetasd1(2)
       temp2 = temp7*(zetas(2)*zetas(2))
-      temp7d = 2*(one_m_z3_chain*temp1d0+temp1*one_m_z3_chaind1)
-      temp7 = 2*temp1*one_m_z3_chain
-      temp15 = (zetas(2)*di_2d+di_2*zetasd(2)-temp7*one_m_z3_chaind)/(&
-&       one_m_z3_chain*one_m_z3_chain)
+      temp7d = 2*(eta*temp1d0+temp1*etad1)
+      temp7 = 2*temp1*eta
+      temp15 = (zetas(2)*di_2d+di_2*zetasd(2)-temp7*etad)/(eta*eta)
       temp6d = (di_2d*zetasd1(2)+zetas(2)*di_2dd0+zetasd(2)*di_2d1+di_2*&
-&       zetasdd0(2)-one_m_z3_chaind*temp7d-temp7*one_m_z3_chaindd0-&
-&       temp15*2*one_m_z3_chain*one_m_z3_chaind1)/one_m_z3_chain**2
+&       zetasdd0(2)-etad*temp7d-temp7*etadd0-temp15*2*eta*etad1)/eta**2
       temp6 = temp15
-      temp15 = one_m_z3_chaind/(one_m_z3_chain*one_m_z3_chain)
-      temp5d = (one_m_z3_chaindd0-temp15*2*one_m_z3_chain*&
-&       one_m_z3_chaind1)/one_m_z3_chain**2
+      temp15 = etad/(eta*eta)
+      temp5d = (etadd0-temp15*2*eta*etad1)/eta**2
       temp5 = temp15
       temp3d = 2**2*zetas(2)*zetasd1(2)
       temp3 = 2*(zetas(2)*zetas(2))
       temp8d = 2**2*di_2*di_2d1
       temp8 = 2*(di_2*di_2)
-      temp9d = 3*2*one_m_z3_chain*one_m_z3_chaind1
-      temp9 = 3*(one_m_z3_chain*one_m_z3_chain)
+      temp9d = 3*2*eta*etad1
+      temp9 = 3*(eta*eta)
       temp15 = (temp3*di_2*di_2d+temp8*zetas(2)*zetasd(2)-temp9*temp2*&
-&       one_m_z3_chaind)/temp
+&       etad)/temp
       temp10d = (di_2d*(di_2*temp3d+temp3*di_2d1)+temp3*di_2*di_2dd0+&
 &       zetasd(2)*(zetas(2)*temp8d+temp8*zetasd1(2))+temp8*zetas(2)*&
-&       zetasdd0(2)-one_m_z3_chaind*(temp2*temp9d+temp9*temp2d0)-temp9*&
-&       temp2*one_m_z3_chaindd0-temp15*tempd4)/temp
+&       zetasdd0(2)-etad*(temp2*temp9d+temp9*temp2d0)-temp9*temp2*etadd0&
+&       -temp15*tempd4)/temp
       temp10 = temp15
-      temp15 = 2*one_m_z3_chain*temp1d + 2*temp1*one_m_z3_chaind0
-      temp14 = 2*temp6*one_m_z3_chain
+      temp15 = 2*eta*temp1d + 2*temp1*etad0
+      temp14 = 2*temp6*eta
       temp13 = (di_2d*zetasd0(2)+zetas(2)*di_2dd+zetasd(2)*di_2d0+di_2*&
-&       zetasdd(2)-one_m_z3_chaind*temp15-temp7*one_m_z3_chaindd-temp14*&
-&       one_m_z3_chaind0)/(one_m_z3_chain*one_m_z3_chain)
-      temp11 = 2*temp5*one_m_z3_chain
-      temp16 = (one_m_z3_chaindd-temp11*one_m_z3_chaind0)/(&
-&       one_m_z3_chain*one_m_z3_chain)
+&       zetasdd(2)-etad*temp15-temp7*etadd-temp14*etad0)/(eta*eta)
+      temp11 = 2*temp5*eta
+      temp16 = (etadd-temp11*etad0)/(eta*eta)
       temp17 = di_2d*di_2d0 + di_2*di_2dd
       temp18 = zetasd(2)*zetasd0(2) + zetas(2)*zetasdd(2)
-      temp19 = one_m_z3_chaind*temp2d + temp2*one_m_z3_chaindd
+      temp19 = etad*temp2d + temp2*etadd
       temp20 = (2*2*di_2*di_2d*zetas(2)*zetasd0(2)+temp3*temp17+2*2*&
-&       zetas(2)*zetasd(2)*di_2*di_2d0+temp8*temp18-2*3*temp2*&
-&       one_m_z3_chaind*one_m_z3_chain*one_m_z3_chaind0-temp9*temp19-&
-&       temp10*tempd1)/temp
+&       zetas(2)*zetasd(2)*di_2*di_2d0+temp8*temp18-2*3*temp2*etad*eta*&
+&       etad0-temp9*temp19-temp10*tempd1)/temp
       g_iiddd = 3.0_pr*(zetasd0(2)*di_2dd0+di_2d*zetasd0d(2)+di_2dd*&
 &       zetasd1(2)+zetas(2)*di_2ddd+di_2d0*zetasdd0(2)+zetasd(2)*di_2d0d&
-&       +zetasdd(2)*di_2d1+di_2*zetasddd(2)-temp15*one_m_z3_chaindd0-&
-&       one_m_z3_chaind*(temp1d*2*one_m_z3_chaind1+2*one_m_z3_chain*&
-&       temp1dd+one_m_z3_chaind0*2*temp1d0+2*temp1*one_m_z3_chaind0d)-&
-&       one_m_z3_chaindd*temp7d-temp7*one_m_z3_chainddd-one_m_z3_chaind0&
-&       *(one_m_z3_chain*2*temp6d+2*temp6*one_m_z3_chaind1)-temp14*&
-&       one_m_z3_chaind0d-temp13*2*one_m_z3_chain*one_m_z3_chaind1)/&
-&       one_m_z3_chain**2 - (one_m_z3_chainddd-one_m_z3_chaind0*(&
-&       one_m_z3_chain*2*temp5d+2*temp5*one_m_z3_chaind1)-temp11*&
-&       one_m_z3_chaind0d-temp16*2*one_m_z3_chain*one_m_z3_chaind1)/&
-&       one_m_z3_chain**2 + 2.0_pr*(2**2*(zetas(2)*zetasd0(2)*(di_2d*&
-&       di_2d1+di_2*di_2dd0)+di_2*di_2d*(zetasd0(2)*zetasd1(2)+zetas(2)*&
-&       zetasd0d(2)))+temp17*temp3d+temp3*(di_2d0*di_2dd0+di_2d*di_2d0d+&
-&       di_2dd*di_2d1+di_2*di_2ddd)+2**2*(di_2*di_2d0*(zetasd(2)*zetasd1&
-&       (2)+zetas(2)*zetasdd0(2))+zetas(2)*zetasd(2)*(di_2d0*di_2d1+di_2&
-&       *di_2d0d))+temp18*temp8d+temp8*(zetasd0(2)*zetasdd0(2)+zetasd(2)&
-&       *zetasd0d(2)+zetasdd(2)*zetasd1(2)+zetas(2)*zetasddd(2))-2*3*(&
-&       one_m_z3_chain*one_m_z3_chaind0*(one_m_z3_chaind*temp2d0+temp2*&
-&       one_m_z3_chaindd0)+temp2*one_m_z3_chaind*(one_m_z3_chaind0*&
-&       one_m_z3_chaind1+one_m_z3_chain*one_m_z3_chaind0d))-temp19*&
-&       temp9d-temp9*(temp2d*one_m_z3_chaindd0+one_m_z3_chaind*temp2dd+&
-&       one_m_z3_chaindd*temp2d0+temp2*one_m_z3_chainddd)-tempd1*temp10d&
-&       -temp10*tempd1d-temp20*tempd4)/temp
+&       +zetasdd(2)*di_2d1+di_2*zetasddd(2)-temp15*etadd0-etad*(temp1d*2&
+&       *etad1+2*eta*temp1dd+etad0*2*temp1d0+2*temp1*etad0d)-etadd*&
+&       temp7d-temp7*etaddd-etad0*(eta*2*temp6d+2*temp6*etad1)-temp14*&
+&       etad0d-temp13*2*eta*etad1)/eta**2 - (etaddd-etad0*(eta*2*temp5d+&
+&       2*temp5*etad1)-temp11*etad0d-temp16*2*eta*etad1)/eta**2 + 2.0_pr*&
+&       (2**2*(zetas(2)*zetasd0(2)*(di_2d*di_2d1+di_2*di_2dd0)+di_2*&
+&       di_2d*(zetasd0(2)*zetasd1(2)+zetas(2)*zetasd0d(2)))+temp17*&
+&       temp3d+temp3*(di_2d0*di_2dd0+di_2d*di_2d0d+di_2dd*di_2d1+di_2*&
+&       di_2ddd)+2**2*(di_2*di_2d0*(zetasd(2)*zetasd1(2)+zetas(2)*&
+&       zetasdd0(2))+zetas(2)*zetasd(2)*(di_2d0*di_2d1+di_2*di_2d0d))+&
+&       temp18*temp8d+temp8*(zetasd0(2)*zetasdd0(2)+zetasd(2)*zetasd0d(2&
+&       )+zetasdd(2)*zetasd1(2)+zetas(2)*zetasddd(2))-2*3*(eta*etad0*(&
+&       etad*temp2d0+temp2*etadd0)+temp2*etad*(etad0*etad1+eta*etad0d))-&
+&       temp19*temp9d-temp9*(temp2d*etadd0+etad*temp2dd+etadd*temp2d0+&
+&       temp2*etaddd)-tempd1*temp10d-temp10*tempd1d-temp20*tempd4)/temp
       g_iidd = 3.0_pr*temp13 - temp16 + 2.0_8*temp20
       g_iidd0 = 3.0_pr*temp6d - temp5d + 2.0_8*temp10d
       g_iid = 3.0_pr*temp6 - temp5 + 2.0_8*temp10
-      temp20 = one_m_z3_chaind0/(one_m_z3_chain*one_m_z3_chain)
-      g_iid0d = 3.0_pr*temp1dd - (one_m_z3_chaind0d-temp20*2*&
-&       one_m_z3_chain*one_m_z3_chaind1)/one_m_z3_chain**2 + 2.0_pr*&
-&       temp2dd
+      temp20 = etad0/(eta*eta)
+      g_iid0d = 3.0_pr*temp1dd - (etad0d-temp20*2*eta*etad1)/eta**2 + &
+&       2.0_pr*temp2dd
       g_iid0 = 3.0_pr*temp1d - temp20 + 2.0_8*temp2d
-      g_iid1 = 3.0_pr*temp1d0 - one_m_z3_chaind1/one_m_z3_chain**2 + &
-&       2.0_pr*temp2d0
-      g_ii = 1.0/one_m_z3_chain + 3.0_pr*temp1 + 2.0_8*temp2
+      g_iid1 = 3.0_pr*temp1d0 - etad1/eta**2 + 2.0_8*temp2d0
+      g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
 ! Summation
       temp2dd = (g_iid0d-g_iid0*g_iid1/g_ii)/g_ii
       temp2d = g_iid0/g_ii
@@ -830,32 +804,9 @@ CONTAINS
       rho_dispd0 = n_avo*temp2d
       rho_dispd1 = n_avo*temp2d0
       rho_disp = n_avo*temp2
-      etaddd = zetasddd(3)
-      etadd = zetasdd(3)
-      etadd0 = zetasdd0(3)
-      etad = zetasd(3)
-      etad0d = zetasd0d(3)
-      etad0 = zetasd0(3)
-      etad1 = zetasd1(3)
-      eta = zetas(3)
-      one_m_etaddd = -etaddd
-      one_m_etadd = -etadd
-      one_m_etadd0 = -etadd0
-      one_m_etad = -etad
-      one_m_etad0d = -etad0d
-      one_m_etad0 = -etad0
-      one_m_etad1 = -etad1
-      one_m_eta = 1.0_pr - eta
 ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr
       m2_es3 = 0.0_pr
       m2_e2s3 = 0.0_pr
-      m_aved = 0.0_pr
-      DO i=1,nc
-! Segment average
-        m_aved = m_aved + m(i)*xd(i)
-        m_ave = m_ave + x(i)*m(i)
-      END DO
       m2_e2s3d = 0.0_pr
       m2_es3d = 0.0_pr
       m2_e2s3d0 = 0.0_pr
@@ -952,55 +903,55 @@ CONTAINS
 &         -temp1*2*m_ave-3.0)/m_ave**2)*m_aved
         b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
 &         temp1
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           temp2d = 0.0_pr
           temp2dd = 0.0_pr
         ELSE
-          temp20 = eta**(k-1)
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          temp20 = zetas(3)**(k-1)
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             tempd6 = 0.0_pr
           ELSE
-            tempd6 = (k-1)*eta**(k-2)*etad1
+            tempd6 = (k-1)*zetas(3)**(k-2)*zetasd1(3)
           END IF
-          temp2dd = k*(etad0*tempd6+temp20*etad0d)
-          temp2d = k*(temp20*etad0)
+          temp2dd = k*(zetasd0(3)*tempd6+temp20*zetasd0d(3))
+          temp2d = k*(temp20*zetasd0(3))
         END IF
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           temp2d0 = 0.0_pr
         ELSE
-          temp2d0 = k*eta**(k-1)*etad1
+          temp2d0 = k*zetas(3)**(k-1)*zetasd1(3)
         END IF
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           tempd0 = 0.0_pr
           tempd0d = 0.0_pr
           tempd0dd = 0.0_pr
           tempd0d0 = 0.0_pr
         ELSE
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             temp10d = 0.0_pr
           ELSE
-            temp10d = (k-1)*eta**(k-2)*etad1
+            temp10d = (k-1)*zetas(3)**(k-2)*zetasd1(3)
           END IF
-          temp10 = eta**(k-1)
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          temp10 = zetas(3)**(k-1)
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             tempd3 = 0.0_pr
             tempd3d = 0.0_pr
           ELSE
-            temp20 = eta**(k-2)
-            IF (eta .LE. 0.0 .AND. k - 2 .EQ. 0.0) THEN
+            temp20 = zetas(3)**(k-2)
+            IF (zetas(3) .LE. 0.0 .AND. k - 2 .EQ. 0.0) THEN
               tempd6 = 0.0_pr
             ELSE
-              tempd6 = (k-2)*eta**(k-3)*etad1
+              tempd6 = (k-2)*zetas(3)**(k-3)*zetasd1(3)
             END IF
-            tempd3d = (k-1)*(etad0*tempd6+temp20*etad0d)
-            tempd3 = (k-1)*(temp20*etad0)
+            tempd3d = (k-1)*(zetasd0(3)*tempd6+temp20*zetasd0d(3))
+            tempd3 = (k-1)*(temp20*zetasd0(3))
           END IF
-          tempd0dd = k*(tempd3*etadd0+etad*tempd3d+etadd*temp10d+temp10*&
-&           etaddd)
-          tempd0d = k*(etad*tempd3+temp10*etadd)
-          tempd0d0 = k*(etad*temp10d+temp10*etadd0)
-          tempd0 = k*(temp10*etad)
+          tempd0dd = k*(tempd3*zetasdd0(3)+zetasd(3)*tempd3d+zetasdd(3)*&
+&           temp10d+temp10*zetasddd(3))
+          tempd0d = k*(zetasd(3)*tempd3+temp10*zetasdd(3))
+          tempd0d0 = k*(zetasd(3)*temp10d+temp10*zetasdd0(3))
+          tempd0 = k*(temp10*zetasd(3))
         END IF
         i1ddd = i1ddd + a_kd*temp2dd + a_k*tempd0dd
         i1dd = i1dd + a_kd*temp2d + a_k*tempd0d
@@ -1010,55 +961,55 @@ CONTAINS
         i1d0 = i1d0 + a_k*temp2d
         i1d1 = i1d1 + a_k*temp2d0
         i1 = i1 + a_k*temp2
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           temp2d = 0.0_pr
           temp2dd = 0.0_pr
         ELSE
-          temp20 = eta**(k-1)
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          temp20 = zetas(3)**(k-1)
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             tempd6 = 0.0_pr
           ELSE
-            tempd6 = (k-1)*eta**(k-2)*etad1
+            tempd6 = (k-1)*zetas(3)**(k-2)*zetasd1(3)
           END IF
-          temp2dd = k*(etad0*tempd6+temp20*etad0d)
-          temp2d = k*(temp20*etad0)
+          temp2dd = k*(zetasd0(3)*tempd6+temp20*zetasd0d(3))
+          temp2d = k*(temp20*zetasd0(3))
         END IF
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           temp2d0 = 0.0_pr
         ELSE
-          temp2d0 = k*eta**(k-1)*etad1
+          temp2d0 = k*zetas(3)**(k-1)*zetasd1(3)
         END IF
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           tempd0 = 0.0_pr
           tempd0d = 0.0_pr
           tempd0dd = 0.0_pr
           tempd0d0 = 0.0_pr
         ELSE
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             temp10d = 0.0_pr
           ELSE
-            temp10d = (k-1)*eta**(k-2)*etad1
+            temp10d = (k-1)*zetas(3)**(k-2)*zetasd1(3)
           END IF
-          temp10 = eta**(k-1)
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          temp10 = zetas(3)**(k-1)
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             tempd3 = 0.0_pr
             tempd3d = 0.0_pr
           ELSE
-            temp20 = eta**(k-2)
-            IF (eta .LE. 0.0 .AND. k - 2 .EQ. 0.0) THEN
+            temp20 = zetas(3)**(k-2)
+            IF (zetas(3) .LE. 0.0 .AND. k - 2 .EQ. 0.0) THEN
               tempd6 = 0.0_pr
             ELSE
-              tempd6 = (k-2)*eta**(k-3)*etad1
+              tempd6 = (k-2)*zetas(3)**(k-3)*zetasd1(3)
             END IF
-            tempd3d = (k-1)*(etad0*tempd6+temp20*etad0d)
-            tempd3 = (k-1)*(temp20*etad0)
+            tempd3d = (k-1)*(zetasd0(3)*tempd6+temp20*zetasd0d(3))
+            tempd3 = (k-1)*(temp20*zetasd0(3))
           END IF
-          tempd0dd = k*(tempd3*etadd0+etad*tempd3d+etadd*temp10d+temp10*&
-&           etaddd)
-          tempd0d = k*(etad*tempd3+temp10*etadd)
-          tempd0d0 = k*(etad*temp10d+temp10*etadd0)
-          tempd0 = k*(temp10*etad)
+          tempd0dd = k*(tempd3*zetasdd0(3)+zetasd(3)*tempd3d+zetasdd(3)*&
+&           temp10d+temp10*zetasddd(3))
+          tempd0d = k*(zetasd(3)*tempd3+temp10*zetasdd(3))
+          tempd0d0 = k*(zetasd(3)*temp10d+temp10*zetasdd0(3))
+          tempd0 = k*(temp10*zetasd(3))
         END IF
         i2ddd = i2ddd + b_kd*temp2dd + b_k*tempd0dd
         i2dd = i2dd + b_kd*temp2d + b_k*tempd0d
@@ -1070,61 +1021,63 @@ CONTAINS
         i2 = i2 + b_k*temp2
       END DO
 ! 3. Compressibility C1 (Same as before)
-      temp20 = one_m_eta*one_m_eta*one_m_eta
-      temp2dd = 4*(one_m_etad0*3*one_m_eta**2*one_m_etad1+temp20*&
-&       one_m_etad0d)
-      temp2d = 4*(temp20*one_m_etad0)
-      temp2d0 = 4*one_m_eta**3*one_m_etad1
-      temp2 = one_m_eta**4
+      temp20 = eta*eta*eta
+      temp2dd = 4*(etad0*3*eta**2*etad1+temp20*etad0d)
+      temp2d = 4*(temp20*etad0)
+      temp2d0 = 4*eta**3*etad1
+      temp2 = eta**4
       temp20 = temp2d/(temp2*temp2)
       temp1dd = -(m_ave*(temp2dd-temp20*2*temp2*temp2d0)/temp2**2)
       temp1d = -(m_ave*temp20)
       temp1d0 = -(m_ave*temp2d0/temp2**2)
       temp1 = m_ave/temp2
-      tempd1d = (8.0_pr-2*2.0_pr*eta)*etad0d - etad0*2*2.0_pr*etad1
-      tempd1 = (8.0_pr-2.0_pr*2*eta)*etad0
-      tempd4 = (8.0_pr-2.0_pr*2*eta)*etad1
-      temp = 8.0_pr*eta - 2.0_pr*(eta*eta)
+      tempd1d = (8.0_pr-2*2.0_pr*zetas(3))*zetasd0d(3) - zetasd0(3)*2*&
+&       2.0_pr*zetasd1(3)
+      tempd1 = (8.0_pr-2.0_pr*2*zetas(3))*zetasd0(3)
+      tempd4 = (8.0_pr-2.0_pr*2*zetas(3))*zetasd1(3)
+      temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
       temp10d = (tempd4-temp*temp2d0/temp2)/temp2
       temp10 = temp/temp2
-      temp9d = 4*3*one_m_eta**2*one_m_etad1
-      temp9 = 4*(one_m_eta*one_m_eta*one_m_eta)
-      temp8d = -(one_m_etad*(temp1*temp9d+temp9*temp1d0)+temp9*temp1*&
-&       one_m_etadd0)
-      temp8 = m_aved - temp9*temp1*one_m_etad
-      temp20 = etad*temp1d + temp1*etadd
+      temp9d = 4*3*eta**2*etad1
+      temp9 = 4*(eta*eta*eta)
+      temp8d = -(etad*(temp1*temp9d+temp9*temp1d0)+temp9*temp1*etadd0)
+      temp8 = m_aved - temp9*temp1*etad
+      temp20 = zetasd(3)*temp1d + temp1*zetasdd(3)
       temp19 = temp8/temp2
-      temp18 = one_m_etad*temp1d + temp1*one_m_etadd
-      temp17 = one_m_eta*one_m_eta*one_m_etad0
-      temp16 = 3*4*temp1*one_m_etad*temp17 + temp9*temp18
-      c1ddd = (8.0_pr-2.0_pr*2*eta)*(temp1d*etadd0+etad*temp1dd+etadd*&
-&       temp1d0+temp1*etaddd) - temp20*2.0_pr*2*etad1 - 2.0_pr*2*(etad0*&
-&       (etad*temp1d0+temp1*etadd0)+temp1*etad*etad0d) + temp19*(tempd1d&
-&       -temp2d*temp10d-temp10*temp2dd) + (tempd1-temp10*temp2d)*(temp8d&
-&       -temp19*temp2d0)/temp2 - temp16*temp10d - temp10*(3*4*(temp17*(&
-&       one_m_etad*temp1d0+temp1*one_m_etadd0)+temp1*one_m_etad*(&
-&       one_m_etad0*2*one_m_eta*one_m_etad1+one_m_eta**2*one_m_etad0d))+&
-&       temp18*temp9d+temp9*(temp1d*one_m_etadd0+one_m_etad*temp1dd+&
-&       one_m_etadd*temp1d0+temp1*one_m_etaddd))
-      c1dd = (8.0_pr-2.0_pr*2*eta)*temp20 - 2.0_pr*2*(temp1*etad*etad0) &
-&       + (tempd1-temp10*temp2d)*temp19 - temp10*temp16
-      c1dd0 = (8.0_pr-2.0_pr*2*eta)*(etad*temp1d0+temp1*etadd0) - temp1*&
-&       etad*2.0_pr*2*etad1 + temp10*temp8d + temp8*temp10d
-      c1d = (8.0_pr-2*2.0_pr*eta)*(temp1*etad) + temp8*temp10
+      temp18 = etad*temp1d + temp1*etadd
+      temp17 = eta*eta*etad0
+      temp16 = 3*4*temp1*etad*temp17 + temp9*temp18
+      c1ddd = (8.0_pr-2.0_pr*2*zetas(3))*(temp1d*zetasdd0(3)+zetasd(3)*&
+&       temp1dd+zetasdd(3)*temp1d0+temp1*zetasddd(3)) - temp20*2.0_pr*2*&
+&       zetasd1(3) - 2.0_pr*2*(zetasd0(3)*(zetasd(3)*temp1d0+temp1*&
+&       zetasdd0(3))+temp1*zetasd(3)*zetasd0d(3)) + temp19*(tempd1d-&
+&       temp2d*temp10d-temp10*temp2dd) + (tempd1-temp10*temp2d)*(temp8d-&
+&       temp19*temp2d0)/temp2 - temp16*temp10d - temp10*(3*4*(temp17*(&
+&       etad*temp1d0+temp1*etadd0)+temp1*etad*(etad0*2*eta*etad1+eta**2*&
+&       etad0d))+temp18*temp9d+temp9*(temp1d*etadd0+etad*temp1dd+etadd*&
+&       temp1d0+temp1*etaddd))
+      c1dd = (8.0_pr-2.0_pr*2*zetas(3))*temp20 - 2.0_pr*2*(temp1*zetasd(&
+&       3)*zetasd0(3)) + (tempd1-temp10*temp2d)*temp19 - temp10*temp16
+      c1dd0 = (8.0_pr-2.0_pr*2*zetas(3))*(zetasd(3)*temp1d0+temp1*&
+&       zetasdd0(3)) - temp1*zetasd(3)*2.0_pr*2*zetasd1(3) + temp10*&
+&       temp8d + temp8*temp10d
+      c1d = (8.0_pr-2*2.0_pr*zetas(3))*(temp1*zetasd(3)) + temp8*temp10
       c1d0d = tempd1*temp1d0 + temp1*tempd1d + temp1d*tempd4 + temp*&
 &       temp1dd
       c1d0 = temp1*tempd1 + temp*temp1d
       c1d1 = temp1*tempd4 + temp*temp1d0
       c1 = temp*temp1 + 1.0_pr
-      temp20 = 2*((-eta+2.0_pr)*(-eta+2.0_pr))
-      temp19 = 2*((-eta+1.0_pr)*(-eta+1.0_pr))
-      temp18 = temp20*(-eta+1.0_pr) + temp19*(-eta+2.0_pr)
-      temp2dd = -(temp18*etad0d-etad0*((1.0_pr-eta)*2**2*(2.0_pr-eta)+&
-&       temp20+(2.0_pr-eta)*2**2*(1.0_pr-eta)+temp19)*etad1)
-      temp2d = -(temp18*etad0)
-      temp2d0 = -(((2.0_pr-eta)**2*2*(1.0_pr-eta)+(1.0_pr-eta)**2*2*(&
-&       2.0_pr-eta))*etad1)
-      temp2 = (-eta+1.0_pr)*(-eta+1.0_pr)*((-eta+2.0_pr)*(-eta+2.0_pr))
+      temp20 = 2*((-zetas(3)+2.0_pr)*(-zetas(3)+2.0_pr))
+      temp19 = 2*((-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr))
+      temp18 = temp20*(-zetas(3)+1.0_pr) + temp19*(-zetas(3)+2.0_pr)
+      temp2dd = -(temp18*zetasd0d(3)-zetasd0(3)*((1.0_pr-zetas(3))*2**2*&
+&       (2.0_pr-zetas(3))+temp20+(2.0_pr-zetas(3))*2**2*(1.0_pr-zetas(3)&
+&       )+temp19)*zetasd1(3))
+      temp2d = -(temp18*zetasd0(3))
+      temp2d0 = -(((2.0_pr-zetas(3))**2*2*(1.0_pr-zetas(3))+(1.0_pr-&
+&       zetas(3))**2*2*(2.0_pr-zetas(3)))*zetasd1(3))
+      temp2 = (-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr)*((-zetas(3)+2.0_pr)*&
+&       (-zetas(3)+2.0_pr))
       temp20 = (-m_ave+1.0_pr)/temp2
       temp10d = -(temp20*temp2d0/temp2)
       temp10 = temp20
@@ -1133,52 +1086,57 @@ CONTAINS
       temp1d = -temp20
       temp1d0 = temp10d
       temp1 = temp10
-      temp20 = 3*12.0_pr*(eta*eta) - 2*27.0_pr*eta - 4*2.0_pr*(eta*eta*&
-&       eta) + 20.0_pr
-      tempd1d = etad0*(3*12.0_pr*2*eta-2*27.0_pr-4*2.0_pr*3*eta**2)*&
-&       etad1 + temp20*etad0d
-      tempd1 = temp20*etad0
-      tempd4 = (12.0_pr*3*eta**2-27.0_pr*2*eta-2.0_pr*4*eta**3+20.0_pr)*&
-&       etad1
-      temp = 20.0_pr*eta - 27.0_pr*(eta*eta) + 12.0_pr*(eta*eta*eta) - &
-&       2.0_pr*eta**4
-      temp10d = (12.0_pr*3*2*eta-2*27.0_pr-2.0_pr*4*3*eta**2)*etad1
-      temp10 = 3*12.0_pr*(eta*eta) - 2*27.0_pr*eta - 4*2.0_pr*(eta*eta*&
-&       eta) + 20.0_pr
+      temp20 = 3*12.0_pr*(zetas(3)*zetas(3)) - 2*27.0_pr*zetas(3) - 4*&
+&       2.0_pr*(zetas(3)*zetas(3)*zetas(3)) + 20.0_pr
+      tempd1d = zetasd0(3)*(3*12.0_pr*2*zetas(3)-2*27.0_pr-4*2.0_pr*3*&
+&       zetas(3)**2)*zetasd1(3) + temp20*zetasd0d(3)
+      tempd1 = temp20*zetasd0(3)
+      tempd4 = (12.0_pr*3*zetas(3)**2-27.0_pr*2*zetas(3)-2.0_pr*4*zetas(&
+&       3)**3+20.0_pr)*zetasd1(3)
+      temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+&       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+      temp10d = (12.0_pr*3*2*zetas(3)-2*27.0_pr-2.0_pr*4*3*zetas(3)**2)*&
+&       zetasd1(3)
+      temp10 = 3*12.0_pr*(zetas(3)*zetas(3)) - 2*27.0_pr*zetas(3) - 4*&
+&       2.0_pr*(zetas(3)*zetas(3)*zetas(3)) + 20.0_pr
       temp9d = (tempd4-temp*temp2d0/temp2)/temp2
       temp9 = temp/temp2
-      temp8d = -(2**2*(2.0_pr-eta)*etad1)
-      temp8 = 2*((-eta+2.0_pr)*(-eta+2.0_pr))
-      temp7d = -(2**2*(1.0_pr-eta)*etad1)
-      temp7 = 2*((-eta+1.0_pr)*(-eta+1.0_pr))
-      temp6d = (1.0_pr-eta)*temp8d - (temp8+temp7)*etad1 + (2.0_pr-eta)*&
-&       temp7d
-      temp6 = temp8*(-eta+1.0_pr) + temp7*(-eta+2.0_pr)
-      temp5d = etad*(temp1*temp6d+temp6*temp1d0) + temp6*temp1*etadd0
-      temp5 = temp6*temp1*etad - m_aved
-      temp20 = 12.0_pr*2*3*eta - 2*27.0_pr - 2.0_pr*3*4*(eta*eta)
-      temp19 = temp1*etad*etad0
-      temp18 = etad*temp1d + temp1*etadd
-      temp17 = 2*2*(-eta+1.0_pr)*(-eta+2.0_pr) + temp8 + 2*2*(-eta+&
-&       2.0_pr)*(-eta+1.0_pr) + temp7
-      temp16 = temp1*etad*etad0
-      temp15 = etad*temp1d + temp1*etadd
+      temp8d = -(2**2*(2.0_pr-zetas(3))*zetasd1(3))
+      temp8 = 2*((-zetas(3)+2.0_pr)*(-zetas(3)+2.0_pr))
+      temp7d = -(2**2*(1.0_pr-zetas(3))*zetasd1(3))
+      temp7 = 2*((-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr))
+      temp6d = (1.0_pr-zetas(3))*temp8d - (temp8+temp7)*zetasd1(3) + (&
+&       2.0_pr-zetas(3))*temp7d
+      temp6 = temp8*(-zetas(3)+1.0_pr) + temp7*(-zetas(3)+2.0_pr)
+      temp5d = zetasd(3)*(temp1*temp6d+temp6*temp1d0) + temp6*temp1*&
+&       zetasdd0(3)
+      temp5 = temp6*temp1*zetasd(3) - m_aved
+      temp20 = 12.0_pr*2*3*zetas(3) - 2*27.0_pr - 2.0_pr*3*4*(zetas(3)*&
+&       zetas(3))
+      temp19 = temp1*zetasd(3)*zetasd0(3)
+      temp18 = zetasd(3)*temp1d + temp1*zetasdd(3)
+      temp17 = 2*2*(-zetas(3)+1.0_pr)*(-zetas(3)+2.0_pr) + temp8 + 2*2*(&
+&       -zetas(3)+2.0_pr)*(-zetas(3)+1.0_pr) + temp7
+      temp16 = temp1*zetasd(3)*zetasd0(3)
+      temp15 = zetasd(3)*temp1d + temp1*zetasdd(3)
       temp14 = temp6*temp15 - temp16*temp17
       temp13 = temp5/temp2
-      c1ddd = c1ddd + temp20*(etad0*(etad*temp1d0+temp1*etadd0)+temp1*&
-&       etad*etad0d) + temp19*(6*12.0_pr-2.0_pr*3*4*2*eta)*etad1 + &
-&       temp18*temp10d + temp10*(temp1d*etadd0+etad*temp1dd+etadd*&
-&       temp1d0+temp1*etaddd) + temp14*temp9d + temp9*(temp15*temp6d+&
-&       temp6*(temp1d*etadd0+etad*temp1dd+etadd*temp1d0+temp1*etaddd)-&
-&       temp17*(etad0*(etad*temp1d0+temp1*etadd0)+temp1*etad*etad0d)-&
-&       temp16*(temp8d-2*2**2*(3.0-2*eta)*etad1+temp7d)) + temp13*(&
-&       tempd1d-temp2d*temp9d-temp9*temp2dd) + (tempd1-temp9*temp2d)*(&
-&       temp5d-temp13*temp2d0)/temp2
+      c1ddd = c1ddd + temp20*(zetasd0(3)*(zetasd(3)*temp1d0+temp1*&
+&       zetasdd0(3))+temp1*zetasd(3)*zetasd0d(3)) + temp19*(6*12.0_pr-&
+&       2.0_pr*3*4*2*zetas(3))*zetasd1(3) + temp18*temp10d + temp10*(&
+&       temp1d*zetasdd0(3)+zetasd(3)*temp1dd+zetasdd(3)*temp1d0+temp1*&
+&       zetasddd(3)) + temp14*temp9d + temp9*(temp15*temp6d+temp6*(&
+&       temp1d*zetasdd0(3)+zetasd(3)*temp1dd+zetasdd(3)*temp1d0+temp1*&
+&       zetasddd(3))-temp17*(zetasd0(3)*(zetasd(3)*temp1d0+temp1*&
+&       zetasdd0(3))+temp1*zetasd(3)*zetasd0d(3))-temp16*(temp8d-2*2**2*&
+&       (3.0-2*zetas(3))*zetasd1(3)+temp7d)) + temp13*(tempd1d-temp2d*&
+&       temp9d-temp9*temp2dd) + (tempd1-temp9*temp2d)*(temp5d-temp13*&
+&       temp2d0)/temp2
       c1dd = c1dd + temp19*temp20 + temp10*temp18 + temp9*temp14 + (&
 &       tempd1-temp9*temp2d)*temp13
-      c1dd0 = c1dd0 + etad*(temp1*temp10d+temp10*temp1d0) + temp10*temp1&
-&       *etadd0 + temp9*temp5d + temp5*temp9d
-      c1d = c1d + temp10*(temp1*etad) + temp5*temp9
+      c1dd0 = c1dd0 + zetasd(3)*(temp1*temp10d+temp10*temp1d0) + temp10*&
+&       temp1*zetasdd0(3) + temp9*temp5d + temp5*temp9d
+      c1d = c1d + temp10*(temp1*zetasd(3)) + temp5*temp9
       c1d0d = c1d0d + tempd1*temp1d0 + temp1*tempd1d + temp1d*tempd4 + &
 &       temp*temp1dd
       c1d0 = c1d0 + temp1*tempd1 + temp*temp1d
@@ -1284,27 +1242,19 @@ CONTAINS
       ar_dispersiond0d = 0.0_pr
     END IF
 ! Final evaluation
-    m_average = 0.0_pr
-    m_averaged = 0.0_pr
-    DO i=1,nc
-! Segment average
-      m_averaged = m_averaged + m(i)*xd(i)
-      m_average = m_average + x(i)*m(i)
-    END DO
-    temp2dd = m_average*ar_hsd0d + ar_chaind0d + ar_dispersiond0d
-    temp2d = m_average*ar_hsd0 + ar_chaind0 + ar_dispersiond0
-    temp2d0 = m_average*ar_hsd1 + ar_chaind1 + ar_dispersiond1
-    temp2 = m_average*ar_hs + ar_chain + ar_dispersion
+    temp2dd = m_ave*ar_hsd0d + ar_chaind0d + ar_dispersiond0d
+    temp2d = m_ave*ar_hsd0 + ar_chaind0 + ar_dispersiond0
+    temp2d0 = m_ave*ar_hsd1 + ar_chaind1 + ar_dispersiond1
+    temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
     temp10d = n_totd*td1
     temp10 = n_tot*td + n_totd*t
-    temp9d = m_averaged*ar_hsd1 + m_average*ar_hsdd0 + ar_chaindd0 + &
+    temp9d = m_aved*ar_hsd1 + m_ave*ar_hsdd0 + ar_chaindd0 + &
 &     ar_dispersiondd0
-    temp9 = m_averaged*ar_hs + m_average*ar_hsd + ar_chaind + &
-&     ar_dispersiond
-    temp20 = m_averaged*ar_hsd0 + m_average*ar_hsdd + ar_chaindd + &
+    temp9 = m_aved*ar_hs + m_ave*ar_hsd + ar_chaind + ar_dispersiond
+    temp20 = m_aved*ar_hsd0 + m_ave*ar_hsdd + ar_chaindd + &
 &     ar_dispersiondd
     arvalddd = r*(temp2d*temp10d+temp10*temp2dd+n_totd*td0*temp2d0+n_tot&
-&     *(td0*temp9d+temp20*td1+t*(m_averaged*ar_hsd0d+m_average*ar_hsddd+&
+&     *(td0*temp9d+temp20*td1+t*(m_aved*ar_hsd0d+m_ave*ar_hsddd+&
 &     ar_chainddd+ar_dispersionddd)))
     arvaldd = r*(temp10*temp2d+n_totd*td0*temp2+n_tot*(td0*temp9+t*&
 &     temp20))
@@ -1347,8 +1297,8 @@ CONTAINS
 ! Number of components
     INTEGER :: nc
 ! Average number of segments
-    REAL(pr) :: m_average
-    REAL(pr) :: m_averaged
+    REAL(pr) :: m_ave
+    REAL(pr) :: m_aved
 ! Internal variables declarations
 ! Diameter declarations
     REAL(pr) :: d(SIZE(n))
@@ -1364,20 +1314,24 @@ CONTAINS
     REAL(pr) :: rhod0
     REAL(pr) :: rhod
     REAL(pr) :: rhodd
+    REAL(pr) :: eta
+    REAL(pr) :: etad0
+    REAL(pr) :: etad
+    REAL(pr) :: etadd
 ! Ar hard-sphere contribution declarations
-    REAL(pr) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
-    REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0, one_m_z3_hsd0
-    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd, one_m_z3_hsd
-    REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd, one_m_z3_hsdd
+    REAL(pr) :: term1_hs, term2_hs, term3_hs
+    REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0
+    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+    REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd
     REAL(pr) :: ar_hs
     REAL(pr) :: ar_hsd0
     REAL(pr) :: ar_hsd
     REAL(pr) :: ar_hsdd
 ! Ar chain contribution declarations
-    REAL(pr) :: g_ii, one_m_z3_chain
-    REAL(pr) :: g_iid0, one_m_z3_chaind0
-    REAL(pr) :: g_iid, one_m_z3_chaind
-    REAL(pr) :: g_iidd, one_m_z3_chaindd
+    REAL(pr) :: g_ii
+    REAL(pr) :: g_iid0
+    REAL(pr) :: g_iid
+    REAL(pr) :: g_iidd
     REAL(pr) :: di_2
     REAL(pr) :: di_2d0
     REAL(pr) :: di_2d
@@ -1387,13 +1341,13 @@ CONTAINS
     REAL(pr) :: ar_chaind
     REAL(pr) :: ar_chaindd
 ! Ar dispersion contribution declarations
-    REAL(pr) :: rho_disp, eta, one_m_eta
-    REAL(pr) :: rho_dispd0, etad0, one_m_etad0
-    REAL(pr) :: rho_dispd, etad, one_m_etad
-    REAL(pr) :: rho_dispdd, etadd, one_m_etadd
-    REAL(pr) :: m_ave, m2_es3, m2_e2s3, i1, i2, c1
+    REAL(pr) :: rho_disp
+    REAL(pr) :: rho_dispd0
+    REAL(pr) :: rho_dispd
+    REAL(pr) :: rho_dispdd
+    REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
     REAL(pr) :: m2_es3d0, m2_e2s3d0, i1d0, i2d0, c1d0
-    REAL(pr) :: m_aved, m2_es3d, m2_e2s3d, i1d, i2d, c1d
+    REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
     REAL(pr) :: m2_es3dd, m2_e2s3dd, i1dd, i2dd, c1dd
     REAL(pr) :: term_disp, a_k, b_k
     REAL(pr) :: term_dispd, a_kd, b_kd
@@ -1466,6 +1420,13 @@ CONTAINS
     n_tot = SUM(n)
 ! Number of components
     nc = SIZE(n)
+    m_ave = 0.0_pr
+    m_aved = 0.0_pr
+    DO i=1,nc
+! Segment average
+      m_aved = m_aved + m(i)*xd(i)
+      m_ave = m_ave + x(i)*m(i)
+    END DO
     dd = 0.0_pr
     ddd = 0.0_pr
     dd0 = 0.0_pr
@@ -1534,42 +1495,39 @@ CONTAINS
       zetasd0(k) = pi*(temp*rhod0/6.0_pr+rho*tempd1/6.0_8)
       zetas(k) = pi*(rho/6.0_pr*temp)
     END DO
+    etadd = -zetasdd(3)
+    etad = -zetasd(3)
+    etad0 = -zetasd0(3)
+    eta = 1.0_pr - zetas(3)
 ! Ar hard-sphere contribution
-    one_m_z3_hsdd = -zetasdd(3)
-    one_m_z3_hsd = -zetasd(3)
-    one_m_z3_hsd0 = -zetasd0(3)
-    one_m_z3_hs = 1.0_pr - zetas(3)
-    temp3 = zetas(1)/one_m_z3_hs
-    tempd1 = (zetasd0(1)-temp3*one_m_z3_hsd0)/one_m_z3_hs
+    temp3 = zetas(1)/eta
+    tempd1 = (zetasd0(1)-temp3*etad0)/eta
     temp = temp3
-    temp3 = zetasd(1) - temp*one_m_z3_hsd
-    temp5 = zetas(2)/one_m_z3_hs
-    term1_hsdd = 3.0_pr*(temp3*(zetasd0(2)-temp5*one_m_z3_hsd0)/&
-&     one_m_z3_hs+temp5*(zetasdd(1)-one_m_z3_hsd*tempd1-temp*&
-&     one_m_z3_hsdd)+zetasd(2)*tempd1+temp*zetasdd(2))
+    temp3 = zetasd(1) - temp*etad
+    temp5 = zetas(2)/eta
+    term1_hsdd = 3.0_pr*(temp3*(zetasd0(2)-temp5*etad0)/eta+temp5*(&
+&     zetasdd(1)-etad*tempd1-temp*etadd)+zetasd(2)*tempd1+temp*zetasdd(2&
+&     ))
     term1_hsd = 3.0_pr*(temp5*temp3+temp*zetasd(2))
     term1_hsd0 = 3.0_pr*(zetas(2)*tempd1+temp*zetasd0(2))
     term1_hs = 3.0_pr*(temp*zetas(2))
-    tempd1 = one_m_z3_hs**2*zetasd0(3) + zetas(3)*2*one_m_z3_hs*&
-&     one_m_z3_hsd0
-    temp = zetas(3)*(one_m_z3_hs*one_m_z3_hs)
+    tempd1 = eta**2*zetasd0(3) + zetas(3)*2*eta*etad0
+    temp = zetas(3)*(eta*eta)
     temp5 = zetas(2)*zetas(2)*zetas(2)/temp
     temp1d = (3*zetas(2)**2*zetasd0(2)-temp5*tempd1)/temp
     temp1 = temp5
     temp5 = 3*(zetas(2)*zetas(2))
-    temp3 = one_m_z3_hs*one_m_z3_hs*zetasd(3) + 2*zetas(3)*one_m_z3_hs*&
-&     one_m_z3_hsd
+    temp3 = eta*eta*zetasd(3) + 2*zetas(3)*eta*etad
     temp6 = (temp5*zetasd(2)-temp1*temp3)/temp
     term2_hsdd = (zetasd(2)*3*2*zetas(2)*zetasd0(2)+temp5*zetasdd(2)-&
-&     temp3*temp1d-temp1*(zetasd(3)*2*one_m_z3_hs*one_m_z3_hsd0+&
-&     one_m_z3_hs**2*zetasdd(3)+one_m_z3_hs*one_m_z3_hsd*2*zetasd0(3)+2*&
-&     zetas(3)*(one_m_z3_hsd*one_m_z3_hsd0+one_m_z3_hs*one_m_z3_hsdd))-&
-&     temp6*tempd1)/temp
+&     temp3*temp1d-temp1*(zetasd(3)*2*eta*etad0+eta**2*zetasdd(3)+eta*&
+&     etad*2*zetasd0(3)+2*zetas(3)*(etad*etad0+eta*etadd))-temp6*tempd1)&
+&     /temp
     term2_hsd = temp6
     term2_hsd0 = temp1d
     term2_hs = temp1
-    temp1d = one_m_z3_hsd0/one_m_z3_hs
-    temp1 = LOG(one_m_z3_hs)
+    temp1d = etad0/eta
+    temp1 = LOG(eta)
     temp6 = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
     tempd1 = (3*zetas(2)**2*zetasd0(2)-temp6*2*zetas(3)*zetasd0(3))/&
 &     zetas(3)**2
@@ -1577,12 +1535,12 @@ CONTAINS
     temp6 = 2*temp*zetas(3)
     temp5 = 3*(zetas(2)*zetas(2))
     temp3 = (temp5*zetasd(2)-temp6*zetasd(3))/(zetas(3)*zetas(3))
-    temp7 = one_m_z3_hsd/one_m_z3_hs
+    temp7 = etad/eta
     term3_hsdd = (temp3-zetasd(0))*temp1d + temp1*((zetasd(2)*3*2*zetas(&
 &     2)*zetasd0(2)+temp5*zetasdd(2)-zetasd(3)*(zetas(3)*2*tempd1+2*temp&
 &     *zetasd0(3))-temp6*zetasdd(3)-temp3*2*zetas(3)*zetasd0(3))/zetas(3&
 &     )**2-zetasdd(0)) + temp7*(tempd1-zetasd0(0)) + (temp-zetas(0))*(&
-&     one_m_z3_hsdd-temp7*one_m_z3_hsd0)/one_m_z3_hs
+&     etadd-temp7*etad0)/eta
     term3_hsd = temp1*(temp3-zetasd(0)) + (temp-zetas(0))*temp7
     term3_hsd0 = temp1*(tempd1-zetasd0(0)) + (temp-zetas(0))*temp1d
     term3_hs = (temp-zetas(0))*temp1
@@ -1599,10 +1557,6 @@ CONTAINS
     ar_hs = temp1
 ! Ar chain contribution
     ar_chain = 0.0_pr
-    one_m_z3_chaindd = -zetasdd(3)
-    one_m_z3_chaind = -zetasd(3)
-    one_m_z3_chaind0 = -zetasd0(3)
-    one_m_z3_chain = 1.0_pr - zetas(3)
     ar_chaind = 0.0_pr
     ar_chaindd = 0.0_pr
     ar_chaind0 = 0.0_pr
@@ -1611,39 +1565,34 @@ CONTAINS
       di_2d = dd(i)/2.0_pr
       di_2d0 = dd0(i)/2.0_pr
       di_2 = d(i)/2.0_pr
-      temp7 = di_2*zetas(2)/(one_m_z3_chain*one_m_z3_chain)
-      temp1d = (zetas(2)*di_2d0+di_2*zetasd0(2)-temp7*2*one_m_z3_chain*&
-&       one_m_z3_chaind0)/one_m_z3_chain**2
+      temp7 = di_2*zetas(2)/(eta*eta)
+      temp1d = (zetas(2)*di_2d0+di_2*zetasd0(2)-temp7*2*eta*etad0)/eta**&
+&       2
       temp1 = temp7
-      tempd1 = 3*one_m_z3_chain**2*one_m_z3_chaind0
-      temp = one_m_z3_chain*one_m_z3_chain*one_m_z3_chain
+      tempd1 = 3*eta**2*etad0
+      temp = eta*eta*eta
       temp7 = di_2*di_2/temp
       temp2d = zetas(2)**2*(2*di_2*di_2d0-temp7*tempd1)/temp + temp7*2*&
 &       zetas(2)*zetasd0(2)
       temp2 = temp7*(zetas(2)*zetas(2))
-      temp7 = 2*temp1*one_m_z3_chain
-      temp6 = (zetas(2)*di_2d+di_2*zetasd(2)-temp7*one_m_z3_chaind)/(&
-&       one_m_z3_chain*one_m_z3_chain)
-      temp5 = one_m_z3_chaind/(one_m_z3_chain*one_m_z3_chain)
+      temp7 = 2*temp1*eta
+      temp6 = (zetas(2)*di_2d+di_2*zetasd(2)-temp7*etad)/(eta*eta)
+      temp5 = etad/(eta*eta)
       temp3 = 2*(zetas(2)*zetas(2))
       temp8 = 2*(di_2*di_2)
-      temp9 = 3*(one_m_z3_chain*one_m_z3_chain)
+      temp9 = 3*(eta*eta)
       temp10 = (temp3*di_2*di_2d+temp8*zetas(2)*zetasd(2)-temp9*temp2*&
-&       one_m_z3_chaind)/temp
+&       etad)/temp
       g_iidd = 3.0_pr*(di_2d*zetasd0(2)+zetas(2)*di_2dd+zetasd(2)*di_2d0+&
-&       di_2*zetasdd(2)-one_m_z3_chaind*(one_m_z3_chain*2*temp1d+2*temp1&
-&       *one_m_z3_chaind0)-temp7*one_m_z3_chaindd-temp6*2*one_m_z3_chain&
-&       *one_m_z3_chaind0)/one_m_z3_chain**2 - (one_m_z3_chaindd-temp5*2&
-&       *one_m_z3_chain*one_m_z3_chaind0)/one_m_z3_chain**2 + 2.0_pr*(&
-&       di_2*di_2d*2**2*zetas(2)*zetasd0(2)+temp3*(di_2d*di_2d0+di_2*&
-&       di_2dd)+zetas(2)*zetasd(2)*2**2*di_2*di_2d0+temp8*(zetasd(2)*&
-&       zetasd0(2)+zetas(2)*zetasdd(2))-temp2*one_m_z3_chaind*3*2*&
-&       one_m_z3_chain*one_m_z3_chaind0-temp9*(one_m_z3_chaind*temp2d+&
-&       temp2*one_m_z3_chaindd)-temp10*tempd1)/temp
+&       di_2*zetasdd(2)-etad*(eta*2*temp1d+2*temp1*etad0)-temp7*etadd-&
+&       temp6*2*eta*etad0)/eta**2 - (etadd-temp5*2*eta*etad0)/eta**2 + &
+&       2.0_pr*(di_2*di_2d*2**2*zetas(2)*zetasd0(2)+temp3*(di_2d*di_2d0+&
+&       di_2*di_2dd)+zetas(2)*zetasd(2)*2**2*di_2*di_2d0+temp8*(zetasd(2&
+&       )*zetasd0(2)+zetas(2)*zetasdd(2))-temp2*etad*3*2*eta*etad0-temp9&
+&       *(etad*temp2d+temp2*etadd)-temp10*tempd1)/temp
       g_iid = 3.0_pr*temp6 - temp5 + 2.0_8*temp10
-      g_iid0 = 3.0_pr*temp1d - one_m_z3_chaind0/one_m_z3_chain**2 + 2.0_8&
-&       *temp2d
-      g_ii = 1.0/one_m_z3_chain + 3.0_pr*temp1 + 2.0_8*temp2
+      g_iid0 = 3.0_pr*temp1d - etad0/eta**2 + 2.0_8*temp2d
+      g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
 ! Summation
       temp2d = g_iid0/g_ii
       temp2 = LOG(g_ii)
@@ -1665,24 +1614,9 @@ CONTAINS
       rho_dispd = n_avo*temp10
       rho_dispd0 = n_avo*temp2d
       rho_disp = n_avo*temp2
-      etadd = zetasdd(3)
-      etad = zetasd(3)
-      etad0 = zetasd0(3)
-      eta = zetas(3)
-      one_m_etadd = -etadd
-      one_m_etad = -etad
-      one_m_etad0 = -etad0
-      one_m_eta = 1.0_pr - eta
 ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr
       m2_es3 = 0.0_pr
       m2_e2s3 = 0.0_pr
-      m_aved = 0.0_pr
-      DO i=1,nc
-! Segment average
-        m_aved = m_aved + m(i)*xd(i)
-        m_ave = m_ave + x(i)*m(i)
-      END DO
       m2_e2s3d = 0.0_pr
       m2_es3d = 0.0_pr
       m2_e2s3d0 = 0.0_pr
@@ -1739,47 +1673,47 @@ CONTAINS
 &         -temp1*2*m_ave-3.0)/m_ave**2)*m_aved
         b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
 &         temp1
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           temp2d = 0.0_pr
         ELSE
-          temp2d = k*eta**(k-1)*etad0
+          temp2d = k*zetas(3)**(k-1)*zetasd0(3)
         END IF
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           tempd0 = 0.0_pr
           tempd0d = 0.0_pr
         ELSE
-          temp10 = eta**(k-1)
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          temp10 = zetas(3)**(k-1)
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             tempd3 = 0.0_pr
           ELSE
-            tempd3 = (k-1)*eta**(k-2)*etad0
+            tempd3 = (k-1)*zetas(3)**(k-2)*zetasd0(3)
           END IF
-          tempd0d = k*(etad*tempd3+temp10*etadd)
-          tempd0 = k*(temp10*etad)
+          tempd0d = k*(zetasd(3)*tempd3+temp10*zetasdd(3))
+          tempd0 = k*(temp10*zetasd(3))
         END IF
         i1dd = i1dd + a_kd*temp2d + a_k*tempd0d
         i1d = i1d + temp2*a_kd + a_k*tempd0
         i1d0 = i1d0 + a_k*temp2d
         i1 = i1 + a_k*temp2
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           temp2d = 0.0_pr
         ELSE
-          temp2d = k*eta**(k-1)*etad0
+          temp2d = k*zetas(3)**(k-1)*zetasd0(3)
         END IF
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           tempd0 = 0.0_pr
           tempd0d = 0.0_pr
         ELSE
-          temp10 = eta**(k-1)
-          IF (eta .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+          temp10 = zetas(3)**(k-1)
+          IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
             tempd3 = 0.0_pr
           ELSE
-            tempd3 = (k-1)*eta**(k-2)*etad0
+            tempd3 = (k-1)*zetas(3)**(k-2)*zetasd0(3)
           END IF
-          tempd0d = k*(etad*tempd3+temp10*etadd)
-          tempd0 = k*(temp10*etad)
+          tempd0d = k*(zetasd(3)*tempd3+temp10*zetasdd(3))
+          tempd0 = k*(temp10*zetasd(3))
         END IF
         i2dd = i2dd + b_kd*temp2d + b_k*tempd0d
         i2d = i2d + temp2*b_kd + b_k*tempd0
@@ -1787,45 +1721,47 @@ CONTAINS
         i2 = i2 + b_k*temp2
       END DO
 ! 3. Compressibility C1 (Same as before)
-      temp2d = 4*one_m_eta**3*one_m_etad0
-      temp2 = one_m_eta**4
+      temp2d = 4*eta**3*etad0
+      temp2 = eta**4
       temp1d = -(m_ave*temp2d/temp2**2)
       temp1 = m_ave/temp2
-      tempd1 = (8.0_pr-2.0_pr*2*eta)*etad0
-      temp = 8.0_pr*eta - 2.0_pr*(eta*eta)
+      tempd1 = (8.0_pr-2.0_pr*2*zetas(3))*zetasd0(3)
+      temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
       temp10 = temp/temp2
-      temp9 = 4*(one_m_eta*one_m_eta*one_m_eta)
-      temp8 = m_aved - temp9*temp1*one_m_etad
-      c1dd = (8.0_pr-2*2.0_pr*eta)*(etad*temp1d+temp1*etadd) - temp1*&
-&       etad*2*2.0_pr*etad0 - temp10*(temp1*one_m_etad*4*3*one_m_eta**2*&
-&       one_m_etad0+temp9*(one_m_etad*temp1d+temp1*one_m_etadd)) + temp8&
-&       *(tempd1-temp10*temp2d)/temp2
-      c1d = (8.0_pr-2*2.0_pr*eta)*(temp1*etad) + temp8*temp10
+      temp9 = 4*(eta*eta*eta)
+      temp8 = m_aved - temp9*temp1*etad
+      c1dd = (8.0_pr-2*2.0_pr*zetas(3))*(zetasd(3)*temp1d+temp1*zetasdd(&
+&       3)) - temp1*zetasd(3)*2*2.0_pr*zetasd0(3) - temp10*(temp1*etad*4&
+&       *3*eta**2*etad0+temp9*(etad*temp1d+temp1*etadd)) + temp8*(tempd1&
+&       -temp10*temp2d)/temp2
+      c1d = (8.0_pr-2*2.0_pr*zetas(3))*(temp1*zetasd(3)) + temp8*temp10
       c1d0 = temp1*tempd1 + temp*temp1d
       c1 = temp*temp1 + 1.0_pr
-      temp2d = -(((2.0_pr-eta)**2*2*(1.0_pr-eta)+(1.0_pr-eta)**2*2*(&
-&       2.0_pr-eta))*etad0)
-      temp2 = (-eta+1.0_pr)*(-eta+1.0_pr)*((-eta+2.0_pr)*(-eta+2.0_pr))
+      temp2d = -(((2.0_pr-zetas(3))**2*2*(1.0_pr-zetas(3))+(1.0_pr-zetas&
+&       (3))**2*2*(2.0_pr-zetas(3)))*zetasd0(3))
+      temp2 = (-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr)*((-zetas(3)+2.0_pr)*&
+&       (-zetas(3)+2.0_pr))
       temp10 = (-m_ave+1.0_pr)/temp2
       temp1d = -(temp10*temp2d/temp2)
       temp1 = temp10
-      tempd1 = (12.0_pr*3*eta**2-27.0_pr*2*eta-2.0_pr*4*eta**3+20.0_pr)*&
-&       etad0
-      temp = 20.0_pr*eta - 27.0_pr*(eta*eta) + 12.0_pr*(eta*eta*eta) - &
-&       2.0_pr*eta**4
-      temp10 = 3*12.0_pr*(eta*eta) - 2*27.0_pr*eta - 4*2.0_pr*(eta*eta*&
-&       eta) + 20.0_pr
+      tempd1 = (12.0_pr*3*zetas(3)**2-27.0_pr*2*zetas(3)-2.0_pr*4*zetas(&
+&       3)**3+20.0_pr)*zetasd0(3)
+      temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+&       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+      temp10 = 3*12.0_pr*(zetas(3)*zetas(3)) - 2*27.0_pr*zetas(3) - 4*&
+&       2.0_pr*(zetas(3)*zetas(3)*zetas(3)) + 20.0_pr
       temp9 = temp/temp2
-      temp8 = 2*((-eta+2.0_pr)*(-eta+2.0_pr))
-      temp7 = 2*((-eta+1.0_pr)*(-eta+1.0_pr))
-      temp6 = temp8*(-eta+1.0_pr) + temp7*(-eta+2.0_pr)
-      temp5 = temp6*temp1*etad - m_aved
-      c1dd = c1dd + temp1*etad*(3*12.0_pr*2*eta-2*27.0_pr-4*2.0_pr*3*eta&
-&       **2)*etad0 + temp10*(etad*temp1d+temp1*etadd) + temp9*(temp6*(&
-&       etad*temp1d+temp1*etadd)-temp1*etad*((1.0_pr-eta)*2**2*(2.0_pr-&
-&       eta)+temp8+(2.0_pr-eta)*2**2*(1.0_pr-eta)+temp7)*etad0) + temp5*&
-&       (tempd1-temp9*temp2d)/temp2
-      c1d = c1d + temp10*(temp1*etad) + temp5*temp9
+      temp8 = 2*((-zetas(3)+2.0_pr)*(-zetas(3)+2.0_pr))
+      temp7 = 2*((-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr))
+      temp6 = temp8*(-zetas(3)+1.0_pr) + temp7*(-zetas(3)+2.0_pr)
+      temp5 = temp6*temp1*zetasd(3) - m_aved
+      c1dd = c1dd + temp1*zetasd(3)*(3*12.0_pr*2*zetas(3)-2*27.0_pr-4*&
+&       2.0_pr*3*zetas(3)**2)*zetasd0(3) + temp10*(zetasd(3)*temp1d+&
+&       temp1*zetasdd(3)) + temp9*(temp6*(zetasd(3)*temp1d+temp1*zetasdd&
+&       (3))-temp1*zetasd(3)*((1.0_pr-zetas(3))*2**2*(2.0_pr-zetas(3))+&
+&       temp8+(2.0_pr-zetas(3))*2**2*(1.0_pr-zetas(3))+temp7)*zetasd0(3)&
+&       ) + temp5*(tempd1-temp9*temp2d)/temp2
+      c1d = c1d + temp10*(temp1*zetasd(3)) + temp5*temp9
       c1d0 = c1d0 + temp1*tempd1 + temp*temp1d
       c1 = c1 + temp*temp1
       temp10 = c1d/(c1*c1)
@@ -1868,20 +1804,12 @@ CONTAINS
       ar_dispersiond0 = 0.0_pr
     END IF
 ! Final evaluation
-    m_average = 0.0_pr
-    m_averaged = 0.0_pr
-    DO i=1,nc
-! Segment average
-      m_averaged = m_averaged + m(i)*xd(i)
-      m_average = m_average + x(i)*m(i)
-    END DO
-    temp2d = m_average*ar_hsd0 + ar_chaind0 + ar_dispersiond0
-    temp2 = m_average*ar_hs + ar_chain + ar_dispersion
+    temp2d = m_ave*ar_hsd0 + ar_chaind0 + ar_dispersiond0
+    temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
     temp10 = n_tot*td + n_totd*t
-    temp9 = m_averaged*ar_hs + m_average*ar_hsd + ar_chaind + &
-&     ar_dispersiond
+    temp9 = m_aved*ar_hs + m_ave*ar_hsd + ar_chaind + ar_dispersiond
     arvaldd = r*(temp10*temp2d+temp2*n_totd*td0+n_tot*(temp9*td0+t*(&
-&     m_averaged*ar_hsd0+m_average*ar_hsdd+ar_chaindd+ar_dispersiondd)))
+&     m_aved*ar_hsd0+m_ave*ar_hsdd+ar_chaindd+ar_dispersiondd)))
     arvald = r*(temp2*temp10+n_tot*(t*temp9))
     arvald0 = r*n_tot*(temp2*td0+t*temp2d)
     arval = r*(t*n_tot*temp2)
@@ -1923,10 +1851,10 @@ CONTAINS
 ! Number of components
     INTEGER :: nc
 ! Average number of segments
-    REAL(pr) :: m_average
-    REAL(pr) :: m_averageb
-    REAL(pr) :: m_averaged
-    REAL(pr) :: m_averagedb
+    REAL(pr) :: m_ave
+    REAL(pr) :: m_aveb
+    REAL(pr) :: m_aved
+    REAL(pr) :: m_avedb
 ! Internal variables declarations
 ! Diameter declarations
     REAL(pr) :: d(SIZE(n))
@@ -1942,20 +1870,24 @@ CONTAINS
     REAL(pr) :: rhob
     REAL(pr) :: rhod
     REAL(pr) :: rhodb
+    REAL(pr) :: eta
+    REAL(pr) :: etab
+    REAL(pr) :: etad
+    REAL(pr) :: etadb
 ! Ar hard-sphere contribution declarations
-    REAL(pr) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
-    REAL(pr) :: term1_hsb, term2_hsb, term3_hsb, one_m_z3_hsb
-    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd, one_m_z3_hsd
-    REAL(pr) :: term1_hsdb, term2_hsdb, term3_hsdb, one_m_z3_hsdb
+    REAL(pr) :: term1_hs, term2_hs, term3_hs
+    REAL(pr) :: term1_hsb, term2_hsb, term3_hsb
+    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+    REAL(pr) :: term1_hsdb, term2_hsdb, term3_hsdb
     REAL(pr) :: ar_hs
     REAL(pr) :: ar_hsb
     REAL(pr) :: ar_hsd
     REAL(pr) :: ar_hsdb
 ! Ar chain contribution declarations
-    REAL(pr) :: g_ii, one_m_z3_chain
-    REAL(pr) :: g_iib, one_m_z3_chainb
-    REAL(pr) :: g_iid, one_m_z3_chaind
-    REAL(pr) :: g_iidb, one_m_z3_chaindb
+    REAL(pr) :: g_ii
+    REAL(pr) :: g_iib
+    REAL(pr) :: g_iid
+    REAL(pr) :: g_iidb
     REAL(pr) :: di_2
     REAL(pr) :: di_2b
     REAL(pr) :: di_2d
@@ -1965,14 +1897,14 @@ CONTAINS
     REAL(pr) :: ar_chaind
     REAL(pr) :: ar_chaindb
 ! Ar dispersion contribution declarations
-    REAL(pr) :: rho_disp, eta, one_m_eta
-    REAL(pr) :: rho_dispb, etab, one_m_etab
-    REAL(pr) :: rho_dispd, etad, one_m_etad
-    REAL(pr) :: rho_dispdb, etadb, one_m_etadb
-    REAL(pr) :: m_ave, m2_es3, m2_e2s3, i1, i2, c1
-    REAL(pr) :: m_aveb, m2_es3b, m2_e2s3b, i1b, i2b, c1b
-    REAL(pr) :: m_aved, m2_es3d, m2_e2s3d, i1d, i2d, c1d
-    REAL(pr) :: m_avedb, m2_es3db, m2_e2s3db, i1db, i2db, c1db
+    REAL(pr) :: rho_disp
+    REAL(pr) :: rho_dispb
+    REAL(pr) :: rho_dispd
+    REAL(pr) :: rho_dispdb
+    REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+    REAL(pr) :: m2_es3b, m2_e2s3b, i1b, i2b, c1b
+    REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
+    REAL(pr) :: m2_es3db, m2_e2s3db, i1db, i2db, c1db
     REAL(pr) :: term_disp, a_k, b_k
     REAL(pr) :: term_dispb, a_kb, b_kb
     REAL(pr) :: term_dispd, a_kd, b_kd
@@ -2061,6 +1993,13 @@ CONTAINS
     n_tot = SUM(n)
 ! Number of components
     nc = SIZE(n)
+    m_ave = 0.0_pr
+    m_aved = 0.0_pr
+    DO i=1,nc
+! Segment average
+      m_aved = m_aved + m(i)*xd(i)
+      m_ave = m_ave + x(i)*m(i)
+    END DO
     dd = 0.0_pr
 ! Diameter calculation
     DO i=1,SIZE(n)
@@ -2095,24 +2034,23 @@ CONTAINS
       zetasd(k) = pi*(temp*rhod/6.0_pr+rho*SUM(arg10d)/6.0_8)
       zetas(k) = pi*(rho/6.0_pr*temp)
     END DO
+    etad = -zetasd(3)
+    eta = 1.0_pr - zetas(3)
 ! Ar hard-sphere contribution
-    one_m_z3_hsd = -zetasd(3)
-    one_m_z3_hs = 1.0_pr - zetas(3)
     CALL PUSHREAL8(temp)
-    temp = zetas(1)/one_m_z3_hs
-    term1_hsd = 3.0_pr*(zetas(2)*(zetasd(1)-temp*one_m_z3_hsd)/&
-&     one_m_z3_hs+temp*zetasd(2))
+    temp = zetas(1)/eta
+    term1_hsd = 3.0_pr*(zetas(2)*(zetasd(1)-temp*etad)/eta+temp*zetasd(2)&
+&     )
     term1_hs = 3.0_pr*(temp*zetas(2))
-    temp = zetas(3)*(one_m_z3_hs*one_m_z3_hs)
+    temp = zetas(3)*(eta*eta)
     temp1 = zetas(2)*zetas(2)*zetas(2)/temp
-    term2_hsd = (3*zetas(2)**2*zetasd(2)-temp1*(one_m_z3_hs**2*zetasd(3)&
-&     +zetas(3)*2*one_m_z3_hs*one_m_z3_hsd))/temp
+    term2_hsd = (3*zetas(2)**2*zetasd(2)-temp1*(eta**2*zetasd(3)+zetas(3&
+&     )*2*eta*etad))/temp
     term2_hs = temp1
-    temp1 = LOG(one_m_z3_hs)
+    temp1 = LOG(eta)
     temp = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
     term3_hsd = temp1*((3*zetas(2)**2*zetasd(2)-temp*2*zetas(3)*zetasd(3&
-&     ))/zetas(3)**2-zetasd(0)) + (temp-zetas(0))*one_m_z3_hsd/&
-&     one_m_z3_hs
+&     ))/zetas(3)**2-zetasd(0)) + (temp-zetas(0))*etad/eta
     term3_hs = (temp-zetas(0))*temp1
 ! A_hs/RT
     CALL PUSHREAL8(temp1)
@@ -2121,25 +2059,21 @@ CONTAINS
     ar_hs = temp1
 ! Ar chain contribution
     ar_chain = 0.0_pr
-    one_m_z3_chaind = -zetasd(3)
-    one_m_z3_chain = 1.0_pr - zetas(3)
     ar_chaind = 0.0_pr
     DO i=1,SIZE(x)
       di_2d = dd(i)/2.0_pr
       di_2 = d(i)/2.0_pr
       CALL PUSHREAL8(temp1)
-      temp1 = di_2*zetas(2)/(one_m_z3_chain*one_m_z3_chain)
-      temp = one_m_z3_chain*one_m_z3_chain*one_m_z3_chain
+      temp1 = di_2*zetas(2)/(eta*eta)
+      temp = eta*eta*eta
       CALL PUSHREAL8(temp2)
       temp2 = di_2*di_2*(zetas(2)*zetas(2))/temp
       CALL PUSHREAL8(g_iid)
-      g_iid = 3.0_pr*(zetas(2)*di_2d+di_2*zetasd(2)-temp1*2*&
-&       one_m_z3_chain*one_m_z3_chaind)/one_m_z3_chain**2 - &
-&       one_m_z3_chaind/one_m_z3_chain**2 + 2.0_pr*(zetas(2)**2*2*di_2*&
-&       di_2d+di_2**2*2*zetas(2)*zetasd(2)-temp2*3*one_m_z3_chain**2*&
-&       one_m_z3_chaind)/temp
+      g_iid = 3.0_pr*(zetas(2)*di_2d+di_2*zetasd(2)-temp1*2*eta*etad)/eta&
+&       **2 - etad/eta**2 + 2.0_pr*(zetas(2)**2*2*di_2*di_2d+di_2**2*2*&
+&       zetas(2)*zetasd(2)-temp2*3*eta**2*etad)/temp
       CALL PUSHREAL8(g_ii)
-      g_ii = 1.0/one_m_z3_chain + 3.0_pr*temp1 + 2.0_8*temp2
+      g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
 ! Summation
       temp2 = LOG(g_ii)
       ar_chaind = ar_chaind - (m(i)-1.0_pr)*(temp2*xd(i)+x(i)*g_iid/g_ii)
@@ -2153,20 +2087,9 @@ CONTAINS
       temp2 = n_tot/(1.0e27_pr*v)
       rho_dispd = n_avo*(n_totd-temp2*1.0e27_pr*vd)/(1.0e27_pr*v)
       rho_disp = n_avo*temp2
-      etad = zetasd(3)
-      eta = zetas(3)
-      one_m_etad = -etad
-      one_m_eta = 1.0_pr - eta
 ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr
       m2_es3 = 0.0_pr
       m2_e2s3 = 0.0_pr
-      m_aved = 0.0_pr
-      DO i=1,nc
-! Segment average
-        m_aved = m_aved + m(i)*xd(i)
-        m_ave = m_ave + x(i)*m(i)
-      END DO
       m2_e2s3d = 0.0_pr
       m2_es3d = 0.0_pr
       DO i=1,nc
@@ -2214,46 +2137,48 @@ CONTAINS
         CALL PUSHREAL8(b_k)
         b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
 &         temp1
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           CALL PUSHREAL8(tempd0)
           tempd0 = 0.0_pr
           CALL PUSHCONTROL1B(0)
         ELSE
           CALL PUSHREAL8(tempd0)
-          tempd0 = k*eta**(k-1)*etad
+          tempd0 = k*zetas(3)**(k-1)*zetasd(3)
           CALL PUSHCONTROL1B(1)
         END IF
         i1d = i1d + temp2*a_kd + a_k*tempd0
         i1 = i1 + a_k*temp2
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           CALL PUSHREAL8(tempd0)
           tempd0 = 0.0_pr
           CALL PUSHCONTROL1B(0)
         ELSE
           CALL PUSHREAL8(tempd0)
-          tempd0 = k*eta**(k-1)*etad
+          tempd0 = k*zetas(3)**(k-1)*zetasd(3)
           CALL PUSHCONTROL1B(1)
         END IF
         i2d = i2d + temp2*b_kd + b_k*tempd0
         i2 = i2 + b_k*temp2
       END DO
 ! 3. Compressibility C1 (Same as before)
-      temp2 = one_m_eta**4
+      temp2 = eta**4
       temp1 = m_ave/temp2
-      temp = 8.0_pr*eta - 2.0_pr*(eta*eta)
-      c1d = temp1*(8.0_pr-2.0_pr*2*eta)*etad + temp*(m_aved-temp1*4*&
-&       one_m_eta**3*one_m_etad)/temp2
+      temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+      c1d = temp1*(8.0_pr-2.0_pr*2*zetas(3))*zetasd(3) + temp*(m_aved-&
+&       temp1*4*eta**3*etad)/temp2
       c1 = temp*temp1 + 1.0_pr
-      temp2 = (-eta+1.0_pr)*(-eta+1.0_pr)*((-eta+2.0_pr)*(-eta+2.0_pr))
+      temp2 = (-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr)*((-zetas(3)+2.0_pr)*&
+&       (-zetas(3)+2.0_pr))
       CALL PUSHREAL8(temp1)
       temp1 = (-m_ave+1.0_pr)/temp2
-      temp = 20.0_pr*eta - 27.0_pr*(eta*eta) + 12.0_pr*(eta*eta*eta) - &
-&       2.0_pr*eta**4
-      c1d = c1d + temp1*(12.0_pr*3*eta**2-27.0_pr*2*eta-2.0_pr*4*eta**3+&
-&       20.0_pr)*etad + temp*(temp1*((2.0_pr-eta)**2*2*(1.0_pr-eta)+(&
-&       1.0_pr-eta)**2*2*(2.0_pr-eta))*etad-m_aved)/temp2
+      temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+&       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+      c1d = c1d + temp1*(12.0_pr*3*zetas(3)**2-27.0_pr*2*zetas(3)-2.0_pr&
+&       *4*zetas(3)**3+20.0_pr)*zetasd(3) + temp*(temp1*((2.0_pr-zetas(3&
+&       ))**2*2*(1.0_pr-zetas(3))+(1.0_pr-zetas(3))**2*2*(2.0_pr-zetas(3&
+&       )))*zetasd(3)-m_aved)/temp2
       c1 = c1 + temp*temp1
       CALL PUSHREAL8(c1d)
       c1d = -(c1d/c1**2)
@@ -2279,15 +2204,8 @@ CONTAINS
       CALL PUSHCONTROL1B(1)
     END IF
 ! Final evaluation
-    m_average = 0.0_pr
-    m_averaged = 0.0_pr
-    DO i=1,nc
-! Segment average
-      m_averaged = m_averaged + m(i)*xd(i)
-      m_average = m_average + x(i)*m(i)
-    END DO
     CALL PUSHREAL8(temp2)
-    temp2 = m_average*ar_hs + ar_chain + ar_dispersion
+    temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
     tempb7 = r*arvalb
     tb = tb + n_tot*temp2*tempb7
     n_totb = t*temp2*tempb7
@@ -2295,13 +2213,12 @@ CONTAINS
     tempb7 = r*arvaldb
     temp2b = temp2b + (n_tot*td+t*n_totd)*tempb7
     tempb8 = temp2*tempb7
-    tempb9 = (ar_hs*m_averaged+m_average*ar_hsd+ar_chaind+ar_dispersiond&
-&     )*tempb7
+    tempb9 = (ar_hs*m_aved+m_ave*ar_hsd+ar_chaind+ar_dispersiond)*tempb7
     tempb6 = t*n_tot*tempb7
-    ar_hsb = m_averaged*tempb6 + m_average*temp2b
-    m_averagedb = ar_hs*tempb6
-    m_averageb = ar_hsd*tempb6 + ar_hs*temp2b
-    ar_hsdb = m_average*tempb6
+    ar_hsb = m_aved*tempb6 + m_ave*temp2b
+    m_avedb = ar_hs*tempb6
+    m_aveb = ar_hsd*tempb6 + ar_hs*temp2b
+    ar_hsdb = m_ave*tempb6
     ar_chaindb = tempb6
     ar_dispersiondb = tempb6
     tb = tb + n_tot*tempb9 + n_totd*tempb8
@@ -2311,12 +2228,6 @@ CONTAINS
     CALL POPREAL8(temp2)
     ar_chainb = temp2b
     ar_dispersionb = temp2b
-    xdb = 0.0_pr
-    xb = 0.0_pr
-    DO i=nc,1,-1
-      xb(i) = xb(i) + m(i)*m_averageb
-      xdb(i) = xdb(i) + m(i)*m_averagedb
-    END DO
     CALL POPCONTROL1B(branch)
     IF (branch .EQ. 0) THEN
       a1_term_dispb = ar_dispersionb
@@ -2339,11 +2250,12 @@ CONTAINS
       i2db = c1*tempb5
       m2_e2s3b = temp9*tempb6 + rho_disp*m_ave*temp2b
       tempb8 = m2_e2s3*tempb6
-      m_aveb = rho_disp*m2_e2s3d*tempb6 + rho_dispd*tempb8
+      m_aveb = m_aveb + rho_disp*m2_e2s3d*tempb6 + rho_dispd*tempb8
       m2_e2s3db = rho_disp*m_ave*tempb6
       rho_dispdb = m_ave*tempb8
-      m_avedb = rho_disp*tempb8
-      temp2 = (-eta+1.0_pr)*(-eta+1.0_pr)*((-eta+2.0_pr)*(-eta+2.0_pr))
+      m_avedb = m_avedb + rho_disp*tempb8
+      temp2 = (-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr)*((-zetas(3)+2.0_pr)*&
+&       (-zetas(3)+2.0_pr))
       tempb7 = -(pi*2.0_pr*a1_term_dispb)
       rho_dispb = m_ave*m2_e2s3d*tempb6 + m_aved*tempb8 + m_ave*m2_e2s3*&
 &       temp2b + i1*m2_es3*tempb7
@@ -2362,45 +2274,47 @@ CONTAINS
       tempb7 = -(c1db/c1**2)
       c1b = -(c1b/c1**2) - 2*c1d*tempb7/c1
       c1db = tempb7
-      temp6 = 2*((-eta+2.0_pr)*(-eta+2.0_pr))
-      temp5 = 2*((-eta+1.0_pr)*(-eta+1.0_pr))
-      temp7 = temp6*(-eta+1.0_pr) + temp5*(-eta+2.0_pr)
-      tempb7 = temp1*etad*c1db
-      tempb8 = (3*12.0_pr*eta**2-2*27.0_pr*eta-4*2.0_pr*eta**3+20.0_pr)*&
-&       c1db
+      zetasb = 0.0_pr
+      zetasdb = 0.0_pr
+      temp6 = 2*((-zetas(3)+2.0_pr)*(-zetas(3)+2.0_pr))
+      temp5 = 2*((-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr))
+      temp7 = temp6*(-zetas(3)+1.0_pr) + temp5*(-zetas(3)+2.0_pr)
+      tempb7 = temp1*zetasd(3)*c1db
+      tempb8 = (3*12.0_pr*zetas(3)**2-2*27.0_pr*zetas(3)-4*2.0_pr*zetas(&
+&       3)**3+20.0_pr)*c1db
       tempb9 = temp*c1db/temp2
-      temp1b = temp*c1b + etad*temp7*tempb9 + etad*tempb8
+      temp1b = temp*c1b + zetasd(3)*temp7*tempb9 + zetasd(3)*tempb8
       m_aveb = m_aveb + rho_disp*m2_e2s3*temp2b - temp1b/temp2
-      tempb2 = (temp7*(temp1*etad)-m_aved)*c1db/temp2
+      tempb2 = (temp7*(temp1*zetasd(3))-m_aved)*c1db/temp2
       tempb = temp1*c1b + tempb2
       temp2b = -(temp*tempb2/temp2) - (1.0_pr-m_ave)*temp1b/temp2**2
-      tempb6 = temp1*etad*tempb9
-      etadb = temp1*temp7*tempb9 + temp1*tempb8
-      etab = (2*eta*3*12.0_pr-2*27.0_pr-3*eta**2*4*2.0_pr)*tempb7 - (2**&
-&       2*(2.0_pr-eta)*(1.0_pr-eta)+temp6+2**2*(1.0_pr-eta)*(2.0_pr-eta)&
-&       +temp5)*tempb6 + (3*eta**2*12.0_pr-4*eta**3*2.0_pr-2*eta*27.0_pr&
-&       +20.0_pr)*tempb
-      temp = 8.0_pr*eta - 2.0_pr*(eta*eta)
+      tempb6 = temp1*zetasd(3)*tempb9
+      zetasdb(3) = zetasdb(3) + temp1*temp7*tempb9 + temp1*tempb8
+      zetasb(3) = zetasb(3) + (2*zetas(3)*3*12.0_pr-2*27.0_pr-3*zetas(3)&
+&       **2*4*2.0_pr)*tempb7 - (2**2*(2.0_pr-zetas(3))*(1.0_pr-zetas(3))&
+&       +temp6+2**2*(1.0_pr-zetas(3))*(2.0_pr-zetas(3))+temp5)*tempb6 + &
+&       (3*zetas(3)**2*12.0_pr-4*zetas(3)**3*2.0_pr-2*zetas(3)*27.0_pr+&
+&       20.0_pr)*tempb
+      temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
       CALL POPREAL8(temp1)
-      temp2 = one_m_eta**4
-      temp8 = 4*(one_m_eta*one_m_eta*one_m_eta)
-      tempb7 = (8.0_pr-2*2.0_pr*eta)*c1db
+      temp2 = eta**4
+      temp8 = 4*(eta*eta*eta)
+      tempb7 = (8.0_pr-2*2.0_pr*zetas(3))*c1db
       tempb8 = temp*c1db/temp2
       m_avedb = m_avedb + tempb8 - tempb9
-      temp1b = temp*c1b + etad*tempb7 - one_m_etad*temp8*tempb8
-      tempb6 = (m_aved-temp8*(temp1*one_m_etad))*c1db/temp2
+      temp1b = temp*c1b + zetasd(3)*tempb7 - etad*temp8*tempb8
+      tempb6 = (m_aved-temp8*(temp1*etad))*c1db/temp2
       tempb = temp1*c1b + tempb6
-      etab = etab + (8.0_pr-2*eta*2.0_pr)*tempb - (2*(1.0_pr-eta)*(&
-&       2.0_pr-eta)**2+2*(2.0_pr-eta)*(1.0_pr-eta)**2)*temp2b - 2*2.0_pr&
-&       *temp1*etad*c1db
+      zetasb(3) = zetasb(3) + (8.0_pr-2*zetas(3)*2.0_pr)*tempb - (2*(&
+&       1.0_pr-zetas(3))*(2.0_pr-zetas(3))**2+2*(2.0_pr-zetas(3))*(&
+&       1.0_pr-zetas(3))**2)*temp2b - 2*2.0_pr*temp1*zetasd(3)*c1db
       temp2b = -(temp*tempb6/temp2) - m_ave*temp1b/temp2**2
-      one_m_etab = 4*one_m_eta**3*temp2b - 3*one_m_eta**2*4*temp1*&
-&       one_m_etad*tempb8
-      one_m_etadb = -(temp1*temp8*tempb8)
-      etadb = etadb + temp1*tempb7
+      etab = 4*eta**3*temp2b - 3*eta**2*4*temp1*etad*tempb8
+      etadb = -(temp1*temp8*tempb8)
+      zetasdb(3) = zetasdb(3) + temp1*tempb7
       m_aveb = m_aveb + temp1b/temp2
       DO k=6,0,-1
-        temp2 = eta**k
+        temp2 = zetas(3)**k
         b_kb = temp2*i2b + tempd0*i2db
         temp2b = b_k*i2b + b_kd*i2db
         b_kdb = temp2*i2db
@@ -2410,13 +2324,13 @@ CONTAINS
           CALL POPREAL8(tempd0)
         ELSE
           CALL POPREAL8(tempd0)
-          IF (.NOT.(eta .LE. 0.0 .AND. k - 1 .EQ. 0.0)) etab = etab + (k&
-&             -1)*eta**(k-2)*etad*k*tempd0b
-          etadb = etadb + eta**(k-1)*k*tempd0b
+          IF (.NOT.(zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0)) zetasb(3)&
+&            = zetasb(3) + (k-1)*zetas(3)**(k-2)*zetasd(3)*k*tempd0b
+          zetasdb(3) = zetasdb(3) + zetas(3)**(k-1)*k*tempd0b
         END IF
-        IF (.NOT.(eta .LE. 0.0 .AND. k .EQ. 0.0)) etab = etab + k*eta**(&
-&           k-1)*temp2b
-        temp2 = eta**k
+        IF (.NOT.(zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+&           zetasb(3) + k*zetas(3)**(k-1)*temp2b
+        temp2 = zetas(3)**k
         a_kb = temp2*i1b + tempd0*i1db
         temp2b = a_k*i1b + a_kd*i1db
         a_kdb = temp2*i1db
@@ -2426,14 +2340,14 @@ CONTAINS
           CALL POPREAL8(tempd0)
         ELSE
           CALL POPREAL8(tempd0)
-          IF (.NOT.(eta .LE. 0.0 .AND. k - 1 .EQ. 0.0)) etab = etab + (k&
-&             -1)*eta**(k-2)*etad*k*tempd0b
-          etadb = etadb + eta**(k-1)*k*tempd0b
+          IF (.NOT.(zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0)) zetasb(3)&
+&            = zetasb(3) + (k-1)*zetas(3)**(k-2)*zetasd(3)*k*tempd0b
+          zetasdb(3) = zetasdb(3) + zetas(3)**(k-1)*k*tempd0b
         END IF
         tempb8 = b_coeffs(2, k)*m_aved*b_kdb/m_ave**2
         tempb7 = b_coeffs(1, k)*m_aved*b_kdb/m_ave
-        IF (.NOT.(eta .LE. 0.0 .AND. k .EQ. 0.0)) etab = etab + k*eta**(&
-&           k-1)*temp2b
+        IF (.NOT.(zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+&           zetasb(3) + k*zetas(3)**(k-1)*temp2b
         temp1 = (m_ave-1.0_pr)*(m_ave-2.0_pr)/(m_ave*m_ave)
         temp2 = (m_ave-1.0_pr)/m_ave
         CALL POPREAL8(b_k)
@@ -2469,6 +2383,8 @@ CONTAINS
 &         -3.0)*tempb7 + (1.0/m_ave-(m_ave-1.0_pr)/m_ave**2)*temp2b
         CALL POPREAL8(temp2)
       END DO
+      xdb = 0.0_pr
+      xb = 0.0_pr
       DO i=nc,1,-1
         DO j=nc,1,-1
           tempb7 = eps_ij**2*m2_e2s3db/t**2
@@ -2505,17 +2421,7 @@ CONTAINS
           CALL POPREAL8(eps_ij)
         END DO
       END DO
-      DO i=nc,1,-1
-        xb(i) = xb(i) + m(i)*m_aveb
-        xdb(i) = xdb(i) + m(i)*m_avedb
-      END DO
       tempb7 = n_avo*rho_dispdb/(1.0e27_pr*v)
-      etab = etab - one_m_etab
-      etadb = etadb - one_m_etadb
-      zetasb = 0.0_pr
-      zetasb(3) = zetasb(3) + etab
-      zetasdb = 0.0_pr
-      zetasdb(3) = zetasdb(3) + etadb
       temp2b = n_avo*rho_dispb - vd*1.0e27_pr*tempb7
       n_totdb = n_totdb + tempb7
       vdb = vdb - temp2*1.0e27_pr*tempb7
@@ -2525,13 +2431,15 @@ CONTAINS
       n_totb = n_totb + tempb7
       vb = vb - n_tot*tempb7/v
     ELSE
+      xdb = 0.0_pr
+      xb = 0.0_pr
       zetasb = 0.0_pr
+      etab = 0.0_pr
+      etadb = 0.0_pr
       zetasdb = 0.0_pr
     END IF
     ddb = 0.0_pr
     db = 0.0_pr
-    one_m_z3_chainb = 0.0_pr
-    one_m_z3_chaindb = 0.0_pr
     CALL POPINTEGER4(ad_to0)
     DO i=ad_to0,1,-1
       tempb7 = -((m(i)-1.0_pr)*ar_chainb)
@@ -2545,117 +2453,108 @@ CONTAINS
       g_iidb = tempb8
       g_iib = temp2b/g_ii - g_iid*tempb8/g_ii
       di_2 = d(i)/2.0_pr
-      temp = one_m_z3_chain*one_m_z3_chain*one_m_z3_chain
-      temp1 = di_2*zetas(2)/(one_m_z3_chain*one_m_z3_chain)
+      temp = eta*eta*eta
+      temp1 = di_2*zetas(2)/(eta*eta)
       temp2 = di_2*di_2*(zetas(2)*zetas(2))/temp
       CALL POPREAL8(g_ii)
       di_2d = dd(i)/2.0_pr
       CALL POPREAL8(g_iid)
-      temp6 = 2*temp1*one_m_z3_chain
+      temp6 = 2*temp1*eta
       temp8 = 2*(zetas(2)*zetas(2))
       temp9 = 2*(di_2*di_2)
-      temp10 = 3*(one_m_z3_chain*one_m_z3_chain)
-      tempb6 = 3.0_pr*g_iidb/one_m_z3_chain**2
-      temp1b = 3.0_pr*g_iib - 2*one_m_z3_chain*one_m_z3_chaind*tempb6
-      tempb4 = -(g_iidb/one_m_z3_chain**2)
+      temp10 = 3*(eta*eta)
+      tempb6 = 3.0_pr*g_iidb/eta**2
+      temp1b = 3.0_pr*g_iib - 2*eta*etad*tempb6
+      tempb4 = -(g_iidb/eta**2)
       tempb2 = 2.0_pr*g_iidb/temp
-      one_m_z3_chainb = one_m_z3_chainb - g_iib/one_m_z3_chain**2 - 2*&
-&       one_m_z3_chain*3*temp2*one_m_z3_chaind*tempb2 - 2*&
-&       one_m_z3_chaind*tempb4/one_m_z3_chain - (2*temp1*one_m_z3_chaind&
-&       +2*(zetas(2)*di_2d+di_2*zetasd(2)-temp6*one_m_z3_chaind)/&
-&       one_m_z3_chain)*tempb6
-      temp2b = 2.0_pr*g_iib - one_m_z3_chaind*temp10*tempb2
+      etab = etab - g_iib/eta**2 - 2*eta*3*temp2*etad*tempb2 - 2*etad*&
+&       tempb4/eta - (2*temp1*etad+2*(zetas(2)*di_2d+di_2*zetasd(2)-&
+&       temp6*etad)/eta)*tempb6
+      temp2b = 2.0_pr*g_iib - etad*temp10*tempb2
       zetasb(2) = zetasb(2) + (2**2*zetas(2)*di_2*di_2d+zetasd(2)*temp9)&
 &       *tempb2 + di_2d*tempb6
       di_2b = (di_2d*temp8+2**2*di_2*zetas(2)*zetasd(2))*tempb2 + zetasd&
 &       (2)*tempb6
       di_2db = di_2*temp8*tempb2 + zetas(2)*tempb6
       zetasdb(2) = zetasdb(2) + zetas(2)*temp9*tempb2 + di_2*tempb6
-      one_m_z3_chaindb = one_m_z3_chaindb + tempb4 - temp2*temp10*tempb2&
-&       - temp6*tempb6
+      etadb = etadb + tempb4 - temp2*temp10*tempb2 - temp6*tempb6
       temp7 = di_2*di_2/temp
       tempb6 = zetas(2)**2*temp2b/temp
       tempb = -((temp8*(di_2*di_2d)+temp9*(zetas(2)*zetasd(2))-temp10*(&
-&       temp2*one_m_z3_chaind))*tempb2/temp) - temp7*tempb6
+&       temp2*etad))*tempb2/temp) - temp7*tempb6
       CALL POPREAL8(temp2)
       di_2b = di_2b + 2*di_2*tempb6
       CALL POPREAL8(temp1)
-      tempb6 = temp1b/one_m_z3_chain**2
+      tempb6 = temp1b/eta**2
       zetasb(2) = zetasb(2) + 2*zetas(2)*temp7*temp2b + di_2*tempb6
-      one_m_z3_chainb = one_m_z3_chainb + 3*one_m_z3_chain**2*tempb - 2*&
-&       di_2*zetas(2)*tempb6/one_m_z3_chain
+      etab = etab + 3*eta**2*tempb - 2*di_2*zetas(2)*tempb6/eta
       di_2b = di_2b + zetas(2)*tempb6
       db(i) = db(i) + di_2b/2.0_pr
       ddb(i) = ddb(i) + di_2db/2.0_pr
     END DO
+    temp4 = etad/eta
     tempb6 = ar_hsdb/zetas(0)
+    temp1b = ar_hsb - zetasd(0)*tempb6
+    term1_hsdb = tempb6
+    term2_hsdb = tempb6
     term3_hsdb = tempb6
     zetasdb(0) = zetasdb(0) - temp1*tempb6
     zetasb(0) = zetasb(0) - (term1_hsd+term2_hsd+term3_hsd-temp1*zetasd(&
 &     0))*tempb6/zetas(0)
     temp = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
     CALL POPREAL8(temp1)
-    temp7 = 2*temp*zetas(3)
-    temp6 = 3*(zetas(2)*zetas(2))
-    temp5 = (temp6*zetasd(2)-temp7*zetasd(3))/(zetas(3)*zetas(3))
-    temp4 = one_m_z3_hsd/one_m_z3_hs
-    tempb4 = temp1*term3_hsdb/zetas(3)**2
-    zetasb(3) = zetasb(3) - one_m_z3_chainb - (2*temp*zetasd(3)+2*zetas(&
-&     3)*temp5)*tempb4
-    temp1b = ar_hsb - zetasd(0)*tempb6
-    term1_hsdb = tempb6
-    term2_hsdb = tempb6
     tempb6 = temp1b/zetas(0)
     term1_hsb = tempb6
     term2_hsb = tempb6
     term3_hsb = tempb6
     zetasb(0) = zetasb(0) - (term1_hs+term2_hs+term3_hs)*tempb6/zetas(0)&
 &     - temp1*term3_hsb - temp4*term3_hsdb
+    temp7 = 2*temp*zetas(3)
+    temp6 = 3*(zetas(2)*zetas(2))
+    temp5 = (temp6*zetasd(2)-temp7*zetasd(3))/(zetas(3)*zetas(3))
+    temp1b = (temp-zetas(0))*term3_hsb + (temp5-zetasd(0))*term3_hsdb
+    tempb4 = temp1*term3_hsdb/zetas(3)**2
     tempb = temp1*term3_hsb + temp4*term3_hsdb - 2*zetas(3)*zetasd(3)*&
 &     tempb4
-    temp1b = (temp-zetas(0))*term3_hsb + (temp5-zetasd(0))*term3_hsdb
     zetasdb(0) = zetasdb(0) - temp1*term3_hsdb
-    tempb2 = (temp-zetas(0))*term3_hsdb/one_m_z3_hs
-    one_m_z3_hsdb = tempb2
-    one_m_z3_hsb = temp1b/one_m_z3_hs - temp4*tempb2
+    tempb2 = (temp-zetas(0))*term3_hsdb/eta
+    etadb = etadb + tempb2
+    etab = etab + temp1b/eta - temp4*tempb2
+    zetasb(3) = zetasb(3) - (2*temp*zetasd(3)+2*zetas(3)*temp5)*tempb4
     tempb6 = tempb/zetas(3)**2
-    temp = zetas(3)*(one_m_z3_hs*one_m_z3_hs)
+    temp = zetas(3)*(eta*eta)
     temp1 = zetas(2)*zetas(2)*zetas(2)/temp
     temp5 = 3*(zetas(2)*zetas(2))
-    temp4 = one_m_z3_hs*one_m_z3_hs*zetasd(3) + 2*zetas(3)*one_m_z3_hs*&
-&     one_m_z3_hsd
+    temp4 = eta*eta*zetasd(3) + 2*zetas(3)*eta*etad
     tempb5 = term2_hsdb/temp
     temp1b = term2_hsb - temp4*tempb5
     zetasb(2) = zetasb(2) + 2*zetas(2)*3*zetasd(2)*tempb4 + 3*zetas(2)**&
 &     2*tempb6 + 2*zetas(2)*3*zetasd(2)*tempb5 + 3*zetas(2)**2*temp1b/&
 &     temp
     tempb2 = -(temp1*tempb5)
-    zetasdb(3) = zetasdb(3) + one_m_z3_hs**2*tempb2 - one_m_z3_chaindb -&
-&     temp7*tempb4
+    zetasdb(3) = zetasdb(3) + eta**2*tempb2 - temp7*tempb4
     tempb = -((temp5*zetasd(2)-temp1*temp4)*tempb5/temp) - zetas(2)**3*&
 &     temp1b/temp**2
-    zetasb(3) = zetasb(3) + 2*one_m_z3_hs*one_m_z3_hsd*tempb2 - 2*zetas(&
-&     2)**3*tempb6/zetas(3) + one_m_z3_hs**2*tempb
+    zetasb(3) = zetasb(3) + 2*eta*etad*tempb2 - 2*zetas(2)**3*tempb6/&
+&     zetas(3) + eta**2*tempb
     tempb6 = 2*zetas(3)*tempb2
-    one_m_z3_hsb = one_m_z3_hsb + 2*one_m_z3_hs*zetasd(3)*tempb2 + &
-&     one_m_z3_hsd*tempb6 + 2*one_m_z3_hs*zetas(3)*tempb
-    temp = zetas(1)/one_m_z3_hs
+    etab = etab + 2*eta*zetasd(3)*tempb2 + etad*tempb6 + 2*eta*zetas(3)*&
+&     tempb
+    temp = zetas(1)/eta
     tempb2 = 3.0_pr*term1_hsdb
     zetasdb(2) = zetasdb(2) + temp6*tempb4 + temp5*tempb5 + temp*tempb2
-    temp5 = zetas(2)/one_m_z3_hs
-    tempb4 = (zetasd(1)-temp*one_m_z3_hsd)*tempb2/one_m_z3_hs
+    temp5 = zetas(2)/eta
+    tempb4 = (zetasd(1)-temp*etad)*tempb2/eta
     zetasb(2) = zetasb(2) + temp*3.0_pr*term1_hsb + tempb4
     tempb5 = temp5*tempb2
-    one_m_z3_hsdb = one_m_z3_hsdb + one_m_z3_hs*tempb6 - temp*tempb5
-    tempb = zetas(2)*3.0_pr*term1_hsb + zetasd(2)*tempb2 - one_m_z3_hsd*&
-&     tempb5
+    etadb = etadb + eta*tempb6 - temp*tempb5
+    tempb = zetas(2)*3.0_pr*term1_hsb + zetasd(2)*tempb2 - etad*tempb5
     zetasdb(1) = zetasdb(1) + tempb5
-    one_m_z3_hsb = one_m_z3_hsb - temp5*tempb4 - zetas(1)*tempb/&
-&     one_m_z3_hs**2
+    etab = etab - temp5*tempb4 - zetas(1)*tempb/eta**2
     CALL POPREAL8(temp)
-    zetasb(1) = zetasb(1) + tempb/one_m_z3_hs
-    zetasb(3) = zetasb(3) - one_m_z3_hsb
-    zetasdb(3) = zetasdb(3) - one_m_z3_hsdb
+    zetasb(1) = zetasb(1) + tempb/eta
+    zetasb(3) = zetasb(3) - etab
+    zetasdb(3) = zetasdb(3) - etadb
     tempdb = 0.0_pr
     rhodb = 0.0_pr
     rhob = 0.0_pr
@@ -2719,6 +2618,10 @@ CONTAINS
       tb = tb + 3.0_pr*epsilon_k(i)*arg1b/t**2 - 2*td*tempb2/t
       tdb = tdb + tempb2
     END DO
+    DO i=nc,1,-1
+      xb(i) = xb(i) + m(i)*m_aveb
+      xdb(i) = xdb(i) + m(i)*m_avedb
+    END DO
     temp4 = SUM(nd)
     tempb0 = xdb/temp
     tempb1 = -(temp4*tempb0/temp)
@@ -2753,8 +2656,8 @@ CONTAINS
 ! Number of components
     INTEGER :: nc
 ! Average number of segments
-    REAL(pr) :: m_average
-    REAL(pr) :: m_averaged
+    REAL(pr) :: m_ave
+    REAL(pr) :: m_aved
 ! Internal variables declarations
 ! Diameter declarations
     REAL(pr) :: d(SIZE(n))
@@ -2764,23 +2667,25 @@ CONTAINS
     REAL(pr) :: zetasd(0:3)
     REAL(pr) :: rho
     REAL(pr) :: rhod
+    REAL(pr) :: eta
+    REAL(pr) :: etad
 ! Ar hard-sphere contribution declarations
-    REAL(pr) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
-    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd, one_m_z3_hsd
+    REAL(pr) :: term1_hs, term2_hs, term3_hs
+    REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
     REAL(pr) :: ar_hs
     REAL(pr) :: ar_hsd
 ! Ar chain contribution declarations
-    REAL(pr) :: g_ii, one_m_z3_chain
-    REAL(pr) :: g_iid, one_m_z3_chaind
+    REAL(pr) :: g_ii
+    REAL(pr) :: g_iid
     REAL(pr) :: di_2
     REAL(pr) :: di_2d
     REAL(pr) :: ar_chain
     REAL(pr) :: ar_chaind
 ! Ar dispersion contribution declarations
-    REAL(pr) :: rho_disp, eta, one_m_eta
-    REAL(pr) :: rho_dispd, etad, one_m_etad
-    REAL(pr) :: m_ave, m2_es3, m2_e2s3, i1, i2, c1
-    REAL(pr) :: m_aved, m2_es3d, m2_e2s3d, i1d, i2d, c1d
+    REAL(pr) :: rho_disp
+    REAL(pr) :: rho_dispd
+    REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+    REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
     REAL(pr) :: term_disp, a_k, b_k
     REAL(pr) :: term_dispd, a_kd, b_kd
     REAL(pr) :: a1_term_disp, a2_term_disp
@@ -2826,6 +2731,13 @@ CONTAINS
     n_tot = SUM(n)
 ! Number of components
     nc = SIZE(n)
+    m_ave = 0.0_pr
+    m_aved = 0.0_pr
+    DO i=1,nc
+! Segment average
+      m_aved = m_aved + m(i)*xd(i)
+      m_ave = m_ave + x(i)*m(i)
+    END DO
     dd = 0.0_pr
 ! Diameter calculation
     DO i=1,SIZE(n)
@@ -2855,23 +2767,22 @@ CONTAINS
       zetasd(k) = pi*(temp*rhod/6.0_pr+rho*SUM(arg10d)/6.0_8)
       zetas(k) = pi*(rho/6.0_pr*temp)
     END DO
+    etad = -zetasd(3)
+    eta = 1.0_pr - zetas(3)
 ! Ar hard-sphere contribution
-    one_m_z3_hsd = -zetasd(3)
-    one_m_z3_hs = 1.0_pr - zetas(3)
-    temp = zetas(1)/one_m_z3_hs
-    term1_hsd = 3.0_pr*(zetas(2)*(zetasd(1)-temp*one_m_z3_hsd)/&
-&     one_m_z3_hs+temp*zetasd(2))
+    temp = zetas(1)/eta
+    term1_hsd = 3.0_pr*(zetas(2)*(zetasd(1)-temp*etad)/eta+temp*zetasd(2)&
+&     )
     term1_hs = 3.0_pr*(temp*zetas(2))
-    temp = zetas(3)*(one_m_z3_hs*one_m_z3_hs)
+    temp = zetas(3)*(eta*eta)
     temp1 = zetas(2)*zetas(2)*zetas(2)/temp
-    term2_hsd = (3*zetas(2)**2*zetasd(2)-temp1*(one_m_z3_hs**2*zetasd(3)&
-&     +zetas(3)*2*one_m_z3_hs*one_m_z3_hsd))/temp
+    term2_hsd = (3*zetas(2)**2*zetasd(2)-temp1*(eta**2*zetasd(3)+zetas(3&
+&     )*2*eta*etad))/temp
     term2_hs = temp1
-    temp1 = LOG(one_m_z3_hs)
+    temp1 = LOG(eta)
     temp = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
     term3_hsd = temp1*((3*zetas(2)**2*zetasd(2)-temp*2*zetas(3)*zetasd(3&
-&     ))/zetas(3)**2-zetasd(0)) + (temp-zetas(0))*one_m_z3_hsd/&
-&     one_m_z3_hs
+&     ))/zetas(3)**2-zetasd(0)) + (temp-zetas(0))*etad/eta
     term3_hs = (temp-zetas(0))*temp1
 ! A_hs/RT
     temp1 = (term1_hs+term2_hs+term3_hs)/zetas(0)
@@ -2879,21 +2790,17 @@ CONTAINS
     ar_hs = temp1
 ! Ar chain contribution
     ar_chain = 0.0_pr
-    one_m_z3_chaind = -zetasd(3)
-    one_m_z3_chain = 1.0_pr - zetas(3)
     ar_chaind = 0.0_pr
     DO i=1,SIZE(x)
       di_2d = dd(i)/2.0_pr
       di_2 = d(i)/2.0_pr
-      temp1 = di_2*zetas(2)/(one_m_z3_chain*one_m_z3_chain)
-      temp = one_m_z3_chain*one_m_z3_chain*one_m_z3_chain
+      temp1 = di_2*zetas(2)/(eta*eta)
+      temp = eta*eta*eta
       temp2 = di_2*di_2*(zetas(2)*zetas(2))/temp
-      g_iid = 3.0_pr*(zetas(2)*di_2d+di_2*zetasd(2)-temp1*2*&
-&       one_m_z3_chain*one_m_z3_chaind)/one_m_z3_chain**2 - &
-&       one_m_z3_chaind/one_m_z3_chain**2 + 2.0_pr*(zetas(2)**2*2*di_2*&
-&       di_2d+di_2**2*2*zetas(2)*zetasd(2)-temp2*3*one_m_z3_chain**2*&
-&       one_m_z3_chaind)/temp
-      g_ii = 1.0/one_m_z3_chain + 3.0_pr*temp1 + 2.0_8*temp2
+      g_iid = 3.0_pr*(zetas(2)*di_2d+di_2*zetasd(2)-temp1*2*eta*etad)/eta&
+&       **2 - etad/eta**2 + 2.0_pr*(zetas(2)**2*2*di_2*di_2d+di_2**2*2*&
+&       zetas(2)*zetasd(2)-temp2*3*eta**2*etad)/temp
+      g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
 ! Summation
       temp2 = LOG(g_ii)
       ar_chaind = ar_chaind - (m(i)-1.0_pr)*(temp2*xd(i)+x(i)*g_iid/g_ii)
@@ -2905,20 +2812,9 @@ CONTAINS
       temp2 = n_tot/(1.0e27_pr*v)
       rho_dispd = n_avo*(n_totd-temp2*1.0e27_pr*vd)/(1.0e27_pr*v)
       rho_disp = n_avo*temp2
-      etad = zetasd(3)
-      eta = zetas(3)
-      one_m_etad = -etad
-      one_m_eta = 1.0_pr - eta
 ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr
       m2_es3 = 0.0_pr
       m2_e2s3 = 0.0_pr
-      m_aved = 0.0_pr
-      DO i=1,nc
-! Segment average
-        m_aved = m_aved + m(i)*xd(i)
-        m_ave = m_ave + x(i)*m(i)
-      END DO
       m2_e2s3d = 0.0_pr
       m2_es3d = 0.0_pr
       DO i=1,nc
@@ -2956,37 +2852,39 @@ CONTAINS
 &         -temp1*2*m_ave-3.0)/m_ave**2)*m_aved
         b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
 &         temp1
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           tempd0 = 0.0_pr
         ELSE
-          tempd0 = k*eta**(k-1)*etad
+          tempd0 = k*zetas(3)**(k-1)*zetasd(3)
         END IF
         i1d = i1d + temp2*a_kd + a_k*tempd0
         i1 = i1 + a_k*temp2
-        temp2 = eta**k
-        IF (eta .LE. 0.0 .AND. k .EQ. 0.0) THEN
+        temp2 = zetas(3)**k
+        IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
           tempd0 = 0.0_pr
         ELSE
-          tempd0 = k*eta**(k-1)*etad
+          tempd0 = k*zetas(3)**(k-1)*zetasd(3)
         END IF
         i2d = i2d + temp2*b_kd + b_k*tempd0
         i2 = i2 + b_k*temp2
       END DO
 ! 3. Compressibility C1 (Same as before)
-      temp2 = one_m_eta**4
+      temp2 = eta**4
       temp1 = m_ave/temp2
-      temp = 8.0_pr*eta - 2.0_pr*(eta*eta)
-      c1d = temp1*(8.0_pr-2.0_pr*2*eta)*etad + temp*(m_aved-temp1*4*&
-&       one_m_eta**3*one_m_etad)/temp2
+      temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+      c1d = temp1*(8.0_pr-2.0_pr*2*zetas(3))*zetasd(3) + temp*(m_aved-&
+&       temp1*4*eta**3*etad)/temp2
       c1 = temp*temp1 + 1.0_pr
-      temp2 = (-eta+1.0_pr)*(-eta+1.0_pr)*((-eta+2.0_pr)*(-eta+2.0_pr))
+      temp2 = (-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr)*((-zetas(3)+2.0_pr)*&
+&       (-zetas(3)+2.0_pr))
       temp1 = (-m_ave+1.0_pr)/temp2
-      temp = 20.0_pr*eta - 27.0_pr*(eta*eta) + 12.0_pr*(eta*eta*eta) - &
-&       2.0_pr*eta**4
-      c1d = c1d + temp1*(12.0_pr*3*eta**2-27.0_pr*2*eta-2.0_pr*4*eta**3+&
-&       20.0_pr)*etad + temp*(temp1*((2.0_pr-eta)**2*2*(1.0_pr-eta)+(&
-&       1.0_pr-eta)**2*2*(2.0_pr-eta))*etad-m_aved)/temp2
+      temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+&       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+      c1d = c1d + temp1*(12.0_pr*3*zetas(3)**2-27.0_pr*2*zetas(3)-2.0_pr&
+&       *4*zetas(3)**3+20.0_pr)*zetasd(3) + temp*(temp1*((2.0_pr-zetas(3&
+&       ))**2*2*(1.0_pr-zetas(3))+(1.0_pr-zetas(3))**2*2*(2.0_pr-zetas(3&
+&       )))*zetasd(3)-m_aved)/temp2
       c1 = c1 + temp*temp1
       c1d = -(c1d/c1**2)
       c1 = 1._pr/c1
@@ -3008,16 +2906,9 @@ CONTAINS
       ar_dispersiond = 0.0_pr
     END IF
 ! Final evaluation
-    m_average = 0.0_pr
-    m_averaged = 0.0_pr
-    DO i=1,nc
-! Segment average
-      m_averaged = m_averaged + m(i)*xd(i)
-      m_average = m_average + x(i)*m(i)
-    END DO
-    temp2 = m_average*ar_hs + ar_chain + ar_dispersion
-    arvald = r*(temp2*(n_tot*td+t*n_totd)+t*n_tot*(ar_hs*m_averaged+&
-&     m_average*ar_hsd+ar_chaind+ar_dispersiond))
+    temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
+    arvald = r*(temp2*(n_tot*td+t*n_totd)+t*n_tot*(ar_hs*m_aved+m_ave*&
+&     ar_hsd+ar_chaind+ar_dispersiond))
     arval = r*(t*n_tot*temp2)
   END SUBROUTINE AR_D
 
@@ -3043,8 +2934,8 @@ CONTAINS
 ! Number of components
     INTEGER :: nc
 ! Average number of segments
-    REAL(pr) :: m_average
-    REAL(pr) :: m_averageb
+    REAL(pr) :: m_ave
+    REAL(pr) :: m_aveb
 ! Internal variables declarations
 ! Diameter declarations
     REAL(pr) :: d(SIZE(n))
@@ -3054,23 +2945,25 @@ CONTAINS
     REAL(pr) :: zetasb(0:3)
     REAL(pr) :: rho
     REAL(pr) :: rhob
+    REAL(pr) :: eta
+    REAL(pr) :: etab
 ! Ar hard-sphere contribution declarations
-    REAL(pr) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
-    REAL(pr) :: term1_hsb, term2_hsb, term3_hsb, one_m_z3_hsb
+    REAL(pr) :: term1_hs, term2_hs, term3_hs
+    REAL(pr) :: term1_hsb, term2_hsb, term3_hsb
     REAL(pr) :: ar_hs
     REAL(pr) :: ar_hsb
 ! Ar chain contribution declarations
-    REAL(pr) :: g_ii, one_m_z3_chain
-    REAL(pr) :: g_iib, one_m_z3_chainb
+    REAL(pr) :: g_ii
+    REAL(pr) :: g_iib
     REAL(pr) :: di_2
     REAL(pr) :: di_2b
     REAL(pr) :: ar_chain
     REAL(pr) :: ar_chainb
 ! Ar dispersion contribution declarations
-    REAL(pr) :: rho_disp, eta, one_m_eta
-    REAL(pr) :: rho_dispb, etab, one_m_etab
-    REAL(pr) :: m_ave, m2_es3, m2_e2s3, i1, i2, c1
-    REAL(pr) :: m_aveb, m2_es3b, m2_e2s3b, i1b, i2b, c1b
+    REAL(pr) :: rho_disp
+    REAL(pr) :: rho_dispb
+    REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+    REAL(pr) :: m2_es3b, m2_e2s3b, i1b, i2b, c1b
     REAL(pr) :: term_disp, a_k, b_k
     REAL(pr) :: term_dispb, a_kb, b_kb
     REAL(pr) :: a1_term_disp, a2_term_disp
@@ -3115,6 +3008,11 @@ CONTAINS
     n_tot = SUM(n)
 ! Number of components
     nc = SIZE(n)
+    m_ave = 0.0_pr
+    DO i=1,nc
+! Segment average
+      m_ave = m_ave + x(i)*m(i)
+    END DO
 ! Diameter calculation
     DO i=1,SIZE(n)
       arg1 = -(3.0_pr*epsilon_k(i)/t)
@@ -3128,21 +3026,20 @@ CONTAINS
       arg10 = x*m*d**k
       zetas(k) = rho*(pi/6.0_pr)*SUM(arg10)
     END DO
+    eta = 1.0_pr - zetas(3)
 ! Ar hard-sphere contribution
-    one_m_z3_hs = 1.0_pr - zetas(3)
-    term1_hs = 3.0_pr*zetas(1)*zetas(2)/one_m_z3_hs
-    term2_hs = zetas(2)**3/(zetas(3)*one_m_z3_hs**2)
-    term3_hs = (zetas(2)**3/zetas(3)**2-zetas(0))*LOG(one_m_z3_hs)
+    term1_hs = 3.0_pr*zetas(1)*zetas(2)/eta
+    term2_hs = zetas(2)**3/(zetas(3)*eta**2)
+    term3_hs = (zetas(2)**3/zetas(3)**2-zetas(0))*LOG(eta)
 ! A_hs/RT
     ar_hs = 1.0_pr/zetas(0)*(term1_hs+term2_hs+term3_hs)
 ! Ar chain contribution
     ar_chain = 0.0_pr
-    one_m_z3_chain = 1.0_pr - zetas(3)
     DO i=1,SIZE(x)
       di_2 = d(i)/2.0_pr
       CALL PUSHREAL8(g_ii)
-      g_ii = 1.0_pr/one_m_z3_chain + 3.0_8*di_2*zetas(2)/one_m_z3_chain**&
-&       2 + 2.0_pr*di_2**2*zetas(2)**2/one_m_z3_chain**3
+      g_ii = 1.0_pr/eta + 3.0_8*di_2*zetas(2)/eta**2 + 2.0_8*di_2**2*&
+&       zetas(2)**2/eta**3
 ! Summation
       ar_chain = ar_chain - x(i)*(m(i)-1.0_pr)*LOG(g_ii)
     END DO
@@ -3151,16 +3048,9 @@ CONTAINS
     IF (ALLOCATED(model%kij)) THEN
 ! Number density [1/A^3]
       rho_disp = n_tot*n_avo/(v*1.0e27_pr)
-      eta = zetas(3)
-      one_m_eta = 1.0_pr - eta
 ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr
       m2_es3 = 0.0_pr
       m2_e2s3 = 0.0_pr
-      DO i=1,nc
-! Segment average
-        m_ave = m_ave + x(i)*m(i)
-      END DO
       DO i=1,nc
         DO j=1,nc
           sig_ij = 0.5_pr*(sigma(i)+sigma(j))
@@ -3184,13 +3074,14 @@ CONTAINS
         CALL PUSHREAL8(b_k)
         b_k = b_coeffs(0, k) + (m_ave-1.0_pr)/m_ave*b_coeffs(1, k) + (&
 &         m_ave-1.0_pr)/m_ave*(m_ave-2.0_pr)/m_ave*b_coeffs(2, k)
-        i1 = i1 + a_k*eta**k
-        i2 = i2 + b_k*eta**k
+        i1 = i1 + a_k*zetas(3)**k
+        i2 = i2 + b_k*zetas(3)**k
       END DO
 ! 3. Compressibility C1 (Same as before)
-      c1 = 1.0_pr + m_ave*(8.0_pr*eta-2.0_pr*eta**2)/one_m_eta**4
-      c1 = c1 + (1.0_pr-m_ave)*(20.0_pr*eta-27.0_pr*eta**2+12.0_pr*eta**&
-&       3-2.0_pr*eta**4)/((1.0_pr-eta)*(2.0_pr-eta))**2
+      c1 = 1.0_pr + m_ave*(8.0_pr*zetas(3)-2.0_pr*zetas(3)**2)/eta**4
+      c1 = c1 + (1.0_pr-m_ave)*(20.0_pr*zetas(3)-27.0_pr*zetas(3)**2+&
+&       12.0_pr*zetas(3)**3-2.0_pr*zetas(3)**4)/((1.0_pr-zetas(3))*(&
+&       2.0_pr-zetas(3)))**2
       CALL PUSHREAL8(c1)
       c1 = 1._pr/c1
 ! Eq. A.11 Gross & Sadowski (2001)
@@ -3205,24 +3096,14 @@ CONTAINS
       ar_dispersion = 0.0_pr
       CALL PUSHCONTROL1B(1)
     END IF
-! Final evaluation
-    m_average = 0.0_pr
-    DO i=1,nc
-! Segment average
-      m_average = m_average + x(i)*m(i)
-    END DO
-    tempb1 = (m_average*ar_hs+ar_chain+ar_dispersion)*r*arvalb
+    tempb1 = (m_ave*ar_hs+ar_chain+ar_dispersion)*r*arvalb
     tempb0 = t*n_tot*r*arvalb
-    m_averageb = ar_hs*tempb0
-    ar_hsb = m_average*tempb0
+    m_aveb = ar_hs*tempb0
+    ar_hsb = m_ave*tempb0
     ar_chainb = tempb0
     ar_dispersionb = tempb0
     tb = n_tot*tempb1
     n_totb = t*tempb1
-    xb = 0.0_pr
-    DO i=nc,1,-1
-      xb(i) = xb(i) + m(i)*m_averageb
-    END DO
     CALL POPCONTROL1B(branch)
     IF (branch .EQ. 0) THEN
       a1_term_dispb = ar_dispersionb
@@ -3235,32 +3116,35 @@ CONTAINS
       m2_e2s3b = rho_disp*m_ave*tempb1
       CALL POPREAL8(c1)
       c1b = -(c1b/c1**2)
-      temp1 = (-eta+1.0_pr)*(-eta+1.0_pr)*((-eta+2.0_pr)*(-eta+2.0_pr))
+      zetasb = 0.0_pr
+      temp1 = (-zetas(3)+1.0_pr)*(-zetas(3)+1.0_pr)*((-zetas(3)+2.0_pr)*&
+&       (-zetas(3)+2.0_pr))
       temp0 = (-m_ave+1.0_pr)/temp1
       tempb = temp0*c1b
-      tempb0 = (20.0_pr*eta-27.0_pr*eta**2+12.0_pr*eta**3-2.0_pr*eta**4)&
-&       *c1b/temp1
-      m_aveb = rho_disp*m2_e2s3*tempb1 - tempb0
+      tempb0 = (20.0_pr*zetas(3)-27.0_pr*zetas(3)**2+12.0_pr*zetas(3)**3&
+&       -2.0_pr*zetas(3)**4)*c1b/temp1
+      m_aveb = m_aveb + rho_disp*m2_e2s3*tempb1 - tempb0
       tempb1 = -(pi*2.0_pr*a1_term_dispb)
       rho_dispb = rho_dispb + i1*m2_es3*tempb1
       i1b = rho_disp*m2_es3*tempb1
       m2_es3b = rho_disp*i1*tempb1
       tempb1 = -(temp0*tempb0)
-      temp1 = one_m_eta**4
+      temp1 = eta**4
       temp0 = m_ave/temp1
-      etab = (3*eta**2*12.0_pr-4*eta**3*2.0_pr-2*eta*27.0_pr+20.0_pr)*&
-&       tempb - (2*(1.0_pr-eta)*(2.0_pr-eta)**2+2*(2.0_pr-eta)*(1.0_pr-&
-&       eta)**2)*tempb1 + (8.0_pr-2*eta*2.0_pr)*temp0*c1b
-      tempb0 = (8.0_pr*eta-2.0_pr*eta**2)*c1b/temp1
+      zetasb(3) = zetasb(3) + (3*zetas(3)**2*12.0_pr-4*zetas(3)**3*&
+&       2.0_pr-2*zetas(3)*27.0_pr+20.0_pr)*tempb - (2*(1.0_pr-zetas(3))*&
+&       (2.0_pr-zetas(3))**2+2*(2.0_pr-zetas(3))*(1.0_pr-zetas(3))**2)*&
+&       tempb1 + (8.0_pr-2*zetas(3)*2.0_pr)*temp0*c1b
+      tempb0 = (8.0_pr*zetas(3)-2.0_pr*zetas(3)**2)*c1b/temp1
       m_aveb = m_aveb + tempb0
-      one_m_etab = -(4*one_m_eta**3*temp0*tempb0)
+      etab = -(4*eta**3*temp0*tempb0)
       DO k=6,0,-1
-        b_kb = eta**k*i2b
-        IF (.NOT.(eta .LE. 0.0 .AND. k .EQ. 0.0)) etab = etab + k*eta**(&
-&           k-1)*b_k*i2b
-        a_kb = eta**k*i1b
-        IF (.NOT.(eta .LE. 0.0 .AND. k .EQ. 0.0)) etab = etab + k*eta**(&
-&           k-1)*a_k*i1b
+        b_kb = zetas(3)**k*i2b
+        IF (.NOT.(zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+&           zetasb(3) + k*zetas(3)**(k-1)*b_k*i2b
+        a_kb = zetas(3)**k*i1b
+        IF (.NOT.(zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+&           zetasb(3) + k*zetas(3)**(k-1)*a_k*i1b
         CALL POPREAL8(b_k)
         tempb1 = b_coeffs(1, k)*b_kb/m_ave
         tempb0 = b_coeffs(2, k)*b_kb/m_ave**2
@@ -3272,6 +3156,7 @@ CONTAINS
         m_aveb = m_aveb + (2*m_ave-2*(m_ave-1.0_pr)*(m_ave-2.0_pr)/m_ave&
 &         -3.0)*tempb0 + (1.0-(m_ave-1.0_pr)/m_ave)*tempb1
       END DO
+      xb = 0.0_pr
       DO i=nc,1,-1
         DO j=nc,1,-1
           sig_ij = 0.5_pr*(sigma(i)+sigma(j))
@@ -3288,21 +3173,16 @@ CONTAINS
           CALL POPREAL8(eps_ij)
         END DO
       END DO
-      DO i=nc,1,-1
-        xb(i) = xb(i) + m(i)*m_aveb
-      END DO
-      etab = etab - one_m_etab
-      zetasb = 0.0_pr
-      zetasb(3) = zetasb(3) + etab
       tempb1 = n_avo*rho_dispb/(1.0e27_pr*v)
       n_totb = n_totb + tempb1
       vb = -(n_tot*tempb1/v)
     ELSE
       vb = 0.0_pr
+      xb = 0.0_pr
       zetasb = 0.0_pr
+      etab = 0.0_pr
     END IF
     db = 0.0_pr
-    one_m_z3_chainb = 0.0_pr
     CALL POPINTEGER4(ad_to0)
     DO i=ad_to0,1,-1
       tempb1 = -((m(i)-1.0_pr)*ar_chainb)
@@ -3310,39 +3190,36 @@ CONTAINS
       g_iib = x(i)*tempb1/g_ii
       di_2 = d(i)/2.0_pr
       CALL POPREAL8(g_ii)
-      temp = one_m_z3_chain*one_m_z3_chain*one_m_z3_chain
-      tempb0 = 3.0_pr*g_iib/one_m_z3_chain**2
+      temp = eta*eta*eta
+      tempb0 = 3.0_pr*g_iib/eta**2
       tempb1 = 2.0_pr*g_iib/temp
-      one_m_z3_chainb = one_m_z3_chainb - g_iib/one_m_z3_chain**2 - 3*&
-&       one_m_z3_chain**2*di_2**2*zetas(2)**2*tempb1/temp - 2*di_2*zetas&
-&       (2)*tempb0/one_m_z3_chain
+      etab = etab - g_iib/eta**2 - 3*eta**2*di_2**2*zetas(2)**2*tempb1/&
+&       temp - 2*di_2*zetas(2)*tempb0/eta
       di_2b = 2*di_2*zetas(2)**2*tempb1 + zetas(2)*tempb0
       zetasb(2) = zetasb(2) + 2*zetas(2)*di_2**2*tempb1 + di_2*tempb0
       db(i) = db(i) + di_2b/2.0_pr
     END DO
+    temp = zetas(3)*(eta*eta)
     tempb0 = ar_hsb/zetas(0)
     term1_hsb = tempb0
     term2_hsb = tempb0
     term3_hsb = tempb0
     temp0 = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
-    tempb = LOG(one_m_z3_hs)*term3_hsb
+    tempb = LOG(eta)*term3_hsb
     zetasb(0) = zetasb(0) - (term1_hs+term2_hs+term3_hs)*tempb0/zetas(0)&
 &     - tempb
     tempb0 = tempb/zetas(3)**2
-    temp = zetas(3)*(one_m_z3_hs*one_m_z3_hs)
-    tempb = -(zetas(2)**3*term2_hsb/temp**2)
-    zetasb(3) = zetasb(3) + one_m_z3_hs**2*tempb - one_m_z3_chainb - 2*&
-&     zetas(3)*temp0*tempb0
-    one_m_z3_hsb = (temp0-zetas(0))*term3_hsb/one_m_z3_hs + 2*&
-&     one_m_z3_hs*zetas(3)*tempb
     zetasb(2) = zetasb(2) + 3*zetas(2)**2*tempb0 + 3*zetas(2)**2*&
 &     term2_hsb/temp
-    temp = zetas(1)/one_m_z3_hs
-    tempb = zetas(2)*3.0_pr*term1_hsb/one_m_z3_hs
+    tempb = -(zetas(2)**3*term2_hsb/temp**2)
+    etab = etab + (temp0-zetas(0))*term3_hsb/eta + 2*eta*zetas(3)*tempb
+    zetasb(3) = zetasb(3) + eta**2*tempb - 2*zetas(3)*temp0*tempb0
+    temp = zetas(1)/eta
+    tempb = zetas(2)*3.0_pr*term1_hsb/eta
     zetasb(2) = zetasb(2) + temp*3.0_pr*term1_hsb
     zetasb(1) = zetasb(1) + tempb
-    one_m_z3_hsb = one_m_z3_hsb - temp*tempb
-    zetasb(3) = zetasb(3) - one_m_z3_hsb
+    etab = etab - temp*tempb
+    zetasb(3) = zetasb(3) - etab
     rhob = 0.0_pr
     DO k=3,0,-1
       arg10 = x*m*d**k
@@ -3365,6 +3242,9 @@ CONTAINS
       db(i) = 0.0_pr
       tb = tb + 3.0_pr*epsilon_k(i)*arg1b/t**2
     END DO
+    DO i=nc,1,-1
+      xb(i) = xb(i) + m(i)*m_aveb
+    END DO
     temp = SUM(n)
     nb = nb + n_totb + xb/temp - SUM(n*xb)/temp**2
     arvalb = 0.0_pr
@@ -3384,23 +3264,24 @@ CONTAINS
 ! Number of components
     INTEGER :: nc
 ! Average number of segments
-    REAL(pr) :: m_average
+    REAL(pr) :: m_ave
 ! Internal variables declarations
 ! Diameter declarations
     REAL(pr) :: d(SIZE(n))
 ! Zetas declarations
     REAL(pr) :: zetas(0:3)
     REAL(pr) :: rho
+    REAL(pr) :: eta
 ! Ar hard-sphere contribution declarations
-    REAL(pr) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
+    REAL(pr) :: term1_hs, term2_hs, term3_hs
     REAL(pr) :: ar_hs
 ! Ar chain contribution declarations
-    REAL(pr) :: g_ii, one_m_z3_chain
+    REAL(pr) :: g_ii
     REAL(pr) :: di_2
     REAL(pr) :: ar_chain
 ! Ar dispersion contribution declarations
-    REAL(pr) :: rho_disp, eta, one_m_eta
-    REAL(pr) :: m_ave, m2_es3, m2_e2s3, i1, i2, c1
+    REAL(pr) :: rho_disp
+    REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
     REAL(pr) :: term_disp, a_k, b_k
     REAL(pr) :: a1_term_disp, a2_term_disp
     REAL(pr) :: eps_ij, sig_ij, kij_val
@@ -3431,6 +3312,11 @@ CONTAINS
     n_tot = SUM(n)
 ! Number of components
     nc = SIZE(n)
+    m_ave = 0.0_pr
+    DO i=1,nc
+! Segment average
+      m_ave = m_ave + x(i)*m(i)
+    END DO
 ! Diameter calculation
     DO i=1,SIZE(n)
       arg1 = -(3.0_pr*epsilon_k(i)/t)
@@ -3444,20 +3330,19 @@ CONTAINS
       arg10 = x*m*d**k
       zetas(k) = rho*(pi/6.0_pr)*SUM(arg10)
     END DO
+    eta = 1.0_pr - zetas(3)
 ! Ar hard-sphere contribution
-    one_m_z3_hs = 1.0_pr - zetas(3)
-    term1_hs = 3.0_pr*zetas(1)*zetas(2)/one_m_z3_hs
-    term2_hs = zetas(2)**3/(zetas(3)*one_m_z3_hs**2)
-    term3_hs = (zetas(2)**3/zetas(3)**2-zetas(0))*LOG(one_m_z3_hs)
+    term1_hs = 3.0_pr*zetas(1)*zetas(2)/eta
+    term2_hs = zetas(2)**3/(zetas(3)*eta**2)
+    term3_hs = (zetas(2)**3/zetas(3)**2-zetas(0))*LOG(eta)
 ! A_hs/RT
     ar_hs = 1.0_pr/zetas(0)*(term1_hs+term2_hs+term3_hs)
 ! Ar chain contribution
     ar_chain = 0.0_pr
-    one_m_z3_chain = 1.0_pr - zetas(3)
     DO i=1,SIZE(x)
       di_2 = d(i)/2.0_pr
-      g_ii = 1.0_pr/one_m_z3_chain + 3.0_8*di_2*zetas(2)/one_m_z3_chain**&
-&       2 + 2.0_pr*di_2**2*zetas(2)**2/one_m_z3_chain**3
+      g_ii = 1.0_pr/eta + 3.0_8*di_2*zetas(2)/eta**2 + 2.0_8*di_2**2*&
+&       zetas(2)**2/eta**3
 ! Summation
       ar_chain = ar_chain - x(i)*(m(i)-1.0_pr)*LOG(g_ii)
     END DO
@@ -3465,16 +3350,9 @@ CONTAINS
     IF (ALLOCATED(model%kij)) THEN
 ! Number density [1/A^3]
       rho_disp = n_tot*n_avo/(v*1.0e27_pr)
-      eta = zetas(3)
-      one_m_eta = 1.0_pr - eta
 ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr
       m2_es3 = 0.0_pr
       m2_e2s3 = 0.0_pr
-      DO i=1,nc
-! Segment average
-        m_ave = m_ave + x(i)*m(i)
-      END DO
       DO i=1,nc
         DO j=1,nc
           sig_ij = 0.5_pr*(sigma(i)+sigma(j))
@@ -3495,13 +3373,14 @@ CONTAINS
 &         m_ave-1.0_pr)/m_ave*(m_ave-2.0_pr)/m_ave*a_coeffs(2, k)
         b_k = b_coeffs(0, k) + (m_ave-1.0_pr)/m_ave*b_coeffs(1, k) + (&
 &         m_ave-1.0_pr)/m_ave*(m_ave-2.0_pr)/m_ave*b_coeffs(2, k)
-        i1 = i1 + a_k*eta**k
-        i2 = i2 + b_k*eta**k
+        i1 = i1 + a_k*zetas(3)**k
+        i2 = i2 + b_k*zetas(3)**k
       END DO
 ! 3. Compressibility C1 (Same as before)
-      c1 = 1.0_pr + m_ave*(8.0_pr*eta-2.0_pr*eta**2)/one_m_eta**4
-      c1 = c1 + (1.0_pr-m_ave)*(20.0_pr*eta-27.0_pr*eta**2+12.0_pr*eta**&
-&       3-2.0_pr*eta**4)/((1.0_pr-eta)*(2.0_pr-eta))**2
+      c1 = 1.0_pr + m_ave*(8.0_pr*zetas(3)-2.0_pr*zetas(3)**2)/eta**4
+      c1 = c1 + (1.0_pr-m_ave)*(20.0_pr*zetas(3)-27.0_pr*zetas(3)**2+&
+&       12.0_pr*zetas(3)**3-2.0_pr*zetas(3)**4)/((1.0_pr-zetas(3))*(&
+&       2.0_pr-zetas(3)))**2
       c1 = 1._pr/c1
 ! Eq. A.11 Gross & Sadowski (2001)
 ! 1st order term (Takes 2 * PI)
@@ -3514,12 +3393,7 @@ CONTAINS
       ar_dispersion = 0.0_pr
     END IF
 ! Final evaluation
-    m_average = 0.0_pr
-    DO i=1,nc
-! Segment average
-      m_average = m_average + x(i)*m(i)
-    END DO
-    arval = r*t*n_tot*(m_average*ar_hs+ar_chain+ar_dispersion)
+    arval = r*t*n_tot*(m_ave*ar_hs+ar_chain+ar_dispersion)
   END SUBROUTINE AR
 
    type(TPCSAFT) function init_tpcsaft(m, sigma, epsilon_k, kij) result(model)

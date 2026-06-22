@@ -29,10 +29,10 @@ program main
    sigma = [3.7039_pr, 3.5206_pr, 3.6184_pr, 3.7086_pr]
    eps_k = [150.03_pr, 191.42_pr, 208.11_pr, 222.88_pr]
    
-   kij(1,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
-   kij(2,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
-   kij(3,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
-   kij(4,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+   kij(1,:) = [0.0_pr, 0.01_pr, 0.0_pr, 0.0_pr]
+   kij(2,:) = [0.01_pr, 0.0_pr, 0.01_pr, 0.0_pr]
+   kij(3,:) = [0.0_pr, 0.01_pr, 0.0_pr, 0.01_pr]
+   kij(4,:) = [0.0_pr, 0.01_pr, 0.0_pr, 0.0_pr]
 
    pcsaft_adiff = init_pcsaft(m, sigma, eps_k, kij)
    pcsaft_tapenade = init_tpcsaft(m, sigma, eps_k, kij)
