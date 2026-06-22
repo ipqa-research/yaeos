@@ -3,7 +3,7 @@
 ! ------------------------------------------------------------------------------
 #:def ar_dispersion_declaration(AR_DISPERSION)
    #:if AR_DISPERSION == "Dispersion-PCSAFT"
-      real(8) :: rho_disp, eta, one_m_eta
+      real(8) :: rho_disp
       real(8) :: m2_es3, m2_e2s3, I1, I2, C1
       real(8) :: term_disp, a_k, b_k
       real(8) :: a1_term_disp, a2_term_disp
@@ -20,8 +20,6 @@
    #:if AR_DISPERSION == "Dispersion-PCSAFT"
       if (allocated(model%kij)) then
          rho_disp = n_tot * N_AVO / (V * 1.0e27_pr)  ! Number density [1/A^3]
-         eta = zetas(3)
-         one_m_eta = 1.0_pr - eta
 
          ! 1. Mixture Averages (Same as before)
          m2_es3 = 0.0_pr
@@ -48,15 +46,15 @@
             b_k = B_COEFFS(0,k) + (m_ave - 1.0_pr)/m_ave * B_COEFFS(1,k) + &
                (m_ave - 1.0_pr)/m_ave * (m_ave - 2.0_pr)/m_ave * B_COEFFS(2,k)
 
-            I1 = I1 + a_k * (eta**k)
-            I2 = I2 + b_k * (eta**k)
+            I1 = I1 + a_k * (zetas(3)**k)
+            I2 = I2 + b_k * (zetas(3)**k)
          end do
 
          ! 3. Compressibility C1 (Same as before)
-         C1 = 1.0_pr + m_ave * (8.0_pr * eta - 2.0_pr * (eta**2)) / (one_m_eta**4)
+         C1 = 1.0_pr + m_ave * (8.0_pr * zetas(3) - 2.0_pr * (zetas(3)**2)) / (eta**4)
          C1 = C1 + (1.0_pr - m_ave) * &
-            (20.0_pr*eta - 27.0_pr*(eta**2) + 12.0_pr*(eta**3) - 2.0_pr*(eta**4)) / &
-            ((1.0_pr - eta) * (2.0_pr - eta))**2
+            (20.0_pr*zetas(3) - 27.0_pr*(zetas(3)**2) + 12.0_pr*(zetas(3)**3) - 2.0_pr*(zetas(3)**4)) / &
+            ((1.0_pr - zetas(3)) * (2.0_pr - zetas(3)))**2
          C1 = 1._pr / C1
 
          ! Eq. A.11 Gross & Sadowski (2001)

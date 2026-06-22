@@ -5,6 +5,7 @@
    #:if ZETAS == "PCSAFT-ZETAS"
       real(8) :: zetas(0:3)
       real(8) :: rho
+      real(8) :: eta
    #:endif
 #:enddef zetas_declaration
 
@@ -16,9 +17,10 @@
       rho = sum(n) * N_AVO / (V * 1.0e27_8)  ! Number density [1/A^3]
       
       zetas = 0.0_8
-
       do k = 0, 3
          zetas(k) = rho * (PI / 6.0_8) * sum(x * m * (d**k))
       end do
+
+      eta = 1.0_8 - zetas(3)
    #:endif
 #:enddef zetas

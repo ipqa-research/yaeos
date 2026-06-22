@@ -3,7 +3,7 @@
 ! ------------------------------------------------------------------------------
 #:def ar_chain_declaration(AR_CHAIN)
    #:if AR_CHAIN == "Chapman-PCSAFT"
-      real(8) :: g_ii, one_m_z3_chain
+      real(8) :: g_ii
       real(8) :: di_2
       real(8) :: ar_chain
    #:endif
@@ -15,14 +15,13 @@
 #:def ar_chain(AR_CHAIN)
    #:if AR_CHAIN == "Chapman-PCSAFT"
       ar_chain = 0.0_8
-      one_m_z3_chain = 1.0_8 - zetas(3)
 
       do i = 1, size(x)
          di_2 = d(i) / 2.0_8
 
-         g_ii = (1.0_8 / one_m_z3_chain) + &
-            (3.0_8 * di_2 * zetas(2)) / (one_m_z3_chain**2) + &
-            (2.0_8 * (di_2**2) * (zetas(2)**2)) / (one_m_z3_chain**3)
+         g_ii = (1.0_8 / eta) + &
+            (3.0_8 * di_2 * zetas(2)) / (eta**2) + &
+            (2.0_8 * (di_2**2) * (zetas(2)**2)) / (eta**3)
 
          ! Summation
          ar_chain = ar_chain - x(i) * (m(i) - 1.0_8) * log(g_ii)

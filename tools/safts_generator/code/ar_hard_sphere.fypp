@@ -3,7 +3,7 @@
 ! ------------------------------------------------------------------------------
 #:def ar_hard_sphere_declaration(AR_HARD_SPHERE)
    #:if AR_HARD_SPHERE == "Boublik-Mansoori-Carnahan-Starling"
-      real(8) :: term1_hs, term2_hs, term3_hs, one_m_z3_hs
+      real(8) :: term1_hs, term2_hs, term3_hs
       real(8) :: ar_hs
    #:endif
 #:enddef ar_hard_sphere_declaration
@@ -13,11 +13,9 @@
 ! ------------------------------------------------------------------------------
 #:def ar_hard_sphere(AR_HARD_SPHERE)
    #:if AR_HARD_SPHERE == "Boublik-Mansoori-Carnahan-Starling"
-      one_m_z3_hs = 1.0_8 - zetas(3)
-
-      term1_hs = (3.0_8 * zetas(1) * zetas(2)) / one_m_z3_hs
-      term2_hs = (zetas(2)**3) / (zetas(3) * (one_m_z3_hs**2))
-      term3_hs = ((zetas(2)**3)/(zetas(3)**2) - zetas(0)) * log(one_m_z3_hs)
+      term1_hs = (3.0_8 * zetas(1) * zetas(2)) / eta
+      term2_hs = (zetas(2)**3) / (zetas(3) * (eta**2))
+      term3_hs = ((zetas(2)**3)/(zetas(3)**2) - zetas(0)) * log(eta)
 
       ar_hs = (1.0_8 / zetas(0)) * (term1_hs + term2_hs + term3_hs) ! A_hs/RT
    #:endif
