@@ -71,7 +71,7 @@ contains
       real(8) :: x(size(n)) ! Mole fractions
       real(8) :: n_tot ! Total moles
       integer :: nc ! Number of components
-      real(8) :: m_average ! Average number of segments
+      real(8) :: m_ave ! Average number of segments
 
       ! Internal variables declarations
       ! Diameter declarations
@@ -92,9 +92,9 @@ contains
       n_tot = sum(n)  ! Total moles
       nc = size(n)    ! Number of components
 
-      m_average = 0.0_8
+      m_ave = 0.0_8
       do i = 1, nc
-         m_average = m_average + x(i)*m(i) ! Segment average
+         m_ave = m_ave + x(i)*m(i) ! Segment average
       end do
 
       ! Diameter calculation
@@ -113,7 +113,7 @@ contains
       $:ar_dispersion(AR_DISPERSION)
 
       ! Final evaluation
-      arval = (R * T * n_tot) * (m_average * ar_hs + ar_chain + ar_dispersion)
+      arval = (R * T * n_tot) * (m_ave * ar_hs + ar_chain + ar_dispersion)
    end subroutine ar
 
    ! PUT setup and get_v0 here after tapenade

@@ -4,7 +4,7 @@
 #:def ar_dispersion_declaration(AR_DISPERSION)
    #:if AR_DISPERSION == "Dispersion-PCSAFT"
       real(8) :: rho_disp, eta, one_m_eta
-      real(8) :: m_ave, m2_es3, m2_e2s3, I1, I2, C1
+      real(8) :: m2_es3, m2_e2s3, I1, I2, C1
       real(8) :: term_disp, a_k, b_k
       real(8) :: a1_term_disp, a2_term_disp
       real(8) :: eps_ij, sig_ij, kij_val
@@ -24,11 +24,8 @@
          one_m_eta = 1.0_pr - eta
 
          ! 1. Mixture Averages (Same as before)
-         m_ave = 0.0_pr; m2_es3 = 0.0_pr; m2_e2s3 = 0.0_pr
-
-         do i = 1, nc
-            m_ave = m_ave + x(i)*m(i) ! Segment average
-         end do
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
 
          do i = 1, nc
             do j = 1, nc
