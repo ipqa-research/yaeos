@@ -14,13 +14,14 @@ program main
 
    real(pr) :: adAr, adArT, adArV, adArn(nc), adArT2, adArV2, adArTn(nc), adArVn(nc), adArTV, adArn2(nc,nc)
    real(pr) :: tAr, tArT, tArV, tArn(nc), tArT2, tArV2, tArTn(nc), tArVn(nc), tArTV, tArn2(nc,nc)
+   real(pr) :: alnphi(nc), tlnphi(nc)
 
    type(EquilibriumState) :: fr
 
 
    n = [5.0_pr, 4.0_pr, 10.0_pr, 15.0_pr]
    T = 303.15_pr
-   V = 10.0_pr
+   V = 100.0_pr
 
    z = n / sum(n)
 
@@ -28,10 +29,10 @@ program main
    sigma = [3.7039_pr, 3.5206_pr, 3.6184_pr, 3.7086_pr]
    eps_k = [150.03_pr, 191.42_pr, 208.11_pr, 222.88_pr]
    
-   kij(1,:) = [0.0_pr, 0.00001_pr, 0.00001_pr, 0.00001_pr]
-   kij(2,:) = [0.00001_pr, 0.0_pr, 0.00001_pr, 0.00001_pr]
-   kij(3,:) = [0.00001_pr, 0.00001_pr, 0.0_pr, 0.00001_pr]
-   kij(4,:) = [0.00001_pr, 0.00001_pr, 0.00001_pr, 0.0_pr]
+   kij(1,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+   kij(2,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+   kij(3,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+   kij(4,:) = [0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr]
 
    pcsaft_adiff = init_pcsaft(m, sigma, eps_k, kij)
    pcsaft_tapenade = init_tpcsaft(m, sigma, eps_k, kij)
@@ -43,6 +44,8 @@ program main
    call cpu_time(t0)
    call pcsaft_adiff%residual_helmholtz(n, V, T, adAr, adArV, adArT, adArTV, adArV2, adArT2, adArn, adArVn, adArTn, adArn2)
    call cpu_time(t1)
+
+   call pcsaft_adiff%lnphi_vt(n, V, T, lnPhi=alnphi)
 
    print *, "Tiempo addiff: ", t1 - t0
    print *, "Ar adiff: ", adAr
@@ -58,6 +61,7 @@ program main
    print *, "Ar adiff n2 fila 2: ", adArn2(2,:)
    print *, "Ar adiff n2 fila 3: ", adArn2(3,:)
    print *, "Ar adiff n2 fila 4: ", adArn2(4,:)
+   print *, "lnPhi adiff: ", alnphi
 
    print *, "------------------------------------------------------------------"
    print *, "PCSAFT tapenade"
@@ -65,6 +69,8 @@ program main
    call cpu_time(t0)
    call pcsaft_tapenade%residual_helmholtz(n, V, T, tAr, tArV, tArT, tArTV, tArV2, tArT2, tArn, tArVn, tArTn, tArn2)
    call cpu_time(t1)
+
+   call pcsaft_tapenade%lnphi_vt(n, V, T, lnPhi=tlnphi)
 
    print *, "Tiempo tapenade: ", t1 - t0
    print *, "Ar tapenade: ", tAr
@@ -80,6 +86,7 @@ program main
    print *, "Ar tapenade n2 fila 2: ", tArn2(2,:)
    print *, "Ar tapenade n2 fila 3: ", tArn2(3,:)
    print *, "Ar tapenade n2 fila 4: ", tArn2(4,:)
+   print *, "lnPhi tapenade: ", tlnphi
 
 
    print *, "------------------------------------------------------------------"

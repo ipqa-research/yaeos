@@ -92,6 +92,11 @@ contains
       n_tot = sum(n)  ! Total moles
       nc = size(n)    ! Number of components
 
+      m_average = 0.0_8
+      do i = 1, nc
+         m_average = m_average + x(i)*m(i) ! Segment average
+      end do
+
       ! Diameter calculation
       $:diameter(DIAMETER)
       
@@ -108,11 +113,6 @@ contains
       $:ar_dispersion(AR_DISPERSION)
 
       ! Final evaluation
-      m_average = 0.0_8
-      do i = 1, nc
-         m_average = m_average + x(i)*m(i) ! Segment average
-      end do
-
       arval = (R * T * n_tot) * (m_average * ar_hs + ar_chain + ar_dispersion)
    end subroutine ar
 
