@@ -1,5 +1,10 @@
 ! ------------------------------------------------------------------------------
 ! Declarations
+!
+! Please, as you may notice, always use the SAFTs zetas as the variable "zetas"
+! do not redeclare it or recalculate it in the other terms. In the template
+! this is the second thing that is evaluated (first comes diameter "d"). The
+! other variables may change for each case.
 ! ------------------------------------------------------------------------------
 #:def zetas_declaration(ZETAS)
    #:if ZETAS == "PCSAFT-ZETAS"
@@ -11,6 +16,8 @@
 
 ! ------------------------------------------------------------------------------
 ! Code
+!
+! SAFT's zetas implementations, add new ones here in the if structure.
 ! ------------------------------------------------------------------------------
 #:def zetas(ZETAS)
    #:if ZETAS == "PCSAFT-ZETAS"

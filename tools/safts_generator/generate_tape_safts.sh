@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# -----------------------------------------------------------------------------
+# Global variables
+# -----------------------------------------------------------------------------
 TEMPLATE="template.fypp"
 TEMPLATE_SETUP="template_setup.fypp"
 TEMPLATE_GET_V0="template_get_v0.fypp"
@@ -9,6 +12,9 @@ TEMPLATE_GET_V0="template_get_v0.fypp"
 OUTDIR="tapenade_inputs"
 TAPEOUT="tapeout"
 
+# -----------------------------------------------------------------------------
+# Utility flags
+# -----------------------------------------------------------------------------
 clean=false
 nodiff=false
 
@@ -35,7 +41,9 @@ if $clean; then
 fi
 
 
-
+# -----------------------------------------------------------------------------
+# Generate model function
+# -----------------------------------------------------------------------------
 mkdir -p "${OUTDIR}"
 
 generate_model() {
@@ -50,6 +58,9 @@ generate_model() {
 
     local model_lower="${model_name,,}"
 
+    # -------------------------------------------------------------------------
+    # Fypp the three templates
+    # -------------------------------------------------------------------------
     fypp \
         -D MODELNAME="'${model_name}'" \
         -D ATTRIBUTES="'${attributes}'" \
@@ -69,6 +80,9 @@ generate_model() {
         -D GETV0="'${get_v0}'" \
         "${TEMPLATE_GET_V0}" "${OUTDIR}/${model_lower}_v0.f90"
 
+    # -------------------------------------------------------------------------
+    # Before tapenade sed modelname over the tapenade inputs
+    # -------------------------------------------------------------------------
     sed -i "s/ModelNameSedMe/${model_name}/g" \
         "${OUTDIR}/${model_lower}.f90"
 
@@ -84,10 +98,20 @@ generate_model() {
     sed -i "s/ModelNameSedMe/${model_name}/g" \
         "${OUTDIR}/${model_lower}_v0.f90"
 
+
+    # -------------------------------------------------------------------------
+    # If diff alowed, call Federico Benelli script to generate tapenade code
+    # of the code generated from template.fypp code
+    # -------------------------------------------------------------------------
     if ! $nodiff; then
         bash ../tapenade_diff/gen_tapemodel.sh \
             "${OUTDIR}/${model_lower}.f90"
 
+        # ---------------------------------------------------------------------
+        # After tapenade sed commands. TODO: this ones probably should be made
+        # by the Federico Benelli script. These seds leave the final file ready
+        # to use.
+        # ---------------------------------------------------------------------
         sed -i '/^! PUT setup and get_v0 here after tapenade$/{
             i\
 
