@@ -339,7 +339,7 @@ contains
       type(hyperdual)             :: rho_num, total_n
       type(hyperdual), allocatable :: XA(:), XB(:), XA_old(:), XB_old(:)
       type(hyperdual), allocatable :: delta(:,:)
-      type(hyperdual)             :: sum_A, sum_B, g_ij, d_ij, eps_mix, kap_mix, di_dj_term
+      type(hyperdual)             :: sum_A, sum_B, g_ij, sig_ij, eps_mix, kap_mix
       real(pr)                    :: error_f0
       
       real(pr), parameter :: ALPHA = 0.5_pr
@@ -364,15 +364,13 @@ contains
             end if
 
             ! RDF de Esferas Duras a contacto (g_hs)
-            d_ij = 0.5_pr * (d(i) + d(j))
-
-            ! g_ij = 1.0_pr / (1.0_pr - zeta(3)) + &
-            !       (3.0_pr * d(i) * d(j) / (d(i) + d(j)) * zeta(2)) / ((1.0_pr - zeta(3))**2) + &
-            !       (2.0_pr * (d(i) * d(j) / (d(i) + d(j)))**2 * zeta(2)**2) / ((1.0_pr - zeta(3))**3)
-            
             g_ij = 1.0_pr / (1.0_pr - zeta(3)) + &
-                  (3.0_pr * d_ij * zeta(2)) / ((1.0_pr - zeta(3))**2) + &
-                  (2.0_pr * (d_ij)**2 * zeta(2)**2) / ((1.0_pr - zeta(3))**3)
+                  (3.0_pr * d(i) * d(j) / (d(i) + d(j)) * zeta(2)) / ((1.0_pr - zeta(3))**2) + &
+                  (2.0_pr * (d(i) * d(j) / (d(i) + d(j)))**2 * zeta(2)**2) / ((1.0_pr - zeta(3))**3)
+            
+            ! g_ij = 1.0_pr / (1.0_pr - zeta(3)) + &
+            !       (3.0_pr * d_ij * zeta(2)) / ((1.0_pr - zeta(3))**2) + &
+            !       (2.0_pr * (d_ij)**2 * zeta(2)**2) / ((1.0_pr - zeta(3))**3)
 
             ! Regla de mezclado Geométrica de Wolbach-Sandler para Energía
             eps_mix = 0.5_pr * (eps_ab(i) + eps_ab(j))
@@ -382,14 +380,16 @@ contains
             / (0.5_pr * (sigmas(i) + sigmas(j))))**3
 
             ! Cálculo de Delta_ij [Angstroms^3]
-            delta(i,j) = (d_ij**3) * g_ij * kap_mix * (exp(eps_mix / T) - 1.0_pr)
+            sig_ij = 0.5_pr * (sigmas(i) + sigmas(j))
+
+            delta(i,j) = (sig_ij**3) * g_ij * kap_mix * (exp(eps_mix / T) - 1.0_pr)
          end do
       end do
 
       ! 3. Solución acoplada de XA y XB (Sustitución Sucesiva con Amortiguación)
       ! Inicialización con un guess hiperdual limpio (derivadas en 0, real en 0.2)
-      XA = 0.2_pr
-      XB = 0.2_pr
+      XA = 0.5_pr
+      XB = 0.5_pr
 
       do iter = 1, 300
          XA_old = XA
@@ -423,11 +423,11 @@ contains
             error_f0 = max(error_f0, abs(XA(i)%f0 - XA_old(i)%f0), abs(XB(i)%f0 - XB_old(i)%f0))
          end do
 
-         ! if (error_f0 < 1.0e-12_pr) exit
+         if (error_f0 < 1.0e-12_pr) exit
 
          ! Aplicar factor de amortiguación sobre todo el objeto hyperdual (mantiene álgebra de derivadas)
-         XA = ALPHA * XA + (1.0_pr - ALPHA) * XA_old
-         XB = ALPHA * XB + (1.0_pr - ALPHA) * XB_old
+         ! XA = ALPHA * XA + (1.0_pr - ALPHA) * XA_old
+         ! XB = ALPHA * XB + (1.0_pr - ALPHA) * XB_old
       end do
 
       ! 4. Cálculo del potencial de Helmholtz Residual Total (A_assoc / RT)
