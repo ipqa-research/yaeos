@@ -17,22 +17,22 @@ module yaeos__models_ar_saft_pcsaft
    ! =========================================================================
    ! A_COEFFS(k, i): k = power of eta (0..6), i = type (0:m=1, 1:m=inf, 2:corr)
    real(pr), dimension(0:2, 0:6) :: A_COEFFS = reshape([ &
-      0.9105631445, -0.3084016918, -0.0906148351, &
-      0.6361281449 , 0.1860531159 , 0.4527842806,  &
-      2.6861347891 , -2.5030047259, 0.5962700728, &
-      -26.547362491, 21.419793629 ,-1.7241829131,&
-      97.759208784 ,-65.255885330 ,-4.1302112531,&
-      -159.59154087, 83.318680481 ,13.776631870, &
-      91.297774084 ,-33.746922930 ,-8.6728470368 ], [3, 7])
+      0.9105631445_pr, -0.3084016918_pr, -0.0906148351_pr, &
+      0.6361281449_pr, 0.1860531159_pr, 0.4527842806_pr,  &
+      2.6861347891_pr, -2.5030047259_pr, 0.5962700728_pr, &
+      -26.547362491_pr, 21.419793629_pr, -1.7241829131_pr,&
+      97.759208784_pr, -65.255885330_pr, -4.1302112531_pr,&
+      -159.59154087_pr, 83.318680481_pr, 13.776631870_pr, &
+      91.297774084_pr, -33.746922930_pr, -8.6728470368_pr ], [3, 7])
 
    real(pr), dimension(0:2, 0:6) :: B_COEFFS = reshape([ &
-      0.7240946941, -0.5755498075, 0.0976883116, &
-      2.2382791861, 0.6995095521, -0.2557574982, &
-      -4.0025849485, 3.8925673390, -9.1558561530, &
-      -21.003576815, -17.215471648, 20.642075974, &
-      26.855641363, 192.67226447, -38.804430052, &
-      206.55133841, -161.82646165, 93.626774077, &
-      -355.60235612, -165.20769346, -29.666905585], [3, 7])
+      0.7240946941_pr, -0.5755498075_pr, 0.0976883116_pr, &
+      2.2382791861_pr, 0.6995095521_pr, -0.2557574982_pr, &
+      -4.0025849485_pr, 3.8925673390_pr, -9.1558561530_pr, &
+      -21.003576815_pr, -17.215471648_pr, 20.642075974_pr, &
+      26.855641363_pr, 192.67226447_pr, -38.804430052_pr, &
+      206.55133841_pr, -161.82646165_pr, 93.626774077_pr, &
+      -355.60235612_pr, -165.20769346_pr, -29.666905585_pr], [3, 7])
 
 
    type, extends(ArModelAdiff) :: PcSaft
@@ -42,9 +42,10 @@ module yaeos__models_ar_saft_pcsaft
       real(pr), allocatable :: sigma(:)     !! Segment diameter [Angstrom]
       real(pr), allocatable :: epsilon_k(:) !! Energy / k_B [K]
       real(pr), allocatable :: kij(:,:)     !! Binary interaction parameters (optional)
-      real(pr), allocatable :: eps_assoc(:) !! Association energy [K]
-      real(pr), allocatable :: kap_assoc(:) !! Association volume [A^3]
-      real(pr), allocatable :: n_sites(:)   !! Number of association sites
+      real(pr), allocatable :: eps_ab(:)    !! Association energy [K]
+      real(pr), allocatable :: kap_ab(:)    !! Association volume [A^3]
+      integer, allocatable :: na_sites(:)  !! Number of aceptors sites
+      integer, allocatable :: nb_sites(:)  !! Number of donor sites
    contains
       procedure :: Ar => Ar_impl
       procedure :: get_v0 => get_v0_impl
@@ -64,12 +65,17 @@ module yaeos__models_ar_saft_pcsaft
 
 contains
 
-   type(PcSaft) function init_pcsaft(m, sigma, epsilon_k, kij) result(model)
+   type(PcSaft) function init_pcsaft(m, sigma, epsilon_k, kij, eps_ab, kap_ab, na_sites, nb_sites) result(model)
       use yaeos__equilibria_critical, only: get_critical_constants
       real(pr), intent(in) :: m(:)
       real(pr), intent(in) :: sigma(:)
       real(pr), intent(in) :: epsilon_k(:)
       real(pr), intent(in), optional :: kij(:,:)
+      real(pr), intent(in), optional :: eps_ab(:)
+      real(pr), intent(in), optional :: kap_ab(:)
+      integer, intent(in), optional :: na_sites(:)
+      integer, intent(in), optional :: nb_sites(:)
+
       integer :: nc
       model%m = m
       model%sigma = sigma
@@ -78,11 +84,18 @@ contains
          model%kij = kij
       end if
 
-      nc = size(m)
-      allocate(model%components%Tc(nc))
-      allocate(model%components%Pc(nc))
-      allocate(model%components%w(nc))
-      call get_critical_constants(model)
+      if (present(eps_ab) .and. present(kap_ab) .and. present(na_sites) .and. present(nb_sites)) then
+         model%eps_ab = eps_ab
+         model%kap_ab = kap_ab
+         model%na_sites = na_sites
+         model%nb_sites = nb_sites
+      end if
+
+      !nc = size(m)
+      !allocate(model%components%Tc(nc))
+      !allocate(model%components%Pc(nc))
+      !allocate(model%components%w(nc))
+      !call get_critical_constants(model)
    end function init_pcsaft
 
 
@@ -140,11 +153,16 @@ contains
       end if
 
       ! 6. Calculate Association (Optional)
-      if (allocated(self%eps_assoc) .and. allocated(self%kap_assoc) .and. allocated(self%n_sites)) then
-         a_assoc = calculate_association(n, V, T, zeta, d, self%m, self%eps_assoc, self%kap_assoc, self%n_sites)
+      if (allocated(self%eps_ab) .and. allocated(self%kap_ab) .and. allocated(self%na_sites)) then
+         a_assoc = calculate_association(n, V, T, zeta, d, self%sigma, self%eps_ab, self%kap_ab, self%na_sites, self%nb_sites)
       else
          a_assoc = 0.0_pr
       end if
+
+      print *, "Ar_hs: ", R * T%f0 * m_ave%f0 * a_hs%f0 * 100
+      print *, "Ar_chain: ", R * T%f0 * a_chain%f0 * 100 / n_tot%f0
+      print *, "Ar_disp: ", R * T%f0 * a_disp%f0 * 100 / n_tot%f0
+      print *, "Ar_assoc: ", R * T%f0 * a_assoc%f0 * 100 / 1000 / n_tot%f0
 
       ! 7. Sum and convert to Energy units [bar * L]
       ar_total = (R * T) * ( n_tot * m_ave * a_hs + a_chain + a_disp + a_assoc)
@@ -311,93 +329,118 @@ contains
 
    end function calculate_dispersion
 
-   function calculate_association(n, V, T, zeta, d, m, eps_assoc, kap_assoc, n_sites) result(val)
+   function calculate_association(n, V, T, zeta, d, sigmas, eps_ab, kap_ab, na_sites, nb_sites) result(val)
       type(hyperdual), intent(in) :: n(:), V, T, zeta(0:3), d(:)
-      real(pr), intent(in) :: m(:), eps_assoc(:), kap_assoc(:), n_sites(:)
-      type(hyperdual) :: val
+      real(pr), intent(in)        :: sigmas(:), eps_ab(:), kap_ab(:) ! Parametros puros (eps/kb en [K], kappa es adimensional)
+      integer, intent(in)         :: na_sites(:), nb_sites(:)
+      type(hyperdual)             :: val
 
-      integer :: i, j, iter
-      type(hyperdual) :: rho_num, delta_ij
-      type(hyperdual) :: XA(size(n)), XA_new_calc(size(n))
-      type(hyperdual) :: delta(size(n), size(n))
-      type(hyperdual) :: sum_term, g_ij, d_ij, eps_mix, kap_mix, di_dj_term
-
-      ! Damping factor (0.5 usually works, 0.2 is very safe but slow)
+      integer :: i, j, iter, n_comp
+      type(hyperdual)             :: rho_num, total_n
+      type(hyperdual), allocatable :: XA(:), XB(:), XA_old(:), XB_old(:)
+      type(hyperdual), allocatable :: delta(:,:)
+      type(hyperdual)             :: sum_A, sum_B, g_ij, d_ij, eps_mix, kap_mix, di_dj_term
+      real(pr)                    :: error_f0
+      
       real(pr), parameter :: ALPHA = 0.5_pr
+      n_comp = size(n)
 
-      ! Number density [1/A^3] to be consistent with sigma in Angstroms
-      rho_num = sum(n) * N_AVO / (V * 1.0e27_pr)
+      allocate(XA(n_comp), XB(n_comp), XA_old(n_comp), XB_old(n_comp))
+      allocate(delta(n_comp, n_comp))
 
-      ! 1. Calculate Delta Matrix (ASSOCIATION STRENGTH)
-      ! WATCH OUT FOR UNITS HERE.
-      ! Delta must have VOLUME units [A^3] to cancel out with rho_num [1/A^3].
+      ! 1. Densidad numérica total [1/Angstrom^3]
+      total_n = sum(n)
+      rho_num = total_n * N_AVO / (V * 1.0e27_pr)
 
-      do i = 1, size(n)
-         do j = 1, size(n)
+      ! 2. Cálculo de la Matriz Delta (Interacción Aceptor_i -> Donador_j)
+      do i = 1, n_comp
+         do j = 1, n_comp
+            
+            ! Si alguno de los dos componentes no tiene capacidad de asociarse, Delta = 0
+            if ((na_sites(i) == 0 .and. nb_sites(i) == 0) .or. &
+               (na_sites(j) == 0 .and. nb_sites(j) == 0)) then
+               delta(i,j) = 0.0_pr
+               cycle
+            end if
+
+            ! RDF de Esferas Duras a contacto (g_hs)
             d_ij = 0.5_pr * (d(i) + d(j))
 
-            ! Contact RDF (g_hs)
+            ! g_ij = 1.0_pr / (1.0_pr - zeta(3)) + &
+            !       (3.0_pr * d(i) * d(j) / (d(i) + d(j)) * zeta(2)) / ((1.0_pr - zeta(3))**2) + &
+            !       (2.0_pr * (d(i) * d(j) / (d(i) + d(j)))**2 * zeta(2)**2) / ((1.0_pr - zeta(3))**3)
+            
             g_ij = 1.0_pr / (1.0_pr - zeta(3)) + &
-               (3.0_pr * d_ij * zeta(2)) / (2.0_pr * (1.0_pr - zeta(3))**2) + &
-               (2.0_pr * (d_ij**2) * (zeta(2)**2)) / (2.0_pr * (1.0_pr - zeta(3))**3)
+                  (3.0_pr * d_ij * zeta(2)) / ((1.0_pr - zeta(3))**2) + &
+                  (2.0_pr * (d_ij)**2 * zeta(2)**2) / ((1.0_pr - zeta(3))**3)
 
-            ! Mixing rules (Wolbach & Sandler)
-            eps_mix = 0.5_pr * (eps_assoc(i) + eps_assoc(j))
+            ! Regla de mezclado Geométrica de Wolbach-Sandler para Energía
+            eps_mix = 0.5_pr * (eps_ab(i) + eps_ab(j))
 
-            ! Geometric correction for Kappa (standard PC-SAFT rule)
-            di_dj_term = (sqrt(d(i)*d(j)) / (0.5_pr*(d(i)+d(j))))**3
-            kap_mix = sqrt(kap_assoc(i) * kap_assoc(j)) * di_dj_term
+            ! Corrección geométrica para el Volumen de Asociación (Kappa)
+            kap_mix = sqrt(kap_ab(i) * kap_ab(j)) * (sqrt(sigmas(i) * sigmas(j)) &
+            / (0.5_pr * (sigmas(i) + sigmas(j))))**3
 
-            ! Delta [Angstroms^3]
-            ! IMPORTANT: Multiply by g_ij * sigma_ij^3 * kappa
-            ! Sometimes d_ij^3 or sigma_ij^3 is used. In strict PC-SAFT it is usually sigma_ij^3.
-            ! We will use d_ij as a consistent approximation or sigma if you have access.
-            ! Note: In original Gross-Sadowski they use sigma, not d(T).
-            ! But d(T) is more common in modern implementations. I will use d_ij.
-
-            delta(i,j) = g_ij * kap_mix * (d_ij**3) * (exp(eps_mix/T) - 1.0_pr)
+            ! Cálculo de Delta_ij [Angstroms^3]
+            delta(i,j) = (d_ij**3) * g_ij * kap_mix * (exp(eps_mix / T) - 1.0_pr)
          end do
       end do
 
-      ! 2. Solve XA with Damping
-      XA = 0.2_pr ! Good guess for associated liquids (better than 0.5)
+      ! 3. Solución acoplada de XA y XB (Sustitución Sucesiva con Amortiguación)
+      ! Inicialización con un guess hiperdual limpio (derivadas en 0, real en 0.2)
+      XA = 0.2_pr
+      XB = 0.2_pr
 
-      do iter = 1, 200 ! Increased iterations in case alpha is low
+      do iter = 1, 300
+         XA_old = XA
+         XB_old = XB
 
-         XA_new_calc = XA ! Initialize temporary
+         do i = 1, n_comp
+            if (na_sites(i) == 0 .and. nb_sites(i) == 0) cycle
 
-         do i = 1, size(n)
-            sum_term = 0.0_pr
-            do j = 1, size(n)
-               ! rho_j * Sitios_j * XA_j * Delta_ij
-               ! rho_num_total * x_j * ...
-               ! (n(j)/n_total) * rho_num * ...
+            sum_A = 0.0_pr
+            sum_B = 0.0_pr
 
-               sum_term = sum_term + (n(j)/sum(n)) * rho_num * n_sites(j) * XA(j) * delta(i,j)
+            do j = 1, n_comp
+               if (na_sites(j) == 0 .and. nb_sites(j) == 0) cycle
+               
+               ! Recordar: Fracción molar x_j = n(j)/total_n
+               ! Para XA(i) necesito los sitios Donadores (nb) de j y sus XB(j)
+               sum_A = sum_A + (n(j) / total_n) * rho_num * real(nb_sites(j), pr) * XB_old(j) * delta(i,j)
+               
+               ! Para XB(i) necesito los sitios Aceptores (na) de j y sus XA(j)
+               ! Nota: delta(j,i) representa Aceptor_j interaccionando con Donador_i
+               sum_B = sum_B + (n(j) / total_n) * rho_num * real(na_sites(j), pr) * XA_old(j) * delta(j,i)
             end do
-            XA_new_calc(i) = 1.0_pr / (1.0_pr + sum_term)
+
+            XA(i) = 1.0_pr / (1.0_pr + sum_A)
+            XB(i) = 1.0_pr / (1.0_pr + sum_B)
          end do
 
-         ! CONVERGENCE CHECK (Before damping)
-         if (abs(XA_new_calc(1)%f0 - XA(1)%f0) < 1e-11) exit
-         print *, iter, XA_new_calc(1)%f0, XA(1)%f0, abs(XA_new_calc(1)%f0 - XA(1)%f0)
+         ! Criterio de convergencia basado ESTRICTAMENTE en la parte real %f0
+         error_f0 = 0.0_pr
+         do i = 1, n_comp
+            error_f0 = max(error_f0, abs(XA(i)%f0 - XA_old(i)%f0), abs(XB(i)%f0 - XB_old(i)%f0))
+         end do
 
-         ! APPLY DAMPING (This is what you were missing)
-         XA = ALPHA * XA_new_calc + (1.0_pr - ALPHA) * XA
+         ! if (error_f0 < 1.0e-12_pr) exit
 
+         ! Aplicar factor de amortiguación sobre todo el objeto hyperdual (mantiene álgebra de derivadas)
+         XA = ALPHA * XA + (1.0_pr - ALPHA) * XA_old
+         XB = ALPHA * XB + (1.0_pr - ALPHA) * XB_old
       end do
 
-      ! Debug if it doesn't converge
-      ! if (iter >= 200) print *, "WARNING: Assoc no convergió. Error:", XA_new_calc(1)%f0 - XA(1)%f0
-
-      ! 3. Calculate Energy
+      ! 4. Cálculo del potencial de Helmholtz Residual Total (A_assoc / RT)
       val = 0.0_pr
-      do i = 1, size(n)
-         val = val + n(i) * n_sites(i) * (log(XA(i)) - 0.5_pr*XA(i) + 0.5_pr)
+      do i = 1, n_comp
+         if (na_sites(i) == 0 .and. nb_sites(i) == 0) cycle
+         
+         val = val + n(i) * ( &
+               real(na_sites(i), pr) * (log(XA(i)) - 0.5_pr * XA(i) + 0.5_pr) + &
+               real(nb_sites(i), pr) * (log(XB(i)) - 0.5_pr * XB(i) + 0.5_pr) )
       end do
 
-      ! Ensure final extensivity if you didn't do it before
-      ! (In this formula it is already multiplied by n(i), so 'val' is A_total/RT)
+      deallocate(XA, XB, XA_old, XB_old, delta)
 
    end function calculate_association
 
