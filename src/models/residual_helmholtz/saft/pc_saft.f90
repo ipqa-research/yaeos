@@ -118,6 +118,7 @@ contains
       type(hyperdual) :: a_assoc          ! A_assoc / RT (dimensionless)
       type(hyperdual) :: n_tot
       type(hyperdual) :: rho, eta, m_ave, x(size(n))
+      real :: t0, t1
 
       integer :: nc, i
 
@@ -153,11 +154,15 @@ contains
       end if
 
       ! 6. Calculate Association (Optional)
+      call cpu_time(t0)
       if (allocated(self%eps_ab) .and. allocated(self%kap_ab) .and. allocated(self%na_sites)) then
          a_assoc = calculate_association(n, V, T, zeta, d, self%sigma, self%eps_ab, self%kap_ab, self%na_sites, self%nb_sites)
       else
          a_assoc = 0.0_pr
       end if
+      call cpu_time(t1)
+
+      print *, "Assoc time: ", t1 - t0
 
       print *, "Ar_hs: ", R * T%f0 * m_ave%f0 * a_hs%f0 * 100
       print *, "Ar_chain: ", R * T%f0 * a_chain%f0 * 100 / n_tot%f0

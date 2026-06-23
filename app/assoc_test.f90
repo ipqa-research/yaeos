@@ -31,22 +31,18 @@ program main
    kap_ab = [0.07555_pr, 0.034868_pr]
    eps_ab = [3044.4_pr, 2500.7_pr]
 
-   call cpu_time(t0)
    pcsaft_adiff = init_pcsaft(m, sigma, eps_k, eps_ab=eps_ab, kap_ab=kap_ab, na_sites=na, nb_sites=nb)
-   call cpu_time(t1)
-
-   print *, "Tiempo init: ", t1 - t0
 
    ! call cpu_time(t0)
    ! call pcsaft_adiff%residual_helmholtz(n, V, T, adAr, adArV, adArT, adArTV, adArV2, adArT2, adArn, adArVn, adArTn, adArn2)
    ! call cpu_time(t1)
 
-   ! call cpu_time(t0)
+   call cpu_time(t0)
    call pcsaft_adiff%lnphi_vt(n, V, T, lnPhi=alnphi)
    call pcsaft_adiff%pressure(n, V, T, P)
-   ! call cpu_time(t1)
+   call cpu_time(t1)
 
-   ! print *, "Tiempo addiff: ", t1 - t0
+   print *, "Tiempo addiff: ", t1 - t0
    ! print *, "Ar adiff: ", adAr
    ! print *, "Ar adiff V: ", adArV
    ! print *, "Ar adiff T: ", adArT
