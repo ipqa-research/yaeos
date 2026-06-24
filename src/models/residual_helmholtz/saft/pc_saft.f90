@@ -154,20 +154,22 @@ contains
       end if
 
       ! 6. Calculate Association (Optional)
-      call cpu_time(t0)
       if (allocated(self%eps_ab) .and. allocated(self%kap_ab) .and. allocated(self%na_sites)) then
-         a_assoc = calculate_association(n, V, T, zeta, d, self%sigma, self%eps_ab, self%kap_ab, self%na_sites, self%nb_sites)
+         call cpu_time(t0)
+         do i=1,1000
+            a_assoc = calculate_association(n, V, T, zeta, d, self%sigma, self%eps_ab, self%kap_ab, self%na_sites, self%nb_sites)
+         end do
+         call cpu_time(t1)
       else
          a_assoc = 0.0_pr
       end if
-      call cpu_time(t1)
 
-      print *, "Assoc time: ", t1 - t0
+      print *, "Assoc time: ", (t1 - t0) / 1000
 
-      print *, "Ar_hs: ", R * T%f0 * m_ave%f0 * a_hs%f0 * 100
-      print *, "Ar_chain: ", R * T%f0 * a_chain%f0 * 100 / n_tot%f0
-      print *, "Ar_disp: ", R * T%f0 * a_disp%f0 * 100 / n_tot%f0
-      print *, "Ar_assoc: ", R * T%f0 * a_assoc%f0 * 100 / 1000 / n_tot%f0
+      ! print *, "Ar_hs: ", R * T%f0 * m_ave%f0 * a_hs%f0 * 100
+      ! print *, "Ar_chain: ", R * T%f0 * a_chain%f0 * 100 / n_tot%f0
+      ! print *, "Ar_disp: ", R * T%f0 * a_disp%f0 * 100 / n_tot%f0
+      ! print *, "Ar_assoc: ", R * T%f0 * a_assoc%f0 * 100 / 1000 / n_tot%f0
 
       ! 7. Sum and convert to Energy units [bar * L]
       ar_total = (R * T) * ( n_tot * m_ave * a_hs + a_chain + a_disp + a_assoc)

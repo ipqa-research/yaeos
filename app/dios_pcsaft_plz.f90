@@ -10,7 +10,7 @@ program main
    real :: t0, t1
 
    real(pr) :: m(nc), sigma(nc), eps_k(nc), kij(nc,nc), n(nc), T, V, z(nc)
-   integer :: its
+   integer :: its, i
 
    real(pr) :: adAr, adArT, adArV, adArn(nc), adArT2, adArV2, adArTn(nc), adArVn(nc), adArTV, adArn2(nc,nc)
    real(pr) :: tAr, tArT, tArV, tArn(nc), tArT2, tArV2, tArTn(nc), tArVn(nc), tArTV, tArn2(nc,nc)
@@ -45,8 +45,8 @@ program main
    ! call pcsaft_adiff%residual_helmholtz(n, V, T, adAr, adArV, adArT, adArTV, adArV2, adArT2, adArn, adArVn, adArTn, adArn2)
    ! call cpu_time(t1)
 
-   call pcsaft_adiff%lnphi_vt(n, V, T, lnPhi=alnphi)
-   call pcsaft_adiff%pressure(n, V, T, P)
+   ! call pcsaft_adiff%lnphi_vt(n, V, T, lnPhi=alnphi)
+   ! call pcsaft_adiff%pressure(n, V, T, P)
 
    ! print *, "Tiempo addiff: ", t1 - t0
    ! print *, "Ar adiff: ", adAr
@@ -62,8 +62,8 @@ program main
    ! print *, "Ar adiff n2 fila 2: ", adArn2(2,:)
    ! print *, "Ar adiff n2 fila 3: ", adArn2(3,:)
    ! print *, "Ar adiff n2 fila 4: ", adArn2(4,:)
-   print *, "lnPhi adiff: ", alnphi
-   print *, "P adiff: ", P * 100
+   ! print *, "lnPhi adiff: ", alnphi
+   !print *, "P adiff: ", P * 100
 
    ! print *, "------------------------------------------------------------------"
    ! print *, "PCSAFT tapenade"
@@ -72,9 +72,13 @@ program main
    ! call pcsaft_tapenade%residual_helmholtz(n, V, T, tAr, tArV, tArT, tArTV, tArV2, tArT2, tArn, tArVn, tArTn, tArn2)
    ! call cpu_time(t1)
 
-   ! call pcsaft_tapenade%lnphi_vt(n, V, T, lnPhi=tlnphi)
+   call cpu_time(t0)
+   do i=1,1000
+   call pcsaft_tapenade%lnphi_vt(n, V, T, lnPhi=tlnphi)
+   end do
+   call cpu_time(t1)
 
-   ! print *, "Tiempo tapenade: ", t1 - t0
+   print *, "Tiempo tapenade: ", (t1 - t0) / 1000
    ! print *, "Ar tapenade: ", tAr
    ! print *, "Ar tapenade V: ", tArV
    ! print *, "Ar tapenade T: ", tArT
@@ -88,7 +92,7 @@ program main
    ! print *, "Ar tapenade n2 fila 2: ", tArn2(2,:)
    ! print *, "Ar tapenade n2 fila 3: ", tArn2(3,:)
    ! print *, "Ar tapenade n2 fila 4: ", tArn2(4,:)
-   ! print *, "lnPhi tapenade: ", tlnphi
+   print *, "lnPhi tapenade: ", tlnphi
 
 
    ! print *, "------------------------------------------------------------------"

@@ -12,6 +12,7 @@ program main
    real(pr) :: eps_ab(nc), kap_ab(nc)
    integer :: na(nc), nb(nc)
    integer :: its
+   integer :: i
 
    real(pr) :: adAr, adArT, adArV, adArn(nc), adArT2, adArV2, adArTn(nc), adArVn(nc), adArTV, adArn2(nc,nc)
    real(pr) :: alnphi(nc), P
@@ -37,12 +38,11 @@ program main
    ! call pcsaft_adiff%residual_helmholtz(n, V, T, adAr, adArV, adArT, adArTV, adArV2, adArT2, adArn, adArVn, adArTn, adArn2)
    ! call cpu_time(t1)
 
-   call cpu_time(t0)
+   ! call cpu_time(t0)
    call pcsaft_adiff%lnphi_vt(n, V, T, lnPhi=alnphi)
-   call pcsaft_adiff%pressure(n, V, T, P)
-   call cpu_time(t1)
+   ! call cpu_time(t1)
 
-   print *, "Tiempo addiff: ", t1 - t0
+   ! print *, "Tiempo addiff: ", (t1 - t0) / 1000
    ! print *, "Ar adiff: ", adAr
    ! print *, "Ar adiff V: ", adArV
    ! print *, "Ar adiff T: ", adArT
@@ -57,5 +57,5 @@ program main
    ! print *, "Ar adiff n2 fila 3: ", adArn2(3,:)
    ! print *, "Ar adiff n2 fila 4: ", adArn2(4,:)
    print *, "lnPhi adiff: ", alnphi
-   print *, "P adiff: ", P * 100
+   ! print *, "P adiff: ", P * 100
 end program main
