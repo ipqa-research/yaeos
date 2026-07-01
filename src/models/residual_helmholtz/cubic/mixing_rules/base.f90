@@ -243,6 +243,9 @@ contains
 
    end subroutine DmixHV
 
+   ! ===========================================================================
+   ! Cubic Mixing Rules
+   ! ---------------------------------------------------------------------------
    subroutine CMR_Dmix(n, V, T, &
       ai, daidt, daidt2, &
       D, &
@@ -270,16 +273,14 @@ contains
       real(pr) :: auxT(size(n)),auxTij(size(n),size(n)),auxT2(size(n)),auxT2ij(size(n),size(n))
       real(pr) :: aijk(size(n),size(n),size(n)),daijkdT(size(n),size(n),size(n)),daijkdT2(size(n),size(n),size(n))
 
-      call aijkTder(NTD,nc,T,aijk,daijkdT,daijkdT2)
-
       TOTN = sum(n)
-      D=0.0_pr
-      dDdT=0.0_pr
-      dDdT2=0.0_pr
-      aux=0.0_pr
-      auxij=0.0_pr
-      auxT=0.0_pr
-      auxTij=0.0_pr
+      D = 0.0_pr
+      dDdT = 0.0_pr
+      dDdT2 = 0.0_pr
+      aux = 0.0_pr
+      auxij = 0.0_pr
+      auxT = 0.0_pr
+      auxTij = 0.0_pr
 
       do i=1,nc
          do j=1,nc
@@ -289,6 +290,7 @@ contains
                auxTij(i,j)=auxTij(i,j) + n(k)*daijkdT(i,j,k)
                auxT2ij(i,j)=auxT2ij(i,j) + n(k)*daijkdT2(i,j,k)
             end do
+
             aux(i) = aux(i)+n(j)*auxij(i,j)
 
             auxT(i) = auxT(i) + n(j)*auxTij(i,j)
@@ -302,18 +304,18 @@ contains
          dDdT2 = dDdT2 + n(i)*auxT2(i)
       end do
 
-      D=D/TOTN
-      dDdT=dDdT/TOTN
-      dDdT2=dDdT2/TOTN
+      D = D/TOTN
+      dDdT = dDdT/TOTN
+      dDdT2 = dDdT2/TOTN
 
       do i=1,nc
-         dDi(i)=(3*aux(i)-D)/TOTN
-         if(NTD.EQ.1)dDiT(i)=(3*auxT(i)-dDdT)/TOTN
+         dDi(i) = (3*aux(i)-D)/TOTN
+
          do j=1,i
-            dDij(i,j)=(6*auxij(i,j)-dDi(i)-dDi(j))/TOTN
-            dDij(j,i)=dDij(i,j)
+            dDij(i,j) = (6*auxij(i,j)-dDi(i)-dDi(j))/TOTN
+            dDij(j,i) = dDij(i,j)
          end do
+
       end do
    end subroutine CMR_Dmix
-
 end module yaeos__models_ar_cubic_mixing_base
