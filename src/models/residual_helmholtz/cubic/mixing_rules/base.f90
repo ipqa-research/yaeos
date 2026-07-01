@@ -172,7 +172,7 @@ contains
       )
       !! # `DmixHV`
       !! Attractive parameter calculation for the Huron-Vidal mixing rule.
-      !! 
+      !!
       !! # Description
       !! This subroutine calculates the attractive parameter \(D\) and its
       !! derivatives for a mixture using the Huron-Vidal mixing rule.
@@ -181,8 +181,8 @@ contains
       !! The expression of the attractive parameter is:
       !!
       !! \[
-      !!   D(n, T) = 
-      !!     B\left(\sum_i n_i\frac{a_i}{b_i} 
+      !!   D(n, T) =
+      !!     B\left(\sum_i n_i\frac{a_i}{b_i}
       !!     - \frac{G^E}{\Lambda}\right)
       !! \]
       !!
@@ -242,5 +242,58 @@ contains
       end do
 
    end subroutine DmixHV
+
+   subroutine DcubicandTnder(n,T,D,dDi,dDiT,dDij,dDdT,dDdT2)
+      real(pr), intent(in) :: n(:), T
+      real(pr), intent(out) :: D
+      real(pr), intent(out) :: dDiT(:)
+      real(pr) :: dDi(nco),dDij(nco,nco),aux(nco),auxij(nco,nco)
+      real(pr) :: auxT(nco),auxTij(nco,nco),auxT2(nco),auxT2ij(nco,nco)
+      real(pr) :: aijk(nco,nco,nco),daijkdT(nco,nco,nco),daijkdT2(nco,nco,nco)
+      call aijkTder(NTD,nc,T,aijk,daijkdT,daijkdT2)
+      TOTN = sum(rn)
+      D=0.0D0
+      dDdT=0.0D0
+      dDdT2=0.0D0
+      aux=0.0D0
+      auxij=0.0D0
+      auxT=0.0D0
+      auxTij=0.0D0
+      DO i=1,nc
+         do j=1,nc
+            do k=1,nc
+               auxij(i,j)=auxij(i,j)+rn(k)*aijk(i,j,k)
+               if(NTD.EQ.1)then
+                  auxTij(i,j)=auxTij(i,j)+rn(k)*daijkdT(i,j,k)
+                  auxT2ij(i,j)=auxT2ij(i,j)+rn(k)*daijkdT2(i,j,k)
+               end if
+            end do
+            aux(i)=aux(i)+rn(j)*auxij(i,j)
+            if(NTD.EQ.1)then
+               auxT(i)=auxT(i)+rn(j)*auxTij(i,j)
+               auxT2(i)=auxT2(i)+rn(j)*auxT2ij(i,j)
+            end if
+         end do
+         D=D+rn(i)*aux(i)
+         if(NTD.EQ.1)then
+            dDdT=dDdT+rn(i)*auxT(i)
+            dDdT2=dDdT2+rn(i)*auxT2(i)
+         end if
+      END DO
+      D=D/TOTN
+      if(NTD.EQ.1)then
+         dDdT=dDdT/TOTN
+         dDdT2=dDdT2/TOTN
+      end if
+      DO i=1,nc
+         dDi(i)=(3*aux(i)-D)/TOTN
+         if(NTD.EQ.1)dDiT(i)=(3*auxT(i)-dDdT)/TOTN
+         do j=1,i
+            dDij(i,j)=(6*auxij(i,j)-dDi(i)-dDi(j))/TOTN
+            dDij(j,i)=dDij(i,j)
+         end do
+      END DO
+   end subroutine DcubicandTnder
+
 
 end module yaeos__models_ar_cubic_mixing_base
