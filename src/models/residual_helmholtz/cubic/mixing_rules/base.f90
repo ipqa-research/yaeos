@@ -243,57 +243,77 @@ contains
 
    end subroutine DmixHV
 
-   subroutine DcubicandTnder(n,T,D,dDi,dDiT,dDij,dDdT,dDdT2)
-      real(pr), intent(in) :: n(:), T
-      real(pr), intent(out) :: D
-      real(pr), intent(out) :: dDiT(:)
-      real(pr) :: dDi(nco),dDij(nco,nco),aux(nco),auxij(nco,nco)
-      real(pr) :: auxT(nco),auxTij(nco,nco),auxT2(nco),auxT2ij(nco,nco)
-      real(pr) :: aijk(nco,nco,nco),daijkdT(nco,nco,nco),daijkdT2(nco,nco,nco)
+   subroutine CMR_Dmix(n, V, T, &
+      ai, daidt, daidt2, &
+      D, &
+      dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
+      )
+      real(pr), intent(in) :: V !! Volume [L] (unused)
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Moles vector [mol]
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
+      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
+      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
+      real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
+      real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
+      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
+      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
+
+      real(pr) :: aux(size(n)),auxij(size(n),size(n))
+      real(pr) :: auxT(size(n)),auxTij(size(n),size(n)),auxT2(size(n)),auxT2ij(size(n),size(n))
+      real(pr) :: aijk(size(n),size(n),size(n)),daijkdT(size(n),size(n),size(n)),daijkdT2(size(n),size(n),size(n))
+
       call aijkTder(NTD,nc,T,aijk,daijkdT,daijkdT2)
-      TOTN = sum(rn)
-      D=0.0D0
-      dDdT=0.0D0
-      dDdT2=0.0D0
-      aux=0.0D0
-      auxij=0.0D0
-      auxT=0.0D0
-      auxTij=0.0D0
-      DO i=1,nc
+
+      TOTN = sum(n)
+      D=0.0_pr
+      dDdT=0.0_pr
+      dDdT2=0.0_pr
+      aux=0.0_pr
+      auxij=0.0_pr
+      auxT=0.0_pr
+      auxTij=0.0_pr
+
+      do i=1,nc
          do j=1,nc
             do k=1,nc
-               auxij(i,j)=auxij(i,j)+rn(k)*aijk(i,j,k)
-               if(NTD.EQ.1)then
-                  auxTij(i,j)=auxTij(i,j)+rn(k)*daijkdT(i,j,k)
-                  auxT2ij(i,j)=auxT2ij(i,j)+rn(k)*daijkdT2(i,j,k)
-               end if
+               auxij(i,j)=auxij(i,j) + n(k)*aijk(i,j,k)
+
+               auxTij(i,j)=auxTij(i,j) + n(k)*daijkdT(i,j,k)
+               auxT2ij(i,j)=auxT2ij(i,j) + n(k)*daijkdT2(i,j,k)
             end do
-            aux(i)=aux(i)+rn(j)*auxij(i,j)
-            if(NTD.EQ.1)then
-               auxT(i)=auxT(i)+rn(j)*auxTij(i,j)
-               auxT2(i)=auxT2(i)+rn(j)*auxT2ij(i,j)
-            end if
+            aux(i) = aux(i)+n(j)*auxij(i,j)
+
+            auxT(i) = auxT(i) + n(j)*auxTij(i,j)
+            auxT2(i) = auxT2(i) + n(j)*auxT2ij(i,j)
+
          end do
-         D=D+rn(i)*aux(i)
-         if(NTD.EQ.1)then
-            dDdT=dDdT+rn(i)*auxT(i)
-            dDdT2=dDdT2+rn(i)*auxT2(i)
-         end if
-      END DO
+
+         D = D + n(i)*aux(i)
+
+         dDdT = dDdT + n(i)*auxT(i)
+         dDdT2 = dDdT2 + n(i)*auxT2(i)
+      end do
+
       D=D/TOTN
-      if(NTD.EQ.1)then
-         dDdT=dDdT/TOTN
-         dDdT2=dDdT2/TOTN
-      end if
-      DO i=1,nc
+      dDdT=dDdT/TOTN
+      dDdT2=dDdT2/TOTN
+
+      do i=1,nc
          dDi(i)=(3*aux(i)-D)/TOTN
          if(NTD.EQ.1)dDiT(i)=(3*auxT(i)-dDdT)/TOTN
          do j=1,i
             dDij(i,j)=(6*auxij(i,j)-dDi(i)-dDi(j))/TOTN
             dDij(j,i)=dDij(i,j)
          end do
-      END DO
-   end subroutine DcubicandTnder
-
+      end do
+   end subroutine CMR_Dmix
 
 end module yaeos__models_ar_cubic_mixing_base
