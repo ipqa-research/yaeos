@@ -246,7 +246,96 @@ contains
    ! ===========================================================================
    ! Cubic Mixing Rules
    ! ---------------------------------------------------------------------------
-   subroutine CMR_Dmix(n, V, T, &
+
+   pure subroutine CMR_aijk(&
+      ai, daidt, daidt2, k, dkdt, dkdt2, &
+      a, dadt, dadt2 &
+      )
+      !! # `CMR_aijk`
+      !! Calculate the \(a_{ijk}\) tensor of the CMR.
+      real(pr), intent(in) :: ai(:) !! \(\a_i\)
+      real(pr), intent(in) :: daidt(:) !! \( \frac{d\a_i}{dT} \)
+      real(pr), intent(in) :: daidt2(:)!! \( \frac{d^2\a_i}{dT^2} \)
+      real(pr), intent(in) :: k(:, :, :) !! k_{ijk} matrix
+      real(pr), intent(in) :: dkdt(:, :, :) !! \(  \frac{d k_{ijk}}{dT} \)
+      real(pr), intent(in) :: dkdt2(:, :, :) !! \(  \frac{d^2k_{ijk}}{dT^2} \)
+      real(pr), intent(out) :: a(:, :, :) !! \(a_{ijk}\) matrix
+      real(pr), intent(out) :: dadt(:, :, :) !! \(\frac{da_{ijk}}{dT}\) matrix
+      real(pr), intent(out) :: dadt2(:, :, :) !! \(\frac{d^2a_{ijk}{dT^2}\) matrix
+
+      integer :: i, j, l, nc
+
+      real(pr) :: aijk_3
+      real(pr) :: aaa, daaadt
+
+      real(pr), parameter :: third = 1._pr/3._pr
+
+      a = 0
+      dadt = 0
+      dadt2 = 0
+
+      nc = size(ai)
+
+
+      do i = 1,nc
+         aaa = ai(i) * ai(i) * ai(i)
+         aijk_3 = aaa ** third
+
+         a(i, i, i) =  aijk_3
+
+         daaadt = (&
+            daidt(i) * ai(i) * ai(i) &
+            + ai(i) * daidt(i) * ai(i) &
+            + ai(i) * ai(i) * daidt(i) &
+            ) * third
+
+         dadt(i, i, i) = daidt(i)
+         dadt2(i, i, i) = daidt2(i)
+
+         do j = i,nc
+            do l = i,nc
+               aaa = ai(i) * ai(j) * ai(l)
+               aijk_3 = aaa ** third
+
+               a(i, j, l) =  aijk_3 * (1 - k(i, j, l))
+
+               a(j, i, l) = a(i, j, l)
+               a(j, l, i) = a(i, j, l)
+
+               daaadt = (&
+                  daidt(i) * ai(j) * ai(l) &
+                  + ai(i) * daidt(j) * ai(l) &
+                  + ai(i) * ai(j) * daidt(l) &
+                  ) * third
+
+               dadt(i, j, l) = - dkdt(i, j, l) * aijk_3 + daaadt / (aaa) * a(i, j, l)
+               dadt(j, i, l) = dadt(i, j, l)
+               dadt(j, l, i) = dadt(i, j, l)
+
+               dadt2(i, j, l) = &
+                  - 2 * dkdt(i, j, l) * daaadt * aijk_3 / aaa &
+                  - daidt(i) * daaadt * a(i, j, l) / (aaa * ai(i)) &
+                  - daidt(j) * daaadt * a(i, j, l) / (aaa * ai(j)) &
+                  - daidt(l) * daaadt * a(i, j, l) / (aaa * ai(l)) &
+                  - dkdt2(i, j, l) * aijk_3 &
+                  + ((&
+                  2 * daidt(i) * daidt(j) * ai(l) &
+                  + 2 * daidt(i) * daidt(l) * ai(j) &
+                  + 2 * daidt(j) * daidt(l) * ai(i) &
+                  + daidt2(i) * ai(j) * ai(l) &
+                  + daidt2(j) * ai(i) * ai(l) &
+                  + daidt2(l) * ai(j) * ai(i) &
+                  )/3._pr) * (a(i, j, l) / aaa) &
+                  + (a(i, j, l)*daaadt**2/aaa**2)
+               dadt2(j, i, l) = dadt2(i, j, l)
+               dadt2(j, l, i) = dadt2(i, j, l)
+
+            end do
+         end do
+      end do
+   end subroutine CMR_aijk
+
+   pure subroutine CMR_Dmix(n, V, T, &
       ai, daidt, daidt2, &
       D, &
       dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
@@ -272,6 +361,12 @@ contains
       real(pr) :: aux(size(n)),auxij(size(n),size(n))
       real(pr) :: auxT(size(n)),auxTij(size(n),size(n)),auxT2(size(n)),auxT2ij(size(n),size(n))
       real(pr) :: aijk(size(n),size(n),size(n)),daijkdT(size(n),size(n),size(n)),daijkdT2(size(n),size(n),size(n))
+
+      real(pr) :: totn
+
+      integer :: i, j, k, nc
+
+      nc = size(n)
 
       TOTN = sum(n)
       D = 0.0_pr
@@ -318,4 +413,44 @@ contains
 
       end do
    end subroutine CMR_Dmix
+
+   pure subroutine CMR_Bmix(n, bijk, Bmix, dBi, dBij)
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: bijk(:, :, :)
+      real(pr), intent(out) :: Bmix
+      real(pr), intent(out) :: dBi(:), dBij(:,:)
+      real(pr) :: aux(size(n)), auxij(size(n), size(n))
+
+      real(pr) :: totn !! Total number of moles
+      real(pr) :: sqn !! totn^2
+
+      integer :: i, j, k, nc
+
+      nc = size(n)
+      totn = sum(n)
+      sqn = totn*totn
+      Bmix = 0
+      aux = 0
+      auxij = 0
+
+      do i=1,nc
+         do j=1,nc
+            do k=1,nc
+               auxij(i,j) = auxij(i,j) + n(k)*bijk(i,j,k)
+            end do
+            aux(i) = aux(i) + n(j)*auxij(i,j)
+         end do
+         Bmix = Bmix + n(i)*aux(i)
+      end do
+
+      Bmix=Bmix/sqn
+
+      do i=1,nc
+         dBi(i)=(3*aux(i)-2*totn*Bmix)/sqn
+         do j=1,i
+            dBij(i,j)=(6*auxij(i,j)-2*(Bmix+totn*dBi(i)+totn*dBi(j)))/sqn
+            dBij(j,i)=dBij(i,j)
+         end do
+      end do
+   end subroutine CMR_Bmix
 end module yaeos__models_ar_cubic_mixing_base
