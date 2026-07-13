@@ -6,6 +6,10 @@ module yaeos__models_ar_cubic_cubic_mixing
    use yaeos__models_ar_cubic_mixing_base, only: bmix_qmr
    implicit none
 
+   private
+
+   public :: CMR
+
    type, extends(CubicMixRule) :: CMR
       !! Cubic Mixing Rule (CMR) derived type. Classic Van der Waals mixing
       !! rules.
@@ -84,6 +88,7 @@ contains
       !! type(CMR) :: my_mixing_rule
       !! my_mixing_rule%aij => new_aij_procedure
       !! ```
+      use yaeos__models_ar_cubic_mixing_base, only: CMR_Dmix
       class(CMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: V !! Volume [L] (unused)
       real(pr), intent(in) :: T !! Temperature [K]
@@ -104,13 +109,27 @@ contains
       real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
 
       integer :: i, j, nc
-      real(pr) :: a(size(ai), size(ai))
-      real(pr) :: dadt(size(ai), size(ai))
-      real(pr) :: dadt2(size(ai), size(ai))
+      real(pr) :: a(size(ai), size(ai), size(ai))
+      real(pr) :: dadt(size(ai), size(ai), size(ai))
+      real(pr) :: dadt2(size(ai), size(ai), size(ai))
 
       nc = size(ai)
 
       call self%aijk(T, ai, daidt, daidt2, a, dadt, dadt2)
+      call CMR_Dmix(&
+         n, V, T, &
+         ai, daidt, daidt2, &
+         D=D, &
+         dDdV=dDdV, &
+         dDdT=dDdT, &
+         dDdT2=dDdT2, &
+         dDdV2=dDdV2, &
+         dDdTV=dDdTV, &
+         dDi=dDi, &
+         dDidV=dDidV, &
+         dDidT=dDidT, &
+         dDij=dDij &
+      )
 
    end subroutine Dmix
 
@@ -186,9 +205,9 @@ contains
       real(pr), intent(in) :: ai(:) !! Pure components attractive parameters (\a_i\)
       real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
       real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
-      real(pr), intent(out) :: a(:, :) !! \(a_{ij}\) Matrix
-      real(pr), intent(out) :: dadt(:, :) !! \(\frac{da_{ij}{dT}\)
-      real(pr), intent(out) :: dadt2(:, :)!! \(\frac{d^2a_{ij}{dT^2}\)
+      real(pr), intent(out) :: a(:, :, :) !! \(a_{ijk}\) Matrix
+      real(pr), intent(out) :: dadt(:, :, :) !! \(\frac{da_{ijk}{dT}\)
+      real(pr), intent(out) :: dadt2(:, :, :)!! \(\frac{d^2a_{ijk}{dT^2}\)
 
       integer :: i, j, l
 

@@ -80,13 +80,17 @@ contains
    type(FixtureFluid) function co2_h2o_isop() result(fluid)
       use yaeos__models, only: CubicEoS, SoaveRedlichKwong
       integer, parameter :: nc = 3
-      real(pr) :: Tc(nc), Pc(nc), w(nc)
+      real(pr) :: Tc(nc), Pc(nc), w(nc), kij(nc, nc)
       Tc = [304.21, 647.13, 508.3]
       Pc = [73.3, 220.55, 47.64]
       w = [0.2236, 0.3449, 0.6669]
 
+      kij(1, :) = [0._pr, 0.19_pr, 0.1215_pr]
+      kij(2, :) = [0.19_pr, 0._pr, -0.1727_pr]
+      kij(3, :) = [0.1215_pr, -0.1727_pr, 0._pr]
+
       fluid%nc = nc
-      fluid%ar_model = SoaveRedlichKwong(Tc, Pc, w)
+      fluid%ar_model = SoaveRedlichKwong(Tc, Pc, w, kij=kij)
       fluid%z0 = [0.997493267163008, 0.000567120831996, 0.00193961200499]
       fluid%zi = [0.122878702720943, 0.376116603168507, 0.50100469411055]
    end function co2_h2o_isop
