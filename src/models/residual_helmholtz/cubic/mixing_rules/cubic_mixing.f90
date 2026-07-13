@@ -1,4 +1,4 @@
-module yaeos__models_ar_cubic_quadratic_mixing
+module yaeos__models_ar_cubic_cubic_mixing
    !! Cubic Mixing Rules for Cubic EoS.
    use yaeos__constants, only: pr, solving_volume
    use yaeos__substance, only: substances
@@ -46,7 +46,7 @@ module yaeos__models_ar_cubic_quadratic_mixing
          !! Combining rule for the attractive parameter.
          !!
          !! From previously calculated attractive parameters calculate the
-         !! \(a_{ij}\) matrix and it's corresponding derivatives.
+         !! \(a_{ijk}\) matrix and it's corresponding derivatives.
          import pr, CMR
          class(CMR), intent(in) :: self
          real(pr), intent(in) :: T
@@ -266,4 +266,4 @@ contains
    !    daijdt = aij_hd%f1
    !    daijdt2 = aij_hd%f12
    ! end subroutine kij_exp_tdep
-end module yaeos__models_ar_cubic_quadratic_mixing
+end module yaeos__models_ar_cubic_cubic_mixing
