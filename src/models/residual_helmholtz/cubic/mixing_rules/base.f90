@@ -276,7 +276,6 @@ contains
 
       nc = size(ai)
 
-
       do i = 1,nc
          aaa = ai(i) * ai(i) * ai(i)
          aijk_3 = aaa ** third
@@ -335,17 +334,17 @@ contains
       end do
    end subroutine CMR_aijk
 
-   pure subroutine CMR_Dmix(n, V, T, &
-      ai, daidt, daidt2, &
+   subroutine CMR_Dmix(n, V, T, &
+      a, dadt, dadt2, &
       D, &
       dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
       real(pr), intent(in) :: V !! Volume [L] (unused)
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: n(:) !! Moles vector [mol]
-      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters \(a_i\)
-      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
-      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+      real(pr), intent(in) :: a(:, :, :) !!
+      real(pr), intent(in) :: dadt(:, :, :) !!
+      real(pr), intent(in) :: dadt2(:, :, :) !!
 
       real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
       real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
@@ -363,6 +362,7 @@ contains
       real(pr) :: aijk(size(n),size(n),size(n)),daijkdT(size(n),size(n),size(n)),daijkdT2(size(n),size(n),size(n))
 
       real(pr) :: totn
+      real(pr) :: cum
 
       integer :: i, j, k, nc
 
@@ -375,7 +375,12 @@ contains
       aux = 0.0_pr
       auxij = 0.0_pr
       auxT = 0.0_pr
+      auxT2 = 0.0_pr
       auxTij = 0.0_pr
+
+      aijk = a
+      daijkdT = dadt
+      daijkdT2 = dadt2
 
       do i=1,nc
          do j=1,nc
@@ -407,11 +412,28 @@ contains
          dDi(i) = (3*aux(i)-D)/TOTN
 
          do j=1,i
-            dDij(i,j) = (6*auxij(i,j)-dDi(i)-dDi(j))/TOTN
+            dDij(i,j) = (6*auxij(i,j)-dDi(i)-dDi(j)) / totn
             dDij(j,i) = dDij(i,j)
          end do
 
       end do
+
+      ! D = 0
+      ! dDdT = 0
+      ! dDdT2 = 0
+      ! do i=1,nc
+      !    do j=1,nc
+      !       do k=1,nc
+      !          D = D + n(i) * n(j) * n(k) * a(i, j, k)
+      !          dDdT = dDdT + n(i) * n(j) * n(k) * dadt(i, j, k)
+      !          dDdT2 = dDdT2 + n(i) * n(j) * n(k) * dadt2(i, j, k)
+      !       end do
+      !    end do
+      ! end do
+
+      ! D = D / totn
+      ! dDdT = dDdT / totn
+      ! dDdT2 = dDdT2 / totn
    end subroutine CMR_Dmix
 
    pure subroutine CMR_Bmix(n, bijk, Bmix, dBi, dBij)

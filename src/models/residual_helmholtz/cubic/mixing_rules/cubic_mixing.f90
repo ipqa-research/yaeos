@@ -9,6 +9,8 @@ module yaeos__models_ar_cubic_cubic_mixing
    private
 
    public :: CMR
+   public :: CMRTD
+   public :: kijk_exp_tdep
 
    type, extends(CubicMixRule) :: CMR
       !! Cubic Mixing Rule (CMR) derived type. Classic Van der Waals mixing
@@ -34,12 +36,12 @@ module yaeos__models_ar_cubic_cubic_mixing
       procedure :: D1mix => RKPR_D1mix
    end type CMR
 
-   ! type, extends(CMR) :: CMRTD
-   !    real(pr), allocatable :: k0(:, :)
-   !    real(pr), allocatable :: Tref(:, :)
-   ! contains
-   !    procedure :: aijk => kij_exp_tdep
-   ! end type CMRTD
+   type, extends(CMR) :: CMRTD
+      real(pr), allocatable :: k0(:, :, :)
+      real(pr), allocatable :: Tref(:, :, :)
+   contains
+      procedure :: aijk => kijk_exp_tdep
+   end type CMRTD
 
    abstract interface
       subroutine get_aijk(&
@@ -118,7 +120,7 @@ contains
       call self%aijk(T, ai, daidt, daidt2, a, dadt, dadt2)
       call CMR_Dmix(&
          n, V, T, &
-         ai, daidt, daidt2, &
+         a, dadt, dadt2, &
          D=D, &
          dDdV=dDdV, &
          dDdT=dDdT, &
@@ -129,8 +131,7 @@ contains
          dDidV=dDidV, &
          dDidT=dDidT, &
          dDij=dDij &
-      )
-
+         )
    end subroutine Dmix
 
    subroutine Bmix(self, n, bi, B, dBi, dBij)
@@ -219,70 +220,48 @@ contains
       call CMR_aijk(ai, daidt, daidt2, k, zeros, zeros, a, dadt, dadt2)
    end subroutine kijk_constant
 
-   ! subroutine kijk_exp_tdep(&
-   !    self, T, a, dadt, dadt2, &
-   !    aij, daijdt, daijdt2 &
-   !    )
-   !    !! # kij_exp_tdep
-   !    !!
-   !    !! Combining rule that uses temperature dependant \(k_{ij}\) values.
-   !    !! With the following expression:
-   !    !! \[
-   !    !! k_{ij}(T) = k_{ij}^0 + k_{ij}^\infty \exp\left(\frac{-T}{T^*}\right)
-   !    !!  \]
-   !    !!
-   !    !! \[
-   !    !!  a_{ij} = \sqrt{a_i a_j} (1 - k_{ij})
-   !    !! ]
-   !    use hyperdual_mod
-   !    class(QMRTD), intent(in) :: self
-   !    real(pr), intent(in) :: T !! Temperature [K]
-   !    real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a_i\)
-   !    real(pr), intent(in) :: dadt(:) !! \(\frac{da_i}{dT}\)
-   !    real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a_i}{dT^2}\)
-   !    real(pr), intent(out) :: aij(:, :) !! \(a_{ij}\) Matrix
-   !    real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}{dT}\)
-   !    real(pr), intent(out) :: daijdt2(:, :)!! \(\frac{d^2a_{ij}{dT^2}\)
+   subroutine kijk_exp_tdep(&
+      self, T, ai, daidt, daidt2, &
+      a, dadt, dadt2 &
+      )
+      !! Combining rule that uses \(k_{ijk}\) as a function of temperature.
+      !!
+      !! \[
+      !!  k_{ijk} = k_{ijk} + k_{ijk}^0 \exp \left(-T/T^{*}\)
+      !! \]
+      !!
+      !! \[
+      !!  a_{ijk} = \sqrt[3]{a_i a_j a_k} (1 - k_{ijk})
+      !! \]
+      use yaeos__models_ar_cubic_mixing_base, only: CMR_aijk
+      class(CMRTD), intent(in) :: self
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: ai(:) !! Pure components attractive parameters (\a_i\)
+      real(pr), intent(in) :: daidt(:) !! \(\frac{da_i}{dT}\)
+      real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
+      real(pr), intent(out) :: a(:, :, :) !! \(a_{ijk}\) Matrix
+      real(pr), intent(out) :: dadt(:, :, :) !! \(\frac{da_{ijk}{dT}\)
+      real(pr), intent(out) :: dadt2(:, :, :)!! \(\frac{d^2a_{ijk}{dT^2}\)
 
-   !    real(pr) :: k0(size(a), size(a))
-   !    real(pr) :: kinf(size(a), size(a))
-   !    real(pr) :: Tstar(size(a), size(a))
+      integer :: i, j, l, nc
 
-   !    type(hyperdual) :: aij_hd(size(a), size(a)), kij_hd(size(a), size(a)), T_hd
-   !    type(hyperdual) :: a_hd(size(a))
+      real(pr) :: c(size(ai), size(ai), size(ai))
+      real(pr) :: k(size(ai), size(ai), size(ai))
+      real(pr) :: dkdt(size(ai), size(ai), size(ai))
+      real(pr) :: dkdt2(size(ai), size(ai), size(ai))
 
-   !    integer :: i, j, nc
+      nc = size(ai)
+      k = 0
+      dkdt = 0
+      dkdt2 = 0
 
-   !    T_hd = T
-   !    T_hd%f1 = 1
-   !    T_hd%f2 = 1
+      where(self%k0 /= 0 .or. self%k /= 0)
+         c = self%k0 * exp(-T/self%Tref)
+         k = self%k + c
+         dkdt = -c / self%Tref
+         dkdt2 = c / self%Tref**2
+      end where
 
-   !    k0 = self%k0
-   !    kinf = self%k
-
-   !    Tstar = self%Tref
-
-   !    kij_hd = kinf + k0 * exp(-T_hd / Tstar)
-
-   !    a_hd = a
-
-   !    ! Inject the already calculated derivatives
-   !    a_hd%f1 = dadt
-   !    a_hd%f2 = dadt
-   !    a_hd%f12 = dadt2
-
-   !    nc = size(a)
-
-   !    do i=1,size(a)
-   !       aij_hd(i, i) = sqrt(a_hd(i) * a_hd(i))
-   !       do j=i+1,size(a)
-   !          aij_hd(i, j) = sqrt(a_hd(i) * a_hd(j)) * (1._pr - kij_hd(i, j))
-   !          aij_hd(j, i) = aij_hd(i, j)
-   !       end do
-   !    end do
-
-   !    aij = aij_hd%f0
-   !    daijdt = aij_hd%f1
-   !    daijdt2 = aij_hd%f12
-   ! end subroutine kij_exp_tdep
+      call CMR_aijk(ai, daidt, daidt2, k, dkdt, dkdt2, a, dadt, dadt2)
+   end subroutine kijk_exp_tdep
 end module yaeos__models_ar_cubic_cubic_mixing
