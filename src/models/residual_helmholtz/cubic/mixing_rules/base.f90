@@ -45,7 +45,7 @@ contains
       integer :: i, j, nc
 
       nc = size(n)
-      TOTN = sum(n)
+      totn = sum(n)
       B = 0
       dBi = 0
       dBij = 0
@@ -368,15 +368,26 @@ contains
 
       nc = size(n)
 
-      TOTN = sum(n)
-      D = 0.0_pr
-      dDdT = 0.0_pr
-      dDdT2 = 0.0_pr
-      aux = 0.0_pr
-      auxij = 0.0_pr
-      auxT = 0.0_pr
-      auxT2 = 0.0_pr
-      auxTij = 0.0_pr
+      totn = sum(n)
+
+      ! Initialize derivatives as 0
+      D = 0
+      dDdT = 0
+      dDdT2 = 0
+      dDi = 0
+      dDidT = 0
+      dDij = 0
+
+      ! Not density-dependent
+      dDdV = 0
+      dDdTV = 0
+      dDdV2 = 0
+
+      aux = 0
+      auxij = 0
+      auxT = 0
+      auxT2 = 0
+      auxTij = 0
 
       aijk = a
       daijkdT = dadt
@@ -384,18 +395,19 @@ contains
 
       do i=1,nc
          do j=1,nc
+            auxT2ij(i, j) = 0
             do k=1,nc
-               auxij(i,j)=auxij(i,j) + n(k)*aijk(i,j,k)
+               auxij(i, j) = auxij(i, j) + n(k) * aijk(i, j, k)
 
-               auxTij(i,j)=auxTij(i,j) + n(k)*daijkdT(i,j,k)
-               auxT2ij(i,j)=auxT2ij(i,j) + n(k)*daijkdT2(i,j,k)
+               auxTij(i, j) = auxTij(i, j) + n(k) * daijkdT(i, j, k)
+               auxT2ij(i, j) = auxT2ij(i, j) + n(k) * daijkdT2(i, j, k)
             end do
 
-            aux(i) = aux(i)+n(j)*auxij(i,j)
+            aux(i) = aux(i) + n(j) * auxij(i,j)
+            print *, i, aux
 
             auxT(i) = auxT(i) + n(j)*auxTij(i,j)
             auxT2(i) = auxT2(i) + n(j)*auxT2ij(i,j)
-
          end do
 
          D = D + n(i)*aux(i)
@@ -404,36 +416,19 @@ contains
          dDdT2 = dDdT2 + n(i)*auxT2(i)
       end do
 
-      D = D/TOTN
-      dDdT = dDdT/TOTN
-      dDdT2 = dDdT2/TOTN
+      D = D / totn
+      dDdT = dDdT / totn
+      dDdT2 = dDdT2 / totn
 
       do i=1,nc
-         dDi(i) = (3*aux(i)-D)/TOTN
+         dDi(i) = (3*aux(i) - D) / totn
+         dDidT(i) = (3 * auxT(i) - dDdT) / totn
 
          do j=1,i
-            dDij(i,j) = (6*auxij(i,j)-dDi(i)-dDi(j)) / totn
-            dDij(j,i) = dDij(i,j)
+            dDij(i, j) = (6*auxij(i, j) - dDi(i) - dDi(j)) / totn
+            dDij(j, i) = dDij(i, j)
          end do
-
       end do
-
-      ! D = 0
-      ! dDdT = 0
-      ! dDdT2 = 0
-      ! do i=1,nc
-      !    do j=1,nc
-      !       do k=1,nc
-      !          D = D + n(i) * n(j) * n(k) * a(i, j, k)
-      !          dDdT = dDdT + n(i) * n(j) * n(k) * dadt(i, j, k)
-      !          dDdT2 = dDdT2 + n(i) * n(j) * n(k) * dadt2(i, j, k)
-      !       end do
-      !    end do
-      ! end do
-
-      ! D = D / totn
-      ! dDdT = dDdT / totn
-      ! dDdT2 = dDdT2 / totn
    end subroutine CMR_Dmix
 
    pure subroutine CMR_Bmix(n, bijk, Bmix, dBi, dBij)

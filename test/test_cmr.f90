@@ -1,5 +1,6 @@
 module tests_cmr
    use yaeos
+   use auxiliar_functions, only: allclose
    use testing_aux, only: assert
    integer, parameter :: nc = 3
 contains
@@ -193,16 +194,16 @@ contains
       real(pr) :: k0(nc, nc, nc)
       real(pr) :: tref(nc, nc, nc)
       type(FixtureFluid) :: fluid
-      type(CMR) :: mixrule
+      type(CMRTD) :: mixrule
 
       integer :: i, j, l
-      real(pr) :: n(nc), V=0, T, dt=1e-3, dni=1e-9, dn(nc)
+      real(pr) :: n(nc), V=0, T, dt=1e-2, dni=1e-9, dn(nc)
       real(pr) :: ai(nc), daidt(nc), daidt2(nc)
       real(pr) :: a(nc, nc, nc), dadt(nc, nc, nc), dadt2(nc, nc, nc)
       real(pr) :: df, df2
-      real(pr) :: f1, f2, f3, f4
+      real(pr) :: f1, f2, f3, f4, f0
 
-      real(pr) :: D
+      real(pr) :: D, D_num
       real(pr) :: dDdV
       real(pr) :: dDdT
       real(pr) :: dDdT2
@@ -210,7 +211,7 @@ contains
       real(pr) :: dDdTV
       real(pr) :: dDi(nc), dDi_num(nc)
       real(pr) :: dDidV(nc)
-      real(pr) :: dDidT(nc)
+      real(pr) :: dDidT(nc), dDidT_num(nc)
       real(pr) :: dDij(nc, nc), dDij_num(nc, nc)
 
       fluid = co2_h2o_isop()
@@ -256,12 +257,13 @@ contains
       tref(1, 2, 2) = 200
 
       n = fluid%z0
+      n = [0.9, 0.5, 0.2]
 
-      ! mixrule = CMRTD(k=k, k0=k0, tref=tref, l=0*k0)
-      mixrule = CMR(k=0*k, l=0*k0)
+      mixrule = CMRTD(k=k, k0=k0, tref=tref, l=0*k0)
 
       T = 200
 
+      print *, "AAAAAAAAAAAA"
       associate(model => fluid%ar_model)
          select type(model)
           type is (CubicEoS)
@@ -283,50 +285,17 @@ contains
                )
          end select
       end associate
+      print *, "AAAAAAAAAAAAfin"
 
-      df = (f(n, T+dT) - f(n, T-dT))/(2*dt)
-      df2 = (f(n, T+dT) - 2*f(n, T) + f(n, T-dT))/(dT**2)
+      call autodiff(n, T, D_num, df, df2, dDi_num, dDidT_num, dDij_num)
 
-      do i=1,nc
-         dn = 0
-         dn(i) = dni
-         dDi_num(i) = (f(n + dn, T) - f(n - dn, T))/(2*dni)
-         do j=1,nc
-            dn = 0
-            dn(i) = dni
-            dn(j) = dni
-            f1 = f(n + dn, T)
-            
-            dn = 0
-            dn(i) = dni
-            dn(j) = -dni
-            f2 = f(n + dn, T)
-            
-            dn = 0
-            dn(i) = -dni
-            dn(j) = dni
-            f3 = f(n + dn, T)
-            
-            dn = 0
-            dn(i) = dni
-            dn(j) = dni
-            f4 = f(n + dn, T)
+      call assert(abs(D - D_num) < 1e-10, "D")
+      call assert(abs(dDdT - df) < 1e-8, "dDdT")
+      call assert(abs(dDdT2 - df2) < 1e-8, "d2DdT2")
+      call assert(allclose(dDi, dDi_num, 1e-8_pr), "dDi")
 
-            dDij_num(i, j) = (f1 - f2 - f3 + f4) / (2*dni**2)
-
-         end do
-      end do
-
-      print *, ""
-
-      print *, dDdT, df
-      print *, dDdT2, df2
-      print *, dDi
-      print *, dDi_num
-      
-      print *, dDij
-      print *, dDij_num
-
+      call assert(allclose(dDidT, dDidT_num, 1e-8_pr), "dDidT")
+      call assert(allclose([dDij], [dDij_num], 1e-8_pr), "dDij")
    contains
       real(pr) function f(n, T)
          real(pr), intent(in) :: n(nc)
@@ -366,6 +335,96 @@ contains
             end select
          end associate
       end function f
+
+      function hd_d(n, T, ai, daidt, daidt2)
+         use hyperdual_mod
+         type(hyperdual), intent(in) :: n(:)
+         type(hyperdual), intent(in) :: T
+         real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
+         type(hyperdual) :: hd_D
+
+         type(hyperdual) :: hd_a(size(n)), hd_k, c
+
+         integer :: i, j, l, nc
+
+         hd_D = 0._pr
+         nc = size(n)
+
+         do i=1,nc
+            do j=1,nc
+               do l=1,nc
+
+                  if (Tref(i, j, l) /= 0) then
+                     c = k0(i, j, l) * exp(-T/Tref(i, j, l))
+                     hd_k = k(i, j, l) + c
+                  else
+                     hd_k = 0._pr
+                  end if
+
+                  hd_a = ai
+
+                  if (T%f1 == 1 .and. T%f2 == 1) then
+                     hd_a%f1 = daidt
+                     hd_a%f2 = daidt
+                     hd_a%f12 = daidt2
+                  else if(T%f1 == 1) then
+                     hd_a%f1 = daidt
+                  else if(T%f2 == 1) then
+                     hd_a%f2 = daidt
+                  end if
+
+                  hd_D = hd_d + (n(i) * n(j) * n(l)) * (hd_a(i) * hd_a(j) * hd_a(l))**(1._pr/3._pr) * (1._pr - hd_k)
+               end do
+            end do
+         end do
+
+         hd_D = hd_D / sum(n)
+      end function hd_d
+
+      subroutine autodiff(n, T, D, dDdT, dDdT2, dDi, dDiT, dDij)
+         use hyperdual_mod
+         real(pr), intent(in) :: n(:), T
+         real(pr), intent(out) :: D, dDdT, dDdT2
+         real(pr), intent(out) :: dDi(:), dDiT(:), dDij(:, :)
+
+         type(hyperdual) :: hd_d_i, hd_t, hd_n(size(n))
+         integer :: i, nc
+
+         nc = size(n)
+
+         hd_n = n
+         hd_t = t
+
+         hd_t%f1 = 1
+         hd_t%f2 = 1
+         hd_d_i = hd_d(hd_n, hd_t, ai, daidt, daidt2)
+
+         D = hd_d_i%f0
+
+         dDdT = hd_d_i%f1
+         dDdT2 = hd_d_i%f12
+
+
+         do i=1,nc
+
+            hd_n%f1 = 0
+            hd_n%f2 = 0
+            hd_n%f12 = 0
+            hd_t%f1 = 0
+            hd_t%f2 = 0
+            hd_t%f12 = 0
+
+
+            hd_n = n
+            hd_t = t
+            hd_n(i)%f1 = 1
+            hd_t%f2 = 1
+            hd_d_i = hd_d(hd_n, hd_t, ai, daidt, daidt2)
+            dDi(i) = hd_d_i%f1
+            dDidT(i) = hd_d_i%f12
+         end do
+
+      end subroutine autodiff
    end subroutine test_D_kexpt_numdiff
 
    subroutine test_compare_with_qmr
