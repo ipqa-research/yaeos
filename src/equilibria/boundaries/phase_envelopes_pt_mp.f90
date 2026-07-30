@@ -61,7 +61,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
       !! Step size of the specification to reach this point.
    end type MPPoint
 
-   type(NearCritical) :: near_critical_state 
+   type(NearCritical) :: near_critical_state
    !! Singleton to follow the near critical status.
 
 contains
@@ -138,12 +138,12 @@ contains
       logical, optional, intent(in) :: allow_negative_betas
       !! Do not stop calculating when there are negative values of beta.
 
-      type(MPPoint), allocatable :: env_points(:) 
+      type(MPPoint), allocatable :: env_points(:)
       !! Array of converged points.
-      type(MPPoint) :: point 
+      type(MPPoint) :: point
       !! Converged point.
-      
-      real(pr) :: max_P 
+
+      real(pr) :: max_P
       !! Maximum pressure [bar] to calculate.
       logical :: anb
       !! Allow negative betas.
@@ -158,7 +158,7 @@ contains
       real(pr) :: dX(size(z) * np + np + 2)
       !! Step for next point estimation.
 
-      integer :: nc 
+      integer :: nc
       !! Number of components.
 
       integer :: its
@@ -593,10 +593,10 @@ contains
       !! Solve a multiphase phase equilbiria at a fixed $T,P,\beta^w$
       !!
       !! # Description
-      !! This subroutine uses the Newton method to solve the system of 
-      !! equations for the calculation of a multiphase phase eqiulibria point. 
+      !! This subroutine uses the Newton method to solve the system of
+      !! equations for the calculation of a multiphase phase eqiulibria point.
       !! To help with convergence, damping on the \(\Delta X\) at each step
-      !! is done, avoiding divergence and undesired big steps.  
+      !! is done, avoiding divergence and undesired big steps.
       use iso_fortran_env, only: error_unit
       use yaeos__math, only: solve_system
       class(ArModel), intent(in) :: model !! Model to use.
@@ -743,7 +743,12 @@ contains
 
       integer :: iT !! Index of temperature variable
       integer :: iP !! Index of pressure variable
-      integer :: iBetas(np) !! Index of phase fraction variables  
+      integer :: iBetas(np) !! Index of phase fraction variables
+
+      real(pr) :: dX(nc*np + np + 2) !! Possible next step
+      logical :: near_crit_next !! The next step will be near crit?
+
+      real(pr), save :: Xold(100)
 
       iBetas = [(i, i=np*nc+1, np*nc+np)]
       iP = size(X) - 1
@@ -772,7 +777,14 @@ contains
       end block
 
       ! Check if we already are in the critical region
+      call near_critical(nc, np, X + dXdS * dS, near_crit_next, l_nc, i_nc, j_nc)
       call near_critical(nc, np, X, near_crit, l_nc, i_nc, j_nc)
+
+      ! Avoid an overshoot of the critical point. This happens on extremely
+      ! rare cases were the phase envelope is very thin.
+      if (.not. near_crit .and. near_crit_next) then
+         dS = dS * 0.25_pr
+      end if
 
       if (near_crit .and. .not. near_critical_state%entering) then
          ! If it is the first point of the critical region save the positions
@@ -799,7 +811,7 @@ contains
          dF(nc*np+np+2, (l_nc-1)*nc + i_nc) = 1
          dF(nc*np+np+2, (l_nc-1)*nc + j_nc) = -1
          dXdS = solve_system(dF, -dFdS)
-
+         
          dS = -0.01_pr
 
          if (abs(S + dS) < 0.010) then
@@ -810,6 +822,7 @@ contains
       else
          near_critical_state%near_critical = .false.
       end if
+      Xold(:size(X)) = X
    end subroutine update_specification
 
    subroutine get_values_from_X(X, np, z, beta_w, x_l, w, betas, P, T)
@@ -858,8 +871,8 @@ contains
       class(PTEnvelMP), intent(in) :: env
       integer, intent(in) :: unit
 
-      integer :: i, j
-      integer :: np, nc
+      integer :: i, j, k
+      integer :: np, nc, n_beta, n_phase
       integer :: ns
       integer :: its
       real(pr) :: S
@@ -869,25 +882,86 @@ contains
       real(pr), allocatable :: w(:)
       real(pr), allocatable :: x_l(:, :)
 
-      np = size(env%points)
-      nc = size(env%points(1)%w)
+      character(len=20) :: str_k, str_ph, hdr
 
-      do i=1,np
-         P = env%points(i)%P
-         T = env%points(i)%T
+      np = size(env%points)
+
+      ! --- Header Generation ---
+      if (np > 0) then
+         nc      = size(env%points(1)%w)
+         n_beta  = size(env%points(1)%betas)
+         n_phase = size(env%points(1)%x_l, dim=1)
+
+         ! Write scalar headers (width 3 for I3, width 25 for E25.15)
+         write(unit, '(A)', advance='no') center_str('its', 3) // '  '
+         write(unit, '(A)', advance='no') center_str('ns', 3) // '  '
+         write(unit, '(A)', advance='no') center_str('S', 25) // '  '
+         write(unit, '(A)', advance='no') center_str('dS', 25) // '  '
+         write(unit, '(A)', advance='no') center_str('P', 25) // '  '
+         write(unit, '(A)', advance='no') center_str('T', 25) // '  '
+
+         ! Beta headers
+         do j = 1, n_beta
+            write(str_k, '(I0)') j
+            hdr = 'beta' // trim(str_k)
+            write(unit, '(A)', advance='no') center_str(hdr, 25) // '  '
+         end do
+
+         ! Overall composition headers (w_1, w_2, ...)
+         do j = 1, nc
+            write(str_k, '(I0)') j
+            hdr = 'w_' // trim(str_k)
+            write(unit, '(A)', advance='no') center_str(hdr, 25) // '  '
+         end do
+
+         ! Phase composition headers (x_1^1, x_2^1, ... x_nc^nphase)
+         do j = 1, n_phase
+            write(str_ph, '(I0)') j
+            do k = 1, nc
+               write(str_k, '(I0)') k
+               hdr = 'x_' // trim(str_k) // '^' // trim(str_ph)
+               write(unit, '(A)', advance='no') center_str(hdr, 25) // '  '
+            end do
+         end do
+
+         write(unit, *) ! End header line
+      end if
+
+      ! --- Data Output ---
+      do i = 1, np
+         P     = env%points(i)%P
+         T     = env%points(i)%T
          betas = env%points(i)%betas
-         w = env%points(i)%w
-         x_l = env%points(i)%x_l
-         its = env%points(i)%iters
-         ns = env%points(i)%ns
-         S = env%points(i)%S
-         dS = env%points(i)%dS
-         write(unit, "(I3,2x,I3,*(E25.15,2x))") its, ns, S, dS, P, T, betas, w, (x_l(j, :), j=1, size(x_l,dim=1))
+         w     = env%points(i)%w
+         x_l   = env%points(i)%x_l
+         its   = env%points(i)%iters
+         ns    = env%points(i)%ns
+         S     = env%points(i)%S
+         dS    = env%points(i)%dS
+
+         write(unit, "(I3,2x,I3,*(E25.15,2x))") its, ns, S, dS, P, T, betas, w, &
+            (x_l(j, :), j=1, size(x_l, dim=1))
       end do
 
-      ! do i=1,size(env%Tc)
-      !    write(unit, "(*(E15.5,2x))") env%Pc(i), env%Tc(i)
-      ! end do
+   contains
+
+      ! Helper function to center a string within a fixed width field
+      pure function center_str(text, width) result(res)
+         character(len=*), intent(in) :: text
+         integer, intent(in) :: width
+         character(len=width) :: res
+         integer :: l, pad
+
+         l = len_trim(text)
+         if (l >= width) then
+            res = text(1:width)
+         else
+            pad = (width - l) / 2
+            res = ' '
+            res(pad + 1 : pad + l) = trim(text)
+         end if
+      end function center_str
+
    end subroutine write_envelope_PT_MP
 
 end module yaeos__equilibria_boundaries_phase_envelopes_mp
