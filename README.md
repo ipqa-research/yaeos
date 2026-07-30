@@ -1,21 +1,24 @@
+<div align="center">
+
 [![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
 [![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
-[![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
+[![FORD Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
+[![Python Docs](https://img.shields.io/badge/Python-Docs-3776AB?logo=python&logoColor=white)](https://ipqa-research.github.io/yaeos/page/python-api/index.html)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/ipqa-research/yaeos/blob/main/LICENSE)
 [![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/ipqa-research/yaeos/graph/badge.svg?token=IDJYKV8XK6)](https://codecov.io/gh/ipqa-research/yaeos)
 
-
-
-<p align="center">
+<br>
 
 <a target="_blank" href="https://colab.research.google.com/github/ipqa-research/yaeos/blob/main/notebooks/run_online.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a> <br>
+</a> 
 
-<img src="media/logo.png" width="50%"/>
-</p>
+<br><br>
 
+<img src="media/logo.png" width="33%"/>
+
+</div>
 There are multiple open source equations of state libraries, like:
 
 - [Clapeyron](https://github.com/ClapeyronThermo/Clapeyron.jl) `julia`
