@@ -227,6 +227,9 @@ contains
       k(1, 2, 3) = 0.3
       k(2, 1, 3) = 0.3
       k(3, 2, 1) = 0.3
+      k(1, 3, 2) = 0.3
+      k(2, 3, 1) = 0.3
+      k(3, 1, 2) = 0.3
 
       k(2, 2, 1) = 0.2
       k(2, 1, 2) = 0.2
@@ -239,6 +242,9 @@ contains
       k0(1, 2, 3) = 0.03
       k0(2, 1, 3) = 0.03
       k0(3, 2, 1) = 0.03
+      k0(1, 3, 2) = 0.03
+      k0(2, 3, 1) = 0.03
+      k0(3, 1, 2) = 0.03
 
       k0(2, 2, 1) = 0.02
       k0(2, 1, 2) = 0.02
@@ -251,6 +257,12 @@ contains
       tref(1, 2, 3) = 300
       tref(2, 1, 3) = 300
       tref(3, 2, 1) = 300
+      tref(1, 2, 3) = 300
+      tref(2, 1, 3) = 300
+      tref(3, 2, 1) = 300
+      tref(1, 3, 2) = 300
+      tref(2, 3, 1) = 300
+      tref(3, 1, 2) = 300
 
       tref(2, 2, 1) = 200
       tref(2, 1, 2) = 200
@@ -263,7 +275,6 @@ contains
 
       T = 200
 
-      print *, "AAAAAAAAAAAA"
       associate(model => fluid%ar_model)
          select type(model)
           type is (CubicEoS)
@@ -285,7 +296,6 @@ contains
                )
          end select
       end associate
-      print *, "AAAAAAAAAAAAfin"
 
       call autodiff(n, T, D_num, df, df2, dDi_num, dDidT_num, dDij_num)
 
@@ -383,45 +393,65 @@ contains
 
       subroutine autodiff(n, T, D, dDdT, dDdT2, dDi, dDiT, dDij)
          use hyperdual_mod
-         real(pr), intent(in) :: n(:), T
+         implicit none
+         real(pr), intent(in)  :: n(:), T
          real(pr), intent(out) :: D, dDdT, dDdT2
          real(pr), intent(out) :: dDi(:), dDiT(:), dDij(:, :)
 
          type(hyperdual) :: hd_d_i, hd_t, hd_n(size(n))
-         integer :: i, nc
+         integer :: i, j, nc
 
          nc = size(n)
 
+         ! -------------------------------------------------------------
+         ! 1. Base property D and T-derivatives (dDdT, dDdT2)
+         ! -------------------------------------------------------------
          hd_n = n
-         hd_t = t
+         hd_t = T
 
-         hd_t%f1 = 1
-         hd_t%f2 = 1
+         hd_n%f1 = 0.0_pr;  hd_n%f2 = 0.0_pr;  hd_n%f12 = 0.0_pr
+         hd_t%f1 = 1.0_pr;  hd_t%f2 = 1.0_pr;  hd_t%f12 = 0.0_pr
+
          hd_d_i = hd_d(hd_n, hd_t, ai, daidt, daidt2)
 
-         D = hd_d_i%f0
-
-         dDdT = hd_d_i%f1
+         D     = hd_d_i%f0
+         dDdT  = hd_d_i%f1
          dDdT2 = hd_d_i%f12
 
-
-         do i=1,nc
-
-            hd_n%f1 = 0
-            hd_n%f2 = 0
-            hd_n%f12 = 0
-            hd_t%f1 = 0
-            hd_t%f2 = 0
-            hd_t%f12 = 0
-
-
+         ! -------------------------------------------------------------
+         ! 2. Composition derivatives (dDi, dDiT, dDij)
+         ! -------------------------------------------------------------
+         do i = 1, nc
+            ! First derivative w.r.t n(i) and mixed w.r.t n(i) and T
             hd_n = n
-            hd_t = t
-            hd_n(i)%f1 = 1
-            hd_t%f2 = 1
+            hd_t = T
+            hd_n%f1 = 0.0_pr;  hd_n%f2 = 0.0_pr;  hd_n%f12 = 0.0_pr
+            hd_t%f1 = 0.0_pr;  hd_t%f2 = 0.0_pr;  hd_t%f12 = 0.0_pr
+
+            hd_n(i)%f1 = 1.0_pr
+            hd_t%f2    = 1.0_pr
+            hd_d_i = 0._pr
+
             hd_d_i = hd_d(hd_n, hd_t, ai, daidt, daidt2)
-            dDi(i) = hd_d_i%f1
-            dDidT(i) = hd_d_i%f12
+
+            dDi(i)  = hd_d_i%f1
+            dDiT(i) = hd_d_i%f12   ! Fixed variable name from dDidT to dDiT
+
+            ! Second derivatives w.r.t n(i) and n(j)
+            do j = 1, nc
+               hd_n = n
+               hd_t = T
+               hd_n%f1 = 0.0_pr;  hd_n%f2 = 0.0_pr;  hd_n%f12 = 0.0_pr
+               hd_t%f1 = 0.0_pr;  hd_t%f2 = 0.0_pr;  hd_t%f12 = 0.0_pr
+
+               hd_n(i)%f1 = 1.0_pr
+               hd_n(j)%f2 = 1.0_pr
+
+               hd_d_i = hd_d(hd_n, hd_t, ai, daidt, daidt2)
+               dDi(i) = hd_d_i%f1
+               dDi(j) = hd_d_i%f2
+               dDij(i, j) = hd_d_i%f12
+            end do
          end do
 
       end subroutine autodiff

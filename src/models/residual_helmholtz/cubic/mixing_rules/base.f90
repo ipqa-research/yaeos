@@ -404,7 +404,6 @@ contains
             end do
 
             aux(i) = aux(i) + n(j) * auxij(i,j)
-            print *, i, aux
 
             auxT(i) = auxT(i) + n(j)*auxTij(i,j)
             auxT2(i) = auxT2(i) + n(j)*auxT2ij(i,j)
