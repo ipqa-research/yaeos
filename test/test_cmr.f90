@@ -457,6 +457,124 @@ contains
       end subroutine autodiff
    end subroutine test_D_kexpt_numdiff
 
+   subroutine test_B_numdiff
+      use yaeos__models, only: CMR
+      use yaeos__models_ar_cubic_cubic_mixing, only: kijk_exp_tdep
+      use yaeos__extra_fluids, only: co2_h2o_isop, FixtureFluid
+      real(pr) :: k(nc, nc, nc), lij(nc, nc, nc)
+      type(FixtureFluid) :: fluid
+      type(CMR) :: mixrule
+
+      real(pr) :: n(nc)
+      real(pr) :: bi(nc)
+
+      real(pr) :: B, B_num
+      real(pr) :: dBi(nc), dBi_num(nc)
+      real(pr) :: dBidV(nc)
+      real(pr) :: dBij(nc, nc), dBij_num(nc, nc)
+
+      fluid = co2_h2o_isop()
+
+      lij = 0
+
+      lij(1, 1, 2) = 0.1
+      lij(1, 2, 1) = 0.1
+      lij(2, 1, 1) = 0.1
+
+      lij(1, 2, 3) = 0.3
+      lij(2, 1, 3) = 0.3
+      lij(3, 2, 1) = 0.3
+      lij(1, 3, 2) = 0.3
+      lij(2, 3, 1) = 0.3
+      lij(3, 1, 2) = 0.3
+
+      lij(2, 2, 1) = 0.2
+      lij(2, 1, 2) = 0.2
+      lij(1, 2, 2) = 0.2
+
+      n = fluid%z0
+      n = [0.9, 0.5, 0.2]
+
+      mixrule = CMR(k=0*lij, l=lij)
+
+      associate(model => fluid%ar_model)
+         select type(model)
+          type is (CubicEoS)
+            call model%set_mixrule(mixrule)
+            bi = model%b
+            call model%mixrule%Bmix(&
+               n, &
+               bi=bi, &
+               B=B, &
+               dBi=dBi, &
+               dBij=dBij &
+               )
+         end select
+      end associate
+
+      call autodiff(n, B_num, dBi_num, dBij_num)
+
+      call assert(abs(B - B_num) < 1e-10, "B")
+      call assert(allclose(dBi, dBi_num, 1e-8_pr), "dBi")
+      call assert(allclose([dBij], [dBij_num], 1e-8_pr), "dBij")
+   contains
+      function hd_B(n)
+         use hyperdual_mod
+         type(hyperdual), intent(in) :: n(:)
+         type(hyperdual) :: hd_B
+
+         integer :: i, j, l, nc
+
+         hd_B = 0._pr
+         nc = size(n)
+
+         do i=1,nc
+            do j=1,nc
+               do l=1,nc
+                  hd_B = hd_B + n(i) * n(j) * n(l) * (bi(i) + bi(j) + bi(l))/3._pr * (1 - lij(i, j, l))
+               end do
+            end do
+         end do
+
+         hd_B = hd_B / sum(n)**2
+      end function hd_B
+
+      subroutine autodiff(n, B, dBi, dBij)
+         use hyperdual_mod
+         implicit none
+         real(pr), intent(in)  :: n(:)
+         real(pr), intent(out) :: B
+         real(pr), intent(out) :: dBi(:), dBij(:, :)
+
+         type(hyperdual) :: hd_b_i, hd_n(size(n))
+         integer :: i, j, nc
+
+         nc = size(n)
+
+         ! =====================================================================
+         ! Composition derivatives (dBi, dBij)
+         ! ---------------------------------------------------------------------
+         do i = 1, nc
+            ! Second derivatives w.r.t n(i) and n(j)
+            do j = 1, nc
+               hd_n = n
+               hd_n%f1 = 0.0_pr;  hd_n%f2 = 0.0_pr;  hd_n%f12 = 0.0_pr
+
+               hd_n(i)%f1 = 1.0_pr
+               hd_n(j)%f2 = 1.0_pr
+
+               hd_b_i = hd_b(hd_n)
+               dBi(i) = hd_b_i%f1
+               dBi(j) = hd_b_i%f2
+               dBij(i, j) = hd_b_i%f12
+            end do
+         end do
+
+         B = hd_b_i%f0
+
+      end subroutine autodiff
+   end subroutine test_B_numdiff
+
    subroutine test_compare_with_qmr
       use yaeos, only: QMR, CMR
       use yaeos__extra_fluids, only: co2_h2o_isop, FixtureFluid
@@ -522,6 +640,7 @@ program test_cmr
    use tests_cmr, only: test_aijk_numdiff
    use tests_cmr, only: test_aijk_kexpt_numdiff
    use tests_cmr, only: test_D_kexpt_numdiff
+   use tests_cmr, only: test_B_numdiff
 
    use testing_aux, only: test_title
 
@@ -529,4 +648,5 @@ program test_cmr
    call test_aijk_numdiff
    call test_aijk_kexpt_numdiff
    call test_D_kexpt_numdiff
+   call test_B_numdiff
 end program test_cmr

@@ -163,6 +163,13 @@ contains
          do j=i,nc
             do l=i,nc
                bijk(i, j, l) = (bi(i) + bi(j) + bi(l))/3._pr * (1 - self%l(i, j, l))
+               bijk(i, l, j) = bijk(i, j, l)
+               
+               bijk(j, i, l) = bijk(i, j, l)
+               bijk(j, l, i) = bijk(i, j, l)
+               
+               bijk(l, i, j) = bijk(i, j, l)
+               bijk(l, j, i) = bijk(i, j, l)
             end do
          end do
       end do
