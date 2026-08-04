@@ -102,6 +102,7 @@ module yaeos__models_ar_genericcubic
       procedure :: set_delta1 => set_delta1
       procedure :: set_mixrule => set_mixrule
       procedure :: set_alpha => set_alpha
+      procedure :: calculate_attractive_parameters => calculate_attractive_parameters
    end type CubicEoS
 
    abstract interface
@@ -131,6 +132,7 @@ module yaeos__models_ar_genericcubic
          real(pr), intent(in) :: bi(:)
          real(pr), intent(out) :: B, dBi(:), dBij(:, :)
       end subroutine abs_Bmix
+
       subroutine abs_D1mix(self, n, d1i, D1, dD1i, dD1ij)
          import pr, CubicMixRule
          class(CubicMixRule), intent(in) :: self
@@ -269,6 +271,23 @@ contains
       if (allocated(self%alpha)) deallocate(self%alpha)
       self%alpha = alpha
    end subroutine set_alpha
+
+   subroutine calculate_attractive_parameters(self, T, a, dadt, dadt2)
+      class(CubicEoS), intent(in out) :: self !! Model
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: a(:) !! Attractive parameter
+      real(pr), intent(out) :: dadt(:) !! Derivative wrt temperature
+      real(pr), intent(out) :: dadt2(:) !! Second derivative wrt temperature
+
+      real(pr) :: Tr(size(a)) !! Reduced temperatures for each pure component
+
+      Tr = T/self%components%Tc
+      call self%alpha%alpha(Tr, a, dadt, dadt2)
+
+      a = self%ac * a
+      dadt = self%ac * dadt / self%components%Tc
+      dadt2 = self%ac * dadt2 / self%components%Tc**2
+   end subroutine calculate_attractive_parameters
 
    function v0(self, n, p, t)
       !! Cubic EoS volume initializer.
