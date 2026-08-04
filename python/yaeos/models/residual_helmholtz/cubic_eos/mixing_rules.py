@@ -6,6 +6,7 @@ import numpy as np
 
 from yaeos.core import GeModel
 from yaeos.lib import yaeos_c
+from yaeos.tools.writers import fmatrix_as_str
 
 
 class CubicMixRule(ABC):
@@ -110,20 +111,8 @@ class QMR(CubicMixRule):
         """
         fcode = ""
 
-        kij_c = ""
-        lij_c = ""
-
-        for i in range(len(self.kij)):
-            kij_c += f"kij({i + 1}, :) = ["
-            lij_c += f"lij({i + 1}, :) = ["
-
-            for j in range(len(self.kij)):
-                if j < len(self.kij) - 1:
-                    kij_c += f"{self.kij[i][j]}_pr, "
-                    lij_c += f"{self.lij[i][j]}_pr, "
-                else:
-                    kij_c += f"{self.kij[i][j]}_pr]\n"
-                    lij_c += f"{self.lij[i][j]}_pr]\n"
+        kij_c = fmatrix_as_str(self.kij, "kij")
+        lij_c = fmatrix_as_str(self.lij, "lij")
 
         fcode += kij_c + "\n"
         fcode += lij_c + "\n"
