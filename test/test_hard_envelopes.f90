@@ -5,6 +5,7 @@ program test
    write(*, *) "ENVELOPES DATABANK"
    call test_b3_should_not_get_back
    call test_double_cp
+   call test_b3_should_not_get_back_2
 contains
    subroutine test_b3_should_not_get_back
       use yaeos__extra_fluids, only: oil_gao, FixtureFluid
@@ -117,9 +118,39 @@ contains
       z = z0
       P = 0.0001
       sat = saturation_temperature(eos, z, P, kind="dew")
-      
+
       env = pt_envelope_2ph(eos, z, sat, points=1000)
       call assert(abs(env%cps(1)%T - Tc)/Tc < 1e-1, "multicomponent_PR: Critical Temperature")
       call assert(abs(env%cps(1)%P - Pc)/pc < 1e-1, "multicomponent_PR: Critical Pressure")
    end subroutine test_multicomponent
+
+   subroutine test_b3_should_not_get_back_2
+      use yaeos__extra_fluids, only: oil_b71, FixtureFluid
+      use yaeos, only: pt_envelope, PTEnvelMP, ArModel
+      type(FixtureFluid) :: fluid
+      integer, parameter :: nc = 16, np=2
+      real(pr) :: z(nc), x_l(np, nc), w(nc), T, P, betas(np)
+      character(len=14) :: k_x(np)
+      character(len=14) :: k_w
+      
+      type(PTEnvelMP) :: env
+
+      fluid = oil_b71()
+
+      z = fluid%z0
+      x_l(1, :) = [0.9416741701541934_pr, 0.0011213305701257231_pr, 0.03701631257908194_pr, 0.006399527236767095_pr, 0.003817604608926774_pr, 0.0002966023186278051_pr, 0.0030372769086758223_pr, 0.0010069560277233447_pr, 0.0013898065767137563_pr, 0.0018678423174985478_pr, 0.0022016092602370452_pr, 0.0001685391251062202_pr, 2.418477580604817e-06_pr, 3.8386836693575555e-09_pr, 5.812460558552299e-14_pr, 8.213791709817468e-25_pr]
+      x_l(2, :) = [0.35045087301301103_pr, 0.0018130206354868726_pr, 0.06321939626556232_pr, 0.019911553263846114_pr, 0.016072137206215923_pr, 0.0022065614570470613_pr, 0.019657405203985616_pr, 0.010142906105283357_pr, 0.013771597003497274_pr, 0.021698762924659325_pr, 0.1330484520274068_pr, 0.12119564721915836_pr, 0.09430425135410335_pr, 0.07180261856002143_pr, 0.04358195796601319_pr, 0.017122859794701805_pr]
+      w = [0.4735720485900767_pr, 0.052429758529525014_pr, 0.46949954475431144_pr, 0.004083537850152927_pr, 0.0003471229043833454_pr, 9.691898117208192e-06_pr, 4.853080578189653e-05_pr, 4.72601393083613e-06_pr, 3.8040860361621804e-06_pr, 1.121841630098261e-06_pr, 1.1258574146363489e-07_pr, 1.4620244416616193e-10_pr, 4.196413708634265e-14_pr, 2.64232988450528e-18_pr, 2.4455204481216936e-23_pr, 1.3740466369262361e-30_pr]
+      betas = [1 - 0.39131605820152016_pr, 0.39131605820152016_pr]
+      P = 7.344294594110742
+      T = 199.99999999999991
+      k_x = "liquid"
+      k_w = "vapor"
+
+      env = pt_envelope(&
+         model=fluid%ar_model, np=np, z=z, x_l0=x_l, w0=w, betas0=betas, p0=P, t0=T, &
+         kinds_x=k_x, kind_w=k_w, &
+         ns0=nc*np+np+2, ds0=1e-3_pr, beta_w=0._pr &
+         )
+   end subroutine test_b3_should_not_get_back_2
 end program test
