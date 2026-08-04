@@ -8,11 +8,13 @@ Implemented models:
     - SoaveRedlichKwong: Soave-Redlich-Kwong model
     - RKPR: RKPR model
 - Mixing rules: mixing rules for cubic EoS
-    - QMR: cuadratic mixing rule
+    - QMR: quadratic mixing rule
+    - QMRTD: quadratic mixing rule with exponential temperature dependance
+    - CMR: cubic mixing rule
+    - CMRTD: cubic mixing rule with exponential temperature dependance
     - MHV1: modified Huron-Vidal mixing rule
     - HV: Huron-Vidal mixing rule
     - HVNRTL: Huron-Vidal mixing rule with NRTL excess Gibbs energy
-
 """
 
 from yaeos.models.residual_helmholtz.cubic_eos.cubic_eos import (
@@ -31,6 +33,8 @@ from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import (
     QMR,
     QMRTD,
     sDDLC,
+    CMR,
+    CMRTD
 )
 
 from yaeos.models.residual_helmholtz.cubic_eos.alphas import (
@@ -58,4 +62,6 @@ __all__ = [
     "HV",
     "HVNRTL",
     "sDDLC",
+    "CMR",
+    "CMRTD"
 ]

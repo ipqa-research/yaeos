@@ -7,6 +7,7 @@ import numpy as np
 from yaeos.core import GeModel
 from yaeos.lib import yaeos_c
 from yaeos.tools.writers import fmatrix_as_str
+from yaeos.tools.writers import f3dmatrix_as_str
 
 
 class CubicMixRule(ABC):
@@ -858,4 +859,119 @@ class sDDLC(CubicMixRule):
             "real(pr) :: t_ref(nc, nc), qs(nc)\n\n"
         )
 
+        return fcode
+
+
+class CMR(CubicMixRule):
+    """Cubic mixing rule.
+
+    Parameters
+    ----------
+    kijk : array_like
+        kijk 3D interaction parameters matrix
+    lijk : array_like
+        lijk 3D interaction parameters matrix
+
+    Attributes
+    ----------
+    kijk : array_like
+        kijk 3D interaction parameters matrix
+    lijk : array_like
+        lijk 3D interaction parameters matrix
+    """
+
+    name = "CMR"
+
+    def __init__(self, kijk, lijk) -> None:
+        self.kijk = np.array(kijk, order="F")
+        self.lijk = np.array(lijk, order="F")
+
+    def set_mixrule(self, ar_model_id: int) -> None:
+        """Set cubic mix rule method.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
+        yaeos_c.set_cmr(ar_model_id, self.kijk, self.lijk)
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters assignment as Fortran code string."""
+        fcode = ""
+        fcode += f3dmatrix_as_str(self.kijk, "kijk") + "\n"
+        fcode += f3dmatrix_as_str(self.lijk, "lijk") + "\n"
+        fcode += "mixrule = CMR(k=kijk, l=lijk)\n\n"
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as Fortran code string."""
+        fcode = (
+            "type(CMR) :: mixrule\n"
+            "real(pr) :: kijk(nc, nc, nc), lijk(nc, nc, nc)\n\n"
+        )
+        return fcode
+
+
+class CMRTD(CubicMixRule):
+    r"""Cubic mixing rule, with temperature dependence.
+
+    Parameters
+    ----------
+    kijk_0 : array_like
+        kijk_0 3D interaction parameters matrix
+    kijk_inf : array_like
+        kijk_inf 3D interaction parameters matrix
+    t_ref: array_like
+        Reference temperature 3D matrix
+    lijk : array_like
+        lijk 3D interaction parameters matrix
+
+    Attributes
+    ----------
+    kijk_0 : array_like
+        kijk_0 3D interaction parameters matrix
+    kijk_inf : array_like
+        kijk_inf 3D interaction parameters matrix
+    t_ref: array_like
+        Reference temperature 3D matrix
+    lijk : array_like
+        lijk 3D interaction parameters matrix
+    """
+
+    name = "CMRTD"
+
+    def __init__(self, kijk_0, kijk_inf, t_ref, lijk) -> None:
+        self.kijk_0 = np.array(kijk_0, order="F")
+        self.kijk_inf = np.array(kijk_inf, order="F")
+        self.t_ref = np.array(t_ref, order="F")
+        self.lijk = np.array(lijk, order="F")
+
+    def set_mixrule(self, ar_model_id: int) -> None:
+        """Set temperature-dependent cubic mix rule method."""
+        yaeos_c.set_cmrtd(
+            ar_model_id,
+            kijk_0=self.kijk_0,
+            kijk_inf=self.kijk_inf,
+            t_star=self.t_ref,
+            lijk=self.lijk,
+        )
+
+    def _model_params_as_str(self) -> str:
+        """Return the model parameters assignment as Fortran code string."""
+        fcode = ""
+        fcode += f3dmatrix_as_str(self.kijk_0, "kijk_0") + "\n"
+        fcode += f3dmatrix_as_str(self.kijk_inf, "kijk_inf") + "\n"
+        fcode += f3dmatrix_as_str(self.t_ref, "t_ref") + "\n"
+        fcode += f3dmatrix_as_str(self.lijk, "lijk") + "\n"
+        fcode += "mixrule = CMRTD(k=kijk_inf, k0=kijk_0, Tref=t_ref, l=lijk)\n\n"
+        return fcode
+
+    def _model_params_declaration_as_str(self) -> str:
+        """Return the model parameters declaration as Fortran code string."""
+        fcode = (
+            "type(CMRTD) :: mixrule\n"
+            "real(pr) :: kijk_0(nc, nc, nc), kijk_inf(nc, nc, nc), "
+            "t_ref(nc, nc, nc), lijk(nc, nc, nc)\n\n"
+        )
         return fcode
