@@ -48,3 +48,25 @@ def f3dmatrix_as_str(array: np.ndarray, array_name: str) -> str:
                     f"{array_name}({i+1},{j+1},{k+1}) = {array[i, j, k]}\n"
                 )
     return array_str
+
+
+def f1darray_as_str(array: np.ndarray, array_name: str) -> str:
+    """Convert 1D array into its equivalent representation in Fortran code.
+
+    Parameters
+    ----------
+    array: 1D array
+        1D array with the values to write as a Fortran vector with yaeos
+        precision variable `pr`
+    array_name: str
+        Name that the variable should have in the Fortran side
+    """
+    array_str = f"{array_name} = ["
+    n = len(array)
+
+    for i in range(n):
+        if i < n - 1:
+            array_str += f"{array[i]}_pr, "
+        else:
+            array_str += f"{array[i]}_pr]\n"
+    return array_str

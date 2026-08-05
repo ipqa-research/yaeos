@@ -6,9 +6,8 @@ functions existing in yaeos.
 
 from abc import ABC, abstractmethod
 
-import numpy as np
-
 from yaeos.lib import yaeos_c
+from yaeos.writers import f1darray_as_str
 
 
 class CubicAlphaFunction(ABC):
@@ -93,11 +92,7 @@ class AlphaSoave(CubicAlphaFunction):
         yaeos_c.set_alpha_soave(ar_model_id, self.k)
 
     def _model_params_as_str(self):
-        fcode = "k = ["
-
-        for k in self.k:
-            fcode += f"{k}_pr, "
-        fcode += "]\n"
+        fcode = f1darray_as_str(self.k, "k")
 
         return fcode
 
@@ -147,11 +142,7 @@ class AlphaRKPR(CubicAlphaFunction):
         yaeos_c.set_alpha_rkpr(ar_model_id, self.k)
 
     def _model_params_as_str(self):
-        fcode = "k = ["
-
-        for k in self.k:
-            fcode += f"{k}_pr, "
-        fcode += "]\n"
+        fcode = f1darray_as_str(self.k, "k")
 
         return fcode
 
@@ -216,21 +207,11 @@ class AlphaMathiasCopeman(CubicAlphaFunction):
         )
 
     def _model_params_as_str(self):
-        fcode = "c1 = ["
+        c1 = f1darray_as_str(self.c1, "c1")
+        c2 = f1darray_as_str(self.c2, "c2")
+        c3 = f1darray_as_str(self.c3, "c3")
 
-        for k in self.self.c1:
-            fcode += f"{k}_pr, "
-        fcode += "]\n"
-
-        fcode += "c2 = ["
-        for k in self.self.c2:
-            fcode += f"{k}_pr, "
-        fcode += "]\n"
-
-        fcode += "c3 = ["
-        for k in self.self.c3:
-            fcode += f"{k}_pr, "
-        fcode += "]\n"
+        fcode = "\n".join([c1, c2, c3])
 
         return fcode
 
