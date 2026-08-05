@@ -31,6 +31,7 @@ module yaeos_c
    public :: get_cubiceos_attractive_parameters, get_cubiceos_repulsive_parameters
    ! Mixing rules
    public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl, set_sddlc
+   public :: set_cmr, set_cmrtd
    ! Alphas
    public :: set_alpha_mathiascopeman, set_alpha_RKPR, set_alpha_soave
    ! Multifluid equations
@@ -535,6 +536,64 @@ contains
          end select
       end associate
    end subroutine set_sddlc
+
+   subroutine set_cmr(ar_id, kijk, lijk)
+      !! # `set_cmr`
+      !! Set the Cubic Mixing Rule (CMR) to a cubic equation of state.
+      !!
+      !! ## Description
+      !! With the `id` of a previously created cubic equation of state that is
+      !! in the list of `ArModels`, this procedure will set the mixing rule of
+      !! that model to the Cubic Mixing Rule (CMR) with the provided
+      !! binary interaction parameters matrices `kijk` and `lijk`.
+      use yaeos, only: CMR, CubicEoS
+      integer(c_int), intent(in) :: ar_id !! id in the `ArModels` list.
+      real(c_double) :: kijk(:, :, :) !! \(k_{ij}\) matrix
+      real(c_double) :: lijk(:, :, :) !! \(l_{ij}\) matrix
+
+      type(CMR) :: mixrule
+
+      ar_model = ar_models(ar_id)%model
+
+      ! Using a selector to determine that the model is a CubicEoS
+      select type(ar_model)
+       class is(CubicEoS)
+         mixrule = CMR(k=kijk, l=lijk)
+         ! Remove the previous mixing rule in the model
+         deallocate(ar_model%mixrule)
+         ! Put the new mixing rule
+         ar_model%mixrule = mixrule
+      end select
+
+      call move_alloc(ar_model, ar_models(ar_id)%model)
+   end subroutine set_cmr
+
+   subroutine set_cmrtd(ar_id, kijk_0, kijk_inf, t_star, lijk)
+      !! # `set_cmrtd`
+      !! Set the Cubic Mixing Rule with Temperature Dependent `k_ijk` (CMRTD)
+      !! to a cubic equation of state. The expression of the `k_ijk` parameter is:
+      !! \[
+      !! k_{ijk} = k_{ijk}^{\infty} + k_{ijk}^0 \exp {\frac{-T}{T^*_{ijk}}}
+      !! \]
+      use yaeos, only: CMRTD, CubicEoS
+      integer(c_int), intent(in) :: ar_id !!
+      real(c_double), intent(in) :: kijk_0(:, :, :)
+      real(c_double), intent(in) :: kijk_inf(:, :, :)
+      real(c_double), intent(in) :: t_star(:, :, :)
+      real(c_double), intent(in) :: lijk(:, :, :)
+
+      type(CMRTD) :: mixrule
+
+      mixrule = CMRTD(k=kijk_inf, k0=kijk_0, Tref=t_star, l=lijk)
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = mixrule
+         end select
+      end associate
+   end subroutine set_cmrtd
 
    ! ==========================================================================
    !  Cubic Alpha Functions
