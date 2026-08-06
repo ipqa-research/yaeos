@@ -7,7 +7,7 @@ functions existing in yaeos.
 from abc import ABC, abstractmethod
 
 from yaeos.lib import yaeos_c
-from yaeos.writers import f1darray_as_str
+from yaeos.tools.writers import f1darray_as_str
 
 
 class CubicAlphaFunction(ABC):
