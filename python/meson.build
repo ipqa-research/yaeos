@@ -166,6 +166,7 @@ py.install_sources(residual_helmholtz_sources, subdir:python_lib / 'models' / 'r
 cubic_eos_sources = [
   python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / '__init__.py',
   python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'cubic_eos.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'alphas.py',
   python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos' / 'mixing_rules.py'
 ]
 py.install_sources(cubic_eos_sources, subdir:python_lib / 'models' / 'residual_helmholtz' / 'cubic_eos')

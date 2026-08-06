@@ -19,6 +19,10 @@ module yaeos__models
    !!       defaults to classic vdW mixing rules.
    !!    - `MHV` (Modified Huron-Vidal) type: Michelsens first order modified
    !!       Huron-Vidal mixing rule.
+   !!    - `HV` (Huron-Vidal) type: Huron-Vidal mixing rule.
+   !!    - `sDDLC` (segmented Density Dependent Local Composition) type:
+   !!    mixing rule proposed by Cismondi and Mollerup, including volume as 
+   !!    a dependance of the mixture's attractive parameter. 
    !! - **GERG2008 Equation of State**:
    !!    - GERG2008 multifluid equation of state
    !! - **SAFT Equations of State**:
@@ -47,6 +51,7 @@ module yaeos__models
 
    ! Mixing Rules
    use yaeos__models_ar_cubic_quadratic_mixing
+   use yaeos__models_ar_cubic_cubic_mixing
    use yaeos__models_cubic_mixing_rules_huron_vidal
    use yaeos__models_ar_cubic_mixing_sddlc
 

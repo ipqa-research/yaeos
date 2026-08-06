@@ -37,7 +37,7 @@ program test_sddlc
    mr = sDDLC(q=q, k=kij, k0=kij, Tref=Tstar, l=lij)
    model = RKPR(Tc, Pc, w, zc)
    call model%set_mixrule(mr)
-   
+
    call test_numdiff
 
    do i=1,4
@@ -61,7 +61,7 @@ contains
 
       real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
       real(pr), parameter :: tol=1e-2
-      integer :: i
+      integer :: i, j
 
       logical :: individual_calls
 
@@ -72,6 +72,26 @@ contains
 
       dv = 0.0001
       dt = 0.01
+
+      ! do i=1,int(1e7),int(5e4)
+      !    do j=1,int(1e7),int(5e4)
+      !       dv = real(i, pr) * 1.e-10
+      !       dt = real(j, pr) * 1.e-10
+
+      !       call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
+      !          Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+
+      !       call model%residual_helmholtz(z, V, T, &
+      !          Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
+      !          ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+      !          )
+
+      !       write(1, *) dv, dt, abs((ArTV - ArTV_num)/ArTV)
+      !    end do
+      !    print *, i, j
+      !    write(1, *)
+      ! end do
+
 
       call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
          Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
@@ -85,12 +105,12 @@ contains
       call assert(allclose([Ar_num], [Ar], tol), "Ar")
       call assert(allclose([ArT_num] , [ArT], tol), "ArT")
       call assert(allclose([ArT2_num], [ArT2], tol), "ArT2")
-      
+
       call assert(allclose([ArV_num] , [ArV], tol), "ArV")
       call assert(allclose([ArV2_num], [ArV2], tol), "ArV2")
-      
+
       call assert(allclose([ArTV_num], [ArTV], tol), "ArTV")
-      
+
       call assert(allclose([ArVn_num], [ArVn], tol), "ArnV")
       call assert(allclose([ArTn_num], [ArTn], tol), "ArnT")
 

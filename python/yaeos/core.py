@@ -4119,6 +4119,8 @@ class ArModel(ABC):
         ws_stability=None,
         max_points=100,
         beta0=1e-15,
+        pstep="down",
+        tstep="down",
     ) -> dict:
         """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
@@ -4128,14 +4130,46 @@ class ArModel(ABC):
             spec_variable = phases * len(z) + phases + 1 + 1
             p0 = spec_value
             spec_variable_value = np.log(p0)
+            # There can be two (and in more rare cases even more)
+            # points at the fixed P value. So we select one based on the value
+            # of pstep. Related to the desired step on P
+            y = [p0, p0]
+            x = [0, 1e10]
+            ts, ps, *_ = intersection(x, y, env["T"], env["P"])
+
+            # Add just a little noise in case we are on the last point of
+            # the envelope. Using the originally specified value later
+            # ensures that there are no errors
+            if len(ts) == 0:
+                ts, ps, *_ = intersection(x, y, env["T"], env["P"] + 1)
+                if len(ts) == 0:
+                    ts, ps, *_ = intersection(x, y, env["T"], env["P"] - 1)
+
+            if tstep == "down":
+                t0 = max(ts)
+            else:
+                t0 = min(ts)
+
+            loc = np.argmin((env["T"] - t0) ** 2 + (env["P"] - p0) ** 2)
             loc = np.argmin(np.abs(env["P"] - p0))
             t0 = env["T"][loc]
         elif spec == "T":
             spec_variable = phases * len(z) + phases + 1 + 2
             t0 = spec_value
             spec_variable_value = np.log(t0)
-            loc = np.argmin(np.abs(env["T"] - t0))
-            p0 = env["P"][loc]
+
+            # There can be two (and in more rare cases even more)
+            # points at the fixed T value. So we select one based on the value
+            # of pstep. Related to the desired step on P
+            x = [t0, t0]
+            y = [0, 1e10]
+
+            ts, ps, *_ = intersection(x, y, env["T"], env["P"])
+            if pstep == "down":
+                p0 = min(ps)
+            else:
+                p0 = max(ps)
+            loc = np.argmin((env["T"] - t0) ** 2 + (env["P"] - p0) ** 2)
         else:
             raise ValueError(
                 "spec must be either 'P' or 'T', got: {}".format(spec)

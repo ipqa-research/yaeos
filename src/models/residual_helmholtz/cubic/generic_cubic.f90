@@ -14,10 +14,10 @@ module yaeos__models_ar_genericcubic
    type, abstract :: CubicMixRule
       !! Abstract derived type that describe the required
       !! procedure for a mixing rule on a Cubic EoS
-      logical :: is_D_ddlc = .false. 
-         !! Mixing rule D parameter dependant on density
-      logical :: dn2 = .false. 
-         !! Calculate second order derivatives
+      logical :: is_D_ddlc = .false.
+      !! Mixing rule D parameter dependant on density
+      logical :: dn2 = .false.
+      !! Calculate second order derivatives
    contains
       procedure(abs_Dmix), deferred :: Dmix
       procedure(abs_Bmix), deferred :: Bmix
@@ -101,6 +101,8 @@ module yaeos__models_ar_genericcubic
       procedure :: volume => volume
       procedure :: set_delta1 => set_delta1
       procedure :: set_mixrule => set_mixrule
+      procedure :: set_alpha => set_alpha
+      procedure :: calculate_attractive_parameters => calculate_attractive_parameters
    end type CubicEoS
 
    abstract interface
@@ -130,6 +132,7 @@ module yaeos__models_ar_genericcubic
          real(pr), intent(in) :: bi(:)
          real(pr), intent(out) :: B, dBi(:), dBij(:, :)
       end subroutine abs_Bmix
+
       subroutine abs_D1mix(self, n, d1i, D1, dD1i, dD1ij)
          import pr, CubicMixRule
          class(CubicMixRule), intent(in) :: self
@@ -244,7 +247,7 @@ contains
             D=D, dDi=dDi, dDij=dDij, dDidT=dDidT, dDdT=dDdT, dDdT2=dDdT2, &
             D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
             Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
-         )
+            )
       end if
    end subroutine GenericCubic_Ar
 
@@ -261,6 +264,30 @@ contains
       if (allocated(self%mixrule)) deallocate(self%mixrule)
       self%mixrule = mixrule
    end subroutine set_mixrule
+
+   subroutine set_alpha(self, alpha)
+      class(CubicEoS), intent(in out) :: self
+      class(AlphaFunction), intent(in) :: alpha
+      if (allocated(self%alpha)) deallocate(self%alpha)
+      self%alpha = alpha
+   end subroutine set_alpha
+
+   subroutine calculate_attractive_parameters(self, T, a, dadt, dadt2)
+      class(CubicEoS), intent(in out) :: self !! Model
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: a(:) !! Attractive parameter
+      real(pr), intent(out) :: dadt(:) !! Derivative wrt temperature
+      real(pr), intent(out) :: dadt2(:) !! Second derivative wrt temperature
+
+      real(pr) :: Tr(size(a)) !! Reduced temperatures for each pure component
+
+      Tr = T/self%components%Tc
+      call self%alpha%alpha(Tr, a, dadt, dadt2)
+
+      a = self%ac * a
+      dadt = self%ac * dadt / self%components%Tc
+      dadt2 = self%ac * dadt2 / self%components%Tc**2
+   end subroutine calculate_attractive_parameters
 
    function v0(self, n, p, t)
       !! Cubic EoS volume initializer.
