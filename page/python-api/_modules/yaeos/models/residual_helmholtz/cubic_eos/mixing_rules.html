@@ -94,6 +94,8 @@
 
 <span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">GeModel</span>
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
+<span class="kn">from</span> <span class="nn">yaeos.tools.writers</span> <span class="kn">import</span> <span class="n">fmatrix_as_str</span>
+<span class="kn">from</span> <span class="nn">yaeos.tools.writers</span> <span class="kn">import</span> <span class="n">f3dmatrix_as_str</span>
 
 
 <div class="viewcode-block" id="CubicMixRule">
@@ -209,20 +211,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="n">kij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">lij_c</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)):</span>
-            <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;kij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
-            <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;lij(</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, :) = [&quot;</span>
-
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr, &quot;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">kij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="n">lij_c</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">_pr]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">kij_c</span> <span class="o">=</span> <span class="n">fmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">,</span> <span class="s2">&quot;kij&quot;</span><span class="p">)</span>
+        <span class="n">lij_c</span> <span class="o">=</span> <span class="n">fmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">,</span> <span class="s2">&quot;lij&quot;</span><span class="p">)</span>
 
         <span class="n">fcode</span> <span class="o">+=</span> <span class="n">kij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -474,9 +464,7 @@
 
         <span class="n">fcode</span> <span class="o">+=</span> <span class="n">lij_c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="n">fcode</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, b=ar_model%b, lij=lij)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;mixrule = MHV(ge=ge_model, q=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s2">_pr, b=ar_model%b, lij=lij)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
         <span class="k">return</span> <span class="n">fcode</span>
 
@@ -742,13 +730,12 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">fcode</span>
 
-
 <div class="viewcode-block" id="HVNRTL.setup_from_kij">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.HVNRTL.setup_from_kij">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setup_from_kij</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">,</span> <span class="n">kij</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generalizes the calculation of gji parameters and returns linear </span>
+<span class="sd">        Generalizes the calculation of gji parameters and returns linear</span>
 <span class="sd">        correlation matrices gji0 and gjiT for any number of components.</span>
 
 <span class="sd">        .. warning::</span>
@@ -758,7 +745,7 @@
 <span class="sd">           only use a mean value. Which will make the predictions further</span>
 <span class="sd">           away of the predictions being made with :math:`k_{ij}` compared</span>
 <span class="sd">           to using classic Cubic EoS. This method is intended only as a way</span>
-<span class="sd">           to ease the initialization of parameters on optimization methods. </span>
+<span class="sd">           to ease the initialization of parameters on optimization methods.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -776,62 +763,65 @@
 <span class="sd">            QMR mixing rule.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
-        <span class="k">def</span> <span class="nf">lambd</span><span class="p">(</span><span class="n">d1</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
+
+        <span class="k">def</span> <span class="nf">lambd</span><span class="p">(</span><span class="n">d1</span><span class="o">=</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">d1</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">d1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="n">L</span> <span class="o">=</span> <span class="n">f</span><span class="o">/</span><span class="n">g</span> <span class="o">*</span> <span class="n">h</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">f</span> <span class="o">/</span> <span class="n">g</span> <span class="o">*</span> <span class="n">h</span>
             <span class="k">return</span> <span class="n">L</span>
-        
+
         <span class="c1"># 1. Setup basic parameters</span>
         <span class="n">nc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="n">ac</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">del1</span><span class="p">,</span> <span class="n">del2</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">get_ac_b_del1_del2_k</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
         <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span>
-        <span class="n">ais</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_attractive_parameter</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span>  <span class="c1"># Shape: (nt, nc)</span>
-        <span class="n">bis</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_repulsive_parameter</span><span class="p">()</span>          <span class="c1"># Shape: (nc,)</span>
+        <span class="n">ais</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_attractive_parameter</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)[</span>
+            <span class="s2">&quot;a&quot;</span>
+        <span class="p">]</span>  <span class="c1"># Shape: (nt, nc)</span>
+        <span class="n">bis</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_repulsive_parameter</span><span class="p">()</span>  <span class="c1"># Shape: (nc,)</span>
         <span class="n">lambd</span> <span class="o">=</span> <span class="n">lambd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">del1</span><span class="p">))</span>
-        
+
         <span class="c1"># Storage for all gji matrices across all temperatures</span>
         <span class="c1"># Shape: (Temperature, Component_j, Component_i)</span>
         <span class="n">gjiss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
-        
+
         <span class="c1"># 2. Calculate gji at each Temperature</span>
         <span class="k">for</span> <span class="n">t_idx</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">temperatures</span><span class="p">):</span>
             <span class="n">ais_i</span> <span class="o">=</span> <span class="n">ais</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
-            
+
             <span class="c1"># Calculate gii (pure component interaction) for this T</span>
             <span class="c1"># gii = - (a_i / b_i) * lambda</span>
-            <span class="n">gii</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">ais_i</span> <span class="o">/</span> <span class="n">bis</span><span class="p">)</span> <span class="o">*</span> <span class="n">lambd</span>
-            
+            <span class="n">gii</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">ais_i</span> <span class="o">/</span> <span class="n">bis</span><span class="p">)</span> <span class="o">*</span> <span class="n">lambd</span>
+
             <span class="n">gji_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
                     <span class="c1"># Cross-interaction term logic</span>
                     <span class="n">term1</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">bis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">bis</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">bis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">bis</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
                     <span class="n">term2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gii</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">gii</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">kij</span><span class="p">)</span>
-                    
+
                     <span class="c1"># gji = (Interaction Term) - gii[i]</span>
                     <span class="n">gji_temp</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">term1</span> <span class="o">*</span> <span class="n">term2</span><span class="p">)</span> <span class="o">-</span> <span class="n">gii</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            
+
             <span class="n">gjiss</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">gji_temp</span>
 
         <span class="c1"># 3. Linear Correlation: gji = gji0 + gjiT * T</span>
         <span class="n">gji0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
         <span class="n">gjiT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
-        
+
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nc</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
                     <span class="c1"># Extract the vector of values for parameter g[j,i] over time</span>
                     <span class="n">y</span> <span class="o">=</span> <span class="n">gjiss</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
-                    
+
                     <span class="c1"># Polyfit returns [slope, intercept]</span>
                     <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">temperatures</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                    
+
                     <span class="n">gjiT</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">slope</span>
                     <span class="n">gji0</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">intercept</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span><span class="n">nc</span><span class="p">)),</span> <span class="n">gji</span><span class="o">=</span><span class="n">gji0</span><span class="p">,</span> <span class="n">gjiT</span><span class="o">=</span><span class="n">gjiT</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">)),</span> <span class="n">gji</span><span class="o">=</span><span class="n">gji0</span><span class="p">,</span> <span class="n">gjiT</span><span class="o">=</span><span class="n">gjiT</span><span class="p">)</span></div>
 </div>
 
 
@@ -912,7 +902,7 @@
         <span class="k">if</span> <span class="n">kij_0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t_ref should be provided with kij_0&quot;</span><span class="p">)</span>
 
-        <span class="c1"># kij temperature dependance term </span>
+        <span class="c1"># kij temperature dependance term</span>
         <span class="k">if</span> <span class="n">kij_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kij_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">))</span>
@@ -1001,6 +991,133 @@
             <span class="s2">&quot;real(pr) :: t_ref(nc, nc), qs(nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
+        <span class="k">return</span> <span class="n">fcode</span></div>
+
+
+
+<div class="viewcode-block" id="CMR">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CMR">[docs]</a>
+<span class="k">class</span> <span class="nc">CMR</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cubic mixing rule.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kijk : array_like</span>
+<span class="sd">        kijk 3D interaction parameters matrix</span>
+<span class="sd">    lijk : array_like</span>
+<span class="sd">        lijk 3D interaction parameters matrix</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kijk : array_like</span>
+<span class="sd">        kijk 3D interaction parameters matrix</span>
+<span class="sd">    lijk : array_like</span>
+<span class="sd">        lijk 3D interaction parameters matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;CMR&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kijk</span><span class="p">,</span> <span class="n">lijk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kijk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kijk</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lijk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lijk</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CMR.set_mixrule">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CMR.set_mixrule">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set cubic mix rule method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ar_model_id : int</span>
+<span class="sd">            ID of the cubic EoS model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_cmr</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kijk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lijk</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters assignment as Fortran code string.&quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">f3dmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kijk</span><span class="p">,</span> <span class="s2">&quot;kijk&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">f3dmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lijk</span><span class="p">,</span> <span class="s2">&quot;lijk&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule = CMR(k=kijk, l=lijk)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as Fortran code string.&quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;type(CMR) :: mixrule</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: kijk(nc, nc, nc), lijk(nc, nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fcode</span></div>
+
+
+
+<div class="viewcode-block" id="CMRTD">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CMRTD">[docs]</a>
+<span class="k">class</span> <span class="nc">CMRTD</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Cubic mixing rule, with temperature dependence.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kijk_0 : array_like</span>
+<span class="sd">        kijk_0 3D interaction parameters matrix</span>
+<span class="sd">    kijk_inf : array_like</span>
+<span class="sd">        kijk_inf 3D interaction parameters matrix</span>
+<span class="sd">    t_ref: array_like</span>
+<span class="sd">        Reference temperature 3D matrix</span>
+<span class="sd">    lijk : array_like</span>
+<span class="sd">        lijk 3D interaction parameters matrix</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kijk_0 : array_like</span>
+<span class="sd">        kijk_0 3D interaction parameters matrix</span>
+<span class="sd">    kijk_inf : array_like</span>
+<span class="sd">        kijk_inf 3D interaction parameters matrix</span>
+<span class="sd">    t_ref: array_like</span>
+<span class="sd">        Reference temperature 3D matrix</span>
+<span class="sd">    lijk : array_like</span>
+<span class="sd">        lijk 3D interaction parameters matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;CMRTD&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kijk_0</span><span class="p">,</span> <span class="n">kijk_inf</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">lijk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kijk_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kijk_0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kijk_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kijk_inf</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_ref</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lijk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lijk</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CMRTD.set_mixrule">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/mixing_rules.html#yaeos.models.residual_helmholtz.cubic_eos.mixing_rules.CMRTD.set_mixrule">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set temperature-dependent cubic mix rule method.&quot;&quot;&quot;</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_cmrtd</span><span class="p">(</span>
+            <span class="n">ar_model_id</span><span class="p">,</span>
+            <span class="n">kijk_0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kijk_0</span><span class="p">,</span>
+            <span class="n">kijk_inf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kijk_inf</span><span class="p">,</span>
+            <span class="n">t_star</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span>
+            <span class="n">lijk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lijk</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters assignment as Fortran code string.&quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">f3dmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kijk_0</span><span class="p">,</span> <span class="s2">&quot;kijk_0&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">f3dmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kijk_inf</span><span class="p">,</span> <span class="s2">&quot;kijk_inf&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">f3dmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span> <span class="s2">&quot;t_ref&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="n">f3dmatrix_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lijk</span><span class="p">,</span> <span class="s2">&quot;lijk&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">fcode</span> <span class="o">+=</span> <span class="s2">&quot;mixrule = CMRTD(k=kijk_inf, k0=kijk_0, Tref=t_ref, l=lijk)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">fcode</span>
+
+    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as Fortran code string.&quot;&quot;&quot;</span>
+        <span class="n">fcode</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;type(CMRTD) :: mixrule</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;real(pr) :: kijk_0(nc, nc, nc), kijk_inf(nc, nc, nc), &quot;</span>
+            <span class="s2">&quot;t_ref(nc, nc, nc), lijk(nc, nc, nc)</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">fcode</span></div>
 
 </pre></div>

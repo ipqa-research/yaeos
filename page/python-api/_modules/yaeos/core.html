@@ -4373,6 +4373,8 @@
         <span class="n">ws_stability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
         <span class="n">beta0</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+        <span class="n">pstep</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">,</span>
+        <span class="n">tstep</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate precipitation line from a PTEnvelope.&quot;&quot;&quot;</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">number_of_phases</span>
@@ -4382,14 +4384,46 @@
             <span class="n">spec_variable</span> <span class="o">=</span> <span class="n">phases</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">phases</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">p0</span> <span class="o">=</span> <span class="n">spec_value</span>
             <span class="n">spec_variable_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+            <span class="c1"># There can be two (and in more rare cases even more)</span>
+            <span class="c1"># points at the fixed P value. So we select one based on the value</span>
+            <span class="c1"># of pstep. Related to the desired step on P</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">p0</span><span class="p">,</span> <span class="n">p0</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">]</span>
+            <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+
+            <span class="c1"># Add just a little noise in case we are on the last point of</span>
+            <span class="c1"># the envelope. Using the originally specified value later</span>
+            <span class="c1"># ensures that there are no errors</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">tstep</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">((</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
             <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p0</span><span class="p">))</span>
             <span class="n">t0</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">spec</span> <span class="o">==</span> <span class="s2">&quot;T&quot;</span><span class="p">:</span>
             <span class="n">spec_variable</span> <span class="o">=</span> <span class="n">phases</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">phases</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
             <span class="n">t0</span> <span class="o">=</span> <span class="n">spec_value</span>
             <span class="n">spec_variable_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
-            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
-            <span class="n">p0</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">]</span>
+
+            <span class="c1"># There can be two (and in more rare cases even more)</span>
+            <span class="c1"># points at the fixed T value. So we select one based on the value</span>
+            <span class="c1"># of pstep. Related to the desired step on P</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">t0</span><span class="p">,</span> <span class="n">t0</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">]</span>
+
+            <span class="n">ts</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">intersection</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">pstep</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="n">p0</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">((</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">p0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;spec must be either &#39;P&#39; or &#39;T&#39;, got: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>

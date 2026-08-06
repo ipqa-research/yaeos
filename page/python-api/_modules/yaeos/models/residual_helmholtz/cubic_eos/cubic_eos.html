@@ -94,6 +94,7 @@
 <span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
 <span class="kn">from</span> <span class="nn">yaeos.models.groups</span> <span class="kn">import</span> <span class="n">groups_from_dicts</span>
 <span class="kn">from</span> <span class="nn">yaeos.models.residual_helmholtz.cubic_eos.mixing_rules</span> <span class="kn">import</span> <span class="n">CubicMixRule</span>
+<span class="kn">from</span> <span class="nn">yaeos.models.residual_helmholtz.cubic_eos.alphas</span> <span class="kn">import</span> <span class="n">CubicAlphaFunction</span>
 
 
 <div class="viewcode-block" id="CubicEoS">
@@ -166,6 +167,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="CubicEoS.set_alpha">
+<a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.set_alpha">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="n">CubicAlphaFunction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the alpha function for the EoS.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        alpha : CubicAlphaFunction</span>
+<span class="sd">            AlphaFunction object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
 
@@ -219,28 +234,24 @@
 <span class="sd">        temperatures : array_like</span>
 <span class="sd">            Range of temperatuers for which calculate the attractive parameter.</span>
 
-<span class="sd">        Returns </span>
+<span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        dict : Dictionary with the values of a for each component and its </span>
+<span class="sd">        dict : Dictionary with the values of a for each component and its</span>
 <span class="sd">               derivatives with temperature.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">dadt</span><span class="p">,</span> <span class="n">dadt2</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">get_cubiceos_attractive_parameters</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">t</span><span class="o">=</span><span class="n">temperatures</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
-            <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dadt</span><span class="p">,</span>
-            <span class="s2">&quot;dt2&quot;</span><span class="p">:</span> <span class="n">dadt2</span>
-        <span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dadt</span><span class="p">,</span> <span class="s2">&quot;dt2&quot;</span><span class="p">:</span> <span class="n">dadt2</span><span class="p">}</span></div>
 
-    
+
 <div class="viewcode-block" id="CubicEoS.get_repulsive_parameter">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS.get_repulsive_parameter">[docs]</a>
     <span class="k">def</span> <span class="nf">get_repulsive_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the repulsive parameters of the CubicEoS.</span>
 
-<span class="sd">        Returns </span>
+<span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            array : Repulsive parameter value for each component.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

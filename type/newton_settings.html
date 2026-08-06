@@ -1,0 +1,564 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>newton_settings &ndash; yaeos </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>newton_settings
+      <small>Derived Type</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="<p> 2.9% of total for derived types.</p>Including implementation: 19 statements,  0.2% of total for derived types.">19 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/newton.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/newton.f90.html'>newton.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__newton_solver.html'>yaeos__newton_solver</a></li>
+            <li class="breadcrumb-item active" aria-current="page">newton_settings</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/newton_settings.html#variable-armijo_c">armijo_c</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-armijo_max_its">armijo_max_its</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-armijo_tau">armijo_tau</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-atol">atol</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-cond_max">cond_max</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-lambda0">lambda0</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-lambda_down">lambda_down</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-lambda_max">lambda_max</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-lambda_min">lambda_min</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-lambda_up">lambda_up</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-max_its">max_its</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-rtol">rtol</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-save_history">save_history</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-stagnation_nits">stagnation_nits</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-stagnation_tol">stagnation_tol</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-t_min">t_min</a>
+            <a class="list-group-item" href="../type/newton_settings.html#variable-verbosity">verbosity</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+      <h2 id="type-def-statement">
+        type, public :: newton_settings</h2>
+    
+    <br>
+
+    <section>
+    <h2>Components</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-armijo_c"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>armijo_c</strong></td>
+<td> =</td>
+                <td>1.0e-4_pr</td>
+            <td>
+                <p>Sufficient decrease constant (Wolfe c1 condition).
+Smaller values accept more steps but give weaker convergence guarantees.
+Must satisfy 0 &lt; armijo_c &lt; 0.5. Dimensionless. Default: 1e-4.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-armijo_max_its"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>armijo_max_its</strong></td>
+<td> =</td>
+                <td>50</td>
+            <td>
+                <p>Maximum number of backtracking halvings per Newton step.
+If reached without satisfying Armijo, ls_failed is set .true.
+Default: 50.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-armijo_tau"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>armijo_tau</strong></td>
+<td> =</td>
+                <td>0.5_pr</td>
+            <td>
+                <p>Step-length reduction factor applied each backtracking iteration.
+t_new = armijo_tau * t_old  until Armijo or t &lt; t_min.
+Must satisfy 0 &lt; armijo_tau &lt; 1. Dimensionless. Default: 0.5.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-atol"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>atol</strong></td>
+<td> =</td>
+                <td>1.0e-9_pr</td>
+            <td>
+                <p>Absolute residual tolerance.
+Converged when  max_i |F_i(x)| &lt; atol.
+Units: same as F. Default: 1e-8.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cond_max"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cond_max</strong></td>
+<td> =</td>
+                <td>1.0e10_pr</td>
+            <td>
+                <p>Condition number threshold above which LM regularization is activated
+(or strengthened) to stabilise the linear solve.
+Estimated via LAPACK dgecon. Dimensionless. Default: 1e10.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda0"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda0</strong></td>
+<td> =</td>
+                <td>0.0_pr</td>
+            <td>
+                <p>Initial value of the LM damping parameter.
+0.0 = start as pure Newton; the solver activates LM automatically
+if conditioning is poor. Set &gt; 0 to force LM from the first iteration.
+Units: [J]^2 (scales with the Jacobian entries squared). Default: 0.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda_down"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda_down</strong></td>
+<td> =</td>
+                <td>5.0_pr</td>
+            <td>
+                <p>Factor by which lambda is divided after a successful step with t &gt; 0.1.
+Drives the solver back toward pure Newton as the iterate improves.
+Dimensionless. Default: 5.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda_max"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda_max</strong></td>
+<td> =</td>
+                <td>1.0e8_pr</td>
+            <td>
+                <p>Maximum lambda, expressed as a multiplier of jacobian_scale.
+If lambda exceeds this ceiling the solver returns NEWTON_LINE_SEARCH_FAIL.
+Dimensionless multiplier. Default: 1e8.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda_min"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda_min</strong></td>
+<td> =</td>
+                <td>1.0e-6_pr</td>
+            <td>
+                <p>Minimum non-zero lambda, expressed as a multiplier of jacobian_scale.
+Effective floor = lambda_min * ||J||_F^2/n.
+Prevents lambda from decaying to numerical zero after a good step.
+Dimensionless multiplier. Default: 1e-6.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda_up"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda_up</strong></td>
+<td> =</td>
+                <td>10.0_pr</td>
+            <td>
+                <p>Factor by which lambda is multiplied on a line-search failure.
+Larger values recover faster from bad Jacobians but may overshoot.
+Dimensionless. Default: 10.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_its"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_its</strong></td>
+<td> =</td>
+                <td>100</td>
+            <td>
+                <p>Maximum number of Newton iterations before returning NEWTON_MAX_ITS.
+Default: 100.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rtol"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rtol</strong></td>
+<td> =</td>
+                <td>1.0e-9_pr</td>
+            <td>
+                <p>Relative step tolerance.
+Converged when  max_i |dX_i| &lt; rtol * (max_i |x_i| + atol).
+Catches the case where the step becomes negligible compared to x.
+Dimensionless. Default: 1e-6.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-save_history"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>save_history</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+                <p>If .true., allocate result%f_history(0:iterations) and store
+||F||_inf at each iteration. Slightly increases memory use.
+Default: .false.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stagnation_nits"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stagnation_nits</strong></td>
+<td> =</td>
+                <td>5</td>
+            <td>
+                <p>Number of consecutive iterations with negligible change in ||dX||
+before the solver exits with NEWTON_STAGNATION.
+Default: 5.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stagnation_tol"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stagnation_tol</strong></td>
+<td> =</td>
+                <td>1.0e-12_pr</td>
+            <td>
+                <p>Relative threshold for stagnation: iteration is counted as stagnant
+when  |||dX||_prev - ||dX||_curr| &lt; stagnation_tol * (||dX|| + 1).
+Dimensionless. Default: 1e-12.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t_min"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t_min</strong></td>
+<td> =</td>
+                <td>1.0e-8_pr</td>
+            <td>
+                <p>Minimum accepted step length.
+If t &lt; t_min the line search declares failure instead of accepting a
+micro-step that satisfies Armijo trivially (m changes by ~machine eps).
+Dimensionless (fraction of the full Newton step). Default: 1e-8.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-verbosity"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>verbosity</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>Controls stdout output.
+  0 – silent
+  1 – print header + one-line summary at exit
+  2 – also print one line per accepted iteration
+Default: 0.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+
+
+
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-08-06 13:57 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

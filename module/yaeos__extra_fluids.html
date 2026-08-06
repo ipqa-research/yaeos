@@ -1,0 +1,1522 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>yaeos__extra_fluids &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>yaeos__extra_fluids
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.7% of total for modules and submodules.">104 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/fluids.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/fluids.f90.html'>fluids.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">yaeos__extra_fluids</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__extra_fluids.html#type-fixturefluid">FixtureFluid</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__extra_fluids.html#proc-co2_h2o_isop">co2_h2o_isop</a>
+            <a class="list-group-item" href="../module/yaeos__extra_fluids.html#proc-oil_b71">oil_b71</a>
+            <a class="list-group-item" href="../module/yaeos__extra_fluids.html#proc-oil_gao">oil_gao</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <h1 id="predefined-fluids">Predefined Fluids</h1>
+<p>Collection of predefined fluids to be used as examples and in tests.</p>
+<h1 id="description">Description</h1>
+<p>This module collects a set of different fluids intended to be used for tests
+or in practice when training on using the library.</p>
+<p>The fluids are stored as functions that return a derived type <code>FixtureFluid</code>
+which contains the instantiated ArModel of the fluid, and its relevant
+compositions <code>z0</code> and <code>zi</code></p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">basic</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">example</span>
+</code></pre></div>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='yaeos__models.html'>yaeos__models</a></li>
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos__extra_fluids~~UsesGraph Pages: 1 -->
+<svg id="moduleyaeos__extra_fluidsUsesGraph" width="641pt" height="273pt"
+ viewBox="0.00 0.00 641.00 273.27" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__extra_fluids~~UsesGraph" class="graph" transform="scale(0.25 0.25) rotate(0) translate(4 1095.49)">
+<title>module~~yaeos__extra_fluids~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1095.49 2575,-1095.49 2575,4 -4,4"/>
+<!-- module~yaeos__extra_fluids -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node1" class="node">
+<title>module~yaeos__extra_fluids</title>
+<polygon fill="none" stroke="black" points="2571,-889.49 2456,-889.49 2456,-865.49 2571,-865.49 2571,-889.49"/>
+<text text-anchor="middle" x="2513.5" y="-875.09" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__extra_fluids</text>
+</g>
+<!-- module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node2" class="node">
+<title>module~yaeos__constants</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node2"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="236,-365.49 130,-365.49 130,-341.49 236,-341.49 236,-365.49"/>
+<text text-anchor="middle" x="183" y="-351.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__extra_fluids&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge1" class="edge">
+<title>module~yaeos__extra_fluids&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2502.27,-889.61C2462.86,-934.88 2315.1,-1091.49 2157.5,-1091.49 2157.5,-1091.49 2157.5,-1091.49 1594,-1091.49 1311.05,-1091.49 1240.52,-1076.44 958.5,-1053.49"/>
+</g>
+<!-- module~yaeos__models -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node3" class="node">
+<title>module~yaeos__models</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node3"><a xlink:href="../module/yaeos__models.html" xlink:title="yaeos__models">
+<polygon fill="#337ab7" stroke="#337ab7" points="2420,-639.49 2326,-639.49 2326,-615.49 2420,-615.49 2420,-639.49"/>
+<text text-anchor="middle" x="2373" y="-625.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__extra_fluids&#45;&gt;module~yaeos__models -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge2" class="edge">
+<title>module~yaeos__extra_fluids&#45;&gt;module~yaeos__models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2505.82,-865.43C2483.84,-825.76 2413.58,-698.93 2385.63,-648.48"/>
+<polygon fill="#000000" stroke="#000000" points="2388.68,-646.77 2380.78,-639.72 2382.56,-650.17 2388.68,-646.77"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node4" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-365.49 0,-365.49 0,-341.49 94,-341.49 94,-365.49"/>
+<text text-anchor="middle" x="47" y="-351.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge3" class="edge">
+<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-353.49C121.45,-353.49 112.77,-353.49 104.32,-353.49"/>
+<polygon fill="#000000" stroke="#000000" points="104.16,-349.99 94.16,-353.49 104.16,-356.99 104.16,-349.99"/>
+</g>
+<!-- module~yaeos__models_ar -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node5" class="node">
+<title>module~yaeos__models_ar</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node5"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="1012.5,-907.49 902.5,-907.49 902.5,-883.49 1012.5,-883.49 1012.5,-907.49"/>
+<text text-anchor="middle" x="957.5" y="-893.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge4" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-937.49C1751.83,-953.16 1722.14,-976.53 1596,-977.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1594,-977.49C1537.66,-977.92 1172.48,-926.31 1022.57,-904.76"/>
+<polygon fill="#000000" stroke="#000000" points="1022.99,-901.29 1012.59,-903.33 1021.99,-908.22 1022.99,-901.29"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_alphas -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node6" class="node">
+<title>module~yaeos__models_ar_cubic_alphas</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node6"><a xlink:href="../module/yaeos__models_ar_cubic_alphas.html" xlink:title="yaeos__models_ar_cubic_alphas">
+<polygon fill="#337ab7" stroke="#337ab7" points="1687,-1029.49 1503,-1029.49 1503,-1005.49 1687,-1005.49 1687,-1029.49"/>
+<text text-anchor="middle" x="1595" y="-1015.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_alphas</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_alphas -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge5" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_alphas</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-937.49C1809.18,-945.98 1798.82,-973.05 1733,-991.49 1716.63,-996.08 1698.93,-1000.1 1681.87,-1003.53"/>
+<polygon fill="#000000" stroke="#000000" points="1681.05,-1000.13 1671.91,-1005.48 1682.4,-1007 1681.05,-1000.13"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node7" class="node">
+<title>module~yaeos__models_ar_cubic_cubic_mixing</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node7"><a xlink:href="../module/yaeos__models_ar_cubic_cubic_mixing.html" xlink:title="yaeos__models_ar_cubic_cubic_mixing">
+<polygon fill="#337ab7" stroke="#337ab7" points="1704.5,-949.49 1485.5,-949.49 1485.5,-925.49 1704.5,-925.49 1704.5,-949.49"/>
+<text text-anchor="middle" x="1595" y="-935.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_cubic_mixing</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_cubic_mixing -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge6" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_cubic_mixing</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-937.49C1824.13,-944.11 1765.22,-945.08 1715.05,-944.02"/>
+<polygon fill="#000000" stroke="#000000" points="1714.89,-940.51 1704.81,-943.77 1714.72,-947.51 1714.89,-940.51"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_implementations -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node8" class="node">
+<title>module~yaeos__models_ar_cubic_implementations</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node8"><a xlink:href="../module/yaeos__models_ar_cubic_implementations.html" xlink:title="yaeos__models_ar_cubic_implementations">
+<polygon fill="#337ab7" stroke="#337ab7" points="1714.5,-755.49 1475.5,-755.49 1475.5,-731.49 1714.5,-731.49 1714.5,-755.49"/>
+<text text-anchor="middle" x="1595" y="-741.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_implementations</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_implementations -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge7" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_implementations</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2155.5,-859.49C2059.66,-895.94 1753.76,-797.88 1639.55,-758.78"/>
+<polygon fill="#000000" stroke="#000000" points="1640.66,-755.46 1630.07,-755.52 1638.38,-762.08 1640.66,-755.46"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_sddlc -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node9" class="node">
+<title>module~yaeos__models_ar_cubic_mixing_sddlc</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node9"><a xlink:href="../module/yaeos__models_ar_cubic_mixing_sddlc.html" xlink:title="yaeos__models_ar_cubic_mixing_sddlc">
+<polygon fill="#337ab7" stroke="#337ab7" points="1987,-715.49 1769,-715.49 1769,-691.49 1987,-691.49 1987,-715.49"/>
+<text text-anchor="middle" x="1878" y="-701.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_mixing_sddlc</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_mixing_sddlc -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge8" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_mixing_sddlc</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2366.04,-639.63C2344.81,-681.17 2268.25,-817.37 2157.5,-859.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2155.5,-859.49C2049.34,-899.87 1934.92,-774.15 1894.33,-723.58"/>
+<polygon fill="#000000" stroke="#000000" points="1896.98,-721.29 1888.04,-715.61 1891.49,-725.63 1896.98,-721.29"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_quadratic_mixing -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node10" class="node">
+<title>module~yaeos__models_ar_cubic_quadratic_mixing</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node10"><a xlink:href="../module/yaeos__models_ar_cubic_quadratic_mixing.html" xlink:title="yaeos__models_ar_cubic_quadratic_mixing">
+<polygon fill="#337ab7" stroke="#337ab7" points="1715.5,-835.49 1474.5,-835.49 1474.5,-811.49 1715.5,-811.49 1715.5,-835.49"/>
+<text text-anchor="middle" x="1595" y="-821.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_quadratic_mixing</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_quadratic_mixing -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge9" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_quadratic_mixing</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2155.5,-859.49C2035.32,-902.62 2005.7,-921.63 1879,-937.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-937.49C1864.22,-939.09 1706.75,-871.62 1633.29,-839.75"/>
+<polygon fill="#000000" stroke="#000000" points="1634.49,-836.45 1623.92,-835.68 1631.7,-842.87 1634.49,-836.45"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node11" class="node">
+<title>module~yaeos__models_ar_genericcubic</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node11"><a xlink:href="../module/yaeos__models_ar_genericcubic.html" xlink:title="yaeos__models_ar_genericcubic">
+<polygon fill="#337ab7" stroke="#337ab7" points="1385,-873.49 1201,-873.49 1201,-849.49 1385,-849.49 1385,-873.49"/>
+<text text-anchor="middle" x="1293" y="-859.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_genericcubic</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge10" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-937.49C1751.83,-953.16 1721.17,-881.83 1596,-897.49"/>
+</g>
+<!-- module~yaeos__models_ar_gerg2008 -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node12" class="node">
+<title>module~yaeos__models_ar_gerg2008</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node12"><a xlink:href="../module/yaeos__models_ar_gerg2008.html" xlink:title="yaeos__models_ar_gerg2008">
+<polygon fill="#337ab7" stroke="#337ab7" points="1961.5,-635.49 1794.5,-635.49 1794.5,-611.49 1961.5,-611.49 1961.5,-635.49"/>
+<text text-anchor="middle" x="1878" y="-621.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_gerg2008</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_gerg2008 -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge11" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_gerg2008</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2155.5,-551.49C2065.12,-542.01 1962.5,-582.97 1911.44,-607.03"/>
+<polygon fill="#000000" stroke="#000000" points="1909.73,-603.97 1902.23,-611.46 1912.76,-610.28 1909.73,-603.97"/>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node13" class="node">
+<title>module~yaeos__models_ar_saft_pcsaft</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node13"><a xlink:href="../module/yaeos__models_ar_saft_pcsaft.html" xlink:title="yaeos__models_ar_saft_pcsaft">
+<polygon fill="#337ab7" stroke="#337ab7" points="1681,-523.49 1509,-523.49 1509,-499.49 1681,-499.49 1681,-523.49"/>
+<text text-anchor="middle" x="1595" y="-509.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_saft_pcsaft</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_saft_pcsaft -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge12" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_saft_pcsaft</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2349.36,-615.43C2311.13,-596 2230.78,-559.18 2157.5,-551.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2155.5,-551.49C2033.28,-538.67 2001.81,-555.83 1879,-551.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-551.49C1803.95,-548.91 1721.2,-535.89 1664.53,-525.4"/>
+<polygon fill="#000000" stroke="#000000" points="1665.08,-521.94 1654.61,-523.54 1663.79,-528.82 1665.08,-521.94"/>
+</g>
+<!-- module~yaeos__models_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node14" class="node">
+<title>module~yaeos__models_base</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node14"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="649.5,-713.49 525.5,-713.49 525.5,-689.49 649.5,-689.49 649.5,-713.49"/>
+<text text-anchor="middle" x="587.5" y="-699.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge13" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1594,-977.49C1414.08,-984.77 940.2,-1009.48 786,-916.49 761.3,-901.6 768.3,-884.78 750,-862.49 704.37,-806.92 642.21,-749.17 609.93,-720.3"/>
+<polygon fill="#000000" stroke="#000000" points="612.19,-717.63 602.39,-713.6 607.54,-722.86 612.19,-717.63"/>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node15" class="node">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node15"><a xlink:href="../module/yaeos__models_cubic_mixing_rules_huron_vidal.html" xlink:title="yaeos__models_cubic_mixing_rules_huron_vidal">
+<polygon fill="#337ab7" stroke="#337ab7" points="2290,-639.49 2023,-639.49 2023,-615.49 2290,-615.49 2290,-639.49"/>
+<text text-anchor="middle" x="2156.5" y="-625.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_cubic_mixing_rules_huron_vidal</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_cubic_mixing_rules_huron_vidal -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge14" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_cubic_mixing_rules_huron_vidal</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2325.98,-627.49C2317.94,-627.49 2309.2,-627.49 2300.08,-627.49"/>
+<polygon fill="#000000" stroke="#000000" points="2300.05,-623.99 2290.05,-627.49 2300.05,-630.99 2300.05,-623.99"/>
+</g>
+<!-- module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node16" class="node">
+<title>module~yaeos__models_ge</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node16"><a xlink:href="../module/yaeos__models_ge.html" xlink:title="yaeos__models_ge">
+<polygon fill="#337ab7" stroke="#337ab7" points="1013.5,-485.49 901.5,-485.49 901.5,-461.49 1013.5,-461.49 1013.5,-485.49"/>
+<text text-anchor="middle" x="957.5" y="-471.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge15" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-551.49C1690.26,-544.9 1643.24,-547.71 1457,-532.49 1301.12,-519.76 1118.81,-495.88 1023.73,-482.75"/>
+<polygon fill="#000000" stroke="#000000" points="1024.08,-479.26 1013.69,-481.35 1023.12,-486.19 1024.08,-479.26"/>
+</g>
+<!-- module~yaeos__models_ge_implementations -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node17" class="node">
+<title>module~yaeos__models_ge_implementations</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node17"><a xlink:href="../module/yaeos__models_ge_implementations.html" xlink:title="yaeos__models_ge_implementations">
+<polygon fill="#337ab7" stroke="#337ab7" points="2260.5,-444.49 2052.5,-444.49 2052.5,-420.49 2260.5,-420.49 2260.5,-444.49"/>
+<text text-anchor="middle" x="2156.5" y="-430.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_implementations</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ge_implementations -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge16" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ge_implementations</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2361.96,-615.27C2347.05,-597.4 2317.81,-563.45 2290,-537.49 2254.76,-504.6 2210.21,-470.7 2182.79,-450.62"/>
+<polygon fill="#000000" stroke="#000000" points="2184.67,-447.66 2174.52,-444.6 2180.55,-453.32 2184.67,-447.66"/>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge17" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M902.45,-890.54C868.58,-886.63 824.25,-880.04 786,-869.49 618.99,-823.45 538.72,-853.17 425,-722.49 313.94,-594.87 499.22,-375.72 331.5,-353.49"/>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge18" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M902.25,-900.85C865.5,-901.5 817.98,-896.13 786,-869.49 748.41,-838.19 783.82,-800.83 750,-765.49 726.01,-740.42 690.97,-724.96 659.65,-715.53"/>
+<polygon fill="#000000" stroke="#000000" points="660.2,-712.05 649.63,-712.68 658.29,-718.78 660.2,-712.05"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_alphas&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge19" class="edge">
+<title>module~yaeos__models_ar_cubic_alphas&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-1053.49C1143.85,-1058.09 1106.23,-1065.51 958.5,-1053.49"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_alphas&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge20" class="edge">
+<title>module~yaeos__models_ar_cubic_alphas&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1502.89,-1006.63C1487.17,-1002.96 1471.3,-998.06 1457,-991.49 1397.46,-964.16 1340.64,-910.5 1312.45,-881.4"/>
+<polygon fill="#000000" stroke="#000000" points="1314.72,-878.7 1305.28,-873.88 1309.65,-883.53 1314.72,-878.7"/>
+</g>
+<!-- module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node28" class="node">
+<title>module~yaeos__substance</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node28"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
+<polygon fill="#337ab7" stroke="#337ab7" points="385,-733.49 276,-733.49 276,-709.49 385,-709.49 385,-733.49"/>
+<text text-anchor="middle" x="330.5" y="-719.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_cubic_alphas&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge21" class="edge">
+<title>module~yaeos__models_ar_cubic_alphas&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1523.65,-1029.5C1463.02,-1038.99 1373.04,-1051.04 1294,-1053.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-1053.49C1254.72,-1054.65 995.18,-1022.24 958.5,-1015.49"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge22" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1496.16,-949.52C1482.64,-953.05 1469.21,-957.6 1457,-963.49 1437.98,-972.66 1440.29,-985.9 1421,-994.49 1373.67,-1015.56 1010.31,-1053.49 958.5,-1053.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-1053.49C622.35,-1053.66 435.78,-1033.75 272,-742.49 201.23,-616.64 187.37,-437.72 184.66,-375.68"/>
+<polygon fill="#000000" stroke="#000000" points="188.15,-375.36 184.27,-365.5 181.15,-375.62 188.15,-375.36"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge24" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1502.61,-925.44C1487.08,-921.9 1471.34,-917.35 1457,-911.49 1439.2,-904.22 1438.75,-894.89 1421,-887.49 1410.05,-882.93 1398.21,-879.14 1386.33,-876"/>
+<polygon fill="#000000" stroke="#000000" points="1386.91,-872.54 1376.36,-873.51 1385.22,-879.33 1386.91,-872.54"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node20" class="node">
+<title>module~yaeos__models_ar_cubic_mixing_base</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node20"><a xlink:href="../module/yaeos__models_ar_cubic_mixing_base.html" xlink:title="yaeos__models_ar_cubic_mixing_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="1401,-793.49 1185,-793.49 1185,-769.49 1401,-769.49 1401,-793.49"/>
+<text text-anchor="middle" x="1293" y="-779.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_mixing_base</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_cubic_mixing_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge23" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_cubic_mixing_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1573.77,-925.48C1541.75,-906.63 1477.25,-869.27 1421,-840.49 1391.06,-825.17 1356.4,-809.18 1330.85,-797.72"/>
+<polygon fill="#000000" stroke="#000000" points="1332.1,-794.44 1321.54,-793.56 1329.24,-800.83 1332.1,-794.44"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge25" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1515.72,-949.51C1358.01,-973.36 1012.48,-1023.73 958.5,-1015.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-1015.49C881.24,-1001.65 858.31,-1016.55 786,-991.49 690.02,-958.23 684.58,-909.46 588.5,-876.49"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge26" class="edge">
+<title>module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1475.27,-747.36C1347.5,-750.54 1138.39,-752.87 958.5,-741.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-741.49C880.18,-735.86 854.25,-752.11 786,-717.49 765.54,-707.11 770.58,-690.64 750,-680.49 685.18,-648.53 655.09,-689.58 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge27" class="edge">
+<title>module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1563.3,-755.57C1508.84,-776.99 1395.33,-821.64 1334.52,-845.55"/>
+<polygon fill="#000000" stroke="#000000" points="1332.9,-842.43 1324.88,-849.35 1335.46,-848.94 1332.9,-842.43"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge28" class="edge">
+<title>module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-741.49C751.51,-730.44 508.34,-724.8 395.25,-722.61"/>
+<polygon fill="#000000" stroke="#000000" points="395.11,-719.11 385.04,-722.42 394.97,-726.11 395.11,-719.11"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_sddlc&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge29" class="edge">
+<title>module~yaeos__models_ar_cubic_mixing_sddlc&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1768.88,-701.71C1716.64,-701.31 1653.04,-701.48 1596,-703.49"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_sddlc&#45;&gt;module~yaeos__models_ar_cubic_quadratic_mixing -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge30" class="edge">
+<title>module~yaeos__models_ar_cubic_mixing_sddlc&#45;&gt;module~yaeos__models_ar_cubic_quadratic_mixing</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1862.54,-715.75C1837.75,-736.09 1784.79,-776.63 1733,-797.49 1721.48,-802.13 1709.08,-805.96 1696.61,-809.1"/>
+<polygon fill="#000000" stroke="#000000" points="1695.53,-805.76 1686.61,-811.49 1697.15,-812.57 1695.53,-805.76"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge31" class="edge">
+<title>module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1474.35,-826.75C1346.48,-829.21 1137.89,-830.27 958.5,-817.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-817.49C879.8,-811.34 844.34,-837.66 786,-787.49 747.96,-754.78 788.96,-712.11 750,-680.49 693.88,-634.95 655.09,-689.58 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge33" class="edge">
+<title>module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1499.08,-835.52C1466.1,-839.69 1428.99,-844.39 1395.5,-848.63"/>
+<polygon fill="#000000" stroke="#000000" points="1394.71,-845.21 1385.23,-849.94 1395.59,-852.15 1394.71,-845.21"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__models_ar_cubic_mixing_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge32" class="edge">
+<title>module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__models_ar_cubic_mixing_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1508.03,-811.46C1471.08,-806.28 1427.74,-800.22 1389.77,-794.9"/>
+<polygon fill="#000000" stroke="#000000" points="1390.11,-791.41 1379.72,-793.49 1389.14,-798.35 1390.11,-791.41"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge34" class="edge">
+<title>module~yaeos__models_ar_cubic_quadratic_mixing&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-817.49C791.27,-805.72 745.18,-930.25 588.5,-876.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M586.5,-876.49C512.17,-850.99 491.05,-847.08 425,-804.49 396.27,-785.97 367.5,-758.82 349.61,-740.67"/>
+<polygon fill="#000000" stroke="#000000" points="352.12,-738.23 342.65,-733.5 347.1,-743.11 352.12,-738.23"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge35" class="edge">
+<title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1200.73,-868.59C1072.19,-876.55 846.68,-882.39 786,-831.49 733.14,-787.15 801.55,-726.34 750,-680.49 696,-632.46 655.06,-689.66 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__models_ar -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge36" class="edge">
+<title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1200.87,-870.78C1144.4,-876.54 1073.24,-883.79 1022.67,-888.95"/>
+<polygon fill="#000000" stroke="#000000" points="1022.12,-885.49 1012.52,-889.98 1022.83,-892.45 1022.12,-885.49"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge37" class="edge">
+<title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1265.29,-873.52C1233.56,-887.09 1178.66,-908.34 1129,-916.49 891.3,-955.51 816.1,-955.38 588.5,-876.49"/>
+</g>
+<!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge40" class="edge">
+<title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-665.49C1142.9,-656.2 1107.87,-620.74 958.5,-623.49"/>
+</g>
+<!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_cubic_implementations -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge41" class="edge">
+<title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_cubic_implementations</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1794.27,-635.53C1785.2,-639.08 1776.54,-643.64 1769,-649.49 1741.99,-670.46 1760.52,-697.19 1733,-717.49 1727.89,-721.27 1722.38,-724.54 1716.62,-727.37"/>
+<polygon fill="#000000" stroke="#000000" points="1715.09,-724.22 1707.37,-731.48 1717.93,-730.62 1715.09,-724.22"/>
+</g>
+<!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge42" class="edge">
+<title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1794.23,-632.61C1784.78,-636.61 1776.03,-642.07 1769,-649.49 1708.38,-713.46 1789.24,-776.64 1733,-844.49 1691.34,-894.76 1661.1,-892.59 1596,-897.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1594,-897.49C1553.22,-900.56 1450.83,-886.54 1377.01,-875.1"/>
+<polygon fill="#000000" stroke="#000000" points="1377.21,-871.59 1366.79,-873.51 1376.13,-878.51 1377.21,-871.59"/>
+</g>
+<!-- module~hyperdual_mod -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node18" class="node">
+<title>module~hyperdual_mod</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node18"><a xlink:href="../module/hyperdual_mod.html" xlink:title="hyperdual_mod">
+<polygon fill="#337ab7" stroke="#337ab7" points="1005.5,-595.49 909.5,-595.49 909.5,-571.49 1005.5,-571.49 1005.5,-595.49"/>
+<text text-anchor="middle" x="957.5" y="-581.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~hyperdual_mod -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge38" class="edge">
+<title>module~yaeos__models_ar_gerg2008&#45;&gt;module~hyperdual_mod</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1594,-665.49C1460.78,-670.9 1427.07,-673.79 1294,-665.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-665.49C1235.04,-661.94 1215.79,-672.53 1165,-646.49 1144.58,-636.02 1149.4,-619.99 1129,-609.49 1094.25,-591.61 1050.63,-585.21 1016.2,-583.22"/>
+<polygon fill="#000000" stroke="#000000" points="1015.99,-579.71 1005.83,-582.74 1015.66,-586.7 1015.99,-579.71"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node19" class="node">
+<title>module~yaeos__adiff_hyperdual_ar_api</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node19"><a xlink:href="../module/yaeos__adiff_hyperdual_ar_api.html" xlink:title="yaeos__adiff_hyperdual_ar_api">
+<polygon fill="#337ab7" stroke="#337ab7" points="1381,-637.49 1205,-637.49 1205,-613.49 1381,-613.49 1381,-637.49"/>
+<text text-anchor="middle" x="1293" y="-623.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__adiff_hyperdual_ar_api</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__adiff_hyperdual_ar_api -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge39" class="edge">
+<title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__adiff_hyperdual_ar_api</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1820.83,-635.53C1764.35,-646.78 1674.61,-662.3 1596,-665.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1594,-665.49C1552.38,-667.18 1447.25,-651.44 1373.24,-639.2"/>
+<polygon fill="#000000" stroke="#000000" points="1373.45,-635.69 1363.01,-637.5 1372.3,-642.6 1373.45,-635.69"/>
+</g>
+<!-- module~yaeos__models_ar_multifluid_parameters_gerg2008 -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node21" class="node">
+<title>module~yaeos__models_ar_multifluid_parameters_gerg2008</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node21"><a xlink:href="../module/yaeos__models_ar_multifluid_parameters_gerg2008.html" xlink:title="yaeos__models_ar_multifluid_parameters_gerg2008">
+<polygon fill="#337ab7" stroke="#337ab7" points="1102.5,-675.49 812.5,-675.49 812.5,-651.49 1102.5,-651.49 1102.5,-675.49"/>
+<text text-anchor="middle" x="957.5" y="-661.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_multifluid_parameters_gerg2008</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_multifluid_parameters_gerg2008 -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge43" class="edge">
+<title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_multifluid_parameters_gerg2008</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-665.49C1233.53,-661.85 1169.19,-660.77 1112.75,-660.8"/>
+<polygon fill="#000000" stroke="#000000" points="1112.66,-657.3 1102.67,-660.82 1112.67,-664.3 1112.66,-657.3"/>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge46" class="edge">
+<title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1508.74,-505.86C1359.39,-498.41 1041.95,-493.35 786,-562.49 691.21,-588.1 678.94,-699.73 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~hyperdual_mod -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge44" class="edge">
+<title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~hyperdual_mod</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1562.2,-523.56C1508.08,-543.14 1394.17,-580.17 1294,-585.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-585.49C1195.27,-590.63 1082.54,-588.2 1016.03,-585.9"/>
+<polygon fill="#000000" stroke="#000000" points="1015.88,-582.39 1005.76,-585.53 1015.63,-589.38 1015.88,-582.39"/>
+</g>
+<!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__adiff_hyperdual_ar_api -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge45" class="edge">
+<title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__adiff_hyperdual_ar_api</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1558.95,-523.57C1530.49,-534.08 1489.83,-550.71 1457,-570.49 1439.4,-581.1 1439.59,-590.74 1421,-599.49 1411.41,-604.01 1401.06,-607.74 1390.54,-610.83"/>
+<polygon fill="#000000" stroke="#000000" points="1389.57,-607.46 1380.85,-613.48 1391.42,-614.21 1389.57,-607.46"/>
+</g>
+<!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge47" class="edge">
+<title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M525.42,-706.28C486.11,-709.37 435.12,-713.36 395.29,-716.49"/>
+<polygon fill="#000000" stroke="#000000" points="394.85,-713.01 385.16,-717.28 395.4,-719.99 394.85,-713.01"/>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge48" class="edge">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2043.41,-639.51C1980.92,-646.72 1909.67,-655.92 1879,-663.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-663.49C1846.38,-671.05 1627.52,-702.38 1596,-703.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1594,-703.49C1235.01,-716.16 1144.34,-709.52 786,-684.49 783.25,-684.3 591.04,-662.57 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ar_cubic_quadratic_mixing -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge50" class="edge">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ar_cubic_quadratic_mixing</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-663.49C1829.71,-675.29 1805.62,-650.33 1769,-682.49 1728.76,-717.84 1773,-761.88 1733,-797.49 1729.24,-800.84 1725.19,-803.81 1720.92,-806.45"/>
+<polygon fill="#000000" stroke="#000000" points="1718.96,-803.54 1711.87,-811.41 1722.32,-809.68 1718.96,-803.54"/>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge51" class="edge">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2141.15,-639.56C2080.17,-689.67 1834.76,-879.52 1596,-897.49"/>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge52" class="edge">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2124.78,-615.42C2097.26,-604.08 2056.25,-585.85 2023,-565.49 2005.71,-554.91 2005.49,-545.79 1987,-537.49 1814.03,-459.83 1222.43,-466.9 1023.99,-471.63"/>
+<polygon fill="#000000" stroke="#000000" points="1023.63,-468.13 1013.72,-471.88 1023.81,-475.13 1023.63,-468.13"/>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ar_cubic_mixing_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge49" class="edge">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ar_cubic_mixing_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-663.49C1829.71,-675.29 1807.33,-652.39 1769,-682.49 1737.69,-707.07 1765.9,-742.09 1733,-764.49 1682.48,-798.9 1523.12,-796.89 1411.02,-790.57"/>
+<polygon fill="#000000" stroke="#000000" points="1411.19,-787.07 1401.01,-789.99 1410.79,-794.06 1411.19,-787.07"/>
+</g>
+<!-- module~yaeos__models_ge_nrtlhv -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node26" class="node">
+<title>module~yaeos__models_ge_nrtlhv</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node26"><a xlink:href="../module/yaeos__models_ge_nrtlhv.html" xlink:title="yaeos__models_ge_nrtlhv">
+<polygon fill="#337ab7" stroke="#337ab7" points="1952,-444.49 1804,-444.49 1804,-420.49 1952,-420.49 1952,-444.49"/>
+<text text-anchor="middle" x="1878" y="-430.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_nrtlhv</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ge_nrtlhv -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge53" class="edge">
+<title>module~yaeos__models_cubic_mixing_rules_huron_vidal&#45;&gt;module~yaeos__models_ge_nrtlhv</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2107.75,-615.44C2079.6,-606.08 2045.24,-590.4 2023,-565.49 1989.58,-528.06 2024.01,-492.37 1987,-458.49 1979.69,-451.8 1970.97,-446.75 1961.69,-442.95"/>
+<polygon fill="#000000" stroke="#000000" points="1962.85,-439.65 1952.26,-439.55 1960.48,-446.23 1962.85,-439.65"/>
+</g>
+<!-- module~yaeos__models_ge&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge54" class="edge">
+<title>module~yaeos__models_ge&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M908.47,-485.49C873.54,-495.11 825.63,-510.19 786,-529.49 691.08,-575.72 685.7,-702.71 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ge&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge55" class="edge">
+<title>module~yaeos__models_ge&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M913.75,-485.5C875.14,-498.45 819.41,-522.75 786,-562.49 752.08,-602.84 789.94,-641.09 750,-675.49 725.54,-696.56 690.97,-704.04 660.09,-705.85"/>
+<polygon fill="#000000" stroke="#000000" points="659.63,-702.37 649.77,-706.26 659.9,-709.36 659.63,-702.37"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node22" class="node">
+<title>module~yaeos__models_ge_group_contribution_dortmund</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node22"><a xlink:href="../module/yaeos__models_ge_group_contribution_dortmund.html" xlink:title="yaeos__models_ge_group_contribution_dortmund">
+<polygon fill="#337ab7" stroke="#337ab7" points="1733,-365.49 1457,-365.49 1457,-341.49 1733,-341.49 1733,-365.49"/>
+<text text-anchor="middle" x="1595" y="-351.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_dortmund</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_group_contribution_dortmund -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge56" class="edge">
+<title>module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_group_contribution_dortmund</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-313.49C1857.42,-309.48 1749.83,-326.62 1673.62,-339.71"/>
+<polygon fill="#000000" stroke="#000000" points="1672.82,-336.29 1663.56,-341.44 1674.01,-343.19 1672.82,-336.29"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node23" class="node">
+<title>module~yaeos__models_ge_group_contribution_psrk</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node23"><a xlink:href="../module/yaeos__models_ge_group_contribution_psrk.html" xlink:title="yaeos__models_ge_group_contribution_psrk">
+<polygon fill="#337ab7" stroke="#337ab7" points="1718,-285.49 1472,-285.49 1472,-261.49 1718,-261.49 1718,-285.49"/>
+<text text-anchor="middle" x="1595" y="-271.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_psrk</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_group_contribution_psrk -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge57" class="edge">
+<title>module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_group_contribution_psrk</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-313.49C1823.14,-302.47 1762.86,-293.46 1711.98,-286.79"/>
+<polygon fill="#000000" stroke="#000000" points="1712.3,-283.31 1701.94,-285.49 1711.4,-290.25 1712.3,-283.31"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node24" class="node">
+<title>module~yaeos__models_ge_group_contribution_unifac</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node24"><a xlink:href="../module/yaeos__models_ge_group_contribution_unifac.html" xlink:title="yaeos__models_ge_group_contribution_unifac">
+<polygon fill="#337ab7" stroke="#337ab7" points="1421,-325.49 1165,-325.49 1165,-301.49 1421,-301.49 1421,-325.49"/>
+<text text-anchor="middle" x="1293" y="-311.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_unifac</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_group_contribution_unifac -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge58" class="edge">
+<title>module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_group_contribution_unifac</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-313.49C1795.22,-296.54 1576.58,-301.45 1431.53,-307.07"/>
+<polygon fill="#000000" stroke="#000000" points="1431.07,-303.59 1421.22,-307.48 1431.35,-310.58 1431.07,-303.59"/>
+</g>
+<!-- module~yaeos__models_ge_nrtl -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node25" class="node">
+<title>module~yaeos__models_ge_nrtl</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node25"><a xlink:href="../module/yaeos__models_ge_nrtl.html" xlink:title="yaeos__models_ge_NRTL">
+<polygon fill="#337ab7" stroke="#337ab7" points="1365.5,-405.49 1220.5,-405.49 1220.5,-381.49 1365.5,-381.49 1365.5,-405.49"/>
+<text text-anchor="middle" x="1293" y="-391.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_NRTL</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_nrtl -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge59" class="edge">
+<title>module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_nrtl</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-313.49C1808.91,-299.55 1800.8,-359.19 1733,-374.49 1610.83,-402.06 1464.81,-402.09 1375.77,-398.55"/>
+<polygon fill="#000000" stroke="#000000" points="1375.88,-395.06 1365.74,-398.13 1375.58,-402.05 1375.88,-395.06"/>
+</g>
+<!-- module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_nrtlhv -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge60" class="edge">
+<title>module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_nrtlhv</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2052.15,-432.49C2022.5,-432.49 1990.57,-432.49 1962.29,-432.49"/>
+<polygon fill="#000000" stroke="#000000" points="1962.05,-428.99 1952.05,-432.49 1962.05,-435.99 1962.05,-428.99"/>
+</g>
+<!-- module~yaeos__models_ge_uniquac -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node27" class="node">
+<title>module~yaeos__models_ge_uniquac</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node27"><a xlink:href="../module/yaeos__models_ge_uniquac.html" xlink:title="yaeos__models_ge_uniquac">
+<polygon fill="#337ab7" stroke="#337ab7" points="1373,-87.49 1213,-87.49 1213,-63.49 1373,-63.49 1373,-87.49"/>
+<text text-anchor="middle" x="1293" y="-73.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_uniquac</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_uniquac -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge61" class="edge">
+<title>module~yaeos__models_ge_implementations&#45;&gt;module~yaeos__models_ge_uniquac</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M2135.28,-420.41C2090.84,-394.64 1980.51,-334.87 1879,-313.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1877,-313.49C1808.99,-299.17 1797.23,-279.04 1733,-252.49 1586.25,-191.83 1410.92,-121.9 1333.76,-91.25"/>
+<polygon fill="#000000" stroke="#000000" points="1335,-87.98 1324.41,-87.54 1332.41,-94.48 1335,-87.98"/>
+</g>
+<!-- module~hyperdual_mod&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge62" class="edge">
+<title>module~hyperdual_mod&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M909.22,-589.33C874.86,-593.91 827.34,-600.92 786,-609.49 697.12,-627.91 672.07,-696.93 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge64" class="edge">
+<title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1204.92,-623.81C1137.62,-622.79 1042.15,-621.95 958.5,-623.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-623.49C951.36,-623.59 593.23,-663.5 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__models_ar -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge65" class="edge">
+<title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1204.92,-629.32C1190.03,-633.63 1175.88,-640.57 1165,-651.49 1107.44,-709.31 1181.84,-769.33 1129,-831.49 1102.42,-862.76 1058.96,-878.77 1022.58,-886.96"/>
+<polygon fill="#000000" stroke="#000000" points="1021.59,-883.59 1012.52,-889.07 1023.03,-890.44 1021.59,-883.59"/>
+</g>
+<!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~hyperdual_mod -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge63" class="edge">
+<title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~hyperdual_mod</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1204.81,-614.51C1145.1,-606.99 1067.62,-597.23 1015.64,-590.69"/>
+<polygon fill="#000000" stroke="#000000" points="1015.96,-587.2 1005.6,-589.42 1015.09,-594.15 1015.96,-587.2"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_base&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge66" class="edge">
+<title>module~yaeos__models_ar_cubic_mixing_base&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1184.94,-788.46C1056.04,-794.73 849.02,-797.44 786,-755.49 755.22,-735 780.09,-701.98 750,-680.49 691.19,-638.49 655.04,-689.71 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge67" class="edge">
+<title>module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M812.28,-673.95C726.89,-677.97 627.91,-678.2 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge68" class="edge">
+<title>module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M840.06,-675.52C780.84,-681.63 710.77,-688.87 659.64,-694.15"/>
+<polygon fill="#000000" stroke="#000000" points="659.27,-690.67 649.68,-695.17 659.99,-697.63 659.27,-690.67"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge69" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-353.49C1235.03,-356.88 1214.94,-344.86 1165,-372.49 1143.49,-384.39 1150.73,-403 1129,-414.49 1061.6,-450.14 1030.5,-408.39 958.5,-433.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-433.49C884.5,-458.59 854.24,-418.48 786,-452.49 671.62,-509.5 706.21,-711.27 588.5,-661.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_unifac -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge74" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_unifac</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1503.99,-341.49C1469.51,-336.89 1429.97,-331.62 1394.56,-326.9"/>
+<polygon fill="#000000" stroke="#000000" points="1394.58,-323.37 1384.21,-325.52 1393.65,-330.31 1394.58,-323.37"/>
+</g>
+<!-- module~yaeos__models_ge_gc_td -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node31" class="node">
+<title>module~yaeos__models_ge_gc_td</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node31"><a xlink:href="../module/yaeos__models_ge_gc_td.html" xlink:title="yaeos__models_ge_gc_td">
+<polygon fill="#337ab7" stroke="#337ab7" points="1030.5,-207.49 884.5,-207.49 884.5,-183.49 1030.5,-183.49 1030.5,-207.49"/>
+<text text-anchor="middle" x="957.5" y="-193.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_gc_td</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_gc_td -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge70" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_gc_td</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1566.49,-341.37C1503.31,-313.74 1349.08,-247.58 1294,-235.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-235.49C1207.48,-216.95 1108.9,-206.46 1040.95,-200.92"/>
+<polygon fill="#000000" stroke="#000000" points="1040.98,-197.41 1030.73,-200.11 1040.42,-204.39 1040.98,-197.41"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node32" class="node">
+<title>module~yaeos__models_ge_group_contribution_dortmund_parameters</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node32"><a xlink:href="../module/yaeos__models_ge_group_contribution_dortmund_parameters.html" xlink:title="yaeos__models_ge_group_contribution_dortmund_parameters">
+<polygon fill="#337ab7" stroke="#337ab7" points="1129,-405.49 786,-405.49 786,-381.49 1129,-381.49 1129,-405.49"/>
+<text text-anchor="middle" x="957.5" y="-391.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_dortmund_parameters</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_dortmund_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge71" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_dortmund_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-353.49C1208.39,-358.46 1113.62,-370.44 1046.54,-380.01"/>
+<polygon fill="#000000" stroke="#000000" points="1045.83,-376.57 1036.43,-381.46 1046.82,-383.5 1045.83,-376.57"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_groups -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node33" class="node">
+<title>module~yaeos__models_ge_group_contribution_groups</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node33"><a xlink:href="../module/yaeos__models_ge_group_contribution_groups.html" xlink:title="yaeos__models_ge_group_contribution_groups">
+<polygon fill="#337ab7" stroke="#337ab7" points="717,-266.49 458,-266.49 458,-242.49 717,-242.49 717,-266.49"/>
+<text text-anchor="middle" x="587.5" y="-252.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_groups</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_groups -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge72" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_groups</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-235.49C1188.25,-212.72 900.9,-229.65 727.22,-242.85"/>
+<polygon fill="#000000" stroke="#000000" points="726.93,-239.36 717.23,-243.62 727.47,-246.34 726.93,-239.36"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_model_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node34" class="node">
+<title>module~yaeos__models_ge_group_contribution_model_parameters</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node34"><a xlink:href="../module/yaeos__models_ge_group_contribution_model_parameters.html" xlink:title="yaeos__models_ge_group_contribution_model_parameters">
+<polygon fill="#337ab7" stroke="#337ab7" points="750,-365.49 425,-365.49 425,-341.49 750,-341.49 750,-365.49"/>
+<text text-anchor="middle" x="587.5" y="-351.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_model_parameters</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge73" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1456.87,-350.07C1405.72,-349.7 1347.16,-350.33 1294,-353.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-353.49C1144.04,-362.28 1106.66,-349.08 958.5,-353.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge75" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1566.49,-261.35C1503.32,-233.7 1349.1,-167.48 1294,-155.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-155.49C1216.42,-139.05 1205.11,-108.27 1129,-94.49 978.99,-67.34 926.84,-36.15 786,-94.49 765.09,-103.15 769.57,-119.14 750,-130.49 685.65,-167.82 657.98,-147.9 588.5,-174.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M586.5,-174.49C515.1,-201.72 486.77,-188.5 425,-233.49 370.35,-273.3 398.5,-362.6 331.5,-353.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.5,-353.49C302.32,-349.8 272.02,-349.24 246.14,-349.82"/>
+<polygon fill="#000000" stroke="#000000" points="245.98,-346.32 236.08,-350.1 246.18,-353.32 245.98,-346.32"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_group_contribution_unifac -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge79" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_group_contribution_unifac</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1503.99,-285.49C1469.51,-290.09 1429.97,-295.36 1394.56,-300.08"/>
+<polygon fill="#000000" stroke="#000000" points="1393.65,-296.67 1384.21,-301.46 1394.58,-303.61 1393.65,-296.67"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_gc_td -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge76" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_gc_td</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-155.49C1268.05,-150.24 1131.61,-169.15 1040.83,-182.75"/>
+<polygon fill="#000000" stroke="#000000" points="1040.19,-179.3 1030.83,-184.25 1041.24,-186.23 1040.19,-179.3"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_group_contribution_groups -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge77" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_group_contribution_groups</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-155.49C1182.09,-131.37 896.02,-150.9 786,-174.49 781.89,-175.37 683.83,-215.42 627.46,-238.51"/>
+<polygon fill="#000000" stroke="#000000" points="626.05,-235.31 618.12,-242.34 628.7,-241.79 626.05,-235.31"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node35" class="node">
+<title>module~yaeos__models_ge_group_contribution_psrk_parameters</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node35"><a xlink:href="../module/yaeos__models_ge_group_contribution_psrk_parameters.html" xlink:title="yaeos__models_ge_group_contribution_psrk_parameters">
+<polygon fill="#337ab7" stroke="#337ab7" points="1114,-127.49 801,-127.49 801,-103.49 1114,-103.49 1114,-127.49"/>
+<text text-anchor="middle" x="957.5" y="-113.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_psrk_parameters</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_group_contribution_psrk_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge78" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk&#45;&gt;module~yaeos__models_ge_group_contribution_psrk_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-155.49C1236.9,-143.4 1175.83,-134.74 1121.16,-128.64"/>
+<polygon fill="#000000" stroke="#000000" points="1121.35,-125.14 1111.03,-127.53 1120.59,-132.09 1121.35,-125.14"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge80" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-273.49C792.15,-266.07 752.13,-296.38 588.5,-313.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M586.5,-313.49C514.62,-321.01 496.24,-320.33 425,-332.49 383.02,-339.66 373.7,-359.23 331.5,-353.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge81" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1186.48,-325.6C1178.7,-329.25 1171.4,-333.82 1165,-339.49 1127.15,-373.06 1167.69,-414.89 1129,-447.49 1100.24,-471.73 1058.66,-478.44 1023.76,-478.99"/>
+<polygon fill="#000000" stroke="#000000" points="1023.64,-475.49 1013.64,-478.98 1023.64,-482.49 1023.64,-475.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_gc_td -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge82" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_gc_td</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1257.88,-301.42C1196.96,-279.86 1069.58,-234.79 1002.3,-210.99"/>
+<polygon fill="#000000" stroke="#000000" points="1003.42,-207.67 992.82,-207.64 1001.08,-214.27 1003.42,-207.67"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_group_contribution_groups -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge83" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_group_contribution_groups</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1218.41,-301.48C1151.01,-291.24 1048.36,-277.55 958.5,-273.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-273.49C880.66,-270.07 796.06,-265.73 727.12,-262.07"/>
+<polygon fill="#000000" stroke="#000000" points="727.23,-258.57 717.06,-261.54 726.86,-265.56 727.23,-258.57"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge84" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1222.33,-325.54C1155.05,-336.29 1050.16,-350.76 958.5,-353.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M956.5,-353.49C892.53,-355.4 822.27,-355.81 760.45,-355.61"/>
+<polygon fill="#000000" stroke="#000000" points="760.22,-352.11 750.2,-355.57 760.19,-359.11 760.22,-352.11"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node36" class="node">
+<title>module~yaeos__models_ge_group_contribution_unifac_parameters</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node36"><a xlink:href="../module/yaeos__models_ge_group_contribution_unifac_parameters.html" xlink:title="yaeos__models_ge_group_contribution_unifac_parameters">
+<polygon fill="#337ab7" stroke="#337ab7" points="1119.5,-325.49 795.5,-325.49 795.5,-301.49 1119.5,-301.49 1119.5,-325.49"/>
+<text text-anchor="middle" x="957.5" y="-311.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge_group_contribution_unifac_parameters</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_group_contribution_unifac_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge85" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac&#45;&gt;module~yaeos__models_ge_group_contribution_unifac_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1164.97,-313.49C1153.51,-313.49 1141.78,-313.49 1130.02,-313.49"/>
+<polygon fill="#000000" stroke="#000000" points="1129.69,-309.99 1119.69,-313.49 1129.69,-316.99 1129.69,-309.99"/>
+</g>
+<!-- module~yaeos__models_ge_nrtl&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge86" class="edge">
+<title>module~yaeos__models_ge_nrtl&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1220.22,-403.01C1191.82,-406.7 1158.89,-410.9 1129,-414.49 1053.3,-423.59 1030.5,-408.39 958.5,-433.49"/>
+</g>
+<!-- module~yaeos__models_ge_nrtl&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge87" class="edge">
+<title>module~yaeos__models_ge_nrtl&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1220.3,-402.22C1201.75,-406.07 1182.17,-411.59 1165,-419.49 1146.59,-427.97 1147.62,-439.48 1129,-447.49 1096.11,-461.64 1056.76,-468.24 1024.14,-471.26"/>
+<polygon fill="#000000" stroke="#000000" points="1023.49,-467.8 1013.81,-472.12 1024.07,-474.78 1023.49,-467.8"/>
+</g>
+<!-- module~yaeos__models_ge_nrtlhv&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge89" class="edge">
+<title>module~yaeos__models_ge_nrtlhv&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1803.81,-431.3C1693.33,-429.8 1477.37,-428.03 1294,-433.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-433.49C1217.94,-436.19 1028.48,-409.09 958.5,-433.49"/>
+</g>
+<!-- module~yaeos__models_ge_nrtlhv&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge90" class="edge">
+<title>module~yaeos__models_ge_nrtlhv&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1292,-433.49C1241.29,-435 1105.46,-452.94 1023.63,-464.27"/>
+<polygon fill="#000000" stroke="#000000" points="1023.11,-460.81 1013.69,-465.65 1024.07,-467.74 1023.11,-460.81"/>
+</g>
+<!-- module~yaeos__autodiff -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node29" class="node">
+<title>module~yaeos__autodiff</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node29"><a xlink:href="../module/yaeos__autodiff.html" xlink:title="yaeos__autodiff">
+<polygon fill="#337ab7" stroke="#337ab7" points="1643,-603.49 1547,-603.49 1547,-579.49 1643,-579.49 1643,-603.49"/>
+<text text-anchor="middle" x="1595" y="-589.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__autodiff</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_nrtlhv&#45;&gt;module~yaeos__autodiff -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge88" class="edge">
+<title>module~yaeos__models_ge_nrtlhv&#45;&gt;module~yaeos__autodiff</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1861.69,-444.67C1836.08,-464.67 1782.5,-505.01 1733,-532.49 1702.42,-549.47 1665.97,-564.96 1638.36,-575.8"/>
+<polygon fill="#000000" stroke="#000000" points="1637.04,-572.56 1628.98,-579.44 1639.57,-579.08 1637.04,-572.56"/>
+</g>
+<!-- module~yaeos__models_ge_uniquac&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge91" class="edge">
+<title>module~yaeos__models_ge_uniquac&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1268.2,-63.48C1237.12,-48.53 1180.59,-23.83 1129,-14.49 978.99,12.66 938.23,-6.42 786,-14.49 697.85,-19.16 676.74,-33.11 588.5,-35.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M586.5,-35.49C473.19,-37.63 429.32,21.74 331.5,-35.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.5,-35.49C220.23,-99.43 192.43,-270.19 185.88,-331.33"/>
+<polygon fill="#000000" stroke="#000000" points="182.39,-331.13 184.89,-341.42 189.35,-331.81 182.39,-331.13"/>
+</g>
+<!-- module~yaeos__models_ge_uniquac&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge93" class="edge">
+<title>module~yaeos__models_ge_uniquac&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1245.85,-87.5C1217.83,-97.29 1183.92,-114.09 1165,-141.49 1087.19,-254.18 1224.16,-349.02 1129,-447.49 1102.49,-474.93 1060.13,-481.49 1024.26,-481.17"/>
+<polygon fill="#000000" stroke="#000000" points="1023.95,-477.66 1013.85,-480.88 1023.75,-484.65 1023.95,-477.66"/>
+</g>
+<!-- module~yaeos__math -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node30" class="node">
+<title>module~yaeos__math</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node30"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
+<polygon fill="#337ab7" stroke="#337ab7" points="998.5,-47.49 916.5,-47.49 916.5,-23.49 998.5,-23.49 998.5,-47.49"/>
+<text text-anchor="middle" x="957.5" y="-33.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ge_uniquac&#45;&gt;module~yaeos__math -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge92" class="edge">
+<title>module~yaeos__models_ge_uniquac&#45;&gt;module~yaeos__math</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1212.97,-66.01C1149.63,-58.42 1062.7,-47.99 1008.59,-41.5"/>
+<polygon fill="#000000" stroke="#000000" points="1008.9,-38.01 998.56,-40.3 1008.07,-44.96 1008.9,-38.01"/>
+</g>
+<!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge94" class="edge">
+<title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M324.66,-709.25C303.6,-655.99 219.81,-444.05 192.59,-375.21"/>
+<polygon fill="#000000" stroke="#000000" points="195.79,-373.79 188.86,-365.78 189.28,-376.37 195.79,-373.79"/>
+</g>
+<!-- module~yaeos__autodiff&#45;&gt;module~hyperdual_mod -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge95" class="edge">
+<title>module~yaeos__autodiff&#45;&gt;module~hyperdual_mod</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1546.94,-588.43C1487.84,-585.07 1383.35,-580.75 1294,-585.49"/>
+</g>
+<!-- module~yaeos__autodiff&#45;&gt;module~yaeos__adiff_hyperdual_ar_api -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge96" class="edge">
+<title>module~yaeos__autodiff&#45;&gt;module~yaeos__adiff_hyperdual_ar_api</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1546.79,-596.84C1505.17,-601.56 1443.2,-608.58 1391.04,-614.49"/>
+<polygon fill="#000000" stroke="#000000" points="1390.63,-611.02 1381.08,-615.62 1391.42,-617.97 1390.63,-611.02"/>
+</g>
+<!-- module~yaeos__math&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge97" class="edge">
+<title>module~yaeos__math&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M916.47,-34.78C848.86,-33.75 707.77,-32.27 588.5,-35.49"/>
+</g>
+<!-- module~yaeos__math_continuation -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node37" class="node">
+<title>module~yaeos__math_continuation</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node37"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
+<polygon fill="#337ab7" stroke="#337ab7" points="664.5,-87.49 510.5,-87.49 510.5,-63.49 664.5,-63.49 664.5,-87.49"/>
+<text text-anchor="middle" x="587.5" y="-73.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__math&#45;&gt;module~yaeos__math_continuation -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge98" class="edge">
+<title>module~yaeos__math&#45;&gt;module~yaeos__math_continuation</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M916.42,-39.85C858.74,-46.12 750.92,-57.84 674.68,-66.12"/>
+<polygon fill="#000000" stroke="#000000" points="674.17,-62.66 664.61,-67.22 674.93,-69.62 674.17,-62.66"/>
+</g>
+<!-- module~yaeos__math_linalg -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_node38" class="node">
+<title>module~yaeos__math_linalg</title>
+<g id="a_module~~yaeos__extra_fluids~~UsesGraph_node38"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
+<polygon fill="#337ab7" stroke="#337ab7" points="389,-127.49 272,-127.49 272,-103.49 389,-103.49 389,-127.49"/>
+<text text-anchor="middle" x="330.5" y="-113.09" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__math&#45;&gt;module~yaeos__math_linalg -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge99" class="edge">
+<title>module~yaeos__math&#45;&gt;module~yaeos__math_linalg</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M916.18,-34.82C880.26,-35.76 827.16,-41.03 786,-61.49 766.02,-71.42 770.48,-87.63 750,-96.49 634.86,-146.31 484.89,-137.62 399.29,-126.65"/>
+<polygon fill="#000000" stroke="#000000" points="399.55,-123.15 389.18,-125.3 398.63,-130.09 399.55,-123.15"/>
+</g>
+<!-- module~yaeos__models_ge_gc_td&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge100" class="edge">
+<title>module~yaeos__models_ge_gc_td&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M918.65,-183.43C850.15,-163.73 702.2,-130.97 588.5,-174.49"/>
+</g>
+<!-- module~yaeos__models_ge_gc_td&#45;&gt;module~yaeos__models_ge_group_contribution_groups -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge101" class="edge">
+<title>module~yaeos__models_ge_gc_td&#45;&gt;module~yaeos__models_ge_group_contribution_groups</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M884.29,-206.27C853.92,-210.86 818.23,-216.34 786,-221.49 747.41,-227.66 704.62,-234.77 668.76,-240.81"/>
+<polygon fill="#000000" stroke="#000000" points="668.12,-237.37 658.84,-242.49 669.29,-244.28 668.12,-237.37"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund_parameters&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge102" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund_parameters&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M818.09,-405.53C806.87,-409.19 796.01,-413.78 786,-419.49 665.44,-488.33 716.31,-715.69 588.5,-661.49"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M586.5,-661.49C422.89,-592.11 507.68,-376.84 331.5,-353.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_dortmund_parameters&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge103" class="edge">
+<title>module~yaeos__models_ge_group_contribution_dortmund_parameters&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M846.09,-381.49C802.98,-376.8 753.41,-371.42 709.34,-366.63"/>
+<polygon fill="#000000" stroke="#000000" points="709.47,-363.12 699.15,-365.52 708.72,-370.08 709.47,-363.12"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_groups&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge104" class="edge">
+<title>module~yaeos__models_ge_group_contribution_groups&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M530.01,-266.53C498.46,-274.16 458.81,-285.29 425,-299.49 380.76,-318.08 379.07,-359.8 331.5,-353.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_model_parameters&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge105" class="edge">
+<title>module~yaeos__models_ge_group_contribution_model_parameters&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M424.88,-359.9C393.79,-359.33 361.56,-357.48 331.5,-353.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk_parameters&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge106" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk_parameters&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M800.62,-126.12C733.67,-134.31 655.58,-148.82 588.5,-174.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_psrk_parameters&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge107" class="edge">
+<title>module~yaeos__models_ge_group_contribution_psrk_parameters&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M871.08,-127.5C840.37,-135.9 807.93,-150.2 786,-174.49 739.19,-226.34 801.13,-279.89 750,-327.49 746.58,-330.68 742.92,-333.57 739.08,-336.17"/>
+<polygon fill="#000000" stroke="#000000" points="737.13,-333.27 730.41,-341.45 740.77,-339.25 737.13,-333.27"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac_parameters&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge108" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac_parameters&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M795.36,-306.24C730.88,-305.23 656.01,-306.43 588.5,-313.49"/>
+</g>
+<!-- module~yaeos__models_ge_group_contribution_unifac_parameters&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge109" class="edge">
+<title>module~yaeos__models_ge_group_contribution_unifac_parameters&#45;&gt;module~yaeos__models_ge_group_contribution_model_parameters</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M846.09,-325.49C802.98,-330.18 753.41,-335.57 709.34,-340.36"/>
+<polygon fill="#000000" stroke="#000000" points="708.72,-336.9 699.15,-341.46 709.47,-343.86 708.72,-336.9"/>
+</g>
+<!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge110" class="edge">
+<title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M511.75,-63.48C436.86,-51.49 332.49,-34.91 331.5,-35.49"/>
+</g>
+<!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge111" class="edge">
+<title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M510.34,-87.44C474.94,-92.99 433.21,-99.54 398.96,-104.91"/>
+<polygon fill="#000000" stroke="#000000" points="398.39,-101.46 389.05,-106.46 399.47,-108.37 398.39,-101.46"/>
+</g>
+<!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__extra_fluids~~UsesGraph_edge112" class="edge">
+<title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M322.08,-127.62C298.69,-165.9 226.22,-284.43 196.7,-332.71"/>
+<polygon fill="#000000" stroke="#000000" points="193.63,-331.03 191.4,-341.39 199.6,-334.68 193.63,-331.03"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panmoduleyaeos__extra_fluidsUsesGraph = svgPanZoom('#moduleyaeos__extra_fluidsUsesGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      
+      <br>
+
+
+
+
+
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-fixturefluid"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/fixturefluid.html'>FixtureFluid</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ar_model"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>ar_model</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~96"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Number of components</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-reference"></span>
+              character(len=:),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>reference</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Reference of where the fluid was taken from</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z0~25"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>z0</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Original composition</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zi~21"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Injection composition (if exists)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-co2_h2o_isop"></span> <h3>public  function <a href='../proc/co2_h2o_isop.html'>co2_h2o_isop</a>() result(fluid)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+    <h4>
+    Return Value
+    <small>type(<a href='../type/fixturefluid.html'>FixtureFluid</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-oil_b71"></span> <h3>public  function <a href='../proc/oil_b71.html'>oil_b71</a>() result(fluid)  
+</h3></div>
+    <div class="card-body">
+          
+  
+
+  <h4>Arguments</h4>
+    <em>None</em>
+    <h4>
+    Return Value
+    <small>type(<a href='../type/fixturefluid.html'>FixtureFluid</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-oil_gao"></span> <h3>public  function <a href='../proc/oil_gao.html'>oil_gao</a>()  
+</h3></div>
+    <div class="card-body">
+          
+  <p>J. Gao, R. Okuno, and H. A. Li,
+“An Experimental Study of Multiphase Behavior for n-Butane/Bitumen/Water Mixtures,”
+SPE Journal, 2016, doi: 10.2118/180736-pa.</p>
+
+  <h4>Arguments</h4>
+    <em>None</em>
+    <h4>
+    Return Value
+    <small>type(<a href='../type/fixturefluid.html'>FixtureFluid</a>)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-08-06 13:57 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

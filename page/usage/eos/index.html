@@ -296,11 +296,12 @@ residual Helmholtz free energy):</p>
 <p>On this documentation section we are going to express all the properties in
 terms of <script type="math/tex">A^r(\mathbf{n}, V, T)</script> so a little algebraic work is required.</p>
 <p>Finally, we are going to use the MM notation, for that:</p>
-<p>$n$ is the total number of moles, and <script type="math/tex">n_i</script> is the number of moles of
+<p>
+<script type="math/tex">\mathbf{n}</script> is the total number of moles, and <script type="math/tex">n_i</script> is the number of moles of
 component <script type="math/tex">i</script>. Therefore:</p>
 <p>
 <script type="math/tex; mode=display">
-n = \sum_i n_i
+\mathbf{n} = \sum_i n_i
 </script>
 </p>
 <p>The moles number vector is denoted as <script type="math/tex">\mathbf{n}</script>.</p>
@@ -337,21 +338,21 @@ of the other components are kept constant. This is omitted for simplicity.</p>
 <p>
 <script type="math/tex; mode=display">
 P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}} 
-+ \frac{nRT}{V}
++ \frac{\mathbf{n}RT}{V}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
 \left(\frac{\partial P}{\partial V} \right)_{T,\mathbf{n}} =
 -\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,\mathbf{n}} -
-\frac{nRT}{V^2}
+\frac{\mathbf{n}RT}{V^2}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
 \left(\frac{\partial P}{\partial T} \right)_{V,\mathbf{n}} =
 - \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_{\mathbf{n}} +
-- \frac{nR}{V}
+- \frac{\mathbf{n}R}{V}
 </script>
 </p>
 <p>
@@ -448,7 +449,7 @@ calculated as follows:</p>
 <p>Remember that the compressibility factor <script type="math/tex">Z</script> is calculated as:</p>
 <p>
 <script type="math/tex; mode=display">
-Z = \frac{PV}{nRT}
+Z = \frac{PV}{\mathbf{n}RT}
 </script>
 </p>
 <p>Next, the derivatives:</p>
@@ -473,7 +474,7 @@ Z = \frac{PV}{nRT}
 <p>
 <script type="math/tex; mode=display">
 \left(\frac{\partial \ln \hat{\phi_i}}{\partial n_j} \right)_{P,T} =
-\frac{1}{n} + \frac{1}{RT} 
+\frac{1}{\mathbf{n}} + \frac{1}{RT} 
 \left(\frac{\partial^2 A^r}{\partial n_i \partial n_j}
 + \frac{\left(\frac{\partial P}{\partial n_i} \right)_{V,T}
 \left(\frac{\partial P}{\partial n_j} \right)_{V,T}}
@@ -588,26 +589,26 @@ S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,\mathbf{n}}
 <p>
 <script type="math/tex; mode=display">
 H^r(\mathbf{n},V,T) = H^r(\mathbf{n},P,T) = A^r(\mathbf{n},V,T) + T
-S^r(\mathbf{n},V,T) + PV - nRT
+S^r(\mathbf{n},V,T) + PV - \mathbf{n}RT
 </script>
 </p>
 <p>We know that pressure can be calculated as:</p>
 <p>
 <script type="math/tex; mode=display">
 P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}} +
-\frac{nRT}{V}
+\frac{\mathbf{n}RT}{V}
 </script>
 </p>
 <p>Then, we can obtain:</p>
 <p>
 <script type="math/tex; mode=display">
-P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V}
+P - \frac{\mathbf{n}RT}{V} = - \left(\frac{\partial A^r}{\partial V}
 \right)_{T,\mathbf{n}}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
+PV - \mathbf{n}RT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
 </script>
 </p>
 <p>And we also know how to calculate residual entropy as:</p>
@@ -671,13 +672,13 @@ H^r = A^r(\mathbf{n},V,T) - T \left(\frac{\partial A^r}{\partial T}
 <p>The residual Gibbs free energy is calculated as follows:</p>
 <p>
 <script type="math/tex; mode=display">
-G^r(\mathbf{n},V,T) = A^r(\mathbf{n},V,T) + PV - nRT
+G^r(\mathbf{n},V,T) = A^r(\mathbf{n},V,T) + PV - \mathbf{n}RT
 </script>
 </p>
 <p>As with residual enthalpy we can easily deduce:</p>
 <p>
 <script type="math/tex; mode=display">
-PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
+PV - \mathbf{n}RT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
 </script>
 </p>
 <p>For that:</p>
@@ -736,7 +737,7 @@ A^r}{\partial V} \right)_{T,\mathbf{n}}
 <p>From <strong>MM - Chapter 1 - Table 6 (Equations IX, XII, and XIII)</strong> we know that:</p>
 <p>
 <script type="math/tex; mode=display">
-    S^r(\mathbf{n},P,T) = S^r(\mathbf{n},V,T) + nR \; ln Z
+    S^r(\mathbf{n},P,T) = S^r(\mathbf{n},V,T) + \mathbf{n}R \; ln Z
 </script>
 </p>
 <p>
@@ -746,14 +747,14 @@ A^r}{\partial V} \right)_{T,\mathbf{n}}
 </p>
 <p>
 <script type="math/tex; mode=display">
-    G^r(\mathbf{n},P,T) = G^r(\mathbf{n},V,T) - nRT \; ln Z
+    G^r(\mathbf{n},P,T) = G^r(\mathbf{n},V,T) - \mathbf{n}RT \; ln Z
 </script>
 </p>
 <p>Replacing on the first equation we have:</p>
 <p>
 <script type="math/tex; mode=display">
-G^r(\mathbf{n},V,T) - nRT \; ln Z = H^r(\mathbf{n},V,T) - T
-\left(S^r(\mathbf{n},V,T) + nR \; ln Z \right)
+G^r(\mathbf{n},V,T) - \mathbf{n}RT \; ln Z = H^r(\mathbf{n},V,T) - T
+\left(S^r(\mathbf{n},V,T) + \mathbf{n}R \; ln Z \right)
 </script>
 </p>
 <p>Which of course lead us to:</p>
@@ -886,7 +887,7 @@ C_V^r(\mathbf{n},V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2}
 <script type="math/tex; mode=display">
 C_P^r(\mathbf{n},V,T) = C_V^r(\mathbf{n},V,T) + T \left(\frac{\partial
 P}{\partial T}\right)_{V,\mathbf{n}} \left(\frac{\partial V}{\partial
-T}\right)_{P,\mathbf{n}} - nR
+T}\right)_{P,\mathbf{n}} - \mathbf{n}R
 </script>
 </p>
 <p>From <strong>MM - Chapter 1 - Equation A37</strong> we know that:</p>
@@ -903,7 +904,7 @@ T}\right)_{P,\mathbf{n}} - nR
 <script type="math/tex; mode=display">
 C_P^r(\mathbf{n},V,T) = C_V^r(\mathbf{n},V,T) - T \frac{\left(\frac{\partial P}
 {\partial T} \right)^2_{V,\mathbf{n}}}{\left(\frac{\partial P}
-{\partial V} \right)_{T,\mathbf{n}}} - nR
+{\partial V} \right)_{T,\mathbf{n}}} - \mathbf{n}R
 </script>
 </p>
 <p>We can replace all the terms to obtain an expression completely expressed in
@@ -913,8 +914,8 @@ terms of residual Helmholtz (\mathbf{n},V,T).</p>
 C_P^r(\mathbf{n},V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2}
 \right)_{V,\mathbf{n}} - T \; \frac{\left(- \left(\frac{\partial^2
 A^r}{\partial V \partial T} \right)_{V,\mathbf{n}} +
-\frac{nR}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial V^2}
-\right)_{T,\mathbf{n}} - \frac{nRT}{V^2}\right)} - nR
+\frac{\mathbf{n}R}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial
+V^2} \right)_{T,\mathbf{n}} - \frac{\mathbf{n}RT}{V^2}\right)} - \mathbf{n}R
 </script>
 </p>
 <div class="codehilite"><pre><span></span><code><span class="n">residual_cp</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
@@ -969,7 +970,7 @@ the derivatives of <script type="math/tex">ln \; Z</script>:</p>
 <script type="math/tex; mode=display">
     \left(\frac{\partial \, ln \; Z}{\partial n_i}\right)_{P,T} =
     \frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} 
-    - \frac{1}{n}
+    - \frac{1}{\mathbf{n}}
 </script>
 </p>
 <p>If desired, all the volume derivatives can be expressed in terms of
@@ -979,7 +980,7 @@ the derivatives of <script type="math/tex">ln \; Z</script>:</p>
     \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}} =
     \frac{1}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}} =
     \frac{1}{-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,\mathbf{n}}
-    - \frac{nRT}{V^2}}
+    - \frac{\mathbf{n}RT}{V^2}}
 </script>
 </p>
 <p>From <strong>MM - Chapter 1 - Equation A39</strong></p>
@@ -1000,8 +1001,9 @@ the derivatives of <script type="math/tex">ln \; Z</script>:</p>
     \frac{\left(\frac{\partial P}{\partial T}
     \right)_{V,\mathbf{n}}}{\left(\frac{\partial P}{\partial V}
     \right)_{T,\mathbf{n}}} = - \frac{- \left(\frac{\partial^2 A^r}{\partial V
-    \partial T} \right)_{\mathbf{n}} + \frac{nR}{V}}{-\left(\frac{\partial^2
-    A^r}{\partial V^2} \right)_{T,\mathbf{n}} - \frac{nRT}{V^2}}
+    \partial T} \right)_{\mathbf{n}} +
+    \frac{\mathbf{n}R}{V}}{-\left(\frac{\partial^2 A^r}{\partial V^2}
+    \right)_{T,\mathbf{n}} - \frac{\mathbf{n}RT}{V^2}}
 </script>
 </p>
 <p>Finally, we have to understand the chain rule&hellip;</p>
@@ -1070,7 +1072,7 @@ the value of the calculated volume and the pressure derivatives.</p>
 <p>The <script type="math/tex">A^r(\mathbf{n}, P, T)</script> can be calculated as follows:</p>
 <p>
 <script type="math/tex; mode=display">
-    A^r(\mathbf{n}, P, T) = A^r(\mathbf{n}, V, T) - nRT \; ln \; Z
+    A^r(\mathbf{n}, P, T) = A^r(\mathbf{n}, V, T) - \mathbf{n}RT \; ln \; Z
 </script>
 </p>
 <p>And its derivatives:</p>
@@ -1079,7 +1081,7 @@ the value of the calculated volume and the pressure derivatives.</p>
     \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial
     P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
     A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
+    V}{\partial P}\right)_{T,\mathbf{n}} - \mathbf{n} R T \left(\frac{1}{P} +
     \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
     \right)
 </script>
@@ -1090,8 +1092,8 @@ the value of the calculated volume and the pressure derivatives.</p>
     T}\right)_{P,\mathbf{n}} = \left(\frac{\partial A^r(\mathbf{n}, V,
     T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     A^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \; ln \; Z -
-    n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - \mathbf{n}R \;
+    ln \; Z - \mathbf{n} R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
     T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 </script>
 </p>
@@ -1100,9 +1102,9 @@ the value of the calculated volume and the pressure derivatives.</p>
     \left(\frac{\partial A^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
-    \frac{1}{n}\right)
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z -
+    \mathbf{n}RT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
 </script>
 </p>
 <div class="codehilite"><pre><span></span><code><span class="n">ar_pt</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
@@ -1124,36 +1126,38 @@ the value of the calculated volume and the pressure derivatives.</p>
 <p>The residual entropy at <script type="math/tex">\mathbf{n}, P, T</script> can be calculated as follows:</p>
 <p>
 <script type="math/tex; mode=display">
-    S^r(\mathbf{n}, P, T) = S^r(\mathbf{n}, V, T) + nR \; \ln \; Z
+    S^r(\mathbf{n}, P, T) = S^r(\mathbf{n}, V, T) + \mathbf{n}R \; \ln \; Z
 </script>
 </p>
 <p>And its derivatives:</p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial P}\right)_{T,n} + nR
-    \left(\frac{1}{P} + \frac{1}{V} \left(\frac{\partial V}{\partial
-    P}\right)_{T,n} \right)
+    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
+    = \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial
+    V}\right)_{T,\mathbf{n}} \left(\frac{\partial V}{\partial
+    P}\right)_{T,\mathbf{n}} + \mathbf{n}R \left(\frac{1}{P} + \frac{1}{V}
+    \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}} \right)
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n} + nR \left(\frac{1}{V}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n} - \frac{1}{T}\right)
+    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial T}\right)_{P,\mathbf{n}}
+    = \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial
+    T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial T}\right)_{P,\mathbf{n}} + \mathbf{n}R \left(\frac{1}{V}
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} -
+    \frac{1}{T}\right)
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
     \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} + R \; ln \; Z + nR
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
-    \frac{1}{n}\right)
+    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} + R \; ln \; Z +
+    \mathbf{n}R \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
 </script>
 </p>
 <h3 id="residual-enthalpy-p-t-hrmathbfn-p-t">Residual Enthalpy (P, T): <script type="math/tex">H^r(\mathbf{n}, P, T)</script>
@@ -1169,24 +1173,26 @@ specification.</p>
 <p>For that, its derivatives can be obtained as:</p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial P}{\partial V}\right)^{-1}_{T,n}
+    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
+    = \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial
+    V}\right)_{T,\mathbf{n}} \left(\frac{\partial P}{\partial
+    V}\right)^{-1}_{T,\mathbf{n}}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n}
+    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial T}\right)_{P,\mathbf{n}}
+    = \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial
+    T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial T}\right)_{P,\mathbf{n}}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
     \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T}
 </script>
 </p>
@@ -1219,7 +1225,7 @@ specification.</p>
     \left(\frac{\partial \, G^r(\mathbf{n},P,T)}{\partial
     P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
     G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
+    V}{\partial P}\right)_{T,\mathbf{n}} - \mathbf{n} R T \left(\frac{1}{P} +
     \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
     \right)
 </script>
@@ -1230,8 +1236,8 @@ specification.</p>
     T}\right)_{P,\mathbf{n}} = \left(\frac{\partial G^r(\mathbf{n}, V,
     T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     G^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \; ln \; Z -
-    n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - \mathbf{n}R \;
+    ln \; Z - \mathbf{n} R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
     T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 </script>
 </p>
@@ -1240,9 +1246,9 @@ specification.</p>
     \left(\frac{\partial G^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
-    \frac{1}{n}\right)
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z -
+    \mathbf{n}RT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
 </script>
 </p>
 <div class="codehilite"><pre><span></span><code><span class="n">gr_pt</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
@@ -1270,24 +1276,26 @@ specification.</p>
 <p>Therefore, its derivatives are the same as enthalpy <script type="math/tex">(\mathbf{n}, P, T)</script>:</p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial P}{\partial V}\right)^{-1}_{T,n}
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
+    = \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial
+    V}\right)_{T,\mathbf{n}} \left(\frac{\partial P}{\partial
+    V}\right)^{-1}_{T,\mathbf{n}}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n}
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial T}\right)_{P,\mathbf{n}}
+    = \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial
+    T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial T}\right)_{P,\mathbf{n}}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
     \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T}
 </script>
 </p>
@@ -1390,14 +1398,14 @@ same pressure and temperature as the mixture.</p>
 <p><strong>MM - Chapter 1 - Table 9 (Equations V and VI)</strong></p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial \ln \; \gamma_i}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial \ln \; \hat{\phi}_i}{\partial T}\right)_{P,n} -
-    \left(\frac{\partial \ln \; \phi_i}{\partial T}\right)_{P}
+    \left(\frac{\partial \ln \; \gamma_i}{\partial T}\right)_{P,\mathbf{n}} =
+    \left(\frac{\partial \ln \; \hat{\phi}_i}{\partial T}\right)_{P,\mathbf{n}}
+    - \left(\frac{\partial \ln \; \phi_i}{\partial T}\right)_{P}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial \ln \; \gamma_i}{\partial P}\right)_{T,n} =
+    \left(\frac{\partial \ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}} =
     \frac{\overline{V}_i(\mathbf{n}, P, T) - v_i(P, T)}{RT}
 </script>
 </p>
@@ -1410,8 +1418,10 @@ same pressure and temperature as the mixture.</p>
 <p>Where:</p>
 <p>
 <script type="math/tex; mode=display">
-\overline{V}_i(\mathbf{n}, P, T) = \left(\frac{\partial V}{\partial
-n_i}\right)_{P,T} = - \frac{\left(\frac{\partial P}{\partial n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}}
+    \overline{V}_i(\mathbf{n}, P, T) = \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} = - \frac{\left(\frac{\partial P}{\partial
+    n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial
+    V}\right)_{T,\mathbf{n}}}
 </script>
 </p>
 <p>and <script type="math/tex">v_i(P, T)</script> is the partial molar volume of component <script type="math/tex">i</script> in the pure
@@ -1458,9 +1468,7 @@ coefficients as follows:</p>
 </p>
 <p>
 <script type="math/tex; mode=display">
-    \left(\frac{\partial G^E}{\partial n_j}\right)_{P,T} = R T \sum_i n_i
-    \left(\frac{\partial ln \; \gamma_i}{\partial n_j}\right)_{P,T} + R T
-    \; ln \; \gamma_j
+    \left(\frac{\partial G^E}{\partial n_i}\right)_{P,T} = R T \; ln \; \gamma_i
 </script>
 </p>
 <div class="codehilite"><pre><span></span><code><span class="n">gibbs_excess</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
@@ -1645,7 +1653,7 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-07-30 19:16 +0000             </p>
+ on 2026-08-06 13:57 +0000             </p>
           </div>
         </div>
         <br>

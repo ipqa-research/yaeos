@@ -93,20 +93,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">21 statements</a>
+                 title=" 0.8% of total for procedures.">114 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/nonlineal.f90"> Source File</a>
+              <a href="../src/newton.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/nonlineal.f90.html'>nonlineal.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__math_nonlinearsolvers.html'>yaeos__math_nonlinearsolvers</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/newton.f90.html'>newton.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__newton_solver.html'>yaeos__newton_solver</a></li>
             <li class="breadcrumb-item active" aria-current="page">newton</li>
           </ol>
         </nav>
@@ -135,12 +135,30 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/newton.html#variable-f~45">F</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-f2~4">F2</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-j~5">J</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-j2">J2</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-dx~20">dX</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-t~40">t</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-f~9">F</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-f_new">F_new</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-j~2">J</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-j_new">J_new</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-x_old">X_old</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-cond_est~2">cond_est</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-converged">converged</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-dx~5">dX</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-dx_norm~2">dx_norm</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-dx_norm_prev">dx_norm_prev</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-f_norm~2">f_norm</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-f_norm_new">f_norm_new</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-hist_buf">hist_buf</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-its~5">its</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-jscale">jscale</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-lambda~3">lambda</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-ls_failed">ls_failed</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-n~33">n</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-res~3">res</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-s~2">s</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-small_step">small_step</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-stag_count">stag_count</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-stagnated">stagnated</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-t~15">t</a>
         </div>
       </div>
     </div>
@@ -170,7 +188,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine newton(sub, x, tol, max_its, its)  
+    <h2>public  subroutine newton(sub, x, settings, result)  
 </h2>
     
 
@@ -190,7 +208,7 @@
         <tr>
             <td>
               <span class="anchor" id="variable-sub"></span>
-              procedure(to_solve)
+              procedure(<a href='../interface/to_solve.html'>to_solve</a>)
             </td>
 <td></td>
               <td></td>            <td>
@@ -204,7 +222,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~30"></span>
+              <span class="anchor" id="variable-x~4"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -219,45 +237,30 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~14"></span>
-              real(kind=pr),
+              <span class="anchor" id="variable-settings"></span>
+              type(<a href='../type/newton_settings.html'>newton_settings</a>),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>tol</strong></td>
+            <td><strong>settings</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_its~2"></span>
-              integer,
+              <span class="anchor" id="variable-result"></span>
+              type(<a href='../type/newton_result.html'>newton_result</a>),
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>max_its</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-its~26"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>its</strong></td>
+            <td><strong>result</strong></td>
             <td>
                 
             </td>
@@ -277,43 +280,229 @@
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~newton~~CallsGraph Pages: 1 -->
-<svg id="procnewtonCallsGraph" width="271pt" height="32pt"
- viewBox="0.00 0.00 271.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~newton~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procnewtonCallsGraph" width="355pt" height="446pt"
+ viewBox="0.00 0.00 355.00 445.54" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~newton~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 441.54)">
 <title>proc~~newton~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 267,-28 267,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-441.54 351,-441.54 351,4 -4,4"/>
 <!-- proc~newton -->
 <g id="proc~~newton~~CallsGraph_node1" class="node">
 <title>proc~newton</title>
-<polygon fill="none" stroke="black" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">newton</text>
+<polygon fill="none" stroke="black" points="54,-306 0,-306 0,-282 54,-282 54,-306"/>
+<text text-anchor="middle" x="27" y="-291.6" font-family="Helvetica,sans-Serif" font-size="10.50">newton</text>
 </g>
-<!-- proc~solve_system -->
+<!-- proc~armijo_backtrack -->
 <g id="proc~~newton~~CallsGraph_node2" class="node">
-<title>proc~solve_system</title>
-<g id="a_proc~~newton~~CallsGraph_node2"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="173,-24 90,-24 90,0 173,0 173,-24"/>
-<text text-anchor="middle" x="131.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+<title>proc~armijo_backtrack</title>
+<g id="a_proc~~newton~~CallsGraph_node2"><a xlink:href="../proc/armijo_backtrack.html" xlink:title="armijo_backtrack">
+<polygon fill="#d9534f" stroke="#d9534f" points="195,-408 90,-408 90,-384 195,-384 195,-408"/>
+<text text-anchor="middle" x="142.5" y="-393.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">armijo_backtrack</text>
 </a>
 </g>
 </g>
-<!-- proc~newton&#45;&gt;proc~solve_system -->
+<!-- proc~newton&#45;&gt;proc~armijo_backtrack -->
 <g id="proc~~newton~~CallsGraph_edge1" class="edge">
-<title>proc~newton&#45;&gt;proc~solve_system</title>
-<path fill="none" stroke="#000000" d="M54.13,-12C61.89,-12 70.67,-12 79.44,-12"/>
-<polygon fill="#000000" stroke="#000000" points="79.67,-15.5 89.67,-12 79.67,-8.5 79.67,-15.5"/>
+<title>proc~newton&#45;&gt;proc~armijo_backtrack</title>
+<path fill="none" stroke="#000000" d="M34.45,-306.06C44.31,-323.47 64.67,-355.65 90,-375 91.84,-376.4 93.79,-377.73 95.8,-378.98"/>
+<polygon fill="#000000" stroke="#000000" points="94.53,-382.27 104.99,-383.98 97.88,-376.12 94.53,-382.27"/>
 </g>
-<!-- none~dgesv -->
+<!-- proc~has_nan_inf -->
 <g id="proc~~newton~~CallsGraph_node3" class="node">
-<title>none~dgesv</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="263,-24 209,-24 209,0 263,0 263,-24"/>
-<text text-anchor="middle" x="236" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+<title>proc~has_nan_inf</title>
+<g id="a_proc~~newton~~CallsGraph_node3"><a xlink:href="../proc/has_nan_inf.html" xlink:title="has_nan_inf">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="327,-428 251,-428 251,-404 327,-404 327,-428"/>
+<text text-anchor="middle" x="289" y="-413.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has_nan_inf</text>
+</a>
 </g>
-<!-- proc~solve_system&#45;&gt;none~dgesv -->
+</g>
+<!-- proc~newton&#45;&gt;proc~has_nan_inf -->
 <g id="proc~~newton~~CallsGraph_edge2" class="edge">
-<title>proc~solve_system&#45;&gt;none~dgesv</title>
-<path fill="none" stroke="#000000" d="M173.01,-12C181.51,-12 190.42,-12 198.75,-12"/>
-<polygon fill="#000000" stroke="#000000" points="198.92,-15.5 208.92,-12 198.92,-8.5 198.92,-15.5"/>
+<title>proc~newton&#45;&gt;proc~has_nan_inf</title>
+<path fill="none" stroke="#000000" d="M29.9,-306.26C34.64,-332.17 49.68,-392.17 90,-417 135.39,-444.95 198.44,-438.67 241.1,-429.38"/>
+<polygon fill="#000000" stroke="#000000" points="242,-432.76 250.95,-427.1 240.42,-425.94 242,-432.76"/>
+</g>
+<!-- proc~jacobian_scale -->
+<g id="proc~~newton~~CallsGraph_node4" class="node">
+<title>proc~jacobian_scale</title>
+<g id="a_proc~~newton~~CallsGraph_node4"><a xlink:href="../proc/jacobian_scale.html" xlink:title="jacobian_scale">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="188,-366 97,-366 97,-342 188,-342 188,-366"/>
+<text text-anchor="middle" x="142.5" y="-351.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacobian_scale</text>
+</a>
+</g>
+</g>
+<!-- proc~newton&#45;&gt;proc~jacobian_scale -->
+<g id="proc~~newton~~CallsGraph_edge3" class="edge">
+<title>proc~newton&#45;&gt;proc~jacobian_scale</title>
+<path fill="none" stroke="#000000" d="M49.71,-306.14C61.56,-312.71 76.53,-320.91 90,-328 95.82,-331.06 102.03,-334.26 108.07,-337.33"/>
+<polygon fill="#000000" stroke="#000000" points="106.81,-340.61 117.31,-342 109.96,-334.37 106.81,-340.61"/>
+</g>
+<!-- proc~norm_inf -->
+<g id="proc~~newton~~CallsGraph_node5" class="node">
+<title>proc~norm_inf</title>
+<g id="a_proc~~newton~~CallsGraph_node5"><a xlink:href="../proc/norm_inf.html" xlink:title="norm_inf">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="319,-356 259,-356 259,-332 319,-332 319,-356"/>
+<text text-anchor="middle" x="289" y="-341.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">norm_inf</text>
+</a>
+</g>
+</g>
+<!-- proc~newton&#45;&gt;proc~norm_inf -->
+<g id="proc~~newton~~CallsGraph_edge4" class="edge">
+<title>proc~newton&#45;&gt;proc~norm_inf</title>
+<path fill="none" stroke="#000000" d="M54.36,-299.07C100.33,-307.91 195.35,-326.18 248.97,-336.49"/>
+<polygon fill="#000000" stroke="#000000" points="248.32,-339.93 258.8,-338.38 249.64,-333.06 248.32,-339.93"/>
+</g>
+<!-- proc~pack_result -->
+<g id="proc~~newton~~CallsGraph_node6" class="node">
+<title>proc~pack_result</title>
+<g id="a_proc~~newton~~CallsGraph_node6"><a xlink:href="../proc/pack_result.html" xlink:title="pack_result">
+<polygon fill="#d9534f" stroke="#d9534f" points="179,-286 106,-286 106,-262 179,-262 179,-286"/>
+<text text-anchor="middle" x="142.5" y="-271.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pack_result</text>
+</a>
+</g>
+</g>
+<!-- proc~newton&#45;&gt;proc~pack_result -->
+<g id="proc~~newton~~CallsGraph_edge5" class="edge">
+<title>proc~newton&#45;&gt;proc~pack_result</title>
+<path fill="none" stroke="#000000" d="M54.04,-289.41C66.36,-287.24 81.45,-284.58 95.6,-282.09"/>
+<polygon fill="#000000" stroke="#000000" points="96.45,-285.49 105.69,-280.31 95.24,-278.6 96.45,-285.49"/>
+</g>
+<!-- proc~print_header -->
+<g id="proc~~newton~~CallsGraph_node7" class="node">
+<title>proc~print_header</title>
+<g id="a_proc~~newton~~CallsGraph_node7"><a xlink:href="../proc/print_header.html" xlink:title="print_header">
+<polygon fill="#d9534f" stroke="#d9534f" points="183,-244 102,-244 102,-220 183,-220 183,-244"/>
+<text text-anchor="middle" x="142.5" y="-229.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">print_header</text>
+</a>
+</g>
+</g>
+<!-- proc~newton&#45;&gt;proc~print_header -->
+<g id="proc~~newton~~CallsGraph_edge6" class="edge">
+<title>proc~newton&#45;&gt;proc~print_header</title>
+<path fill="none" stroke="#000000" d="M44.29,-281.94C56.49,-273.23 73.79,-261.55 90,-253 93.13,-251.35 96.41,-249.74 99.75,-248.2"/>
+<polygon fill="#000000" stroke="#000000" points="101.45,-251.27 109.19,-244.04 98.62,-244.87 101.45,-251.27"/>
+</g>
+<!-- proc~print_summary -->
+<g id="proc~~newton~~CallsGraph_node8" class="node">
+<title>proc~print_summary</title>
+<g id="a_proc~~newton~~CallsGraph_node8"><a xlink:href="../proc/print_summary.html" xlink:title="print_summary">
+<polygon fill="#d9534f" stroke="#d9534f" points="189,-202 96,-202 96,-178 189,-178 189,-202"/>
+<text text-anchor="middle" x="142.5" y="-187.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">print_summary</text>
+</a>
+</g>
+</g>
+<!-- proc~newton&#45;&gt;proc~print_summary -->
+<g id="proc~~newton~~CallsGraph_edge7" class="edge">
+<title>proc~newton&#45;&gt;proc~print_summary</title>
+<path fill="none" stroke="#000000" d="M34.22,-281.93C43.92,-264.16 64.25,-230.91 90,-211 91.8,-209.61 93.7,-208.29 95.68,-207.06"/>
+<polygon fill="#000000" stroke="#000000" points="97.61,-209.99 104.68,-202.11 94.23,-203.86 97.61,-209.99"/>
+</g>
+<!-- proc~solve_lm -->
+<g id="proc~~newton~~CallsGraph_node9" class="node">
+<title>proc~solve_lm</title>
+<g id="a_proc~~newton~~CallsGraph_node9"><a xlink:href="../proc/solve_lm.html" xlink:title="solve_lm">
+<polygon fill="#d9534f" stroke="#d9534f" points="172,-129 113,-129 113,-105 172,-105 172,-129"/>
+<text text-anchor="middle" x="142.5" y="-114.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_lm</text>
+</a>
+</g>
+</g>
+<!-- proc~newton&#45;&gt;proc~solve_lm -->
+<g id="proc~~newton~~CallsGraph_edge8" class="edge">
+<title>proc~newton&#45;&gt;proc~solve_lm</title>
+<path fill="none" stroke="#000000" d="M32.48,-281.93C41.38,-258.77 62.82,-207.04 90,-169 98.51,-157.09 109.79,-145.37 119.62,-136.08"/>
+<polygon fill="#000000" stroke="#000000" points="122.12,-138.54 127.12,-129.19 117.39,-133.38 122.12,-138.54"/>
+</g>
+<!-- proc~armijo_backtrack&#45;&gt;proc~has_nan_inf -->
+<g id="proc~~newton~~CallsGraph_edge9" class="edge">
+<title>proc~armijo_backtrack&#45;&gt;proc~has_nan_inf</title>
+<path fill="none" stroke="#000000" d="M195.26,-403.16C209.99,-405.2 225.95,-407.41 240.42,-409.41"/>
+<polygon fill="#000000" stroke="#000000" points="240.26,-412.93 250.65,-410.83 241.22,-405.99 240.26,-412.93"/>
+</g>
+<!-- proc~armijo_backtrack&#45;&gt;proc~norm_inf -->
+<g id="proc~~newton~~CallsGraph_edge10" class="edge">
+<title>proc~armijo_backtrack&#45;&gt;proc~norm_inf</title>
+<path fill="none" stroke="#000000" d="M177.01,-383.94C198.51,-376.2 226.5,-366.13 249,-358.04"/>
+<polygon fill="#000000" stroke="#000000" points="250.36,-361.27 258.58,-354.59 247.99,-354.68 250.36,-361.27"/>
+</g>
+<!-- proc~newton_status_msg -->
+<g id="proc~~newton~~CallsGraph_node15" class="node">
+<title>proc~newton_status_msg</title>
+<g id="a_proc~~newton~~CallsGraph_node15"><a xlink:href="../proc/newton_status_msg.html" xlink:title="newton_status_msg">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="347,-234 231,-234 231,-210 347,-210 347,-234"/>
+<text text-anchor="middle" x="289" y="-219.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_status_msg</text>
+</a>
+</g>
+</g>
+<!-- proc~print_summary&#45;&gt;proc~newton_status_msg -->
+<g id="proc~~newton~~CallsGraph_edge11" class="edge">
+<title>proc~print_summary&#45;&gt;proc~newton_status_msg</title>
+<path fill="none" stroke="#000000" d="M189.22,-200.12C200.16,-202.55 212.03,-205.18 223.64,-207.75"/>
+<polygon fill="#000000" stroke="#000000" points="223.21,-211.24 233.73,-209.98 224.72,-204.4 223.21,-211.24"/>
+</g>
+<!-- dgecon -->
+<g id="proc~~newton~~CallsGraph_node10" class="node">
+<title>dgecon</title>
+<polygon fill="#777777" stroke="#777777" points="316,-192 262,-192 262,-168 316,-168 316,-192"/>
+<text text-anchor="middle" x="289" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgecon</text>
+</g>
+<!-- proc~solve_lm&#45;&gt;dgecon -->
+<g id="proc~~newton~~CallsGraph_edge12" class="edge">
+<title>proc~solve_lm&#45;&gt;dgecon</title>
+<path fill="none" stroke="#000000" d="M166.99,-129.02C184.45,-137.77 208.96,-149.68 231,-159 237.88,-161.91 245.31,-164.82 252.47,-167.5"/>
+<polygon fill="#000000" stroke="#000000" points="251.38,-170.83 261.98,-171 253.8,-164.26 251.38,-170.83"/>
+</g>
+<!-- dgetrf -->
+<g id="proc~~newton~~CallsGraph_node11" class="node">
+<title>dgetrf</title>
+<polygon fill="#777777" stroke="#777777" points="316,-150 262,-150 262,-126 316,-126 316,-150"/>
+<text text-anchor="middle" x="289" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgetrf</text>
+</g>
+<!-- proc~solve_lm&#45;&gt;dgetrf -->
+<g id="proc~~newton~~CallsGraph_edge13" class="edge">
+<title>proc~solve_lm&#45;&gt;dgetrf</title>
+<path fill="none" stroke="#000000" d="M172.05,-121.15C194.93,-124.47 227.19,-129.16 251.87,-132.75"/>
+<polygon fill="#000000" stroke="#000000" points="251.54,-136.24 261.94,-134.21 252.55,-129.31 251.54,-136.24"/>
+</g>
+<!-- dgetrs -->
+<g id="proc~~newton~~CallsGraph_node12" class="node">
+<title>dgetrs</title>
+<polygon fill="#777777" stroke="#777777" points="316,-108 262,-108 262,-84 316,-84 316,-108"/>
+<text text-anchor="middle" x="289" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgetrs</text>
+</g>
+<!-- proc~solve_lm&#45;&gt;dgetrs -->
+<g id="proc~~newton~~CallsGraph_edge14" class="edge">
+<title>proc~solve_lm&#45;&gt;dgetrs</title>
+<path fill="none" stroke="#000000" d="M172.05,-112.85C194.93,-109.53 227.19,-104.84 251.87,-101.25"/>
+<polygon fill="#000000" stroke="#000000" points="252.55,-104.69 261.94,-99.79 251.54,-97.76 252.55,-104.69"/>
+</g>
+<!-- proc~add_diagonal -->
+<g id="proc~~newton~~CallsGraph_node13" class="node">
+<title>proc~add_diagonal</title>
+<g id="a_proc~~newton~~CallsGraph_node13"><a xlink:href="../proc/add_diagonal.html" xlink:title="add_diagonal">
+<polygon fill="#d9534f" stroke="#d9534f" points="331.5,-66 246.5,-66 246.5,-42 331.5,-42 331.5,-66"/>
+<text text-anchor="middle" x="289" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">add_diagonal</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_lm&#45;&gt;proc~add_diagonal -->
+<g id="proc~~newton~~CallsGraph_edge15" class="edge">
+<title>proc~solve_lm&#45;&gt;proc~add_diagonal</title>
+<path fill="none" stroke="#000000" d="M166.99,-104.98C184.45,-96.23 208.96,-84.32 231,-75 235.21,-73.22 239.63,-71.44 244.07,-69.71"/>
+<polygon fill="#000000" stroke="#000000" points="245.64,-72.86 253.73,-66.03 243.14,-66.32 245.64,-72.86"/>
+</g>
+<!-- proc~mat1norm -->
+<g id="proc~~newton~~CallsGraph_node14" class="node">
+<title>proc~mat1norm</title>
+<g id="a_proc~~newton~~CallsGraph_node14"><a xlink:href="../proc/mat1norm.html" xlink:title="mat1norm">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="323.5,-24 254.5,-24 254.5,0 323.5,0 323.5,-24"/>
+<text text-anchor="middle" x="289" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">mat1norm</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_lm&#45;&gt;proc~mat1norm -->
+<g id="proc~~newton~~CallsGraph_edge16" class="edge">
+<title>proc~solve_lm&#45;&gt;proc~mat1norm</title>
+<path fill="none" stroke="#000000" d="M153.31,-104.8C168.33,-86.83 198.69,-53.21 231,-33 235.36,-30.27 240.12,-27.82 244.98,-25.64"/>
+<polygon fill="#000000" stroke="#000000" points="246.45,-28.83 254.36,-21.78 243.78,-22.35 246.45,-28.83"/>
 </g>
 </g>
 </svg>
@@ -321,169 +510,6 @@
             <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
           </div>
           <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-<p>Nodes of different colours represent the following: </p>
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: Graph Key Pages: 1 -->
-<svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
-<title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
-<!-- Subroutine -->
-<g id="node1" class="node">
-<title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
-</g>
-<!-- Function -->
-<g id="node2" class="node">
-<title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
-</g>
-<!-- Interface -->
-<g id="node3" class="node">
-<title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
-</g>
-<!-- Type Bound Procedure -->
-<g id="node4" class="node">
-<title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
-</g>
-<!-- Unknown Procedure Type -->
-<g id="node5" class="node">
-<title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
-</g>
-<!-- Program -->
-<g id="node6" class="node">
-<title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
-</g>
-<!-- This Page&#39;s Entity -->
-<g id="node7" class="node">
-<title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
-</g>
-</g>
-</svg>
-
-<p>Solid arrows point from a procedure to one which it calls. Dashed 
-arrows point from an interface to procedures which implement that interface.
-This could include the module procedures in a generic interface or the
-implementation in a submodule of an interface in a parent module.
-</p>
- </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-  <h3 class="card-title">Called by</h3>
-      </div>
-      <div class="card-body">
-  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
- -->
-<!-- Title: proc~~newton~~CalledByGraph Pages: 1 -->
-<svg id="procnewtonCalledByGraph" width="340pt" height="95pt"
- viewBox="0.00 0.00 340.00 95.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~newton~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 91)">
-<title>proc~~newton~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-91 336,-91 336,4 -4,4"/>
-<!-- proc~newton -->
-<g id="proc~~newton~~CalledByGraph_node1" class="node">
-<title>proc~newton</title>
-<polygon fill="none" stroke="black" points="332,-66 278,-66 278,-42 332,-42 332,-66"/>
-<text text-anchor="middle" x="305" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">newton</text>
-</g>
-<!-- proc~homotopy -->
-<g id="proc~~newton~~CalledByGraph_node2" class="node">
-<title>proc~homotopy</title>
-<g id="a_proc~~newton~~CalledByGraph_node2"><a xlink:href="../proc/homotopy.html" xlink:title="homotopy">
-<polygon fill="#d9534f" stroke="#d9534f" points="242,-87 175,-87 175,-63 242,-63 242,-87"/>
-<text text-anchor="middle" x="208.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">homotopy</text>
-</a>
-</g>
-</g>
-<!-- proc~homotopy&#45;&gt;proc~newton -->
-<g id="proc~~newton~~CalledByGraph_edge1" class="edge">
-<title>proc~homotopy&#45;&gt;proc~newton</title>
-<path fill="none" stroke="#000000" d="M242.02,-67.77C250.46,-65.9 259.6,-63.87 268.2,-61.95"/>
-<polygon fill="#000000" stroke="#000000" points="268.98,-65.37 277.98,-59.78 267.46,-58.54 268.98,-65.37"/>
-</g>
-<!-- proc~solve_tp -->
-<g id="proc~~newton~~CalledByGraph_node3" class="node">
-<title>proc~solve_tp</title>
-<g id="a_proc~~newton~~CalledByGraph_node3"><a xlink:href="../proc/solve_tp.html" xlink:title="solve_TP">
-<polygon fill="#d9534f" stroke="#d9534f" points="237.5,-45 179.5,-45 179.5,-21 237.5,-21 237.5,-45"/>
-<text text-anchor="middle" x="208.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_TP</text>
-</a>
-</g>
-</g>
-<!-- proc~solve_tp&#45;&gt;proc~newton -->
-<g id="proc~~newton~~CalledByGraph_edge2" class="edge">
-<title>proc~solve_tp&#45;&gt;proc~newton</title>
-<path fill="none" stroke="#000000" d="M237.6,-39.24C247.05,-41.34 257.73,-43.72 267.71,-45.94"/>
-<polygon fill="#000000" stroke="#000000" points="267.27,-49.42 277.79,-48.18 268.79,-42.59 267.27,-49.42"/>
-</g>
-<!-- proc~saturation_pressure -->
-<g id="proc~~newton~~CalledByGraph_node4" class="node">
-<title>proc~saturation_pressure</title>
-<g id="a_proc~~newton~~CalledByGraph_node4"><a xlink:href="../proc/saturation_pressure.html" xlink:title="saturation_pressure">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="128,-66 11,-66 11,-42 128,-42 128,-66"/>
-<text text-anchor="middle" x="69.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">saturation_pressure</text>
-</a>
-</g>
-</g>
-<!-- proc~saturation_pressure&#45;&gt;proc~solve_tp -->
-<g id="proc~~newton~~CalledByGraph_edge3" class="edge">
-<title>proc~saturation_pressure&#45;&gt;proc~solve_tp</title>
-<path fill="none" stroke="#000000" d="M128.2,-45.15C142.03,-43.04 156.46,-40.82 169.16,-38.88"/>
-<polygon fill="#000000" stroke="#000000" points="170.01,-42.29 179.37,-37.31 168.95,-35.37 170.01,-42.29"/>
-</g>
-<!-- proc~saturation_temperature -->
-<g id="proc~~newton~~CalledByGraph_node5" class="node">
-<title>proc~saturation_temperature</title>
-<g id="a_proc~~newton~~CalledByGraph_node5"><a xlink:href="../proc/saturation_temperature.html" xlink:title="saturation_temperature">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="139,-24 0,-24 0,0 139,0 139,-24"/>
-<text text-anchor="middle" x="69.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">saturation_temperature</text>
-</a>
-</g>
-</g>
-<!-- proc~saturation_temperature&#45;&gt;proc~solve_tp -->
-<g id="proc~~newton~~CalledByGraph_edge4" class="edge">
-<title>proc~saturation_temperature&#45;&gt;proc~solve_tp</title>
-<path fill="none" stroke="#000000" d="M139.4,-22.56C149.66,-24.13 159.92,-25.71 169.23,-27.13"/>
-<polygon fill="#000000" stroke="#000000" points="168.89,-30.62 179.31,-28.68 169.95,-23.7 168.89,-30.62"/>
-</g>
-</g>
-</svg>
-</div>          <div>
-            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
-          </div>
-          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -576,15 +602,15 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~45"></span>
+              <span class="anchor" id="variable-f~9"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private,</td>
             <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>F</strong>(size(X))</td>
+            <td><strong>F</strong>(:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -593,15 +619,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f2~4"></span>
+              <span class="anchor" id="variable-f_new"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private,</td>
             <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>F2</strong>(size(X))</td>
+            <td><strong>F_new</strong>(:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -610,15 +636,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~5"></span>
+              <span class="anchor" id="variable-j~2"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private,</td>
             <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>J</strong>(size(X),size(X))</td>
+            <td><strong>J</strong>(:,:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -627,15 +653,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j2"></span>
+              <span class="anchor" id="variable-j_new"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private,</td>
             <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>J2</strong>(size(X),size(X))</td>
+            <td><strong>J_new</strong>(:,:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -644,15 +670,15 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~20"></span>
+              <span class="anchor" id="variable-x_old"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private,</td>
             <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>dX</strong>(size(X))</td>
+            <td><strong>X_old</strong>(:)</td>
                 <td></td>
                 <td></td>
             <td>
@@ -661,10 +687,316 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~40"></span>
+              <span class="anchor" id="variable-cond_est~2"></span>
               real(kind=pr),
             </td>
-              <td>public</td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cond_est</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-converged"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>converged</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx~5"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dX</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx_norm~2"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dx_norm</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dx_norm_prev"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dx_norm_prev</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f_norm~2"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f_norm</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f_norm_new"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f_norm_new</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hist_buf"></span>
+              real(kind=pr),
+            </td>
+              <td>private,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>hist_buf</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-its~5"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>its</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jscale"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>jscale</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lambda~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lambda</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ls_failed"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ls_failed</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~33"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-res~3"></span>
+              type(<a href='../type/newton_result.html'>newton_result</a>),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>res</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~2"></span>
+              type(<a href='../type/newton_settings.html'>newton_settings</a>),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>s</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-small_step"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>small_step</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stag_count"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stag_count</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-stagnated"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>stagnated</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~15"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
             <td>
               
             </td>
@@ -709,7 +1041,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-07-30 19:16 +0000             </p>
+ on 2026-08-06 13:57 +0000             </p>
           </div>
         </div>
         <br>

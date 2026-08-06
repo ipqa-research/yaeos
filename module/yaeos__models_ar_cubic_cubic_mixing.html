@@ -1,0 +1,1938 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
+    <meta name="author" content="Federico Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>yaeos__models_ar_cubic_cubic_mixing &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>yaeos__models_ar_cubic_cubic_mixing
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.9% of total for modules and submodules.">142 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/cubic_mixing.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/cubic_mixing.f90.html'>cubic_mixing.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">yaeos__models_ar_cubic_cubic_mixing</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#absints-0"
+         aria-expanded="false" aria-controls="absints-0">
+         <h4 class="card-header bg-primary text-white">Abstract Interfaces</h4>
+      </a>
+      <div id="absints-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#interface-get_aijk">get_aijk</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#type-cmr">CMR</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#type-cmrtd">CMRTD</a>
+        </div>
+      </div>
+    </div>
+
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#proc-kijk_exp_tdep">kijk_exp_tdep</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#proc-bmix">Bmix</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#proc-dmix">Dmix</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#proc-rkpr_d1mix">RKPR_D1mix</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_cubic_cubic_mixing.html#proc-kijk_constant">kijk_constant</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <p>Cubic Mixing Rules for Cubic EoS.</p>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='yaeos__substance.html'>yaeos__substance</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar_cubic_mixing_base.html'>yaeos__models_ar_cubic_mixing_base</a></li>
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph Pages: 1 -->
+<svg id="moduleyaeos__models_ar_cubic_cubic_mixingUsesGraph" width="641pt" height="92pt"
+ viewBox="0.00 0.00 641.00 92.02" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph" class="graph" transform="scale(0.5 0.5) rotate(0) translate(4 179.19)">
+<title>module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-179.19 1272,-179.19 1272,4 -4,4"/>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node1" class="node">
+<title>module~yaeos__models_ar_cubic_cubic_mixing</title>
+<polygon fill="none" stroke="black" points="1268,-54.42 1049,-54.42 1049,-30.42 1268,-30.42 1268,-54.42"/>
+<text text-anchor="middle" x="1158.5" y="-40.02" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_cubic_cubic_mixing</text>
+</g>
+<!-- module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node2" class="node">
+<title>module~yaeos__constants</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node2"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="236,-94.42 130,-94.42 130,-70.42 236,-70.42 236,-94.42"/>
+<text text-anchor="middle" x="183" y="-80.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge1" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M920,-162.42C770.12,-191.5 728.3,-163.86 577,-143.42 533.29,-137.52 524.11,-122.02 480,-122.42"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_base -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node3" class="node">
+<title>module~yaeos__models_ar_cubic_mixing_base</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node3"><a xlink:href="../module/yaeos__models_ar_cubic_mixing_base.html" xlink:title="yaeos__models_ar_cubic_mixing_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="793,-134.42 577,-134.42 577,-110.42 793,-110.42 793,-134.42"/>
+<text text-anchor="middle" x="685" y="-120.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_mixing_base</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_cubic_mixing_base -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge2" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_cubic_mixing_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1141.83,-54.43C1105.62,-81.21 1012.32,-144.9 922,-162.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M920,-162.42C886.92,-168.84 800.61,-150.74 742.58,-136.82"/>
+<polygon fill="#000000" stroke="#000000" points="743.35,-133.4 732.81,-134.45 741.7,-140.21 743.35,-133.4"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node4" class="node">
+<title>module~yaeos__models_ar_genericcubic</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node4"><a xlink:href="../module/yaeos__models_ar_genericcubic.html" xlink:title="yaeos__models_ar_genericcubic">
+<polygon fill="#337ab7" stroke="#337ab7" points="1013,-54.42 829,-54.42 829,-30.42 1013,-30.42 1013,-54.42"/>
+<text text-anchor="middle" x="921" y="-40.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_genericcubic</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_genericcubic -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge3" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__models_ar_genericcubic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1048.71,-42.42C1040.23,-42.42 1031.68,-42.42 1023.25,-42.42"/>
+<polygon fill="#000000" stroke="#000000" points="1023.04,-38.92 1013.04,-42.42 1023.04,-45.92 1023.04,-38.92"/>
+</g>
+<!-- module~yaeos__substance -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node5" class="node">
+<title>module~yaeos__substance</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node5"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
+<polygon fill="#337ab7" stroke="#337ab7" points="381,-54.42 272,-54.42 272,-30.42 381,-30.42 381,-54.42"/>
+<text text-anchor="middle" x="326.5" y="-40.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge4" class="edge">
+<title>module~yaeos__models_ar_cubic_cubic_mixing&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1083.4,-30.4C1060.84,-27.08 1035.95,-23.75 1013,-21.42 868.17,-6.72 831.45,-8.57 686,-2.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M684,-2.42C565.22,4.23 534.62,-3.56 417,-21.42 405.77,-23.13 393.87,-25.51 382.54,-28.06"/>
+<polygon fill="#000000" stroke="#000000" points="381.71,-24.65 372.76,-30.32 383.29,-31.47 381.71,-24.65"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node6" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node6"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="94,-94.42 0,-94.42 0,-70.42 94,-70.42 94,-94.42"/>
+<text text-anchor="middle" x="47" y="-80.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge5" class="edge">
+<title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-82.42C121.45,-82.42 112.77,-82.42 104.32,-82.42"/>
+<polygon fill="#000000" stroke="#000000" points="104.16,-78.92 94.16,-82.42 104.16,-85.92 104.16,-78.92"/>
+</g>
+<!-- module~yaeos__models_ar_cubic_mixing_base&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge6" class="edge">
+<title>module~yaeos__models_ar_cubic_mixing_base&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M576.76,-120.48C545.54,-120.44 511.4,-120.9 480,-122.42"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge7" class="edge">
+<title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M847.7,-54.48C762.92,-68.69 627.57,-91.6 577,-101.42 533.7,-109.83 524.11,-122.02 480,-122.42"/>
+</g>
+<!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge9" class="edge">
+<title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M871.09,-30.33C824.01,-19.58 750.65,-5.16 686,-2.42"/>
+</g>
+<!-- module~yaeos__models_ar -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node7" class="node">
+<title>module~yaeos__models_ar</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node7"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="740,-54.42 630,-54.42 630,-30.42 740,-30.42 740,-54.42"/>
+<text text-anchor="middle" x="685" y="-40.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__models_ar -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge8" class="edge">
+<title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M828.86,-42.42C802.58,-42.42 774.48,-42.42 750.21,-42.42"/>
+<polygon fill="#000000" stroke="#000000" points="750.06,-38.92 740.06,-42.42 750.06,-45.92 750.06,-38.92"/>
+</g>
+<!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge10" class="edge">
+<title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M283.05,-54.42C268.49,-58.54 252.02,-63.19 236.74,-67.51"/>
+<polygon fill="#000000" stroke="#000000" points="235.58,-64.2 226.91,-70.29 237.49,-70.94 235.58,-64.2"/>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge11" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M629.79,-52.61C612.6,-56.63 593.73,-61.87 577,-68.42 531.05,-86.41 529.28,-120.04 480,-122.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-122.42C395.44,-126.42 300.86,-109.69 241.78,-96.65"/>
+<polygon fill="#000000" stroke="#000000" points="242.41,-93.2 231.89,-94.42 240.88,-100.03 242.41,-93.2"/>
+</g>
+<!-- module~yaeos__models_base -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node8" class="node">
+<title>module~yaeos__models_base</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_node8"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="541,-54.42 417,-54.42 417,-30.42 541,-30.42 541,-54.42"/>
+<text text-anchor="middle" x="479" y="-40.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge12" class="edge">
+<title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M629.87,-42.42C605.8,-42.42 577.12,-42.42 551.34,-42.42"/>
+<polygon fill="#000000" stroke="#000000" points="551.24,-38.92 541.24,-42.42 551.24,-45.92 551.24,-38.92"/>
+</g>
+<!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsesGraph_edge13" class="edge">
+<title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M416.79,-42.42C408.45,-42.42 399.89,-42.42 391.51,-42.42"/>
+<polygon fill="#000000" stroke="#000000" points="391.41,-38.92 381.41,-42.42 391.41,-45.92 391.41,-38.92"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panmoduleyaeos__models_ar_cubic_cubic_mixingUsesGraph = svgPanZoom('#moduleyaeos__models_ar_cubic_cubic_mixingUsesGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+          <div class="card">
+      <h3 class="card-header card-title bg-light">Used by</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph Pages: 1 -->
+<svg id="moduleyaeos__models_ar_cubic_cubic_mixingUsedByGraph" width="508pt" height="116pt"
+ viewBox="0.00 0.00 508.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 504,-112 504,4 -4,4"/>
+<!-- module~yaeos__models_ar_cubic_cubic_mixing -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node1" class="node">
+<title>module~yaeos__models_ar_cubic_cubic_mixing</title>
+<polygon fill="none" stroke="black" points="219,-66 0,-66 0,-42 219,-42 219,-66"/>
+<text text-anchor="middle" x="109.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_cubic_cubic_mixing</text>
+</g>
+<!-- module~yaeos__models -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node2" class="node">
+<title>module~yaeos__models</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node2"><a xlink:href="../module/yaeos__models.html" xlink:title="yaeos__models">
+<polygon fill="#337ab7" stroke="#337ab7" points="349,-66 255,-66 255,-42 349,-42 349,-66"/>
+<text text-anchor="middle" x="302" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_cubic_mixing -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_edge1" class="edge">
+<title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_cubic_cubic_mixing</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M254.89,-54C246.88,-54 238.25,-54 229.31,-54"/>
+<polygon fill="#000000" stroke="#000000" points="229.12,-50.5 219.12,-54 229.12,-57.5 229.12,-50.5"/>
+</g>
+<!-- module~yaeos -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node3" class="node">
+<title>module~yaeos</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node3"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
+<polygon fill="#337ab7" stroke="#337ab7" points="469.5,-108 415.5,-108 415.5,-84 469.5,-84 469.5,-108"/>
+<text text-anchor="middle" x="442.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos&#45;&gt;module~yaeos__models -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_edge2" class="edge">
+<title>module~yaeos&#45;&gt;module~yaeos__models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M415.45,-88.1C397.79,-82.75 373.9,-75.5 352.68,-69.06"/>
+<polygon fill="#000000" stroke="#000000" points="353.42,-65.63 342.83,-66.08 351.39,-72.33 353.42,-65.63"/>
+</g>
+<!-- module~yaeos__extra_fluids -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node4" class="node">
+<title>module~yaeos__extra_fluids</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node4"><a xlink:href="../module/yaeos__extra_fluids.html" xlink:title="yaeos__extra_fluids">
+<polygon fill="#337ab7" stroke="#337ab7" points="500,-66 385,-66 385,-42 500,-42 500,-66"/>
+<text text-anchor="middle" x="442.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__extra_fluids</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__extra_fluids&#45;&gt;module~yaeos__models -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_edge3" class="edge">
+<title>module~yaeos__extra_fluids&#45;&gt;module~yaeos__models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M384.77,-54C376.38,-54 367.73,-54 359.35,-54"/>
+<polygon fill="#000000" stroke="#000000" points="359.29,-50.5 349.29,-54 359.29,-57.5 359.29,-50.5"/>
+</g>
+<!-- proc~co2_h2o_isop -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node5" class="node">
+<title>proc~co2_h2o_isop</title>
+<g id="a_module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_node5"><a xlink:href="../proc/co2_h2o_isop.html" xlink:title="co2_h2o_isop">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="485,-24 400,-24 400,0 485,0 485,-24"/>
+<text text-anchor="middle" x="442.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">co2_h2o_isop</text>
+</a>
+</g>
+</g>
+<!-- proc~co2_h2o_isop&#45;&gt;module~yaeos__models -->
+<g id="module~~yaeos__models_ar_cubic_cubic_mixing~~UsedByGraph_edge4" class="edge">
+<title>proc~co2_h2o_isop&#45;&gt;module~yaeos__models</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M401.81,-24.04C386.45,-28.69 368.71,-34.07 352.53,-38.98"/>
+<polygon fill="#000000" stroke="#000000" points="351.25,-35.71 342.69,-41.96 353.28,-42.41 351.25,-35.71"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsedByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsedByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="518pt" height="32pt"
+ viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
+<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
+<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
+<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
+<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
+<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      <br>
+
+
+
+
+
+        <section>
+          <h2>Abstract Interfaces</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-get_aijk"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    private  subroutine get_aijk(self, T, ai, daidt, daidt2, a, dadt, dadt2)  
+
+    </h3>
+  <p>Combining rule for the attractive parameter.</p>
+<p>From previously calculated attractive parameters calculate the
+<script type="math/tex">a_{ijk}</script> matrix and it&rsquo;s corresponding derivatives.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~48"></span>
+              class(<a href='../type/cmr.html'>CMR</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~62"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ai~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ai</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt2~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt2</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~33"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:,:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadt</strong>(:,:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt2~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadt2</strong>(:,:)</td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+      </li>
+    </ul>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-cmr"></span>
+      <h3>
+        type, public, extends(<a href='../type/cubicmixrule.html'>CubicMixRule</a>)&nbsp;::&nbsp;
+        <a href='../type/cmr.html'>CMR</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Cubic Mixing Rule (CMR) derived type. Classic Van der Waals mixing
+rules.</p><a href="../type/cmr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dn2~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dn2</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>Calculate second order derivatives</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-is_d_ddlc"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>is_D_ddlc</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>Mixing rule D parameter dependant on density</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~16"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>k</strong>(:,:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Attractive Binary Interatction parameter matrix</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~19"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>l</strong>(:,:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Repulsive Binary Interatction parameter matrix</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-bmix~7'>Bmix</a></strong></td>
+                  <td><p>Repulsive parameter mixing rule</p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-d1mix~2'>D1mix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/rkpr_d1mix.html'>RKPR_D1mix</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-dmix~6'>Dmix</a></strong></td>
+                  <td><p>Attractive parameter mixing rule</p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-aijk~2'>aijk</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/kijk_constant.html'>kijk_constant</a></td>
+                  <td><p>Default attractive parameter combining rule</p></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-cmrtd"></span>
+      <h3>
+        type, public, extends(<a href='../type/cmr.html'>CMR</a>)&nbsp;::&nbsp;
+        <a href='../type/cmrtd.html'>CMRTD</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tref"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Tref</strong>(:,:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dn2~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dn2</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>Calculate second order derivatives</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-is_d_ddlc"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>is_D_ddlc</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>Mixing rule D parameter dependant on density</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~16"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>k</strong>(:,:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Attractive Binary Interatction parameter matrix</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k0~2"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>k0</strong>(:,:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~19"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>l</strong>(:,:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Repulsive Binary Interatction parameter matrix</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-bmix~7'>Bmix</a></strong></td>
+                  <td><p>Repulsive parameter mixing rule</p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-d1mix~2'>D1mix</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/rkpr_d1mix.html'>RKPR_D1mix</a></td>
+                  <td></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmr.html#boundprocedure-dmix~6'>Dmix</a></strong></td>
+                  <td><p>Attractive parameter mixing rule</p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='../type/cmrtd.html#boundprocedure-aijk~3'>aijk</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/kijk_exp_tdep.html'>kijk_exp_tdep</a></td>
+                  <td></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-kijk_exp_tdep"></span> <h3>public  subroutine <a href='../proc/kijk_exp_tdep.html'>kijk_exp_tdep</a>(self, T, ai, daidt, daidt2, a, dadt, dadt2)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Combining rule that uses <script type="math/tex">k_{ijk}</script> as a function of temperature.</p><a href="../proc/kijk_exp_tdep.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~53"></span>
+              class(<a href='../type/cmrtd.html'>CMRTD</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~65"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ai~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ai</strong>(:)</td>
+            <td>
+<p>Pure components attractive parameters (\a_i)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{da_i}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt2~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt2</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2a_i}{dT^2}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~36"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:,:,:)</td>
+            <td>
+<p>
+<script type="math/tex">a_{ijk}</script> Matrix</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadt</strong>(:,:,:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{da_{ijk}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt2~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadt2</strong>(:,:,:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2a_{ijk}{dT^2}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-bmix"></span> <h3>private  subroutine <a href='../proc/bmix.html'>Bmix</a>(self, n, bi, B, dBi, dBij)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Mixture repulsive parameter.</p><a href="../proc/bmix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~50"></span>
+              class(<a href='../type/cmr.html'>CMR</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+<p>Mixing rule object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~67"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bi~14"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bi</strong>(:)</td>
+            <td>
+<p>Pure components repulsive parameters.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>B</strong></td>
+            <td>
+<p>Mixture repulsive parameter.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbi~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBi</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dB}{dn_i}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dbij~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dBij</strong>(:,:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2B}{dn_{ij}}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-dmix"></span> <h3>private  subroutine <a href='../proc/dmix.html'>Dmix</a>(self, n, V, T, ai, daidt, daidt2, D, dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Attractive parameter mixing rule with quadratic mix.</p><a href="../proc/dmix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~49"></span>
+              class(<a href='../type/cmr.html'>CMR</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+<p>Mixing rule object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~66"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+<p>Moles vector [mol]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~21"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong></td>
+            <td>
+<p>Volume [L] (unused)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~63"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ai~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ai</strong>(:)</td>
+            <td>
+<p>Pure components attractive parameters <script type="math/tex">a_i</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{da_i}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt2~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt2</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2a_i}{dT^2}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D</strong></td>
+            <td>
+<p>Mixture attractive parameter <script type="math/tex">n^2a_{mix}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddv~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dD}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddt~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdT</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{dD}{dV}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddv2~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdV2</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2D}{dV^2}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddt2~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdT2</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2D}{dT^2}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddi~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDi</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{dD}{dn_i}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dddtv~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDdTV</strong></td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2D}{dTV</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddidv~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDidV</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2D}{dVn_i}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddidt~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDidT</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2D}{dTn_i}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ddij~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dDij</strong>(:,:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2D}{dn_{ij}}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-rkpr_d1mix"></span> <h3>private  subroutine <a href='../proc/rkpr_d1mix.html'>RKPR_D1mix</a>(self, n, d1i, D1, dD1i, dD1ij)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>RKPR <script type="math/tex">\delta_1</script> parameter mixing rule.</p><a href="../proc/rkpr_d1mix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~51"></span>
+              class(<a href='../type/cmr.html'>CMR</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~68"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1i~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>d1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d1~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>D1</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1i~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1i</strong>(:)</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dd1ij~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dD1ij</strong>(:,:)</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-kijk_constant"></span> <h3>private  subroutine <a href='../proc/kijk_constant.html'>kijk_constant</a>(self, T, ai, daidt, daidt2, a, dadt, dadt2)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Combining rule that uses constant <script type="math/tex">k_{ijk}</script> values.</p><a href="../proc/kijk_constant.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-self~52"></span>
+              class(<a href='../type/cmr.html'>CMR</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>self</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~64"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ai~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ai</strong>(:)</td>
+            <td>
+<p>Pure components attractive parameters (\a_i)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{da_i}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daidt2~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daidt2</strong>(:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2a_i}{dT^2}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~35"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:,:,:)</td>
+            <td>
+<p>
+<script type="math/tex">a_{ijk}</script> Matrix</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadt</strong>(:,:,:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{da_{ijk}{dT}</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt2~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadt2</strong>(:,:,:)</td>
+            <td>
+<p>
+<script type="math/tex">\frac{d^2a_{ijk}{dT^2}</script>
+</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-08-06 13:57 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

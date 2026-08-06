@@ -1373,9 +1373,6 @@ contains
       !! \(\frac{dG^E}}{dn}\)
 
       real(pr) :: lngamma(size(n)), dlngammadP(size(n)), dlngammadT(size(n))
-      real(pr) :: dlngammadn(size(n),size(n))
-
-      integer :: j
 
       logical :: dp, dt, dn, present_derivs
 
@@ -1392,19 +1389,14 @@ contains
          call eos%ln_activity_coefficient(&
             n=n, P=P, T=T, root_type=root_type, &
             lngamma=lngamma, dlngammadP=dlngammadP, &
-            dlngammadT=dlngammadT, dlngammadn=dlngammadn &
+            dlngammadT=dlngammadT &
             )
       end if
 
       if (present(Ge)) Ge = R * T * sum(n * lngamma)
       if (present(GeP)) GeP = R * T * sum(n * dlngammadP)
       if (present(GeT)) GeT = R * sum(n * lngamma) + R * T * sum(n * dlngammadT)
-
-      if (present(Gen)) then
-         do j=1, size(n)
-            Gen(j) = R * T * sum(n * dlngammadn(:,j)) + R * T * lngamma(j)
-         end do
-      end if
+      if (present(Gen)) Gen = R * T * lngamma
    end subroutine gibbs_excess
 
    subroutine enthalpy_excess(eos, n, P, T, root_type, He)
