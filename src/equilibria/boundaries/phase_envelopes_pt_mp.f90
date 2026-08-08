@@ -333,7 +333,7 @@ contains
             P > max_P&
             .or. P < 1e-5_pr &
             .or. abs(dS) <= 1e-14 &
-            .or. (T < 100._pr .and. P < 1e-5_pr) &
+            .or. (T < 200._pr .and. dXdS(iT)*dS < 0) &
             ) exit continuation
 
          if (.not. anb) then
