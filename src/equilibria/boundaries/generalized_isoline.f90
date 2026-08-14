@@ -17,7 +17,7 @@ module yaeos__equilibria_boundaries_generalized_isopleths
       real(pr), allocatable :: w_more_stable(:)
    end type GeneralizedIsoZLine
 
-   real(pr), parameter :: minT = 150
+   real(pr), parameter :: minT = 100
    !! Mininimum temperature to make calculations
 
 contains
