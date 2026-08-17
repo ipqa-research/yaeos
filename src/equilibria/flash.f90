@@ -13,6 +13,7 @@ module yaeos__equilibria_flash
    private
 
    public :: flash
+   public :: flash_no_beta_limits
 
 contains
 
