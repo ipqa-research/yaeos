@@ -9,7 +9,7 @@ module yaeos__equilibria
       EquilibriumState, MPEquilibriumState
 
    ! Phase split calculations
-   use yaeos__equilibria_flash, only: flash
+   use yaeos__equilibria_flash, only: flash, flash_no_beta_limits
 
    use yaeos__equilibria_multiphase_flash, only: &
       solve_mp_flash_point, pt_mp_flash, MPEquilibriumState
