@@ -1566,7 +1566,7 @@ contains
    ! ==========================================================================
    ! Other methods
    ! --------------------------------------------------------------------------
-   real(pr) function Psat_pure(eos, ncomp, T)
+   real(pr) function Psat_pure(eos, ncomp, T, converged)
       !! Calculation of saturation pressure of a pure component using the
       !! secant method.
       class(ArModel), intent(in) :: eos !! Model that will be used
@@ -1574,6 +1574,8 @@ contains
       !! Number of component in the mixture from which the saturation pressure
       !! will be calculated
       real(pr), intent(in) :: T !! Temperature [K]
+      logical, optional, intent(out) :: converged
+      !! The calculation converged
 
       real(pr) :: n(size(eos))
       real(pr) :: F(3), X(3), dF(3, 3), Vl, Vv, P, Pc, S, dFdS(3)
@@ -1592,6 +1594,9 @@ contains
       F = 10
       call solve_point_psat(eos, ncomp, size(n), X, ns, S, F, dF, dFdS, its)
       Vl = exp(X(1))
+
+      if (present(converged)) converged = .not. any(isnan(F))
+
       call eos%pressure(n, Vl, T, Psat_pure)
    end function Psat_pure
 
