@@ -58,7 +58,10 @@ contains
    ! ========================================================================
    ! INITIAL ESTIMATE of critical point
    ! ========================================================================
-   subroutine estimate_critical_point(model, i, nc, V_est, T_est)
+   subroutine estimate_critical_point(&
+         model, i, nc, V_est, T_est &
+      )
+      use yaeos__equilibria_boundaries_pure_saturation, only:pure_saturation_line, PurePsat
       class(ArModel), intent(in) :: model
       integer, intent(in) :: i
       integer, intent(in) :: nc
@@ -69,17 +72,19 @@ contains
       logical :: psat_converged
       integer :: iter
 
+      type(PurePsat) :: psat
+
       z = 0.0_pr
       z(i) = 1.0_pr
 
       ! Initial temperature heuristic scan
-      T = 50.0_pr
+      T = 150.0_pr
       V_est = 0.15_pr
       T_est = T
 
       do iter = 1, 20
          P_sat = model%Psat_pure(i, T, Vl=VL, Vv=Vv, converged=psat_converged)
-         if (VL > 0.0_pr .and. VV > VL) then
+         if (abs(Vv - Vl) > 1e-3) then
             ratio = VV / VL
             ! Cailletet-Mathias mean rectilinear volume estimate
             V_est = (2.0_pr * VL * VV) / (VL + VV)

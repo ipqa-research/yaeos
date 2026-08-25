@@ -1582,12 +1582,22 @@ contains
       real(pr) :: F(3), X(3), dF(3, 3), S, dFdS(3)
       integer, parameter :: ns=3
       integer :: its
+      real(pr) :: P
 
       n = 0
       n(ncomp) = 1
 
-      call eos%volume(n, 1e-3_pr, T, Vl, root_type="liquid")
-      call eos%volume(n, 1e-3_pr, T, Vv, root_type="vapor")
+      Vl = 1
+      Vv = 1
+      P = 1e-3
+      do while(abs((Vl - Vv)) < 1e-3 .and. P < 1000)
+         call eos%volume(n, P, T, Vl, root_type="liquid")
+         call eos%volume(n, P, T, Vv, root_type="vapor")
+         P = P * 1.5
+      end do
+
+      ! Vl = eos%get_v0(n, 1._pr, T) * 1.0001
+      ! Vv = 2
 
       X = [log(Vl), log(Vv), log(T)]
       S = log(T)

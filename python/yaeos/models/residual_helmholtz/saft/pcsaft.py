@@ -57,6 +57,27 @@ class PCSAFT(ArModel):
 
         self.id = yaeos_c.pcsaft(m, sigma, epsilon_k, kij)
 
+    def set_kij(self, i, j, kij):
+        """Set the kij value between component i and j.
+
+        Arguments
+        ---------
+        i: int
+            Component i. Counting from 0
+        j: int
+            Component j. Counting from 0
+        kij: float
+            kij value
+        """
+
+        nc = self.size
+        if (i < 0):
+            i = nc - i
+        if (j < 0):
+            j = nc - j
+
+        yaeos_c.pcsaft_set_kij(self.id, i+1, j+1)
+
     def size(self) -> int:
         """Return the number of components in the model."""
         return len(self.m)
