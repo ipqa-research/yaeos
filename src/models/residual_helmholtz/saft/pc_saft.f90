@@ -3398,6 +3398,7 @@ CONTAINS
 
    type(PCSAFT) function init_pcsaft(m, sigma, epsilon_k, kij) result(model)
       use yaeos__equilibria_critical, only: get_critical_constants
+      use yaeos__critical_pure_point_solver, only: find_critical_points_all_components
       real(8), intent(in) :: m(:)
       !! Number of segments
       real(8), intent(in) :: sigma(:)
@@ -3407,7 +3408,12 @@ CONTAINS
       real(8), intent(in), optional :: kij(:,:)
       !! Binary interaction parameters (optional)
 
-      integer :: nc
+      real(pr) :: Vc(size(m)), Pc(size(m)), Tc(size(m)), w(size(m))
+      logical :: converged(size(m))
+
+      real(pr) :: P_sat_i, Vl, Vv
+
+      integer :: i, nc
       nc = size(m)
 
       model%m = m
@@ -3424,7 +3430,15 @@ CONTAINS
       allocate(model%components%Tc(nc))
       allocate(model%components%Pc(nc))
       allocate(model%components%w(nc))
-      call get_critical_constants(model)
+      ! call get_critical_constants(model)
+
+      call find_critical_points_all_components(model, nc, Vc, Tc, Pc, converged)
+      model%components%Pc = Pc
+      model%components%Tc = Tc
+      do i=1,nc
+         P_sat_i = model%Psat_pure(i, 0.7*Tc(i), Vl=Vl, Vv=Vv)
+         model%components%w(i) = (-1 - log10(P_sat_i/Pc(i)))
+      end do
    end function init_pcsaft
    ! ---------------------------------------------------------
    ! Method get_v0: Volume lower limit (Covolume)
