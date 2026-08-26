@@ -18,6 +18,7 @@ KINDS = {
     "zP1": ["dewT"],
     "PT": ["PT", "liquid-liquid"],
     "CP": ["critical", "CP"],
+    "LLV": ["LLV"]
 }
 
 
