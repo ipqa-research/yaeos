@@ -72,9 +72,9 @@ class PCSAFT(ArModel):
 
         nc = self.size
         if (i < 0):
-            i = nc - i
+            i = nc + i
         if (j < 0):
-            j = nc - j
+            j = nc + j
 
         yaeos_c.pcsaft_set_kij(self.id, i+1, j+1)
 
