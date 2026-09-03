@@ -60,7 +60,7 @@ cc = meson.get_compiler('c')
 quadmath_dep = cc.find_library('quadmath', required: true)
 
 if not is_windows
-  # Flags needed after glibc 3.21. Only available from gcc 14.1
+  # Flags needed after glibc 2.41. Only available from gcc 14.1
   if fc_version.version_compare('>=14.1')
     message('Fortran compiler version is 14.1 or newer.')
   else
@@ -96,6 +96,11 @@ message(output)
 message('fpm build error:')
 err = fpm.stderr().strip()
 message(err)
+
+fpm_include = fpm_build_dir / 'include'
+if not fs.exists(fpm_include)
+  error('fpm include directory was not generated: ' + fpm_include)
+endif
 
 # f2py
 source_path = meson.global_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
