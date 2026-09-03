@@ -13,6 +13,9 @@ endif
 
 add_languages('fortran', native: false)
 
+fc = meson.get_compiler('fortran')
+fc_version = fc.version()
+
 meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
@@ -57,18 +60,15 @@ cc = meson.get_compiler('c')
 quadmath_dep = cc.find_library('quadmath', required: true)
 
 if not is_windows
-  glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
-  glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
-
-  message('glibc major version: ' + glibc_major)
-  message('glibc minor version: ' + glibc_minor)
-
-  glibc_version = glibc_major + '.' + glibc_minor
-
-  if glibc_version.version_compare('>=2.41')
-    fflags = fflags + ' -ftrampoline-impl=heap'
-    cflags = cflags + ' -ftrampoline-impl=heap'
+  # Flags needed after glibc 3.21. Only available from gcc 14.1
+  if fc_version.version_compare('>=14.1')
+    message('Fortran compiler version is 14.1 or newer.')
+  else
+    error('Fortran compiler version 14.1 or newer is required!')
   endif
+
+  fflags = fflags + ' -ftrampoline-impl=heap'
+  cflags = cflags + ' -ftrampoline-impl=heap'
 else
   fflags = fflags + ' -static'
   cflags = cflags + ' -static'
