@@ -70,13 +70,13 @@ class PCSAFT(ArModel):
             kij value
         """
 
-        nc = self.size
+        nc = self.size()
         if (i < 0):
             i = nc + i
         if (j < 0):
             j = nc + j
 
-        yaeos_c.pcsaft_set_kij(self.id, i+1, j+1)
+        yaeos_c.pcsaft_set_kij(self.id, i+1, j+1, kij)
 
     def size(self) -> int:
         """Return the number of components in the model."""
