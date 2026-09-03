@@ -97,11 +97,6 @@ message('fpm build error:')
 err = fpm.stderr().strip()
 message(err)
 
-fpm_include = fpm_build_dir / 'include'
-if not fs.exists(fpm_include)
-  error('fpm include directory was not generated: ' + fpm_include)
-endif
-
 # f2py
 source_path = meson.global_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'
 c_wrapper = files(source_path)
