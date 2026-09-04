@@ -69,25 +69,41 @@ if not is_windows
 
   fflags = fflags + ' -ftrampoline-impl=heap'
   cflags = cflags + ' -ftrampoline-impl=heap'
+  fpm = run_command(
+      'fpm',
+      'install',
+      '--profile',
+      'release',
+      '--verbose',
+      '--flag',
+      fflags,
+      '--c-flag',
+      cflags,
+      '--link-flag',
+      '-lgcc',
+      '--prefix',
+      fpm_build_dir,
+      check : false
+  )
 else
   fflags = fflags + ' -static'
   cflags = cflags + ' -static'
+  fpm = run_command(
+      'fpm',
+      'install',
+      '--profile',
+      'release',
+      '--verbose',
+      '--flag',
+      fflags,
+      '--c-flag',
+      cflags,
+      '--prefix',
+      fpm_build_dir,
+      check : false
+  )
 endif
 
-fpm = run_command(
-    'fpm',
-    'install',
-    '--profile',
-    'release',
-    '--verbose',
-    '--flag',
-    fflags,
-    '--c-flag',
-    cflags,
-    '--prefix',
-    fpm_build_dir,
-    check : false
-)
 
 # Error printing
 message('fpm build output:')
