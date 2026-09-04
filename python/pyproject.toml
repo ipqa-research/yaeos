@@ -40,14 +40,9 @@ manylinux-x86_64-image = "manylinux_2_28"
 # before-all = "dnf update -y && dnf install -y lapack-devel blas-devel gcc-gfortran"
 before-all = """
 dnf install -y epel-release && \\
-dnf install -y lapack-devel blas-devel gcc-toolset-15-gcc-gfortran
+dnf install -y lapack-devel blas-devel gcc-toolset-15-gcc-gfortran \\
+source /opt/rh/gcc-toolset-15/enable && echo 'source /opt/rh/gcc-toolset-15/enable' >> ~/.bashrc
 """
-
-[tool.cibuildwheel.linux.environment]
-# Habilitamos dinámicamente GCC 15 para el compilador de Fortran
-FC = "scl enable gcc-toolset-15 -- gfortran"
-F77 = "scl enable gcc-toolset-15 -- gfortran"
-
 
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"
