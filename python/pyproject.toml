@@ -32,21 +32,21 @@ markers = [
 [tool.cibuildwheel]
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 skip = ["*-manylinux_i686", "*-musllinux_*", "*-win32"]
-manylinux-x86_64-image = "quay.io/pypa/manylinux_2_35_x86_64:latest"
+manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
 # before-all = "yum -y install lapack-devel"
 # before-all = "apt-get update && apt-get install -y gfortran"
+# before-all = "dnf update -y && dnf install -y lapack-devel blas-devel gcc-gfortran"
 before-all = """
-apt-get update && \\
-apt-get install -y software-properties-common && \\
-add-apt-repository -y ppa:ubuntu-toolchain-r/test && \\
-apt-get update && \\
-apt-get install -y gfortran-16 liblapack-dev libblas-dev && \\
-update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-16 100
+dnf install -y epel-release && \\
+dnf install -y lapack-devel blas-devel gcc-toolset-15-gcc-gfortran
 """
-# before-all = "yum install -y lapack-devel gcc-toolset-16-gcc gcc-toolset-16-gcc-c++ gcc-toolset-16-gcc-gfortran"
-# environment = { FPM_FC="/opt/rh/gcc-toolset-16/root/usr/bin/gfortran", FC="/opt/rh/gcc-toolset-16/root/usr/bin/gfortran", CC="/opt/rh/gcc-toolset-16/root/usr/bin/gcc", CXX="/opt/rh/gcc-toolset-16/root/usr/bin/g++" }
+
+[tool.cibuildwheel.linux.environment]
+# Habilitamos dinámicamente GCC 15 para el compilador de Fortran
+FC = "scl enable gcc-toolset-15 -- gfortran"
+F77 = "scl enable gcc-toolset-15 -- gfortran"
 
 
 [tool.cibuildwheel.macos]
