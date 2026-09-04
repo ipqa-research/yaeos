@@ -49,8 +49,8 @@ incdir_f2py = run_command(py,
 #   fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
 # endif
 
-fflags = '-g -fPIC -O2'
-cflags = '-g -fPIC'
+fflags = '-g -fno-tree-vrp -fPIC -O2'
+cflags = '-g -fno-tree-vrp -fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
 ## GLIBC patches
