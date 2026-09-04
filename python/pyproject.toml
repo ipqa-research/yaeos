@@ -35,7 +35,15 @@ skip = ["*-manylinux_i686", "*-musllinux_*", "*-win32"]
 manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
-before-all = "yum -y install lapack-devel"
+# before-all = "yum -y install lapack-devel"
+before-all = "yum install -y lapack-devel gcc-toolset-16-gcc gcc-toolset-16-gcc-c++ gcc-toolset-16-gcc-gfortran"
+environment = { 
+    FPM_FC="/opt/rh/gcc-toolset-16/root/usr/bin/gfortran",
+    FC="/opt/rh/gcc-toolset-16/root/usr/bin/gfortran",
+    CC="/opt/rh/gcc-toolset-16/root/usr/bin/gcc",
+    CXX="/opt/rh/gcc-toolset-16/root/usr/bin/g++" 
+}
+
 
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"
