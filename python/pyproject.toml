@@ -14,7 +14,7 @@ name = "yaeos"
 description = "Thermodynamic modelling with Equations of State"
 readme = "README.md"
 dependencies = ["IPython", "numpy", "scipy", "pandas", "intersect", "matplotlib"]
-version = "4.5.3"
+version = "4.5.4"
 requires-python = ">=3.10"
 
 
@@ -32,9 +32,29 @@ markers = [
 [tool.cibuildwheel]
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 skip = ["*-manylinux_i686", "*-musllinux_*", "*-win32"]
+manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
-before-all = "yum -y install lapack-devel"
+# before-all = "yum -y install lapack-devel"
+# before-all = "apt-get update && apt-get install -y gfortran"
+# before-all = "dnf update -y && dnf install -y lapack-devel blas-devel gcc-gfortran"
+before-all = """
+dnf install -y epel-release && \\
+dnf install -y lapack-devel blas-devel gcc-toolset-15-gcc-gfortran && \\
+source /opt/rh/gcc-toolset-15/enable && echo 'source /opt/rh/gcc-toolset-15/enable' >> ~/.bashrc
+"""
+
+[tool.cibuildwheel.linux.environment]
+# These variables will strictly apply to the Linux container runs
+CC = "/opt/rh/gcc-toolset-15/root/usr/bin/gcc"
+CXX = "/opt/rh/gcc-toolset-15/root/usr/bin/g++"
+FPM_FC = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
+FC = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
+F77 = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
+
+PATH = "/opt/rh/gcc-toolset-15/root/usr/bin:$PATH"
+LD_LIBRARY_PATH = "/opt/rh/gcc-toolset-15/root/usr/lib64:/opt/rh/gcc-tools"
+LDFLAGS = "-lgcc"
 
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"

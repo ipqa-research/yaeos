@@ -1,412 +1,3433 @@
-module yaeos__models_ar_saft_pcsaft
-   !! PC-SAFT Implementation (Gross & Sadowski, 2001)
-   !! Approach: Hard Chain + Dispersion (Placeholder)
-
+MODULE YAEOS__MODELS_AR_SAFT_PCSAFT
+   USE YAEOS__TAPENADE_AR_API, ONLY: armodeltapenade
+   USE YAEOS__TAPENADE_INTERFACES
    use yaeos__constants, only: pr, R
-   use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
-   use hyperdual_mod
-
-   implicit none
-
-   private
-
-   public :: PcSaft, init_pcsaft
-
-   ! =========================================================================
+   IMPLICIT NONE
+   ! ---------------------------------------------------------------------------
    ! PC-SAFT UNIVERSAL CONSTANTS (Gross & Sadowski, 2001, Table A1)
-   ! =========================================================================
-   ! A_COEFFS(k, i): k = power of eta (0..6), i = type (0:m=1, 1:m=inf, 2:corr)
-   real(pr), dimension(0:2, 0:6) :: A_COEFFS = reshape([ &
-      0.9105631445, -0.3084016918, -0.0906148351, &
-      0.6361281449 , 0.1860531159 , 0.4527842806,  &
-      2.6861347891 , -2.5030047259, 0.5962700728, &
-      -26.547362491, 21.419793629 ,-1.7241829131,&
-      97.759208784 ,-65.255885330 ,-4.1302112531,&
-      -159.59154087, 83.318680481 ,13.776631870, &
-      91.297774084 ,-33.746922930 ,-8.6728470368 ], [3, 7])
+   ! ---------------------------------------------------------------------------
+   REAL(pr), DIMENSION(0:2, 0:6), SAVE :: a_coeffs = RESHAPE((/0.9105631445, &
+   &   -0.3084016918, -0.0906148351, 0.6361281449, 0.1860531159, &
+   &   0.4527842806, 2.6861347891, -2.5030047259, 0.5962700728, -&
+   &   26.547362491, 21.419793629, -1.7241829131, 97.759208784, -&
+   &   65.255885330, -4.1302112531, -159.59154087, 83.318680481, &
+   &   13.776631870, 91.297774084, -33.746922930, -8.6728470368/), (/3, 7/)&
+   &   )
+   REAL(pr), DIMENSION(0:2, 0:6), SAVE :: b_coeffs = RESHAPE((/0.7240946941, &
+   &   -0.5755498075, 0.0976883116, 2.2382791861, 0.6995095521, -&
+   &   0.2557574982, -4.0025849485, 3.8925673390, -9.1558561530, -&
+   &   21.003576815, -17.215471648, 20.642075974, 26.855641363, &
+   &   192.67226447, -38.804430052, 206.55133841, -161.82646165, &
+   &   93.626774077, -355.60235612, -165.20769346, -29.666905585/), (/3, 7&
+   &   /))
 
-   real(pr), dimension(0:2, 0:6) :: B_COEFFS = reshape([ &
-      0.7240946941, -0.5755498075, 0.0976883116, &
-      2.2382791861, 0.6995095521, -0.2557574982, &
-      -4.0025849485, 3.8925673390, -9.1558561530, &
-      -21.003576815, -17.215471648, 20.642075974, &
-      26.855641363, 192.67226447, -38.804430052, &
-      206.55133841, -161.82646165, 93.626774077, &
-      -355.60235612, -165.20769346, -29.666905585], [3, 7])
-
-
-   type, extends(ArModelAdiff) :: PcSaft
-      !! # `PcSaft`
-      !! PC-SAFT Equation of State Model
-      real(pr), allocatable :: m(:)         !! Number of segments
-      real(pr), allocatable :: sigma(:)     !! Segment diameter [Angstrom]
-      real(pr), allocatable :: epsilon_k(:) !! Energy / k_B [K]
-      real(pr), allocatable :: kij(:,:)     !! Binary interaction parameters (optional)
-      real(pr), allocatable :: eps_assoc(:) !! Association energy [K]
-      real(pr), allocatable :: kap_assoc(:) !! Association volume [A^3]
-      real(pr), allocatable :: n_sites(:)   !! Number of association sites
+   type, extends(ArModelTapenade) :: PCSAFT
+      REAL(pr), ALLOCATABLE :: m(:)           !! Number of segments
+      REAL(pr), ALLOCATABLE :: sigma(:)       !! Segment diameter [Angstrom]
+      REAL(pr), ALLOCATABLE :: epsilon_k(:)   !! Energy / k_B [K]
+      REAL(pr), ALLOCATABLE :: kij(:, :)      !! Binary interaction parameters (optional)
    contains
-      procedure :: Ar => Ar_impl
-      procedure :: get_v0 => get_v0_impl
-   end type PcSaft
-
+      procedure :: ar
+      procedure :: ar_d
+      procedure :: ar_b
+      procedure :: ar_d_b
+      procedure :: ar_d_d
+      procedure :: get_v0 => get_v0
+   end type PCSAFT
    ! Module private constants
-   real(pr), parameter :: PI = 3.14159265359_pr
-   real(pr), parameter :: N_AVO = 6.02214076e23_pr
+   REAL(pr), PARAMETER :: pi = 3.14159265359_pr
+   REAL(pr), PARAMETER :: n_avo = 6.02214076e23_pr
+   ! Conversion factor:
+   ! Zeta must be dimensionless. V comes in Liters. Sigma in Angstroms.
+   ! 1 L = 10^27 A^3. rho_num [1/A^3] = (n [mol] * N_AVO) / (V [L] * 10^27)
+   REAL(pr), PARAMETER :: units_factor = 0.000602214086_pr
 
-   ! Critical conversion factor:
-   ! Zeta must be dimensionless.
-   ! V comes in Liters. Sigma in Angstroms.
-   ! 1 L = 10^27 A^3.
-   ! rho_num [1/A^3] = (n [mol] * N_AVO) / (V [L] * 10^27)
-   ! Factor = 0.602214...
-   real(pr), parameter :: UNITS_FACTOR = 0.000602214086_pr
+CONTAINS
+   !  Differentiation of ar_d_d in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval arvaldd arvald arvald0
+   !   with respect to varying inputs: t v
+   !   RW status of diff variables: t:in v:in arval:out arvaldd:out
+   !                arvald:out arvald0:out
+   !  Differentiation of ar_d in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval arvald
+   !   with respect to varying inputs: t v
+   !   RW status of diff variables: t:in v:in arval:out arvald:out
+   !  Differentiation of ar in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval
+   !   with respect to varying inputs: n t v
+   !   RW status of diff variables: n:in t:in v:in arval:out
+   SUBROUTINE AR_D_D_D(model, n, nd, v, vd1, vd0, vd, t, td1, td0, td, &
+   &   arval, arvald1, arvald0, arvald0d, arvald, arvaldd0, arvaldd, &
+   &   arvalddd)
+      IMPLICIT NONE
+      class(PCSAFT), INTENT(IN) :: model
+      REAL(pr), INTENT(IN) :: n(:), v, t
+      REAL(pr), INTENT(IN) :: vd1, td1
+      REAL(pr), INTENT(IN) :: vd0, td0
+      REAL(pr), INTENT(IN) :: nd(:), vd, td
+      REAL(pr), INTENT(OUT) :: arval
+      REAL(pr), INTENT(OUT) :: arvald1
+      REAL(pr), INTENT(OUT) :: arvald0
+      REAL(pr), INTENT(OUT) :: arvald0d
+      REAL(pr), INTENT(OUT) :: arvald
+      REAL(pr), INTENT(OUT) :: arvaldd0
+      REAL(pr), INTENT(OUT) :: arvaldd
+      REAL(pr), INTENT(OUT) :: arvalddd
+      ! Auxiliars
+      INTEGER :: i, j, k
+      ! Mole fractions
+      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: xd(SIZE(n))
+      ! Total moles
+      REAL(pr) :: n_tot
+      REAL(pr) :: n_totd
+      ! Number of components
+      INTEGER :: nc
+      ! Average number of segments
+      REAL(pr) :: m_ave
+      REAL(pr) :: m_aved
+      ! Internal variables declarations
+      ! Diameter declarations
+      REAL(pr) :: d(SIZE(n))
+      REAL(pr) :: dd1(SIZE(n))
+      REAL(pr) :: dd0(SIZE(n))
+      REAL(pr) :: dd0d(SIZE(n))
+      REAL(pr) :: dd(SIZE(n))
+      REAL(pr) :: ddd0(SIZE(n))
+      REAL(pr) :: ddd(SIZE(n))
+      REAL(pr) :: dddd(SIZE(n))
+      ! Zetas declarations
+      REAL(pr) :: zetas(0:3)
+      REAL(pr) :: zetasd1(0:3)
+      REAL(pr) :: zetasd0(0:3)
+      REAL(pr) :: zetasd0d(0:3)
+      REAL(pr) :: zetasd(0:3)
+      REAL(pr) :: zetasdd0(0:3)
+      REAL(pr) :: zetasdd(0:3)
+      REAL(pr) :: zetasddd(0:3)
+      REAL(pr) :: rho
+      REAL(pr) :: rhod1
+      REAL(pr) :: rhod0
+      REAL(pr) :: rhod0d
+      REAL(pr) :: rhod
+      REAL(pr) :: rhodd0
+      REAL(pr) :: rhodd
+      REAL(pr) :: rhoddd
+      REAL(pr) :: eta
+      REAL(pr) :: etad1
+      REAL(pr) :: etad0
+      REAL(pr) :: etad0d
+      REAL(pr) :: etad
+      REAL(pr) :: etadd0
+      REAL(pr) :: etadd
+      REAL(pr) :: etaddd
+      ! Ar hard-sphere contribution declarations
+      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: term1_hsd1, term2_hsd1, term3_hsd1
+      REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0
+      REAL(pr) :: term1_hsd0d, term2_hsd0d, term3_hsd0d
+      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+      REAL(pr) :: term1_hsdd0, term2_hsdd0, term3_hsdd0
+      REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd
+      REAL(pr) :: term1_hsddd, term2_hsddd, term3_hsddd
+      REAL(pr) :: ar_hs
+      REAL(pr) :: ar_hsd1
+      REAL(pr) :: ar_hsd0
+      REAL(pr) :: ar_hsd0d
+      REAL(pr) :: ar_hsd
+      REAL(pr) :: ar_hsdd0
+      REAL(pr) :: ar_hsdd
+      REAL(pr) :: ar_hsddd
+      ! Ar chain contribution declarations
+      REAL(pr) :: g_ii
+      REAL(pr) :: g_iid1
+      REAL(pr) :: g_iid0
+      REAL(pr) :: g_iid0d
+      REAL(pr) :: g_iid
+      REAL(pr) :: g_iidd0
+      REAL(pr) :: g_iidd
+      REAL(pr) :: g_iiddd
+      REAL(pr) :: di_2
+      REAL(pr) :: di_2d1
+      REAL(pr) :: di_2d0
+      REAL(pr) :: di_2d0d
+      REAL(pr) :: di_2d
+      REAL(pr) :: di_2dd0
+      REAL(pr) :: di_2dd
+      REAL(pr) :: di_2ddd
+      REAL(pr) :: ar_chain
+      REAL(pr) :: ar_chaind1
+      REAL(pr) :: ar_chaind0
+      REAL(pr) :: ar_chaind0d
+      REAL(pr) :: ar_chaind
+      REAL(pr) :: ar_chaindd0
+      REAL(pr) :: ar_chaindd
+      REAL(pr) :: ar_chainddd
+      ! Ar dispersion contribution declarations
+      REAL(pr) :: rho_disp
+      REAL(pr) :: rho_dispd1
+      REAL(pr) :: rho_dispd0
+      REAL(pr) :: rho_dispd0d
+      REAL(pr) :: rho_dispd
+      REAL(pr) :: rho_dispdd0
+      REAL(pr) :: rho_dispdd
+      REAL(pr) :: rho_dispddd
+      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+      REAL(pr) :: m2_es3d1, m2_e2s3d1, i1d1, i2d1, c1d1
+      REAL(pr) :: m2_es3d0, m2_e2s3d0, i1d0, i2d0, c1d0
+      REAL(pr) :: m2_es3d0d, m2_e2s3d0d, i1d0d, i2d0d, c1d0d
+      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
+      REAL(pr) :: m2_es3dd0, m2_e2s3dd0, i1dd0, i2dd0, c1dd0
+      REAL(pr) :: m2_es3dd, m2_e2s3dd, i1dd, i2dd, c1dd
+      REAL(pr) :: m2_es3ddd, m2_e2s3ddd, i1ddd, i2ddd, c1ddd
+      REAL(pr) :: term_disp, a_k, b_k
+      REAL(pr) :: term_dispd, a_kd, b_kd
+      REAL(pr) :: a1_term_disp, a2_term_disp
+      REAL(pr) :: a1_term_dispd1, a2_term_dispd1
+      REAL(pr) :: a1_term_dispd0, a2_term_dispd0
+      REAL(pr) :: a1_term_dispd0d, a2_term_dispd0d
+      REAL(pr) :: a1_term_dispd, a2_term_dispd
+      REAL(pr) :: a1_term_dispdd0, a2_term_dispdd0
+      REAL(pr) :: a1_term_dispdd, a2_term_dispdd
+      REAL(pr) :: a1_term_dispddd, a2_term_dispddd
+      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: ar_dispersion
+      REAL(pr) :: ar_dispersiond1
+      REAL(pr) :: ar_dispersiond0
+      REAL(pr) :: ar_dispersiond0d
+      REAL(pr) :: ar_dispersiond
+      REAL(pr) :: ar_dispersiondd0
+      REAL(pr) :: ar_dispersiondd
+      REAL(pr) :: ar_dispersionddd
+      ! Attributes declarations as variables
+      REAL(pr) :: m(SIZE(n))
+      REAL(pr) :: sigma(SIZE(n))
+      REAL(pr) :: epsilon_k(SIZE(n))
+      REAL(pr) :: kij(SIZE(n), SIZE(n))
+      INTRINSIC SUM
+      INTRINSIC EXP
+      INTRINSIC LOG
+      INTRINSIC ALLOCATED
+      INTRINSIC SQRT
+      REAL(pr) :: arg1
+      REAL(pr) :: arg1d1
+      REAL(pr) :: arg1d0
+      REAL(pr) :: arg1d0d
+      REAL(pr) :: arg1d
+      REAL(pr) :: arg1dd0
+      REAL(pr) :: arg1dd
+      REAL(pr) :: arg1ddd
+      INTRINSIC SIZE
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d1
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d0
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d0d
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10dd0
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10dd
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10ddd
+      REAL(pr) :: result1
+      REAL(pr) :: temp
+      REAL(pr) :: tempd4
+      REAL(pr) :: tempd1
+      REAL(pr) :: tempd1d
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0d0
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0d
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0dd
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd
+      REAL(pr), DIMENSION(SIZE(n)) :: tempdd0
+      REAL(pr), DIMENSION(SIZE(n)) :: tempdd
+      REAL(pr), DIMENSION(SIZE(n)) :: tempddd
+      REAL(pr) :: temp1
+      REAL(pr) :: temp1d0
+      REAL(pr) :: temp1d
+      REAL(pr) :: temp1dd
+      REAL(pr) :: temp2
+      REAL(pr) :: temp2d0
+      REAL(pr) :: temp2d
+      REAL(pr) :: temp2dd
+      REAL(pr) :: tempd0
+      REAL(pr) :: tempd0d0
+      REAL(pr) :: tempd0d
+      REAL(pr) :: tempd0dd
 
-contains
+      REAL(pr) :: temp3
+      REAL(pr) :: temp3d
+      REAL(pr), DIMENSION(SIZE(n)) :: temp4
+      REAL(pr), DIMENSION(SIZE(n)) :: temp4d
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd2
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd2d
+      REAL(pr) :: temp5
+      REAL(pr) :: temp5d
+      REAL(pr) :: temp6
+      REAL(pr) :: temp6d
+      REAL(pr) :: temp7
+      REAL(pr) :: temp7d
+      REAL(pr) :: temp8
+      REAL(pr) :: temp8d
+      REAL(pr) :: temp9
+      REAL(pr) :: temp9d
+      REAL(pr) :: temp10
+      REAL(pr) :: temp10d
+      REAL(pr) :: tempd3
+      REAL(pr) :: tempd3d
+      REAL(pr) :: temp11
+      REAL(pr), DIMENSION(SIZE(n)) :: temp12
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd5
+      REAL(pr) :: temp13
+      REAL(pr) :: temp14
+      REAL(pr) :: temp15
+      REAL(pr) :: temp16
+      REAL(pr) :: temp17
+      REAL(pr) :: temp18
+      REAL(pr) :: temp19
+      REAL(pr) :: temp20
+      REAL(pr) :: tempd6
+      LOGICAL, DIMENSION(SIZE(n)) :: mask
+      LOGICAL, DIMENSION(SIZE(n)) :: mask0
+      LOGICAL, DIMENSION(SIZE(n)) :: mask1
+      LOGICAL, DIMENSION(SIZE(n)) :: mask2
+      LOGICAL, DIMENSION(SIZE(n)) :: mask3
+      LOGICAL, DIMENSION(SIZE(n)) :: mask4
+      LOGICAL, DIMENSION(SIZE(n)) :: mask5
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      ! Residual Helmholtz free energy calculation
+      ! Mole fractions
+      temp = SUM(n)
+      xd = (nd - n*SUM(nd)/temp)/temp
+      x = n/temp
+      ! Total moles
+      n_totd = SUM(nd)
+      n_tot = SUM(n)
+      ! Number of components
+      nc = SIZE(n)
+      m_ave = 0.0_pr
+      m_aved = 0.0_pr
+      DO i = 1, nc
+         ! Segment average
+         m_aved = m_aved + m(i)*xd(i)
+         m_ave = m_ave + x(i)*m(i)
+      END DO
+      dd = 0.0_pr
+      ddd = 0.0_pr
+      dd0 = 0.0_pr
+      dddd = 0.0_pr
+      ddd0 = 0.0_pr
+      dd1 = 0.0_pr
+      dd0d = 0.0_pr
+      ! Diameter calculation
+      DO i = 1, SIZE(n)
+         temp11 = 3.0_pr*epsilon_k(i)*td/(t*t)
+         temp3d = -(temp11*2*td1/t)
+         temp3 = temp11
+         arg1ddd = -(td0*2*(temp3d - temp3*td1/t)/t)
+         arg1dd = -(temp3*2*td0/t)
+         arg1dd0 = temp3d
+         arg1d = temp3
+         temp11 = 3.0_pr*epsilon_k(i)*td0/(t*t)
+         arg1d0d = -(temp11*2*td1/t)
+         arg1d0 = temp11
+         arg1d1 = epsilon_k(i)*3.0_pr*td1/t**2
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         temp3d = EXP(arg1)*arg1d1
+         temp3 = EXP(arg1)
+         temp11 = EXP(arg1)
+         dddd(i) = -(sigma(i)*0.12_pr*(arg1d*arg1d0*EXP(arg1)*arg1d1 + temp11*&
+         &       (arg1d0*arg1dd0 + arg1d*arg1d0d) + arg1dd*temp3d + temp3*arg1ddd))
+         ddd(i) = -(sigma(i)*0.12_pr*(temp11*(arg1d*arg1d0) + temp3*arg1dd))
+         ddd0(i) = -(sigma(i)*0.12_pr*(arg1d*temp3d + temp3*arg1dd0))
+         dd(i) = -(sigma(i)*0.12_pr*(temp3*arg1d))
+         temp11 = EXP(arg1)
+         dd0d(i) = -(sigma(i)*0.12_pr*(arg1d0*EXP(arg1)*arg1d1 + temp11*&
+         &       arg1d0d))
+         dd0(i) = -(sigma(i)*0.12_pr*(temp11*arg1d0))
+         dd1(i) = -(sigma(i)*0.12_pr*EXP(arg1)*arg1d1)
+         d(i) = sigma(i)*(1.0_pr - 0.12_8*EXP(arg1))
+      END DO
+      ! Zetas calculation
+      ! Number density [1/A^3]
+      temp11 = SUM(n)/(1.0e27_pr*v)
+      temp3d = -(temp11*vd1/v)
+      temp3 = temp11
+      tempd1d = -(vd0*(temp3d - temp3*vd1/v)/v)
+      tempd1 = -(temp3*vd0/v)
+      tempd4 = temp3d
+      temp = temp3
+      temp11 = (SUM(nd) - 1.0e27_pr*vd*temp)/(1.0e27_8*v)
+      temp3d = (-(vd*1.0e27_pr*tempd4) - temp11*1.0e27_8*vd1)/(1.0e27_8*v)
+      temp3 = temp11
+      temp11 = (-(1.0e27_pr*vd*tempd1) - 1.0e27_8*vd0*temp3)/(1.0e27_8*v)
+      rhoddd = n_avo*(-(vd*1.0e27_pr*tempd1d) - vd0*1.0e27_8*temp3d - temp11*&
+      &     1.0e27_pr*vd1)/(1.0e27_8*v)
+      rhodd = n_avo*temp11
+      rhodd0 = n_avo*temp3d
+      rhod = n_avo*temp3
+      rhod0d = n_avo*tempd1d
+      rhod0 = n_avo*tempd1
+      rhod1 = n_avo*tempd4
+      rho = n_avo*temp
+      zetas = 0.0_pr
+      zetasd = 0.0_pr
+      tempdd = 0.0_pr
+      zetasd0 = 0.0_pr
+      zetasdd = 0.0_pr
+      temp4d = 0.0_pr
+      zetasddd = 0.0_pr
+      tempd2d = 0.0_pr
+      tempdd0 = 0.0_pr
+      zetasd1 = 0.0_pr
+      zetasd0d = 0.0_pr
+      temp0dd = 0.0_pr
+      zetasdd0 = 0.0_pr
+      tempddd = 0.0_pr
+      DO k = 0, 3
+         mask = d .LE. 0.0 .AND. k .EQ. 0.0
+         WHERE (mask)
+            temp0dd = 0.0_pr
+            temp0d = 0.0_pr
+         ELSEWHERE
+            temp12 = d**(k - 1)
+            mask0 = d .LE. 0.0 .AND. k - 1 .EQ. 0.0
+            WHERE (mask0)
+               tempd5 = 0.0_pr
+            ELSEWHERE
+               tempd5 = (k - 1)*d**(k - 2)*dd1
+            END WHERE
+            temp0dd = k*(dd0*tempd5 + temp12*dd0d)
+            temp0d = k*(temp12*dd0)
+         END WHERE
+         mask1 = d .LE. 0.0 .AND. k .EQ. 0.0
+         WHERE (mask1)
+            temp0d0 = 0.0_pr
+         ELSEWHERE
+            temp0d0 = k*d**(k - 1)*dd1
+         END WHERE
+         temp0 = d**k
+         mask2 = d .LE. 0.0 .AND. k .EQ. 0.0
+         WHERE (mask2)
+            tempddd = 0.0_pr
+            tempdd = 0.0_pr
+            tempdd0 = 0.0_pr
+            tempd = 0.0_pr
+         ELSEWHERE
+            mask3 = d .LE. 0.0 .AND. k - 1 .EQ. 0.0
+            WHERE (mask3)
+               temp4d = 0.0_pr
+            ELSEWHERE
+               temp4d = (k - 1)*d**(k - 2)*dd1
+            END WHERE
+            temp4 = d**(k - 1)
+            mask4 = d .LE. 0.0 .AND. k - 1 .EQ. 0.0
+            WHERE (mask4)
+               tempd2d = 0.0_pr
+               tempd2 = 0.0_pr
+            ELSEWHERE
+               temp12 = d**(k - 2)
+               mask5 = d .LE. 0.0 .AND. k - 2 .EQ. 0.0
+               WHERE (mask5)
+                  tempd5 = 0.0_pr
+               ELSEWHERE
+                  tempd5 = (k - 2)*d**(k - 3)*dd1
+               END WHERE
+               tempd2d = (k - 1)*(dd0*tempd5 + temp12*dd0d)
+               tempd2 = (k - 1)*(temp12*dd0)
+            END WHERE
+            tempddd = k*(tempd2*ddd0 + dd*tempd2d + ddd*temp4d + temp4*dddd)
+            tempdd = k*(dd*tempd2 + temp4*ddd)
+            tempdd0 = k*(dd*temp4d + temp4*ddd0)
+            tempd = k*(temp4*dd)
+         END WHERE
+         arg10ddd = m*(xd*temp0dd + x*tempddd)
+         arg10dd = m*(xd*temp0d + x*tempdd)
+         arg10dd0 = m*(xd*temp0d0 + x*tempdd0)
+         arg10d = m*(temp0*xd + x*tempd)
+         arg10d0d = m*x*temp0dd
+         arg10d0 = m*x*temp0d
+         arg10d1 = m*x*temp0d0
+         arg10 = m*(x*temp0)
+         tempd1d = SUM(arg10d0d)
+         tempd1 = SUM(arg10d0)
+         tempd4 = SUM(arg10d1)
+         temp = SUM(arg10)
+         temp3d = SUM(arg10dd0)
+         temp3 = SUM(arg10d)
+         temp11 = SUM(arg10dd)
+         zetasddd(k) = pi*(tempd1*rhodd0/6.0_pr + rhod*tempd1d/6.0_8 + rhodd*&
+         &       tempd4/6.0_pr + temp*rhoddd/6.0_8 + rhod0*temp3d/6.0_8 + temp3*rhod0d/&
+         &       6.0_pr + temp11*rhod1/6.0_8 + rho*SUM(arg10ddd)/6.0_8)
+         zetasdd(k) = pi*(rhod/6.0_pr*tempd1 + temp/6.0_8*rhodd + temp3/6.0_8*&
+         &       rhod0 + rho/6.0_pr*temp11)
+         zetasdd0(k) = pi*(rhod*tempd4/6.0_pr + temp*rhodd0/6.0_8 + temp3*rhod1/&
+         &       6.0_pr + rho*temp3d/6.0_8)
+         zetasd(k) = pi*(temp/6.0_pr*rhod + rho/6.0_8*temp3)
+         zetasd0d(k) = pi*(rhod0*tempd4/6.0_pr + temp*rhod0d/6.0_8 + tempd1*&
+         &       rhod1/6.0_pr + rho*tempd1d/6.0_8)
+         zetasd0(k) = pi*(temp*rhod0/6.0_pr + rho*tempd1/6.0_8)
+         zetasd1(k) = pi*(temp*rhod1/6.0_pr + rho*tempd4/6.0_8)
+         zetas(k) = pi*(rho/6.0_pr*temp)
+      END DO
+      etaddd = -zetasddd(3)
+      etadd = -zetasdd(3)
+      etadd0 = -zetasdd0(3)
+      etad = -zetasd(3)
+      etad0d = -zetasd0d(3)
+      etad0 = -zetasd0(3)
+      etad1 = -zetasd1(3)
+      eta = 1.0_pr - zetas(3)
+      ! Ar hard-sphere contribution
+      temp11 = zetas(1)/eta
+      temp3d = (zetasd1(1) - temp11*etad1)/eta
+      temp3 = temp11
+      temp11 = (zetasd0(1) - temp3*etad0)/eta
+      tempd1d = (zetasd0d(1) - etad0*temp3d - temp3*etad0d - temp11*etad1)/eta
+      tempd1 = temp11
+      tempd4 = temp3d
+      temp = temp3
+      temp3d = zetasdd0(1) - etad*tempd4 - temp*etadd0
+      temp3 = zetasd(1) - temp*etad
+      temp11 = zetas(2)/eta
+      temp5d = (zetasd1(2) - temp11*etad1)/eta
+      temp5 = temp11
+      temp11 = temp3/eta
+      temp13 = zetasd0(2) - temp5*etad0
+      temp14 = zetasdd(1) - etad*tempd1 - temp*etadd
+      term1_hsddd = 3.0_pr*(temp11*(zetasd0d(2) - etad0*temp5d - temp5*etad0d) +&
+      &     temp13*(temp3d - temp11*etad1)/eta + temp14*temp5d + temp5*(zetasddd(1) -&
+      &     tempd1*etadd0 - etad*tempd1d - etadd*tempd4 - temp*etaddd) + tempd1*&
+      &     zetasdd0(2) + zetasd(2)*tempd1d + zetasdd(2)*tempd4 + temp*zetasddd(2))
+      term1_hsdd = 3.0_pr*(temp13*temp11 + temp5*temp14 + zetasd(2)*tempd1 + temp&
+      &     *zetasdd(2))
+      term1_hsdd0 = 3.0_pr*(temp3*temp5d + temp5*temp3d + zetasd(2)*tempd4 + temp&
+      &     *zetasdd0(2))
+      term1_hsd = 3.0_pr*(temp5*temp3 + temp*zetasd(2))
+      term1_hsd0d = 3.0_pr*(tempd1*zetasd1(2) + zetas(2)*tempd1d + zetasd0(2)*&
+      &     tempd4 + temp*zetasd0d(2))
+      term1_hsd0 = 3.0_pr*(zetas(2)*tempd1 + temp*zetasd0(2))
+      term1_hsd1 = 3.0_pr*(zetas(2)*tempd4 + temp*zetasd1(2))
+      term1_hs = 3.0_pr*(temp*zetas(2))
+      tempd1d = zetasd0(3)*2*eta*etad1 + eta**2*zetasd0d(3) + eta*etad0*2*&
+      &     zetasd1(3) + 2*zetas(3)*(etad0*etad1 + eta*etad0d)
+      tempd1 = eta**2*zetasd0(3) + zetas(3)*2*eta*etad0
+      tempd4 = eta**2*zetasd1(3) + zetas(3)*2*eta*etad1
+      temp = zetas(3)*(eta*eta)
+      temp14 = zetas(2)*zetas(2)*zetas(2)/temp
+      temp5d = (3*zetas(2)**2*zetasd1(2) - temp14*tempd4)/temp
+      temp5 = temp14
+      temp14 = 3*(zetas(2)*zetas(2))
+      temp13 = (temp14*zetasd0(2) - temp5*tempd1)/temp
+      temp1dd = (zetasd0(2)*3*2*zetas(2)*zetasd1(2) + temp14*zetasd0d(2) -&
+      &     tempd1*temp5d - temp5*tempd1d - temp13*tempd4)/temp
+      temp1d = temp13
+      temp1d0 = temp5d
+      temp1 = temp5
+      temp5d = 3*2*zetas(2)*zetasd1(2)
+      temp5 = 3*(zetas(2)*zetas(2))
+      temp3d = zetasd(3)*2*eta*etad1 + eta**2*zetasdd0(3) + eta*etad*2*&
+      &     zetasd1(3) + 2*zetas(3)*(etad*etad1 + eta*etadd0)
+      temp3 = eta*eta*zetasd(3) + 2*zetas(3)*eta*etad
+      temp14 = (temp5*zetasd(2) - temp1*temp3)/temp
+      temp6d = (zetasd(2)*temp5d + temp5*zetasdd0(2) - temp3*temp1d0 - temp1*&
+      &     temp3d - temp14*tempd4)/temp
+      temp6 = temp14
+      temp14 = etad*etad0 + eta*etadd
+      temp13 = 2*eta*etad
+      temp11 = 2*zetasd(3)*eta*etad0 + eta*eta*zetasdd(3) + temp13*zetasd0&
+      &     (3) + 2*zetas(3)*temp14
+      temp15 = (2*3*zetasd(2)*zetas(2)*zetasd0(2) + temp5*zetasdd(2) - temp3*&
+      &     temp1d - temp1*temp11 - temp6*tempd1)/temp
+      term2_hsddd = (2*3*(zetasd0(2)*(zetas(2)*zetasdd0(2) + zetasd(2)*&
+      &     zetasd1(2)) + zetasd(2)*zetas(2)*zetasd0d(2)) + zetasdd(2)*temp5d +&
+      &     temp5*zetasddd(2) - temp1d*temp3d - temp3*temp1dd - temp11*temp1d0 - temp1&
+      &     *(eta*etad0*2*zetasdd0(3) + 2*zetasd(3)*(etad0*etad1 + eta*etad0d) +&
+      &     zetasdd(3)*2*eta*etad1 + eta**2*zetasddd(3) + zetasd0(3)*(etad*2*etad1&
+      &     + 2*eta*etadd0) + temp13*zetasd0d(3) + temp14*2*zetasd1(3) + 2*zetas(3)*(&
+      &     etad0*etadd0 + etad*etad0d + etadd*etad1 + eta*etaddd)) - tempd1*temp6d -&
+      &     temp6*tempd1d - temp15*tempd4)/temp
+      term2_hsdd = temp15
+      term2_hsdd0 = temp6d
+      term2_hsd = temp6
+      term2_hsd0d = temp1dd
+      term2_hsd0 = temp1d
+      term2_hsd1 = temp1d0
+      term2_hs = temp1
+      temp1dd = (etad0d - etad0*etad1/eta)/eta
+      temp1d = etad0/eta
+      temp1d0 = etad1/eta
+      temp1 = LOG(eta)
+      temp15 = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
+      temp6d = (3*zetas(2)**2*zetasd1(2) - temp15*2*zetas(3)*zetasd1(3))/&
+      &     zetas(3)**2
+      temp6 = temp15
+      temp15 = 3*(zetas(2)*zetas(2))
+      temp14 = 2*temp6*zetas(3)
+      temp13 = (temp15*zetasd0(2) - temp14*zetasd0(3))/(zetas(3)*zetas(3))
+      tempd1d = (zetasd0(2)*3*2*zetas(2)*zetasd1(2) + temp15*zetasd0d(2) -&
+      &     zetasd0(3)*(zetas(3)*2*temp6d + 2*temp6*zetasd1(3)) - temp14*zetasd0d(&
+      &     3) - temp13*2*zetas(3)*zetasd1(3))/zetas(3)**2
+      tempd1 = temp13
+      tempd4 = temp6d
+      temp = temp6
+      temp6d = 2*(zetas(3)*tempd4 + temp*zetasd1(3))
+      temp6 = 2*temp*zetas(3)
+      temp5d = 3*2*zetas(2)*zetasd1(2)
+      temp5 = 3*(zetas(2)*zetas(2))
+      temp15 = (temp5*zetasd(2) - temp6*zetasd(3))/(zetas(3)*zetas(3))
+      temp3d = (zetasd(2)*temp5d + temp5*zetasdd0(2) - zetasd(3)*temp6d - temp6*&
+      &     zetasdd0(3) - temp15*2*zetas(3)*zetasd1(3))/zetas(3)**2
+      temp3 = temp15
+      temp7d = (etadd0 - etad*etad1/eta)/eta
+      temp7 = etad/eta
+      temp15 = 2*temp3*zetas(3)
+      temp14 = 2*zetas(3)*tempd1 + 2*temp*zetasd0(3)
+      temp13 = (2*3*zetasd(2)*zetas(2)*zetasd0(2) + temp5*zetasdd(2) - zetasd(&
+      &     3)*temp14 - temp6*zetasdd(3) - temp15*zetasd0(3))/(zetas(3)*zetas(3))
+      temp11 = (temp - zetas(0))/eta
+      term3_hsddd = temp1d*(temp3d - zetasdd0(0)) + (temp3 - zetasd(0))*&
+      &     temp1dd + (temp13 - zetasdd(0))*temp1d0 + temp1*((2*3*(zetasd0(2)*(&
+      &     zetas(2)*zetasdd0(2) + zetasd(2)*zetasd1(2)) + zetasd(2)*zetas(2)*&
+      &     zetasd0d(2)) + zetasdd(2)*temp5d + temp5*zetasddd(2) - temp14*zetasdd0(3&
+      &     ) - zetasd(3)*(tempd1*2*zetasd1(3) + 2*zetas(3)*tempd1d + zetasd0(3)*2*&
+      &     tempd4 + 2*temp*zetasd0d(3)) - zetasdd(3)*temp6d - temp6*zetasddd(3) -&
+      &     zetasd0(3)*(zetas(3)*2*temp3d + 2*temp3*zetasd1(3)) - temp15*zetasd0d(&
+      &     3) - temp13*2*zetas(3)*zetasd1(3))/zetas(3)**2 - zetasddd(0)) + (&
+      &     tempd1 - zetasd0(0))*temp7d + temp7*(tempd1d - zetasd0d(0)) + (etadd -&
+      &     temp7*etad0)*(tempd4 - zetasd1(0) - temp11*etad1)/eta + temp11*(etaddd&
+      &     - etad0*temp7d - temp7*etad0d)
+      term3_hsdd = (temp3 - zetasd(0))*temp1d + temp1*(temp13 - zetasdd(0)) + &
+      &     temp7*(tempd1 - zetasd0(0)) + temp11*(etadd - temp7*etad0)
+      term3_hsdd0 = (temp3 - zetasd(0))*temp1d0 + temp1*(temp3d - zetasdd0(0))&
+      &     + temp7*(tempd4 - zetasd1(0)) + (temp - zetas(0))*temp7d
+      term3_hsd = temp1*(temp3 - zetasd(0)) + (temp - zetas(0))*temp7
+      term3_hsd0d = (tempd1 - zetasd0(0))*temp1d0 + temp1*(tempd1d - zetasd0d(&
+      &     0)) + temp1d*(tempd4 - zetasd1(0)) + (temp - zetas(0))*temp1dd
+      term3_hsd0 = temp1*(tempd1 - zetasd0(0)) + (temp - zetas(0))*temp1d
+      term3_hsd1 = temp1*(tempd4 - zetasd1(0)) + (temp - zetas(0))*temp1d0
+      term3_hs = (temp - zetas(0))*temp1
+      ! A_hs/RT
+      temp15 = (term1_hs + term2_hs + term3_hs)/zetas(0)
+      temp7d = (term1_hsd1 + term2_hsd1 + term3_hsd1 - temp15*zetasd1(0))/zetas(&
+      &     0)
+      temp7 = temp15
+      temp15 = (term1_hsd0 + term2_hsd0 + term3_hsd0 - temp7*zetasd0(0))/zetas(0&
+      &     )
+      temp1dd = (term1_hsd0d + term2_hsd0d + term3_hsd0d - zetasd0(0)*temp7d -&
+      &     temp7*zetasd0d(0) - temp15*zetasd1(0))/zetas(0)
+      temp1d = temp15
+      temp1d0 = temp7d
+      temp1 = temp7
+      temp15 = (term1_hsd + term2_hsd + term3_hsd - temp1*zetasd(0))/zetas(0)
+      temp7d = (term1_hsdd0 + term2_hsdd0 + term3_hsdd0 - zetasd(0)*temp1d0 -&
+      &     temp1*zetasdd0(0) - temp15*zetasd1(0))/zetas(0)
+      temp7 = temp15
+      temp15 = (term1_hsdd + term2_hsdd + term3_hsdd - zetasd(0)*temp1d - temp1*&
+      &     zetasdd(0) - temp7*zetasd0(0))/zetas(0)
+      ar_hsddd = (term1_hsddd + term2_hsddd + term3_hsddd - temp1d*zetasdd0(0) -&
+      &     zetasd(0)*temp1dd - zetasdd(0)*temp1d0 - temp1*zetasddd(0) - zetasd0(0)*&
+      &     temp7d - temp7*zetasd0d(0) - temp15*zetasd1(0))/zetas(0)
+      ar_hsdd = temp15
+      ar_hsdd0 = temp7d
+      ar_hsd = temp7
+      ar_hsd0d = temp1dd
+      ar_hsd0 = temp1d
+      ar_hsd1 = temp1d0
+      ar_hs = temp1
+      ! Ar chain contribution
+      ar_chain = 0.0_pr
+      ar_chaind = 0.0_pr
+      ar_chaindd = 0.0_pr
+      ar_chaind0 = 0.0_pr
+      ar_chainddd = 0.0_pr
+      ar_chaindd0 = 0.0_pr
+      ar_chaind1 = 0.0_pr
+      ar_chaind0d = 0.0_pr
+      DO i = 1, SIZE(x)
+         di_2ddd = dddd(i)/2.0_pr
+         di_2dd = ddd(i)/2.0_pr
+         di_2dd0 = ddd0(i)/2.0_pr
+         di_2d = dd(i)/2.0_pr
+         di_2d0d = dd0d(i)/2.0_pr
+         di_2d0 = dd0(i)/2.0_pr
+         di_2d1 = dd1(i)/2.0_pr
+         di_2 = d(i)/2.0_pr
+         temp15 = di_2*zetas(2)/(eta*eta)
+         temp7d = (zetas(2)*di_2d1 + di_2*zetasd1(2) - temp15*2*eta*etad1)/eta&
+         &       **2
+         temp7 = temp15
+         temp15 = 2*temp7*eta
+         temp14 = (zetas(2)*di_2d0 + di_2*zetasd0(2) - temp15*etad0)/(eta*eta)
+         temp1dd = (di_2d0*zetasd1(2) + zetas(2)*di_2d0d + zetasd0(2)*di_2d1 +&
+         &       di_2*zetasd0d(2) - etad0*(eta*2*temp7d + 2*temp7*etad1) - temp15*&
+         &       etad0d - temp14*2*eta*etad1)/eta**2
+         temp1d = temp14
+         temp1d0 = temp7d
+         temp1 = temp7
+         tempd1d = 3*(etad0*2*eta*etad1 + eta**2*etad0d)
+         tempd1 = 3*eta**2*etad0
+         tempd4 = 3*eta**2*etad1
+         temp = eta*eta*eta
+         temp15 = di_2*di_2/temp
+         temp7d = (2*di_2*di_2d1 - temp15*tempd4)/temp
+         temp7 = temp15
+         temp15 = 2*di_2*di_2d0 - temp7*tempd1
+         temp14 = zetas(2)*zetas(2)/temp
+         temp13 = 2*temp7*zetas(2)
+         temp2dd = temp15*(2*zetas(2)*zetasd1(2) - temp14*tempd4)/temp + &
+         &       temp14*(di_2d0*2*di_2d1 + 2*di_2*di_2d0d - tempd1*temp7d - temp7*&
+         &       tempd1d) + zetasd0(2)*(zetas(2)*2*temp7d + 2*temp7*zetasd1(2)) + &
+         &       temp13*zetasd0d(2)
+         temp2d = temp14*temp15 + temp13*zetasd0(2)
+         temp2d0 = zetas(2)**2*temp7d + temp7*2*zetas(2)*zetasd1(2)
+         temp2 = temp7*(zetas(2)*zetas(2))
+         temp7d = 2*(eta*temp1d0 + temp1*etad1)
+         temp7 = 2*temp1*eta
+         temp15 = (zetas(2)*di_2d + di_2*zetasd(2) - temp7*etad)/(eta*eta)
+         temp6d = (di_2d*zetasd1(2) + zetas(2)*di_2dd0 + zetasd(2)*di_2d1 + di_2*&
+         &       zetasdd0(2) - etad*temp7d - temp7*etadd0 - temp15*2*eta*etad1)/eta**2
+         temp6 = temp15
+         temp15 = etad/(eta*eta)
+         temp5d = (etadd0 - temp15*2*eta*etad1)/eta**2
+         temp5 = temp15
+         temp3d = 2**2*zetas(2)*zetasd1(2)
+         temp3 = 2*(zetas(2)*zetas(2))
+         temp8d = 2**2*di_2*di_2d1
+         temp8 = 2*(di_2*di_2)
+         temp9d = 3*2*eta*etad1
+         temp9 = 3*(eta*eta)
+         temp15 = (temp3*di_2*di_2d + temp8*zetas(2)*zetasd(2) - temp9*temp2*&
+         &       etad)/temp
+         temp10d = (di_2d*(di_2*temp3d + temp3*di_2d1) + temp3*di_2*di_2dd0 +&
+         &       zetasd(2)*(zetas(2)*temp8d + temp8*zetasd1(2)) + temp8*zetas(2)*&
+         &       zetasdd0(2) - etad*(temp2*temp9d + temp9*temp2d0) - temp9*temp2*etadd0&
+         &       - temp15*tempd4)/temp
+         temp10 = temp15
+         temp15 = 2*eta*temp1d + 2*temp1*etad0
+         temp14 = 2*temp6*eta
+         temp13 = (di_2d*zetasd0(2) + zetas(2)*di_2dd + zetasd(2)*di_2d0 + di_2*&
+         &       zetasdd(2) - etad*temp15 - temp7*etadd - temp14*etad0)/(eta*eta)
+         temp11 = 2*temp5*eta
+         temp16 = (etadd - temp11*etad0)/(eta*eta)
+         temp17 = di_2d*di_2d0 + di_2*di_2dd
+         temp18 = zetasd(2)*zetasd0(2) + zetas(2)*zetasdd(2)
+         temp19 = etad*temp2d + temp2*etadd
+         temp20 = (2*2*di_2*di_2d*zetas(2)*zetasd0(2) + temp3*temp17 + 2*2*&
+         &       zetas(2)*zetasd(2)*di_2*di_2d0 + temp8*temp18 - 2*3*temp2*etad*eta*&
+         &       etad0 - temp9*temp19 - temp10*tempd1)/temp
+         g_iiddd = 3.0_pr*(zetasd0(2)*di_2dd0 + di_2d*zetasd0d(2) + di_2dd*&
+         &       zetasd1(2) + zetas(2)*di_2ddd + di_2d0*zetasdd0(2) + zetasd(2)*di_2d0d&
+         &       + zetasdd(2)*di_2d1 + di_2*zetasddd(2) - temp15*etadd0 - etad*(temp1d*2&
+         &       *etad1 + 2*eta*temp1dd + etad0*2*temp1d0 + 2*temp1*etad0d) - etadd*&
+         &       temp7d - temp7*etaddd - etad0*(eta*2*temp6d + 2*temp6*etad1) - temp14*&
+         &       etad0d - temp13*2*eta*etad1)/eta**2 - (etaddd - etad0*(eta*2*temp5d +&
+         &       2*temp5*etad1) - temp11*etad0d - temp16*2*eta*etad1)/eta**2 + 2.0_pr*&
+         &       (2**2*(zetas(2)*zetasd0(2)*(di_2d*di_2d1 + di_2*di_2dd0) + di_2*&
+         &       di_2d*(zetasd0(2)*zetasd1(2) + zetas(2)*zetasd0d(2))) + temp17*&
+         &       temp3d + temp3*(di_2d0*di_2dd0 + di_2d*di_2d0d + di_2dd*di_2d1 + di_2*&
+         &       di_2ddd) + 2**2*(di_2*di_2d0*(zetasd(2)*zetasd1(2) + zetas(2)*&
+         &       zetasdd0(2)) + zetas(2)*zetasd(2)*(di_2d0*di_2d1 + di_2*di_2d0d)) +&
+         &       temp18*temp8d + temp8*(zetasd0(2)*zetasdd0(2) + zetasd(2)*zetasd0d(2&
+         &       ) + zetasdd(2)*zetasd1(2) + zetas(2)*zetasddd(2)) - 2*3*(eta*etad0*(&
+         &       etad*temp2d0 + temp2*etadd0) + temp2*etad*(etad0*etad1 + eta*etad0d)) -&
+         &       temp19*temp9d - temp9*(temp2d*etadd0 + etad*temp2dd + etadd*temp2d0 +&
+         &       temp2*etaddd) - tempd1*temp10d - temp10*tempd1d - temp20*tempd4)/temp
+         g_iidd = 3.0_pr*temp13 - temp16 + 2.0_8*temp20
+         g_iidd0 = 3.0_pr*temp6d - temp5d + 2.0_8*temp10d
+         g_iid = 3.0_pr*temp6 - temp5 + 2.0_8*temp10
+         temp20 = etad0/(eta*eta)
+         g_iid0d = 3.0_pr*temp1dd - (etad0d - temp20*2*eta*etad1)/eta**2 + &
+         &       2.0_pr*temp2dd
+         g_iid0 = 3.0_pr*temp1d - temp20 + 2.0_8*temp2d
+         g_iid1 = 3.0_pr*temp1d0 - etad1/eta**2 + 2.0_8*temp2d0
+         g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
+         ! Summation
+         temp2dd = (g_iid0d - g_iid0*g_iid1/g_ii)/g_ii
+         temp2d = g_iid0/g_ii
+         temp2d0 = g_iid1/g_ii
+         temp2 = LOG(g_ii)
+         temp20 = g_iid*g_iid0/g_ii
+         temp19 = (g_iidd - temp20)/g_ii
+         ar_chainddd = ar_chainddd - (m(i) - 1.0_pr)*(xd(i)*temp2dd + x(i)*(&
+         &       g_iiddd - (g_iid0*g_iidd0 + g_iid*g_iid0d - temp20*g_iid1)/g_ii - temp19&
+         &       *g_iid1)/g_ii)
+         ar_chaindd = ar_chaindd - (m(i) - 1.0_pr)*(xd(i)*temp2d + x(i)*temp19)
+         ar_chaindd0 = ar_chaindd0 - (m(i) - 1.0_pr)*(xd(i)*temp2d0 + x(i)*(&
+         &       g_iidd0 - g_iid*g_iid1/g_ii)/g_ii)
+         ar_chaind = ar_chaind - (m(i) - 1.0_pr)*(temp2*xd(i) + x(i)*g_iid/g_ii)
+         ar_chaind0d = ar_chaind0d - (m(i) - 1.0_pr)*x(i)*temp2dd
+         ar_chaind0 = ar_chaind0 - (m(i) - 1.0_pr)*x(i)*temp2d
+         ar_chaind1 = ar_chaind1 - (m(i) - 1.0_pr)*x(i)*temp2d0
+         ar_chain = ar_chain - (m(i) - 1.0_pr)*(x(i)*temp2)
+      END DO
+      ! Ar dispersion contribution
+      IF (ALLOCATED(model%kij)) THEN
+         ! Number density [1/A^3]
+         temp20 = n_tot/(1.0e27_pr*v)
+         temp10d = -(temp20*vd1/v)
+         temp10 = temp20
+         temp2dd = -(vd0*(temp10d - temp10*vd1/v)/v)
+         temp2d = -(temp10*vd0/v)
+         temp2d0 = temp10d
+         temp2 = temp10
+         temp20 = (n_totd - 1.0e27_pr*vd*temp2)/(1.0e27_pr*v)
+         temp10d = (-(vd*1.0e27_pr*temp2d0) - temp20*1.0e27_pr*vd1)/(&
+         &       1.0e27_pr*v)
+         temp10 = temp20
+         temp20 = (-(1.0e27_pr*vd*temp2d) - 1.0e27_pr*vd0*temp10)/(1.0e27_pr*&
+         &       v)
+         rho_dispddd = n_avo*(-(vd*1.0e27_pr*temp2dd) - vd0*1.0e27_pr*temp10d&
+         &       - temp20*1.0e27_pr*vd1)/(1.0e27_pr*v)
+         rho_dispdd = n_avo*temp20
+         rho_dispdd0 = n_avo*temp10d
+         rho_dispd = n_avo*temp10
+         rho_dispd0d = n_avo*temp2dd
+         rho_dispd0 = n_avo*temp2d
+         rho_dispd1 = n_avo*temp2d0
+         rho_disp = n_avo*temp2
+         ! 1. Mixture Averages (Same as before)
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
+         m2_e2s3d = 0.0_pr
+         m2_es3d = 0.0_pr
+         m2_e2s3d0 = 0.0_pr
+         m2_es3d0 = 0.0_pr
+         m2_es3dd = 0.0_pr
+         m2_e2s3dd = 0.0_pr
+         m2_e2s3d1 = 0.0_pr
+         m2_es3ddd = 0.0_pr
+         m2_e2s3ddd = 0.0_pr
+         m2_es3d1 = 0.0_pr
+         m2_es3dd0 = 0.0_pr
+         m2_es3d0d = 0.0_pr
+         m2_e2s3d0d = 0.0_pr
+         m2_e2s3dd0 = 0.0_pr
+         DO i = 1, nc
+            DO j = 1, nc
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               kij_val = kij(i, j)
+               arg1 = epsilon_k(i)*epsilon_k(j)
+               result1 = SQRT(arg1)
+               eps_ij = result1*(1.0_pr - kij_val)
+               temp2 = m(i)*m(j)*(sig_ij*sig_ij*sig_ij)
+               term_dispd = temp2*(x(j)*xd(i) + x(i)*xd(j))
+               term_disp = temp2*(x(i)*x(j))
+               temp20 = term_disp*td/t
+               temp10d = -(temp20*td1/t)
+               temp10 = temp20
+               temp20 = (term_dispd - temp10)/t
+               temp9d = (-temp10d - temp20*td1)/t
+               temp9 = temp20
+               temp20 = (temp10/t - temp9)/t
+               m2_es3ddd = m2_es3ddd + eps_ij*td0*((temp10d - temp10*td1/t)/t -&
+               &           temp9d - temp20*td1)/t
+               m2_es3dd = m2_es3dd + eps_ij*td0*temp20
+               m2_es3dd0 = m2_es3dd0 + eps_ij*temp9d
+               m2_es3d = m2_es3d + eps_ij*temp9
+               temp20 = term_disp*eps_ij/t
+               temp10d = -(temp20*td1/t)
+               temp10 = temp20
+               m2_es3d0d = m2_es3d0d - td0*(temp10d - temp10*td1/t)/t
+               m2_es3d0 = m2_es3d0 - temp10*td0/t
+               m2_es3d1 = m2_es3d1 + temp10d
+               m2_es3 = m2_es3 + temp10
+               temp20 = term_disp/(t*t)
+               temp10d = -(temp20*2*td1/t)
+               temp10 = temp20
+               temp2dd = -(td0*2*(temp10d - temp10*td1/t)/t)
+               temp2d = -(temp10*2*td0/t)
+               temp2d0 = temp10d
+               temp2 = temp10
+               temp20 = (term_dispd - 2*td*temp2*t)/(t*t)
+               temp10d = (-(td*2*(t*temp2d0 + temp2*td1)) - temp20*2*t*td1)/t**2
+               temp10 = temp20
+               temp20 = (-(2*td*(t*temp2d + td0*temp2)) - 2*td0*temp10*t)/(t*t)
+               m2_e2s3ddd = m2_e2s3ddd + eps_ij**2*(-(td*2*(temp2d*td1 + t*&
+               &           temp2dd + td0*temp2d0)) - td0*2*(t*temp10d + temp10*td1) - temp20*2*&
+               &           t*td1)/t**2
+               m2_e2s3dd = m2_e2s3dd + eps_ij*eps_ij*temp20
+               m2_e2s3dd0 = m2_e2s3dd0 + eps_ij**2*temp10d
+               m2_e2s3d = m2_e2s3d + eps_ij*eps_ij*temp10
+               m2_e2s3d0d = m2_e2s3d0d + eps_ij**2*temp2dd
+               m2_e2s3d0 = m2_e2s3d0 + eps_ij**2*temp2d
+               m2_e2s3d1 = m2_e2s3d1 + eps_ij**2*temp2d0
+               m2_e2s3 = m2_e2s3 + eps_ij*eps_ij*temp2
+            END DO
+         END DO
+         ! 2. Integrals I1 and I2 (Same as before)
+         i1 = 0.0_pr
+         i2 = 0.0_pr
+         i1d = 0.0_pr
+         i2d = 0.0_pr
+         i1d0 = 0.0_pr
+         i2d0 = 0.0_pr
+         i1dd = 0.0_pr
+         i2dd = 0.0_pr
+         i1d1 = 0.0_pr
+         i2ddd = 0.0_pr
+         i2d1 = 0.0_pr
+         i1dd0 = 0.0_pr
+         i1ddd = 0.0_pr
+         i2d0d = 0.0_pr
+         i2dd0 = 0.0_pr
+         i1d0d = 0.0_pr
+         DO k = 0, 6
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            a_kd = (a_coeffs(1, k)*(1.0 - temp2)/m_ave + a_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            a_k = a_coeffs(0, k) + a_coeffs(1, k)*temp2 + a_coeffs(2, k)*&
+            &         temp1
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            b_kd = (b_coeffs(1, k)*(1.0 - temp2)/m_ave + b_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
+            &         temp1
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               temp2d = 0.0_pr
+               temp2dd = 0.0_pr
+            ELSE
+               temp20 = zetas(3)**(k - 1)
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  tempd6 = 0.0_pr
+               ELSE
+                  tempd6 = (k - 1)*zetas(3)**(k - 2)*zetasd1(3)
+               END IF
+               temp2dd = k*(zetasd0(3)*tempd6 + temp20*zetasd0d(3))
+               temp2d = k*(temp20*zetasd0(3))
+            END IF
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               temp2d0 = 0.0_pr
+            ELSE
+               temp2d0 = k*zetas(3)**(k - 1)*zetasd1(3)
+            END IF
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               tempd0 = 0.0_pr
+               tempd0d = 0.0_pr
+               tempd0dd = 0.0_pr
+               tempd0d0 = 0.0_pr
+            ELSE
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  temp10d = 0.0_pr
+               ELSE
+                  temp10d = (k - 1)*zetas(3)**(k - 2)*zetasd1(3)
+               END IF
+               temp10 = zetas(3)**(k - 1)
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  tempd3 = 0.0_pr
+                  tempd3d = 0.0_pr
+               ELSE
+                  temp20 = zetas(3)**(k - 2)
+                  IF (zetas(3) .LE. 0.0 .AND. k - 2 .EQ. 0.0) THEN
+                     tempd6 = 0.0_pr
+                  ELSE
+                     tempd6 = (k - 2)*zetas(3)**(k - 3)*zetasd1(3)
+                  END IF
+                  tempd3d = (k - 1)*(zetasd0(3)*tempd6 + temp20*zetasd0d(3))
+                  tempd3 = (k - 1)*(temp20*zetasd0(3))
+               END IF
+               tempd0dd = k*(tempd3*zetasdd0(3) + zetasd(3)*tempd3d + zetasdd(3)*&
+               &           temp10d + temp10*zetasddd(3))
+               tempd0d = k*(zetasd(3)*tempd3 + temp10*zetasdd(3))
+               tempd0d0 = k*(zetasd(3)*temp10d + temp10*zetasdd0(3))
+               tempd0 = k*(temp10*zetasd(3))
+            END IF
+            i1ddd = i1ddd + a_kd*temp2dd + a_k*tempd0dd
+            i1dd = i1dd + a_kd*temp2d + a_k*tempd0d
+            i1dd0 = i1dd0 + a_kd*temp2d0 + a_k*tempd0d0
+            i1d = i1d + temp2*a_kd + a_k*tempd0
+            i1d0d = i1d0d + a_k*temp2dd
+            i1d0 = i1d0 + a_k*temp2d
+            i1d1 = i1d1 + a_k*temp2d0
+            i1 = i1 + a_k*temp2
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               temp2d = 0.0_pr
+               temp2dd = 0.0_pr
+            ELSE
+               temp20 = zetas(3)**(k - 1)
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  tempd6 = 0.0_pr
+               ELSE
+                  tempd6 = (k - 1)*zetas(3)**(k - 2)*zetasd1(3)
+               END IF
+               temp2dd = k*(zetasd0(3)*tempd6 + temp20*zetasd0d(3))
+               temp2d = k*(temp20*zetasd0(3))
+            END IF
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               temp2d0 = 0.0_pr
+            ELSE
+               temp2d0 = k*zetas(3)**(k - 1)*zetasd1(3)
+            END IF
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               tempd0 = 0.0_pr
+               tempd0d = 0.0_pr
+               tempd0dd = 0.0_pr
+               tempd0d0 = 0.0_pr
+            ELSE
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  temp10d = 0.0_pr
+               ELSE
+                  temp10d = (k - 1)*zetas(3)**(k - 2)*zetasd1(3)
+               END IF
+               temp10 = zetas(3)**(k - 1)
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  tempd3 = 0.0_pr
+                  tempd3d = 0.0_pr
+               ELSE
+                  temp20 = zetas(3)**(k - 2)
+                  IF (zetas(3) .LE. 0.0 .AND. k - 2 .EQ. 0.0) THEN
+                     tempd6 = 0.0_pr
+                  ELSE
+                     tempd6 = (k - 2)*zetas(3)**(k - 3)*zetasd1(3)
+                  END IF
+                  tempd3d = (k - 1)*(zetasd0(3)*tempd6 + temp20*zetasd0d(3))
+                  tempd3 = (k - 1)*(temp20*zetasd0(3))
+               END IF
+               tempd0dd = k*(tempd3*zetasdd0(3) + zetasd(3)*tempd3d + zetasdd(3)*&
+               &           temp10d + temp10*zetasddd(3))
+               tempd0d = k*(zetasd(3)*tempd3 + temp10*zetasdd(3))
+               tempd0d0 = k*(zetasd(3)*temp10d + temp10*zetasdd0(3))
+               tempd0 = k*(temp10*zetasd(3))
+            END IF
+            i2ddd = i2ddd + b_kd*temp2dd + b_k*tempd0dd
+            i2dd = i2dd + b_kd*temp2d + b_k*tempd0d
+            i2dd0 = i2dd0 + b_kd*temp2d0 + b_k*tempd0d0
+            i2d = i2d + temp2*b_kd + b_k*tempd0
+            i2d0d = i2d0d + b_k*temp2dd
+            i2d0 = i2d0 + b_k*temp2d
+            i2d1 = i2d1 + b_k*temp2d0
+            i2 = i2 + b_k*temp2
+         END DO
+         ! 3. Compressibility C1 (Same as before)
+         temp20 = eta*eta*eta
+         temp2dd = 4*(etad0*3*eta**2*etad1 + temp20*etad0d)
+         temp2d = 4*(temp20*etad0)
+         temp2d0 = 4*eta**3*etad1
+         temp2 = eta**4
+         temp20 = temp2d/(temp2*temp2)
+         temp1dd = -(m_ave*(temp2dd - temp20*2*temp2*temp2d0)/temp2**2)
+         temp1d = -(m_ave*temp20)
+         temp1d0 = -(m_ave*temp2d0/temp2**2)
+         temp1 = m_ave/temp2
+         tempd1d = (8.0_pr - 2*2.0_pr*zetas(3))*zetasd0d(3) - zetasd0(3)*2*&
+         &       2.0_pr*zetasd1(3)
+         tempd1 = (8.0_pr - 2.0_pr*2*zetas(3))*zetasd0(3)
+         tempd4 = (8.0_pr - 2.0_pr*2*zetas(3))*zetasd1(3)
+         temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+         temp10d = (tempd4 - temp*temp2d0/temp2)/temp2
+         temp10 = temp/temp2
+         temp9d = 4*3*eta**2*etad1
+         temp9 = 4*(eta*eta*eta)
+         temp8d = -(etad*(temp1*temp9d + temp9*temp1d0) + temp9*temp1*etadd0)
+         temp8 = m_aved - temp9*temp1*etad
+         temp20 = zetasd(3)*temp1d + temp1*zetasdd(3)
+         temp19 = temp8/temp2
+         temp18 = etad*temp1d + temp1*etadd
+         temp17 = eta*eta*etad0
+         temp16 = 3*4*temp1*etad*temp17 + temp9*temp18
+         c1ddd = (8.0_pr - 2.0_pr*2*zetas(3))*(temp1d*zetasdd0(3) + zetasd(3)*&
+         &       temp1dd + zetasdd(3)*temp1d0 + temp1*zetasddd(3)) - temp20*2.0_pr*2*&
+         &       zetasd1(3) - 2.0_pr*2*(zetasd0(3)*(zetasd(3)*temp1d0 + temp1*&
+         &       zetasdd0(3)) + temp1*zetasd(3)*zetasd0d(3)) + temp19*(tempd1d -&
+         &       temp2d*temp10d - temp10*temp2dd) + (tempd1 - temp10*temp2d)*(temp8d -&
+         &       temp19*temp2d0)/temp2 - temp16*temp10d - temp10*(3*4*(temp17*(&
+         &       etad*temp1d0 + temp1*etadd0) + temp1*etad*(etad0*2*eta*etad1 + eta**2*&
+         &       etad0d)) + temp18*temp9d + temp9*(temp1d*etadd0 + etad*temp1dd + etadd*&
+         &       temp1d0 + temp1*etaddd))
+         c1dd = (8.0_pr - 2.0_pr*2*zetas(3))*temp20 - 2.0_pr*2*(temp1*zetasd(&
+         &       3)*zetasd0(3)) + (tempd1 - temp10*temp2d)*temp19 - temp10*temp16
+         c1dd0 = (8.0_pr - 2.0_pr*2*zetas(3))*(zetasd(3)*temp1d0 + temp1*&
+         &       zetasdd0(3)) - temp1*zetasd(3)*2.0_pr*2*zetasd1(3) + temp10*&
+         &       temp8d + temp8*temp10d
+         c1d = (8.0_pr - 2*2.0_pr*zetas(3))*(temp1*zetasd(3)) + temp8*temp10
+         c1d0d = tempd1*temp1d0 + temp1*tempd1d + temp1d*tempd4 + temp*&
+         &       temp1dd
+         c1d0 = temp1*tempd1 + temp*temp1d
+         c1d1 = temp1*tempd4 + temp*temp1d0
+         c1 = temp*temp1 + 1.0_pr
+         temp20 = 2*((-zetas(3) + 2.0_pr)*(-zetas(3) + 2.0_pr))
+         temp19 = 2*((-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr))
+         temp18 = temp20*(-zetas(3) + 1.0_pr) + temp19*(-zetas(3) + 2.0_pr)
+         temp2dd = -(temp18*zetasd0d(3) - zetasd0(3)*((1.0_pr - zetas(3))*2**2*&
+         &       (2.0_pr - zetas(3)) + temp20 + (2.0_pr - zetas(3))*2**2*(1.0_pr - zetas(3)&
+         &       ) + temp19)*zetasd1(3))
+         temp2d = -(temp18*zetasd0(3))
+         temp2d0 = -(((2.0_pr - zetas(3))**2*2*(1.0_pr - zetas(3)) + (1.0_pr -&
+         &       zetas(3))**2*2*(2.0_pr - zetas(3)))*zetasd1(3))
+         temp2 = (-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr)*((-zetas(3) + 2.0_pr)*&
+         &       (-zetas(3) + 2.0_pr))
+         temp20 = (-m_ave + 1.0_pr)/temp2
+         temp10d = -(temp20*temp2d0/temp2)
+         temp10 = temp20
+         temp20 = temp10*temp2d/temp2
+         temp1dd = -((temp2d*temp10d + temp10*temp2dd - temp20*temp2d0)/temp2)
+         temp1d = -temp20
+         temp1d0 = temp10d
+         temp1 = temp10
+         temp20 = 3*12.0_pr*(zetas(3)*zetas(3)) - 2*27.0_pr*zetas(3) - 4*&
+         &       2.0_pr*(zetas(3)*zetas(3)*zetas(3)) + 20.0_pr
+         tempd1d = zetasd0(3)*(3*12.0_pr*2*zetas(3) - 2*27.0_pr - 4*2.0_pr*3*&
+         &       zetas(3)**2)*zetasd1(3) + temp20*zetasd0d(3)
+         tempd1 = temp20*zetasd0(3)
+         tempd4 = (12.0_pr*3*zetas(3)**2 - 27.0_pr*2*zetas(3) - 2.0_pr*4*zetas(&
+         &       3)**3 + 20.0_pr)*zetasd1(3)
+         temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+         &       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+         temp10d = (12.0_pr*3*2*zetas(3) - 2*27.0_pr - 2.0_pr*4*3*zetas(3)**2)*&
+         &       zetasd1(3)
+         temp10 = 3*12.0_pr*(zetas(3)*zetas(3)) - 2*27.0_pr*zetas(3) - 4*&
+         &       2.0_pr*(zetas(3)*zetas(3)*zetas(3)) + 20.0_pr
+         temp9d = (tempd4 - temp*temp2d0/temp2)/temp2
+         temp9 = temp/temp2
+         temp8d = -(2**2*(2.0_pr - zetas(3))*zetasd1(3))
+         temp8 = 2*((-zetas(3) + 2.0_pr)*(-zetas(3) + 2.0_pr))
+         temp7d = -(2**2*(1.0_pr - zetas(3))*zetasd1(3))
+         temp7 = 2*((-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr))
+         temp6d = (1.0_pr - zetas(3))*temp8d - (temp8 + temp7)*zetasd1(3) + (&
+         &       2.0_pr - zetas(3))*temp7d
+         temp6 = temp8*(-zetas(3) + 1.0_pr) + temp7*(-zetas(3) + 2.0_pr)
+         temp5d = zetasd(3)*(temp1*temp6d + temp6*temp1d0) + temp6*temp1*&
+         &       zetasdd0(3)
+         temp5 = temp6*temp1*zetasd(3) - m_aved
+         temp20 = 12.0_pr*2*3*zetas(3) - 2*27.0_pr - 2.0_pr*3*4*(zetas(3)*&
+         &       zetas(3))
+         temp19 = temp1*zetasd(3)*zetasd0(3)
+         temp18 = zetasd(3)*temp1d + temp1*zetasdd(3)
+         temp17 = 2*2*(-zetas(3) + 1.0_pr)*(-zetas(3) + 2.0_pr) + temp8 + 2*2*(&
+         &       -zetas(3) + 2.0_pr)*(-zetas(3) + 1.0_pr) + temp7
+         temp16 = temp1*zetasd(3)*zetasd0(3)
+         temp15 = zetasd(3)*temp1d + temp1*zetasdd(3)
+         temp14 = temp6*temp15 - temp16*temp17
+         temp13 = temp5/temp2
+         c1ddd = c1ddd + temp20*(zetasd0(3)*(zetasd(3)*temp1d0 + temp1*&
+         &       zetasdd0(3)) + temp1*zetasd(3)*zetasd0d(3)) + temp19*(6*12.0_pr -&
+         &       2.0_pr*3*4*2*zetas(3))*zetasd1(3) + temp18*temp10d + temp10*(&
+         &       temp1d*zetasdd0(3) + zetasd(3)*temp1dd + zetasdd(3)*temp1d0 + temp1*&
+         &       zetasddd(3)) + temp14*temp9d + temp9*(temp15*temp6d + temp6*(&
+         &       temp1d*zetasdd0(3) + zetasd(3)*temp1dd + zetasdd(3)*temp1d0 + temp1*&
+         &       zetasddd(3)) - temp17*(zetasd0(3)*(zetasd(3)*temp1d0 + temp1*&
+         &       zetasdd0(3)) + temp1*zetasd(3)*zetasd0d(3)) - temp16*(temp8d - 2*2**2*&
+         &       (3.0 - 2*zetas(3))*zetasd1(3) + temp7d)) + temp13*(tempd1d - temp2d*&
+         &       temp9d - temp9*temp2dd) + (tempd1 - temp9*temp2d)*(temp5d - temp13*&
+         &       temp2d0)/temp2
+         c1dd = c1dd + temp19*temp20 + temp10*temp18 + temp9*temp14 + (&
+         &       tempd1 - temp9*temp2d)*temp13
+         c1dd0 = c1dd0 + zetasd(3)*(temp1*temp10d + temp10*temp1d0) + temp10*&
+         &       temp1*zetasdd0(3) + temp9*temp5d + temp5*temp9d
+         c1d = c1d + temp10*(temp1*zetasd(3)) + temp5*temp9
+         c1d0d = c1d0d + tempd1*temp1d0 + temp1*tempd1d + temp1d*tempd4 + &
+         &       temp*temp1dd
+         c1d0 = c1d0 + temp1*tempd1 + temp*temp1d
+         c1d1 = c1d1 + temp1*tempd4 + temp*temp1d0
+         c1 = c1 + temp*temp1
+         temp20 = c1d/(c1*c1)
+         temp10d = (c1dd0 - temp20*2*c1*c1d1)/c1**2
+         temp10 = temp20
+         temp20 = 2*temp10*c1
+         temp19 = (c1dd - temp20*c1d0)/(c1*c1)
+         c1ddd = -((c1ddd - c1d0*(c1*2*temp10d + 2*temp10*c1d1) - temp20*c1d0d -&
+         &       temp19*2*c1*c1d1)/c1**2)
+         c1dd = -temp19
+         c1dd0 = -temp10d
+         c1d = -temp10
+         temp20 = c1d0/(c1*c1)
+         c1d0d = -((c1d0d - temp20*2*c1*c1d1)/c1**2)
+         c1d0 = -temp20
+         c1d1 = -(c1d1/c1**2)
+         c1 = 1._pr/c1
+         ! Eq. A.11 Gross & Sadowski (2001)
+         ! 1st order term (Takes 2 * PI)
+         temp10d = rho_dispd*i1d1 + i1*rho_dispdd0 + i1d*rho_dispd1 + &
+         &       rho_disp*i1dd0
+         temp10 = i1*rho_dispd + rho_disp*i1d
+         temp20 = rho_dispd*i1d0 + i1*rho_dispdd + i1d*rho_dispd0 + &
+         &       rho_disp*i1dd
+         temp19 = i1*rho_dispd0 + rho_disp*i1d0
+         a1_term_dispddd = -(pi*2.0_pr*(m2_es3d0*temp10d + temp10*m2_es3d0d +&
+         &       temp20*m2_es3d1 + m2_es3*(i1d0*rho_dispdd0 + rho_dispd*i1d0d +&
+         &       rho_dispdd*i1d1 + i1*rho_dispddd + rho_dispd0*i1dd0 + i1d*rho_dispd0d +&
+         &       i1dd*rho_dispd1 + rho_disp*i1ddd) + temp19*m2_es3dd0 + m2_es3d*(&
+         &       rho_dispd0*i1d1 + i1*rho_dispd0d + i1d0*rho_dispd1 + rho_disp*i1d0d) +&
+         &       m2_es3dd*(i1*rho_dispd1 + rho_disp*i1d1) + rho_disp*i1*m2_es3ddd))
+         a1_term_dispdd = -(pi*2.0_pr*(temp10*m2_es3d0 + m2_es3*temp20 +&
+         &       m2_es3d*temp19 + rho_disp*i1*m2_es3dd))
+         a1_term_dispdd0 = -(pi*2.0_pr*(temp10*m2_es3d1 + m2_es3*temp10d +&
+         &       m2_es3d*(i1*rho_dispd1 + rho_disp*i1d1) + rho_disp*i1*m2_es3dd0))
+         a1_term_dispd = -(pi*2.0_pr*(m2_es3*temp10 + rho_disp*i1*m2_es3d))
+         temp20 = i1*rho_dispd0 + rho_disp*i1d0
+         a1_term_dispd0d = -(pi*2.0_pr*(temp20*m2_es3d1 + m2_es3*(rho_dispd0*&
+         &       i1d1 + i1*rho_dispd0d + i1d0*rho_dispd1 + rho_disp*i1d0d) + m2_es3d0*(i1&
+         &       *rho_dispd1 + rho_disp*i1d1) + rho_disp*i1*m2_es3d0d))
+         a1_term_dispd0 = -(pi*2.0_pr*(m2_es3*temp20 + rho_disp*i1*m2_es3d0))
+         a1_term_dispd1 = -(pi*2.0_pr*(m2_es3*(i1*rho_dispd1 + rho_disp*i1d1)&
+         &       + rho_disp*i1*m2_es3d1))
+         a1_term_disp = -(2.0_pr*pi*rho_disp*i1*m2_es3)
+         ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+         temp2dd = m_ave*(rho_dispd0*m2_e2s3d1 + m2_e2s3*rho_dispd0d +&
+         &       m2_e2s3d0*rho_dispd1 + rho_disp*m2_e2s3d0d)
+         temp2d = m_ave*(m2_e2s3*rho_dispd0 + rho_disp*m2_e2s3d0)
+         temp2d0 = m_ave*(m2_e2s3*rho_dispd1 + rho_disp*m2_e2s3d1)
+         temp2 = rho_disp*m_ave*m2_e2s3
+         temp10d = m_ave*rho_dispdd0 + m_aved*rho_dispd1
+         temp10 = m_ave*rho_dispd + m_aved*rho_disp
+         temp9d = temp10*m2_e2s3d1 + m2_e2s3*temp10d + m_ave*(m2_e2s3d*&
+         &       rho_dispd1 + rho_disp*m2_e2s3dd0)
+         temp9 = m2_e2s3*temp10 + m_ave*rho_disp*m2_e2s3d
+         temp8d = c1d*i2d1 + i2*c1dd0 + i2d*c1d1 + c1*i2dd0
+         temp8 = i2*c1d + c1*i2d
+         temp20 = i2*c1d0 + c1*i2d0
+         temp19 = m_ave*rho_dispdd + m_aved*rho_dispd0
+         temp18 = temp10*m2_e2s3d0 + m2_e2s3*temp19 + m_ave*(m2_e2s3d*&
+         &       rho_dispd0 + rho_disp*m2_e2s3dd)
+         temp17 = c1d*i2d0 + i2*c1dd + i2d*c1d0 + c1*i2dd
+         a2_term_dispddd = -(pi*(temp20*temp9d + temp9*(c1d0*i2d1 + i2*c1d0d +&
+         &       i2d0*c1d1 + c1*i2d0d) + temp18*(i2*c1d1 + c1*i2d1) + c1*i2*(m2_e2s3d0*&
+         &       temp10d + temp10*m2_e2s3d0d + temp19*m2_e2s3d1 + m2_e2s3*(m_ave*&
+         &       rho_dispddd + m_aved*rho_dispd0d) + m_ave*(rho_dispd0*m2_e2s3dd0 +&
+         &       m2_e2s3d*rho_dispd0d + m2_e2s3dd*rho_dispd1 + rho_disp*m2_e2s3ddd)) +&
+         &       temp2d*temp8d + temp8*temp2dd + temp17*temp2d0 + temp2*(i2d0*c1dd0 + c1d&
+         &       *i2d0d + c1dd*i2d1 + i2*c1ddd + c1d0*i2dd0 + i2d*c1d0d + i2dd*c1d1 + c1*&
+         &       i2ddd)))
+         a2_term_dispdd = -(pi*(temp9*temp20 + c1*i2*temp18 + temp8*temp2d +&
+         &       temp2*temp17))
+         a2_term_dispdd0 = -(pi*(temp9*(i2*c1d1 + c1*i2d1) + c1*i2*temp9d + temp8&
+         &       *temp2d0 + temp2*temp8d))
+         a2_term_dispd = -(pi*(c1*i2*temp9 + temp2*temp8))
+         temp20 = c1*temp2d + temp2*c1d0
+         a2_term_dispd0d = -(pi*(temp20*i2d1 + i2*(temp2d*c1d1 + c1*temp2dd +&
+         &       c1d0*temp2d0 + temp2*c1d0d) + i2d0*(c1*temp2d0 + temp2*c1d1) + temp2*c1*&
+         &       i2d0d))
+         a2_term_dispd0 = -(pi*(i2*temp20 + temp2*c1*i2d0))
+         a2_term_dispd1 = -(pi*(i2*(c1*temp2d0 + temp2*c1d1) + temp2*c1*i2d1))
+         a2_term_disp = -(pi*(temp2*(c1*i2)))
+         ! Sum and make extensive
+         ar_dispersionddd = a1_term_dispddd + a2_term_dispddd
+         ar_dispersiondd = a1_term_dispdd + a2_term_dispdd
+         ar_dispersiondd0 = a1_term_dispdd0 + a2_term_dispdd0
+         ar_dispersiond = a1_term_dispd + a2_term_dispd
+         ar_dispersiond0d = a1_term_dispd0d + a2_term_dispd0d
+         ar_dispersiond0 = a1_term_dispd0 + a2_term_dispd0
+         ar_dispersiond1 = a1_term_dispd1 + a2_term_dispd1
+         ar_dispersion = a1_term_disp + a2_term_disp
+      ELSE
+         ar_dispersion = 0.0_pr
+         ar_dispersiond = 0.0_pr
+         ar_dispersiondd = 0.0_pr
+         ar_dispersiond0 = 0.0_pr
+         ar_dispersiondd0 = 0.0_pr
+         ar_dispersionddd = 0.0_pr
+         ar_dispersiond1 = 0.0_pr
+         ar_dispersiond0d = 0.0_pr
+      END IF
+      ! Final evaluation
+      temp2dd = m_ave*ar_hsd0d + ar_chaind0d + ar_dispersiond0d
+      temp2d = m_ave*ar_hsd0 + ar_chaind0 + ar_dispersiond0
+      temp2d0 = m_ave*ar_hsd1 + ar_chaind1 + ar_dispersiond1
+      temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
+      temp10d = n_totd*td1
+      temp10 = n_tot*td + n_totd*t
+      temp9d = m_aved*ar_hsd1 + m_ave*ar_hsdd0 + ar_chaindd0 + &
+      &     ar_dispersiondd0
+      temp9 = m_aved*ar_hs + m_ave*ar_hsd + ar_chaind + ar_dispersiond
+      temp20 = m_aved*ar_hsd0 + m_ave*ar_hsdd + ar_chaindd + &
+      &     ar_dispersiondd
+      arvalddd = r*(temp2d*temp10d + temp10*temp2dd + n_totd*td0*temp2d0 + n_tot&
+      &     *(td0*temp9d + temp20*td1 + t*(m_aved*ar_hsd0d + m_ave*ar_hsddd +&
+      &     ar_chainddd + ar_dispersionddd)))
+      arvaldd = r*(temp10*temp2d + n_totd*td0*temp2 + n_tot*(td0*temp9 + t*&
+      &     temp20))
+      arvaldd0 = r*(temp10*temp2d0 + temp2*temp10d + n_tot*(temp9*td1 + t*temp9d&
+      &     ))
+      arvald = r*(temp2*temp10 + n_tot*(t*temp9))
+      arvald0d = r*n_tot*(td0*temp2d0 + temp2d*td1 + t*temp2dd)
+      arvald0 = r*n_tot*(temp2*td0 + t*temp2d)
+      arvald1 = r*n_tot*(temp2*td1 + t*temp2d0)
+      arval = r*(t*n_tot*temp2)
+   end subroutine AR_D_D_D
 
-   type(PcSaft) function init_pcsaft(m, sigma, epsilon_k, kij) result(model)
+   !  Differentiation of ar_d in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval arvald
+   !   with respect to varying inputs: t v
+   !   RW status of diff variables: t:in v:in arval:out arvald:out
+   !  Differentiation of ar in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval
+   !   with respect to varying inputs: n t v
+   !   RW status of diff variables: n:in t:in v:in arval:out
+   SUBROUTINE AR_D_D(model, n, nd, v, vd0, vd, t, td0, td, arval, arvald0&
+   &   , arvald, arvaldd)
+      IMPLICIT NONE
+      class(PCSAFT), INTENT(IN) :: model
+      REAL(pr), INTENT(IN) :: n(:), v, t
+      REAL(pr), INTENT(IN) :: vd0, td0
+      REAL(pr), INTENT(IN) :: nd(:), vd, td
+      REAL(pr), INTENT(OUT) :: arval
+      REAL(pr), INTENT(OUT) :: arvald0
+      REAL(pr), INTENT(OUT) :: arvald
+      REAL(pr), INTENT(OUT) :: arvaldd
+      ! Auxiliars
+      INTEGER :: i, j, k
+      ! Mole fractions
+      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: xd(SIZE(n))
+      ! Total moles
+      REAL(pr) :: n_tot
+      REAL(pr) :: n_totd
+      ! Number of components
+      INTEGER :: nc
+      ! Average number of segments
+      REAL(pr) :: m_ave
+      REAL(pr) :: m_aved
+      ! Internal variables declarations
+      ! Diameter declarations
+      REAL(pr) :: d(SIZE(n))
+      REAL(pr) :: dd0(SIZE(n))
+      REAL(pr) :: dd(SIZE(n))
+      REAL(pr) :: ddd(SIZE(n))
+      ! Zetas declarations
+      REAL(pr) :: zetas(0:3)
+      REAL(pr) :: zetasd0(0:3)
+      REAL(pr) :: zetasd(0:3)
+      REAL(pr) :: zetasdd(0:3)
+      REAL(pr) :: rho
+      REAL(pr) :: rhod0
+      REAL(pr) :: rhod
+      REAL(pr) :: rhodd
+      REAL(pr) :: eta
+      REAL(pr) :: etad0
+      REAL(pr) :: etad
+      REAL(pr) :: etadd
+      ! Ar hard-sphere contribution declarations
+      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0
+      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+      REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd
+      REAL(pr) :: ar_hs
+      REAL(pr) :: ar_hsd0
+      REAL(pr) :: ar_hsd
+      REAL(pr) :: ar_hsdd
+      ! Ar chain contribution declarations
+      REAL(pr) :: g_ii
+      REAL(pr) :: g_iid0
+      REAL(pr) :: g_iid
+      REAL(pr) :: g_iidd
+      REAL(pr) :: di_2
+      REAL(pr) :: di_2d0
+      REAL(pr) :: di_2d
+      REAL(pr) :: di_2dd
+      REAL(pr) :: ar_chain
+      REAL(pr) :: ar_chaind0
+      REAL(pr) :: ar_chaind
+      REAL(pr) :: ar_chaindd
+      ! Ar dispersion contribution declarations
+      REAL(pr) :: rho_disp
+      REAL(pr) :: rho_dispd0
+      REAL(pr) :: rho_dispd
+      REAL(pr) :: rho_dispdd
+      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+      REAL(pr) :: m2_es3d0, m2_e2s3d0, i1d0, i2d0, c1d0
+      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
+      REAL(pr) :: m2_es3dd, m2_e2s3dd, i1dd, i2dd, c1dd
+      REAL(pr) :: term_disp, a_k, b_k
+      REAL(pr) :: term_dispd, a_kd, b_kd
+      REAL(pr) :: a1_term_disp, a2_term_disp
+      REAL(pr) :: a1_term_dispd0, a2_term_dispd0
+      REAL(pr) :: a1_term_dispd, a2_term_dispd
+      REAL(pr) :: a1_term_dispdd, a2_term_dispdd
+      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: ar_dispersion
+      REAL(pr) :: ar_dispersiond0
+      REAL(pr) :: ar_dispersiond
+      REAL(pr) :: ar_dispersiondd
+      ! Attributes declarations as variables
+      REAL(pr) :: m(SIZE(n))
+      REAL(pr) :: sigma(SIZE(n))
+      REAL(pr) :: epsilon_k(SIZE(n))
+      REAL(pr) :: kij(SIZE(n), SIZE(n))
+      INTRINSIC SUM
+      INTRINSIC EXP
+      INTRINSIC LOG
+      INTRINSIC ALLOCATED
+      INTRINSIC SQRT
+      REAL(pr) :: arg1
+      REAL(pr) :: arg1d0
+      REAL(pr) :: arg1d
+      REAL(pr) :: arg1dd
+      INTRINSIC SIZE
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d0
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10dd
+      REAL(pr) :: result1
+      REAL(pr) :: temp
+      REAL(pr) :: tempd1
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0d
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd
+      REAL(pr), DIMENSION(SIZE(n)) :: tempdd
+      REAL(pr) :: temp1
+      REAL(pr) :: temp1d
+      REAL(pr) :: temp2
+      REAL(pr) :: temp2d
+      REAL(pr) :: tempd0
+      REAL(pr) :: tempd0d
+
+      REAL(pr) :: temp3
+      REAL(pr), DIMENSION(SIZE(n)) :: temp4
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd2
+      REAL(pr) :: temp5
+      REAL(pr) :: temp6
+      REAL(pr) :: temp7
+      REAL(pr) :: temp8
+      REAL(pr) :: temp9
+      REAL(pr) :: temp10
+      REAL(pr) :: tempd3
+      LOGICAL, DIMENSION(SIZE(n)) :: mask
+      LOGICAL, DIMENSION(SIZE(n)) :: mask0
+      LOGICAL, DIMENSION(SIZE(n)) :: mask1
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      ! Residual Helmholtz free energy calculation
+      ! Mole fractions
+      temp = SUM(n)
+      xd = (nd - n*SUM(nd)/temp)/temp
+      x = n/temp
+      ! Total moles
+      n_totd = SUM(nd)
+      n_tot = SUM(n)
+      ! Number of components
+      nc = SIZE(n)
+      m_ave = 0.0_pr
+      m_aved = 0.0_pr
+      DO i = 1, nc
+         ! Segment average
+         m_aved = m_aved + m(i)*xd(i)
+         m_ave = m_ave + x(i)*m(i)
+      END DO
+      dd = 0.0_pr
+      ddd = 0.0_pr
+      dd0 = 0.0_pr
+      ! Diameter calculation
+      DO i = 1, SIZE(n)
+         temp3 = 3.0_pr*epsilon_k(i)*td/(t*t)
+         arg1dd = -(temp3*2*td0/t)
+         arg1d = temp3
+         arg1d0 = epsilon_k(i)*3.0_pr*td0/t**2
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         temp3 = EXP(arg1)
+         ddd(i) = -(sigma(i)*0.12_pr*(arg1d*EXP(arg1)*arg1d0 + temp3*arg1dd))
+         dd(i) = -(sigma(i)*0.12_pr*(temp3*arg1d))
+         dd0(i) = -(sigma(i)*0.12_pr*EXP(arg1)*arg1d0)
+         d(i) = sigma(i)*(1.0_pr - 0.12_8*EXP(arg1))
+      END DO
+      ! Zetas calculation
+      ! Number density [1/A^3]
+      temp3 = SUM(n)/(1.0e27_pr*v)
+      tempd1 = -(temp3*vd0/v)
+      temp = temp3
+      temp3 = (SUM(nd) - 1.0e27_pr*vd*temp)/(1.0e27_8*v)
+      rhodd = n_avo*(-(vd*1.0e27_pr*tempd1) - temp3*1.0e27_8*vd0)/(1.0e27_8*v&
+      &     )
+      rhod = n_avo*temp3
+      rhod0 = n_avo*tempd1
+      rho = n_avo*temp
+      zetas = 0.0_pr
+      zetasd = 0.0_pr
+      tempdd = 0.0_pr
+      zetasd0 = 0.0_pr
+      zetasdd = 0.0_pr
+      DO k = 0, 3
+         mask = d .LE. 0.0 .AND. k .EQ. 0.0
+         WHERE (mask)
+            temp0d = 0.0_pr
+         ELSEWHERE
+            temp0d = k*d**(k - 1)*dd0
+         END WHERE
+         temp0 = d**k
+         mask0 = d .LE. 0.0 .AND. k .EQ. 0.0
+         WHERE (mask0)
+            tempdd = 0.0_pr
+            tempd = 0.0_pr
+         ELSEWHERE
+            temp4 = d**(k - 1)
+            mask1 = d .LE. 0.0 .AND. k - 1 .EQ. 0.0
+            WHERE (mask1)
+               tempd2 = 0.0_pr
+            ELSEWHERE
+               tempd2 = (k - 1)*d**(k - 2)*dd0
+            END WHERE
+            tempdd = k*(dd*tempd2 + temp4*ddd)
+            tempd = k*(temp4*dd)
+         END WHERE
+         arg10dd = m*(xd*temp0d + x*tempdd)
+         arg10d = m*(temp0*xd + x*tempd)
+         arg10d0 = m*x*temp0d
+         arg10 = m*(x*temp0)
+         tempd1 = SUM(arg10d0)
+         temp = SUM(arg10)
+         temp3 = SUM(arg10d)
+         zetasdd(k) = pi*(rhod*tempd1/6.0_pr + temp*rhodd/6.0_8 + temp3*rhod0/&
+         &       6.0_pr + rho*SUM(arg10dd)/6.0_8)
+         zetasd(k) = pi*(temp/6.0_pr*rhod + rho/6.0_8*temp3)
+         zetasd0(k) = pi*(temp*rhod0/6.0_pr + rho*tempd1/6.0_8)
+         zetas(k) = pi*(rho/6.0_pr*temp)
+      END DO
+      etadd = -zetasdd(3)
+      etad = -zetasd(3)
+      etad0 = -zetasd0(3)
+      eta = 1.0_pr - zetas(3)
+      ! Ar hard-sphere contribution
+      temp3 = zetas(1)/eta
+      tempd1 = (zetasd0(1) - temp3*etad0)/eta
+      temp = temp3
+      temp3 = zetasd(1) - temp*etad
+      temp5 = zetas(2)/eta
+      term1_hsdd = 3.0_pr*(temp3*(zetasd0(2) - temp5*etad0)/eta + temp5*(&
+      &     zetasdd(1) - etad*tempd1 - temp*etadd) + zetasd(2)*tempd1 + temp*zetasdd(2&
+      &     ))
+      term1_hsd = 3.0_pr*(temp5*temp3 + temp*zetasd(2))
+      term1_hsd0 = 3.0_pr*(zetas(2)*tempd1 + temp*zetasd0(2))
+      term1_hs = 3.0_pr*(temp*zetas(2))
+      tempd1 = eta**2*zetasd0(3) + zetas(3)*2*eta*etad0
+      temp = zetas(3)*(eta*eta)
+      temp5 = zetas(2)*zetas(2)*zetas(2)/temp
+      temp1d = (3*zetas(2)**2*zetasd0(2) - temp5*tempd1)/temp
+      temp1 = temp5
+      temp5 = 3*(zetas(2)*zetas(2))
+      temp3 = eta*eta*zetasd(3) + 2*zetas(3)*eta*etad
+      temp6 = (temp5*zetasd(2) - temp1*temp3)/temp
+      term2_hsdd = (zetasd(2)*3*2*zetas(2)*zetasd0(2) + temp5*zetasdd(2) -&
+      &     temp3*temp1d - temp1*(zetasd(3)*2*eta*etad0 + eta**2*zetasdd(3) + eta*&
+      &     etad*2*zetasd0(3) + 2*zetas(3)*(etad*etad0 + eta*etadd)) - temp6*tempd1)&
+      &     /temp
+      term2_hsd = temp6
+      term2_hsd0 = temp1d
+      term2_hs = temp1
+      temp1d = etad0/eta
+      temp1 = LOG(eta)
+      temp6 = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
+      tempd1 = (3*zetas(2)**2*zetasd0(2) - temp6*2*zetas(3)*zetasd0(3))/&
+      &     zetas(3)**2
+      temp = temp6
+      temp6 = 2*temp*zetas(3)
+      temp5 = 3*(zetas(2)*zetas(2))
+      temp3 = (temp5*zetasd(2) - temp6*zetasd(3))/(zetas(3)*zetas(3))
+      temp7 = etad/eta
+      term3_hsdd = (temp3 - zetasd(0))*temp1d + temp1*((zetasd(2)*3*2*zetas(&
+      &     2)*zetasd0(2) + temp5*zetasdd(2) - zetasd(3)*(zetas(3)*2*tempd1 + 2*temp&
+      &     *zetasd0(3)) - temp6*zetasdd(3) - temp3*2*zetas(3)*zetasd0(3))/zetas(3&
+      &     )**2 - zetasdd(0)) + temp7*(tempd1 - zetasd0(0)) + (temp - zetas(0))*(&
+      &     etadd - temp7*etad0)/eta
+      term3_hsd = temp1*(temp3 - zetasd(0)) + (temp - zetas(0))*temp7
+      term3_hsd0 = temp1*(tempd1 - zetasd0(0)) + (temp - zetas(0))*temp1d
+      term3_hs = (temp - zetas(0))*temp1
+      ! A_hs/RT
+      temp7 = (term1_hs + term2_hs + term3_hs)/zetas(0)
+      temp1d = (term1_hsd0 + term2_hsd0 + term3_hsd0 - temp7*zetasd0(0))/zetas(0&
+      &     )
+      temp1 = temp7
+      temp7 = (term1_hsd + term2_hsd + term3_hsd - temp1*zetasd(0))/zetas(0)
+      ar_hsdd = (term1_hsdd + term2_hsdd + term3_hsdd - zetasd(0)*temp1d - temp1*&
+      &     zetasdd(0) - temp7*zetasd0(0))/zetas(0)
+      ar_hsd = temp7
+      ar_hsd0 = temp1d
+      ar_hs = temp1
+      ! Ar chain contribution
+      ar_chain = 0.0_pr
+      ar_chaind = 0.0_pr
+      ar_chaindd = 0.0_pr
+      ar_chaind0 = 0.0_pr
+      DO i = 1, SIZE(x)
+         di_2dd = ddd(i)/2.0_pr
+         di_2d = dd(i)/2.0_pr
+         di_2d0 = dd0(i)/2.0_pr
+         di_2 = d(i)/2.0_pr
+         temp7 = di_2*zetas(2)/(eta*eta)
+         temp1d = (zetas(2)*di_2d0 + di_2*zetasd0(2) - temp7*2*eta*etad0)/eta**&
+         &       2
+         temp1 = temp7
+         tempd1 = 3*eta**2*etad0
+         temp = eta*eta*eta
+         temp7 = di_2*di_2/temp
+         temp2d = zetas(2)**2*(2*di_2*di_2d0 - temp7*tempd1)/temp + temp7*2*&
+         &       zetas(2)*zetasd0(2)
+         temp2 = temp7*(zetas(2)*zetas(2))
+         temp7 = 2*temp1*eta
+         temp6 = (zetas(2)*di_2d + di_2*zetasd(2) - temp7*etad)/(eta*eta)
+         temp5 = etad/(eta*eta)
+         temp3 = 2*(zetas(2)*zetas(2))
+         temp8 = 2*(di_2*di_2)
+         temp9 = 3*(eta*eta)
+         temp10 = (temp3*di_2*di_2d + temp8*zetas(2)*zetasd(2) - temp9*temp2*&
+         &       etad)/temp
+         g_iidd = 3.0_pr*(di_2d*zetasd0(2) + zetas(2)*di_2dd + zetasd(2)*di_2d0 +&
+         &       di_2*zetasdd(2) - etad*(eta*2*temp1d + 2*temp1*etad0) - temp7*etadd -&
+         &       temp6*2*eta*etad0)/eta**2 - (etadd - temp5*2*eta*etad0)/eta**2 + &
+         &       2.0_pr*(di_2*di_2d*2**2*zetas(2)*zetasd0(2) + temp3*(di_2d*di_2d0 +&
+         &       di_2*di_2dd) + zetas(2)*zetasd(2)*2**2*di_2*di_2d0 + temp8*(zetasd(2&
+         &       )*zetasd0(2) + zetas(2)*zetasdd(2)) - temp2*etad*3*2*eta*etad0 - temp9&
+         &       *(etad*temp2d + temp2*etadd) - temp10*tempd1)/temp
+         g_iid = 3.0_pr*temp6 - temp5 + 2.0_8*temp10
+         g_iid0 = 3.0_pr*temp1d - etad0/eta**2 + 2.0_8*temp2d
+         g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
+         ! Summation
+         temp2d = g_iid0/g_ii
+         temp2 = LOG(g_ii)
+         ar_chaindd = ar_chaindd - (m(i) - 1.0_pr)*(xd(i)*temp2d + x(i)*(g_iidd -&
+         &       g_iid*g_iid0/g_ii)/g_ii)
+         ar_chaind = ar_chaind - (m(i) - 1.0_pr)*(temp2*xd(i) + x(i)*g_iid/g_ii)
+         ar_chaind0 = ar_chaind0 - (m(i) - 1.0_pr)*x(i)*temp2d
+         ar_chain = ar_chain - (m(i) - 1.0_pr)*(x(i)*temp2)
+      END DO
+      ! Ar dispersion contribution
+      IF (ALLOCATED(model%kij)) THEN
+         ! Number density [1/A^3]
+         temp10 = n_tot/(1.0e27_pr*v)
+         temp2d = -(temp10*vd0/v)
+         temp2 = temp10
+         temp10 = (n_totd - 1.0e27_pr*vd*temp2)/(1.0e27_pr*v)
+         rho_dispdd = n_avo*(-(vd*1.0e27_pr*temp2d) - temp10*1.0e27_pr*vd0)/(&
+         &       1.0e27_pr*v)
+         rho_dispd = n_avo*temp10
+         rho_dispd0 = n_avo*temp2d
+         rho_disp = n_avo*temp2
+         ! 1. Mixture Averages (Same as before)
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
+         m2_e2s3d = 0.0_pr
+         m2_es3d = 0.0_pr
+         m2_e2s3d0 = 0.0_pr
+         m2_es3d0 = 0.0_pr
+         m2_es3dd = 0.0_pr
+         m2_e2s3dd = 0.0_pr
+         DO i = 1, nc
+            DO j = 1, nc
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               kij_val = kij(i, j)
+               arg1 = epsilon_k(i)*epsilon_k(j)
+               result1 = SQRT(arg1)
+               eps_ij = result1*(1.0_pr - kij_val)
+               temp2 = m(i)*m(j)*(sig_ij*sig_ij*sig_ij)
+               term_dispd = temp2*(x(j)*xd(i) + x(i)*xd(j))
+               term_disp = temp2*(x(i)*x(j))
+               temp10 = term_disp*td/t
+               temp9 = (term_dispd - temp10)/t
+               m2_es3dd = m2_es3dd + eps_ij*(temp10/t - temp9)*td0/t
+               m2_es3d = m2_es3d + eps_ij*temp9
+               temp10 = term_disp*eps_ij/t
+               m2_es3d0 = m2_es3d0 - temp10*td0/t
+               m2_es3 = m2_es3 + temp10
+               temp10 = term_disp/(t*t)
+               temp2d = -(temp10*2*td0/t)
+               temp2 = temp10
+               temp10 = (term_dispd - 2*td*temp2*t)/(t*t)
+               m2_e2s3dd = m2_e2s3dd + eps_ij**2*(-(td*2*(t*temp2d + temp2*td0)&
+               &           ) - temp10*2*t*td0)/t**2
+               m2_e2s3d = m2_e2s3d + eps_ij*eps_ij*temp10
+               m2_e2s3d0 = m2_e2s3d0 + eps_ij**2*temp2d
+               m2_e2s3 = m2_e2s3 + eps_ij*eps_ij*temp2
+            END DO
+         END DO
+         ! 2. Integrals I1 and I2 (Same as before)
+         i1 = 0.0_pr
+         i2 = 0.0_pr
+         i1d = 0.0_pr
+         i2d = 0.0_pr
+         i1d0 = 0.0_pr
+         i2d0 = 0.0_pr
+         i1dd = 0.0_pr
+         i2dd = 0.0_pr
+         DO k = 0, 6
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            a_kd = (a_coeffs(1, k)*(1.0 - temp2)/m_ave + a_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            a_k = a_coeffs(0, k) + a_coeffs(1, k)*temp2 + a_coeffs(2, k)*&
+            &         temp1
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            b_kd = (b_coeffs(1, k)*(1.0 - temp2)/m_ave + b_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
+            &         temp1
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               temp2d = 0.0_pr
+            ELSE
+               temp2d = k*zetas(3)**(k - 1)*zetasd0(3)
+            END IF
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               tempd0 = 0.0_pr
+               tempd0d = 0.0_pr
+            ELSE
+               temp10 = zetas(3)**(k - 1)
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  tempd3 = 0.0_pr
+               ELSE
+                  tempd3 = (k - 1)*zetas(3)**(k - 2)*zetasd0(3)
+               END IF
+               tempd0d = k*(zetasd(3)*tempd3 + temp10*zetasdd(3))
+               tempd0 = k*(temp10*zetasd(3))
+            END IF
+            i1dd = i1dd + a_kd*temp2d + a_k*tempd0d
+            i1d = i1d + temp2*a_kd + a_k*tempd0
+            i1d0 = i1d0 + a_k*temp2d
+            i1 = i1 + a_k*temp2
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               temp2d = 0.0_pr
+            ELSE
+               temp2d = k*zetas(3)**(k - 1)*zetasd0(3)
+            END IF
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               tempd0 = 0.0_pr
+               tempd0d = 0.0_pr
+            ELSE
+               temp10 = zetas(3)**(k - 1)
+               IF (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0) THEN
+                  tempd3 = 0.0_pr
+               ELSE
+                  tempd3 = (k - 1)*zetas(3)**(k - 2)*zetasd0(3)
+               END IF
+               tempd0d = k*(zetasd(3)*tempd3 + temp10*zetasdd(3))
+               tempd0 = k*(temp10*zetasd(3))
+            END IF
+            i2dd = i2dd + b_kd*temp2d + b_k*tempd0d
+            i2d = i2d + temp2*b_kd + b_k*tempd0
+            i2d0 = i2d0 + b_k*temp2d
+            i2 = i2 + b_k*temp2
+         END DO
+         ! 3. Compressibility C1 (Same as before)
+         temp2d = 4*eta**3*etad0
+         temp2 = eta**4
+         temp1d = -(m_ave*temp2d/temp2**2)
+         temp1 = m_ave/temp2
+         tempd1 = (8.0_pr - 2.0_pr*2*zetas(3))*zetasd0(3)
+         temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+         temp10 = temp/temp2
+         temp9 = 4*(eta*eta*eta)
+         temp8 = m_aved - temp9*temp1*etad
+         c1dd = (8.0_pr - 2*2.0_pr*zetas(3))*(zetasd(3)*temp1d + temp1*zetasdd(&
+         &       3)) - temp1*zetasd(3)*2*2.0_pr*zetasd0(3) - temp10*(temp1*etad*4&
+         &       *3*eta**2*etad0 + temp9*(etad*temp1d + temp1*etadd)) + temp8*(tempd1&
+         &       - temp10*temp2d)/temp2
+         c1d = (8.0_pr - 2*2.0_pr*zetas(3))*(temp1*zetasd(3)) + temp8*temp10
+         c1d0 = temp1*tempd1 + temp*temp1d
+         c1 = temp*temp1 + 1.0_pr
+         temp2d = -(((2.0_pr - zetas(3))**2*2*(1.0_pr - zetas(3)) + (1.0_pr - zetas&
+         &       (3))**2*2*(2.0_pr - zetas(3)))*zetasd0(3))
+         temp2 = (-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr)*((-zetas(3) + 2.0_pr)*&
+         &       (-zetas(3) + 2.0_pr))
+         temp10 = (-m_ave + 1.0_pr)/temp2
+         temp1d = -(temp10*temp2d/temp2)
+         temp1 = temp10
+         tempd1 = (12.0_pr*3*zetas(3)**2 - 27.0_pr*2*zetas(3) - 2.0_pr*4*zetas(&
+         &       3)**3 + 20.0_pr)*zetasd0(3)
+         temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+         &       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+         temp10 = 3*12.0_pr*(zetas(3)*zetas(3)) - 2*27.0_pr*zetas(3) - 4*&
+         &       2.0_pr*(zetas(3)*zetas(3)*zetas(3)) + 20.0_pr
+         temp9 = temp/temp2
+         temp8 = 2*((-zetas(3) + 2.0_pr)*(-zetas(3) + 2.0_pr))
+         temp7 = 2*((-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr))
+         temp6 = temp8*(-zetas(3) + 1.0_pr) + temp7*(-zetas(3) + 2.0_pr)
+         temp5 = temp6*temp1*zetasd(3) - m_aved
+         c1dd = c1dd + temp1*zetasd(3)*(3*12.0_pr*2*zetas(3) - 2*27.0_pr - 4*&
+         &       2.0_pr*3*zetas(3)**2)*zetasd0(3) + temp10*(zetasd(3)*temp1d +&
+         &       temp1*zetasdd(3)) + temp9*(temp6*(zetasd(3)*temp1d + temp1*zetasdd&
+         &       (3)) - temp1*zetasd(3)*((1.0_pr - zetas(3))*2**2*(2.0_pr - zetas(3)) +&
+         &       temp8 + (2.0_pr - zetas(3))*2**2*(1.0_pr - zetas(3)) + temp7)*zetasd0(3)&
+         &       ) + temp5*(tempd1 - temp9*temp2d)/temp2
+         c1d = c1d + temp10*(temp1*zetasd(3)) + temp5*temp9
+         c1d0 = c1d0 + temp1*tempd1 + temp*temp1d
+         c1 = c1 + temp*temp1
+         temp10 = c1d/(c1*c1)
+         c1dd = -((c1dd - temp10*2*c1*c1d0)/c1**2)
+         c1d = -temp10
+         c1d0 = -(c1d0/c1**2)
+         c1 = 1._pr/c1
+         ! Eq. A.11 Gross & Sadowski (2001)
+         ! 1st order term (Takes 2 * PI)
+         temp10 = i1*rho_dispd + rho_disp*i1d
+         a1_term_dispdd = -(pi*2.0_pr*(temp10*m2_es3d0 + m2_es3*(rho_dispd*&
+         &       i1d0 + i1*rho_dispdd + i1d*rho_dispd0 + rho_disp*i1dd) + m2_es3d*(i1*&
+         &       rho_dispd0 + rho_disp*i1d0) + rho_disp*i1*m2_es3dd))
+         a1_term_dispd = -(pi*2.0_pr*(m2_es3*temp10 + rho_disp*i1*m2_es3d))
+         a1_term_dispd0 = -(pi*2.0_pr*(m2_es3*(i1*rho_dispd0 + rho_disp*i1d0)&
+         &       + rho_disp*i1*m2_es3d0))
+         a1_term_disp = -(2.0_pr*pi*rho_disp*i1*m2_es3)
+         ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+         temp2d = m_ave*(m2_e2s3*rho_dispd0 + rho_disp*m2_e2s3d0)
+         temp2 = rho_disp*m_ave*m2_e2s3
+         temp10 = m_ave*rho_dispd + m_aved*rho_disp
+         temp9 = m2_e2s3*temp10 + m_ave*rho_disp*m2_e2s3d
+         temp8 = i2*c1d + c1*i2d
+         a2_term_dispdd = -(pi*(temp9*(i2*c1d0 + c1*i2d0) + c1*i2*(temp10*&
+         &       m2_e2s3d0 + m2_e2s3*(m_ave*rho_dispdd + m_aved*rho_dispd0) + m_ave*(&
+         &       m2_e2s3d*rho_dispd0 + rho_disp*m2_e2s3dd)) + temp8*temp2d + temp2*(c1d&
+         &       *i2d0 + i2*c1dd + i2d*c1d0 + c1*i2dd)))
+         a2_term_dispd = -(pi*(c1*i2*temp9 + temp2*temp8))
+         a2_term_dispd0 = -(pi*(i2*(c1*temp2d + temp2*c1d0) + temp2*c1*i2d0))
+         a2_term_disp = -(pi*(temp2*(c1*i2)))
+         ! Sum and make extensive
+         ar_dispersiondd = a1_term_dispdd + a2_term_dispdd
+         ar_dispersiond = a1_term_dispd + a2_term_dispd
+         ar_dispersiond0 = a1_term_dispd0 + a2_term_dispd0
+         ar_dispersion = a1_term_disp + a2_term_disp
+      ELSE
+         ar_dispersion = 0.0_pr
+         ar_dispersiond = 0.0_pr
+         ar_dispersiondd = 0.0_pr
+         ar_dispersiond0 = 0.0_pr
+      END IF
+      ! Final evaluation
+      temp2d = m_ave*ar_hsd0 + ar_chaind0 + ar_dispersiond0
+      temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
+      temp10 = n_tot*td + n_totd*t
+      temp9 = m_aved*ar_hs + m_ave*ar_hsd + ar_chaind + ar_dispersiond
+      arvaldd = r*(temp10*temp2d + temp2*n_totd*td0 + n_tot*(temp9*td0 + t*(&
+      &     m_aved*ar_hsd0 + m_ave*ar_hsdd + ar_chaindd + ar_dispersiondd)))
+      arvald = r*(temp2*temp10 + n_tot*(t*temp9))
+      arvald0 = r*n_tot*(temp2*td0 + t*temp2d)
+      arval = r*(t*n_tot*temp2)
+   end subroutine AR_D_D
+
+   !  Differentiation of ar_d in reverse (adjoint) mode (with options noISIZE):
+   !   gradient     of useful results: nd n t v arval arvald vd td
+   !   with respect to varying inputs: nd n t v arval arvald vd td
+   !   RW status of diff variables: nd:incr n:incr t:incr v:incr arval:in-zero
+   !                arvald:in-zero vd:incr td:incr
+   !  Differentiation of ar in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval
+   !   with respect to varying inputs: n t v
+   !   RW status of diff variables: n:in t:in v:in arval:out
+   SUBROUTINE AR_D_B(model, n, nb, nd, ndb, v, vb, vd, vdb, t, tb, td, &
+   &   tdb, arval, arvalb, arvald, arvaldb)
+      IMPLICIT NONE
+      class(PCSAFT), INTENT(IN) :: model
+      REAL(pr), INTENT(IN) :: n(:), v, t
+      REAL(pr) :: nb(:), vb, tb
+      REAL(pr), INTENT(IN) :: nd(:), vd, td
+      REAL(pr) :: ndb(:), vdb, tdb
+      REAL(pr) :: arval
+      REAL(pr) :: arvalb
+      REAL(pr) :: arvald
+      REAL(pr) :: arvaldb
+      ! Auxiliars
+      INTEGER :: i, j, k
+      ! Mole fractions
+      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: xb(SIZE(n))
+      REAL(pr) :: xd(SIZE(n))
+      REAL(pr) :: xdb(SIZE(n))
+      ! Total moles
+      REAL(pr) :: n_tot
+      REAL(pr) :: n_totb
+      REAL(pr) :: n_totd
+      REAL(pr) :: n_totdb
+      ! Number of components
+      INTEGER :: nc
+      ! Average number of segments
+      REAL(pr) :: m_ave
+      REAL(pr) :: m_aveb
+      REAL(pr) :: m_aved
+      REAL(pr) :: m_avedb
+      ! Internal variables declarations
+      ! Diameter declarations
+      REAL(pr) :: d(SIZE(n))
+      REAL(pr) :: db(SIZE(n))
+      REAL(pr) :: dd(SIZE(n))
+      REAL(pr) :: ddb(SIZE(n))
+      ! Zetas declarations
+      REAL(pr) :: zetas(0:3)
+      REAL(pr) :: zetasb(0:3)
+      REAL(pr) :: zetasd(0:3)
+      REAL(pr) :: zetasdb(0:3)
+      REAL(pr) :: rho
+      REAL(pr) :: rhob
+      REAL(pr) :: rhod
+      REAL(pr) :: rhodb
+      REAL(pr) :: eta
+      REAL(pr) :: etab
+      REAL(pr) :: etad
+      REAL(pr) :: etadb
+      ! Ar hard-sphere contribution declarations
+      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: term1_hsb, term2_hsb, term3_hsb
+      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+      REAL(pr) :: term1_hsdb, term2_hsdb, term3_hsdb
+      REAL(pr) :: ar_hs
+      REAL(pr) :: ar_hsb
+      REAL(pr) :: ar_hsd
+      REAL(pr) :: ar_hsdb
+      ! Ar chain contribution declarations
+      REAL(pr) :: g_ii
+      REAL(pr) :: g_iib
+      REAL(pr) :: g_iid
+      REAL(pr) :: g_iidb
+      REAL(pr) :: di_2
+      REAL(pr) :: di_2b
+      REAL(pr) :: di_2d
+      REAL(pr) :: di_2db
+      REAL(pr) :: ar_chain
+      REAL(pr) :: ar_chainb
+      REAL(pr) :: ar_chaind
+      REAL(pr) :: ar_chaindb
+      ! Ar dispersion contribution declarations
+      REAL(pr) :: rho_disp
+      REAL(pr) :: rho_dispb
+      REAL(pr) :: rho_dispd
+      REAL(pr) :: rho_dispdb
+      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+      REAL(pr) :: m2_es3b, m2_e2s3b, i1b, i2b, c1b
+      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
+      REAL(pr) :: m2_es3db, m2_e2s3db, i1db, i2db, c1db
+      REAL(pr) :: term_disp, a_k, b_k
+      REAL(pr) :: term_dispb, a_kb, b_kb
+      REAL(pr) :: term_dispd, a_kd, b_kd
+      REAL(pr) :: term_dispdb, a_kdb, b_kdb
+      REAL(pr) :: a1_term_disp, a2_term_disp
+      REAL(pr) :: a1_term_dispb, a2_term_dispb
+      REAL(pr) :: a1_term_dispd, a2_term_dispd
+      REAL(pr) :: a1_term_dispdb, a2_term_dispdb
+      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: ar_dispersion
+      REAL(pr) :: ar_dispersionb
+      REAL(pr) :: ar_dispersiond
+      REAL(pr) :: ar_dispersiondb
+      ! Attributes declarations as variables
+      REAL(pr) :: m(SIZE(n))
+      REAL(pr) :: sigma(SIZE(n))
+      REAL(pr) :: epsilon_k(SIZE(n))
+      REAL(pr) :: kij(SIZE(n), SIZE(n))
+      INTRINSIC SUM
+      INTRINSIC EXP
+      INTRINSIC LOG
+      INTRINSIC ALLOCATED
+      INTRINSIC SQRT
+      REAL(pr) :: arg1
+      REAL(pr) :: arg1b
+      REAL(pr) :: arg1d
+      REAL(pr) :: arg1db
+      INTRINSIC SIZE
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10b
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10db
+      REAL(pr) :: result1
+      REAL(pr) :: temp
+      REAL(pr) :: tempb
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0b
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd
+      REAL(pr), DIMENSION(SIZE(n)) :: tempdb
+      REAL(pr) :: temp1
+      REAL(pr) :: temp1b
+      REAL(pr) :: temp2
+      REAL(pr) :: temp2b
+      REAL(pr) :: tempd0
+      REAL(pr) :: tempd0b
+
+      LOGICAL, DIMENSION(SIZE(n)) :: mask
+      REAL(pr), DIMENSION(SIZE(n, 1)) :: tempb0
+      REAL(pr), DIMENSION(SIZE(n, 1)) :: temp3
+      REAL(pr) :: temp4
+      REAL(pr), DIMENSION(SIZE(n, 1)) :: tempb1
+      REAL(pr) :: tempb2
+      REAL(pr), DIMENSION(SIZE(n)) :: tempb3
+      REAL(pr) :: temp5
+      REAL(pr) :: tempb4
+      REAL(pr) :: temp6
+      REAL(pr) :: tempb5
+      REAL(pr) :: temp7
+      REAL(pr) :: tempb6
+      REAL(pr) :: temp8
+      REAL(pr) :: temp9
+      REAL(pr) :: temp10
+      REAL(pr) :: tempb7
+      REAL(pr) :: tempb8
+      REAL(pr) :: tempb9
+      INTEGER :: ad_to
+      INTEGER :: ad_to0
+      INTEGER*4 :: branch
+      INTEGER :: arg11
+      LOGICAL, DIMENSION(SIZE(n)) :: mask0
+      LOGICAL, DIMENSION(SIZE(n)) :: mask1
+      LOGICAL, DIMENSION(SIZE(n)) :: mask2
+      LOGICAL, DIMENSION(SIZE(n)) :: mask3
+      REAL(pr) :: result10
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      ! Residual Helmholtz free energy calculation
+      ! Mole fractions
+      temp = SUM(n)
+      xd = (nd - n*SUM(nd)/temp)/temp
+      x = n/temp
+      ! Total moles
+      n_totd = SUM(nd)
+      n_tot = SUM(n)
+      ! Number of components
+      nc = SIZE(n)
+      m_ave = 0.0_pr
+      m_aved = 0.0_pr
+      DO i = 1, nc
+         ! Segment average
+         m_aved = m_aved + m(i)*xd(i)
+         m_ave = m_ave + x(i)*m(i)
+      END DO
+      dd = 0.0_pr
+      ! Diameter calculation
+      DO i = 1, SIZE(n)
+         arg1d = epsilon_k(i)*3.0_pr*td/t**2
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         dd(i) = -(sigma(i)*0.12_pr*EXP(arg1)*arg1d)
+         d(i) = sigma(i)*(1.0_pr - 0.12_8*EXP(arg1))
+      END DO
+      CALL PUSHINTEGER4(i - 1)
+      ! Zetas calculation
+      ! Number density [1/A^3]
+      CALL PUSHREAL8(temp)
+      temp = SUM(n)/(1.0e27_pr*v)
+      rhod = n_avo*(SUM(nd) - temp*1.0e27_pr*vd)/(1.0e27_8*v)
+      rho = n_avo*temp
+      DO k = 0, 3
+         arg11 = SIZE(n)
+         CALL PUSHREAL8ARRAY(temp0, arg11)
+         temp0 = d**k
+         mask = d .LE. 0.0 .AND. k .EQ. 0.0
+         arg11 = SIZE(n)
+         CALL PUSHREAL8ARRAY(tempd, arg11)
+         WHERE (mask) tempd = 0.0_pr
+         arg11 = SIZE(n)
+         CALL PUSHREAL8ARRAY(tempd, arg11)
+         mask0 = .NOT. mask
+         WHERE (mask0) tempd = k*d**(k - 1)*dd
+         arg10d = m*(temp0*xd + x*tempd)
+         arg10 = m*(x*temp0)
+         CALL PUSHREAL8(temp)
+         temp = SUM(arg10)
+         zetasd(k) = pi*(temp*rhod/6.0_pr + rho*SUM(arg10d)/6.0_8)
+         zetas(k) = pi*(rho/6.0_pr*temp)
+      END DO
+      etad = -zetasd(3)
+      eta = 1.0_pr - zetas(3)
+      ! Ar hard-sphere contribution
+      CALL PUSHREAL8(temp)
+      temp = zetas(1)/eta
+      term1_hsd = 3.0_pr*(zetas(2)*(zetasd(1) - temp*etad)/eta + temp*zetasd(2)&
+      &     )
+      term1_hs = 3.0_pr*(temp*zetas(2))
+      temp = zetas(3)*(eta*eta)
+      temp1 = zetas(2)*zetas(2)*zetas(2)/temp
+      term2_hsd = (3*zetas(2)**2*zetasd(2) - temp1*(eta**2*zetasd(3) + zetas(3&
+      &     )*2*eta*etad))/temp
+      term2_hs = temp1
+      temp1 = LOG(eta)
+      temp = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
+      term3_hsd = temp1*((3*zetas(2)**2*zetasd(2) - temp*2*zetas(3)*zetasd(3&
+      &     ))/zetas(3)**2 - zetasd(0)) + (temp - zetas(0))*etad/eta
+      term3_hs = (temp - zetas(0))*temp1
+      ! A_hs/RT
+      CALL PUSHREAL8(temp1)
+      temp1 = (term1_hs + term2_hs + term3_hs)/zetas(0)
+      ar_hsd = (term1_hsd + term2_hsd + term3_hsd - temp1*zetasd(0))/zetas(0)
+      ar_hs = temp1
+      ! Ar chain contribution
+      ar_chain = 0.0_pr
+      ar_chaind = 0.0_pr
+      DO i = 1, SIZE(x)
+         di_2d = dd(i)/2.0_pr
+         di_2 = d(i)/2.0_pr
+         CALL PUSHREAL8(temp1)
+         temp1 = di_2*zetas(2)/(eta*eta)
+         temp = eta*eta*eta
+         CALL PUSHREAL8(temp2)
+         temp2 = di_2*di_2*(zetas(2)*zetas(2))/temp
+         CALL PUSHREAL8(g_iid)
+         g_iid = 3.0_pr*(zetas(2)*di_2d + di_2*zetasd(2) - temp1*2*eta*etad)/eta&
+         &       **2 - etad/eta**2 + 2.0_pr*(zetas(2)**2*2*di_2*di_2d + di_2**2*2*&
+         &       zetas(2)*zetasd(2) - temp2*3*eta**2*etad)/temp
+         CALL PUSHREAL8(g_ii)
+         g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
+         ! Summation
+         temp2 = LOG(g_ii)
+         ar_chaind = ar_chaind - (m(i) - 1.0_pr)*(temp2*xd(i) + x(i)*g_iid/g_ii)
+         ar_chain = ar_chain - (m(i) - 1.0_pr)*(x(i)*temp2)
+      END DO
+      CALL PUSHINTEGER4(i - 1)
+      ! Ar dispersion contribution
+      IF (ALLOCATED(model%kij)) THEN
+         ! Number density [1/A^3]
+         CALL PUSHREAL8(temp2)
+         temp2 = n_tot/(1.0e27_pr*v)
+         rho_dispd = n_avo*(n_totd - temp2*1.0e27_pr*vd)/(1.0e27_pr*v)
+         rho_disp = n_avo*temp2
+         ! 1. Mixture Averages (Same as before)
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
+         m2_e2s3d = 0.0_pr
+         m2_es3d = 0.0_pr
+         DO i = 1, nc
+            DO j = 1, nc
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               kij_val = kij(i, j)
+               arg1 = epsilon_k(i)*epsilon_k(j)
+               result1 = SQRT(arg1)
+               CALL PUSHREAL8(eps_ij)
+               eps_ij = result1*(1.0_pr - kij_val)
+               CALL PUSHREAL8(temp2)
+               temp2 = m(i)*m(j)*(sig_ij*sig_ij*sig_ij)
+               CALL PUSHREAL8(term_dispd)
+               term_dispd = temp2*(x(j)*xd(i) + x(i)*xd(j))
+               CALL PUSHREAL8(term_disp)
+               term_disp = temp2*(x(i)*x(j))
+               m2_es3d = m2_es3d + eps_ij*(term_dispd - term_disp*td/t)/t
+               m2_es3 = m2_es3 + term_disp*(eps_ij/t)
+               temp2 = term_disp/(t*t)
+               m2_e2s3d = m2_e2s3d + eps_ij**2*(term_dispd - temp2*2*t*td)/t**2
+               m2_e2s3 = m2_e2s3 + eps_ij*eps_ij*temp2
+            END DO
+         END DO
+         ! 2. Integrals I1 and I2 (Same as before)
+         i1 = 0.0_pr
+         i2 = 0.0_pr
+         i1d = 0.0_pr
+         i2d = 0.0_pr
+         DO k = 0, 6
+            CALL PUSHREAL8(temp2)
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            CALL PUSHREAL8(temp1)
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            CALL PUSHREAL8(a_kd)
+            a_kd = (a_coeffs(1, k)*(1.0 - temp2)/m_ave + a_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            CALL PUSHREAL8(a_k)
+            a_k = a_coeffs(0, k) + a_coeffs(1, k)*temp2 + a_coeffs(2, k)*&
+            &         temp1
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            CALL PUSHREAL8(b_kd)
+            b_kd = (b_coeffs(1, k)*(1.0 - temp2)/m_ave + b_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            CALL PUSHREAL8(b_k)
+            b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
+            &         temp1
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               CALL PUSHREAL8(tempd0)
+               tempd0 = 0.0_pr
+               CALL PUSHCONTROL1B(0)
+            ELSE
+               CALL PUSHREAL8(tempd0)
+               tempd0 = k*zetas(3)**(k - 1)*zetasd(3)
+               CALL PUSHCONTROL1B(1)
+            END IF
+            i1d = i1d + temp2*a_kd + a_k*tempd0
+            i1 = i1 + a_k*temp2
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               CALL PUSHREAL8(tempd0)
+               tempd0 = 0.0_pr
+               CALL PUSHCONTROL1B(0)
+            ELSE
+               CALL PUSHREAL8(tempd0)
+               tempd0 = k*zetas(3)**(k - 1)*zetasd(3)
+               CALL PUSHCONTROL1B(1)
+            END IF
+            i2d = i2d + temp2*b_kd + b_k*tempd0
+            i2 = i2 + b_k*temp2
+         END DO
+         ! 3. Compressibility C1 (Same as before)
+         temp2 = eta**4
+         temp1 = m_ave/temp2
+         temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+         c1d = temp1*(8.0_pr - 2.0_pr*2*zetas(3))*zetasd(3) + temp*(m_aved -&
+         &       temp1*4*eta**3*etad)/temp2
+         c1 = temp*temp1 + 1.0_pr
+         temp2 = (-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr)*((-zetas(3) + 2.0_pr)*&
+         &       (-zetas(3) + 2.0_pr))
+         CALL PUSHREAL8(temp1)
+         temp1 = (-m_ave + 1.0_pr)/temp2
+         temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+         &       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+         c1d = c1d + temp1*(12.0_pr*3*zetas(3)**2 - 27.0_pr*2*zetas(3) - 2.0_pr&
+         &       *4*zetas(3)**3 + 20.0_pr)*zetasd(3) + temp*(temp1*((2.0_pr - zetas(3&
+         &       ))**2*2*(1.0_pr - zetas(3)) + (1.0_pr - zetas(3))**2*2*(2.0_pr - zetas(3&
+         &       )))*zetasd(3) - m_aved)/temp2
+         c1 = c1 + temp*temp1
+         CALL PUSHREAL8(c1d)
+         c1d = -(c1d/c1**2)
+         CALL PUSHREAL8(c1)
+         c1 = 1._pr/c1
+         ! Eq. A.11 Gross & Sadowski (2001)
+         ! 1st order term (Takes 2 * PI)
+         a1_term_dispd = -(pi*2.0_pr*(m2_es3*(i1*rho_dispd + rho_disp*i1d) +&
+         &       rho_disp*i1*m2_es3d))
+         a1_term_disp = -(2.0_pr*pi*rho_disp*i1*m2_es3)
+         ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+         temp2 = rho_disp*m_ave*m2_e2s3
+         a2_term_dispd = -(pi*(c1*i2*(m2_e2s3*(m_ave*rho_dispd + rho_disp*&
+         &       m_aved) + rho_disp*m_ave*m2_e2s3d) + temp2*(i2*c1d + c1*i2d)))
+         a2_term_disp = -(pi*(temp2*(c1*i2)))
+         ! Sum and make extensive
+         ar_dispersiond = a1_term_dispd + a2_term_dispd
+         ar_dispersion = a1_term_disp + a2_term_disp
+         CALL PUSHCONTROL1B(0)
+      ELSE
+         ar_dispersion = 0.0_pr
+         ar_dispersiond = 0.0_pr
+         CALL PUSHCONTROL1B(1)
+      END IF
+      ! Final evaluation
+      CALL PUSHREAL8(temp2)
+      temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
+      tempb7 = r*arvalb
+      tb = tb + n_tot*temp2*tempb7
+      n_totb = t*temp2*tempb7
+      temp2b = t*n_tot*tempb7
+      tempb7 = r*arvaldb
+      temp2b = temp2b + (n_tot*td + t*n_totd)*tempb7
+      tempb8 = temp2*tempb7
+      tempb9 = (ar_hs*m_aved + m_ave*ar_hsd + ar_chaind + ar_dispersiond)*tempb7
+      tempb6 = t*n_tot*tempb7
+      ar_hsb = m_aved*tempb6 + m_ave*temp2b
+      m_avedb = ar_hs*tempb6
+      m_aveb = ar_hsd*tempb6 + ar_hs*temp2b
+      ar_hsdb = m_ave*tempb6
+      ar_chaindb = tempb6
+      ar_dispersiondb = tempb6
+      tb = tb + n_tot*tempb9 + n_totd*tempb8
+      n_totb = n_totb + t*tempb9 + td*tempb8
+      tdb = tdb + n_tot*tempb8
+      n_totdb = t*tempb8
+      CALL POPREAL8(temp2)
+      ar_chainb = temp2b
+      ar_dispersionb = temp2b
+      CALL POPCONTROL1B(branch)
+      IF (branch .EQ. 0) THEN
+         a1_term_dispb = ar_dispersionb
+         a2_term_dispb = ar_dispersionb
+         a1_term_dispdb = ar_dispersiondb
+         a2_term_dispdb = ar_dispersiondb
+         tempb7 = -(pi*a2_term_dispb)
+         temp2b = c1*i2*tempb7
+         c1b = temp2*i2*tempb7
+         i2b = temp2*c1*tempb7
+         temp9 = m_ave*rho_dispd + rho_disp*m_aved
+         tempb7 = -(pi*a2_term_dispdb)
+         tempb9 = (m2_e2s3*temp9 + rho_disp*m_ave*m2_e2s3d)*tempb7
+         tempb6 = c1*i2*tempb7
+         temp2b = temp2b + (i2*c1d + c1*i2d)*tempb7
+         tempb5 = temp2*tempb7
+         i2b = i2b + c1d*tempb5 + c1*tempb9
+         c1db = i2*tempb5
+         c1b = c1b + i2d*tempb5 + i2*tempb9
+         i2db = c1*tempb5
+         m2_e2s3b = temp9*tempb6 + rho_disp*m_ave*temp2b
+         tempb8 = m2_e2s3*tempb6
+         m_aveb = m_aveb + rho_disp*m2_e2s3d*tempb6 + rho_dispd*tempb8
+         m2_e2s3db = rho_disp*m_ave*tempb6
+         rho_dispdb = m_ave*tempb8
+         m_avedb = m_avedb + rho_disp*tempb8
+         temp2 = (-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr)*((-zetas(3) + 2.0_pr)*&
+         &       (-zetas(3) + 2.0_pr))
+         tempb7 = -(pi*2.0_pr*a1_term_dispb)
+         rho_dispb = m_ave*m2_e2s3d*tempb6 + m_aved*tempb8 + m_ave*m2_e2s3*&
+         &       temp2b + i1*m2_es3*tempb7
+         i1b = rho_disp*m2_es3*tempb7
+         m2_es3b = rho_disp*i1*tempb7
+         tempb7 = -(pi*2.0_pr*a1_term_dispdb)
+         m2_es3b = m2_es3b + (i1*rho_dispd + rho_disp*i1d)*tempb7
+         tempb8 = m2_es3*tempb7
+         rho_dispb = rho_dispb + i1*m2_es3d*tempb7 + i1d*tempb8
+         i1b = i1b + rho_disp*m2_es3d*tempb7 + rho_dispd*tempb8
+         m2_es3db = rho_disp*i1*tempb7
+         rho_dispdb = rho_dispdb + i1*tempb8
+         i1db = rho_disp*tempb8
+         CALL POPREAL8(c1)
+         CALL POPREAL8(c1d)
+         tempb7 = -(c1db/c1**2)
+         c1b = -(c1b/c1**2) - 2*c1d*tempb7/c1
+         c1db = tempb7
+         zetasb = 0.0_pr
+         zetasdb = 0.0_pr
+         temp6 = 2*((-zetas(3) + 2.0_pr)*(-zetas(3) + 2.0_pr))
+         temp5 = 2*((-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr))
+         temp7 = temp6*(-zetas(3) + 1.0_pr) + temp5*(-zetas(3) + 2.0_pr)
+         tempb7 = temp1*zetasd(3)*c1db
+         tempb8 = (3*12.0_pr*zetas(3)**2 - 2*27.0_pr*zetas(3) - 4*2.0_pr*zetas(&
+         &       3)**3 + 20.0_pr)*c1db
+         tempb9 = temp*c1db/temp2
+         temp1b = temp*c1b + zetasd(3)*temp7*tempb9 + zetasd(3)*tempb8
+         m_aveb = m_aveb + rho_disp*m2_e2s3*temp2b - temp1b/temp2
+         tempb2 = (temp7*(temp1*zetasd(3)) - m_aved)*c1db/temp2
+         tempb = temp1*c1b + tempb2
+         temp2b = -(temp*tempb2/temp2) - (1.0_pr - m_ave)*temp1b/temp2**2
+         tempb6 = temp1*zetasd(3)*tempb9
+         zetasdb(3) = zetasdb(3) + temp1*temp7*tempb9 + temp1*tempb8
+         zetasb(3) = zetasb(3) + (2*zetas(3)*3*12.0_pr - 2*27.0_pr - 3*zetas(3)&
+         &       **2*4*2.0_pr)*tempb7 - (2**2*(2.0_pr - zetas(3))*(1.0_pr - zetas(3))&
+         &       + temp6 + 2**2*(1.0_pr - zetas(3))*(2.0_pr - zetas(3)) + temp5)*tempb6 + &
+         &       (3*zetas(3)**2*12.0_pr - 4*zetas(3)**3*2.0_pr - 2*zetas(3)*27.0_pr +&
+         &       20.0_pr)*tempb
+         temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+         CALL POPREAL8(temp1)
+         temp2 = eta**4
+         temp8 = 4*(eta*eta*eta)
+         tempb7 = (8.0_pr - 2*2.0_pr*zetas(3))*c1db
+         tempb8 = temp*c1db/temp2
+         m_avedb = m_avedb + tempb8 - tempb9
+         temp1b = temp*c1b + zetasd(3)*tempb7 - etad*temp8*tempb8
+         tempb6 = (m_aved - temp8*(temp1*etad))*c1db/temp2
+         tempb = temp1*c1b + tempb6
+         zetasb(3) = zetasb(3) + (8.0_pr - 2*zetas(3)*2.0_pr)*tempb - (2*(&
+         &       1.0_pr - zetas(3))*(2.0_pr - zetas(3))**2 + 2*(2.0_pr - zetas(3))*(&
+         &       1.0_pr - zetas(3))**2)*temp2b - 2*2.0_pr*temp1*zetasd(3)*c1db
+         temp2b = -(temp*tempb6/temp2) - m_ave*temp1b/temp2**2
+         etab = 4*eta**3*temp2b - 3*eta**2*4*temp1*etad*tempb8
+         etadb = -(temp1*temp8*tempb8)
+         zetasdb(3) = zetasdb(3) + temp1*tempb7
+         m_aveb = m_aveb + temp1b/temp2
+         DO k = 6, 0, -1
+            temp2 = zetas(3)**k
+            b_kb = temp2*i2b + tempd0*i2db
+            temp2b = b_k*i2b + b_kd*i2db
+            b_kdb = temp2*i2db
+            tempd0b = b_k*i2db
+            CALL POPCONTROL1B(branch)
+            IF (branch .EQ. 0) THEN
+               CALL POPREAL8(tempd0)
+            ELSE
+               CALL POPREAL8(tempd0)
+               IF (.NOT. (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0)) zetasb(3)&
+               &            = zetasb(3) + (k - 1)*zetas(3)**(k - 2)*zetasd(3)*k*tempd0b
+               zetasdb(3) = zetasdb(3) + zetas(3)**(k - 1)*k*tempd0b
+            END IF
+            IF (.NOT. (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+            &           zetasb(3) + k*zetas(3)**(k - 1)*temp2b
+            temp2 = zetas(3)**k
+            a_kb = temp2*i1b + tempd0*i1db
+            temp2b = a_k*i1b + a_kd*i1db
+            a_kdb = temp2*i1db
+            tempd0b = a_k*i1db
+            CALL POPCONTROL1B(branch)
+            IF (branch .EQ. 0) THEN
+               CALL POPREAL8(tempd0)
+            ELSE
+               CALL POPREAL8(tempd0)
+               IF (.NOT. (zetas(3) .LE. 0.0 .AND. k - 1 .EQ. 0.0)) zetasb(3)&
+               &            = zetasb(3) + (k - 1)*zetas(3)**(k - 2)*zetasd(3)*k*tempd0b
+               zetasdb(3) = zetasdb(3) + zetas(3)**(k - 1)*k*tempd0b
+            END IF
+            tempb8 = b_coeffs(2, k)*m_aved*b_kdb/m_ave**2
+            tempb7 = b_coeffs(1, k)*m_aved*b_kdb/m_ave
+            IF (.NOT. (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+            &           zetasb(3) + k*zetas(3)**(k - 1)*temp2b
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            CALL POPREAL8(b_k)
+            temp2b = b_coeffs(1, k)*b_kb - tempb7
+            temp1b = b_coeffs(2, k)*b_kb - 2*m_ave*tempb8
+            CALL POPREAL8(b_kd)
+            temp10 = (-temp2 + 1.0)/m_ave
+            temp9 = (2*m_ave - 2*temp1*m_ave - 3.0)/(m_ave*m_ave)
+            m_avedb = m_avedb + (b_coeffs(1, k)*temp10 + b_coeffs(2, k)*temp9)&
+            &         *b_kdb
+            m_aveb = m_aveb + (2 - 2*m_ave*temp9 - 2*temp1)*tempb8 - temp10*&
+            &         tempb7
+            tempb7 = temp1b/m_ave**2
+            m_aveb = m_aveb + (2*m_ave - 2*(m_ave - 1.0_pr)*(m_ave - 2.0_pr)/m_ave&
+            &         - 3.0)*tempb7
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            CALL POPREAL8(a_k)
+            CALL POPREAL8(a_kd)
+            temp10 = (-temp2 + 1.0)/m_ave
+            temp9 = (2*m_ave - 2*temp1*m_ave - 3.0)/(m_ave*m_ave)
+            tempb7 = a_coeffs(1, k)*m_aved*a_kdb/m_ave
+            tempb8 = a_coeffs(2, k)*m_aved*a_kdb/m_ave**2
+            m_aveb = m_aveb + (1.0/m_ave - (m_ave - 1.0_pr)/m_ave**2)*temp2b + (&
+            &         2 - 2*m_ave*temp9 - 2*temp1)*tempb8 - temp10*tempb7
+            temp2b = a_coeffs(1, k)*a_kb - tempb7
+            temp1b = a_coeffs(2, k)*a_kb - 2*m_ave*tempb8
+            m_avedb = m_avedb + (a_coeffs(1, k)*temp10 + a_coeffs(2, k)*temp9)&
+            &         *a_kdb
+            CALL POPREAL8(temp1)
+            tempb7 = temp1b/m_ave**2
+            m_aveb = m_aveb + (2*m_ave - 2*(m_ave - 1.0_pr)*(m_ave - 2.0_pr)/m_ave&
+            &         - 3.0)*tempb7 + (1.0/m_ave - (m_ave - 1.0_pr)/m_ave**2)*temp2b
+            CALL POPREAL8(temp2)
+         END DO
+         xdb = 0.0_pr
+         xb = 0.0_pr
+         DO i = nc, 1, -1
+            DO j = nc, 1, -1
+               tempb7 = eps_ij**2*m2_e2s3db/t**2
+               temp2 = term_disp/(t*t)
+               temp2b = eps_ij**2*m2_e2s3b - 2*t*td*tempb7
+               temp9 = 2*temp2*t
+               term_dispdb = tempb7
+               tb = tb - (2*temp2*td + 2*(term_dispd - temp9*td)/t)*tempb7
+               tdb = tdb - temp9*tempb7
+               tempb7 = temp2b/t**2
+               term_dispb = tempb7
+               tb = tb - 2*term_disp*tempb7/t
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               temp2 = m(i)*m(j)*(sig_ij*sig_ij*sig_ij)
+               tempb7 = eps_ij*m2_es3b/t
+               term_dispb = term_dispb + tempb7
+               tb = tb - term_disp*tempb7/t
+               temp9 = term_disp*td/t
+               tempb7 = eps_ij*m2_es3db/t
+               term_dispdb = term_dispdb + tempb7
+               tempb8 = -(tempb7/t)
+               tb = tb - (term_dispd - temp9)*tempb7/t - temp9*tempb8
+               term_dispb = term_dispb + td*tempb8
+               tdb = tdb + term_disp*tempb8
+               CALL POPREAL8(term_disp)
+               xb(i) = xb(i) + x(j)*temp2*term_dispb
+               CALL POPREAL8(term_dispd)
+               tempb7 = temp2*term_dispdb
+               xb(j) = xb(j) + x(i)*temp2*term_dispb + xd(i)*tempb7
+               xdb(i) = xdb(i) + x(j)*tempb7
+               xb(i) = xb(i) + xd(j)*tempb7
+               xdb(j) = xdb(j) + x(i)*tempb7
+               CALL POPREAL8(temp2)
+               CALL POPREAL8(eps_ij)
+            END DO
+         END DO
+         tempb7 = n_avo*rho_dispdb/(1.0e27_pr*v)
+         temp2b = n_avo*rho_dispb - vd*1.0e27_pr*tempb7
+         n_totdb = n_totdb + tempb7
+         vdb = vdb - temp2*1.0e27_pr*tempb7
+         vb = vb - (n_totd - 1.0e27_pr*(temp2*vd))*tempb7/v
+         CALL POPREAL8(temp2)
+         tempb7 = temp2b/(1.0e27_pr*v)
+         n_totb = n_totb + tempb7
+         vb = vb - n_tot*tempb7/v
+      ELSE
+         xdb = 0.0_pr
+         xb = 0.0_pr
+         zetasb = 0.0_pr
+         etab = 0.0_pr
+         etadb = 0.0_pr
+         zetasdb = 0.0_pr
+      END IF
+      ddb = 0.0_pr
+      db = 0.0_pr
+      CALL POPINTEGER4(ad_to0)
+      DO i = ad_to0, 1, -1
+         tempb7 = -((m(i) - 1.0_pr)*ar_chainb)
+         xb(i) = xb(i) + temp2*tempb7
+         temp2b = x(i)*tempb7
+         tempb7 = -((m(i) - 1.0_pr)*ar_chaindb)
+         temp2b = temp2b + xd(i)*tempb7
+         xdb(i) = xdb(i) + temp2*tempb7
+         xb(i) = xb(i) + g_iid*tempb7/g_ii
+         tempb8 = x(i)*tempb7/g_ii
+         g_iidb = tempb8
+         g_iib = temp2b/g_ii - g_iid*tempb8/g_ii
+         di_2 = d(i)/2.0_pr
+         temp = eta*eta*eta
+         temp1 = di_2*zetas(2)/(eta*eta)
+         temp2 = di_2*di_2*(zetas(2)*zetas(2))/temp
+         CALL POPREAL8(g_ii)
+         di_2d = dd(i)/2.0_pr
+         CALL POPREAL8(g_iid)
+         temp6 = 2*temp1*eta
+         temp8 = 2*(zetas(2)*zetas(2))
+         temp9 = 2*(di_2*di_2)
+         temp10 = 3*(eta*eta)
+         tempb6 = 3.0_pr*g_iidb/eta**2
+         temp1b = 3.0_pr*g_iib - 2*eta*etad*tempb6
+         tempb4 = -(g_iidb/eta**2)
+         tempb2 = 2.0_pr*g_iidb/temp
+         etab = etab - g_iib/eta**2 - 2*eta*3*temp2*etad*tempb2 - 2*etad*&
+         &       tempb4/eta - (2*temp1*etad + 2*(zetas(2)*di_2d + di_2*zetasd(2) -&
+         &       temp6*etad)/eta)*tempb6
+         temp2b = 2.0_pr*g_iib - etad*temp10*tempb2
+         zetasb(2) = zetasb(2) + (2**2*zetas(2)*di_2*di_2d + zetasd(2)*temp9)&
+         &       *tempb2 + di_2d*tempb6
+         di_2b = (di_2d*temp8 + 2**2*di_2*zetas(2)*zetasd(2))*tempb2 + zetasd&
+         &       (2)*tempb6
+         di_2db = di_2*temp8*tempb2 + zetas(2)*tempb6
+         zetasdb(2) = zetasdb(2) + zetas(2)*temp9*tempb2 + di_2*tempb6
+         etadb = etadb + tempb4 - temp2*temp10*tempb2 - temp6*tempb6
+         temp7 = di_2*di_2/temp
+         tempb6 = zetas(2)**2*temp2b/temp
+         tempb = -((temp8*(di_2*di_2d) + temp9*(zetas(2)*zetasd(2)) - temp10*(&
+         &       temp2*etad))*tempb2/temp) - temp7*tempb6
+         CALL POPREAL8(temp2)
+         di_2b = di_2b + 2*di_2*tempb6
+         CALL POPREAL8(temp1)
+         tempb6 = temp1b/eta**2
+         zetasb(2) = zetasb(2) + 2*zetas(2)*temp7*temp2b + di_2*tempb6
+         etab = etab + 3*eta**2*tempb - 2*di_2*zetas(2)*tempb6/eta
+         di_2b = di_2b + zetas(2)*tempb6
+         db(i) = db(i) + di_2b/2.0_pr
+         ddb(i) = ddb(i) + di_2db/2.0_pr
+      END DO
+      temp4 = etad/eta
+      tempb6 = ar_hsdb/zetas(0)
+      temp1b = ar_hsb - zetasd(0)*tempb6
+      term1_hsdb = tempb6
+      term2_hsdb = tempb6
+      term3_hsdb = tempb6
+      zetasdb(0) = zetasdb(0) - temp1*tempb6
+      zetasb(0) = zetasb(0) - (term1_hsd + term2_hsd + term3_hsd - temp1*zetasd(&
+      &     0))*tempb6/zetas(0)
+      temp = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
+      CALL POPREAL8(temp1)
+      tempb6 = temp1b/zetas(0)
+      term1_hsb = tempb6
+      term2_hsb = tempb6
+      term3_hsb = tempb6
+      zetasb(0) = zetasb(0) - (term1_hs + term2_hs + term3_hs)*tempb6/zetas(0)&
+      &     - temp1*term3_hsb - temp4*term3_hsdb
+      temp7 = 2*temp*zetas(3)
+      temp6 = 3*(zetas(2)*zetas(2))
+      temp5 = (temp6*zetasd(2) - temp7*zetasd(3))/(zetas(3)*zetas(3))
+      temp1b = (temp - zetas(0))*term3_hsb + (temp5 - zetasd(0))*term3_hsdb
+      tempb4 = temp1*term3_hsdb/zetas(3)**2
+      tempb = temp1*term3_hsb + temp4*term3_hsdb - 2*zetas(3)*zetasd(3)*&
+      &     tempb4
+      zetasdb(0) = zetasdb(0) - temp1*term3_hsdb
+      tempb2 = (temp - zetas(0))*term3_hsdb/eta
+      etadb = etadb + tempb2
+      etab = etab + temp1b/eta - temp4*tempb2
+      zetasb(3) = zetasb(3) - (2*temp*zetasd(3) + 2*zetas(3)*temp5)*tempb4
+      tempb6 = tempb/zetas(3)**2
+      temp = zetas(3)*(eta*eta)
+      temp1 = zetas(2)*zetas(2)*zetas(2)/temp
+      temp5 = 3*(zetas(2)*zetas(2))
+      temp4 = eta*eta*zetasd(3) + 2*zetas(3)*eta*etad
+      tempb5 = term2_hsdb/temp
+      temp1b = term2_hsb - temp4*tempb5
+      zetasb(2) = zetasb(2) + 2*zetas(2)*3*zetasd(2)*tempb4 + 3*zetas(2)**&
+      &     2*tempb6 + 2*zetas(2)*3*zetasd(2)*tempb5 + 3*zetas(2)**2*temp1b/&
+      &     temp
+      tempb2 = -(temp1*tempb5)
+      zetasdb(3) = zetasdb(3) + eta**2*tempb2 - temp7*tempb4
+      tempb = -((temp5*zetasd(2) - temp1*temp4)*tempb5/temp) - zetas(2)**3*&
+      &     temp1b/temp**2
+      zetasb(3) = zetasb(3) + 2*eta*etad*tempb2 - 2*zetas(2)**3*tempb6/&
+      &     zetas(3) + eta**2*tempb
+      tempb6 = 2*zetas(3)*tempb2
+      etab = etab + 2*eta*zetasd(3)*tempb2 + etad*tempb6 + 2*eta*zetas(3)*&
+      &     tempb
+      temp = zetas(1)/eta
+      tempb2 = 3.0_pr*term1_hsdb
+      zetasdb(2) = zetasdb(2) + temp6*tempb4 + temp5*tempb5 + temp*tempb2
+      temp5 = zetas(2)/eta
+      tempb4 = (zetasd(1) - temp*etad)*tempb2/eta
+      zetasb(2) = zetasb(2) + temp*3.0_pr*term1_hsb + tempb4
+      tempb5 = temp5*tempb2
+      etadb = etadb + eta*tempb6 - temp*tempb5
+      tempb = zetas(2)*3.0_pr*term1_hsb + zetasd(2)*tempb2 - etad*tempb5
+      zetasdb(1) = zetasdb(1) + tempb5
+      etab = etab - temp5*tempb4 - zetas(1)*tempb/eta**2
+      CALL POPREAL8(temp)
+      zetasb(1) = zetasb(1) + tempb/eta
+      zetasb(3) = zetasb(3) - etab
+      zetasdb(3) = zetasdb(3) - etadb
+      tempdb = 0.0_pr
+      rhodb = 0.0_pr
+      rhob = 0.0_pr
+      DO k = 3, 0, -1
+         tempb2 = pi*zetasdb(k)
+         arg10d = m*(temp0*xd + x*tempd)
+         rhob = rhob + temp*pi*zetasb(k)/6.0_pr + SUM(arg10d)*tempb2/6.0_8
+         tempb = rho*pi*zetasb(k)/6.0_pr + rhod*tempb2/6.0_8
+         zetasb(k) = 0.0_pr
+         arg10db = 0.0_pr
+         zetasdb(k) = 0.0_pr
+         rhodb = rhodb + temp*tempb2/6.0_pr
+         arg10db = rho*tempb2/6.0_pr
+         arg10b = 0.0_pr
+         CALL POPREAL8(temp)
+         arg10b = tempb
+         temp0b = 0.0_pr
+         tempb3 = m*arg10db
+         xb = xb + temp0*m*arg10b + tempd*tempb3
+         temp0b = x*m*arg10b + xd*tempb3
+         xdb = xdb + temp0*tempb3
+         tempdb = tempdb + x*tempb3
+         mask = d .LE. 0.0 .AND. k .EQ. 0.0
+         arg11 = SIZE(n)
+         CALL POPREAL8ARRAY(tempd, arg11)
+         arg11 = SIZE(n)
+         CALL POPREAL8ARRAY(tempd, arg11)
+         arg11 = SIZE(n)
+         CALL POPREAL8ARRAY(temp0, arg11)
+         mask1 = .NOT. mask
+         WHERE (mask1)
+            mask2 = .NOT. (d .LE. 0.0 .AND. k - 1 .EQ. 0.0)
+            WHERE (mask2) db = db + (k - 1)*d**(k - 2)*dd*k*tempdb
+            ddb = ddb + d**(k - 1)*k*tempdb
+            tempdb = 0.0_pr
+         ELSEWHERE
+            tempdb = 0.0_pr
+         END WHERE
+         mask3 = .NOT. (d .LE. 0.0 .AND. k .EQ. 0.0)
+         WHERE (mask3) db = db + k*d**(k - 1)*temp0b
+      END DO
+      tempb2 = n_avo*rhodb/(1.0e27_pr*v)
+      tempb = n_avo*rhob - vd*1.0e27_pr*tempb2
+      ndb = ndb + tempb2
+      vdb = vdb - temp*1.0e27_pr*tempb2
+      vb = vb - (SUM(nd) - 1.0e27_pr*(temp*vd))*tempb2/v
+      CALL POPREAL8(temp)
+      tempb2 = tempb/(1.0e27_pr*v)
+      nb = nb + tempb2
+      vb = vb - SUM(n)*tempb2/v
+      CALL POPINTEGER4(ad_to)
+      DO i = ad_to, 1, -1
+         tempb2 = -(sigma(i)*0.12_pr*ddb(i))
+         arg1d = epsilon_k(i)*3.0_pr*td/t**2
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         arg1b = EXP(arg1)*arg1d*tempb2 - EXP(arg1)*0.12_pr*sigma(i)*db(i)
+         db(i) = 0.0_pr
+         ddb(i) = 0.0_pr
+         arg1db = EXP(arg1)*tempb2
+         tempb2 = epsilon_k(i)*3.0_pr*arg1db/t**2
+         tb = tb + 3.0_pr*epsilon_k(i)*arg1b/t**2 - 2*td*tempb2/t
+         tdb = tdb + tempb2
+      END DO
+      DO i = nc, 1, -1
+         xb(i) = xb(i) + m(i)*m_aveb
+         xdb(i) = xdb(i) + m(i)*m_avedb
+      END DO
+      temp4 = SUM(nd)
+      tempb0 = xdb/temp
+      tempb1 = -(temp4*tempb0/temp)
+      temp3 = n/temp
+      result10 = SUM((nd - temp4*temp3)*tempb0)
+      tempb = -(SUM(n*xb)/temp**2) - result10/temp - SUM(temp3*tempb1)
+      nb = nb + n_totb + xb/temp + tempb1 + tempb
+      ndb = ndb + n_totdb + tempb0 - SUM(temp3*tempb0)
+      arvalb = 0.0_pr
+      arvaldb = 0.0_pr
+   end subroutine AR_D_B
+
+   !  Differentiation of ar in forward (tangent) mode (with options noISIZE):
+   !   variations   of useful results: arval
+   !   with respect to varying inputs: n t v
+   !   RW status of diff variables: n:in t:in v:in arval:out
+   SUBROUTINE AR_D(model, n, nd, v, vd, t, td, arval, arvald)
+      IMPLICIT NONE
+      class(PCSAFT), INTENT(IN) :: model
+      REAL(pr), INTENT(IN) :: n(:), v, t
+      REAL(pr), INTENT(IN) :: nd(:), vd, td
+      REAL(pr), INTENT(OUT) :: arval
+      REAL(pr), INTENT(OUT) :: arvald
+      ! Auxiliars
+      INTEGER :: i, j, k
+      ! Mole fractions
+      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: xd(SIZE(n))
+      ! Total moles
+      REAL(pr) :: n_tot
+      REAL(pr) :: n_totd
+      ! Number of components
+      INTEGER :: nc
+      ! Average number of segments
+      REAL(pr) :: m_ave
+      REAL(pr) :: m_aved
+      ! Internal variables declarations
+      ! Diameter declarations
+      REAL(pr) :: d(SIZE(n))
+      REAL(pr) :: dd(SIZE(n))
+      ! Zetas declarations
+      REAL(pr) :: zetas(0:3)
+      REAL(pr) :: zetasd(0:3)
+      REAL(pr) :: rho
+      REAL(pr) :: rhod
+      REAL(pr) :: eta
+      REAL(pr) :: etad
+      ! Ar hard-sphere contribution declarations
+      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+      REAL(pr) :: ar_hs
+      REAL(pr) :: ar_hsd
+      ! Ar chain contribution declarations
+      REAL(pr) :: g_ii
+      REAL(pr) :: g_iid
+      REAL(pr) :: di_2
+      REAL(pr) :: di_2d
+      REAL(pr) :: ar_chain
+      REAL(pr) :: ar_chaind
+      ! Ar dispersion contribution declarations
+      REAL(pr) :: rho_disp
+      REAL(pr) :: rho_dispd
+      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
+      REAL(pr) :: term_disp, a_k, b_k
+      REAL(pr) :: term_dispd, a_kd, b_kd
+      REAL(pr) :: a1_term_disp, a2_term_disp
+      REAL(pr) :: a1_term_dispd, a2_term_dispd
+      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: ar_dispersion
+      REAL(pr) :: ar_dispersiond
+      ! Attributes declarations as variables
+      REAL(pr) :: m(SIZE(n))
+      REAL(pr) :: sigma(SIZE(n))
+      REAL(pr) :: epsilon_k(SIZE(n))
+      REAL(pr) :: kij(SIZE(n), SIZE(n))
+      INTRINSIC SUM
+      INTRINSIC EXP
+      INTRINSIC LOG
+      INTRINSIC ALLOCATED
+      INTRINSIC SQRT
+      REAL(pr) :: arg1
+      REAL(pr) :: arg1d
+      INTRINSIC SIZE
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10d
+      REAL(pr) :: result1
+      REAL(pr) :: temp
+      REAL(pr), DIMENSION(SIZE(n)) :: temp0
+      REAL(pr), DIMENSION(SIZE(n)) :: tempd
+      REAL(pr) :: temp1
+      REAL(pr) :: temp2
+      REAL(pr) :: tempd0
+
+      LOGICAL, DIMENSION(SIZE(n)) :: mask
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      ! Residual Helmholtz free energy calculation
+      ! Mole fractions
+      temp = SUM(n)
+      xd = (nd - n*SUM(nd)/temp)/temp
+      x = n/temp
+      ! Total moles
+      n_totd = SUM(nd)
+      n_tot = SUM(n)
+      ! Number of components
+      nc = SIZE(n)
+      m_ave = 0.0_pr
+      m_aved = 0.0_pr
+      DO i = 1, nc
+         ! Segment average
+         m_aved = m_aved + m(i)*xd(i)
+         m_ave = m_ave + x(i)*m(i)
+      END DO
+      dd = 0.0_pr
+      ! Diameter calculation
+      DO i = 1, SIZE(n)
+         arg1d = epsilon_k(i)*3.0_pr*td/t**2
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         dd(i) = -(sigma(i)*0.12_pr*EXP(arg1)*arg1d)
+         d(i) = sigma(i)*(1.0_pr - 0.12_8*EXP(arg1))
+      END DO
+      ! Zetas calculation
+      ! Number density [1/A^3]
+      temp = SUM(n)/(1.0e27_pr*v)
+      rhod = n_avo*(SUM(nd) - temp*1.0e27_pr*vd)/(1.0e27_8*v)
+      rho = n_avo*temp
+      zetas = 0.0_pr
+      zetasd = 0.0_pr
+      DO k = 0, 3
+         temp0 = d**k
+         mask = d .LE. 0.0 .AND. k .EQ. 0.0
+         WHERE (mask)
+            tempd = 0.0_pr
+         ELSEWHERE
+            tempd = k*d**(k - 1)*dd
+         END WHERE
+         arg10d = m*(temp0*xd + x*tempd)
+         arg10 = m*(x*temp0)
+         temp = SUM(arg10)
+         zetasd(k) = pi*(temp*rhod/6.0_pr + rho*SUM(arg10d)/6.0_8)
+         zetas(k) = pi*(rho/6.0_pr*temp)
+      END DO
+      etad = -zetasd(3)
+      eta = 1.0_pr - zetas(3)
+      ! Ar hard-sphere contribution
+      temp = zetas(1)/eta
+      term1_hsd = 3.0_pr*(zetas(2)*(zetasd(1) - temp*etad)/eta + temp*zetasd(2)&
+      &     )
+      term1_hs = 3.0_pr*(temp*zetas(2))
+      temp = zetas(3)*(eta*eta)
+      temp1 = zetas(2)*zetas(2)*zetas(2)/temp
+      term2_hsd = (3*zetas(2)**2*zetasd(2) - temp1*(eta**2*zetasd(3) + zetas(3&
+      &     )*2*eta*etad))/temp
+      term2_hs = temp1
+      temp1 = LOG(eta)
+      temp = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
+      term3_hsd = temp1*((3*zetas(2)**2*zetasd(2) - temp*2*zetas(3)*zetasd(3&
+      &     ))/zetas(3)**2 - zetasd(0)) + (temp - zetas(0))*etad/eta
+      term3_hs = (temp - zetas(0))*temp1
+      ! A_hs/RT
+      temp1 = (term1_hs + term2_hs + term3_hs)/zetas(0)
+      ar_hsd = (term1_hsd + term2_hsd + term3_hsd - temp1*zetasd(0))/zetas(0)
+      ar_hs = temp1
+      ! Ar chain contribution
+      ar_chain = 0.0_pr
+      ar_chaind = 0.0_pr
+      DO i = 1, SIZE(x)
+         di_2d = dd(i)/2.0_pr
+         di_2 = d(i)/2.0_pr
+         temp1 = di_2*zetas(2)/(eta*eta)
+         temp = eta*eta*eta
+         temp2 = di_2*di_2*(zetas(2)*zetas(2))/temp
+         g_iid = 3.0_pr*(zetas(2)*di_2d + di_2*zetasd(2) - temp1*2*eta*etad)/eta&
+         &       **2 - etad/eta**2 + 2.0_pr*(zetas(2)**2*2*di_2*di_2d + di_2**2*2*&
+         &       zetas(2)*zetasd(2) - temp2*3*eta**2*etad)/temp
+         g_ii = 1.0/eta + 3.0_pr*temp1 + 2.0_8*temp2
+         ! Summation
+         temp2 = LOG(g_ii)
+         ar_chaind = ar_chaind - (m(i) - 1.0_pr)*(temp2*xd(i) + x(i)*g_iid/g_ii)
+         ar_chain = ar_chain - (m(i) - 1.0_pr)*(x(i)*temp2)
+      END DO
+      ! Ar dispersion contribution
+      IF (ALLOCATED(model%kij)) THEN
+         ! Number density [1/A^3]
+         temp2 = n_tot/(1.0e27_pr*v)
+         rho_dispd = n_avo*(n_totd - temp2*1.0e27_pr*vd)/(1.0e27_pr*v)
+         rho_disp = n_avo*temp2
+         ! 1. Mixture Averages (Same as before)
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
+         m2_e2s3d = 0.0_pr
+         m2_es3d = 0.0_pr
+         DO i = 1, nc
+            DO j = 1, nc
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               kij_val = kij(i, j)
+               arg1 = epsilon_k(i)*epsilon_k(j)
+               result1 = SQRT(arg1)
+               eps_ij = result1*(1.0_pr - kij_val)
+               temp2 = m(i)*m(j)*(sig_ij*sig_ij*sig_ij)
+               term_dispd = temp2*(x(j)*xd(i) + x(i)*xd(j))
+               term_disp = temp2*(x(i)*x(j))
+               m2_es3d = m2_es3d + eps_ij*(term_dispd - term_disp*td/t)/t
+               m2_es3 = m2_es3 + term_disp*(eps_ij/t)
+               temp2 = term_disp/(t*t)
+               m2_e2s3d = m2_e2s3d + eps_ij**2*(term_dispd - temp2*2*t*td)/t**2
+               m2_e2s3 = m2_e2s3 + eps_ij*eps_ij*temp2
+            END DO
+         END DO
+         ! 2. Integrals I1 and I2 (Same as before)
+         i1 = 0.0_pr
+         i2 = 0.0_pr
+         i1d = 0.0_pr
+         i2d = 0.0_pr
+         DO k = 0, 6
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            a_kd = (a_coeffs(1, k)*(1.0 - temp2)/m_ave + a_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            a_k = a_coeffs(0, k) + a_coeffs(1, k)*temp2 + a_coeffs(2, k)*&
+            &         temp1
+            temp2 = (m_ave - 1.0_pr)/m_ave
+            temp1 = (m_ave - 1.0_pr)*(m_ave - 2.0_pr)/(m_ave*m_ave)
+            b_kd = (b_coeffs(1, k)*(1.0 - temp2)/m_ave + b_coeffs(2, k)*(2*m_ave&
+            &         - temp1*2*m_ave - 3.0)/m_ave**2)*m_aved
+            b_k = b_coeffs(0, k) + b_coeffs(1, k)*temp2 + b_coeffs(2, k)*&
+            &         temp1
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               tempd0 = 0.0_pr
+            ELSE
+               tempd0 = k*zetas(3)**(k - 1)*zetasd(3)
+            END IF
+            i1d = i1d + temp2*a_kd + a_k*tempd0
+            i1 = i1 + a_k*temp2
+            temp2 = zetas(3)**k
+            IF (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0) THEN
+               tempd0 = 0.0_pr
+            ELSE
+               tempd0 = k*zetas(3)**(k - 1)*zetasd(3)
+            END IF
+            i2d = i2d + temp2*b_kd + b_k*tempd0
+            i2 = i2 + b_k*temp2
+         END DO
+         ! 3. Compressibility C1 (Same as before)
+         temp2 = eta**4
+         temp1 = m_ave/temp2
+         temp = 8.0_pr*zetas(3) - 2.0_pr*(zetas(3)*zetas(3))
+         c1d = temp1*(8.0_pr - 2.0_pr*2*zetas(3))*zetasd(3) + temp*(m_aved -&
+         &       temp1*4*eta**3*etad)/temp2
+         c1 = temp*temp1 + 1.0_pr
+         temp2 = (-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr)*((-zetas(3) + 2.0_pr)*&
+         &       (-zetas(3) + 2.0_pr))
+         temp1 = (-m_ave + 1.0_pr)/temp2
+         temp = 20.0_pr*zetas(3) - 27.0_pr*(zetas(3)*zetas(3)) + 12.0_pr*(&
+         &       zetas(3)*zetas(3)*zetas(3)) - 2.0_pr*zetas(3)**4
+         c1d = c1d + temp1*(12.0_pr*3*zetas(3)**2 - 27.0_pr*2*zetas(3) - 2.0_pr&
+         &       *4*zetas(3)**3 + 20.0_pr)*zetasd(3) + temp*(temp1*((2.0_pr - zetas(3&
+         &       ))**2*2*(1.0_pr - zetas(3)) + (1.0_pr - zetas(3))**2*2*(2.0_pr - zetas(3&
+         &       )))*zetasd(3) - m_aved)/temp2
+         c1 = c1 + temp*temp1
+         c1d = -(c1d/c1**2)
+         c1 = 1._pr/c1
+         ! Eq. A.11 Gross & Sadowski (2001)
+         ! 1st order term (Takes 2 * PI)
+         a1_term_dispd = -(pi*2.0_pr*(m2_es3*(i1*rho_dispd + rho_disp*i1d) +&
+         &       rho_disp*i1*m2_es3d))
+         a1_term_disp = -(2.0_pr*pi*rho_disp*i1*m2_es3)
+         ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+         temp2 = rho_disp*m_ave*m2_e2s3
+         a2_term_dispd = -(pi*(c1*i2*(m2_e2s3*(m_ave*rho_dispd + rho_disp*&
+         &       m_aved) + rho_disp*m_ave*m2_e2s3d) + temp2*(i2*c1d + c1*i2d)))
+         a2_term_disp = -(pi*(temp2*(c1*i2)))
+         ! Sum and make extensive
+         ar_dispersiond = a1_term_dispd + a2_term_dispd
+         ar_dispersion = a1_term_disp + a2_term_disp
+      ELSE
+         ar_dispersion = 0.0_pr
+         ar_dispersiond = 0.0_pr
+      END IF
+      ! Final evaluation
+      temp2 = m_ave*ar_hs + ar_chain + ar_dispersion
+      arvald = r*(temp2*(n_tot*td + t*n_totd) + t*n_tot*(ar_hs*m_aved + m_ave*&
+      &     ar_hsd + ar_chaind + ar_dispersiond))
+      arval = r*(t*n_tot*temp2)
+   end subroutine AR_D
+
+   !  Differentiation of ar in reverse (adjoint) mode (with options noISIZE):
+   !   gradient     of useful results: arval
+   !   with respect to varying inputs: n t v arval
+   !   RW status of diff variables: n:out t:out v:out arval:in-zero
+   SUBROUTINE AR_B(model, n, nb, v, vb, t, tb, arval, arvalb)
+      IMPLICIT NONE
+      class(PCSAFT), INTENT(IN) :: model
+      REAL(pr), INTENT(IN) :: n(:), v, t
+      REAL(pr) :: nb(:), vb, tb
+      REAL(pr) :: arval
+      REAL(pr) :: arvalb
+      ! Auxiliars
+      INTEGER :: i, j, k
+      ! Mole fractions
+      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: xb(SIZE(n))
+      ! Total moles
+      REAL(pr) :: n_tot
+      REAL(pr) :: n_totb
+      ! Number of components
+      INTEGER :: nc
+      ! Average number of segments
+      REAL(pr) :: m_ave
+      REAL(pr) :: m_aveb
+      ! Internal variables declarations
+      ! Diameter declarations
+      REAL(pr) :: d(SIZE(n))
+      REAL(pr) :: db(SIZE(n))
+      ! Zetas declarations
+      REAL(pr) :: zetas(0:3)
+      REAL(pr) :: zetasb(0:3)
+      REAL(pr) :: rho
+      REAL(pr) :: rhob
+      REAL(pr) :: eta
+      REAL(pr) :: etab
+      ! Ar hard-sphere contribution declarations
+      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: term1_hsb, term2_hsb, term3_hsb
+      REAL(pr) :: ar_hs
+      REAL(pr) :: ar_hsb
+      ! Ar chain contribution declarations
+      REAL(pr) :: g_ii
+      REAL(pr) :: g_iib
+      REAL(pr) :: di_2
+      REAL(pr) :: di_2b
+      REAL(pr) :: ar_chain
+      REAL(pr) :: ar_chainb
+      ! Ar dispersion contribution declarations
+      REAL(pr) :: rho_disp
+      REAL(pr) :: rho_dispb
+      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+      REAL(pr) :: m2_es3b, m2_e2s3b, i1b, i2b, c1b
+      REAL(pr) :: term_disp, a_k, b_k
+      REAL(pr) :: term_dispb, a_kb, b_kb
+      REAL(pr) :: a1_term_disp, a2_term_disp
+      REAL(pr) :: a1_term_dispb, a2_term_dispb
+      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: ar_dispersion
+      REAL(pr) :: ar_dispersionb
+      ! Attributes declarations as variables
+      REAL(pr) :: m(SIZE(n))
+      REAL(pr) :: sigma(SIZE(n))
+      REAL(pr) :: epsilon_k(SIZE(n))
+      REAL(pr) :: kij(SIZE(n), SIZE(n))
+      INTRINSIC SUM
+      INTRINSIC EXP
+      INTRINSIC LOG
+      INTRINSIC ALLOCATED
+      INTRINSIC SQRT
+      REAL(pr) :: arg1
+      REAL(pr) :: arg1b
+      INTRINSIC SIZE
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10b
+      REAL(pr) :: result1
+
+      REAL(pr) :: temp
+      REAL(pr) :: tempb
+      REAL(pr) :: temp0
+      REAL(pr) :: tempb0
+      REAL(pr) :: temp1
+      REAL(pr) :: tempb1
+      INTEGER :: ad_to
+      INTEGER :: ad_to0
+      INTEGER*4 :: branch
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      ! Residual Helmholtz free energy calculation
+      ! Mole fractions
+      x = n/SUM(n)
+      ! Total moles
+      n_tot = SUM(n)
+      ! Number of components
+      nc = SIZE(n)
+      m_ave = 0.0_pr
+      DO i = 1, nc
+         ! Segment average
+         m_ave = m_ave + x(i)*m(i)
+      END DO
+      ! Diameter calculation
+      DO i = 1, SIZE(n)
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         d(i) = sigma(i)*(1.0_pr - 0.12_8*EXP(arg1))
+      END DO
+      CALL PUSHINTEGER4(i - 1)
+      ! Zetas calculation
+      ! Number density [1/A^3]
+      rho = SUM(n)*n_avo/(v*1.0e27_pr)
+      DO k = 0, 3
+         arg10 = x*m*d**k
+         zetas(k) = rho*(pi/6.0_pr)*SUM(arg10)
+      END DO
+      eta = 1.0_pr - zetas(3)
+      ! Ar hard-sphere contribution
+      term1_hs = 3.0_pr*zetas(1)*zetas(2)/eta
+      term2_hs = zetas(2)**3/(zetas(3)*eta**2)
+      term3_hs = (zetas(2)**3/zetas(3)**2 - zetas(0))*LOG(eta)
+      ! A_hs/RT
+      ar_hs = 1.0_pr/zetas(0)*(term1_hs + term2_hs + term3_hs)
+      ! Ar chain contribution
+      ar_chain = 0.0_pr
+      DO i = 1, SIZE(x)
+         di_2 = d(i)/2.0_pr
+         CALL PUSHREAL8(g_ii)
+         g_ii = 1.0_pr/eta + 3.0_8*di_2*zetas(2)/eta**2 + 2.0_8*di_2**2*&
+         &       zetas(2)**2/eta**3
+         ! Summation
+         ar_chain = ar_chain - x(i)*(m(i) - 1.0_pr)*LOG(g_ii)
+      END DO
+      CALL PUSHINTEGER4(i - 1)
+      ! Ar dispersion contribution
+      IF (ALLOCATED(model%kij)) THEN
+         ! Number density [1/A^3]
+         rho_disp = n_tot*n_avo/(v*1.0e27_pr)
+         ! 1. Mixture Averages (Same as before)
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
+         DO i = 1, nc
+            DO j = 1, nc
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               kij_val = kij(i, j)
+               arg1 = epsilon_k(i)*epsilon_k(j)
+               result1 = SQRT(arg1)
+               CALL PUSHREAL8(eps_ij)
+               eps_ij = result1*(1.0_pr - kij_val)
+               term_disp = x(i)*x(j)*m(i)*m(j)*sig_ij**3
+               m2_es3 = m2_es3 + term_disp*(eps_ij/t)
+               m2_e2s3 = m2_e2s3 + term_disp*(eps_ij/t)**2
+            END DO
+         END DO
+         ! 2. Integrals I1 and I2 (Same as before)
+         i1 = 0.0_pr
+         i2 = 0.0_pr
+         DO k = 0, 6
+            CALL PUSHREAL8(a_k)
+            a_k = a_coeffs(0, k) + (m_ave - 1.0_pr)/m_ave*a_coeffs(1, k) + (&
+            &         m_ave - 1.0_pr)/m_ave*(m_ave - 2.0_pr)/m_ave*a_coeffs(2, k)
+            CALL PUSHREAL8(b_k)
+            b_k = b_coeffs(0, k) + (m_ave - 1.0_pr)/m_ave*b_coeffs(1, k) + (&
+            &         m_ave - 1.0_pr)/m_ave*(m_ave - 2.0_pr)/m_ave*b_coeffs(2, k)
+            i1 = i1 + a_k*zetas(3)**k
+            i2 = i2 + b_k*zetas(3)**k
+         END DO
+         ! 3. Compressibility C1 (Same as before)
+         c1 = 1.0_pr + m_ave*(8.0_pr*zetas(3) - 2.0_pr*zetas(3)**2)/eta**4
+         c1 = c1 + (1.0_pr - m_ave)*(20.0_pr*zetas(3) - 27.0_pr*zetas(3)**2 +&
+         &       12.0_pr*zetas(3)**3 - 2.0_pr*zetas(3)**4)/((1.0_pr - zetas(3))*(&
+         &       2.0_pr - zetas(3)))**2
+         CALL PUSHREAL8(c1)
+         c1 = 1._pr/c1
+         ! Eq. A.11 Gross & Sadowski (2001)
+         ! 1st order term (Takes 2 * PI)
+         a1_term_disp = -(2.0_pr*pi*rho_disp*i1*m2_es3)
+         ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+         a2_term_disp = -(1.0_pr*pi*rho_disp*m_ave*c1*i2*m2_e2s3)
+         ! Sum and make extensive
+         ar_dispersion = a1_term_disp + a2_term_disp
+         CALL PUSHCONTROL1B(0)
+      ELSE
+         ar_dispersion = 0.0_pr
+         CALL PUSHCONTROL1B(1)
+      END IF
+      tempb1 = (m_ave*ar_hs + ar_chain + ar_dispersion)*r*arvalb
+      tempb0 = t*n_tot*r*arvalb
+      m_aveb = ar_hs*tempb0
+      ar_hsb = m_ave*tempb0
+      ar_chainb = tempb0
+      ar_dispersionb = tempb0
+      tb = n_tot*tempb1
+      n_totb = t*tempb1
+      CALL POPCONTROL1B(branch)
+      IF (branch .EQ. 0) THEN
+         a1_term_dispb = ar_dispersionb
+         a2_term_dispb = ar_dispersionb
+         tempb1 = -(c1*i2*pi*a2_term_dispb)
+         tempb0 = -(rho_disp*m_ave*m2_e2s3*pi*a2_term_dispb)
+         c1b = i2*tempb0
+         i2b = c1*tempb0
+         rho_dispb = m_ave*m2_e2s3*tempb1
+         m2_e2s3b = rho_disp*m_ave*tempb1
+         CALL POPREAL8(c1)
+         c1b = -(c1b/c1**2)
+         zetasb = 0.0_pr
+         temp1 = (-zetas(3) + 1.0_pr)*(-zetas(3) + 1.0_pr)*((-zetas(3) + 2.0_pr)*&
+         &       (-zetas(3) + 2.0_pr))
+         temp0 = (-m_ave + 1.0_pr)/temp1
+         tempb = temp0*c1b
+         tempb0 = (20.0_pr*zetas(3) - 27.0_pr*zetas(3)**2 + 12.0_pr*zetas(3)**3&
+         &       - 2.0_pr*zetas(3)**4)*c1b/temp1
+         m_aveb = m_aveb + rho_disp*m2_e2s3*tempb1 - tempb0
+         tempb1 = -(pi*2.0_pr*a1_term_dispb)
+         rho_dispb = rho_dispb + i1*m2_es3*tempb1
+         i1b = rho_disp*m2_es3*tempb1
+         m2_es3b = rho_disp*i1*tempb1
+         tempb1 = -(temp0*tempb0)
+         temp1 = eta**4
+         temp0 = m_ave/temp1
+         zetasb(3) = zetasb(3) + (3*zetas(3)**2*12.0_pr - 4*zetas(3)**3*&
+         &       2.0_pr - 2*zetas(3)*27.0_pr + 20.0_pr)*tempb - (2*(1.0_pr - zetas(3))*&
+         &       (2.0_pr - zetas(3))**2 + 2*(2.0_pr - zetas(3))*(1.0_pr - zetas(3))**2)*&
+         &       tempb1 + (8.0_pr - 2*zetas(3)*2.0_pr)*temp0*c1b
+         tempb0 = (8.0_pr*zetas(3) - 2.0_pr*zetas(3)**2)*c1b/temp1
+         m_aveb = m_aveb + tempb0
+         etab = -(4*eta**3*temp0*tempb0)
+         DO k = 6, 0, -1
+            b_kb = zetas(3)**k*i2b
+            IF (.NOT. (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+            &           zetasb(3) + k*zetas(3)**(k - 1)*b_k*i2b
+            a_kb = zetas(3)**k*i1b
+            IF (.NOT. (zetas(3) .LE. 0.0 .AND. k .EQ. 0.0)) zetasb(3) = &
+            &           zetasb(3) + k*zetas(3)**(k - 1)*a_k*i1b
+            CALL POPREAL8(b_k)
+            tempb1 = b_coeffs(1, k)*b_kb/m_ave
+            tempb0 = b_coeffs(2, k)*b_kb/m_ave**2
+            m_aveb = m_aveb + (2*m_ave - 2*(m_ave - 1.0_pr)*(m_ave - 2.0_pr)/m_ave&
+            &         - 3.0)*tempb0 + (1.0 - (m_ave - 1.0_pr)/m_ave)*tempb1
+            CALL POPREAL8(a_k)
+            tempb1 = a_coeffs(1, k)*a_kb/m_ave
+            tempb0 = a_coeffs(2, k)*a_kb/m_ave**2
+            m_aveb = m_aveb + (2*m_ave - 2*(m_ave - 1.0_pr)*(m_ave - 2.0_pr)/m_ave&
+            &         - 3.0)*tempb0 + (1.0 - (m_ave - 1.0_pr)/m_ave)*tempb1
+         END DO
+         xb = 0.0_pr
+         DO i = nc, 1, -1
+            DO j = nc, 1, -1
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               term_disp = x(i)*x(j)*m(i)*m(j)*sig_ij**3
+               tempb1 = eps_ij**2*m2_e2s3b/t**2
+               term_dispb = tempb1
+               tb = tb - 2*term_disp*tempb1/t
+               tempb1 = eps_ij*m2_es3b/t
+               term_dispb = term_dispb + tempb1
+               tb = tb - term_disp*tempb1/t
+               tempb1 = m(i)*m(j)*sig_ij**3*term_dispb
+               xb(i) = xb(i) + x(j)*tempb1
+               xb(j) = xb(j) + x(i)*tempb1
+               CALL POPREAL8(eps_ij)
+            END DO
+         END DO
+         tempb1 = n_avo*rho_dispb/(1.0e27_pr*v)
+         n_totb = n_totb + tempb1
+         vb = -(n_tot*tempb1/v)
+      ELSE
+         vb = 0.0_pr
+         xb = 0.0_pr
+         zetasb = 0.0_pr
+         etab = 0.0_pr
+      END IF
+      db = 0.0_pr
+      CALL POPINTEGER4(ad_to0)
+      DO i = ad_to0, 1, -1
+         tempb1 = -((m(i) - 1.0_pr)*ar_chainb)
+         xb(i) = xb(i) + LOG(g_ii)*tempb1
+         g_iib = x(i)*tempb1/g_ii
+         di_2 = d(i)/2.0_pr
+         CALL POPREAL8(g_ii)
+         temp = eta*eta*eta
+         tempb0 = 3.0_pr*g_iib/eta**2
+         tempb1 = 2.0_pr*g_iib/temp
+         etab = etab - g_iib/eta**2 - 3*eta**2*di_2**2*zetas(2)**2*tempb1/&
+         &       temp - 2*di_2*zetas(2)*tempb0/eta
+         di_2b = 2*di_2*zetas(2)**2*tempb1 + zetas(2)*tempb0
+         zetasb(2) = zetasb(2) + 2*zetas(2)*di_2**2*tempb1 + di_2*tempb0
+         db(i) = db(i) + di_2b/2.0_pr
+      END DO
+      temp = zetas(3)*(eta*eta)
+      tempb0 = ar_hsb/zetas(0)
+      term1_hsb = tempb0
+      term2_hsb = tempb0
+      term3_hsb = tempb0
+      temp0 = zetas(2)*zetas(2)*zetas(2)/(zetas(3)*zetas(3))
+      tempb = LOG(eta)*term3_hsb
+      zetasb(0) = zetasb(0) - (term1_hs + term2_hs + term3_hs)*tempb0/zetas(0)&
+      &     - tempb
+      tempb0 = tempb/zetas(3)**2
+      zetasb(2) = zetasb(2) + 3*zetas(2)**2*tempb0 + 3*zetas(2)**2*&
+      &     term2_hsb/temp
+      tempb = -(zetas(2)**3*term2_hsb/temp**2)
+      etab = etab + (temp0 - zetas(0))*term3_hsb/eta + 2*eta*zetas(3)*tempb
+      zetasb(3) = zetasb(3) + eta**2*tempb - 2*zetas(3)*temp0*tempb0
+      temp = zetas(1)/eta
+      tempb = zetas(2)*3.0_pr*term1_hsb/eta
+      zetasb(2) = zetasb(2) + temp*3.0_pr*term1_hsb
+      zetasb(1) = zetasb(1) + tempb
+      etab = etab - temp*tempb
+      zetasb(3) = zetasb(3) - etab
+      rhob = 0.0_pr
+      DO k = 3, 0, -1
+         arg10 = x*m*d**k
+         arg10b = 0.0_pr
+         rhob = rhob + SUM(arg10)*pi*zetasb(k)/6.0_pr
+         arg10b = rho*pi*zetasb(k)/6.0_pr
+         zetasb(k) = 0.0_pr
+         xb = xb + d**k*m*arg10b
+         WHERE (.NOT. (d .LE. 0.0 .AND. k .EQ. 0.0)) db = db + k*d**(k - 1)*x*&
+         &         m*arg10b
+      END DO
+      nb = 0.0_pr
+      tempb = n_avo*rhob/(1.0e27_pr*v)
+      nb = tempb
+      vb = vb - SUM(n)*tempb/v
+      CALL POPINTEGER4(ad_to)
+      DO i = ad_to, 1, -1
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         arg1b = -(EXP(arg1)*0.12_pr*sigma(i)*db(i))
+         db(i) = 0.0_pr
+         tb = tb + 3.0_pr*epsilon_k(i)*arg1b/t**2
+      END DO
+      DO i = nc, 1, -1
+         xb(i) = xb(i) + m(i)*m_aveb
+      END DO
+      temp = SUM(n)
+      nb = nb + n_totb + xb/temp - SUM(n*xb)/temp**2
+      arvalb = 0.0_pr
+   end subroutine AR_B
+
+   SUBROUTINE AR(model, n, v, t, arval)
+      IMPLICIT NONE
+      class(PCSAFT), INTENT(IN) :: model
+      REAL(pr), INTENT(IN) :: n(:), v, t
+      REAL(pr), INTENT(OUT) :: arval
+      ! Auxiliars
+      INTEGER :: i, j, k
+      ! Mole fractions
+      REAL(pr) :: x(SIZE(n))
+      ! Total moles
+      REAL(pr) :: n_tot
+      ! Number of components
+      INTEGER :: nc
+      ! Average number of segments
+      REAL(pr) :: m_ave
+      ! Internal variables declarations
+      ! Diameter declarations
+      REAL(pr) :: d(SIZE(n))
+      ! Zetas declarations
+      REAL(pr) :: zetas(0:3)
+      REAL(pr) :: rho
+      REAL(pr) :: eta
+      ! Ar hard-sphere contribution declarations
+      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: ar_hs
+      ! Ar chain contribution declarations
+      REAL(pr) :: g_ii
+      REAL(pr) :: di_2
+      REAL(pr) :: ar_chain
+      ! Ar dispersion contribution declarations
+      REAL(pr) :: rho_disp
+      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
+      REAL(pr) :: term_disp, a_k, b_k
+      REAL(pr) :: a1_term_disp, a2_term_disp
+      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: ar_dispersion
+      ! Attributes declarations as variables
+      REAL(pr) :: m(SIZE(n))
+      REAL(pr) :: sigma(SIZE(n))
+      REAL(pr) :: epsilon_k(SIZE(n))
+      REAL(pr) :: kij(SIZE(n), SIZE(n))
+      INTRINSIC SUM
+      INTRINSIC EXP
+      INTRINSIC LOG
+      INTRINSIC ALLOCATED
+      INTRINSIC SQRT
+      REAL(pr) :: arg1
+      INTRINSIC SIZE
+      REAL(pr), DIMENSION(SIZE(n)) :: arg10
+      REAL(pr) :: result1
+
+      m = model%m
+      sigma = model%sigma
+      epsilon_k = model%epsilon_k
+      kij = model%kij
+      ! Residual Helmholtz free energy calculation
+      ! Mole fractions
+      x = n/SUM(n)
+      ! Total moles
+      n_tot = SUM(n)
+      ! Number of components
+      nc = SIZE(n)
+      m_ave = 0.0_pr
+      DO i = 1, nc
+         ! Segment average
+         m_ave = m_ave + x(i)*m(i)
+      END DO
+      ! Diameter calculation
+      DO i = 1, SIZE(n)
+         arg1 = -(3.0_pr*epsilon_k(i)/t)
+         d(i) = sigma(i)*(1.0_pr - 0.12_8*EXP(arg1))
+      END DO
+      ! Zetas calculation
+      ! Number density [1/A^3]
+      rho = SUM(n)*n_avo/(v*1.0e27_pr)
+      zetas = 0.0_pr
+      DO k = 0, 3
+         arg10 = x*m*d**k
+         zetas(k) = rho*(pi/6.0_pr)*SUM(arg10)
+      END DO
+      eta = 1.0_pr - zetas(3)
+      ! Ar hard-sphere contribution
+      term1_hs = 3.0_pr*zetas(1)*zetas(2)/eta
+      term2_hs = zetas(2)**3/(zetas(3)*eta**2)
+      term3_hs = (zetas(2)**3/zetas(3)**2 - zetas(0))*LOG(eta)
+      ! A_hs/RT
+      ar_hs = 1.0_pr/zetas(0)*(term1_hs + term2_hs + term3_hs)
+      ! Ar chain contribution
+      ar_chain = 0.0_pr
+      DO i = 1, SIZE(x)
+         di_2 = d(i)/2.0_pr
+         g_ii = 1.0_pr/eta + 3.0_8*di_2*zetas(2)/eta**2 + 2.0_8*di_2**2*&
+         &       zetas(2)**2/eta**3
+         ! Summation
+         ar_chain = ar_chain - x(i)*(m(i) - 1.0_pr)*LOG(g_ii)
+      END DO
+      ! Ar dispersion contribution
+      IF (ALLOCATED(model%kij)) THEN
+         ! Number density [1/A^3]
+         rho_disp = n_tot*n_avo/(v*1.0e27_pr)
+         ! 1. Mixture Averages (Same as before)
+         m2_es3 = 0.0_pr
+         m2_e2s3 = 0.0_pr
+         DO i = 1, nc
+            DO j = 1, nc
+               sig_ij = 0.5_pr*(sigma(i) + sigma(j))
+               kij_val = kij(i, j)
+               arg1 = epsilon_k(i)*epsilon_k(j)
+               result1 = SQRT(arg1)
+               eps_ij = result1*(1.0_pr - kij_val)
+               term_disp = x(i)*x(j)*m(i)*m(j)*sig_ij**3
+               m2_es3 = m2_es3 + term_disp*(eps_ij/t)
+               m2_e2s3 = m2_e2s3 + term_disp*(eps_ij/t)**2
+            END DO
+         END DO
+         ! 2. Integrals I1 and I2 (Same as before)
+         i1 = 0.0_pr
+         i2 = 0.0_pr
+         DO k = 0, 6
+            a_k = a_coeffs(0, k) + (m_ave - 1.0_pr)/m_ave*a_coeffs(1, k) + (&
+            &         m_ave - 1.0_pr)/m_ave*(m_ave - 2.0_pr)/m_ave*a_coeffs(2, k)
+            b_k = b_coeffs(0, k) + (m_ave - 1.0_pr)/m_ave*b_coeffs(1, k) + (&
+            &         m_ave - 1.0_pr)/m_ave*(m_ave - 2.0_pr)/m_ave*b_coeffs(2, k)
+            i1 = i1 + a_k*zetas(3)**k
+            i2 = i2 + b_k*zetas(3)**k
+         END DO
+         ! 3. Compressibility C1 (Same as before)
+         c1 = 1.0_pr + m_ave*(8.0_pr*zetas(3) - 2.0_pr*zetas(3)**2)/eta**4
+         c1 = c1 + (1.0_pr - m_ave)*(20.0_pr*zetas(3) - 27.0_pr*zetas(3)**2 +&
+         &       12.0_pr*zetas(3)**3 - 2.0_pr*zetas(3)**4)/((1.0_pr - zetas(3))*(&
+         &       2.0_pr - zetas(3)))**2
+         c1 = 1._pr/c1
+         ! Eq. A.11 Gross & Sadowski (2001)
+         ! 1st order term (Takes 2 * PI)
+         a1_term_disp = -(2.0_pr*pi*rho_disp*i1*m2_es3)
+         ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
+         a2_term_disp = -(1.0_pr*pi*rho_disp*m_ave*c1*i2*m2_e2s3)
+         ! Sum and make extensive
+         ar_dispersion = a1_term_disp + a2_term_disp
+      ELSE
+         ar_dispersion = 0.0_pr
+      END IF
+      ! Final evaluation
+      arval = r*t*n_tot*(m_ave*ar_hs + ar_chain + ar_dispersion)
+   end subroutine AR
+
+   type(PCSAFT) function init_pcsaft(m, sigma, epsilon_k, kij) result(model)
       use yaeos__equilibria_critical, only: get_critical_constants
-      real(pr), intent(in) :: m(:)
-      real(pr), intent(in) :: sigma(:)
-      real(pr), intent(in) :: epsilon_k(:)
-      real(pr), intent(in), optional :: kij(:,:)
-      integer :: nc
+      use yaeos__critical_pure_point_solver, only: find_critical_points_all_components
+      real(8), intent(in) :: m(:)
+      !! Number of segments
+      real(8), intent(in) :: sigma(:)
+      !! Segment diameter [Angstrom]
+      real(8), intent(in) :: epsilon_k(:)
+      !! Energy / k_B [K]
+      real(8), intent(in), optional :: kij(:, :)
+      !! Binary interaction parameters (optional)
+
+      real(pr) :: Vc(size(m)), Pc(size(m)), Tc(size(m)), w(size(m))
+      logical :: converged(size(m))
+
+      real(pr) :: P_sat_i, Vl, Vv
+
+      integer :: i, nc
+      nc = size(m)
+
       model%m = m
       model%sigma = sigma
       model%epsilon_k = epsilon_k
+
       if (present(kij)) then
          model%kij = kij
+      else
+         allocate (model%kij(nc, nc))
+         model%kij = 0
       end if
 
-      nc = size(m)
-      allocate(model%components%Tc(nc))
-      allocate(model%components%Pc(nc))
-      allocate(model%components%w(nc))
-      call get_critical_constants(model)
+      allocate (model%components%Tc(nc))
+      allocate (model%components%Pc(nc))
+      allocate (model%components%w(nc))
+      ! call get_critical_constants(model)
+
+      call find_critical_points_all_components(model, nc, Vc, Tc, Pc, converged)
+      model%components%Pc = Pc
+      model%components%Tc = Tc
+      do i = 1, nc
+         P_sat_i = model%Psat_pure(i, 0.7*Tc(i), Vl=Vl, Vv=Vv)
+         model%components%w(i) = (-1 - log10(P_sat_i/Pc(i)))
+      end do
    end function init_pcsaft
-
-
-   ! ====================================================================
-   ! Main Function: Residual Helmholtz Energy
-   ! ====================================================================
-   function Ar_impl(self, n, V, T) result(ar_total)
-      class(PcSaft) :: self
-      type(hyperdual), intent(in) :: n(:)  ! Moles [mol]
-      type(hyperdual), intent(in) :: V     ! Volume [L]
-      type(hyperdual), intent(in) :: T     ! Temperature [K]
-      type(hyperdual) :: ar_total          ! A_res Total [bar L]
-
-      ! Local variables
-      type(hyperdual) :: d(size(n))       ! T-dependent diameter
-      type(hyperdual) :: zeta(0:3)        ! Density moments
-      type(hyperdual) :: a_hs             ! A_hard_sphere / RT (dimensionless)
-      type(hyperdual) :: a_chain          ! A_chain / RT (dimensionless)
-      type(hyperdual) :: a_disp           ! A_disp / RT (dimensionless)
-      type(hyperdual) :: a_assoc          ! A_assoc / RT (dimensionless)
-      type(hyperdual) :: n_tot
-      type(hyperdual) :: rho, eta, m_ave, x(size(n))
-
-      integer :: nc, i
-
-      nc = size(n)
-      n_tot = sum(n)
-      x = n / n_tot
-      m_ave = sum(x * self%m)
-
-      ! 1. Calculate Segment Diameter d(T) [Eq. A.4]
-      ! IMPORTANT: 'd' is hyperdual because it depends on T.
-      do i = 1, nc
-         d(i) = self%sigma(i) * (1.0_pr - 0.12_pr * exp(-3.0_pr * self%epsilon_k(i) / T))
-      end do
-
-      ! 2. Calculate Density Moments (Zetas) [Eq. A.5]
-      ! Passing n, V and d.
-      call calculate_zetas(n, V, self%m, d, zeta)
-
-      ! 3. Calculate Hard Sphere Contribution (Mixture) [Eq. A.6 - A.7]
-      a_hs = calculate_hard_sphere(zeta, n_tot)
-
-      ! 4. Calculate Chain Contribution [Eq. A.8 - A.10]
-      ! Requires the radial distribution function (g_hs)
-      a_chain = calculate_chain(x, n_tot, self%m, d, zeta)
-
-      ! 5. Calculate Dispersion Contribution
-      ! We pass self%kij if it exists, otherwise optional
-      a_disp = 0.0_pr
-      if (allocated(self%kij)) then
-         a_disp = calculate_dispersion(n, V, T, zeta, self%m, self%epsilon_k, self%sigma, self%kij)
-      else
-         a_disp = calculate_dispersion(n, V, T, zeta, self%m, self%epsilon_k, self%sigma)
-      end if
-
-      ! 6. Calculate Association (Optional)
-      if (allocated(self%eps_assoc) .and. allocated(self%kap_assoc) .and. allocated(self%n_sites)) then
-         a_assoc = calculate_association(n, V, T, zeta, d, self%m, self%eps_assoc, self%kap_assoc, self%n_sites)
-      else
-         a_assoc = 0.0_pr
-      end if
-
-      ! 7. Sum and convert to Energy units [bar * L]
-      ar_total = (R * T) * ( n_tot * m_ave * a_hs + a_chain + a_disp + a_assoc)
-   end function Ar_impl
-
-   ! ====================================================================
-   ! Auxiliary Routines (Hard Chain)
-   ! ====================================================================
-   subroutine calculate_zetas(n, V, m, d, zeta)
-      type(hyperdual), intent(in) :: n(:), V, d(:)
-      real(pr), intent(in) :: m(:)
-      type(hyperdual), intent(out) :: zeta(0:3)
-
-      integer :: k, i
-      type(hyperdual) :: term
-      type(hyperdual) :: rho
-      type(hyperdual) :: x(size(n))
-
-      rho = sum(n) * N_AVO / (V * 1.0e27_pr)  ! Number density [1/A^3]
-      x = n / sum(n)
-
-      zeta = 0.0_pr
-
-      do k = 0, 3
-         zeta(k) = rho * (PI / 6.0_pr) * sum(x * m * (d**k))
-      end do
-   end subroutine calculate_zetas
-
-   function calculate_hard_sphere(zeta, n_tot) result(val)
-      type(hyperdual), intent(in) :: zeta(0:3), n_tot
-      type(hyperdual) :: val
-
-      ! Boublik-Mansoori-Carnahan-Starling Equation (Eq. A.6 and A.7)
-      ! A_hs/RT = (1/zeta0) * [ ... ]
-      ! But careful: Gross-Sadowski Eq A.6 is on a molar basis.
-      ! A_hs_total/RT = n_total * a_hs_molar
-
-      ! We implement the expanded form to avoid division by zero if zeta0 is very small,
-      ! although in PC-SAFT zeta0 is never zero if there is mass.
-
-      type(hyperdual) :: term1, term2, term3, one_m_z3
-
-      one_m_z3 = 1.0_pr - zeta(3)
-
-      term1 = (3.0_pr * zeta(1) * zeta(2)) / one_m_z3
-      term2 = (zeta(2)**3) / (zeta(3) * (one_m_z3**2))
-      term3 = ((zeta(2)**3)/(zeta(3)**2) - zeta(0)) * log(one_m_z3)
-
-      ! Correct formula for TOTAL Free Energy A_hs/RT:
-      val = (1.0_pr / zeta(0)) * (term1 + term2 + term3)
-   end function calculate_hard_sphere
-
-   function calculate_chain(x, n_tot, m, d, zeta) result(val)
-      type(hyperdual), intent(in) :: x(:), n_tot, d(:), zeta(0:3)
-      real(pr), intent(in) :: m(:)
-      type(hyperdual) :: val
-
-      ! Eq. A.8: A_chain = - sum( x_i * (m_i - 1) * ln(g_ii_hs) )
-      ! In total units: A_chain_total/RT = - sum( n_i * (m_i - 1) * ln(g_ii_hs) )
-
-      integer :: i
-      type(hyperdual) :: g_ii, one_m_z3, z2_term, z2_term2
-      type(hyperdual) :: di_2
-
-      val = 0.0_pr
-      one_m_z3 = 1.0_pr - zeta(3)
-
-      ! Pre-calculate common RDF terms (Eq. A.9)
-      ! g_ij = 1/(1-z3) + (di*dj/(di+dj)) * 3z2/(1-z3)^2 + ...
-      ! For Chain we only need g_ii (di=dj), so di*dj/(di+dj) = di/2
-
-      do i = 1, size(x)
-         ! Contact RDF g_ii (Eq. A.9 simplified for i=j)
-         ! di*di / (di+di) = di / 2
-
-         di_2 = d(i) / 2.0_pr
-
-         g_ii = (1.0_pr / one_m_z3) + &
-            (3.0_pr * di_2 * zeta(2)) / (one_m_z3**2) + &
-            (2.0_pr * (di_2**2) * (zeta(2)**2)) / (one_m_z3**3)
-
-         ! Summation
-         val = val - x(i) * (m(i) - 1.0_pr) * log(g_ii)
-      end do
-
-      val = val * n_tot
-
-   end function calculate_chain
-
-   function calculate_dispersion(n, V, T, zeta, m, eps_k, sig, kij) result(val)
-      type(hyperdual), intent(in) :: n(:), V, T, zeta(0:3)
-      real(pr), intent(in) :: m(:), eps_k(:), sig(:)
-      real(pr), intent(in), optional :: kij(:,:)
-      type(hyperdual) :: val
-
-      ! Local variables
-      integer :: i, j, k, nc
-      type(hyperdual) :: n_tot, rho, eta, one_m_eta
-      type(hyperdual) :: m_ave, m2_es3, m2_e2s3, I1, I2, C1, x(size(n))
-      type(hyperdual) :: term, a_k, b_k
-      type(hyperdual) :: a1_term, a2_term ! <--- Separate the terms
-      real(pr) :: eps_ij, sig_ij, kij_val
-
-      nc = size(n)
-      n_tot = sum(n)
-      rho = n_tot * N_AVO / (V * 1.0e27_pr)  ! Number density [1/A^3]
-      eta = zeta(3)
-      one_m_eta = 1.0_pr - eta
-      x = n / n_tot
-
-      ! 1. Mixture Averages (Same as before)
-      m_ave = 0.0_pr; m2_es3 = 0.0_pr; m2_e2s3 = 0.0_pr
-
-      do i = 1, nc
-         m_ave = m_ave + x(i)*m(i) ! Segment average
-      end do
-
-      do i = 1, nc
-         do j = 1, nc
-            sig_ij = 0.5_pr * (sig(i) + sig(j))
-            kij_val = 0.0_pr; if (present(kij)) kij_val = kij(i,j)
-            eps_ij = sqrt(eps_k(i) * eps_k(j)) * (1.0_pr - kij_val)
-
-            term = x(i) * x(j) * m(i) * m(j) * (sig_ij**3)
-
-            m2_es3 = m2_es3 + term * (eps_ij / T)
-            m2_e2s3 = m2_e2s3 + term * (eps_ij / T)**2
-         end do
-      end do
-
-      ! 2. Integrals I1 and I2 (Same as before)
-      I1 = 0.0_pr; I2 = 0.0_pr
-      do k = 0, 6
-         a_k = A_COEFFS(0,k) + (m_ave - 1.0_pr)/m_ave * A_COEFFS(1,k) + &
-            (m_ave - 1.0_pr)/m_ave * (m_ave - 2.0_pr)/m_ave * A_COEFFS(2,k)
-         b_k = B_COEFFS(0,k) + (m_ave - 1.0_pr)/m_ave * B_COEFFS(1,k) + &
-            (m_ave - 1.0_pr)/m_ave * (m_ave - 2.0_pr)/m_ave * B_COEFFS(2,k)
-
-         I1 = I1 + a_k * (eta**k)
-         I2 = I2 + b_k * (eta**k)
-      end do
-
-      ! 3. Compressibility C1 (Same as before)
-      C1 = 1.0_pr + m_ave * (8.0_pr * eta - 2.0_pr * (eta**2)) / (one_m_eta**4)
-      C1 = C1 + (1.0_pr - m_ave) * &
-         (20.0_pr*eta - 27.0_pr*(eta**2) + 12.0_pr*(eta**3) - 2.0_pr*(eta**4)) / &
-         ((1.0_pr - eta) * (2.0_pr - eta))**2
-      C1 = 1._pr / C1
-
-      ! ---------------------------------------------------------
-      ! 4. Final Sum
-      ! Eq. A.11 Gross & Sadowski (2001)
-      ! a_res/RT = -2*pi*rho*I1*... - pi*rho*m_ave*C1*I2*...
-      ! ---------------------------------------------------------
-
-      ! 1st order term (Takes 2 * PI)
-      a1_term = -2.0_pr * PI * rho * I1 * m2_es3
-
-      ! 2nd order term (Takes 1 * PI and multiplies by m_ave)
-      a2_term = -1.0_pr * PI * rho * m_ave * C1 * I2 * m2_e2s3
-
-      ! Sum and make extensive
-      val = (a1_term + a2_term) * n_tot
-
-   end function calculate_dispersion
-
-   function calculate_association(n, V, T, zeta, d, m, eps_assoc, kap_assoc, n_sites) result(val)
-      type(hyperdual), intent(in) :: n(:), V, T, zeta(0:3), d(:)
-      real(pr), intent(in) :: m(:), eps_assoc(:), kap_assoc(:), n_sites(:)
-      type(hyperdual) :: val
-
-      integer :: i, j, iter
-      type(hyperdual) :: rho_num, delta_ij
-      type(hyperdual) :: XA(size(n)), XA_new_calc(size(n))
-      type(hyperdual) :: delta(size(n), size(n))
-      type(hyperdual) :: sum_term, g_ij, d_ij, eps_mix, kap_mix, di_dj_term
-
-      ! Damping factor (0.5 usually works, 0.2 is very safe but slow)
-      real(pr), parameter :: ALPHA = 0.5_pr
-
-      ! Number density [1/A^3] to be consistent with sigma in Angstroms
-      rho_num = sum(n) * N_AVO / (V * 1.0e27_pr)
-
-      ! 1. Calculate Delta Matrix (ASSOCIATION STRENGTH)
-      ! WATCH OUT FOR UNITS HERE.
-      ! Delta must have VOLUME units [A^3] to cancel out with rho_num [1/A^3].
-
-      do i = 1, size(n)
-         do j = 1, size(n)
-            d_ij = 0.5_pr * (d(i) + d(j))
-
-            ! Contact RDF (g_hs)
-            g_ij = 1.0_pr / (1.0_pr - zeta(3)) + &
-               (3.0_pr * d_ij * zeta(2)) / (2.0_pr * (1.0_pr - zeta(3))**2) + &
-               (2.0_pr * (d_ij**2) * (zeta(2)**2)) / (2.0_pr * (1.0_pr - zeta(3))**3)
-
-            ! Mixing rules (Wolbach & Sandler)
-            eps_mix = 0.5_pr * (eps_assoc(i) + eps_assoc(j))
-
-            ! Geometric correction for Kappa (standard PC-SAFT rule)
-            di_dj_term = (sqrt(d(i)*d(j)) / (0.5_pr*(d(i)+d(j))))**3
-            kap_mix = sqrt(kap_assoc(i) * kap_assoc(j)) * di_dj_term
-
-            ! Delta [Angstroms^3]
-            ! IMPORTANT: Multiply by g_ij * sigma_ij^3 * kappa
-            ! Sometimes d_ij^3 or sigma_ij^3 is used. In strict PC-SAFT it is usually sigma_ij^3.
-            ! We will use d_ij as a consistent approximation or sigma if you have access.
-            ! Note: In original Gross-Sadowski they use sigma, not d(T).
-            ! But d(T) is more common in modern implementations. I will use d_ij.
-
-            delta(i,j) = g_ij * kap_mix * (d_ij**3) * (exp(eps_mix/T) - 1.0_pr)
-         end do
-      end do
-
-      ! 2. Solve XA with Damping
-      XA = 0.2_pr ! Good guess for associated liquids (better than 0.5)
-
-      do iter = 1, 200 ! Increased iterations in case alpha is low
-
-         XA_new_calc = XA ! Initialize temporary
-
-         do i = 1, size(n)
-            sum_term = 0.0_pr
-            do j = 1, size(n)
-               ! rho_j * Sitios_j * XA_j * Delta_ij
-               ! rho_num_total * x_j * ...
-               ! (n(j)/n_total) * rho_num * ...
-
-               sum_term = sum_term + (n(j)/sum(n)) * rho_num * n_sites(j) * XA(j) * delta(i,j)
-            end do
-            XA_new_calc(i) = 1.0_pr / (1.0_pr + sum_term)
-         end do
-
-         ! CONVERGENCE CHECK (Before damping)
-         if (abs(XA_new_calc(1)%f0 - XA(1)%f0) < 1e-11) exit
-         print *, iter, XA_new_calc(1)%f0, XA(1)%f0, abs(XA_new_calc(1)%f0 - XA(1)%f0)
-
-         ! APPLY DAMPING (This is what you were missing)
-         XA = ALPHA * XA_new_calc + (1.0_pr - ALPHA) * XA
-
-      end do
-
-      ! Debug if it doesn't converge
-      ! if (iter >= 200) print *, "WARNING: Assoc no convergió. Error:", XA_new_calc(1)%f0 - XA(1)%f0
-
-      ! 3. Calculate Energy
-      val = 0.0_pr
-      do i = 1, size(n)
-         val = val + n(i) * n_sites(i) * (log(XA(i)) - 0.5_pr*XA(i) + 0.5_pr)
-      end do
-
-      ! Ensure final extensivity if you didn't do it before
-      ! (In this formula it is already multiplied by n(i), so 'val' is A_total/RT)
-
-   end function calculate_association
-
    ! ---------------------------------------------------------
    ! Method get_v0: Volume lower limit (Covolume)
    ! Represents the physical volume occupied by the segments
    ! ---------------------------------------------------------
-   function get_v0_impl(self, n, P, T) result(v0)
-      class(PcSaft), intent(in) :: self
+   function get_v0(self, n, P, T) result(v0)
+      class(PCSAFT), intent(in) :: self
       real(pr), intent(in) :: n(:)  ! Moles of each component
       real(pr), intent(in) :: P     ! System pressure
       real(pr), intent(in) :: T     ! System temperature
@@ -420,14 +3441,13 @@ contains
 
       sum_seg_vol = 0.0_pr
       do i = 1, size(n)
-         sum_seg_vol = sum_seg_vol + n(i) * self%m(i) * (self%sigma(i)**3)
+         sum_seg_vol = sum_seg_vol + n(i)*self%m(i)*(self%sigma(i)**3)
       end do
 
       ! Note: UNITS_FACTOR must be approx 0.000602214 to convert
       ! (mol * Ang^3) to Liters.
       ! Make sure it matches the one used in 'calculate_zetas'.
-      v0 = (PI / 6.0_pr) * UNITS_FACTOR * sum_seg_vol
+      v0 = (PI/6.0_pr)*UNITS_FACTOR*sum_seg_vol
+   end function get_v0
 
-   end function get_v0_impl
-
-end module yaeos__models_ar_saft_pcsaft
+end module YAEOS__MODELS_AR_SAFT_PCSAFT

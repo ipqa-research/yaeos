@@ -10,6 +10,11 @@ module yaeos__equilibria_flash
    use iso_fortran_env, only: error_unit
    implicit none
 
+   private
+
+   public :: flash
+   public :: flash_no_beta_limits
+
 contains
 
    type(EquilibriumState) function flash(model, z, t, v_spec, p_spec, k0, iters)

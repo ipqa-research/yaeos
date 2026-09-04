@@ -13,6 +13,9 @@ endif
 
 add_languages('fortran', native: false)
 
+fc = meson.get_compiler('fortran')
+fc_version = fc.version()
+
 meson_path = meson.current_build_dir()
 
 omp = dependency('openmp')
@@ -46,8 +49,8 @@ incdir_f2py = run_command(py,
 #   fflags = '-g -fPIC -funroll-loops -fstack-arrays -Ofast -frepack-arrays -faggressive-function-elimination -fopenmp'
 # endif
 
-fflags = '-g -fPIC -O2'
-cflags = '-g -fPIC'
+fflags = '-g -fno-tree-vrp -fPIC -O2'
+cflags = '-g -fno-tree-vrp -fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
 ## GLIBC patches
@@ -57,37 +60,50 @@ cc = meson.get_compiler('c')
 quadmath_dep = cc.find_library('quadmath', required: true)
 
 if not is_windows
-  glibc_major = cc.get_define('__GLIBC__', prefix: '#include <gnu/libc-version.h>')
-  glibc_minor = cc.get_define('__GLIBC_MINOR__', prefix: '#include <gnu/libc-version.h>')
-
-  message('glibc major version: ' + glibc_major)
-  message('glibc minor version: ' + glibc_minor)
-
-  glibc_version = glibc_major + '.' + glibc_minor
-
-  if glibc_version.version_compare('>=2.41')
-    fflags = fflags + ' -ftrampoline-impl=heap'
-    cflags = cflags + ' -ftrampoline-impl=heap'
+  # Flags needed after glibc 2.41. Only available from gcc 14.1
+  if fc_version.version_compare('>=14.1')
+    message('Fortran compiler version is 14.1 or newer.')
+  else
+    error('Fortran compiler version 14.1 or newer is required!')
   endif
+
+  fflags = fflags + ' -ftrampoline-impl=heap'
+  cflags = cflags + ' -ftrampoline-impl=heap'
+  fpm = run_command(
+      'fpm',
+      'install',
+      '--profile',
+      'release',
+      '--verbose',
+      '--flag',
+      fflags,
+      '--c-flag',
+      cflags,
+      '--link-flag',
+      '-lgcc',
+      '--prefix',
+      fpm_build_dir,
+      check : false
+  )
 else
   fflags = fflags + ' -static'
   cflags = cflags + ' -static'
+  fpm = run_command(
+      'fpm',
+      'install',
+      '--profile',
+      'release',
+      '--verbose',
+      '--flag',
+      fflags,
+      '--c-flag',
+      cflags,
+      '--prefix',
+      fpm_build_dir,
+      check : false
+  )
 endif
 
-fpm = run_command(
-    'fpm',
-    'install',
-    '--profile',
-    'release',
-    '--verbose',
-    '--flag',
-    fflags,
-    '--c-flag',
-    cflags,
-    '--prefix',
-    fpm_build_dir,
-    check : false
-)
 
 # Error printing
 message('fpm build output:')

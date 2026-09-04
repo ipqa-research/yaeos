@@ -108,13 +108,13 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
-      integer, parameter :: n = 2
-      real(pr) :: z(n), V, T
+      integer, parameter :: nc = 2
+      real(pr) :: z(nc), V, T
       real(pr) :: Ar, ArV, ArV2, ArT, ArTV, ArT2
-      real(pr) :: Arn(n), ArVn(n), ArTn(n), Arn2(n, n)
+      real(pr) :: Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc)
 
       real(pr) :: Ar_val, ArV_val, ArV2_val, ArT_val, ArTV_val, ArT2_val
-      real(pr) :: Arn_val(n), ArVn_val(n), ArTn_val(n), Arn2_val(n, n)
+      real(pr) :: Arn_val(nc), ArVn_val(nc), ArTn_val(nc), Arn2_val(nc, nc)
 
       Ar_val = -9.5079006412803206
       ArV_val = 8.8347920054119555
@@ -133,34 +133,49 @@ contains
       v = 1
       T = 150
 
-      call eos%residual_helmholtz( &
-         z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
-         ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
-         )
+      call test_numdiff
+   contains
+      subroutine test_numdiff
+         use yaeos, only: individual_ar_calls, numeric_ar_derivatives
+         real(pr) :: V, T, z(nc)
+         real(pr) :: Ar_num, ArV_num, ArT_num, ArV2_num, ArT2_num, ArTV_num
+         real(pr), dimension(nc) :: Arn_num, ArVn_num, ArTn_num
+         real(pr), dimension(nc, nc) :: Arn2_num
+         real(pr) :: Ar, ArV, ArT, ArV2, ArT2, ArTV
+         real(pr), dimension(nc) :: Arn, ArVn, ArTn
+         real(pr), dimension(nc, nc) :: Arn2
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+         real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
+         real(pr), parameter :: tol=1e-2
+         integer :: i, j
 
-      call eos%residual_helmholtz( &
-         z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
-         ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-         )
+         logical :: individual_calls
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
 
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+         z = [0.3, 0.7]
+         v = 1
+         T = 150
+         
+         call numeric_ar_derivatives(eos, z, V, T, dn, dv, dt, &
+            Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+
+         call eos%residual_helmholtz(z, V, T, &
+            Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
+            ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+            )
+
+         call check(error, allclose([Ar_num], [Ar], tol))
+         
+         call check(error, allclose([ArT_num] , [ArT], tol))
+         call check(error, allclose([ArT2_num], [ArT2], tol))
+
+         call check(error, allclose([ArV_num] , [ArV], tol))
+         call check(error, allclose([ArV2_num], [ArV2], tol))
+
+         call check(error, allclose([ArTV_num], [ArTV], tol))
+
+         call check(error, allclose([ArVn_num], [ArVn], tol))
+         call check(error, allclose([ArTn_num], [ArTn], tol))
+      end subroutine test_numdiff
    end subroutine test_pr76_tape
 end module test_autodiff_api

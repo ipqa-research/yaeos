@@ -1566,7 +1566,7 @@ contains
    ! ==========================================================================
    ! Other methods
    ! --------------------------------------------------------------------------
-   real(pr) function Psat_pure(eos, ncomp, T)
+   real(pr) function Psat_pure(eos, ncomp, T, Vl, Vv, converged)
       !! Calculation of saturation pressure of a pure component using the
       !! secant method.
       class(ArModel), intent(in) :: eos !! Model that will be used
@@ -1574,17 +1574,30 @@ contains
       !! Number of component in the mixture from which the saturation pressure
       !! will be calculated
       real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: Vl !! Liquid volume [L]
+      real(pr), intent(out) :: Vv !! Vapor volume [L]
+      logical, optional, intent(out) :: converged !! The calculation converged
 
       real(pr) :: n(size(eos))
-      real(pr) :: F(3), X(3), dF(3, 3), Vl, Vv, P, Pc, S, dFdS(3)
+      real(pr) :: F(3), X(3), dF(3, 3), S, dFdS(3)
       integer, parameter :: ns=3
       integer :: its
+      real(pr) :: P
 
       n = 0
       n(ncomp) = 1
 
-      call eos%volume(n, 1e-3_pr, T, Vl, root_type="liquid")
-      call eos%volume(n, 1e-3_pr, T, Vv, root_type="vapor")
+      Vl = 1
+      Vv = 1
+      P = 1e-3
+      do while(abs((Vl - Vv)) < 1e-3 .and. P < 1000)
+         call eos%volume(n, P, T, Vl, root_type="liquid")
+         call eos%volume(n, P, T, Vv, root_type="vapor")
+         P = P * 1.5
+      end do
+
+      ! Vl = eos%get_v0(n, 1._pr, T) * 1.0001
+      ! Vv = 2
 
       X = [log(Vl), log(Vv), log(T)]
       S = log(T)
@@ -1592,6 +1605,12 @@ contains
       F = 10
       call solve_point_psat(eos, ncomp, size(n), X, ns, S, F, dF, dFdS, its)
       Vl = exp(X(1))
+      Vv = exp(X(2))
+
+      if (present(converged)) then
+         converged = .not. any(isnan(F))
+      end if
+
       call eos%pressure(n, Vl, T, Psat_pure)
    end function Psat_pure
 
