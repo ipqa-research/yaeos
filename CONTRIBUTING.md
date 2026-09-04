@@ -1,7 +1,7 @@
 <!-- omit in toc -->
 # Contributing to yaeos
 
-First off, thanks for your interesnt and taking the time to contribute!
+First off, thanks for your interest and taking the time to contribute!
 
 All types of contributions are encouraged and valued. 
 See the [Table of Contents](#table-of-contents) for different ways to help and
@@ -162,7 +162,7 @@ Our code style can be read at [Style Guide](STYLE_GUIDE.md)
 ### Commit Messages
 We encourage the use of
 [commitizen](https://commitizen-tools.github.io/commitizen/) styling on commit
-messages.
+messages, but it is not mandatory.
 <!-- TODO -->
 
 ## Join The Project Team

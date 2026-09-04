@@ -1,25 +1,23 @@
 name: CI
-on: [push]
+on: [push, pull_request, release]
 
 
 jobs:
-  Build:
+  tests_and_coverage:
+    defaults:
+      run:
+        shell: bash
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9]
+        python-version: [3.12]
         toolchain:
           - {compiler: gcc, version: 10}
-          - {compiler: gcc, version: 11}
-          - {compiler: gcc, version: 12}
-          - {compiler: gcc, version: 13}
-          # - {compiler: intel-classic, version: '2024.1'}
-          - {compiler: intel, version: '2024.1'}
-          - {compiler: intel, version: '2023.2'}
-          # - {compiler: nvidia-hpc, version: '23.11'}
-          # - {compiler: intel-classic, version: '2023.2'}
+          - {compiler: gcc, version: 14}
+          # - {compiler: intel, version: '2024.2'}
+          # - {compiler: intel, version: '2023.2'}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -27,7 +25,8 @@ jobs:
         submodules: false
 
     - name: Setup Fortran Compiler
-      uses: fortran-lang/setup-fortran@v1
+      if: runner.os != 'Windows'
+      uses: fortran-lang/setup-fortran@v1.8.1
       id: setup-fortran
       with:
         compiler: ${{ matrix.toolchain.compiler }}
@@ -42,41 +41,256 @@ jobs:
       uses: ts-graphviz/setup-graphviz@v1
 
     - name: Setup Fortran Package Manager
-      uses: fortran-lang/setup-fpm@v4
+      uses: fortran-lang/setup-fpm@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install Python dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr numpy scipy
+        pip install ford numpy matplotlib gcovr numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
-    - name: Install NLopt
-      run:
-        sudo apt-get install libnlopt-dev
-
-        # - name: Compile
-        #   run: fpm build --profile release --compiler ${{ env.FC }} --c-compiler gcc
-    
     - name: Run tests without coverage
-      if: ${{ env.FC != 'gfortran' }}
-      run: |
-        fpm test --profile debug --compiler ${{ env.FC }} --c-compiler gcc
-
-    - name: Run tests with coverage
       if: ${{ env.FC == 'gfortran' }}
       run: |
-        fpm test --profile debug --flag -coverage --compiler ${{ env.FC }} --c-compiler gcc
-        bash ci/ci.sh
+        fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
+
+    - name: Run tests with coverage
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      run: |
+        fpm test --profile release --flag "-g -coverage -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Coverage
       run: bash ci/ci.sh coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
 
     - name: Upload coverage reports to Codecov
-      if: ${{ env.FC == 'gfortran' }}
-      uses: codecov/codecov-action@v4.0.1
+      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: ipqa-research/yaeos
+        files: "coverage.xml"
+
+  tests_windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.12]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: false
+
+      - name: Setup MSYS2 (toolchain only, no Python)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            gcc
+            mingw-w64-x86_64-gcc-libgfortran
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-lapack
+            mingw-w64-x86_64-fpm
+            make
+            git
+            pkg-config
+
+      - name: Add MSYS2 binaries to PATH
+        shell: msys2 {0}
+        run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        run: |
+          pip install numpy scipy matplotlib coverage
+      
+      - name: Run tests
+        shell: msys2 {0}
+        run: |
+          fpm test \
+            --profile release \
+            --flag "-g -ffree-line-length-0" \
+            --c-flag "-I./src/adiff/autodiff_api/tapenade/c/"
+
+  Python-API:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+        toolchain:
+          - {compiler: gcc, version: 14}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: false
+
+    - name: Install Python
+      uses: actions/setup-python@v1 # Use pip to install latest CMake, & FORD/Jin2For, etc.
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libnlopt-dev pandoc libblas-dev liblapack-dev
+    
+    - name: install tox
+      run: |
+        pip install tox tox-gh-actions
+    
+    - name: Setup Fortran Compiler
+      uses: fortran-lang/setup-fortran@v1.8.1
+      id: setup-fortran
+      with:
+        compiler: ${{ matrix.toolchain.compiler }}
+        version: ${{ matrix.toolchain.version }}
+
+    - name: Run tox
+      run: |
+        cd python # && tox -r
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    needs: 
+      - tests_and_coverage
+      - tests_windows
+      - Python-API
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest] #, macos-13, macos-14]
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      # Used to host cibuildwheel
+      - uses: actions/setup-python@v5
+      
+      - name: Install Fortran
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt install gfortran-14
+          sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
+
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            gcc
+            mingw-w64-x86_64-gcc-libgfortran
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-lapack
+            mingw-w64-x86_64-blas
+            mingw-w64-x86_64-fpm
+            make
+            git
+            pkg-config
+
+      - name: Add MSYS2 to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          MINGW_PATH=$(cygpath -w $(dirname $(which gfortran)))
+          echo "$MINGW_PATH" >> $GITHUB_PATH
+
+      - name: Install fpm
+        uses: fortran-lang/setup-fpm@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate meson native file (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          GFORTRAN=$(cygpath -w $(which gfortran))
+          GCC=$(cygpath -w $(which gcc))
+          GPP=$(cygpath -w $(which g++))
+          mkdir -p python/ci
+          cat > python/ci/windows-mingw.ini << EOF
+          [binaries]
+          c = '${GCC//\\/\\\\}'
+          cpp = '${GPP//\\/\\\\}'
+          fortran = '${GFORTRAN//\\/\\\\}'
+          EOF
+          cat python/ci/windows-mingw.ini
+
+      - name: Add MSYS2 to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          # Use -w for PATH, but -m for delvewheel to avoid backslash escaping issues
+          MINGW_PATH_WIN=$(cygpath -w $(dirname $(which gfortran)))
+          MINGW_PATH_MIXED=$(cygpath -m $(dirname $(which gfortran)))
+
+          echo "$MINGW_PATH_WIN" >> $GITHUB_PATH
+
+          # Save the dynamic path to GITHUB_ENV for later steps
+          echo "MINGW_BIN_PATH=$MINGW_PATH_MIXED" >> $GITHUB_ENV
+
+      # CiBuildWheel
+      - name: Install dependencies
+        run: |
+          python -m pip install cibuildwheel
+
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel python/ --output-dir wheelhouse --debug-traceback
+
+        # to supply options, put them in 'env', like:
+        env:
+          # CIBW_BUILD_VERBOSITY: 3
+          CIBW_BUILD_FRONTEND: build
+
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path ${{ env.MINGW_BIN_PATH }} -w {dest_dir} {wheel}"
+          CIBW_CONFIG_SETTINGS_WINDOWS: >
+            setup-args=--native-file=../ci/windows-mingw.ini
+
+          # MACOSX_DEPLOYMENT_TARGET: "13.0"
+          CIBW_BEFORE_TEST: pip install pytest fpm
+          CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+ 
+  publish_to_testpypi:
+    name: Publish Python 🐍 wheels 🛞 to PyPI
+    if: github.event_name == 'release'
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://test.pypi.org/p/yaeos
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        path: dist/
+        pattern: cibw-wheels-*
+        merge-multiple: true
+    - run: ls -R dist
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true

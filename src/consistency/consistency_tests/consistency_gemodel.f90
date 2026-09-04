@@ -18,6 +18,9 @@ module yaeos__consistency_gemodel
    !! - [[ge_consistency]]: From an instantiated GeModel evaluate all the
    !! Michelsen and Mollerup consistency tests
    !!
+   !! - [[individual_ge_calls]]: Test the individual calls to the excess Gibbs
+   !! free energy derivatives.
+   !!
    !! # References
    !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
    !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
@@ -356,5 +359,134 @@ contains
          end do
       end if
    end subroutine numeric_ge_derivatives
+
+   subroutine individual_ge_calls(model, n, T, passed)
+      !! # individual_ge_calls
+      !! Check if all derivatives of excess Gibbs can be called individually
+      !!
+      !! # Description
+      !! Tool to facilitate the development of new [[ArModel]] by testing
+      !! the individual call of each excess Gibbs derivative. The individual
+      !! call must be equal to the total call.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  use yaeos, only: Groups, setup_unifac, UNIFAC
+      !!  use yaeos__consistency_gemodel, only: individual_ge_calls
+      !!
+      !!  type(UNIFAC) :: model
+      !!
+      !!  integer, parameter :: nc = 4
+      !!
+      !!  type(Groups) :: molecules(nc)
+      !!
+      !!  real(pr) :: n(nc), T
+      !!
+      !!  T = 303.15
+      !!  n = [400.0, 100.0, 300.0, 200.0] ! always test with sum(n) > 1
+      !!
+      !!  ! Hexane [CH3, CH2]
+      !!  molecules(1)%groups_ids = [1, 2]
+      !!  molecules(1)%number_of_groups = [2, 4]
+      !!
+      !!  ! Ethanol [CH3, CH2, OH]
+      !!  molecules(2)%groups_ids = [1, 2, 14]
+      !!  molecules(2)%number_of_groups = [1, 1, 1]
+      !!
+      !!  ! Toluene [ACH, ACCH3]
+      !!  molecules(3)%groups_ids = [9, 11]
+      !!  molecules(3)%number_of_groups = [5, 1]
+      !!
+      !!  ! Cyclohexane [CH2]
+      !!  molecules(4)%groups_ids = [2]
+      !!  molecules(4)%number_of_groups = [6]
+      !!
+      !!  model = setup_unifac(molecules)
+      !!
+      !!  call individual_ge_calls(model, n, T, passed)
+      !!
+      !!  ! If TRUE, then all individual calls are correct
+      !!  print *, passed
+      !! ```
+      !!
+      class(GeModel), intent(in) :: model
+      !! \(G^E\) model
+      real(pr), intent(in) :: n(:)
+      !! Moles number vector
+      real(pr), intent(in) :: T
+      !! Temperature [K]
+      logical, intent(out) :: passed
+
+      integer :: i, j
+
+      ! Call all together
+      real(pr) :: Ge, GeT, Gen(size(n)), Gen2(size(n), size(n)), GeT2
+      real(pr) :: GeTn(size(n))
+
+      ! Individuals
+      real(pr) :: i_Ge, i_GeT, i_Gen(size(n)), i_Gen2(size(n), size(n))
+      real(pr) :: i_GeT2, i_GeTn(size(n))
+
+      ! =======================================================================
+      ! All together calls
+      ! -----------------------------------------------------------------------
+      call model%excess_gibbs(&
+         n=n, T=T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
+         )
+
+      ! =======================================================================
+      ! Individual calls
+      ! -----------------------------------------------------------------------
+      call model%excess_gibbs(n=n, T=T, Ge=i_Ge)
+      call model%excess_gibbs(n=n, T=T, GeT=i_GeT)
+      call model%excess_gibbs(n=n, T=T, GeT2=i_GeT2)
+      call model%excess_gibbs(n=n, T=T, Gen=i_Gen)
+      call model%excess_gibbs(n=n, T=T, GeTn=i_GeTn)
+      call model%excess_gibbs(n=n, T=T, Gen2=i_Gen2)
+
+      ! =======================================================================
+      ! Asserts
+      ! -----------------------------------------------------------------------
+      if (abs(Ge - i_Ge) > epsilon(Ge)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(GeT - i_GeT) > epsilon(GeT)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(GeT2 - i_GeT2) > epsilon(GeT2)) then
+         passed = .false.
+         return
+      end if
+
+      do i = 1, size(n)
+         if (abs(Gen(i) - i_Gen(i)) > epsilon(Gen(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      do i = 1, size(n)
+         if (abs(GeTn(i) - i_GeTn(i)) > epsilon(GeTn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      do i = 1, size(n)
+         do j = 1, size(n)
+            if (abs(Gen2(i,j) - i_Gen2(i,j)) > epsilon(Gen2(i,j))) then
+               passed = .false.
+               return
+            end if
+         end do
+      end do
+
+      passed = .true.
+   end subroutine individual_ge_calls
 end module yaeos__consistency_gemodel
 
