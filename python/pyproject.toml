@@ -46,12 +46,11 @@ source /opt/rh/gcc-toolset-15/enable && echo 'source /opt/rh/gcc-toolset-15/enab
 
 [tool.cibuildwheel.linux.environment]
 # These variables will strictly apply to the Linux container runs
-CC = "gcc-15"
-CXX = "g++-15"
-FPM_FC = "gfortran-15"
-FC = "gfortran-15"
-F77 = "gfortran-15"
-F90 = "gfortran-15"
+CC = "/opt/rh/gcc-toolset-15/root/usr/bin/gcc"
+CXX = "/opt/rh/gcc-toolset-15/root/usr/bin/g++"
+FPM_FC = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
+FC = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
+F77 = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
 
 PATH = "/opt/rh/gcc-toolset-15/root/usr/bin:$PATH"
 LD_LIBRARY_PATH = "/opt/rh/gcc-toolset-15/root/usr/lib64:/opt/rh/gcc-tools"
