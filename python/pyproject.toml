@@ -44,6 +44,13 @@ dnf install -y lapack-devel blas-devel gcc-toolset-15-gcc-gfortran && \\
 source /opt/rh/gcc-toolset-15/enable && echo 'source /opt/rh/gcc-toolset-15/enable' >> ~/.bashrc
 """
 
+[tool.cibuildwheel.linux.environment]
+# These variables will strictly apply to the Linux container runs
+FPM_FC = "scl enable gcc-toolset-15 -- gfortran"
+FC = "scl enable gcc-toolset-15 -- gfortran"
+F77 = "scl enable gcc-toolset-15 -- gfortran"
+
+
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"
 
