@@ -2,6 +2,7 @@ MODULE YAEOS__MODELS_AR_SAFT_PCSAFT
    USE YAEOS__TAPENADE_AR_API, ONLY: armodeltapenade
    USE YAEOS__TAPENADE_INTERFACES
    use yaeos__constants, only: pr, R
+   use yaeos__models_solvers, only: volume_michelsen
    IMPLICIT NONE
    ! ---------------------------------------------------------------------------
    ! PC-SAFT UNIVERSAL CONSTANTS (Gross & Sadowski, 2001, Table A1)
@@ -33,6 +34,7 @@ MODULE YAEOS__MODELS_AR_SAFT_PCSAFT
       procedure :: ar_d_b
       procedure :: ar_d_d
       procedure :: get_v0 => get_v0
+      procedure :: volume => volume
    end type PCSAFT
    ! Module private constants
    REAL(pr), PARAMETER :: pi = 3.14159265359_pr
@@ -3449,5 +3451,27 @@ CONTAINS
       ! Make sure it matches the one used in 'calculate_zetas'.
       v0 = (PI/6.0_pr)*UNITS_FACTOR*sum_seg_vol
    end function get_v0
+
+   subroutine volume(eos, n, P, T, V, root_type)
+      !! # PC-SAFT volume solver
+      !! Volume solver optimized for PC-SAFT
+      !!
+      !! # Description
+      !! Uses the solver proposed by Michelsen.
+      !! # References
+      !!
+      !! - [1] "Thermodynamic Models: Fundamental and Computational Aspects",
+      !!  Michael L. Michelsen, Jørgen M. Mollerup.
+      !!  Tie-Line Publications, Denmark (2004)
+      !! [doi](http://dx.doi.org/10.1016/j.fluid.2005.11.032)
+      use yaeos__constants, only: R
+      use yaeos__math_linalg, only: cubic_roots, cubic_roots_rosendo
+      use yaeos__models_solvers, only: volume_michelsen
+      class(PCSAFT), intent(in) :: eos
+      real(pr), intent(in) :: n(:), P, T
+      real(pr), intent(out) :: V
+      character(len=*), intent(in) :: root_type
+      call volume_michelsen(eos, n=n, P=P, T=T, V=V, root_type=root_type)
+   end subroutine volume
 
 end module YAEOS__MODELS_AR_SAFT_PCSAFT
