@@ -1587,9 +1587,9 @@ contains
       n = 0
       n(ncomp) = 1
 
-      Vl = 1
-      Vv = 1
-      P = 1e-3
+      P = 0.1
+      call eos%volume(n, P, T, Vl, root_type="liquid")
+      call eos%volume(n, P, T, Vv, root_type="vapor")
       do while(abs((Vl - Vv)) < 1e-3 .and. P < 1000)
          call eos%volume(n, P, T, Vl, root_type="liquid")
          call eos%volume(n, P, T, Vv, root_type="vapor")
