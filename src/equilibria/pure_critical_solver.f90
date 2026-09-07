@@ -58,9 +58,7 @@ contains
    ! ========================================================================
    ! INITIAL ESTIMATE of critical point
    ! ========================================================================
-   subroutine estimate_critical_point(&
-         model, i, nc, V_est, T_est &
-      )
+   subroutine estimate_critical_point(model, i, nc, V_est, T_est)
       use yaeos__equilibria_boundaries_pure_saturation, only:pure_saturation_line, PurePsat
       class(ArModel), intent(in) :: model
       integer, intent(in) :: i
