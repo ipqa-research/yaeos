@@ -6,7 +6,6 @@ program test_critical_point_pure
    use testing_aux, only: test_title, assert
    use auxiliar_functions, only: allclose
    implicit none
-   class(ArModel), allocatable :: model
    type(FixtureFluid) :: fluid
 
    integer, parameter :: nc=16
@@ -15,10 +14,12 @@ program test_critical_point_pure
 
    write (*, *) test_title("Pure CP solver")
    fluid = oil_b71()
-   model = fluid%ar_model 
-   call find_critical_points_all_components(model, fluid%nc, Vc, Tc, Pc, converged)
 
-   call assert(allclose(model%components%Pc, Pc, 1e-5_pr), "Pc")
-   call assert(allclose(model%components%Tc, Tc, 1e-5_pr), "Tc")
+   associate (model =>  fluid%ar_model)
+      call find_critical_points_all_components(model, fluid%nc, Vc, Tc, Pc, converged)
 
-end program
+      call assert(allclose(model%components%Pc, Pc, 1e-5_pr), "Pc")
+      call assert(allclose(model%components%Tc, Tc, 1e-5_pr), "Tc")
+   end associate
+
+end program test_critical_point_pure
