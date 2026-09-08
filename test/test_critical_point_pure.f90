@@ -9,14 +9,13 @@ program test_critical_point_pure
    class(ArModel), allocatable :: model
    type(FixtureFluid) :: fluid
 
-   real(pr), allocatable :: Tc(:), Pc(:), w(:), Vc(:)
+   integer, parameter :: nc=16
+   real(pr) :: Tc(nc), Pc(nc), w(nc), Vc(nc)
    logical :: converged(2)
 
    write (*, *) test_title("Pure CP solver")
    fluid = oil_b71()
    model = fluid%ar_model 
-
-   allocate(Tc(fluid%nc), Pc(fluid%nc), Vc(fluid%nc), w(fluid%nc))
    call find_critical_points_all_components(model, fluid%nc, Vc, Tc, Pc, converged)
 
    call assert(allclose(model%components%Pc, Pc, 1e-5_pr), "Pc")
