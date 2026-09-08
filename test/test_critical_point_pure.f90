@@ -10,14 +10,14 @@ program test_critical_point_pure
 
    integer, parameter :: nc=16
    real(pr) :: Tc(nc), Pc(nc), w(nc), Vc(nc)
-   logical :: converged(2)
+   logical :: converged(nc)
 
    write (*, *) test_title("Pure CP solver")
+
    fluid = oil_b71()
 
    associate (model =>  fluid%ar_model)
       call find_critical_points_all_components(model, fluid%nc, Vc, Tc, Pc, converged)
-
       call assert(allclose(model%components%Pc, Pc, 1e-5_pr), "Pc")
       call assert(allclose(model%components%Tc, Tc, 1e-5_pr), "Tc")
    end associate
