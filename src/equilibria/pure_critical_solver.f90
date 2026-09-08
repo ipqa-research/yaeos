@@ -66,7 +66,7 @@ contains
       real(pr), intent(out) :: V_est
       real(pr), intent(out) :: T_est
 
-      real(pr) :: z(nc), T, P_sat, VL, VV, ratio
+      real(pr) :: z(nc), T, P_sat, VL, VV, ratio, dT
       logical :: psat_converged
       integer :: iter
 
@@ -80,26 +80,27 @@ contains
       V_est = 0.15_pr
       T_est = T
 
-      do iter = 1, 20
-         P_sat = model%Psat_pure(i, T, Vl=VL, Vv=Vv, converged=psat_converged)
-         if (abs(Vv - Vl) > 1e-3) then
-            ratio = VV / VL
-            ! Cailletet-Mathias mean rectilinear volume estimate
-            V_est = (2.0_pr * VL * VV) / (VL + VV)
 
-            if (ratio < 1.25_pr) then
+      iter = 0
+      do while(.true. .and. iter < 100)
+         P_sat = model%Psat_pure(i, T, Vl=VL, Vv=Vv, converged=psat_converged)
+         iter = iter + 1
+         if (abs(Vv - Vl) > 1e-3) then
+            ratio = Vv / VL
+            if (ratio < 10_pr) then
                T_est = T
+               V_est = Vl
                return
             end if
-
             ! Advance temperature upward towards Tc
-            T = T * (1.0_pr + 0.08_pr * log(ratio))
+            dT = 0.08_pr * log(ratio)
+            dT = sign(min(abs(dT), 0.1_pr), dT)
+            T = T  * (1.0_pr + dT)
          else
             ! Step temperature down if above pseudo-critical or single phase
-            T = T * 0.75_pr
+            T = T * 0.75
          end if
       end do
-      T_est = max(T, 50.0_pr)
    end subroutine estimate_critical_point
 
 
