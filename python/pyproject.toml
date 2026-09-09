@@ -39,28 +39,6 @@ before-all = """
 dnf install -y epel-release && \\
 dnf install -y lapack-devel blas-devel
 """
-# gcc-toolset-15-gcc-gfortran && \\
-# source /opt/rh/gcc-toolset-15/enable && echo 'source /opt/rh/gcc-toolset-15/enable' >> ~/.bashrc
-
-# [tool.cibuildwheel.linux.environment]
-# These variables will strictly apply to the Linux container runs
-# CC = "/opt/rh/gcc-toolset-15/root/usr/bin/gcc"
-# CXX = "/opt/rh/gcc-toolset-15/root/usr/bin/g++"
-# FPM_FC = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
-# FC = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
-# F77 = "/opt/rh/gcc-toolset-15/root/usr/bin/gfortran"
-# 
-# PATH = "/opt/rh/gcc-toolset-15/root/usr/bin:$PATH"
-# LD_LIBRARY_PATH = "/opt/rh/gcc-toolset-15/root/usr/lib64:/opt/rh/gcc-tools"
-# LDFLAGS = "-lgcc"
 
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"
-
-# [tool.cibuildwheel.windows]
-# before-all = """
-#     git clone https://github.com/microsoft/vcpkg.git
-#     cd vcpkg
-#     .\\bootstrap-vcpkg.bat
-#     .\\vcpkg install lapack blas
-# """
