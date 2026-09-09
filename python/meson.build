@@ -80,7 +80,7 @@ if not is_windows
       '--c-flag',
       cflags,
       '--link-flag',
-      '-Wl,-lgcc,-lgfortran',
+      '-static-libgcc',
       '--prefix',
       fpm_build_dir,
       check : false
@@ -240,7 +240,7 @@ if is_windows
   ext_dependencies = [py_dep]
 else
   # For Linux/macOS: Standard dynamic linking
-  extra_link_args += ['-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp']
+  extra_link_args += ['-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp', '-static-libgcc']
   ext_dependencies = [py_dep, omp, quadmath_dep]
 endif
 
