@@ -67,8 +67,8 @@ if not is_windows
     error('Fortran compiler version 14.1 or newer is required!')
   endif
 
-  fflags = fflags + ' -ftrampoline-impl=heap'
-  cflags = cflags + ' -ftrampoline-impl=heap'
+  fflags = fflags + ' -ftrampoline-impl=heap -fno-tree-slp-vectorize -fno-aggressive-loop-optimizations'
+  cflags = cflags + ' -ftrampoline-impl=heap -fno-tree-slp-vectorize -fno-aggressive-loop-optimizations'
   fpm = run_command(
       'fpm',
       'install',
