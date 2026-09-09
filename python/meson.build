@@ -80,7 +80,7 @@ if not is_windows
       '--c-flag',
       cflags,
       '--link-flag',
-      '-lgcc',
+      '-lgcc -lgfortran',
       '--prefix',
       fpm_build_dir,
       check : false
