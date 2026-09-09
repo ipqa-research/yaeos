@@ -1,3 +1,3 @@
 ---
-title: alpha functions
+title: Alpha functions
 ---

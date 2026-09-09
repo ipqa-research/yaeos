@@ -1,37 +1,36 @@
-module tapenade_interfaces
+module yaeos__tapenade_interfaces
+    use yaeos__constants, only: pr
     implicit none
 
-    interface pushreal8
-        subroutine pushreal8(realnum)
-            real(8) :: realnum
-        end subroutine
-        
-        subroutine pushreal8array(realnum)
-            real(8) :: realnum(:)
-        end subroutine
-    end interface
+   interface 
+      subroutine pushinteger4(i)
+         integer :: i
+      end subroutine
+      
+      subroutine popinteger4(i)
+         integer :: i
+      end subroutine
 
-    interface popreal8
-        subroutine popreal8(realnum)
-            real(8) :: realnum
-        end subroutine
-    end interface
+      subroutine pushreal8array(a, n)
+         import pr
+         real(pr), dimension(n) :: a
+         integer :: n
+      end subroutine
 
-    interface pushinteger4
-        subroutine pushinteger4(intnum)
-            integer :: intnum
-        end subroutine
-    end interface
+      subroutine pushreal8(a)
+         import pr
+         real(pr) :: a
+      end subroutine
 
-    interface popinteger4
-        subroutine popinteger4(intnum)
-            integer :: intnum
-        end subroutine
-    end interface
+      subroutine POPREAL8(a)
+         import pr
+         real(pr) :: a
+      end subroutine
 
-    interface pushcontrol1b
-        subroutine pushcontrol1b(intnum)
-            integer :: intnum
-        end subroutine
-    end interface
+      subroutine POPREAL8ARRAY(a, n)
+         import pr
+         real(pr), dimension(n) :: a
+         integer :: n
+      end subroutine
+   end interface
 end module

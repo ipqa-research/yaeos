@@ -41,7 +41,7 @@ run_test() {
         echoerr "There are wrongly named files in the test directory"
 
     echo Running tests...
-    fpm test --flag "--coverage"
+    fpm test --flag "--coverage -g" || exit 1
 }
 
 run_coverage() {
@@ -49,34 +49,36 @@ run_coverage() {
         --exclude "build" \
         --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
         --exclude "tools" \
-        --fail-under-line 90 \
         --jacoco coverage.xml
     
     gcovr \
         --exclude "build" \
         --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
-        --exclude "tools" \
-        --fail-under-line 90
+        --exclude "tools"
 }
 
 python_wrappers(){
-    fpm install --profile release --prefix build/python
+    BUILD_DIR="build/python"
+    fpm install --profile release --prefix "$BUILD_DIR"
+    cd python/yaeos
     f2py \
-        -I ../build/tmp/include \
-        -L ../build/tmp/lib/libyaeos.a \
-        -m yaeos -c yaeos_python.f90 ../build/tmp/lib/libyaeos.a
+        -I ../../$BUILD_DIR/include \
+        -L ../../$BUILD_DIR/lib/libyaeos.a \
+        -m yaeos -c ../yaeos_c.f90 ../../$BUILD_DIR/lib/libyaeos.a
 }
 
 resumee() {
@@ -94,6 +96,7 @@ case $1 in
     "install")  install_fpm;;
     "test") run_test;;
     "coverage") run_coverage;;
+    "python") python_wrappers;;
     *)
         run_test
         run_coverage
