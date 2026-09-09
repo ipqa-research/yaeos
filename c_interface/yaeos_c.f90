@@ -37,7 +37,7 @@ module yaeos_c
    ! Multifluid equations
    public :: multifluid_gerg2008
    ! SAFT equations
-   public :: pcsaft
+   public :: pcsaft, pcsaft_set_kij
 
    ! __del__
    public :: make_available_ar_models_list
@@ -819,6 +819,22 @@ contains
       ar_model = init_pcsaft(m, sigma, epsilon_k, kij)
       call extend_ar_models_list(id)
    end subroutine pcsaft
+
+   subroutine pcsaft_set_kij(ar_id, i, j, kij)
+      use yaeos, only: pcsaft
+      integer(c_int), intent(in) :: ar_id
+      integer(c_int), intent(in) :: i
+      integer(c_int), intent(in) :: j
+      real(c_double), intent(in) :: kij
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is (PCSAFT)
+            ar_model%kij(i, j) = kij
+            ar_model%kij(j, i) = kij
+         end select
+      end associate
+   end subroutine
 
    ! ==========================================================================
    !  Thermodynamic properties

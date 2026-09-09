@@ -1566,7 +1566,7 @@ contains
    ! ==========================================================================
    ! Other methods
    ! --------------------------------------------------------------------------
-   real(pr) function Psat_pure(eos, ncomp, T)
+   real(pr) function Psat_pure(eos, ncomp, T, Vl, Vv, converged)
       !! Calculation of saturation pressure of a pure component using the
       !! secant method.
       class(ArModel), intent(in) :: eos !! Model that will be used
@@ -1574,28 +1574,42 @@ contains
       !! Number of component in the mixture from which the saturation pressure
       !! will be calculated
       real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: Vl !! Liquid volume [L]
+      real(pr), intent(out) :: Vv !! Vapor volume [L]
+      logical, optional, intent(out) :: converged !! The calculation converged
 
       real(pr) :: n(size(eos))
-      real(pr) :: F(3), X(3), dF(3, 3), Vl, Vv, P, Pc, S, dFdS(3)
+      real(pr) :: F(3), X(3), dF(3, 3), S, dFdS(3)
+      real(pr) :: covol
       integer, parameter :: ns=3
       integer :: its
+      real(pr) :: P, P2
+      real(pr) :: f1, f2, step
+      real(pr) :: lnphi_l(size(eos)), lnphi_v(size(eos))
+      real(pr) :: lnphi_l2(size(eos)), lnphi_v2(size(eos))
 
       n = 0
       n(ncomp) = 1
 
-      call eos%volume(n, 1e-3_pr, T, Vl, root_type="liquid")
-      call eos%volume(n, 1e-3_pr, T, Vv, root_type="vapor")
+      call eos%volume(n, 10000._pr, T, V=Vl, root_type="liquid")
+      call eos%volume(n, 0.1_pr, T, V=Vv, root_type="vapor")
 
       X = [log(Vl), log(Vv), log(T)]
       S = log(T)
 
       F = 10
-      call solve_point_psat(eos, ncomp, size(n), X, ns, S, F, dF, dFdS, its)
+      call solve_point_psat(eos, ncomp, size(n), X, ns, S, F, dF, its)
       Vl = exp(X(1))
+      Vv = exp(X(2))
+
+      if (present(converged)) then
+         converged = .not. any(isnan(F))
+      end if
+
       call eos%pressure(n, Vl, T, Psat_pure)
    end function Psat_pure
 
-   subroutine solve_point_psat(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)
+   subroutine solve_point_psat(model, ncomp, nc, X, ns, S, F, dF, its)
       !! # Solve point
       !!
       !! Solve a saturation point for a pure component.
@@ -1643,8 +1657,6 @@ contains
       !! Function
       real(pr), intent(out) :: dF(3, 3)
       !! Jacobian
-      real(pr), intent(out) :: dFdS(3)
-      !! Derivative of the function with respect to S
       integer, intent(out) :: its
       !! Number of iterations
 
@@ -1674,18 +1686,25 @@ contains
       its = 0
       do while((maxval(abs(dX)) > 1e-7 .and. maxval(abs(F)) > 1e-7))
          its = its+1
-         call isofugacity(X, F, dF, dFdS)
+         
+         call isofugacity(X, F, dF)
+         
          if (any(isnan(F))) exit
+         
          dX = solve_system(dF, -F)
+
+         do while(exp(X(1) + dX(1)) < B)
+            dX = dX/2
+         end do
+
          Xnew = X + dX
          X = Xnew
       end do
    contains
-      subroutine isofugacity(X, F, dF, dFdS)
+      subroutine isofugacity(X, F, dF)
          real(pr), intent(inout) :: X(3)
          real(pr), intent(out) :: F(3)
          real(pr), intent(out) :: dF(3,3)
-         real(pr), intent(out) :: dFdS(3)
 
          F = 0
          dF = 0
@@ -1700,16 +1719,21 @@ contains
          F = 0
          dF = 0
          F(1) = lnfug_z(i) - lnfug_y(i)
-         F(2) = log(Pz/Py)
+         F(2) = Pz-Py
          F(3) = X(ns) - S
 
          df(1, 1) = Vz * dlnfdv_z(i)
          df(1, 2) = -Vy * dlnfdv_y(i)
          df(1, 3) = T * (dlnfdt_z(i) - dlnfdt_y(i))
 
-         df(2, 1) = Vz/Pz * dPdVz
-         df(2, 2) = -Vy/Py * dPdVy
-         df(2, 3) = 1/Pz * dPdTz - dPdTy / Py
+         df(2, 1) = Vz * dPdVz
+         df(2, 2) = -Vy * dPdVy
+         df(2, 3) = T * (dPdTz - dPdTy)
+
+
+         ! df(2, 1) = Vz/Pz * dPdVz
+         ! df(2, 2) = -Vy/Py * dPdVy
+         ! df(2, 3) = 1/Pz * dPdTz - dPdTy / Py
 
          df(3, ns) = -1
       end subroutine isofugacity

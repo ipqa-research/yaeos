@@ -395,6 +395,8 @@ contains
       integer, intent(in) :: component !! Component index to refit
 
       real(pr) :: Psat_i, diff, Tc, Pc, w
+      real(pr) :: Vv !! Volume of vapor [L]
+      real(pr) :: VL !! Volume of liquid [L]
 
       integer :: i
       type(AlphaRKPR) :: alpha
@@ -415,7 +417,7 @@ contains
 
       diff = 1
       do while (abs(diff)/abs(w) > 1e-5)
-         Psat_i = model%Psat_pure(i, 0.7*Tc)
+         Psat_i = model%Psat_pure(i, 0.7*Tc, Vl=Vl, Vv=Vv)
 
          if (Psat_i < 1e-10) then
             ! If the saturation pressure did not converge, calculate the

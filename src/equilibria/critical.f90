@@ -932,6 +932,7 @@ contains
       class(ArModel), intent(in out) :: model !! Thermodynamic model.
       real(pr) :: z(size(model%components%Tc)), Psat_i
       type(EquilibriumState) :: cp
+      real(pr) :: Vl, Vv
 
       integer :: i, nc
 
@@ -946,7 +947,7 @@ contains
          model%components%Tc(i) = cp%T
          model%components%Pc(i) = cp%P
 
-         Psat_i =  model%Psat_pure(i, 0.7*cp%T)
+         Psat_i =  model%Psat_pure(i, 0.7*cp%T, Vl=Vl, Vv=Vv)
          model%components%w(i) = (-1 - log10(Psat_i/cp%P))
       end do
    end subroutine get_critical_constants

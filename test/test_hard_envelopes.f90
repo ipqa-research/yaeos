@@ -152,5 +152,8 @@ contains
          kinds_x=k_x, kind_w=k_w, &
          ns0=nc*np+np+2, ds0=1e-3_pr, beta_w=0._pr &
          )
+      open(1, file="TEST_ENVELOPE.dat")
+      call env%write(1)
+      close(1)
    end subroutine test_b3_should_not_get_back_2
 end program test
