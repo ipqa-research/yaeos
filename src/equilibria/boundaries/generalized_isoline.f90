@@ -95,7 +95,7 @@ contains
          dXdS = solve_system(dF, -dFdS)
          ns = maxloc(abs(dXdS), dim=1)
 
-         dS = dXdS(ns) * dS * 3./iters
+         dS = dXdS(ns) * dS * 5./iters
 
          ! dS = sign(max(0.01, abs(dS)), dS)
          dXdS = dXdS/dXdS(ns)
@@ -134,9 +134,11 @@ contains
 
          dX = dXdS * dS
 
-         do while(abs(exp(X(iT) + dX(iT)) - exp(X(iT))) < 5)
-            dX = dX*2
-         end do
+         ! do while(&
+         !    spec_variable /= iT &
+         !    .and. abs(exp(X(iT) + dX(iT)) - exp(X(iT))) < 5)
+         !    dX = dX*2
+         ! end do
 
          X = X + dX
          S = X(ns)
@@ -396,7 +398,7 @@ contains
 
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
-         if (maxval(abs(F)) < 1e-9) exit
+         if (maxval(abs(F)) < 1e-9 .or. maxval(abs(dX)) < 1e-7) exit
 
          dX = solve_system(df, -F)
 
