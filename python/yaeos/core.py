@@ -2531,6 +2531,36 @@ class ArModel(ABC):
     # =========================================================================
     # Equilibrium calculations
     # -------------------------------------------------------------------------
+
+    def pure_saturation_pressure(self, component, temperature):
+        """Saturation pressure of a pure component at a given temperature.
+
+        Parameters
+        ----------
+        component: int
+            Which component index to calculate (starting from 0)
+        temperature: float
+            Temperature at which calculate [K]
+
+        Returns
+        -------
+        dict
+            Pure component saturation pressure dictionary with the keys:
+                - P: Pressure [bar]
+                - T: Temperature [K]
+                - Vx: Liquid volume [L]
+                - Vy: Vapor volume [L]
+        """
+        psat, vl, vv = yaeos_c.pure_psat(
+            id=self.id, ncomp=component+1, t=temperature
+        )
+        return {
+            "T": temperature,
+            "P": psat,
+            "Vx": vl,
+            "Vy": vv
+        }
+
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
     ):
