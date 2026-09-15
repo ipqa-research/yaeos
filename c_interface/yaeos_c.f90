@@ -71,6 +71,7 @@ module yaeos_c
    public :: entropy_excess_ar, helmholtz_excess_ar, internal_energy_excess_ar
 
    ! Phase equilibria
+   public :: pure_psat
    public :: flash, flash_vt, flash_grid, solve_mp_flash
    public :: flash_ge
    public :: saturation_pressure, saturation_temperature
@@ -1149,6 +1150,19 @@ contains
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
+
+   subroutine pure_psat(id, ncomp, T, psat, Vl, Vv)
+      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: ncomp
+      real(c_double), intent(in) :: T
+      real(c_double), intent(out) :: Psat
+      real(c_double), intent(out) :: Vl
+      real(c_double), intent(out) :: Vv
+      ar_model = ar_models(id)%model
+      Psat = ar_model%Psat_pure(ncomp, T, Vl, Vv)
+   end subroutine
+
+
    subroutine critical_point(id, z0, zi, spec, S, max_iters, x, T, P, V)
       use yaeos, only: EquilibriumState, fcritical_point => critical_point
       integer(c_int), intent(in) :: id
