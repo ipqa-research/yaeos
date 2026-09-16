@@ -1579,21 +1579,16 @@ contains
       logical, optional, intent(out) :: converged !! The calculation converged
 
       real(pr) :: n(size(eos))
-      real(pr) :: F(3), X(3), dF(3, 3), S, dFdS(3)
-      real(pr) :: covol
+      real(pr) :: F(3), X(3), dF(3, 3), S
       integer, parameter :: ns=3
       integer :: its
-      real(pr) :: P, P2
-      real(pr) :: f1, f2, step
-      real(pr) :: lnphi_l(size(eos)), lnphi_v(size(eos))
-      real(pr) :: lnphi_l2(size(eos)), lnphi_v2(size(eos))
       real(pr) :: Pc(size(eos))
 
       n = 0
       n(ncomp) = 1
       Pc = eos%components%Pc
-      call eos%volume(n, Pc(ncomp)*10, T, V=Vl, root_type="liquid")
-      call eos%volume(n, 0.1_pr, T, V=Vv, root_type="vapor")
+      call eos%volume(n, 100._pr, T, V=Vl, root_type="liquid")
+      call eos%volume(n, 0.001_pr, T, V=Vv, root_type="vapor")
 
       X = [log(Vl), log(Vv), log(T)]
       S = log(T)
@@ -1694,9 +1689,9 @@ contains
          
          dX = solve_system(dF, -F)
 
-         do while(exp(X(1) + dX(1)) < B)
-            dX = dX/2
-         end do
+         ! do while(exp(X(1) + dX(1)) < B)
+         !    dX = dX/2
+         ! end do
 
          Xnew = X + dX
          X = Xnew
