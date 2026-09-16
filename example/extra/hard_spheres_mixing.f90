@@ -1,6 +1,6 @@
 module yaeos__HardSpheresCubicEoS
    use yaeos, only: pr, R, Substances
-   use yaeos__ar_models_hyperdual, only: ArModelAdiff
+   use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
    use yaeos__autodiff
    implicit none
 
@@ -114,7 +114,7 @@ contains
       type(hPR76) :: hdpr76
       type(HardSpheresCubicEoS) :: hspr76
 
-      type(EquilibriaState) :: eq
+      type(EquilibriumState) :: eq
       type(PTEnvel2) :: env
 
       real(pr) :: Ar, ArT, ArV, ArTV, ArT2, ArV2, Arn(nc), Artn(nc), ArVn(nc), arn2(nc,nc)

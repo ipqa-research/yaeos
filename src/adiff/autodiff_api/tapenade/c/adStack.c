@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include "adStack.h"
 
 #include "adComplex.h"
@@ -62,10 +63,10 @@ static unsigned int adbitbuf = 0 ;
 static int adbitibuf = 0 ;
 
 /** Accumulates the number of bytes pushed and popped */
-static u_int64_t pushPopTraffic = 0 ;
+static uint64_t pushPopTraffic = 0 ;
 
 /** Remembers the maximum number of stack Blocks used */
-static u_int64_t maxBlocks = 0 ;
+static uint64_t maxBlocks = 0 ;
 
 //[llh] Don't know how to manage pushPopTraffic and maxBlocks in the OpenMP case ?
 

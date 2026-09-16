@@ -4,28 +4,40 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   documentation:
-    runs-on: ubuntu-22.04
-
-    env:
-      FC: gfortran
-      GCC_V: 12
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Setup Fortran Compiler
+      uses: fortran-lang/setup-fortran@v1
+      id: setup-fortran
+      with:
+        compiler: "gcc"
+        version: 14
+
     - name: Install Dependencies Ubuntu
       run: |
         sudo apt-get update
-        sudo apt install -y gfortran-${GCC_V} python3-dev graphviz
+        sudo apt install -y python3-dev graphviz pandoc libblas-dev liblapack-dev
         sudo pip install ford markdown
+        pip install -r python/docs/requirements.txt
+        pip install -r python/requirements-build.txt
+        pip install -v python/
 
     - name: Build Developer Documentation
       run: |
         ford ford.md
+        cd python/docs
+        sphinx-build -b html source build
+        rm -r ../../doc/ford_site/page/python-api
+        mv build ../../doc/ford_site/page/python-api
+        cd ../../
+        touch doc/ford_site/.nojekyll
 
     - name: Upload Documentation
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: documentation
         path: doc/ford_site
