@@ -134,6 +134,16 @@ contains
 
          dX = dXdS * dS
 
+         do while(maxval(abs(dX(iBetas))) > 0.1)
+            dX = dX/2
+         end do
+
+         do i=iBetas(1), iBetas(np)
+            do while(dX(i)**2 + dX(iT)**2 + dX(iP)**2 > 0.01)
+               dX = dX/3
+            end do
+         end do
+
          ! do while(&
          !    spec_variable /= iT &
          !    .and. abs(exp(X(iT) + dX(iT)) - exp(X(iT))) < 5)
